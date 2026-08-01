@@ -92,9 +92,16 @@ export const outputsAreEqual = (a: number | null, b: number | null): boolean => 
 // ---------------------------------------------------------------------------
 
 /**
- * The three universal properties every contract must consider. A property is only written as a
- * test when it is applicable; one that cannot fail is recorded here with its reason instead, so
- * the green count never carries a guard that proves nothing.
+ * The universal properties every contract must consider. A property is only written as a test when
+ * it is applicable; one that cannot fail is recorded here with its reason instead, so the green
+ * count never carries a guard that proves nothing.
+ *
+ * `no observable side effect` used to be a single entry here, and that was the error: it named two
+ * different guarantees at once, and only one of them is reachable by a property. `no ambient input`
+ * - the answer depends on the declared arguments and on nothing else - is testable, and is tested.
+ * `no ambient output` - the function writes nowhere - is not, and belongs to the static analysis of
+ * the validation pipeline. The guard removed from this contract was not proof that side effects are
+ * untestable; it was proof that the wrong half was being tested.
  */
 export const universalProperties = [
   {
@@ -113,11 +120,26 @@ export const universalProperties = [
       'between calls and answers differently on the second one.',
   },
   {
-    name: 'no observable side effect',
+    name: 'no ambient input',
     applicable: true,
     reason:
-      'Violable in practice: writing a counter or a cache onto a global, or letting an answer ' +
-      'depend on which inputs were parsed before it.',
+      'Violable in practice: a cache keyed on the wrong thing, or a regular expression whose ' +
+      'lastIndex survives a call, makes an answer depend on which inputs were parsed before it. ' +
+      'The property interleaves a probe with an arbitrary history and requires the probe to answer ' +
+      'identically either way. This contract reads a string and returns a number, so the call ' +
+      'history is the only ambient input it can plausibly acquire.',
+  },
+  {
+    name: 'no ambient output',
+    applicable: false,
+    reason:
+      'Not reachable by a property, and the attempt was removed rather than left decorative. A ' +
+      'test that snapshots globalThis inside its own `it` runs after the earlier tests have called ' +
+      'the function hundreds of times, so it cannot see a write that already happened: measured, ' +
+      'an implementation writing globalThis.__parseNumberCalls passes the whole suite. A correct ' +
+      'memoising cache passes it too, and should - a cache is not a defect. The guarantee is ' +
+      'obtained by static analysis in the validation pipeline, which forbids a feature from ' +
+      'reaching global state at all.',
   },
 ] as const
 

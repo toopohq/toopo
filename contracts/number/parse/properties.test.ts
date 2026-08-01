@@ -101,12 +101,14 @@ describe('number/parse@1 specific properties', () => {
 })
 
 describe('number/parse@1 universal properties', () => {
-  it('keeps the inapplicable universal property declared as such', () => {
+  it('keeps the inapplicable universal properties declared as such', () => {
     // The contract must never silently promote an inapplicable universal property back into a
     // passing test: a guard that cannot fail would inflate the green count with false assurance.
-    const mutation = universalProperties.find((p) => p.name === 'never mutates its arguments')
+    // Both entries below were measured to be unfalsifiable here - one because strings are
+    // immutable, the other because no property can observe a write that already happened.
+    const inapplicable = universalProperties.filter((p) => !p.applicable).map((p) => p.name)
 
-    expect(mutation?.applicable).toBe(false)
+    expect(inapplicable).toEqual(['never mutates its arguments', 'no ambient output'])
   })
 
   it('is deterministic - the same input yields the same output on every call', () => {
@@ -117,19 +119,7 @@ describe('number/parse@1 universal properties', () => {
     )
   })
 
-  it('has no observable effect - it adds no global state', () => {
-    const before = Object.getOwnPropertyNames(globalThis).sort().join(' ')
-
-    fc.assert(
-      fc.property(candidateInput, (input) => {
-        parseNumber(input)
-      }),
-    )
-
-    expect(Object.getOwnPropertyNames(globalThis).sort().join(' ')).toBe(before)
-  })
-
-  it('has no observable effect - an answer does not depend on the inputs parsed before it', () => {
+  it('has no ambient input - an answer does not depend on the inputs parsed before it', () => {
     fc.assert(
       fc.property(candidateInput, fc.array(candidateInput, { maxLength: 20 }), (probe, history) => {
         const first = parseNumber(probe)
