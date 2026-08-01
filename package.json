@@ -1,0 +1,13 @@
+{
+  "name": "toopo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run --typecheck"
+  },
+  "devDependencies": {
+    "fast-check": "^4.9.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
+}
