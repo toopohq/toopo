@@ -19,7 +19,7 @@ contract format emerges from repetition rather than being designed up front. The
 this project lies in the contract format, not in the API or the CLI — which is why neither exists
 yet.
 
-- Contracts written so far: none.
+- Contracts written so far: `number/parse@1`.
 - Error convention (`null` / throw / `Result`) is **undecided**, and will be frozen for the whole
   catalogue once chosen. Any convention in use today is provisional and must be labelled as such
   in the code.
@@ -73,6 +73,8 @@ of the thesis.
   on its real failure condition and show the red output.
 - A guard that is structurally incapable of failing must be recorded as inapplicable, with the
   reason — never written as a passing test that proves nothing.
+- Every universal property carries a status — applicable or not applicable — together with its
+  reason. One declared applicable must have been seen red on at least one plausible mutant.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
 - Report what you left out. Never narrow the scope silently.
