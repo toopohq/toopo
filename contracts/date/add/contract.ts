@@ -464,10 +464,15 @@ export const edgeCases: readonly EdgeCase[] = [
     duration: { months: 1 },
     expected: '0050-02-28T00:00:00.000Z',
     rationale:
-      'A two-digit year stays a two-digit year. It is listed because the obvious way to find the ' +
-      'length of a month is `Date.UTC(year, month + 1, 0)`, and `Date.UTC` maps years 0 to 99 into ' +
-      '1900 to 1999: measured, `Date.UTC(50, 0, 1)` is 1950, while `setUTCFullYear(50, 0, 1)` is 50. ' +
-      'An implementation built on the first silently computes in the wrong century.',
+      'A two-digit year stays a two-digit year rather than being read as a nineteen-hundreds one. ' +
+      'It is listed because `Date.UTC` maps years 0 to 99 onto 1900 to 1999 - measured, ' +
+      '`Date.UTC(50, 0, 1)` is 1950-01-01 where `setUTCFullYear(50, 0, 1)` is year 50 - so an ' +
+      'implementation that builds its result through `Date.UTC` answers in the wrong century. The ' +
+      'measured limit of this case is published rather than hidden: an implementation using ' +
+      '`Date.UTC` only to look up the length of a month passes it, because Y and 1900 + Y are ' +
+      'congruent modulo four and so agree on February everywhere except the century rule. Year 0 ' +
+      'is the only two-digit year where they part - 0 is a leap year and 1900 is not - and this ' +
+      'table does not carry it.',
   },
 
   // --- Aggregation within a step ------------------------------------------
