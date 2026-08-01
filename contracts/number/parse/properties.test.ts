@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { outputsAreEqual, universalProperties } from './contract.js'
+import { outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
 import { parseNumber } from './reference.js'
 
 /**
@@ -79,6 +79,7 @@ describe('number/parse@1 specific properties', () => {
         const result = parseNumber(input)
         return result === null || Number.isFinite(result)
       }),
+      { numRuns: propertyRuns },
     )
   })
 
@@ -87,6 +88,7 @@ describe('number/parse@1 specific properties', () => {
       fc.property(candidateInput, (input) =>
         outputsAreEqual(parseNumber(input), parseNumber(input.trim())),
       ),
+      { numRuns: propertyRuns },
     )
   })
 
@@ -96,6 +98,7 @@ describe('number/parse@1 specific properties', () => {
         finiteDouble.filter((n) => !Object.is(n, -0)),
         (n) => outputsAreEqual(parseNumber(String(n)), n),
       ),
+      { numRuns: propertyRuns },
     )
   })
 })
@@ -116,6 +119,7 @@ describe('number/parse@1 universal properties', () => {
       fc.property(candidateInput, (input) =>
         outputsAreEqual(parseNumber(input), parseNumber(input)),
       ),
+      { numRuns: propertyRuns },
     )
   })
 
@@ -127,6 +131,7 @@ describe('number/parse@1 universal properties', () => {
 
         return outputsAreEqual(parseNumber(probe), first)
       }),
+      { numRuns: propertyRuns },
     )
   })
 })
