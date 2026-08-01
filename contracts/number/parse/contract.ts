@@ -3,8 +3,9 @@
  *
  * This file is the contract itself: identity, signature, universal-property applicability, named
  * edge cases and benchmark profiles. It declares behaviour and executes nothing. The reference
- * implementation lives in `reference.ts`; the executable halves of the contract live in
- * `signature.test-d.ts`, `properties.test.ts` and `edge-cases.test.ts`.
+ * implementation lives in `reference.ts`; the executable half of each block lives in its own file -
+ * `signature.test-d.ts` for 4.2, `properties.test.ts` for 4.3, `edge-cases.test.ts` for 4.4 and
+ * `profiles.test.ts` for 4.5.
  *
  * PROVISIONAL: failure is reported as `null`. The catalogue-wide error convention
  * (`null` / throw / `Result`) is still undecided and will be frozen for every contract at once.
@@ -451,16 +452,33 @@ export const edgeCases: readonly EdgeCase[] = [
 /**
  * Declared as data. Nothing here is executed or measured in this repository: there is no reference
  * machine yet, and a number produced on a developer laptop would be dishonest.
+ *
+ * Every profile declares the class its samples belong to, because without it a profile can measure
+ * something other than what it names and nothing says so. This one did: `long-inputs` carried
+ * '1'.repeat(1000), a thousand digits whose value overflows to Infinity and is therefore rejected,
+ * so a third of the profile timed the rejection path instead of the cost of reading a long number.
+ * `profiles.test.ts` runs the reference over every sample and fails when a declared class does not
+ * hold, which is what turns this block from a comment into a claim.
  */
-export const benchmarkProfiles = [
+export type BenchmarkProfile = {
+  readonly name: string
+  readonly description: string
+  /** What every sample of this profile must do. A profile mixing both classes measures neither. */
+  readonly sampleClass: 'accepted' | 'rejected'
+  readonly samples: readonly string[]
+}
+
+export const benchmarkProfiles: readonly BenchmarkProfile[] = [
   {
     name: 'small-integers',
     description: 'Short integer strings, the dominant shape in form and query-string input.',
+    sampleClass: 'accepted',
     samples: ['0', '7', '42', '1999', '-15'],
   },
   {
     name: 'decimals-and-exponents',
     description: 'Fractional and scientific notation, the shape of spreadsheet and CSV exports.',
+    sampleClass: 'accepted',
     samples: ['3.14159', '-0.001', '1e3', '2.5E-8', '.5'],
   },
   {
@@ -468,17 +486,22 @@ export const benchmarkProfiles = [
     description:
       'Inputs that must return null. Measured separately because an implementation may take a ' +
       'very different path when it rejects, and validation-heavy callers hit that path most.',
+    sampleClass: 'rejected',
     samples: ['', '   ', 'abc', '0x1F', '1,5', 'NaN'],
   },
   {
     name: 'whitespace-padded',
     description: 'Valid numbers wrapped in whitespace, isolating the cost of trimming.',
+    sampleClass: 'accepted',
     samples: ['  42  ', '\t7\n', '   -3.5   '],
   },
   {
     name: 'long-inputs',
     description:
-      'Pathological lengths, to expose implementations whose cost grows faster than linearly.',
-    samples: ['1'.repeat(1000), '0'.repeat(5000) + '1', ' '.repeat(1000) + '42'],
+      'Pathological lengths, to expose implementations whose cost grows faster than linearly. The ' +
+      'thousand digits sit behind the decimal point so that the value stays finite and the sample ' +
+      'stays on the accepting path; written as an integer it overflows and measures rejection.',
+    sampleClass: 'accepted',
+    samples: ['0.' + '1'.repeat(1000), '0'.repeat(5000) + '1', ' '.repeat(1000) + '42'],
   },
-] as const
+]
