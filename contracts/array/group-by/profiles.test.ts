@@ -31,19 +31,40 @@ const holds = (shape: ProfileShape, size: number, length: number): boolean => {
   return size > 1 && size < length && size * 4 > length
 }
 
+/**
+ * These tests assert a shape, never a duration, and the timeout says so out loud.
+ *
+ * Measured, and the reason this is not left at the default. An implementation that rebuilds a group
+ * array on every insertion instead of pushing into it answers correctly on every sample here and
+ * takes 5392 ms on the fifty-thousand-element single-group sample, against 0.7 ms for the reference.
+ * Under vitest's default five-second limit that implementation fails this file - not because the
+ * shape it produced was wrong, but because the machine was slow enough that day. A verdict that
+ * flips with the speed of the computer is the one thing the mutation instrument exists to prevent,
+ * and it would have been pinned here as a defect this contract catches.
+ *
+ * The contract does not constrain complexity. Block 4.5 declares profiles for a benchmark that this
+ * repository does not run, and a quadratic implementation is something that benchmark would expose
+ * and these tests must not pretend to.
+ */
+const SHAPE_CHECK_TIMEOUT_MS = 30_000
+
 describe('array/group-by@1 benchmark profiles', () => {
   for (const { name, shape, keyFunction, samples } of benchmarkProfiles) {
-    it(`${name} - every sample is ${shape}`, () => {
-      const keyOf = profileKeyFunctions[keyFunction]
+    it(
+      `${name} - every sample is ${shape}`,
+      () => {
+        const keyOf = profileKeyFunctions[keyFunction]
 
-      const offenders = samples
-        .map((sample) => ({ length: sample.length, size: groupBy(sample, keyOf).size }))
-        .filter(({ size, length }) => !holds(shape, size, length))
+        const offenders = samples
+          .map((sample) => ({ length: sample.length, size: groupBy(sample, keyOf).size }))
+          .filter(({ size, length }) => !holds(shape, size, length))
 
-      expect(
-        offenders.map(({ size, length }) => `${length} elements fell into ${size} group(s)`),
-      ).toEqual([])
-    })
+        expect(
+          offenders.map(({ size, length }) => `${length} elements fell into ${size} group(s)`),
+        ).toEqual([])
+      },
+      SHAPE_CHECK_TIMEOUT_MS,
+    )
   }
 
   it('declares a non-empty sample set for every profile', () => {
