@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { expectEveryCaseIsJustified } from '../../../catalogue/every-contract.js'
+import {
+  expectEveryCaseIsAddressed,
+  expectEveryCaseIsJustified,
+} from '../../../catalogue/every-contract.js'
 import { edgeCases, untypedCallerCases } from './edge-cases.js'
 import { assertOutcome, callOnce, callsMatch, renderCalls, renderGroups } from './outcome.js'
 import { groupBy } from './reference.js'
@@ -21,8 +24,8 @@ import { groupBy } from './reference.js'
  */
 
 describe('array/group-by@1 named edge cases', () => {
-  for (const { title, items, keyOf, outcome, expectedCalls } of edgeCases) {
-    it(title, () => {
+  for (const { id, items, keyOf, outcome, expectedCalls } of edgeCases) {
+    it(id, () => {
       const elementsBefore = [...items]
       const { attempt, calls } = callOnce(groupBy, items, keyOf)
 
@@ -50,8 +53,8 @@ describe('array/group-by@1 named edge cases', () => {
 })
 
 describe('array/group-by@1 inputs only an untyped caller can pass', () => {
-  for (const { title, items, keyOf, outcome } of untypedCallerCases) {
-    it(title, () => {
+  for (const { id, items, keyOf, outcome } of untypedCallerCases) {
+    it(id, () => {
       // The cast is the whole point of this table: these are the calls TypeScript refuses and
       // JavaScript makes anyway, and block 4.4 settles them so two implementations cannot differ.
       const { attempt } = callOnce(groupBy, items as readonly unknown[], keyOf)
@@ -62,16 +65,13 @@ describe('array/group-by@1 inputs only an untyped caller can pass', () => {
 })
 
 describe('array/group-by@1 edge case table', () => {
-  it('titles each case exactly once, across both tables', () => {
-    const titles = [...edgeCases, ...untypedCallerCases].map((edgeCase) => edgeCase.title)
+  const allCases = [...edgeCases, ...untypedCallerCases]
 
-    expect(titles).toHaveLength(new Set(titles).size)
+  it('addresses each case with a unique identifier', () => {
+    expectEveryCaseIsAddressed(allCases.map((edgeCase) => edgeCase.id))
   })
 
   it('publishes a rationale for every decision', () => {
-    expectEveryCaseIsJustified(
-      [...edgeCases, ...untypedCallerCases],
-      (edgeCase) => edgeCase.title,
-    )
+    expectEveryCaseIsJustified(allCases, (edgeCase) => edgeCase.id)
   })
 })

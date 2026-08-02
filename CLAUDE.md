@@ -58,6 +58,27 @@ or splitting one all break a caller that switches exhaustively — so the partit
 deliberately, and a later change costs `name@2`. The additivity that decided this convention covers
 gaining a diagnostic, not reshaping one.
 
+## Case identifiers — settled, catalogue-wide
+
+Every case of block 4.4 carries an `id`: a **name**, in kebab-case, unique within the contract and
+**frozen with its major version**. Guards are titled by it and by nothing else.
+
+A name, and not a rendering of the case's own data. `"1e400" -> overflow` restates the row it
+addresses, so it can be wrong about it, and §4.4 makes every case one line of public documentation —
+where false documentation is worse than none. The published line goes on being rendered from the
+data; the identifier only addresses the case.
+
+The measurement that forced it: the two fallible contracts titled their guards out of the very data a
+specification battery injects into, so a mutant that changed an expectation reddened a guard under a
+title the unmutated contract does not contain, and left the calibrated one silent — a hundred guards
+of `number/parse@1` and eighty-six of `date/add@1` declared silent as an artefact of the apparatus.
+`array/group-by@1` carried an explicit name and did not have the problem.
+
+The reason that outlives the instrument is the registry's: an API response citing a case, a URL
+anchor on a contract's page, a validation report naming the case a submission failed — each needs an
+address, and an address that changes breaks links. Renaming one therefore costs `name@2`, exactly as
+reshaping a reason set does.
+
 ## Rules for this stage
 
 1. Contracts and their reference implementations only. No backend, no API, no CLI, no website, no

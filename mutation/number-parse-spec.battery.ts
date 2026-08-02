@@ -21,13 +21,16 @@
  * duplicate-input defect is written as one case *renamed onto* another rather than as a case added,
  * and the empty-profile defect empties a sample list rather than deleting a profile.
  *
- * **A specification mutant renames the guard it reddens.** Both tables of this contract title their
- * tests by rendering the very data under mutation - `it(`${input} -> ${expected}`)` - so a mutant
- * that changes an expectation reddens a guard under a title that does not exist in the unmutated
- * contract, and leaves the calibrated one silent. NP-6 and NP-8 are those mutants: they are pinned
- * on the titles they really redden, and the attribution cannot see them, because it identifies a
- * guard by its title. `array/group-by@1` does not have this problem - its cases carry an explicit
- * `title` field - which is the first argument this repository has for writing tables that way.
+ * **A specification mutant used to rename the guard it reddens, and no longer does.** Both tables of
+ * this contract titled their tests by rendering the very data under mutation -
+ * `it(`${input} -> ${expected}`)` - so NP-6 reddened a guard under a title the unmutated contract
+ * does not contain and left the calibrated one silent, with a hundred guards of block 4.4 declared
+ * silent in a block because attribution identifies a guard by its title and could not see the one
+ * that spoke. `array/group-by@1` did not have the problem, because its cases carried an explicit
+ * name; that is now the catalogue's rule, every case carries an `id`, and NP-6 is pinned on the guard
+ * it was written for. The measured consequence is in this battery's own attribution: the block-4.4
+ * silence went from an artefact of the apparatus to a fact about the battery, and one case of the
+ * ninety-nine left it.
  *
  * The prefix is per contract rather than a shared counter. `F-`, `X-` and `S-` are global because
  * they were not, once, and the collision cost a rename; two letters make one impossible.
@@ -69,6 +72,7 @@ const OVERFLOW_CASE = `    input: '1e400',
 // Guards this battery pins by name
 // ---------------------------------------------------------------------------
 
+const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
 const EVERY_INPUT_ONCE = 'settles each input exactly once'
 const REASONS_AGREE = 'names a case for every declared reason, and declares every reason it names'
 const EVERY_CASE_JUSTIFIED = 'publishes a rationale for every decision'
@@ -77,12 +81,7 @@ const INAPPLICABLE_STAY_INAPPLICABLE = 'keeps the inapplicable universal propert
 const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
 const REJECTED_PROFILE = 'rejected-inputs - every sample is rejected'
 
-/**
- * A title that does not exist in the unmutated contract, because the mutant renders it. NP-8 has no
- * twin here: renaming an input onto another produces a title that already exists and still passes,
- * so the only guard that speaks is the one about the table.
- */
-const OVERFLOW_RENAMED = '"1e400" -> 0'
+const OVERFLOW_CASE_ID = 'overflow-past-the-largest-double'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -152,10 +151,11 @@ const mutants: readonly Mutant[] = [
       'as 0 rather than as a refusal, which is what an implementation reading the underflow rule ' +
       'onto the overflow case would produce. Only the value half of block 4.4 reddens - the ' +
       'described half still requires `overflow` and still gets it - which is the asymmetry the two ' +
-      'tables exist to keep. It is pinned on a title the unmutated contract does not contain, ' +
-      'because this table renders its titles from the data being mutated',
+      'tables exist to keep. It is the mutant the case identifier was introduced for: it used to be ' +
+      'pinned on `"1e400" -> 0`, a title the unmutated contract does not contain, and it is now ' +
+      'pinned on the guard it was written for',
     [edgeCases(OVERFLOW_CASE, `    input: '1e400',\n    expected: 0,\n    reason: 'overflow',`)],
-    killed([OVERFLOW_RENAMED]),
+    killed([OVERFLOW_CASE_ID]),
   ),
   sameOnEveryLens(
     'NP-7',
@@ -185,6 +185,16 @@ const mutants: readonly Mutant[] = [
       'one rather than a clause of it',
     [contract(SMALL_INTEGERS, `    samples: [],`)],
     killed([EVERY_PROFILE_POPULATED]),
+  ),
+  sameOnEveryLens(
+    'NP-10',
+    'one case addressed by another case\'s identifier, so two rows of block 4.4 answer to one name. ' +
+      'It is the defect an identifier makes possible, and the only mutant here that probes the ' +
+      'catalogue guard introduced with it: an address that is not unique addresses nothing, and both ' +
+      'rows go on passing, so nothing else in the suite has anything to say. A rename rather than an ' +
+      'added case, for the reason NP-8 is one - the count check refuses a cell whose suite grew',
+    [edgeCases(`    id: 'a-bigint-suffix',`, `    id: 'arbitrary-text',`)],
+    killed([EVERY_ID_UNIQUE]),
   ),
 ]
 
@@ -270,14 +280,67 @@ export const battery: Battery = {
     {
       nature: 'documents a decision',
       reason:
-        'both tables of block 4.4, and the silence is the instrument\'s rather than the battery\'s. ' +
-        'NP-6 and NP-8 do redden a guard in here; they redden it under a title the unmutated ' +
-        'contract does not contain, because `edge-cases.test.ts` renders each title out of the very ' +
-        'data being mutated. Attribution identifies a guard by its title, so the guard that speaks ' +
-        'is invisible to it and the hundred guards calibrated here are all silent. The pins on NP-6 ' +
-        'and NP-8 name the titles that really redden, so the cells still disagree if detection ' +
-        'moves.',
-      suites: ['number/parse@1 named edge cases', 'number/parse@1 named edge cases, described'],
+        'the cases of block 4.4 no mutant here rewrites, and this list is what the case identifier ' +
+        'bought. The same declaration used to name both suites whole, on the grounds that the ' +
+        'silence was the instrument\'s: NP-6 did redden a guard in there, under a title the ' +
+        'unmutated contract does not contain, so attribution could not see it and all hundred read ' +
+        'as silent. They are now addressed by name, NP-6 reddens the case it was written for, and ' +
+        'what is left is a measurement of this battery - forty-nine value guards and fifty described ' +
+        'ones that would each need their own mutant to say one sentence about a different row. The ' +
+        'described suite is whole because no mutant here changes a reason: NP-6 moves a value and ' +
+        'leaves `overflow` in place, which is the asymmetry the two tables exist to keep.',
+      suites: ['number/parse@1 named edge cases, described'],
+      titles: [
+        'ordinary-integer',
+        'ordinary-negative-decimal',
+        'surrounding-whitespace',
+        'tabs-and-newlines',
+        'leading-byte-order-mark',
+        'whitespace-inside-the-number',
+        'leading-plus-sign',
+        'sign-detached-from-its-digits',
+        'repeated-sign',
+        'negative-zero',
+        'leading-zeros',
+        'bare-fraction',
+        'trailing-decimal-point',
+        'lone-decimal-point',
+        'two-decimal-points',
+        'exponent',
+        'exponent-uppercase-and-signed',
+        'negative-exponent',
+        'exponent-with-no-digits',
+        'the-empty-string',
+        'a-blank-string',
+        'the-word-nan',
+        'the-word-infinity',
+        'the-word-negative-infinity',
+        'hexadecimal',
+        'octal',
+        'binary',
+        'comma-as-a-decimal-separator',
+        'comma-grouping',
+        'underscore-grouping',
+        'comma-grouping-with-a-decimal-point',
+        'apostrophe-grouping',
+        'no-break-space-grouping',
+        'narrow-no-break-space-grouping',
+        'grouping-that-is-not-in-threes',
+        'full-stop-grouping-with-a-comma-decimal',
+        'an-ordinary-space-between-digits',
+        'a-typographic-apostrophe-between-digits',
+        'the-arabic-thousands-separator',
+        'a-separator-with-nothing-to-separate',
+        'a-separator-in-text-that-is-not-a-number',
+        'a-separator-inside-a-radix-prefix',
+        'arbitrary-text',
+        'a-bigint-suffix',
+        'arabic-indic-digits',
+        'an-inherited-property-name',
+        'underflow-to-zero',
+        'negative-underflow',
+        'an-integer-past-two-to-the-fifty-third',
+      ],
     },
   ],
 

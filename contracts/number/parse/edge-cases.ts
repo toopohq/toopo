@@ -1,8 +1,9 @@
 /**
  * Block 4.4 of contract `number/parse@1` - the named and settled edge cases.
  *
- * What this block is for, and the `Provenance` vocabulary every case carries, belong to the catalogue
- * and are stated once in `catalogue/every-contract.ts`. What is here is this contract's own table.
+ * What this block is for, the `Provenance` vocabulary every case carries and the shape of the `id`
+ * each one is addressed by belong to the catalogue and are stated once in
+ * `catalogue/every-contract.ts`. What is here is this contract's own table.
  *
  * Every case in it is `specified`, and that is still true of the separator family, which arrived after
  * the rest. No mutant of this contract has ever required a case to be added - a fact about this table
@@ -17,6 +18,7 @@ import type { Provenance } from '../../../catalogue/every-contract.js'
 import type { ParseFailureReason } from './contract.js'
 
 export type EdgeCase = {
+  readonly id: string
   readonly input: string
   readonly expected: number | null
   /** What the diagnostic surface must report, and `null` exactly when the input parses. */
@@ -44,6 +46,7 @@ const ARABIC_THOUSANDS_SEPARATOR = String.fromCharCode(0x066c)
 export const edgeCases: readonly EdgeCase[] = [
   // --- Baseline -----------------------------------------------------------
   {
+    id: 'ordinary-integer',
     input: '42',
     expected: 42,
     reason: null,
@@ -51,6 +54,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'An ordinary integer parses to itself.',
   },
   {
+    id: 'ordinary-negative-decimal',
     input: '-3.5',
     expected: -3.5,
     reason: null,
@@ -60,6 +64,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Whitespace ---------------------------------------------------------
   {
+    id: 'surrounding-whitespace',
     input: '  42  ',
     expected: 42,
     reason: null,
@@ -69,6 +74,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'spreadsheet cell routinely carries it. Trimming uses String.prototype.trim.',
   },
   {
+    id: 'tabs-and-newlines',
     input: '\t\n 7 \r\n',
     expected: 7,
     reason: null,
@@ -76,6 +82,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'Tabs and newlines are whitespace for String.prototype.trim, so they are ignored too.',
   },
   {
+    id: 'leading-byte-order-mark',
     input: BYTE_ORDER_MARK + '9',
     expected: 9,
     reason: null,
@@ -87,6 +94,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'byte-order mark or a non-breaking space.',
   },
   {
+    id: 'whitespace-inside-the-number',
     input: '4 2',
     expected: null,
     reason: 'not-decimal',
@@ -96,6 +104,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Sign ---------------------------------------------------------------
   {
+    id: 'leading-plus-sign',
     input: '+42',
     expected: 42,
     reason: null,
@@ -103,6 +112,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'A leading plus sign is accepted and has no effect on the value.',
   },
   {
+    id: 'sign-detached-from-its-digits',
     input: '- 1',
     expected: null,
     reason: 'not-decimal',
@@ -110,6 +120,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'A sign separated from its digits is not a number.',
   },
   {
+    id: 'repeated-sign',
     input: '--1',
     expected: null,
     reason: 'not-decimal',
@@ -117,6 +128,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'A repeated sign is not a number.',
   },
   {
+    id: 'negative-zero',
     input: '-0',
     expected: -0,
     reason: null,
@@ -129,6 +141,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Digit shapes -------------------------------------------------------
   {
+    id: 'leading-zeros',
     input: '01',
     expected: 1,
     reason: null,
@@ -138,6 +151,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'of old parseInt implementations is not part of this contract.',
   },
   {
+    id: 'bare-fraction',
     input: '.5',
     expected: 0.5,
     reason: null,
@@ -145,6 +159,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'A fraction with no integer part is accepted, matching how people write it.',
   },
   {
+    id: 'trailing-decimal-point',
     input: '5.',
     expected: 5,
     reason: null,
@@ -152,6 +167,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'An integer with a trailing decimal point is accepted; it is a common typing artefact.',
   },
   {
+    id: 'lone-decimal-point',
     input: '.',
     expected: null,
     reason: 'not-decimal',
@@ -159,6 +175,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'A decimal point with no digits on either side is not a number.',
   },
   {
+    id: 'two-decimal-points',
     input: '1.2.3',
     expected: null,
     reason: 'not-decimal',
@@ -170,6 +187,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Exponent -----------------------------------------------------------
   {
+    id: 'exponent',
     input: '1e3',
     expected: 1000,
     reason: null,
@@ -179,6 +197,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'write large numbers. parseInt("1e3") returns 1, keeping only the leading digit.',
   },
   {
+    id: 'exponent-uppercase-and-signed',
     input: '1E+3',
     expected: 1000,
     reason: null,
@@ -186,6 +205,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'The exponent marker is case-insensitive and its sign is optional.',
   },
   {
+    id: 'negative-exponent',
     input: '1e-7',
     expected: 1e-7,
     reason: null,
@@ -193,6 +213,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'A negative exponent is accepted.',
   },
   {
+    id: 'exponent-with-no-digits',
     input: '1e',
     expected: null,
     reason: 'not-decimal',
@@ -204,6 +225,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Empty and blank ----------------------------------------------------
   {
+    id: 'the-empty-string',
     input: '',
     expected: null,
     reason: 'empty',
@@ -214,6 +236,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'Correcting it is the main reason this contract exists.',
   },
   {
+    id: 'a-blank-string',
     input: '   ',
     expected: null,
     reason: 'empty',
@@ -223,6 +246,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Non-finite words ---------------------------------------------------
   {
+    id: 'the-word-nan',
     input: 'NaN',
     expected: null,
     reason: 'not-decimal',
@@ -232,6 +256,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'the failure value of every other invalid input.',
   },
   {
+    id: 'the-word-infinity',
     input: 'Infinity',
     expected: null,
     reason: 'not-decimal',
@@ -244,6 +269,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'that was computed and lost.',
   },
   {
+    id: 'the-word-negative-infinity',
     input: '-Infinity',
     expected: null,
     reason: 'not-decimal',
@@ -253,6 +279,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Alternative radixes ------------------------------------------------
   {
+    id: 'hexadecimal',
     input: '0x1F',
     expected: null,
     reason: 'not-decimal',
@@ -263,6 +290,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'disagrees - parseFloat("0x1F") returns 0 - and Python raises on float("0x1F").',
   },
   {
+    id: 'octal',
     input: '0o17',
     expected: null,
     reason: 'not-decimal',
@@ -270,6 +298,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'Octal notation is rejected, consistently with hexadecimal.',
   },
   {
+    id: 'binary',
     input: '0b11',
     expected: null,
     reason: 'not-decimal',
@@ -284,6 +313,7 @@ export const edgeCases: readonly EdgeCase[] = [
   // refused - this contract is not locale-aware and will not guess which separator was decimal -
   // but the reason names what the writer did instead of calling their number "not a number".
   {
+    id: 'comma-as-a-decimal-separator',
     input: '1,5',
     expected: null,
     reason: 'separator',
@@ -295,6 +325,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'the reason is not a guess - the text does carry a separator, and a caller can say so.',
   },
   {
+    id: 'comma-grouping',
     input: '1,000',
     expected: null,
     reason: 'separator',
@@ -304,6 +335,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'thousand in English and one in French. The refusal is the answer; the reason is the repair.',
   },
   {
+    id: 'underscore-grouping',
     input: '1_000',
     expected: null,
     reason: 'separator',
@@ -315,6 +347,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'gets a named reason rather than the residual one.',
   },
   {
+    id: 'comma-grouping-with-a-decimal-point',
     input: '1,234.56',
     expected: null,
     reason: 'separator',
@@ -326,6 +359,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'second look.',
   },
   {
+    id: 'apostrophe-grouping',
     input: "1'000",
     expected: null,
     reason: 'separator',
@@ -337,6 +371,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'anything else between two digits.',
   },
   {
+    id: 'no-break-space-grouping',
     input: `1${NO_BREAK_SPACE}000`,
     expected: null,
     reason: 'separator',
@@ -347,6 +382,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'person who pasted it, which is exactly the population that cannot diagnose a bare refusal.',
   },
   {
+    id: 'narrow-no-break-space-grouping',
     input: `1${NARROW_NO_BREAK_SPACE}000,5`,
     expected: null,
     reason: 'separator',
@@ -357,6 +393,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'space, so covering one and not the other would miss the locale the literal exists for.',
   },
   {
+    id: 'grouping-that-is-not-in-threes',
     input: '1,2,3',
     expected: null,
     reason: 'separator',
@@ -370,6 +407,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'difference.',
   },
   {
+    id: 'full-stop-grouping-with-a-comma-decimal',
     input: '1.000,5',
     expected: null,
     reason: 'separator',
@@ -384,6 +422,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Separators: the characters the family does not cover -----------------
   {
+    id: 'an-ordinary-space-between-digits',
     input: `1${ORDINARY_SPACE}000`,
     expected: null,
     reason: 'not-decimal',
@@ -396,6 +435,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'it, and a mutant that widens the family to whitespace is caught by this case.',
   },
   {
+    id: 'a-typographic-apostrophe-between-digits',
     input: `1${TYPOGRAPHIC_APOSTROPHE}000`,
     expected: null,
     reason: 'not-decimal',
@@ -408,6 +448,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'later revision has the reason it would be overturning.',
   },
   {
+    id: 'the-arabic-thousands-separator',
     input: `1${ARABIC_THOUSANDS_SEPARATOR}234`,
     expected: null,
     reason: 'not-decimal',
@@ -419,6 +460,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'reach, which is the shape of a guard that cannot fail.',
   },
   {
+    id: 'a-separator-with-nothing-to-separate',
     input: ',',
     expected: null,
     reason: 'not-decimal',
@@ -429,6 +471,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'reached - and `empty` is not, because the input was not blank to begin with.',
   },
   {
+    id: 'a-separator-in-text-that-is-not-a-number',
     input: 'x,y',
     expected: null,
     reason: 'not-decimal',
@@ -439,6 +482,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'a family character appears.',
   },
   {
+    id: 'a-separator-inside-a-radix-prefix',
     input: '0x1_F',
     expected: null,
     reason: 'not-decimal',
@@ -451,6 +495,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- Not numbers at all -------------------------------------------------
   {
+    id: 'arbitrary-text',
     input: 'abc',
     expected: null,
     reason: 'not-decimal',
@@ -458,6 +503,7 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'Arbitrary text is not a number.',
   },
   {
+    id: 'a-bigint-suffix',
     input: '12n',
     expected: null,
     reason: 'not-decimal',
@@ -467,6 +513,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'suffix that carried the meaning.',
   },
   {
+    id: 'arabic-indic-digits',
     input: ARABIC_INDIC_123,
     expected: null,
     reason: 'not-decimal',
@@ -476,6 +523,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'digits U+0661 U+0662 U+0663, even though they spell 123.',
   },
   {
+    id: 'an-inherited-property-name',
     input: 'constructor',
     expected: null,
     reason: 'not-decimal',
@@ -491,6 +539,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   // --- IEEE-754 limits ----------------------------------------------------
   {
+    id: 'overflow-past-the-largest-double',
     input: '1e400',
     expected: null,
     reason: 'overflow',
@@ -501,6 +550,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'makes the loss impossible to ignore.',
   },
   {
+    id: 'underflow-to-zero',
     input: '1e-400',
     expected: 0,
     reason: null,
@@ -511,6 +561,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'repair IEEE-754, only make its behaviour explicit.',
   },
   {
+    id: 'negative-underflow',
     input: '-1e-400',
     expected: -0,
     reason: null,
@@ -520,6 +571,7 @@ export const edgeCases: readonly EdgeCase[] = [
       'where preserving negative zero pays for itself.',
   },
   {
+    id: 'an-integer-past-two-to-the-fifty-third',
     input: '9007199254740993',
     expected: 9007199254740992,
     reason: null,

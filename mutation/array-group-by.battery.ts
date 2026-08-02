@@ -115,18 +115,17 @@ const READONLY_INPUT = 'accepts an array the caller may not modify'
 const OWNED_GROUPS = 'returns groups the caller owns'
 const REFUSES_A_NON_ARRAY = 'refuses an input that is not an array'
 
-const SPARSE = 'a hole in a sparse array is an element whose value is undefined'
-const A_SET = 'a Set'
-const A_STRING = 'a string'
+const SPARSE = 'a-hole-in-a-sparse-array'
+const A_SET = 'a-set'
+const A_STRING = 'a-string'
 const REACHES_EVERY_REGION = 'draws key functions that reach every region the properties police'
-const INTEGER_LIKE_ORDER =
-  'group order is first occurrence, not numeric, for keys that look like integers'
-const NAN_KEYS = 'NaN keys form a single group'
-const DISTINCT_OBJECT_KEYS = 'two distinct objects are two distinct keys'
-const SAME_OBJECT_KEY = 'the same object used as a key twice is one key'
-const PROTO_KEY = 'the key "__proto__"'
-const SECOND_LOOK = 'a key function that would answer differently on a second look is never asked twice'
-const EMPTY_ARRAY = 'the empty array'
+const INTEGER_LIKE_ORDER = 'integer-like-keys-keep-first-occurrence-order'
+const NAN_KEYS = 'nan-keys-form-one-group'
+const DISTINCT_OBJECT_KEYS = 'two-distinct-objects-are-two-keys'
+const SAME_OBJECT_KEY = 'one-object-used-twice-is-one-key'
+const PROTO_KEY = 'the-key-proto'
+const SECOND_LOOK = 'a-key-function-is-never-asked-twice'
+const EMPTY_ARRAY = 'the-empty-array'
 
 // ---------------------------------------------------------------------------
 // M-01 to M-20 - defects of behaviour
@@ -654,7 +653,7 @@ export const battery: Battery = {
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the two tables, ' +
         'the profile list, the key-function rules or the universal-property declarations.',
       titles: [
-        'titles each case exactly once, across both tables',
+        'addresses each case with a unique identifier',
         'publishes a rationale for every decision',
         'declares a non-empty sample set for every profile',
         'names every declared shape at least once, and describes every profile',
@@ -696,7 +695,7 @@ export const battery: Battery = {
         'real and plausible, and this battery does not carry it. The three other untyped-caller cases ' +
         'are red on M-11, which reads the input by counting over `length`. Both cases publish a ' +
         'decision either way; what is missing is the mutant that violates it.',
-      titles: ['null', 'undefined'],
+      titles: ['a-null-input', 'an-undefined-input'],
     },
     {
       nature: 'claims detection',

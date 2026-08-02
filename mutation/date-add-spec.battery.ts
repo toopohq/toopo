@@ -117,8 +117,8 @@ const ACCEPTS_A_DATE_AND_A_DURATION = 'accepts a Date and a Duration, and nothin
 const EVERY_FIELD_OPTIONAL = 'leaves every duration field optional'
 const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
 
-/** Titles that do not exist in the unmutated contract, because the mutant renders them. */
-const CLAMP_RENAMED = '2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-03-02T00:00:00.000Z'
+const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
+const CLAMP_CASE_ID = 'clamp-to-the-end-of-february'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -185,16 +185,17 @@ const mutants: readonly Mutant[] = [
     'DA-7',
     'the clamp settled as an overflow: 31 January plus a month specified as 2 March, which is what ' +
       'JavaScript\'s own `setUTCMonth` answers and what the contract rejects six libraries in favour ' +
-      'of. It is the single most load-bearing decision in this table specified backwards. Pinned on ' +
-      'a title the unmutated contract does not contain, because this table renders its titles from ' +
-      'the data being mutated',
+      'of. It is the single most load-bearing decision in this table specified backwards. It used to ' +
+      'be pinned on a title the unmutated contract does not contain, because this table rendered its ' +
+      'titles from the data being mutated; the case identifier is what lets it name the guard it was ' +
+      'written for',
     [
       edgeCases(
         CLAMP_CASE,
         `    date: '2024-01-31T00:00:00.000Z',\n    duration: { months: 1 },\n    expected: '2024-03-02T00:00:00.000Z',`,
       ),
     ],
-    killed([CLAMP_RENAMED]),
+    killed([CLAMP_CASE_ID]),
   ),
   sameOnEveryLens(
     'DA-8',
@@ -287,6 +288,16 @@ const mutants: readonly Mutant[] = [
       'block 4.2 go red together, because the declared type is the input of all four',
     [contract(OPTIONAL_DAYS, `  readonly days: number | undefined`)],
     killed([TYPE_IDENTITY, ACCEPTS_A_DATE_AND_A_DURATION, EVERY_FIELD_OPTIONAL, DIAGNOSTIC_TYPE]),
+  ),
+  sameOnEveryLens(
+    'DA-15',
+    'one case addressed by another case\'s identifier, so two rows of block 4.4 answer to one name. ' +
+      'Half a day and a fractional month are two refusals of one rule and would read as one case ' +
+      'under one address, which is what an identifier that is not unique costs. Both rows go on ' +
+      'passing - each answers its own data - so the catalogue guard introduced with the identifier ' +
+      'is the only thing that sees it. A rename rather than an added case, for the reason DA-8 is one',
+    [edgeCases(`    id: 'half-a-day',`, `    id: 'a-fractional-month',`)],
+    killed([EVERY_ID_UNIQUE]),
   ),
 ]
 
@@ -386,17 +397,59 @@ export const battery: Battery = {
     {
       nature: 'documents a decision',
       reason:
-        'the four tables of block 4.4, and the silence is the instrument\'s rather than the ' +
-        'battery\'s. DA-6, DA-7 and DA-8 do redden a guard in here; they redden it under a title the ' +
-        'unmutated contract does not contain, because `edge-cases.test.ts` renders each title out of ' +
-        'the very data being mutated. Attribution identifies a guard by its title, so the guard that ' +
-        'speaks is invisible to it. The pins name the titles that really redden, so the cells still ' +
-        'disagree if detection moves.',
+        'the cases of block 4.4 no mutant here rewrites, and this list is what the case identifier ' +
+        'bought. The same declaration used to name all four suites whole, on the grounds that the ' +
+        'silence was the instrument\'s: DA-7 did redden a guard in there, under a title the unmutated ' +
+        'contract does not contain, so attribution could not see it and all eighty-six read as ' +
+        'silent. They are now addressed by name, DA-7 reddens the case it was written for, and what ' +
+        'is left is a measurement of this battery. The three whole suites are whole for reasons of ' +
+        'their own: no mutant here changes a reason, DA-6 rewrites an expected instant into a form ' +
+        'that still parses to the same one - which is exactly why the round-trip guard beside it ' +
+        'exists - and nothing rewrites the untyped table at all.',
       suites: [
-        'date/add@1 named edge cases',
         'date/add@1 named edge cases, described',
         'date/add@1 edge cases outside the declared type',
         'date/add@1 edge cases outside the declared type, described',
+      ],
+      titles: [
+        'an-ordinary-day',
+        'minutes-carry-into-hours',
+        'the-epoch-is-not-a-boundary',
+        'clamp-in-a-common-year',
+        'clamp-into-a-thirty-day-month',
+        'clamp-going-backwards',
+        'the-clamp-does-not-round-trip',
+        'the-clamp-keeps-the-time-of-day',
+        'a-leap-day-plus-one-year',
+        'a-leap-day-plus-four-years',
+        'the-century-rule',
+        'a-two-digit-year',
+        'year-zero',
+        'two-months-aggregated',
+        'years-and-months-are-one-total',
+        'weeks-and-days-are-one-total',
+        'a-week-never-clamps',
+        'calendar-before-elapsed-hours',
+        'calendar-before-elapsed-days',
+        'a-negative-field-subtracts',
+        'fields-of-opposite-sign',
+        'the-empty-duration',
+        'a-negative-zero-field',
+        'a-field-set-to-undefined',
+        'a-fractional-month',
+        'half-a-day',
+        'a-field-that-is-not-a-number',
+        'an-infinite-field',
+        'a-field-past-the-safe-range',
+        'two-fields-whose-total-cancels',
+        'a-month-total-that-is-not-exact',
+        'an-elapsed-total-that-is-not-exact',
+        'an-input-that-is-not-a-date',
+        'an-input-that-is-not-a-date-with-the-empty-duration',
+        'the-last-representable-instant',
+        'one-millisecond-past-the-end-of-the-range',
+        'one-millisecond-before-the-start-of-the-range',
+        'an-intermediate-step-outside-the-range',
       ],
     },
   ],

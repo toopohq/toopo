@@ -7,11 +7,12 @@
  * the two limits measured while writing the first one, are stated in `number-parse-spec.battery.ts`
  * and are not repeated here.
  *
- * This contract is where the second of those limits does *not* bite, and that contrast is the
- * finding. Its cases carry an explicit `title` field, so a mutant that rewrites an expectation
- * reddens the guard it was written for, under the name it already had - where the same family of
- * mutant on the other two contracts reddens a title that did not exist before it. AG-8 and AG-9 are
- * pinned on real, calibrated guards; NP-6, NP-7, DA-6 and DA-7 could not be.
+ * This contract is where the second of those limits did not bite, and that contrast is what settled
+ * the catalogue's case identifier. Its cases carried an explicit name from the start, so a mutant
+ * that rewrites an expectation reddens the guard it was written for - where the same family of mutant
+ * on the other two reddened a title that did not exist before it. AG-8 and AG-9 were pinned on real,
+ * calibrated guards while NP-6 and DA-7 could not be; every case of every contract now carries an
+ * `id`, and they are.
  *
  * AG-8 and AG-9 also reach `language.test.ts`, which the reference battery declares out of its reach
  * by construction: it runs block 4.4 against `Map.groupBy`, so no defect injected into
@@ -56,9 +57,9 @@ const MANY_SMALL_SAMPLES = `    samples: [range(60), range(3_000)],`
 
 const SINGLE_ELEMENT_RATIONALE = `    rationale: 'One group of one. Listed because it is the input a fast path is written for.',`
 
-const SINGLE_ELEMENT_TITLE = `    title: 'a single element',`
+const SINGLE_ELEMENT_ID = `    id: 'a-single-element',`
 
-const PARITY_CASE = `    title: 'numbers grouped by parity',
+const PARITY_CASE = `    id: 'numbers-by-parity',
     items: [1, 2, 3, 4, 5],
     keyOf: parityKey,
     outcome: { kind: 'groups', groups: [['odd', [1, 3, 5]], ['even', [2, 4]]] },
@@ -75,7 +76,7 @@ const INDEX_CALLS = `    expectedCalls: [['a', 0], ['b', 1], ['c', 2]],`
 // Guards this battery pins by name
 // ---------------------------------------------------------------------------
 
-const EVERY_TITLE_ONCE = 'titles each case exactly once, across both tables'
+const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
 const EVERY_CASE_JUSTIFIED = 'publishes a rationale for every decision'
 const EVERY_PROFILE_POPULATED = 'declares a non-empty sample set for every profile'
 const EVERY_SHAPE_AND_DESCRIPTION =
@@ -85,9 +86,8 @@ const EVERY_RULE_STATED = 'publishes a statement for every rule about the key fu
 const ONE_PRECONDITION =
   'declares exactly one precondition, and declares the obligations that make the rest testable'
 
-const INTEGER_LIKE_ORDER =
-  'group order is first occurrence, not numeric, for keys that look like integers'
-const INDEX_PROTOCOL = 'the key function receives the element and its index'
+const INTEGER_LIKE_ORDER = 'integer-like-keys-keep-first-occurrence-order'
+const INDEX_PROTOCOL = 'the-key-function-receives-the-element-and-its-index'
 const IN_THE_LANGUAGE = ', in the language'
 const KEY_IDENTITY_DIVERGENCE = ': Object.groupBy disagrees on the identity of the keys'
 const ORDER_DIVERGENCE = ': Object.groupBy disagrees on the order of the groups'
@@ -129,14 +129,16 @@ const mutants: readonly Mutant[] = [
   ),
   sameOnEveryLens(
     'AG-5',
-    'one case titled onto another, so block 4.4 settles two different things under one name. It is ' +
-      'the defect the instrument itself was bitten by: `language.test.ts` gives every replayed case ' +
-      'its own suffix because two guards sharing a title are attributed to each other, and ' +
-      'twenty-four of them once read as reddened by defects they cannot see. Written as a rename ' +
-      'rather than as an added case, because adding one grows the suite and the count check refuses ' +
-      'the cell before any guard can speak',
-    [edgeCases(SINGLE_ELEMENT_TITLE, `    title: 'the empty array',`)],
-    killed([EVERY_TITLE_ONCE]),
+    'one case addressed by another case\'s identifier, so block 4.4 settles two different things ' +
+      'under one name. It is the defect the instrument itself was bitten by: `language.test.ts` ' +
+      'gives every replayed case its own suffix because two guards sharing a title are attributed to ' +
+      'each other, and twenty-four of them once read as reddened by defects they cannot see. It is ' +
+      'also the mutant the other two contracts copied when the identifier became the catalogue\'s ' +
+      'rule - NP-10 and DA-15 are this one. Written as a rename rather than as an added case, ' +
+      'because adding one grows the suite and the count check refuses the cell before any guard can ' +
+      'speak',
+    [edgeCases(SINGLE_ELEMENT_ID, `    id: 'the-empty-array',`)],
+    killed([EVERY_ID_UNIQUE]),
   ),
   sameOnEveryLens(
     'AG-6',
@@ -298,28 +300,28 @@ export const battery: Battery = {
         'written for - and each of the rest would need its own mutant to say the same sentence about ' +
         'a different row. What is missing is a mutant, not a case.',
       titles: [
-        'numbers grouped by parity',
-        'objects grouped by a field, held by identity',
-        'the empty array',
-        'a single element',
-        'group order is first occurrence for numeric keys too',
-        'a group keeps its elements in input order across interleaving',
-        'NaN keys form a single group',
-        'a negative zero key is stored as a positive zero, and merges with it',
-        'the number 1 and the string "1" are different keys',
-        'true and the string "true" are different keys',
-        'two distinct objects are two distinct keys',
-        'the same object used as a key twice is one key',
-        'symbols are keys',
-        'undefined and null are two different keys',
-        'the key "__proto__"',
-        'the key "constructor"',
-        'the keys "toString" and "hasOwnProperty" together',
-        'a hole in a sparse array is an element whose value is undefined',
-        'an explicit undefined element is indistinguishable from a hole',
-        'a key function that would answer differently on a second look is never asked twice',
-        'a key function that writes to its element is not prevented from doing so',
-        'an exception from the key function propagates unchanged',
+        'numbers-by-parity',
+        'objects-by-a-field',
+        'the-empty-array',
+        'a-single-element',
+        'numeric-keys-keep-first-occurrence-order',
+        'a-group-keeps-input-order',
+        'nan-keys-form-one-group',
+        'a-negative-zero-key-is-stored-as-a-positive-zero',
+        'a-number-and-its-string-are-different-keys',
+        'a-boolean-and-its-string-are-different-keys',
+        'two-distinct-objects-are-two-keys',
+        'one-object-used-twice-is-one-key',
+        'symbols-are-keys',
+        'undefined-and-null-are-two-keys',
+        'the-key-proto',
+        'the-key-constructor',
+        'the-keys-tostring-and-hasownproperty',
+        'a-hole-in-a-sparse-array',
+        'an-explicit-undefined-element',
+        'a-key-function-is-never-asked-twice',
+        'a-key-function-that-writes-to-its-element',
+        'an-exception-propagates-unchanged',
       ],
     },
     {
@@ -331,34 +333,34 @@ export const battery: Battery = {
         'table reaches them. Two of the thirty are probed, which is what establishes that the file ' +
         'replays this table; the other twenty-eight would each need a mutant to repeat it.',
       titles: [
-        'numbers grouped by parity, in the language',
-        'objects grouped by a field, held by identity, in the language',
-        'the empty array, in the language',
-        'a single element, in the language',
-        'group order is first occurrence for numeric keys too, in the language',
-        'a group keeps its elements in input order across interleaving, in the language',
-        'NaN keys form a single group, in the language',
-        'a negative zero key is stored as a positive zero, and merges with it, in the language',
-        'the number 1 and the string "1" are different keys, in the language',
-        'true and the string "true" are different keys, in the language',
-        'two distinct objects are two distinct keys, in the language',
-        'the same object used as a key twice is one key, in the language',
-        'symbols are keys, in the language',
-        'undefined and null are two different keys, in the language',
-        'the key "__proto__", in the language',
-        'the key "constructor", in the language',
-        'the keys "toString" and "hasOwnProperty" together, in the language',
-        'a hole in a sparse array is an element whose value is undefined, in the language',
-        'an explicit undefined element is indistinguishable from a hole, in the language',
-        'a key function that would answer differently on a second look is never asked twice, in the language',
-        'a key function that writes to its element is not prevented from doing so, in the language',
-        'an exception from the key function propagates unchanged, in the language',
-        'null, in the language, from an untyped caller',
-        'undefined, in the language, from an untyped caller',
-        'a plain object, in the language, from an untyped caller',
-        'a number, in the language, from an untyped caller',
-        'a Set, in the language, from an untyped caller',
-        'a string, in the language, from an untyped caller',
+        'numbers-by-parity, in the language',
+        'objects-by-a-field, in the language',
+        'the-empty-array, in the language',
+        'a-single-element, in the language',
+        'numeric-keys-keep-first-occurrence-order, in the language',
+        'a-group-keeps-input-order, in the language',
+        'nan-keys-form-one-group, in the language',
+        'a-negative-zero-key-is-stored-as-a-positive-zero, in the language',
+        'a-number-and-its-string-are-different-keys, in the language',
+        'a-boolean-and-its-string-are-different-keys, in the language',
+        'two-distinct-objects-are-two-keys, in the language',
+        'one-object-used-twice-is-one-key, in the language',
+        'symbols-are-keys, in the language',
+        'undefined-and-null-are-two-keys, in the language',
+        'the-key-proto, in the language',
+        'the-key-constructor, in the language',
+        'the-keys-tostring-and-hasownproperty, in the language',
+        'a-hole-in-a-sparse-array, in the language',
+        'an-explicit-undefined-element, in the language',
+        'a-key-function-is-never-asked-twice, in the language',
+        'a-key-function-that-writes-to-its-element, in the language',
+        'an-exception-propagates-unchanged, in the language',
+        'a-null-input, in the language, from an untyped caller',
+        'an-undefined-input, in the language, from an untyped caller',
+        'a-plain-object, in the language, from an untyped caller',
+        'a-number, in the language, from an untyped caller',
+        'a-set, in the language, from an untyped caller',
+        'a-string, in the language, from an untyped caller',
       ],
     },
     {
@@ -370,9 +372,9 @@ export const battery: Battery = {
         'object-shaped grouper disagrees, and each of the three would need its own mutant to say ' +
         'that about a different row.',
       titles: [
-        `the number 1 and the string "1" are different keys${KEY_IDENTITY_DIVERGENCE}`,
-        `true and the string "true" are different keys${KEY_IDENTITY_DIVERGENCE}`,
-        `two distinct objects are two distinct keys${KEY_IDENTITY_DIVERGENCE}`,
+        `a-number-and-its-string-are-different-keys${KEY_IDENTITY_DIVERGENCE}`,
+        `a-boolean-and-its-string-are-different-keys${KEY_IDENTITY_DIVERGENCE}`,
+        `two-distinct-objects-are-two-keys${KEY_IDENTITY_DIVERGENCE}`,
       ],
     },
     {

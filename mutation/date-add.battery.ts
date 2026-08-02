@@ -120,30 +120,30 @@ const RETURNS_A_DATE_OR_NOTHING = 'returns a Date that may be absent, never an I
 const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
 
 /** The two named cases written to kill D-07 and D-08, pinned so that deleting one reddens here. */
-const YEAR_ZERO_CASE = '0000-01-31T00:00:00.000Z + { months: 1 } -> 0000-02-29T00:00:00.000Z'
+const YEAR_ZERO_CASE = 'year-zero'
 const CANCELLING_TOTAL_CASE =
-  '2024-01-15T00:00:00.000Z + { years: 9007199254740992, months: -108086391056891900 } -> null'
+  'two-fields-whose-total-cancels'
 
-const CLAMP_FEBRUARY = '2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z'
-const CLAMP_JUNE = '2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z'
-const CENTURY_RULE = '2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z'
-const THIRTEEN_MONTHS = '2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z'
-const ORDER_HOURS = '2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z'
-const ORDER_DAYS = '2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z'
-const MIXED_SIGN = '2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z'
-const WEEK_AND_DAY = '2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z'
-const WEEK_ACROSS_MONTHS = '2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z'
-const EPOCH_CROSSING = '1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z'
+const CLAMP_FEBRUARY = 'clamp-to-the-end-of-february'
+const CLAMP_JUNE = 'clamp-into-a-thirty-day-month'
+const CENTURY_RULE = 'the-century-rule'
+const THIRTEEN_MONTHS = 'years-and-months-are-one-total'
+const ORDER_HOURS = 'calendar-before-elapsed-hours'
+const ORDER_DAYS = 'calendar-before-elapsed-days'
+const MIXED_SIGN = 'fields-of-opposite-sign'
+const WEEK_AND_DAY = 'weeks-and-days-are-one-total'
+const WEEK_ACROSS_MONTHS = 'a-week-never-clamps'
+const EPOCH_CROSSING = 'the-epoch-is-not-a-boundary'
 
-const UNKNOWN_FIELD_VALUE = '2024-01-15T00:00:00.000Z + { day: 1 } -> null'
-const UNKNOWN_FIELD_REASON = '2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field'
-const UNKNOWN_MONTH_REASON = '2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field'
-const UNKNOWN_BOTH_REASON = '2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field'
-const FRACTIONAL_MONTH_REASON = '2024-01-15T00:00:00.000Z + { months: 1.5 } -> field-not-whole'
-const STRING_FIELD_REASON = '2024-01-15T00:00:00.000Z + { days: "1" } -> field-not-whole'
-const MONTH_TOTAL_REASON = '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> total-not-exact'
-const INVALID_DATE_REASON = 'not a date + { days: 1 } -> invalid-date'
-const INVALID_DATE_NEUTRAL_REASON = 'not a date + {} -> invalid-date'
+const UNKNOWN_FIELD_VALUE = 'a-singular-day-field'
+const UNKNOWN_FIELD_REASON = 'a-singular-day-field, described'
+const UNKNOWN_MONTH_REASON = 'a-singular-month-field, described'
+const UNKNOWN_BOTH_REASON = 'an-unknown-field-beside-a-declared-one, described'
+const FRACTIONAL_MONTH_REASON = 'a-fractional-month, described'
+const STRING_FIELD_REASON = 'a-declared-field-carrying-a-string, described'
+const MONTH_TOTAL_REASON = 'a-month-total-that-is-not-exact, described'
+const INVALID_DATE_REASON = 'an-input-that-is-not-a-date, described'
+const INVALID_DATE_NEUTRAL_REASON = 'an-input-that-is-not-a-date-with-the-empty-duration, described'
 
 // ---------------------------------------------------------------------------
 // D-01 to D-17 - defects of behaviour
@@ -674,11 +674,16 @@ export const battery: Battery = {
       edits: [
         {
           file: 'edge-cases.test.ts',
-          find: '  expect(describeAddFailure(new Date(date), duration as Duration)).toBe(reason)',
+          find:
+            '  expect(\n' +
+            '    describeAddFailure(new Date(date), duration as Duration),\n' +
+            '    renderCall(date, duration),\n' +
+            '  ).toBe(reason)',
           replace:
-            '  expect(describeAddFailure(new Date(date), duration as Duration) === null).toBe(\n' +
-            '    reason === null,\n' +
-            '  )',
+            '  expect(\n' +
+            '    describeAddFailure(new Date(date), duration as Duration) === null,\n' +
+            '    renderCall(date, duration),\n' +
+            '  ).toBe(reason === null)',
         },
       ],
     },
@@ -695,6 +700,7 @@ export const battery: Battery = {
         'awaiting a signature mutant until S-12 to S-15 measured that no such mutant can exist here.',
       titles: [
         'leaves every duration field optional',
+        'addresses each case with a unique identifier',
         'names a case for every declared reason, and declares every reason it names',
         'settles each call exactly once across both tables',
         'publishes a rationale for every decision',
@@ -727,11 +733,11 @@ export const battery: Battery = {
         'visible. That is the lens working rather than a gap, and those cells are part of the ' +
         'five-defect difference this battery reports between its two columns.',
       titles: [
-        '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> total-not-exact',
-        '2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> total-not-exact',
-        '2024-01-15T00:00:00.000Z + { days: "1" } -> field-not-whole',
-        'not a date + { days: 1 } -> invalid-date',
-        'not a date + {} -> invalid-date',
+        'a-month-total-that-is-not-exact, described',
+        'an-elapsed-total-that-is-not-exact, described',
+        'a-declared-field-carrying-a-string, described',
+        'an-input-that-is-not-a-date, described',
+        'an-input-that-is-not-a-date-with-the-empty-duration, described',
       ],
     },
   ],
@@ -750,11 +756,11 @@ export const battery: Battery = {
         'collision never reaches them. Every one publishes a decision a caller reads whether or not a ' +
         'mutant violates it; what is missing is still a mutant, not a case.',
       titles: [
-        '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> null',
-        '2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> null',
-        '2024-01-15T00:00:00.000Z + { days: "1" } -> null',
-        'not a date + { days: 1 } -> null',
-        'not a date + {} -> null',
+        'a-month-total-that-is-not-exact',
+        'an-elapsed-total-that-is-not-exact',
+        'a-declared-field-carrying-a-string',
+        'an-input-that-is-not-a-date',
+        'an-input-that-is-not-a-date-with-the-empty-duration',
       ],
     },
   ],

@@ -85,28 +85,28 @@ const ACCEPTS_A_STRING = 'accepts a string and nothing else'
 const RETURNS_A_NUMBER_OR_NOTHING = 'returns a number that may be absent, never NaN-as-number-only'
 const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
 
-const NEGATIVE_ZERO = '"-0" -> -0'
-const NEGATIVE_UNDERFLOW = '"-1e-400" -> -0'
-const LOST_DIGIT = '"9007199254740993" -> 9007199254740992'
-const OVERFLOW_VALUE = '"1e400" -> null'
-const OVERFLOW_REASON = '"1e400" -> overflow'
-const BARE_FRACTION = '".5" -> 0.5'
-const BARE_FRACTION_PARSES = '".5" -> no failure to describe'
+const NEGATIVE_ZERO = 'negative-zero'
+const NEGATIVE_UNDERFLOW = 'negative-underflow'
+const LOST_DIGIT = 'an-integer-past-two-to-the-fifty-third'
+const OVERFLOW_VALUE = 'overflow-past-the-largest-double'
+const OVERFLOW_REASON = 'overflow-past-the-largest-double, described'
+const BARE_FRACTION = 'bare-fraction'
+const BARE_FRACTION_PARSES = 'bare-fraction, described'
 const DECIMALS_PROFILE = 'decimals-and-exponents - every sample is accepted'
 const PADDED_PROFILE = 'whitespace-padded - every sample is accepted'
-const INNER_SPACE_VALUE = '"4 2" -> null'
-const INNER_SPACE_REASON = '"4 2" -> not-decimal'
-const DETACHED_SIGN_REASON = '"- 1" -> not-decimal'
-const ORDINARY_SPACE_REASON = '"1 000" -> not-decimal'
-const HEX_VALUE = '"0x1F" -> null'
-const HEX_REASON = '"0x1F" -> not-decimal'
-const UNDERSCORE_VALUE = '"1_000" -> null'
-const UNDERSCORE_REASON = '"1_000" -> separator'
-const COMMA_DECIMAL_REASON = '"1,5" -> separator'
-const COMMA_GROUPING_REASON = '"1,000" -> separator'
-const INHERITED_NAME_REASON = '"constructor" -> not-decimal'
-const EMPTY_REASON = '"" -> empty'
-const BLANK_REASON = '"   " -> empty'
+const INNER_SPACE_VALUE = 'whitespace-inside-the-number'
+const INNER_SPACE_REASON = 'whitespace-inside-the-number, described'
+const DETACHED_SIGN_REASON = 'sign-detached-from-its-digits, described'
+const ORDINARY_SPACE_REASON = 'an-ordinary-space-between-digits, described'
+const HEX_VALUE = 'hexadecimal'
+const HEX_REASON = 'hexadecimal, described'
+const UNDERSCORE_VALUE = 'underscore-grouping'
+const UNDERSCORE_REASON = 'underscore-grouping, described'
+const COMMA_DECIMAL_REASON = 'comma-as-a-decimal-separator, described'
+const COMMA_GROUPING_REASON = 'comma-grouping, described'
+const INHERITED_NAME_REASON = 'an-inherited-property-name, described'
+const EMPTY_REASON = 'the-empty-string, described'
+const BLANK_REASON = 'a-blank-string, described'
 
 // ---------------------------------------------------------------------------
 // The three caches - P-02, P-17 and P-19 differ only in where they are consulted
@@ -535,8 +535,9 @@ export const battery: Battery = {
       edits: [
         {
           file: 'edge-cases.test.ts',
-          find: '      expect(describeParseFailure(input)).toBe(reason)',
-          replace: '      expect(describeParseFailure(input) === null).toBe(reason === null)',
+          find: '      expect(describeParseFailure(input), printable(input)).toBe(reason)',
+          replace:
+            '      expect(describeParseFailure(input) === null, printable(input)).toBe(reason === null)',
         },
       ],
     },
@@ -549,6 +550,7 @@ export const battery: Battery = {
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, the ' +
         'profile list or the universal-property declarations.',
       titles: [
+        'addresses each case with a unique identifier',
         'settles each input exactly once',
         'names a case for every declared reason, and declares every reason it names',
         'publishes a rationale for every decision',

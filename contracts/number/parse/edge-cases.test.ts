@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { expectEveryCaseIsJustified } from '../../../catalogue/every-contract.js'
+import {
+  expectEveryCaseIsAddressed,
+  expectEveryCaseIsJustified,
+} from '../../../catalogue/every-contract.js'
 import { failureReasons, outputsAreEqual } from './contract.js'
 import { edgeCases } from './edge-cases.js'
 import { describeParseFailure, parseNumber } from './reference.js'
@@ -9,10 +12,19 @@ import { describeParseFailure, parseNumber } from './reference.js'
  * equality semantics the contract declares - `Object.is`, so that an implementation normalising
  * `-0` into `0` fails here instead of slipping through a `===` comparison - and every entry is
  * asserted a second time against the diagnostic surface.
+ *
+ * A guard is titled by the case's `id` and nothing else, which is the catalogue's rule and is what
+ * makes the title stable under a specification mutant. What the title used to carry - the input and
+ * the answer, rendered - is carried by the failure message instead, where a mutant may rewrite it
+ * freely because nothing identifies a guard by it.
+ *
+ * The two blocks below must not share a title. Attribution identifies a guard by its title alone, so
+ * two guards carrying one would be read as reddening each other - measured on `language.test.ts` of
+ * `array/group-by@1`, where it made twenty-four guards claim defects they cannot see.
  */
 
 /**
- * Test titles must survive a terminal: several inputs are invisible (byte-order mark) or
+ * Failure messages must survive a terminal: several inputs are invisible (byte-order mark) or
  * non-Latin (Arabic-Indic digits), and two entries printed raw would look identical or empty.
  */
 const printable = (value: string): string =>
@@ -27,27 +39,31 @@ const printable = (value: string): string =>
 const rendered = (value: number | null): string => (Object.is(value, -0) ? '-0' : String(value))
 
 describe('number/parse@1 named edge cases', () => {
-  for (const { input, expected } of edgeCases) {
-    it(`${printable(input)} -> ${rendered(expected)}`, () => {
+  for (const { id, input, expected } of edgeCases) {
+    it(id, () => {
       const actual = parseNumber(input)
 
       expect(
         outputsAreEqual(actual, expected),
-        `expected ${rendered(expected)}, received ${rendered(actual)}`,
+        `${printable(input)}: expected ${rendered(expected)}, received ${rendered(actual)}`,
       ).toBe(true)
     })
   }
 })
 
 describe('number/parse@1 named edge cases, described', () => {
-  for (const { input, reason } of edgeCases) {
-    it(`${printable(input)} -> ${reason ?? 'no failure to describe'}`, () => {
-      expect(describeParseFailure(input)).toBe(reason)
+  for (const { id, input, reason } of edgeCases) {
+    it(`${id}, described`, () => {
+      expect(describeParseFailure(input), printable(input)).toBe(reason)
     })
   }
 })
 
 describe('number/parse@1 edge case table', () => {
+  it('addresses each case with a unique identifier', () => {
+    expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
+  })
+
   it('settles each input exactly once', () => {
     const inputs = edgeCases.map((edgeCase) => edgeCase.input)
 
@@ -66,6 +82,6 @@ describe('number/parse@1 edge case table', () => {
   })
 
   it('publishes a rationale for every decision', () => {
-    expectEveryCaseIsJustified(edgeCases, ({ input }) => printable(input))
+    expectEveryCaseIsJustified(edgeCases, ({ id }) => id)
   })
 })

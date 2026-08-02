@@ -22,7 +22,7 @@ import type { Grouper } from './outcome.js'
  * the language does; a runtime that cannot answer has not agreed, and a guard that did not run is
  * not a guard that passed - the same rule the time-zone property of `date/add@1` follows.
  *
- * Every title carries its own suffix rather than reusing the one block 4.4 gave the case. The
+ * Every title carries its own suffix rather than reusing the identifier block 4.4 gave the case. The
  * mutation instrument identifies a guard by its title, so two guards sharing one would be attributed
  * to each other - measured, and it made twenty-four of these read as reddened by defects they cannot
  * see.
@@ -48,8 +48,8 @@ const languageGrouper = (): Grouper => {
 }
 
 describe('array/group-by@1 against Map.groupBy', () => {
-  for (const { title, items, keyOf, outcome, expectedCalls } of edgeCases) {
-    it(`${title}, in the language`, () => {
+  for (const { id, items, keyOf, outcome, expectedCalls } of edgeCases) {
+    it(`${id}, in the language`, () => {
       const { attempt, calls } = callOnce(languageGrouper(), items, keyOf)
 
       assertOutcome(outcome, attempt)
@@ -64,8 +64,8 @@ describe('array/group-by@1 against Map.groupBy', () => {
     })
   }
 
-  for (const { title, items, keyOf, outcome } of untypedCallerCases) {
-    it(`${title}, in the language, from an untyped caller`, () => {
+  for (const { id, items, keyOf, outcome } of untypedCallerCases) {
+    it(`${id}, in the language, from an untyped caller`, () => {
       const { attempt } = callOnce(languageGrouper(), items as readonly unknown[], keyOf)
 
       assertOutcome(outcome, attempt)
@@ -84,9 +84,9 @@ describe('array/group-by@1 against Map.groupBy', () => {
  * below therefore asserts both halves - that the language and this contract part, and exactly what
  * the language answers instead.
  *
- * The cases are looked up in block 4.4 by title rather than restated, so a divergence is measured
- * against the row the contract actually settles. Renaming or deleting one of those rows reddens
- * here, which is the coupling that keeps this file a measurement of the table.
+ * The cases are looked up in block 4.4 by identifier rather than restated, so a divergence is
+ * measured against the row the contract actually settles. Renaming or deleting one of those rows
+ * reddens here, which is the coupling that keeps this file a measurement of the table.
  *
  * It was written because the sentence was inherited and unmeasured while the sentence beside it was
  * replayed. A published claim with no replay behind it is the one thing this repository sells
@@ -118,11 +118,11 @@ const objectGrouper = (): ((
     ).map(([key, group]) => [key, group ?? []] as const)
 }
 
-const caseTitled = (title: string): EdgeCase => {
-  const settled = edgeCases.find((entry) => entry.title === title)
+const caseIdentified = (id: string): EdgeCase => {
+  const settled = edgeCases.find((entry) => entry.id === id)
 
   if (settled === undefined) {
-    throw new Error(`block 4.4 no longer carries a case titled "${title}"`)
+    throw new Error(`block 4.4 no longer carries a case identified as "${id}"`)
   }
 
   return settled
@@ -140,7 +140,7 @@ const objectGroupByDivergences: readonly {
   readonly rationale: string
 }[] = [
   {
-    settledAs: 'group order is first occurrence, not numeric, for keys that look like integers',
+    settledAs: 'integer-like-keys-keep-first-occurrence-order',
     disagreesOn: 'the order of the groups',
     answers: [['1', ['1']], ['2', ['2']], ['10', ['10']], ['b', ['b']], ['a', ['a']]],
     rationale:
@@ -149,7 +149,7 @@ const objectGroupByDivergences: readonly {
       'it is the half of the sentence that is about order.',
   },
   {
-    settledAs: 'the number 1 and the string "1" are different keys',
+    settledAs: 'a-number-and-its-string-are-different-keys',
     disagreesOn: 'the identity of the keys',
     answers: [['1', [1, '1']]],
     rationale:
@@ -157,13 +157,13 @@ const objectGroupByDivergences: readonly {
       'about a caller\'s data says they are the same thing.',
   },
   {
-    settledAs: 'true and the string "true" are different keys',
+    settledAs: 'a-boolean-and-its-string-are-different-keys',
     disagreesOn: 'the identity of the keys',
     answers: [['true', [true, 'true']]],
     rationale: 'The same collapse for the other primitive an object silently stringifies.',
   },
   {
-    settledAs: 'two distinct objects are two distinct keys',
+    settledAs: 'two-distinct-objects-are-two-keys',
     disagreesOn: 'the identity of the keys',
     answers: [['[object Object]', ['x', 'y']]],
     rationale:
@@ -175,7 +175,7 @@ const objectGroupByDivergences: readonly {
 describe('array/group-by@1 against Object.groupBy', () => {
   for (const { settledAs, disagreesOn, answers } of objectGroupByDivergences) {
     it(`${settledAs}: Object.groupBy disagrees on ${disagreesOn}`, () => {
-      const settled = caseTitled(settledAs)
+      const settled = caseIdentified(settledAs)
 
       if (settled.outcome.kind !== 'groups') {
         throw new Error(`"${settledAs}" does not settle a grouping, so nothing here can diverge`)

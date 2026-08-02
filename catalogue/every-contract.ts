@@ -151,9 +151,53 @@ export const CLOCK_DEPENDENCE_RULE =
 // published sentence, and it states a measured fact rather than an opinion.
 //
 // The tables themselves are not shared and were measured not to be shareable: three contracts
-// produced three entry shapes with no field in common beyond `provenance` and `rationale`, which are
-// the two that live here.
+// produced three entry shapes with no field in common beyond `id`, `provenance` and `rationale`,
+// which are the three that live here.
 // ---------------------------------------------------------------------------
+
+/**
+ * How a case is addressed: a name, in kebab-case, unique within the contract, frozen with its major.
+ *
+ * A **name**, and not a rendering of the case's own data - that distinction is the whole content of
+ * this decision. `"1e400" -> overflow` restates the row it addresses, so it can be wrong about it,
+ * and block 4.4 makes every case one line of public documentation, where false documentation is
+ * worse than none. `overflow-past-the-largest-double` claims nothing about the data, so there is
+ * nothing for it to drift from. The published line goes on being rendered from the data; an
+ * identifier addresses a case, it does not describe it.
+ *
+ * A name is also stable under mutation, which is what the instrument needs and what two of the three
+ * prototypes did not give it. They titled their guards by rendering the very data a specification
+ * battery injects into, so a mutant that changed an expectation reddened a guard under a title the
+ * unmutated contract does not contain and left the calibrated one silent. Measured: a hundred guards
+ * of `number/parse@1` and eighty-six of `date/add@1` stood declared silent in a block, as an artefact
+ * of the apparatus rather than a fact about either contract, because attribution identifies a guard
+ * by its title and could not see the one that spoke. `array/group-by@1` carried an explicit title and
+ * did not have the problem, which is the exemplar this generalises.
+ *
+ * The reason that outlives the instrument belongs to the registry rather than to any one contract. An
+ * API response that cites a case, a URL anchor on a contract's page, a validation report naming the
+ * case a submission failed - each of them needs an address, and an address that changes breaks links.
+ * So it is frozen with the major version, under the discipline a reason set already carries: the name
+ * is chosen once, and renaming one costs `name@2`.
+ */
+const CASE_IDENTIFIER = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+/**
+ * Every case of every table of one contract answers to a distinct name, shaped like an address.
+ *
+ * Both halves in one assertion, because they are one question - whether these strings can be used as
+ * addresses - and a failure has to say which half gave way.
+ *
+ * This is not the guard that a contract settles each *input* exactly once. Two contracts carry that
+ * one as well and it is theirs, over data this file knows nothing about; a table can legitimately
+ * hold two cases about one input, and no two cases may answer to one name.
+ */
+export const expectEveryCaseIsAddressed = (ids: readonly string[]): void => {
+  expect({
+    malformed: ids.filter((id) => !CASE_IDENTIFIER.test(id)),
+    duplicated: [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))],
+  }).toEqual({ malformed: [], duplicated: [] })
+}
 
 /**
  * Where a case of block 4.4 came from. Without it a contract that has been closing its gaps reads
