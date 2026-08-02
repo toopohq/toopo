@@ -110,6 +110,13 @@ export type SilentGuards = {
   readonly suites?: readonly string[]
   /** Individual guards, for a block that is only partly silent. */
   readonly titles?: readonly string[]
+  /**
+   * The lenses this declaration applies to; absent means every lens. A lens that blinds part of the
+   * suite removes a guard's sight on its column and on no other, so a silence that belongs to the
+   * apparatus rather than to the contract has to be declared where it happens - and stay a
+   * disagreement everywhere else.
+   */
+  readonly lenses?: readonly string[]
   readonly reason: string
 }
 

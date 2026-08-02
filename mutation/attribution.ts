@@ -66,21 +66,30 @@ const columnsOf = (results: readonly RunResult[]): readonly string[] => [
   ...new Set(results.map((result) => `${result.arm}/${result.lens}`)),
 ]
 
-const reasonIn = (groups: readonly SilentGuards[], guard: GuardIdentity): string | undefined =>
+const lensOf = (column: string): string => column.slice(column.indexOf('/') + 1)
+
+const reasonIn = (
+  groups: readonly SilentGuards[],
+  guard: GuardIdentity,
+  lens: string,
+): string | undefined =>
   groups.find(
     (group) =>
-      (group.suites ?? []).includes(guard.suite) || (group.titles ?? []).includes(guard.title),
+      (group.lenses === undefined || group.lenses.includes(lens)) &&
+      ((group.suites ?? []).includes(guard.suite) || (group.titles ?? []).includes(guard.title)),
   )?.reason
 
-const accountFor = (battery: Battery, guard: GuardIdentity): string | undefined =>
-  reasonIn(battery.unreachableGuards, guard) ?? reasonIn(battery.unwitnessedGuards, guard)
+const accountFor = (battery: Battery, guard: GuardIdentity, lens: string): string | undefined =>
+  reasonIn(battery.unreachableGuards, guard, lens) ??
+  reasonIn(battery.unwitnessedGuards, guard, lens)
 
 const namedIn = (
   groups: readonly SilentGuards[],
   guards: readonly GuardIdentity[],
+  lens: string,
 ): readonly AccountedGuard[] =>
   guards
-    .map((guard) => ({ guard: guard.title, reason: reasonIn(groups, guard) }))
+    .map((guard) => ({ guard: guard.title, reason: reasonIn(groups, guard, lens) }))
     .filter((entry): entry is AccountedGuard => entry.reason !== undefined)
 
 const attributeColumn = (
@@ -89,6 +98,7 @@ const attributeColumn = (
   results: readonly RunResult[],
   column: string,
 ): ColumnAttribution => {
+  const lens = lensOf(column)
   const cells = results.filter((result) => `${result.arm}/${result.lens}` === column)
   const reddenedBy = (guard: GuardIdentity): readonly RunResult[] =>
     cells.filter((cell) => cell.failedTests.includes(guard.title))
@@ -110,13 +120,13 @@ const attributeColumn = (
     column,
     loadBearing: attributions.filter((entry) => entry.soleRedOn.length > 0),
     neverAlone: attributions.filter((entry) => entry.soleRedOn.length === 0),
-    outOfReach: namedIn(battery.unreachableGuards, silent),
-    unwitnessed: namedIn(battery.unwitnessedGuards, silent),
+    outOfReach: namedIn(battery.unreachableGuards, silent, lens),
+    unwitnessed: namedIn(battery.unwitnessedGuards, silent, lens),
     unaccountedFor: silent
-      .filter((guard) => accountFor(battery, guard) === undefined)
+      .filter((guard) => accountFor(battery, guard, lens) === undefined)
       .map((guard) => guard.title),
     wronglyDeclaredSilent: speaking
-      .filter((guard) => accountFor(battery, guard) !== undefined)
+      .filter((guard) => accountFor(battery, guard, lens) !== undefined)
       .map((guard) => guard.title),
   }
 }

@@ -631,6 +631,16 @@ export const battery: Battery = {
         'for want of a mutant.',
       suites: ['array/group-by@1 against Map.groupBy'],
     },
+    {
+      lenses: ['identity-blind'],
+      reason:
+        'the assertion this lens replaces. `identity-blind` reads ' +
+        '`expectTypeOf(groupBy).toEqualTypeOf<GroupBy>()` as a check that the export is a function, ' +
+        'so on that column the guard cannot fail whatever is injected - which is the point of the ' +
+        'lens, and the difference between the two columns is what it measures. On `as-committed` it ' +
+        'is red on all eight signature defects.',
+      titles: ['matches the type declared by the contract'],
+    },
   ],
 
   unwitnessedGuards: [
