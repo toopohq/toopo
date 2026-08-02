@@ -1,0 +1,61 @@
+[
+  {
+    "mutant": "F-1",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T12:34:56.789Z + {} -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> 2024-01-31T12:34:56.789Z",
+      "+275760-09-13T00:00:00.000Z + {} -> +275760-09-13T00:00:00.000Z",
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "F-2",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> 2024-01-16T10:30:00.000Z",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> 2024-01-15T12:00:00.000Z",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> 2024-01-12T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "2024-01-31T12:34:56.789Z + {} -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> 2024-01-31T12:34:56.789Z",
+      "+275760-09-13T00:00:00.000Z + {} -> +275760-09-13T00:00:00.000Z",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> null",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> null",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> null",
+      "rejected-inputs - every sample is rejected",
+      "P1 - returns null or a valid Date, never an Invalid Date",
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "P4 - an elapsed-time duration and its negation cancel exactly",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  }
+]
