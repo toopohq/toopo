@@ -1,0 +1,1490 @@
+[
+  {
+    "mutant": "D-01",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> 2024-01-16T10:30:00.000Z",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> 2024-01-15T12:00:00.000Z",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> 2024-01-12T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "2024-01-31T12:34:56.789Z + {} -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> 2024-01-31T12:34:56.789Z",
+      "+275760-09-13T00:00:00.000Z + {} -> +275760-09-13T00:00:00.000Z",
+      "elapsed-time-only - every sample is accepted",
+      "calendar-only - every sample is accepted",
+      "clamping - every sample is accepted",
+      "every-field - every sample is accepted",
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "P4 - an elapsed-time duration and its negation cancel exactly",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-02",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "never mutates its arguments"
+    ]
+  },
+  {
+    "mutant": "D-03",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-04",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-05",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration",
+      "has no ambient input - the answer does not depend on the process time zone"
+    ]
+  },
+  {
+    "mutant": "D-06",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-07",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-08",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-09",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> null"
+    ]
+  },
+  {
+    "mutant": "D-10",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> null",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> null",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> null",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "D-11",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-12",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-13",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-14",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object"
+    ]
+  },
+  {
+    "mutant": "D-15",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-16",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-17",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> null",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> null",
+      "rejected-inputs - every sample is rejected",
+      "P3 - adding milliseconds shifts the instant by exactly that many"
+    ]
+  },
+  {
+    "mutant": "R-1",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "not-applicable",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-2",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "not-applicable",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-3",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "not-applicable",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-4",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "not-applicable",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-01",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> 2024-01-16T10:30:00.000Z",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> 2024-01-15T12:00:00.000Z",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> 2024-01-12T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "2024-01-31T12:34:56.789Z + {} -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-15T00:00:00.000Z + { months: 1.5 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 0.5 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: NaN } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: Infinity } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> refused: month-total-not-exact",
+      "2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> refused: elapsed-total-not-exact",
+      "+275760-09-13T00:00:00.000Z + {} -> +275760-09-13T00:00:00.000Z",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> refused: out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> refused: out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> refused: out-of-range",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: \"1\" } -> refused: field-not-whole",
+      "elapsed-time-only - every sample is accepted",
+      "calendar-only - every sample is accepted",
+      "clamping - every sample is accepted",
+      "every-field - every sample is accepted",
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "P4 - an elapsed-time duration and its negation cancel exactly",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-02",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "never mutates its arguments"
+    ]
+  },
+  {
+    "mutant": "D-03",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-04",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-05",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration",
+      "has no ambient input - the answer does not depend on the process time zone"
+    ]
+  },
+  {
+    "mutant": "D-06",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-07",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-08",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> refused: field-not-whole"
+    ]
+  },
+  {
+    "mutant": "D-09",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> refused: unknown-field"
+    ]
+  },
+  {
+    "mutant": "D-10",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> refused: out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> refused: out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> refused: out-of-range",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "D-11",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "not a date + { days: 1 } -> refused: invalid-date",
+      "not a date + {} -> refused: invalid-date"
+    ]
+  },
+  {
+    "mutant": "D-12",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-13",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-14",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object"
+    ]
+  },
+  {
+    "mutant": "D-15",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-16",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-17",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> refused: out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> refused: out-of-range",
+      "rejected-inputs - every sample is rejected",
+      "P3 - adding milliseconds shifts the instant by exactly that many"
+    ]
+  },
+  {
+    "mutant": "R-1",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { months: 1.5 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 0.5 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: NaN } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: Infinity } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: \"1\" } -> refused: field-not-whole"
+    ]
+  },
+  {
+    "mutant": "R-2",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> refused: unknown-field"
+    ]
+  },
+  {
+    "mutant": "R-3",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { months: 1.5 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 0.5 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: NaN } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: Infinity } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> refused: field-not-whole",
+      "2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> refused: month-total-not-exact",
+      "2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> refused: elapsed-total-not-exact",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> refused: out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> refused: out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> refused: out-of-range",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: \"1\" } -> refused: field-not-whole"
+    ]
+  },
+  {
+    "mutant": "R-4",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "not a date + { days: 1 } -> refused: invalid-date",
+      "not a date + {} -> refused: invalid-date",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> refused: unknown-field"
+    ]
+  },
+  {
+    "mutant": "D-01",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> 2024-01-16T10:30:00.000Z",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> 2024-01-15T12:00:00.000Z",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> 2024-01-12T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "2024-01-31T12:34:56.789Z + {} -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> 2024-01-31T12:34:56.789Z",
+      "+275760-09-13T00:00:00.000Z + {} -> +275760-09-13T00:00:00.000Z",
+      "elapsed-time-only - every sample is accepted",
+      "calendar-only - every sample is accepted",
+      "clamping - every sample is accepted",
+      "every-field - every sample is accepted",
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "P4 - an elapsed-time duration and its negation cancel exactly",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-02",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "never mutates its arguments"
+    ]
+  },
+  {
+    "mutant": "D-03",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-04",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-05",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration",
+      "has no ambient input - the answer does not depend on the process time zone"
+    ]
+  },
+  {
+    "mutant": "D-06",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-07",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-08",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-09",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> refused: unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> refused: unknown-field"
+    ]
+  },
+  {
+    "mutant": "D-10",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> refused: out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> refused: out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> refused: out-of-range",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "D-11",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-12",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-13",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-14",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object"
+    ]
+  },
+  {
+    "mutant": "D-15",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-16",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-17",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> refused: out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> refused: out-of-range",
+      "rejected-inputs - every sample is rejected",
+      "P3 - adding milliseconds shifts the instant by exactly that many"
+    ]
+  },
+  {
+    "mutant": "R-1",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-2",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-3",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-4",
+    "arm": "B",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-01",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> 2024-01-16T10:30:00.000Z",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> 2024-01-15T12:00:00.000Z",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> 2024-01-12T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "2024-01-31T12:34:56.789Z + {} -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> 2024-01-31T12:34:56.789Z",
+      "+275760-09-13T00:00:00.000Z + {} -> +275760-09-13T00:00:00.000Z",
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> no failure to describe",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> no failure to describe",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> no failure to describe",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> no failure to describe",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> no failure to describe",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> no failure to describe",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> no failure to describe",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> no failure to describe",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> no failure to describe",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> no failure to describe",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> no failure to describe",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> no failure to describe",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> no failure to describe",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> no failure to describe",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> no failure to describe",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> no failure to describe",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> no failure to describe",
+      "2024-01-31T12:34:56.789Z + {} -> no failure to describe",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> no failure to describe",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> no failure to describe",
+      "2024-01-15T00:00:00.000Z + { months: 1.5 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 0.5 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: NaN } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: Infinity } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> month-total-not-exact",
+      "2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> elapsed-total-not-exact",
+      "+275760-09-13T00:00:00.000Z + {} -> no failure to describe",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> out-of-range",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: \"1\" } -> field-not-whole",
+      "elapsed-time-only - every sample is accepted",
+      "calendar-only - every sample is accepted",
+      "clamping - every sample is accepted",
+      "every-field - every sample is accepted",
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "P4 - an elapsed-time duration and its negation cancel exactly",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-02",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "never mutates its arguments"
+    ]
+  },
+  {
+    "mutant": "D-03",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-04",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-05",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration",
+      "has no ambient input - the answer does not depend on the process time zone"
+    ]
+  },
+  {
+    "mutant": "D-06",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-07",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-08",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> field-not-whole"
+    ]
+  },
+  {
+    "mutant": "D-09",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field"
+    ]
+  },
+  {
+    "mutant": "D-10",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> null",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> null",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> null",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> out-of-range",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "D-11",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "not a date + { days: 1 } -> invalid-date",
+      "not a date + {} -> invalid-date"
+    ]
+  },
+  {
+    "mutant": "D-12",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-13",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-14",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object"
+    ]
+  },
+  {
+    "mutant": "D-15",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-16",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-17",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> null",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> null",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> out-of-range",
+      "rejected-inputs - every sample is rejected",
+      "P3 - adding milliseconds shifts the instant by exactly that many"
+    ]
+  },
+  {
+    "mutant": "R-1",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { months: 1.5 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 0.5 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: NaN } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: Infinity } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: \"1\" } -> field-not-whole"
+    ]
+  },
+  {
+    "mutant": "R-2",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field"
+    ]
+  },
+  {
+    "mutant": "R-3",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { months: 1.5 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 0.5 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: NaN } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: Infinity } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { days: 1e+21 } -> field-not-whole",
+      "2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> month-total-not-exact",
+      "2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> elapsed-total-not-exact",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> out-of-range",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: \"1\" } -> field-not-whole"
+    ]
+  },
+  {
+    "mutant": "R-4",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "not a date + { days: 1 } -> invalid-date",
+      "not a date + {} -> invalid-date",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field"
+    ]
+  },
+  {
+    "mutant": "D-01",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> 2024-01-16T10:30:00.000Z",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> 2024-01-15T12:00:00.000Z",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> 2024-01-12T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "2024-01-31T12:34:56.789Z + {} -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> 2024-01-31T12:34:56.789Z",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> 2024-01-31T12:34:56.789Z",
+      "+275760-09-13T00:00:00.000Z + {} -> +275760-09-13T00:00:00.000Z",
+      "2024-01-15T10:30:00.000Z + { days: 1 } -> no failure to describe",
+      "2024-01-15T10:30:00.000Z + { minutes: 90 } -> no failure to describe",
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> no failure to describe",
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> no failure to describe",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> no failure to describe",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> no failure to describe",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> no failure to describe",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> no failure to describe",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> no failure to describe",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> no failure to describe",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> no failure to describe",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> no failure to describe",
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> no failure to describe",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> no failure to describe",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> no failure to describe",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> no failure to describe",
+      "2024-01-15T00:00:00.000Z + { days: -3 } -> no failure to describe",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> no failure to describe",
+      "2024-01-31T12:34:56.789Z + {} -> no failure to describe",
+      "2024-01-31T12:34:56.789Z + { days: -0 } -> no failure to describe",
+      "2024-01-31T12:34:56.789Z + { days: undefined } -> no failure to describe",
+      "+275760-09-13T00:00:00.000Z + {} -> no failure to describe",
+      "elapsed-time-only - every sample is accepted",
+      "calendar-only - every sample is accepted",
+      "clamping - every sample is accepted",
+      "every-field - every sample is accepted",
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "P4 - an elapsed-time duration and its negation cancel exactly",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-02",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object",
+      "P3 - adding milliseconds shifts the instant by exactly that many",
+      "never mutates its arguments"
+    ]
+  },
+  {
+    "mutant": "D-03",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-04",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-05",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "P5 - a calendar-only duration never changes the UTC time of day",
+      "P6 - the day of the month never grows under a calendar-only duration",
+      "has no ambient input - the answer does not depend on the process time zone"
+    ]
+  },
+  {
+    "mutant": "D-06",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-07",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-08",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-09",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> null",
+      "2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field",
+      "2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field"
+    ]
+  },
+  {
+    "mutant": "D-10",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> null",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> null",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> null",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> out-of-range",
+      "+275760-09-13T00:00:00.000Z + { months: 1, days: -40 } -> out-of-range",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "D-11",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "D-12",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-13",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-14",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "P2 - the empty duration is neutral: it always answers, with the same instant in a new object"
+    ]
+  },
+  {
+    "mutant": "D-15",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z",
+      "P6 - the day of the month never grows under a calendar-only duration"
+    ]
+  },
+  {
+    "mutant": "D-16",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 1 } -> 2023-02-28T00:00:00.000Z",
+      "2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z",
+      "2024-03-31T00:00:00.000Z + { months: -1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { months: -1 } -> 2024-01-29T00:00:00.000Z",
+      "2024-01-31T23:59:59.999Z + { months: 1 } -> 2024-02-29T23:59:59.999Z",
+      "2024-02-29T00:00:00.000Z + { years: 1 } -> 2025-02-28T00:00:00.000Z",
+      "2024-02-29T00:00:00.000Z + { years: 4 } -> 2028-02-29T00:00:00.000Z",
+      "2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z",
+      "0050-01-31T00:00:00.000Z + { months: 1 } -> 0050-02-28T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { months: 2 } -> 2023-03-31T00:00:00.000Z",
+      "2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z",
+      "2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z",
+      "2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z",
+      "2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z"
+    ]
+  },
+  {
+    "mutant": "D-17",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "killed",
+    "failedTests": [
+      "1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> null",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> null",
+      "+275760-09-13T00:00:00.000Z + { milliseconds: 1 } -> out-of-range",
+      "-271821-04-20T00:00:00.000Z + { milliseconds: -1 } -> out-of-range",
+      "rejected-inputs - every sample is rejected",
+      "P3 - adding milliseconds shifts the instant by exactly that many"
+    ]
+  },
+  {
+    "mutant": "R-1",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-2",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-3",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "R-4",
+    "arm": "C",
+    "lens": "reason-blind",
+    "verdict": "survived",
+    "failedTests": []
+  }
+]
