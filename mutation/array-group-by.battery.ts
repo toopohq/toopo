@@ -32,7 +32,7 @@ import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['identity-blind'] }
 
-const { sameOnEveryLens } = mutantsOn(UNDER)
+const { sameOnEveryLens, perLens } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites, quoted from `reference.ts`
@@ -77,6 +77,10 @@ ${STEP}
  * A defect of the declared type. Every one of them groups exactly as the contract requires, so the
  * behavioural half of the suite is blind to all of them by construction and the only question is
  * which type assertion notices.
+ *
+ * `perLens` is the shared form in `mutants.ts`. It was written here and stayed here while this was
+ * the only contract with a lens that blinds the identity assertion; `string/levenshtein@1` is the
+ * second, and it writes the same thing.
  */
 const signatureDefect = (
   id: string,
@@ -84,13 +88,11 @@ const signatureDefect = (
   edits: readonly Edit[],
   asCommitted: Expectation,
   identityBlind: Expectation,
-): Mutant => ({
-  id,
-  kind: 'defect',
-  description,
-  arms: { C: edits },
-  expected: { 'C/as-committed': asCommitted, 'C/identity-blind': identityBlind },
-})
+): Mutant =>
+  perLens(id, description, edits, {
+    'as-committed': asCommitted,
+    'identity-blind': identityBlind,
+  })
 
 // ---------------------------------------------------------------------------
 // Test titles the battery pins by name

@@ -19,10 +19,11 @@ contract format emerges from repetition rather than being designed up front. The
 this project lies in the contract format, not in the API or the CLI — which is why neither exists
 yet.
 
-- Contracts written so far: `number/parse@1`, `date/add@1`, `array/group-by@1` — the last of which
-  is a format prototype that will not be published, because ES2024 shipped `Map.groupBy` and it
-  answers what the contract specifies. The project specification records that refusal and the rule
-  it establishes.
+- Contracts written so far: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`.
+  The third is a format prototype that will not be published, because ES2024 shipped `Map.groupBy` and
+  it answers what the contract specifies. The project specification records that refusal and the rule
+  it establishes. The fourth is the first whose properties are strong by nature — the axioms of a
+  metric — and its table is a third the size of the first's as a result.
 - Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
 
 ## Error convention — settled, catalogue-wide

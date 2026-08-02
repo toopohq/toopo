@@ -151,6 +151,21 @@ export type MutantForms = {
     edits: readonly Edit[],
     by?: readonly string[],
   ) => Mutant
+  /**
+   * A defect every lens sees and no two lenses see alike, pinned one lens at a time.
+   *
+   * It is the form the signature defects take on a contract whose second lens blinds the type
+   * identity assertion: both columns catch them, and the difference between what each column names is
+   * the measurement the lens exists for. `array/group-by@1` wrote it first and kept it local because
+   * one exemplar generalises nothing; `string/levenshtein@1` writes exactly the same thing, so it
+   * lives here rather than in two batteries.
+   */
+  readonly perLens: (
+    id: string,
+    description: string,
+    edits: readonly Edit[],
+    expected: Readonly<Record<string, Expectation>>,
+  ) => Mutant
 }
 
 export const mutantsOn = (under: ArmUnderTest): MutantForms => ({
@@ -170,6 +185,22 @@ export const mutantsOn = (under: ArmUnderTest): MutantForms => ({
     expected: expectedPerCell(under, (lens) =>
       lens === under.asCommitted ? killed(by) : survived,
     ),
+  }),
+
+  perLens: (id, description, edits, expected) => ({
+    id,
+    kind: 'defect',
+    description,
+    arms: { [under.arm]: edits },
+    expected: expectedPerCell(under, (lens) => {
+      const pinned = expected[lens]
+
+      if (pinned === undefined) {
+        throw new Error(`${id} declares no expected verdict for the lens ${lens}`)
+      }
+
+      return pinned
+    }),
   }),
 })
 
