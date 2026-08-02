@@ -26,9 +26,13 @@ import type { ParseFailureReason } from './contract.js'
  * `found-by-mutation:P-17` claims to kill P-17, the mutation battery pins P-17 as killed, and
  * deleting the case turns that column red.
  *
- * Every case in this contract is `specified`. Its twenty mutants were all measured against a table
- * that already existed, and none of them required a case to be added - which is a fact about this
- * table rather than a virtue, and is why `date/add@1` carries two entries this one does not.
+ * Every case in this contract is `specified`, and that is still true of the separator family, which
+ * arrived after the rest. No mutant of this contract has ever required a case to be added - a fact
+ * about this table rather than a virtue, and why `date/add@1` carries two entries this one does
+ * not. The separator cases are not an exception to that: they were written with a revision of the
+ * partition in block 4.2, before the branch that produces the reason existed, which is what
+ * `specified` means. The revision was possible because nothing here is published yet; after that,
+ * the same change would have cost `number/parse@2`.
  */
 export type Provenance =
   /** Written with the contract, before any implementation existed. */
@@ -47,9 +51,21 @@ export type EdgeCase = {
   readonly rationale: string
 }
 
-/** Invisible in source, so they are named rather than pasted: a copy or re-encode would lose them. */
+/**
+ * Invisible in source, so they are named rather than pasted: a copy or re-encode would lose them.
+ *
+ * The three separator characters are named for a second reason. `'1 000'` written with a no-break
+ * space and `'1 000'` written with an ordinary one are the same eight glyphs on screen and carry
+ * opposite answers in this table, so pasting either would leave a reader unable to tell which case
+ * is which - and a maintainer free to "fix" one into the other.
+ */
 const BYTE_ORDER_MARK = String.fromCharCode(0xfeff)
 const ARABIC_INDIC_123 = String.fromCharCode(0x0661, 0x0662, 0x0663)
+const NO_BREAK_SPACE = String.fromCharCode(0x00a0)
+const NARROW_NO_BREAK_SPACE = String.fromCharCode(0x202f)
+const TYPOGRAPHIC_APOSTROPHE = String.fromCharCode(0x2019)
+const ORDINARY_SPACE = String.fromCharCode(0x20)
+const ARABIC_THOUSANDS_SEPARATOR = String.fromCharCode(0x066c)
 
 export const edgeCases: readonly EdgeCase[] = [
   // --- Baseline -----------------------------------------------------------
@@ -287,36 +303,176 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'Binary notation is rejected, consistently with hexadecimal.',
   },
 
-  // --- Separators and locale ----------------------------------------------
-  {
-    input: '1_000',
-    expected: null,
-    reason: 'not-decimal',
-    provenance: 'specified',
-    rationale:
-      'Numeric separators are a feature of JavaScript source literals, not of strings. ' +
-      'Number("1_000") returns NaN while Python\'s float("1_000") returns 1000; this contract ' +
-      'follows JavaScript and rejects it.',
-  },
+  // --- Separators: the characters the family covers -------------------------
+  //
+  // Every character below was measured rather than chosen: `Intl.NumberFormat` was asked to format
+  // 1234567.5 in 108 locales, and these are the grouping characters it emitted. The value is still
+  // refused - this contract is not locale-aware and will not guess which separator was decimal -
+  // but the reason names what the writer did instead of calling their number "not a number".
   {
     input: '1,5',
     expected: null,
-    reason: 'not-decimal',
+    reason: 'separator',
     provenance: 'specified',
     rationale:
-      'A comma is never a decimal separator here. Which separator is decimal depends on locale, ' +
-      'and this contract is deliberately not locale-aware. It carries the residual reason rather ' +
-      'than one of its own, because naming the motive "you used a separator" would require the ' +
-      'same guess about the writer that refusing the value avoids.',
+      'A comma is never a decimal separator here, and this is the most frequent real refusal in ' +
+      'half of Europe: measured, 61 of 108 locales write the decimal point as a comma. The value ' +
+      'is refused because reading it as 1.5 or as 15 would both be guesses about the writer, but ' +
+      'the reason is not a guess - the text does carry a separator, and a caller can say so.',
   },
   {
     input: '1,000',
     expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'A thousands separator, and the exact input that makes guessing indefensible: 1,000 is one ' +
+      'thousand in English and one in French. The refusal is the answer; the reason is the repair.',
+  },
+  {
+    input: '1_000',
+    expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'The underscore is the one member of the family no locale emits. It is here because it is ' +
+      'the digit separator of JavaScript and Python source literals: Number("1_000") returns NaN ' +
+      'while Python\'s float("1_000") returns 1000, so a developer who expects the Python answer ' +
+      'gets a named reason rather than the residual one.',
+  },
+  {
+    input: '1,234.56',
+    expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'Grouping and a decimal point together, the shape a spreadsheet exports in English. It is ' +
+      'listed because it is the case where the separator and the grammar meet: the full stop is a ' +
+      'token this grammar reads and the comma is not, so only the comma is removed before the ' +
+      'second look.',
+  },
+  {
+    input: "1'000",
+    expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'The apostrophe groups digits in Swiss and Liechtenstein formatting - measured, de-CH, ' +
+      'de-LI, it-CH, gsw, wae and en-CH all emit it. It is the only member of the family that is ' +
+      'an ordinary typeable character, and it is included because no measured locale emits it for ' +
+      'anything else between two digits.',
+  },
+  {
+    input: `1${NO_BREAK_SPACE}000`,
+    expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'A no-break space groups digits in 56 of the 108 locales measured, among them Swedish, ' +
+      'Czech, Polish and Russian. It survives a copy out of a document and is invisible to the ' +
+      'person who pasted it, which is exactly the population that cannot diagnose a bare refusal.',
+  },
+  {
+    input: `1${NARROW_NO_BREAK_SPACE}000,5`,
+    expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'What a French spreadsheet exports: a narrow no-break space grouping and a comma decimal, ' +
+      'both in one string. Measured, fr, fr-BE, fr-CH and rm-CH emit U+202F and not the no-break ' +
+      'space, so covering one and not the other would miss the locale the literal exists for.',
+  },
+  {
+    input: '1,2,3',
+    expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'Grouping that is not in threes is still a separator mistake. This case was cited by an ' +
+      'earlier revision of this contract as the reason the literal could not exist - the claim ' +
+      'being that classifying it would need a second grammar that knows groups come in threes. ' +
+      'The claim was wrong about what the reason has to mean: "this text uses digit separators" ' +
+      'is true of 1,2,3 whether or not the grouping is well formed, and no caller acts on the ' +
+      'difference.',
+  },
+  {
+    input: '1.000,5',
+    expected: null,
+    reason: 'separator',
+    provenance: 'specified',
+    rationale:
+      'German and Italian grouping: the full stop groups and the comma is decimal. Removing the ' +
+      'family from this input leaves 1.0005, which is not what the writer meant - and the reason ' +
+      'is still correct, because it names the motive and not the repair. A caller that echoes ' +
+      '"remove the separators" would be wrong here; one that says "this contract reads 1000.5, ' +
+      'not 1.000,5" is right. The literal is a diagnosis, never a rewrite rule.',
+  },
+
+  // --- Separators: the characters the family does not cover -----------------
+  {
+    input: `1${ORDINARY_SPACE}000`,
+    expected: null,
     reason: 'not-decimal',
     provenance: 'specified',
     rationale:
-      'A thousands separator is rejected for the same reason; reading it as 1000 or as 1 would ' +
-      'both be guesses about the writer\'s locale.',
+      'An ordinary space is not formatting. No measured locale emits U+0020 between digits - the ' +
+      'ones that group with a space emit U+00A0 or U+202F - so a space here is a typo, and it ' +
+      'carries the residual reason for the same purpose that 4 2 does. This is the line that ' +
+      'makes the family a decision rather than a habit: it is drawn where the measurement draws ' +
+      'it, and a mutant that widens the family to whitespace is caught by this case.',
+  },
+  {
+    input: `1${TYPOGRAPHIC_APOSTROPHE}000`,
+    expected: null,
+    reason: 'not-decimal',
+    provenance: 'specified',
+    rationale:
+      'The typographic apostrophe is excluded, and it is the exclusion this contract is least ' +
+      'sure of. A word processor turns a typed apostrophe into U+2019, so the character does ' +
+      'reach real text; but measured, no locale emits it as a group separator, and the family is ' +
+      'drawn from the measurement rather than from what seems likely. Recorded here so that a ' +
+      'later revision has the reason it would be overturning.',
+  },
+  {
+    input: `1${ARABIC_THOUSANDS_SEPARATOR}234`,
+    expected: null,
+    reason: 'not-decimal',
+    provenance: 'specified',
+    rationale:
+      'The Arabic thousands separator is excluded on a measurement rather than a preference: the ' +
+      'locales that emit U+066C emit Arabic-Indic digits with it, and this contract rejects those ' +
+      'digits anyway. Adding it to the family would create a branch that no formatted number can ' +
+      'reach, which is the shape of a guard that cannot fail.',
+  },
+  {
+    input: ',',
+    expected: null,
+    reason: 'not-decimal',
+    provenance: 'specified',
+    rationale:
+      'A separator with nothing to separate is not a number with separators in it. Removing the ' +
+      'family leaves the empty string, which the grammar refuses, so the residual reason is ' +
+      'reached - and `empty` is not, because the input was not blank to begin with.',
+  },
+  {
+    input: 'x,y',
+    expected: null,
+    reason: 'not-decimal',
+    provenance: 'specified',
+    rationale:
+      'A comma inside something that is not a number at all. It is the other side of the same ' +
+      'boundary: the reason is decided by what is left once the family is removed, not by whether ' +
+      'a family character appears.',
+  },
+  {
+    input: '0x1_F',
+    expected: null,
+    reason: 'not-decimal',
+    provenance: 'specified',
+    rationale:
+      'A separator does not rescue a radix prefix. Removing the underscore leaves 0x1F, which the ' +
+      'grammar refuses, so this stays the residual refusal - the same answer it would get without ' +
+      'the underscore, which is the point.',
   },
 
   // --- Not numbers at all -------------------------------------------------

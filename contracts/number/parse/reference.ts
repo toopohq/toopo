@@ -26,7 +26,21 @@
  */
 const DECIMAL_GRAMMAR = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
 
-type ParseFailureReason = 'empty' | 'not-decimal' | 'overflow'
+/**
+ * The second look that tells a separator mistake from text that is not a number at all.
+ *
+ * It is the grammar above consulted twice rather than a second grammar: whatever survives the
+ * removal is judged by exactly the same rule, so there is no additional thing that can be wrong and
+ * nothing for the coupling property to fail to cover.
+ *
+ * The characters are escaped rather than pasted because three of them are invisible, and the
+ * literal is written inside the call so that this module holds no global-flagged regular expression
+ * whose lastIndex could survive a call. Block 4.4 settles which characters belong here, one case
+ * each, in both directions.
+ */
+const withoutSeparators = (input: string): string => input.replace(/[,_'\u00A0\u202F]/g, '')
+
+type ParseFailureReason = 'empty' | 'separator' | 'not-decimal' | 'overflow'
 
 /**
  * The single source both exports derive from, private because it is not the shape this contract
@@ -48,7 +62,11 @@ type ParseAnalysis =
 const analyse = (input: string): ParseAnalysis => {
   const trimmed = input.trim()
   if (trimmed === '') return { ok: false, reason: 'empty' }
-  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }
+  if (!DECIMAL_GRAMMAR.test(trimmed)) {
+    return DECIMAL_GRAMMAR.test(withoutSeparators(trimmed))
+      ? { ok: false, reason: 'separator' }
+      : { ok: false, reason: 'not-decimal' }
+  }
 
   const value = Number(trimmed)
 

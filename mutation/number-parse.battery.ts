@@ -1,10 +1,14 @@
 /**
  * The `number/parse@1` battery.
  *
- * P-01 to P-20 are defects of behaviour and carry the mutation score. N-1 to N-3 are defects of
+ * P-01 to P-20 are defects of behaviour and carry the mutation score. N-1 to N-5 are defects of
  * reason: they answer every call with the value the contract asks for and are wrong only about why
  * a refusal happened. X-1 is a probe - it asks whether two exports written independently can drift
  * apart - so it is kept out of the score.
+ *
+ * N-4 and N-5 police the `separator` literal from both sides: one stops producing it and lets every
+ * separator mistake fall back into the residual reason, the other produces it for an ordinary space.
+ * Neither changes a single value, which is what makes the blinded column the measurement it is.
  *
  * The three cache mutants annotate the variable they store, `const result: ParseAnalysis = ...`,
  * rather than letting it be inferred. Measured on an earlier round, and not a stylistic preference:
@@ -32,7 +36,12 @@ const TRIM = `  const trimmed = input.trim()`
 const CONVERT = `  const value = Number(trimmed)`
 
 const EMPTY = `  if (trimmed === '') return { ok: false, reason: 'empty' }`
-const REJECT = `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }`
+const REJECT = `  if (!DECIMAL_GRAMMAR.test(trimmed)) {
+    return DECIMAL_GRAMMAR.test(withoutSeparators(trimmed))
+      ? { ok: false, reason: 'separator' }
+      : { ok: false, reason: 'not-decimal' }
+  }`
+const SEPARATOR_FAMILY = `input.replace(/[,_'\\u00A0\\u202F]/g, '')`
 const FINAL = `  return Number.isFinite(value) ? { ok: true, value } : { ok: false, reason: 'overflow' }`
 
 const PARSE_NUMBER = `export const parseNumber = (input: string): number | null => {
@@ -280,6 +289,22 @@ const reasons: readonly Mutant[] = [
       reference(EMPTY, `  if (trimmed === '') return { ok: false, reason: 'not-decimal' }`),
       reference(`reason: 'overflow' }`, `reason: 'not-decimal' }`),
     ],
+  ),
+  reasonDefect(
+    'N-4',
+    'the separator literal declared and never produced: the second look is dropped and every ' +
+      'separator mistake falls back into the residual reason. No value changes, because both ' +
+      'branches refuse - this is what the contract looked like before the literal existed, and it ' +
+      'is the shape a later optimisation of the refusing path would reach by accident',
+    [reference(REJECT, `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }`)],
+  ),
+  reasonDefect(
+    'N-5',
+    'the separator family widened to whitespace, so "4 2" is reported as a separator mistake. It ' +
+      'polices the line block 4.4 draws from the other side: the family is the formatting a ' +
+      'document emits, never the ordinary space, and without this mutant that line would be a ' +
+      'sentence rather than a measurement',
+    [reference(SEPARATOR_FAMILY, `input.replace(/[,_'\\s\\u00A0\\u202F]/g, '')`)],
   ),
 ]
 

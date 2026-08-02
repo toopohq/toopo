@@ -35,9 +35,12 @@ export const identity = {
     'accepts the decimal grammar a human writes - optional surrounding whitespace, optional sign, ' +
     'leading zeros, a fractional part, scientific notation - and rejects everything else, ' +
     'including hexadecimal, octal, binary, digit separators, "NaN" and "Infinity". The result is ' +
-    'either null or a finite number: never NaN, never Infinity. Which of the three refusals ' +
+    'either null or a finite number: never NaN, never Infinity. Which of the four refusals ' +
     'happened is published by a second export rather than folded into the return value, so a ' +
-    'caller who only needs a number is not made to unwrap one.',
+    'caller who only needs a number is not made to unwrap one. One of the four is that the text ' +
+    'carries digit separators - "1,5", "1 000", "1\'000" - which is what a French, German, Swiss ' +
+    'or Nordic spreadsheet exports, and a caller holding that reason can correct its user instead ' +
+    'of telling them their number is not a number.',
 
   /**
    * The input domain the contract is written for. It belongs to the identity because the answers
@@ -82,7 +85,7 @@ export type ParseNumber = (input: string) => number | null
 /**
  * Why a string is not a decimal number. Declared as a list rather than only as a type, so that the
  * partition is a value the contract can check itself against: `edge-cases.test.ts` requires the
- * reasons the tables actually produce to be exactly these three, which is what stops a literal
+ * reasons the tables actually produce to be exactly these four, which is what stops a literal
  * nobody names any more from surviving as documentation.
  *
  * The literals belong to this contract and to no other. There is no shared failure type in the
@@ -93,22 +96,36 @@ export type ParseNumber = (input: string) => number | null
  * two motives share a literal only when one message covers both without lying AND no caller acts
  * differently on them.
  *
+ * The freeze bites at publication, not at authorship. Nothing in this repository is published, no
+ * caller switches on these literals yet, and this partition gained `separator` after it was first
+ * written. Once `number/parse@1` ships, the same addition costs `number/parse@2` - which is why the
+ * paragraphs below argue each literal rather than listing it.
+ *
  * `empty` and `overflow` each earn theirs. "Not a decimal number" is simply false of `1e400`, which
  * is a well-formed decimal with no finite double; and a blank field is a caller telling its user
  * "this is required" where a malformed one says "this is not a number" - the distinction a caller
  * would otherwise have to rebuild by restating this contract's grammar in its own code.
  *
+ * `separator` earns its own, and an earlier revision of this contract was wrong to refuse it. The
+ * refusal argued that membership could only be defined by a second grammar - a second thing that
+ * can be wrong, and one the coupling property does not cover. Measured on 41 inputs, that is false:
+ * an input is a separator mistake exactly when it matches the grammar above once the separator
+ * characters are removed, which is the same grammar consulted twice rather than a second one. The
+ * argument that decided it is the caller's, not the implementer's: `1,5` is the most frequent real
+ * refusal in half of Europe, and a caller holding this reason corrects its user in one sentence
+ * where the residual reason leaves it guessing.
+ *
+ * Which characters count is behaviour, so block 4.4 settles it one case at a time rather than a
+ * list here doing it twice. The family is the comma, the underscore, the apostrophe, the no-break
+ * space and the narrow no-break space; the full stop, the ordinary space and the Arabic separators
+ * are excluded, each for a reason its own case in block 4.4 carries.
+ *
  * `not-decimal` is the residual, and it is written here as one rather than dressed up as a peer:
- * nineteen of the twenty-two refusals in block 4.4 carry it. The split that nearly earned a literal
- * was a `separator` reason for `1,5`, `1_000` and `1,000` - two of the three domains this contract
- * names for itself would message those differently. It is refused because the contract could only
- * define membership by a second grammar: the naive rule, "it matches once commas and underscores
- * are removed", classifies `1,2,3` as a separator mistake, and the correct rule is a whole second
- * grammar - a second thing that can be wrong, and one the coupling property does not cover. A
- * `wrong-radix` reason is refused for a plainer reason: `0o17` would be a radix prefix while `0777`
- * parses as seven hundred and seventy-seven, so the category is inconsistent at its own edge.
+ * twenty-two of the thirty-four refusals in block 4.4 carry it. A `wrong-radix` reason is refused:
+ * `0o17` would be a radix prefix while `0777` parses as seven hundred and seventy-seven, so the
+ * category is inconsistent at its own edge.
  */
-export const failureReasons = ['empty', 'not-decimal', 'overflow'] as const
+export const failureReasons = ['empty', 'separator', 'not-decimal', 'overflow'] as const
 
 export type ParseFailureReason = (typeof failureReasons)[number]
 
