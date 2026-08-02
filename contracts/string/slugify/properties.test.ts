@@ -1,0 +1,402 @@
+import { describe, it, expect } from 'vitest'
+import fc from 'fast-check'
+import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
+import {
+  outputAlphabet,
+  outputsAreEqual,
+  propertyRuns,
+  theRule,
+  universalProperties,
+} from './contract.js'
+import { slugify } from './reference.js'
+
+/**
+ * Block 4.3 - behavioural properties.
+ *
+ * This contract has no axioms. `string/levenshtein@1` could rest on the four laws of a metric,
+ * which are theorems about every pair of strings; here every property below is a statement about
+ * the *shape* of a slug - it is closed under an alphabet, it is a fixed point, it splits where a
+ * boundary is - and all of them together are satisfied by a rule that folds the wrong characters.
+ * That is why block 4.4 is forty rows: the properties police the shape, the table settles the
+ * content, and neither does the other's job.
+ *
+ * Half of what follows is liveness rather than safety, for the reason measured on
+ * `number/parse@1`: an implementation that answers nothing satisfies every safety property a
+ * contract can state. Here that implementation answers the empty string for everything, and it
+ * satisfies closure, shape and idempotence exactly. P6 and P7 are what force an answer out of it,
+ * and the battery measures which of the two actually does rather than leaving it to argument.
+ */
+
+// ---------------------------------------------------------------------------
+// Arbitraries
+// ---------------------------------------------------------------------------
+
+const COMBINING_ACUTE = '́'
+const ARABIC_FATHA = 'َ'
+const DEVANAGARI_KA = 'क'
+const DEVANAGARI_VIRAMA = '्'
+const DEVANAGARI_NUKTA = '़'
+const LONE_HIGH_SURROGATE = String.fromCharCode(0xd83d)
+const ZERO_WIDTH_JOINER = '‍'
+
+/**
+ * A letter outside the basic plane. It is in both alphabets below because it is the only kind of
+ * input that separates an implementation walking code points from one walking UTF-16 code units:
+ * emoji cannot, since both conventions discard them.
+ */
+const GOTHIC_AHSA = String.fromCodePoint(0x10330)
+
+/**
+ * Characters this contract discards. They are drawn as a set rather than as one representative
+ * because P5 asserts that swapping one for another changes nothing, and a single representative
+ * would make that assertion vacuous.
+ */
+const DISCARDED = [' ', '-', '_', '!', '.', '/', '&', '€', '🎉', LONE_HIGH_SURROGATE, ZERO_WIDTH_JOINER] as const
+
+/**
+ * Pairs of spellings the rule is required to unify: a rich form and the plain form it folds to.
+ *
+ * This is how P1 tests the `unify` and `fold` steps without holding a copy of the fold. Each pair
+ * is two ways of writing one thing - a compatibility form beside its ordinary spelling, a
+ * precomposed letter beside its base - and the property is that a text built from the left column
+ * and the same text built from the right column answer one slug.
+ */
+const EQUIVALENT_SPELLINGS = [
+  ['é', 'e'],
+  ['ế', 'e'],
+  ['Å', 'a'],
+  ['İ', 'i'],
+  ['Ａ', 'a'],
+  ['ﬁ', 'fi'],
+  ['Ⅷ', 'viii'],
+  ['²', '2'],
+  ['Σ', 'σ'],
+] as const
+
+/**
+ * The alphabet the general-purpose texts are drawn from, chosen so that a short random string
+ * reaches every region this contract settles: letters that fold and letters that do not, a case
+ * pair, a digit, three scripts that keep their marks, a mark that composes onto a base and one that
+ * does not, a discarded symbol of each kind, and an unpaired surrogate.
+ */
+const ALPHABET = [
+  'a',
+  'B',
+  '1',
+  'é',
+  'e',
+  COMBINING_ACUTE,
+  'ß',
+  'æ',
+  'Σ',
+  'ς',
+  '日',
+  DEVANAGARI_KA,
+  DEVANAGARI_VIRAMA,
+  DEVANAGARI_NUKTA,
+  ARABIC_FATHA,
+  'م',
+  'Ａ',
+  '²',
+  GOTHIC_AHSA,
+  ...DISCARDED,
+] as const
+
+const anySymbol = fc.constantFrom(...ALPHABET)
+
+const anyText = fc.array(anySymbol, { maxLength: 10 }).map((symbols) => symbols.join(''))
+
+const anyDiscarded = fc.constantFrom(...DISCARDED)
+
+/**
+ * A text and its plain spelling, built together so that the two differ only where a rich form was
+ * chosen. The plain column is what the rule must fold the rich column to.
+ */
+const anyPairOfSpellings: fc.Arbitrary<readonly [string, string]> = fc
+  .array(
+    fc.oneof(
+      fc.constantFrom(...EQUIVALENT_SPELLINGS),
+      anySymbol.map((symbol) => [symbol, symbol] as const),
+    ),
+    { maxLength: 8 },
+  )
+  .map((parts) => [parts.map(([rich]) => rich).join(''), parts.map(([, plain]) => plain).join('')])
+
+/**
+ * A string that is already a well-formed slug, built rather than drawn, because P7 has to be given
+ * one and asking the function under test to produce one would make the property circular.
+ *
+ * The run alphabet carries no mark that a neighbouring base could absorb, which is what makes these
+ * strings fixed points by construction rather than by hope; the precondition block at the end of
+ * this file measures that without calling `slugify`.
+ */
+const SLUG_SYMBOL = [
+  'a',
+  'b',
+  'z',
+  '0',
+  '9',
+  '日',
+  'م',
+  'ß',
+  'æ',
+  'ς',
+  DEVANAGARI_KA,
+  GOTHIC_AHSA,
+] as const
+
+const anySlug: fc.Arbitrary<string> = fc
+  .array(fc.array(fc.constantFrom(...SLUG_SYMBOL), { minLength: 1, maxLength: 5 }), {
+    minLength: 1,
+    maxLength: 4,
+  })
+  .map((runs) => runs.map((run) => run.join('')).join('-'))
+
+const looksLikeASlug = (text: string): boolean =>
+  text === '' || outputAlphabet.pattern.test(text)
+
+const hasSomethingToKeep = (text: string): boolean => /[\p{L}\p{Nd}]/u.test(text)
+
+const absorbs = (base: string, mark: string): boolean =>
+  [...`${base}${mark}`.normalize('NFC')].length === 1
+
+// ---------------------------------------------------------------------------
+// The six steps of the rule
+// ---------------------------------------------------------------------------
+
+/**
+ * Which property polices which step of `theRule`. Both directions are checked at the end of this
+ * file: a step published with nothing behind it is a claim the contract does not keep, and a
+ * property policing a step nobody declared is a guard nobody asked for.
+ */
+const POLICED: Readonly<Record<string, readonly string[]>> = {
+  unify: ['P1'],
+  fold: ['P1'],
+  absorb: ['P2', 'P3'],
+  keep: ['P4', 'P6'],
+  lower: ['P4', 'P5'],
+  join: ['P4', 'P8'],
+}
+
+describe('string/slugify@1 specific properties', () => {
+  it('P1 - two spellings of one text answer one slug', () => {
+    // The `unify` and `fold` steps together, tested without a copy of the fold: the two strings are
+    // built side by side from a table of equivalent spellings, so the property knows what should be
+    // equal without knowing how the function gets there.
+    fc.assert(
+      fc.property(anyPairOfSpellings, ([rich, plain]) =>
+        outputsAreEqual(slugify(rich), slugify(plain)),
+      ),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P2 - slugging a slug changes nothing', () => {
+    // Idempotence. It is a safety property and the constant-empty implementation satisfies it, so
+    // it is not what makes this contract live - but it is the property two successive formulations
+    // of the `absorb` step failed, and the two counterexamples are named in block 4.4.
+    fc.assert(
+      fc.property(anyText, (text) => {
+        const once = slugify(text)
+
+        return outputsAreEqual(slugify(once), once)
+      }),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P3 - no mark in the answer composes onto the base in front of it', () => {
+    // The invariant idempotence rests on, asserted directly rather than inferred from it. A slug
+    // carrying a base immediately followed by a mark that composes onto it is a slug the next call
+    // would shorten, and this guard names that as the defect instead of waiting for P2 to notice
+    // the symptom.
+    fc.assert(
+      fc.property(anyText, (text) => {
+        const points = [...slugify(text)]
+
+        return points.every(
+          (point, at) => at === 0 || !absorbs(points[at - 1] ?? '', point),
+        )
+      }),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P4 - the answer belongs to the declared alphabet', () => {
+    // The `keep`, `lower` and `join` steps read off the result at once. It is a safety property,
+    // free for a function that answers nothing, and its support is everywhere.
+    fc.assert(
+      fc.property(anyText, (text) => looksLikeASlug(slugify(text))),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P5 - swapping one discarded character for another changes nothing', () => {
+    // The `lower` step, stated as what it protects: an answer must not depend on a character that
+    // does not survive it. It is the property that fails on an implementation lower-casing the
+    // whole text at once, because JavaScript's lower-casing reads the character after a Greek sigma
+    // to decide whether it is final - including a character this function is about to discard.
+    fc.assert(
+      fc.property(anyText, anyText, anyDiscarded, anyDiscarded, (before, after, one, other) =>
+        outputsAreEqual(slugify(before + one + after), slugify(before + other + after)),
+      ),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P6 - a text with a letter or a digit answers a non-empty slug', () => {
+    // Liveness. The constant-empty implementation dies here, and so does one that drops a whole
+    // script. The condition is deliberately weaker than the rule - it asks about letters and digits
+    // only, never about marks - so that it cannot be satisfied by copying the implementation.
+    fc.assert(
+      fc.property(anyText, (text) => !hasSomethingToKeep(text) || slugify(text) !== ''),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P7 - a well-formed slug is returned unchanged', () => {
+    // The second liveness property, and the strongest single statement in this block: it pins the
+    // answer exactly on a whole family of inputs rather than constraining its shape. An
+    // implementation that answers the empty string, that drops the last run, or that folds a letter
+    // it should keep dies here. The slugs are built by the arbitrary above rather than produced by
+    // the function, which is what keeps the assertion from comparing the function against itself.
+    fc.assert(
+      fc.property(anySlug, (slug) => outputsAreEqual(slugify(slug), slug)),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P8 - a separator appears exactly between two runs', () => {
+    // The `join` step. P4 already refuses a leading, trailing or doubled separator through the
+    // alphabet pattern; what this adds is that the count is right - a slug of n runs carries n - 1
+    // separators - which is what catches an implementation that emits one per boundary rather than
+    // one per gap.
+    fc.assert(
+      fc.property(anyText, (text) => {
+        const slug = slugify(text)
+        if (slug === '') return true
+
+        const runs = slug.split('-')
+
+        return (
+          runs.every((run) => run !== '') &&
+          [...slug].filter((point) => point === '-').length === runs.length - 1
+        )
+      }),
+      { numRuns: propertyRuns },
+    )
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Universal properties
+// ---------------------------------------------------------------------------
+
+describe('string/slugify@1 universal properties', () => {
+  it('keeps the inapplicable universal properties declared as such', () => {
+    expectUniversalPropertiesAnswered(universalProperties, [
+      'never mutates its arguments',
+      'no ambient output',
+    ])
+  })
+
+  it('is deterministic - the same call yields the same answer every time', () => {
+    fc.assert(
+      fc.property(anyText, (text) => outputsAreEqual(slugify(text), slugify(text))),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('has no ambient input - an answer does not depend on the calls made before it', () => {
+    fc.assert(
+      fc.property(anyText, fc.array(anyText, { maxLength: 12 }), (text, history) => {
+        const first = slugify(text)
+        for (const earlier of history) slugify(earlier)
+
+        return outputsAreEqual(slugify(text), first)
+      }),
+      { numRuns: propertyRuns },
+    )
+  })
+})
+
+// ---------------------------------------------------------------------------
+// The declarations the properties above rest on
+// ---------------------------------------------------------------------------
+
+describe('string/slugify@1 property preconditions', () => {
+  it('answers every declared step of the rule with a property, and declares every step it answers', () => {
+    // A step published in block 4.2 with no property behind it would be a claim this contract makes
+    // and does not check, which is the one thing it sells against. Both directions, one guard.
+    expect(Object.keys(POLICED).sort()).toEqual([...theRule].map((step) => step.name).sort())
+  })
+
+  it('publishes a statement for every step of the rule', () => {
+    const unexplained = theRule.filter((step) => step.statement.trim() === '')
+
+    expect(unexplained.map((step) => step.name)).toEqual([])
+  })
+
+  it('draws slugs that really are well formed, without asking the function under test', () => {
+    // P7 asserts an exact answer, so it is only sound if the arbitrary really produces slugs. The
+    // risk is not hypothetical: a run alphabet gaining a mark that its neighbour absorbs would make
+    // P7 fail on a correct implementation. This measures the three things that make a string a
+    // fixed point - the alphabet, the shape, and the absence of an absorbable adjacency - and it
+    // calls nothing from `reference.ts`.
+    fc.assert(
+      fc.property(anySlug, (slug) => {
+        const points = [...slug]
+
+        return (
+          outputAlphabet.pattern.test(slug) &&
+          slug === points.map((point) => point.toLowerCase()).join('') &&
+          points.every((point, at) => at === 0 || !absorbs(points[at - 1] ?? '', point))
+        )
+      }),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('draws texts that reach every region the properties police', () => {
+    // Without this the properties above are guards whose support is a matter of hope. Each entry is
+    // a region some property can only fail in, and the assertion is that the alphabet reaches it at
+    // all; the battery's probes then ask whether the arbitraries reach it under the declared number
+    // of runs.
+    const marksThatCompose = ALPHABET.filter(
+      (symbol) => /\p{M}/u.test(symbol) && absorbs('e', symbol),
+    )
+    const marksThatDoNot = ALPHABET.filter(
+      (symbol) => /\p{M}/u.test(symbol) && !absorbs('e', symbol),
+    )
+    const lettersThatFold = ALPHABET.filter(
+      (symbol) => /\p{L}/u.test(symbol) && [...symbol.normalize('NFD')].length > 1,
+    )
+    const lettersThatDoNot = ALPHABET.filter(
+      (symbol) =>
+        /\p{L}/u.test(symbol) &&
+        [...symbol.normalize('NFD')].length === 1 &&
+        symbol.normalize('NFKC') === symbol,
+    )
+    const astralLetters = ALPHABET.filter(
+      (symbol) => /\p{L}/u.test(symbol) && symbol.length === 2 && [...symbol].length === 1,
+    )
+
+    expect({
+      marksThatCompose: marksThatCompose.length,
+      marksThatDoNot: marksThatDoNot.length,
+      lettersThatFold: lettersThatFold.length,
+      lettersThatDoNot: lettersThatDoNot.length,
+      astralLetters: astralLetters.length,
+      discarded: DISCARDED.length,
+      equivalentSpellings: EQUIVALENT_SPELLINGS.length,
+    }).toEqual({
+      marksThatCompose: 1,
+      marksThatDoNot: 3,
+      lettersThatFold: 1,
+      lettersThatDoNot: 11,
+      astralLetters: 1,
+      discarded: 11,
+      equivalentSpellings: 9,
+    })
+  })
+})
