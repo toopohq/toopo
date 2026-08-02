@@ -20,11 +20,25 @@ this project lies in the contract format, not in the API or the CLI — which is
 yet.
 
 - Contracts written so far: `number/parse@1`, `date/add@1`.
-- Error convention is **undecided**, and will be frozen for the whole catalogue once chosen. Any
-  convention in use today is provisional and must be labelled as such in the code. Three forms are
-  being measured on throwaway `experiment/*` branches: `null`; a discriminated union
-  `{ ok: true, value } | { ok: false, reason }`; and `null` plus a separate diagnostic export.
-  `throw` is ruled out — for a parser, failure is ordinary control flow, not an exception.
+- Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
+
+## Error convention — settled, catalogue-wide
+
+A fallible function returns `T | null` and publishes a diagnostic export **beside** it:
+`describe<X>Failure(...)`, returning a reason literal owned by that contract, or `null`. No type is
+shared between features — each contract declares its own literals.
+
+Every contract that publishes a diagnostic carries a **coupling property**: a call fails exactly
+when it has a description. Without it the two exports can drift, and an implementation that
+optimises the answering path while leaving the diagnostic one alone will diverge on any input the
+named cases do not cover.
+
+Three forms were built and measured across both prototype contracts. The union
+`{ ok, value } | { ok, reason }` ties this one exactly on detection — the error convention is not a
+verification question. What decided it is that this form is **additive**: a contract can ship
+`name@1` with no diagnostic and gain one later without breaking anyone, whereas putting the reason
+in the return type freezes it into the major version on day one. Known costs are recorded in the
+project specification, together with what would invalidate the decision.
 - Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
 
 ## Rules for this stage
