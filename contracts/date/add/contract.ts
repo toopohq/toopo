@@ -152,8 +152,10 @@ export type AddFailureReason = (typeof failureReasons)[number]
  * The reason is published beside the return channel rather than inside it because that form is
  * additive: a contract can ship `name@1` with no diagnostic and gain one later without breaking
  * anyone, where putting the reason in the return type freezes it into the major on day one. On
- * detection the two forms were measured to tie exactly - the error convention is not a verification
- * question.
+ * detection the two forms that carry a reason were measured to tie exactly - the error convention is
+ * not a verification question. That measurement is replayable rather than asserted: the batteries it
+ * comes from are at the annotated tags `evidence/error-convention-round-2` and
+ * `evidence/error-convention-round-3`.
  *
  * The cost is one extra traversal, on the failing path and only there. On this contract that
  * traversal is arithmetic rather than a regular expression, which is why the reference computes it

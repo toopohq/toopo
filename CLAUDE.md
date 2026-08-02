@@ -40,6 +40,14 @@ verification question. What decided it is that this form is **additive**: a cont
 in the return type freezes it into the major version on day one. Known costs are recorded in the
 project specification, together with what would invalidate the decision.
 
+Those measurements are replayable, at three annotated tags whose messages say what each one proves:
+`evidence/error-convention-round-1` (two forms, six call sites), `evidence/error-convention-round-2`
+(three forms on both contracts, and the batteries the detection tie comes from) and
+`evidence/error-convention-round-3` (the callers that need the value and the reason at once). They
+are tags rather than branches because the conclusion is on `main` and nobody should be reading three
+dead working states — but a published sentence with no replayable measurement behind it is an
+opinion, which is the one thing this repository sells against.
+
 **The reason set of a contract is frozen with its major version.** Adding a literal, removing one,
 or splitting one all break a caller that switches exhaustively — so the partition is chosen once,
 deliberately, and a later change costs `name@2`. The additivity that decided this convention covers
