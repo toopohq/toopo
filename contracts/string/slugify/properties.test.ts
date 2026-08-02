@@ -200,6 +200,38 @@ const anyStackedText: fc.Arbitrary<string> = fc
 
 const anyTextOrStack = fc.oneof(anyText, anyStackedText)
 
+/**
+ * A pair of texts to put a discarded character between, with a cased letter on each side of the
+ * gap. It is the region P5 can only fail in, and it needed building for the same reason P2 and P3
+ * did.
+ *
+ * P5 exists to state that an answer must not depend on a character the function discards, and the
+ * only way that dependency arises in JavaScript is the final sigma: `toLowerCase` reads whether a
+ * cased letter follows, through characters it considers case-ignorable. So the property can only
+ * fail on a draw where a sigma is preceded by a cased letter, followed by the swapped character,
+ * and then by another cased letter - and independently drawn text produces that on well under one
+ * per cent of draws. Measured against G-12 of the battery, `anyText` left P5 green on one run out
+ * of four; the generator below fixes both ends of the gap to cased letters and draws a sigma as one
+ * pivot in three. The reference survives it, which is what says the widening sharpened the support
+ * rather than hardening the property.
+ */
+const CAPITAL_SIGMA = 'Σ'
+
+const anyCasedSymbol = fc.constantFrom('a', 'B', 'e', CAPITAL_SIGMA)
+
+const aroundACasedGap: fc.Arbitrary<readonly [string, string]> = fc
+  .tuple(
+    fc.array(anySymbol, { maxLength: 4 }),
+    anyCasedSymbol,
+    fc.constantFrom(CAPITAL_SIGMA, 'a', 'B'),
+    anyCasedSymbol,
+    fc.array(anySymbol, { maxLength: 4 }),
+  )
+  .map(
+    ([prefix, lead, pivot, trail, suffix]) =>
+      [`${prefix.join('')}${lead}${pivot}`, `${trail}${suffix.join('')}`] as const,
+  )
+
 const looksLikeASlug = (text: string): boolean =>
   (text === '' || outputAlphabet.pattern.test(text)) &&
   text === [...text].map((point) => point.toLowerCase()).join('')
@@ -309,7 +341,7 @@ describe('string/slugify@1 specific properties', () => {
     // whole text at once, because JavaScript's lower-casing reads the character after a Greek sigma
     // to decide whether it is final - including a character this function is about to discard.
     fc.assert(
-      fc.property(anyText, anyText, anyDiscarded, anyDiscarded, (before, after, one, other) =>
+      fc.property(aroundACasedGap, anyDiscarded, anyDiscarded, ([before, after], one, other) =>
         outputsAreEqual(slugify(before + one + after), slugify(before + other + after)),
       ),
       { numRuns: propertyRuns },
@@ -448,6 +480,20 @@ describe('string/slugify@1 property preconditions', () => {
     })
 
     expect(reaching.length).toBeGreaterThan(propertyRuns / 20)
+  })
+
+  it('draws gaps with a sigma before them and a cased letter after', () => {
+    // The support P5 rests on. A swap of one discarded character for another can only change an
+    // answer where a sigma's lower case is context sensitive, and this counts how often the
+    // generator produces that shape under the declared number of draws. It asks nothing of
+    // `reference.ts`.
+    const drawn = fc.sample(aroundACasedGap, propertyRuns)
+
+    const reaching = drawn.filter(
+      ([before, after]) => before.endsWith(CAPITAL_SIGMA) && /^[\p{Lu}\p{Ll}]/u.test(after),
+    )
+
+    expect(reaching.length).toBeGreaterThan(propertyRuns / 5)
   })
 
   it('draws texts that reach every region the properties police', () => {
