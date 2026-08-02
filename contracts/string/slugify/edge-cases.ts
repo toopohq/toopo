@@ -5,14 +5,28 @@
  * each one is addressed by belong to the catalogue and are stated once in
  * `catalogue/every-contract.js`. What is here is this contract's own table.
  *
- * It is the second largest table in the catalogue, and that is the format finding this contract was
- * written to produce rather than a failure to be economical. `string/levenshtein@1` shrank its
- * table to twenty-three because four axioms held of every pair of strings and refused whole
- * families of wrong answer at once. There are no axioms here. The properties of block 4.3 are
- * strong, but they are statements about the *shape* of a slug - it is closed under an alphabet, it
- * is a fixed point, it retains a subsequence - and every one of them is satisfied by a rule that
- * folds the wrong characters. What a slug of a given text should actually *be* is settled one input
- * at a time, because nothing else can settle it.
+ * It is the second largest table in the catalogue, and what that buys was measured rather than
+ * assumed - the measurement is the format finding this contract was written to produce, and it is
+ * not the one the table was written expecting.
+ *
+ * The battery carries a lens that reads every guard below as a comparison of the answer against
+ * itself, so a column of it is what this contract catches with this table removed and nothing else
+ * changed. Over three complete runs, **twenty-one of the twenty-two behaviour defects still die**.
+ * The properties and the benchmark profiles catch them between them, so the table is not what
+ * stands between this contract and a broken fold.
+ *
+ * One defect survives every property, every profile and every type assertion: G-21, which
+ * transliterates Cyrillic to Latin, which is what three of the four measured libraries do and the
+ * single thing this contract exists to refuse. It answers a well-formed, lower-case, idempotent
+ * slug that retains a subsequence and carries no absorbable mark. One guard in the whole suite
+ * kills it, and it is `cyrillic-is-kept`, below.
+ *
+ * The control that makes this readable is G-22, which folds the sharp s to a double s - the same
+ * kind of curation decision, from the same table the ecosystem writes - and dies on both columns.
+ * What separates the two is not the decision, it is the arbitrary: the generator that draws
+ * well-formed slugs carries a sharp s and carries no Cyrillic. A property settles the content of a
+ * slug exactly as far as the alphabet of its arbitrary reaches, so `P7` is a table in disguise and
+ * what this one catches alone is what no arbitrary samples.
  *
  * Every expected slug below was computed by two independent implementations of the rule before the
  * reference existed: one streaming code points and carrying a boundary flag, one grouping survivors

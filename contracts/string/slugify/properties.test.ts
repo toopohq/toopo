@@ -14,11 +14,18 @@ import { slugify } from './reference.js'
  * Block 4.3 - behavioural properties.
  *
  * This contract has no axioms. `string/levenshtein@1` could rest on the four laws of a metric,
- * which are theorems about every pair of strings; here every property below is a statement about
- * the *shape* of a slug - it is closed under an alphabet, it is a fixed point, it splits where a
- * boundary is - and all of them together are satisfied by a rule that folds the wrong characters.
- * That is why block 4.4 is forty rows: the properties police the shape, the table settles the
- * content, and neither does the other's job.
+ * which are theorems about every pair of strings; every property below is a statement about the
+ * *shape* of a slug instead - it is closed under an alphabet, it is a fixed point, it splits where
+ * a boundary is.
+ *
+ * The expectation was that shape properties would leave the content of a slug to block 4.4, and the
+ * battery measured otherwise: twenty-one of its twenty-two behaviour defects die with that whole
+ * table blinded. P7 is why, and it is worth understanding before adding a symbol to its alphabet.
+ * It pins an exact answer on every string the arbitrary can build, so each symbol admitted there
+ * turns one curation decision into a property - a sharp s in that alphabet is what makes
+ * `Straße -> straße` property-checkable. What no symbol represents is settled by a named case and
+ * by nothing else: measured, an implementation that transliterates Cyrillic satisfies every
+ * property in this file.
  *
  * Half of what follows is liveness rather than safety, for the reason measured on
  * `number/parse@1`: an implementation that answers nothing satisfies every safety property a
