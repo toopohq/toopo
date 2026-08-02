@@ -611,17 +611,12 @@ export const battery: Battery = {
     {
       lenses: ['reason-blind'],
       reason:
-        'the `described` twins of the ten refusals below, silent on this column and only on it. ' +
+        'the `described` twins of the five refusals below, silent on this column and only on it. ' +
         'Blinded, the suite requires a refused call to have a description and no longer requires it ' +
         'to be the right one, so R-1 to R-4 - the only mutants that reddened these - stop being ' +
         'visible. That is the lens working rather than a gap, and those cells are part of the ' +
         'five-defect difference this battery reports between its two columns.',
       titles: [
-        '2024-01-15T00:00:00.000Z + { months: 1.5 } -> field-not-whole',
-        '2024-01-15T00:00:00.000Z + { days: 0.5 } -> field-not-whole',
-        '2024-01-15T00:00:00.000Z + { days: NaN } -> field-not-whole',
-        '2024-01-15T00:00:00.000Z + { days: Infinity } -> field-not-whole',
-        '2024-01-15T00:00:00.000Z + { days: 1e+21 } -> field-not-whole',
         '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> total-not-exact',
         '2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> total-not-exact',
         '2024-01-15T00:00:00.000Z + { days: "1" } -> field-not-whole',
@@ -649,18 +644,16 @@ export const battery: Battery = {
     {
       nature: 'documents a decision',
       reason:
-        'the refusal cases of block 4.4, on the value rather than on the reason. No mutant of this ' +
-        'battery makes the function *accept* a duration it must refuse - D-08 weakens the field ' +
-        'guard and the total guard catches every one of these behind it, which the table already ' +
-        'records - so the region is unprobed on the value channel. Their `described` twins are red ' +
-        'on R-1 to R-4, and every one of these publishes a decision a caller reads whether or not a ' +
-        'mutant ever violates it. What is missing is a mutant that accepts a refusal, not a case.',
+        'what is left of the refusal region on the value channel, and the list shrank by half when ' +
+        'D-22 arrived. Ten of these cases were unprobed: no mutant made the function *accept* a ' +
+        'duration it must refuse, because D-08 weakens the field guard and the total guard catches ' +
+        'every one of them behind it. D-22 memoises by the number of duration fields, so a one-field ' +
+        'refusal now collects whatever the previous one-field call answered, and the five one-field ' +
+        'cases went red - measured, and the battery refused the stale declaration rather than letting ' +
+        'it stand. The five below carry no field, two fields, or a field whose type is wrong, so the ' +
+        'collision never reaches them. Every one publishes a decision a caller reads whether or not a ' +
+        'mutant violates it; what is missing is still a mutant, not a case.',
       titles: [
-        '2024-01-15T00:00:00.000Z + { months: 1.5 } -> null',
-        '2024-01-15T00:00:00.000Z + { days: 0.5 } -> null',
-        '2024-01-15T00:00:00.000Z + { days: NaN } -> null',
-        '2024-01-15T00:00:00.000Z + { days: Infinity } -> null',
-        '2024-01-15T00:00:00.000Z + { days: 1e+21 } -> null',
         '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> null',
         '2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> null',
         '2024-01-15T00:00:00.000Z + { days: "1" } -> null',
