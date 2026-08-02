@@ -1,6 +1,6 @@
 import { describe, it, expectTypeOf } from 'vitest'
-import type { ParseNumber } from './contract.js'
-import { parseNumber } from './reference.js'
+import type { DescribeFailure, ParseNumber } from './contract.js'
+import { describeFailure, parseNumber } from './reference.js'
 
 /**
  * Block 4.2, executable. The signature is part of the contract, so an implementation that widens
@@ -24,5 +24,9 @@ describe('number/parse@1 signature', () => {
 
   it('returns a number that may be absent, never NaN-as-number-only', () => {
     expectTypeOf(parseNumber).returns.toEqualTypeOf<number | null>()
+  })
+
+  it('publishes the diagnostic surface with the type the contract declares', () => {
+    expectTypeOf(describeFailure).toEqualTypeOf<DescribeFailure>()
   })
 })

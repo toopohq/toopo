@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
 import { outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
-import { parseNumber } from './reference.js'
+import { describeFailure, parseNumber } from './reference.js'
 
 /**
  * Block 4.3 - behavioural properties.
@@ -98,6 +98,44 @@ describe('number/parse@1 specific properties', () => {
         finiteDouble.filter((n) => !Object.is(n, -0)),
         (n) => outputsAreEqual(parseNumber(String(n)), n),
       ),
+      { numRuns: propertyRuns },
+    )
+  })
+})
+
+describe('number/parse@1 coupling between the two exports', () => {
+  it('P4 - a string fails to parse exactly when it has a description', () => {
+    // The reference cannot fail this one: `parseNumber` is defined through `describeFailure`, so
+    // the module holds one grammar. The property is not decorative for that reason - it governs
+    // every implementation, and one that writes the two independently, which is what optimising
+    // the parsing path looks like, can drift on any input the named cases do not carry.
+    fc.assert(
+      fc.property(
+        candidateInput,
+        (input) => (parseNumber(input) === null) === (describeFailure(input) !== null),
+      ),
+      { numRuns: propertyRuns },
+    )
+  })
+
+  it('P5 - a published reason is the reason it claims to be', () => {
+    // Only the two reasons that can be characterised without restating the grammar. Checking
+    // `not-decimal` here would write the grammar into the test, which is the duplication this form
+    // exists to remove; block 4.4 settles that reason case by case instead.
+    fc.assert(
+      fc.property(candidateInput, (input) => {
+        const trimmed = input.trim()
+        const converted = Number(trimmed)
+
+        switch (describeFailure(input)) {
+          case 'empty':
+            return trimmed === ''
+          case 'overflow':
+            return !Number.isFinite(converted) && !Number.isNaN(converted)
+          default:
+            return true
+        }
+      }),
       { numRuns: propertyRuns },
     )
   })

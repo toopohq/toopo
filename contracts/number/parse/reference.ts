@@ -22,15 +22,30 @@ const DECIMAL_GRAMMAR = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
  * time and leave `signature.test-d.ts` unable to fail - a guard that proves nothing. An
  * implementation states its signature independently, and the contract checks it.
  *
- * PROVISIONAL: `null` marks failure. The catalogue-wide error convention is still undecided.
+ * PROVISIONAL: `null` marks failure, and `describeFailure` publishes the reason beside it. The
+ * catalogue-wide error convention is still undecided.
  */
-export const parseNumber = (input: string): number | null => {
+
+type ParseFailureReason = 'empty' | 'not-decimal' | 'overflow'
+
+/**
+ * Why a string is not a decimal number, or `null` when it is one.
+ *
+ * Overflow is the one failure the grammar cannot express: "1e400" is a well-formed decimal that has
+ * no finite double. Underflow ("1e-400" -> 0) stays finite and is accepted.
+ */
+export const describeFailure = (input: string): ParseFailureReason | null => {
   const trimmed = input.trim()
-  if (!DECIMAL_GRAMMAR.test(trimmed)) return null
+  if (trimmed === '') return 'empty'
+  if (!DECIMAL_GRAMMAR.test(trimmed)) return 'not-decimal'
 
-  const value = Number(trimmed)
-
-  // Overflow is the one failure the grammar cannot express: "1e400" is a well-formed decimal that
-  // has no finite double. Underflow ("1e-400" -> 0) stays finite and is accepted.
-  return Number.isFinite(value) ? value : null
+  return Number.isFinite(Number(trimmed)) ? null : 'overflow'
 }
+
+/**
+ * Defined through `describeFailure` rather than beside it, so that the module holds one grammar and
+ * the two exports cannot drift apart. The contract states the coupling anyway, because it governs
+ * implementations that do not make that choice.
+ */
+export const parseNumber = (input: string): number | null =>
+  describeFailure(input) === null ? Number(input.trim()) : null

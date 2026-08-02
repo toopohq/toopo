@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { edgeCases, outputsAreEqual } from './contract.js'
-import { parseNumber } from './reference.js'
+import { describeFailure, parseNumber } from './reference.js'
 
 /**
  * Block 4.4, executable. Every entry of the contract's table is asserted exactly, using the
@@ -32,6 +32,14 @@ describe('number/parse@1 named edge cases', () => {
         outputsAreEqual(actual, expected),
         `expected ${rendered(expected)}, received ${rendered(actual)}`,
       ).toBe(true)
+    })
+  }
+})
+
+describe('number/parse@1 named edge cases, described', () => {
+  for (const { input, reason } of edgeCases) {
+    it(`${printable(input)} -> ${reason ?? 'no failure to describe'}`, () => {
+      expect(describeFailure(input)).toBe(reason)
     })
   }
 })
