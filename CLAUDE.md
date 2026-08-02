@@ -59,9 +59,12 @@ gaining a diagnostic, not reshaping one.
 
 1. Contracts and their reference implementations only. No backend, no API, no CLI, no website, no
    CI configuration, no publishing tooling. Those come after the five prototypes, deliberately.
-2. **No abstraction across contracts until at least three exist.** Duplication between contract
-   folders is expected and correct here — factoring early would fabricate the format instead of
-   discovering it. This suspension of the no-duplication rule applies nowhere else.
+2. **The no-abstraction suspension has ended**, having done its job: three contracts were written by
+   hand with no shared code, and what they turned out to repeat *identically* now lives in
+   `catalogue/`, under the freeze discipline stated at the top of that file. The bar for adding
+   anything there is not "the contracts repeat it" but "the contracts repeat it identically, and
+   what it says belongs to the registry rather than to any one feature". Resemblance is not
+   duplication: three functions that answer the same question about different data stay apart.
 3. Dev dependencies are limited to `typescript`, `vitest`, `fast-check`, and `@types/node`. The last
    one is types-only, has no runtime footprint and cannot reach distributed code; without it the
    mutation instrument would either sit outside the typechecker or be written in plain JavaScript,
@@ -69,7 +72,13 @@ gaining a diagnostic, not reshaping one.
    still has zero runtime dependencies of any kind.
 4. The root `package.json` carries `"private": true`, so nothing can be published by accident.
 5. Working notes, planning documents and status reports do not belong in this repository. Only
-   contracts, implementations, tests, and the evidence produced by running them.
+   contracts, implementations, tests, the evidence produced by running them, and the instrument that
+   produces that evidence — including its own fixtures.
+6. **Fixtures for the instrument live under `mutation/`, never under `contracts/`.** `contracts/` is
+   the catalogue and nothing else. A fixture is a toy shaped like a contract so that the instrument
+   can be mutation-tested in seconds rather than minutes; a meta-test nobody runs is a decorative
+   guard, and the cost of running one is what decides whether it gets run. A fixture is deliberately
+   minimal, is never a template for a real contract, and says so in its own header.
 
 ## Permanent rules
 
