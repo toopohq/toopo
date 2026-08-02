@@ -152,8 +152,50 @@ const anySlug: fc.Arbitrary<string> = fc
   })
   .map((runs) => runs.map((run) => run.join('')).join('-'))
 
+/**
+ * Both halves of what block 4.2 declares an alphabet to be. The pattern carries the characters and
+ * the description carries the case, and a check that read only the pattern would be weaker than the
+ * sentence the contract publishes - measured: an implementation that never lower-cases satisfies
+ * the pattern exactly, because an upper-case letter is a letter.
+ */
+/**
+ * Text that stacks marks on a base, which is the region P2 and P3 can only fail in.
+ *
+ * They need their own generator and the reason was measured rather than assumed, on the same
+ * question `string/levenshtein@1` asked of its triangle inequality: is the property sound, or is
+ * its support starved? A defect that mistakes the base of a run for the code point to its left is
+ * only visible when a mark the base absorbs sits behind a mark it does not, and three symbols drawn
+ * independently from an alphabet of thirty almost never produce that. Measured against G-07 of the
+ * battery, `anyText` reddens P2 on some runs and not others - it was red on one column and green on
+ * the other in the same run - while the generator below reddens it on every run measured. The
+ * reference survives the same generator, which is what says the widening sharpened the support
+ * rather than hardening the property.
+ *
+ * The other properties keep `anyText`, for the reason `date/add@1` kept `anyDate` on five of its
+ * six: widening a generator that does not need it buys nothing and costs the reader a second thing
+ * to understand.
+ */
+const anyMark = fc.constantFrom(
+  COMBINING_ACUTE,
+  ARABIC_FATHA,
+  DEVANAGARI_VIRAMA,
+  DEVANAGARI_NUKTA,
+)
+
+const anyBase = fc.constantFrom('e', 'a', 'x', 'é', 'Å', DEVANAGARI_KA, 'م', '日')
+
+const anyStackedText: fc.Arbitrary<string> = fc
+  .array(fc.tuple(anyBase, fc.array(anyMark, { minLength: 1, maxLength: 3 })), {
+    minLength: 1,
+    maxLength: 3,
+  })
+  .map((groups) => groups.map(([base, marks]) => `${base}${marks.join('')}`).join(''))
+
+const anyTextOrStack = fc.oneof(anyText, anyStackedText)
+
 const looksLikeASlug = (text: string): boolean =>
-  text === '' || outputAlphabet.pattern.test(text)
+  (text === '' || outputAlphabet.pattern.test(text)) &&
+  text === [...text].map((point) => point.toLowerCase()).join('')
 
 const hasSomethingToKeep = (text: string): boolean => /[\p{L}\p{Nd}]/u.test(text)
 
@@ -196,7 +238,7 @@ describe('string/slugify@1 specific properties', () => {
     // it is not what makes this contract live - but it is the property two successive formulations
     // of the `absorb` step failed, and the two counterexamples are named in block 4.4.
     fc.assert(
-      fc.property(anyText, (text) => {
+      fc.property(anyTextOrStack, (text) => {
         const once = slugify(text)
 
         return outputsAreEqual(slugify(once), once)
@@ -211,7 +253,7 @@ describe('string/slugify@1 specific properties', () => {
     // would shorten, and this guard names that as the defect instead of waiting for P2 to notice
     // the symptom.
     fc.assert(
-      fc.property(anyText, (text) => {
+      fc.property(anyTextOrStack, (text) => {
         const points = [...slugify(text)]
 
         return points.every(
@@ -355,6 +397,27 @@ describe('string/slugify@1 property preconditions', () => {
       }),
       { numRuns: propertyRuns },
     )
+  })
+
+  it('draws stacks where a mark the base absorbs sits behind one it does not', () => {
+    // The support P2 and P3 rest on, measured rather than hoped for. A defect that mistakes the
+    // base of a run for the code point to its left is invisible unless a mark that composes onto
+    // the base sits behind a mark that does not, and this counts how often the generator produces
+    // that shape under the declared number of draws. It asks nothing of `reference.ts`.
+    const drawn = fc.sample(anyStackedText, propertyRuns)
+
+    const reaching = drawn.filter((text) => {
+      const points = [...text]
+
+      return points.some(
+        (point, at) =>
+          at >= 2 &&
+          absorbs(points[at - 2] ?? '', point) &&
+          !absorbs(points[at - 1] ?? '', point),
+      )
+    })
+
+    expect(reaching.length).toBeGreaterThan(propertyRuns / 20)
   })
 
   it('draws texts that reach every region the properties police', () => {

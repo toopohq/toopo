@@ -55,6 +55,31 @@ const underAnAsciiAlphabet = (text: string): string =>
     [...slugify(text)].map((point) => (/[a-z0-9-]/.test(point) ? point : ' ')).join(''),
   )
 
+/**
+ * The rows where this contract and an ASCII-only alphabet part company, named rather than inlined
+ * so that the mutation battery can blind this guard in one edit. Without that, a lens claiming to
+ * read the suite blind to block 4.4 would leave the one guard here that compares an answer against
+ * the table's own expectations - measured, it caught fourteen mutants on a column that was supposed
+ * to be blind to all of them.
+ */
+const DIVERGING_UNDER_AN_ASCII_ALPHABET = [
+  'a-non-latin-script-is-kept',
+  'cyrillic-is-kept',
+  'arabic-is-kept',
+  'an-indic-mark-is-kept',
+  'a-non-latin-digit-is-a-digit',
+  'an-astral-letter-is-kept',
+  'a-letter-with-no-decomposition-is-kept',
+  'a-ligature-letter-is-kept',
+  'a-stroked-letter-is-kept',
+  'a-mark-reaching-its-base-across-another',
+  'a-mark-with-no-base-to-absorb-it-is-kept',
+  'a-greek-tonos-is-removed',
+  'a-final-sigma-is-not-unified',
+  'a-written-final-sigma-is-kept',
+  'the-turkish-dotless-i-is-kept',
+] as const
+
 describe('string/slugify@1 edge case table', () => {
   it('addresses each case with a unique identifier', () => {
     expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
@@ -73,31 +98,15 @@ describe('string/slugify@1 edge case table', () => {
   it('names exactly the cases that an ASCII-only alphabet answers differently', () => {
     // The decision this contract is most likely to be argued with is that the output alphabet is
     // Unicode rather than `[a-z0-9-]`, and block 4.1 puts it in front for that reason. This guard
-    // is that decision replayed rather than asserted: the rows below are where the two alphabets
-    // part company, and five of them are where an ASCII-only answer is the empty slug - a whole
-    // writing system reduced to one identifier. A table that lost them would settle nothing an
-    // ASCII slugifier does not already settle, and it would go on passing.
+    // is that decision replayed rather than asserted: the rows named below are where the two
+    // alphabets part company, and six of them are where an ASCII-only answer is the empty slug - a
+    // whole writing system reduced to one identifier. A table that lost them would settle nothing
+    // an ASCII slugifier does not already settle, and it would go on passing.
     const differing = edgeCases
       .filter(({ text, expected }) => underAnAsciiAlphabet(text) !== expected)
       .map(({ id }) => id)
 
-    expect(differing).toEqual([
-      'a-non-latin-script-is-kept',
-      'cyrillic-is-kept',
-      'arabic-is-kept',
-      'an-indic-mark-is-kept',
-      'a-non-latin-digit-is-a-digit',
-      'an-astral-letter-is-kept',
-      'a-letter-with-no-decomposition-is-kept',
-      'a-ligature-letter-is-kept',
-      'a-stroked-letter-is-kept',
-      'a-mark-reaching-its-base-across-another',
-      'a-mark-with-no-base-to-absorb-it-is-kept',
-      'a-greek-tonos-is-removed',
-      'a-final-sigma-is-not-unified',
-      'a-written-final-sigma-is-kept',
-      'the-turkish-dotless-i-is-kept',
-    ])
+    expect(differing).toEqual([...DIVERGING_UNDER_AN_ASCII_ALPHABET])
   })
 
   it('names exactly the texts of this table that share one slug', () => {
