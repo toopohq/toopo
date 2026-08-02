@@ -96,9 +96,9 @@ const report = (battery: Battery, results: readonly RunResult[]): number => {
 
 const module: { battery: Battery } = (await import(`./${name}.battery.ts`)) as { battery: Battery }
 
-calibrate(module.battery)
+const calibration = calibrate(module.battery)
 
-const results = runBattery(module.battery, valueOf('--only'), valueOf('--arm'))
+const results = runBattery(module.battery, calibration, valueOf('--only'), valueOf('--arm'))
 writeResults(name, results)
 
 process.exitCode = report(module.battery, results)

@@ -21,10 +21,18 @@
  * produce, and a run that disagrees with its expectation is a failure of the battery, not a new
  * result to write down.
  *
+ * Two failures of the apparatus are dangerous in the same way - both produce a cell that reads
+ * exactly like a result - and each has a guard.
+ *
  * Every edit must match exactly once. A mutant whose text no longer matches the reference would
- * otherwise be applied as a no-op and counted as a survivor, which is the single most dangerous
- * failure mode this instrument has: it would report the contract as blind to a defect that was
- * never injected.
+ * otherwise be applied as a no-op and counted as a survivor: the contract reported blind to a defect
+ * that was never injected.
+ *
+ * Every run must collect the whole suite. A run that reports fewer tests than the unmutated arm did
+ * has measured something other than this contract, and it reddens, so it would be counted as a kill.
+ * That is not hypothetical: measured on vitest 4.1.10, naming the json reporter alone under
+ * `--typecheck` makes six of the eight test files fail to collect, and the battery that came before
+ * this guard would have called every mutant killed.
  *
  * This folder is not a contract, not an implementation and not a registry test. It is the evidence
  * produced by running them, which is the one thing besides those three that belongs here.
@@ -120,6 +128,17 @@ export type RunResult = {
   readonly agrees: boolean
 }
 
+/**
+ * What calibration establishes and every later run of the battery is measured against.
+ *
+ * The count is per cell rather than per battery because an arm is a git ref: two arms of the same
+ * contract may legitimately name a different number of cases, and a figure shared between them
+ * would either be wrong for one or too loose for both.
+ */
+export type Calibration = {
+  readonly testsPerCell: Readonly<Record<string, number>>
+}
+
 const HERE = dirname(fileURLToPath(import.meta.url))
 const REPO = join(HERE, '..')
 const REPORT = join(HERE, '.vitest-report.json')
@@ -168,51 +187,72 @@ const applyEdits = (contractPath: string, edits: readonly Edit[], label: string)
   }
 }
 
+type Assertion = { readonly status: string; readonly title: string }
+
 type VitestReport = {
-  readonly testResults?: readonly {
-    readonly assertionResults?: readonly { readonly status: string; readonly title: string }[]
-  }[]
+  readonly testResults?: readonly { readonly assertionResults?: readonly Assertion[] }[]
 }
 
-const failedTestNames = (): readonly string[] => {
+type SuiteRun = {
+  readonly green: boolean
+  readonly failedTests: readonly string[]
+  /**
+   * Tests the run reported, or `null` when it died before writing a report at all - a type error or
+   * an import failure. That is still a kill; it simply has no per-test detail to attribute it to.
+   */
+  readonly testsSeen: number | null
+}
+
+const assertionsOf = (): readonly Assertion[] | null => {
   let report: VitestReport
 
   try {
     report = JSON.parse(readFileSync(REPORT, 'utf8')) as VitestReport
   } catch {
-    // A run that dies before writing a report - a type error, an import failure - is still a kill;
-    // it simply has no per-test detail to attribute it to.
-    return []
+    return null
   }
 
-  return (report.testResults ?? []).flatMap((file) =>
-    (file.assertionResults ?? []).filter((t) => t.status === 'failed').map((t) => t.title),
-  )
+  return (report.testResults ?? []).flatMap((file) => file.assertionResults ?? [])
 }
 
-const runSuite = (
-  timeZone: string,
-): { readonly green: boolean; readonly failedTests: readonly string[] } => {
+const runSuite = (timeZone: string): SuiteRun => {
   rmSync(REPORT, { force: true })
 
+  let green: boolean
   try {
     // The vitest entry point is invoked directly rather than through npx, so that no shell parses
     // this command line and the report path cannot be reinterpreted by one.
+    //
+    // `--reporter=default` is not decoration and must not be dropped. Measured on vitest 4.1.10:
+    // with the json reporter as the only reporter, `--typecheck` makes all six runtime test files
+    // fail to collect with "Cannot read properties of undefined (reading 'config')", and the run
+    // reports 9 tests instead of 215. Naming the default reporter as well collects all 215. A
+    // truncated run reddens, so under the old command line every cell of every battery read as a
+    // kill - which is why the count below is now checked rather than trusted.
     execFileSync(
       process.execPath,
       [
         join(REPO, 'node_modules', 'vitest', 'vitest.mjs'),
         'run',
         '--typecheck',
+        '--reporter=default',
         '--reporter=json',
-        `--outputFile=${REPORT}`,
+        `--outputFile.json=${REPORT}`,
       ],
       { cwd: REPO, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, TZ: timeZone } },
     )
-
-    return { green: true, failedTests: [] }
+    green = true
   } catch {
-    return { green: false, failedTests: failedTestNames() }
+    green = false
+  }
+
+  const assertions = assertionsOf()
+  if (assertions === null) return { green, failedTests: [], testsSeen: null }
+
+  return {
+    green,
+    failedTests: assertions.filter((t) => t.status === 'failed').map((t) => t.title),
+    testsSeen: assertions.length,
   }
 }
 
@@ -247,12 +287,30 @@ const expectationFor = (mutant: Mutant, arm: Arm, lens: Lens): Expectation => {
   return pinned
 }
 
+/**
+ * A run that wrote a report but collected fewer tests than the unmutated arm did has not measured
+ * this contract, and its red is not a verdict. This is the same failure as an edit that does not
+ * apply, arriving from the other side: there, nothing was injected and the cell read as a survivor;
+ * here, most of the suite never ran and the cell reads as a kill. Both have to be louder than a
+ * result, because neither looks any different from one.
+ */
+const assertWholeSuiteRan = (label: string, run: SuiteRun, expectedTests: number): void => {
+  if (run.testsSeen === null || run.testsSeen === expectedTests) return
+
+  throw new Error(
+    `${label}: the suite reported ${run.testsSeen} tests where the unmutated arm reported ` +
+      `${expectedTests}. Part of the suite did not run, so this cell measured something other than ` +
+      `the contract and its verdict would be indistinguishable from a real one.`,
+  )
+}
+
 /** Materialise one cell - arm, lens, mutant - and read the suite's verdict on it. */
 const measureCell = (
   battery: Battery,
   arm: Arm,
   lens: Lens,
   mutant: Mutant,
+  expectedTests: number,
 ): { readonly verdict: Verdict; readonly failedTests: readonly string[] } => {
   const edits = mutant.arms[arm.id]
   if (edits === undefined) return { verdict: 'not-applicable', failedTests: [] }
@@ -262,9 +320,10 @@ const measureCell = (
   applyEdits(battery.contractPath, lens.edits, `lens ${lens.id}`)
   applyEdits(battery.contractPath, edits, `mutant ${mutant.id} on arm ${arm.id}`)
 
-  const { green, failedTests } = runSuite(battery.timeZone)
+  const run = runSuite(battery.timeZone)
+  assertWholeSuiteRan(`${mutant.id} on ${cellKey(arm, lens)}`, run, expectedTests)
 
-  return { verdict: verdictOf(green, failedTests), failedTests }
+  return { verdict: verdictOf(run.green, run.failedTests), failedTests: run.failedTests }
 }
 
 const cellsOf = (battery: Battery): readonly { arm: Arm; lens: Lens }[] =>
@@ -277,13 +336,15 @@ const cellsOf = (battery: Battery): readonly { arm: Arm; lens: Lens }[] =>
  * before any verdict below is worth reading. A lens that reddened the suite on its own would report
  * every mutant as killed, and an apparatus stuck green would report every mutant as survived.
  */
-export const calibrate = (battery: Battery): void => {
+export const calibrate = (battery: Battery): Calibration => {
   assertCleanTree()
 
   const obvious = battery.mutants.find((m) => m.id === battery.calibrationMutant)
   if (obvious === undefined) {
     throw new Error(`${battery.name}: calibration mutant ${battery.calibrationMutant} is not here`)
   }
+
+  const testsPerCell: Record<string, number> = {}
 
   try {
     for (const { arm, lens } of cellsOf(battery)) {
@@ -293,7 +354,8 @@ export const calibrate = (battery: Battery): void => {
 
       const control = runSuite(battery.timeZone)
       process.stdout.write(
-        `calibration ${cellKey(arm, lens).padEnd(20)} control ${control.green ? 'green' : 'RED'}\n`,
+        `calibration ${cellKey(arm, lens).padEnd(20)} control ${control.green ? 'green' : 'RED'} ` +
+          `(${control.testsSeen ?? 'no'} tests)\n`,
       )
       if (!control.green) {
         throw new Error(
@@ -301,8 +363,17 @@ export const calibrate = (battery: Battery): void => {
             `noise:\n  ${control.failedTests.join('\n  ')}`,
         )
       }
+      // A green control that ran nothing is the third way this apparatus can be stuck, beside stuck
+      // red and stuck green: it would agree with every expectation of `survived` for free.
+      if (control.testsSeen === null || control.testsSeen === 0) {
+        throw new Error(
+          `the unmutated ${cellKey(arm, lens)} is green but reported no test at all, so this ` +
+            `battery would be measuring an empty suite`,
+        )
+      }
+      testsPerCell[cellKey(arm, lens)] = control.testsSeen
 
-      const injected = measureCell(battery, arm, lens, obvious)
+      const injected = measureCell(battery, arm, lens, obvious, control.testsSeen)
       process.stdout.write(
         `calibration ${cellKey(arm, lens).padEnd(20)} ${obvious.id} ${injected.verdict}\n`,
       )
@@ -317,10 +388,13 @@ export const calibrate = (battery: Battery): void => {
     restore(battery.contractPath)
     rmSync(REPORT, { force: true })
   }
+
+  return { testsPerCell }
 }
 
 export const runBattery = (
   battery: Battery,
+  calibration: Calibration,
   only?: readonly string[],
   onlyArms?: readonly string[],
 ): readonly RunResult[] => {
@@ -334,9 +408,14 @@ export const runBattery = (
 
   try {
     for (const { arm, lens } of cells) {
+      const expectedTests = calibration.testsPerCell[cellKey(arm, lens)]
+      if (expectedTests === undefined) {
+        throw new Error(`${cellKey(arm, lens)} was never calibrated, so it has nothing to trust`)
+      }
+
       for (const mutant of selected) {
         const expected = expectationFor(mutant, arm, lens)
-        const { verdict, failedTests } = measureCell(battery, arm, lens, mutant)
+        const { verdict, failedTests } = measureCell(battery, arm, lens, mutant, expectedTests)
         const agrees = agreesWith(expected, verdict, failedTests)
 
         results.push({
