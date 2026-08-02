@@ -19,11 +19,14 @@ contract format emerges from repetition rather than being designed up front. The
 this project lies in the contract format, not in the API or the CLI — which is why neither exists
 yet.
 
-- Contracts written so far: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`.
-  The third is a format prototype that will not be published, because ES2024 shipped `Map.groupBy` and
-  it answers what the contract specifies. The project specification records that refusal and the rule
-  it establishes. The fourth is the first whose properties are strong by nature — the axioms of a
-  metric — and its table is a third the size of the first's as a result.
+- The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
+  `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
+  shipped `Map.groupBy` and it answers what the contract specifies. The project specification records
+  that refusal and the rule it establishes. The fourth is the first whose properties are strong by
+  nature — the axioms of a metric — and its table is a third the size of the first's as a result. The
+  fifth is the first with no oracle of any kind: measured over fifty-seven samples, the four most used
+  slug libraries agree on seven, so nothing about its answers is true and every one of them has to be
+  argued for.
 - Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
 
 ## Error convention — settled, catalogue-wide
@@ -79,6 +82,46 @@ The reason that outlives the instrument is the registry's: an API response citin
 anchor on a contract's page, a validation report naming the case a submission failed — each needs an
 address, and an address that changes breaks links. Renaming one therefore costs `name@2`, exactly as
 reshaping a reason set does.
+
+## What a property settles — settled, catalogue-wide
+
+A property that pins an exact answer on a generated family settles **exactly the decisions its
+alphabet represents, and no others**. So for every decision a contract publishes about what its
+answer should *be* — rather than about the shape of that answer — a reviewer can check that one of
+two things is true: a representative of the decision is in the arbitrary, or a named case of block
+4.4 settles it. The battery has to carry a mutant that says which, because the two look identical
+from the outside.
+
+Measured on `string/slugify@1`, whose battery reads the whole of block 4.4 blind on a second lens.
+Twenty-one of its twenty-two behaviour defects still die on that column: shape properties turn out to
+carry far more of the content than the table was written expecting. The twenty-second transliterates
+Cyrillic, and it answers a well-formed, lower-case, idempotent slug that retains a subsequence — so
+every property is satisfied, every benchmark profile keeps its class, and one guard in the whole
+suite kills it: a named case. The control is a mutant folding the sharp s, the same kind of curation
+decision from the same table the ecosystem writes, which dies on both columns — because the arbitrary
+that draws well-formed slugs carries a sharp s and carries no Cyrillic.
+
+What this forbids is the reading that a property is strong and a case is bookkeeping. A property is
+as wide as its alphabet. Widening that alphabet is how a decision becomes property-checkable, and it
+is a deliberate act with a cost — every symbol added is a decision the contract can no longer change
+without the property going red, which is exactly what freezing means.
+
+## Replaying a divergence — settled, catalogue-wide
+
+A contract that answers differently from what the ecosystem or the language answers carries a guard
+that **replays** the divergence on the rows where it happens, rather than asserting it in prose. The
+guard names the exact set of cases that diverge, so a specification drifting back towards the common
+answer takes the measurement refusing that answer with it, and the drift is red instead of silent.
+
+Three contracts carry one, in three shapes: `array/group-by@1` in a file of its own against
+`Object.groupBy`, `string/levenshtein@1` by recoding its table into UTF-16 code units,
+`string/slugify@1` by narrowing its alphabet to ASCII. The shapes differ because what is being
+diverged from differs; what is identical is that the divergence is measured on the contract's own
+table rather than described.
+
+`number/parse@1` and `date/add@1` both diverge — from `Number` and from every library's fractional
+month — and neither carries such a guard. That is recorded here as a debt against this rule rather
+than as an exception to it.
 
 ## Rules for this stage
 
