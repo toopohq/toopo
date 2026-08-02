@@ -28,7 +28,7 @@ import { killed, mutantsOn, probe, reference } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['reason-blind'] }
 
-const { behavioural, onlySeenUnblinded } = mutantsOn(UNDER)
+const { sameOnEveryLens, onlySeenUnblinded } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites, quoted from `reference.ts`
@@ -134,7 +134,7 @@ const INVALID_DATE_NEUTRAL_REASON = 'not a date + {} -> invalid-date'
 // ---------------------------------------------------------------------------
 
 const behaviour: readonly Mutant[] = [
-  behavioural(
+  sameOnEveryLens(
     'D-01',
     'null-always: refuses every call, the implementation that is free to be safe',
     [
@@ -145,13 +145,13 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NEUTRAL_DURATION, MILLISECOND_SHIFT]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-02',
     "mutates-the-input: shifts the caller's own Date and hands it back",
     [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = date`)],
     killed(['never mutates its arguments']),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-03',
     'elapsed-before-calendar: applies the two steps in the order the contract forbids',
     [
@@ -163,13 +163,13 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([ORDER_HOURS, ORDER_DAYS, MIXED_SIGN]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-04',
     'overflows-instead-of-clamping: 31 January plus a month lands in March, as setUTCMonth does',
     [reference(CLAMP, `  const clampedDay = shifted.getUTCDate()`)],
     killed([CLAMP_FEBRUARY, CLAMP_JUNE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-05',
     'local-time-methods: reads and writes the calendar of the process time zone',
     [
@@ -188,7 +188,7 @@ const behaviour: readonly Mutant[] = [
     // left. Naming it here means a rewrite that quietly stops varying the zone reddens the battery.
     killed([ZONE_PROPERTY]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-06',
     'months-then-years: applies the two calendar fields one after the other, clamping twice',
     [
@@ -202,7 +202,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([THIRTEEN_MONTHS]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-07',
     'date-utc-two-digit-year: looks up a month length through Date.UTC, which maps years 0-99 onto ' +
       '1900-1999. Y and 1900 + Y are congruent modulo four, so they agree on February everywhere ' +
@@ -216,19 +216,19 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([YEAR_ZERO_CASE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-08',
     'isinteger-not-issafeinteger: accepts a field past 2^53, where the arithmetic stops being exact',
     [reference(WHOLE_NUMBER, `  value === undefined || Number.isInteger(value)`)],
     killed([CANCELLING_TOTAL_CASE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-09',
     'accepts-unknown-fields: applies the part of the duration it understood and ignores the rest',
     [reference(UNKNOWN_FIELD, '')],
     killed([UNKNOWN_FIELD_VALUE, UNKNOWN_FIELD_REASON]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-10',
     'no-final-range-check: hands back an Invalid Date rather than refusing. The one stray value ' +
       'this contract can produce without a cast, and the real defect P1 exists to catch',
@@ -244,13 +244,13 @@ const behaviour: readonly Mutant[] = [
     [INVALID_DATE_REASON, INVALID_DATE_NEUTRAL_REASON],
   ),
 
-  behavioural(
+  sameOnEveryLens(
     'D-12',
     'weeks-are-five-days',
     [reference(WEEK, `const MILLISECONDS_PER_WEEK = 432_000_000`)],
     killed([WEEK_AND_DAY, WEEK_ACROSS_MONTHS]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-13',
     'naive-leap-rule: year % 4 with no century rule, so 2100 gets a 29 February',
     [
@@ -267,7 +267,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([CENTURY_RULE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-14',
     "identity-on-empty-duration: returns the caller's own object for the neutral duration",
     [
@@ -278,7 +278,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NEUTRAL_DURATION]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-15',
     'clamps-up-not-down: Math.max where the contract clamps with Math.min',
     [
@@ -289,7 +289,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([DAY_NEVER_GROWS, CLAMP_FEBRUARY]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-16',
     'last-day-off-by-one: asks for day 1 of the next month rather than day 0',
     [
@@ -300,7 +300,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([CLAMP_FEBRUARY, CLAMP_JUNE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-17',
     'drops-milliseconds: the smallest field is summed as zero',
     [reference(MILLISECONDS_FIELD, `  0`)],
@@ -310,7 +310,7 @@ const behaviour: readonly Mutant[] = [
   // D-18 to D-21 exist because four properties of this contract were declared applicable and had
   // never been seen red on anything but a defect that reddens everything. A property whose only
   // witness is "refuses every call" has been shown to be a test, not to be this test.
-  behavioural(
+  sameOnEveryLens(
     'D-18',
     'mutates-the-input-and-copies: shifts the caller\'s own Date, then returns a fresh one holding ' +
       'the same instant. D-02 hands the mutated object back, which makes the second of two ' +
@@ -320,7 +320,7 @@ const behaviour: readonly Mutant[] = [
     [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = new Date(date.getTime())`)],
     killed([DETERMINISTIC]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-19',
     'shared-month-probe: the Date used to look up the length of a month is hoisted to module scope ' +
       'and only its month and day are set, so the year it was left at by the previous call decides ' +
@@ -342,14 +342,14 @@ const lastDayOfMonth = (year: number, monthIndex: number): number => {
     ],
     killed([CALL_HISTORY]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-20',
     'midnight-normalising: the calendar step zeroes the UTC time of day, the mistake of an ' +
       'implementation that assumes a date is a day',
     [reference(MONTH_SHIFT, `${MONTH_SHIFT}\n  shifted.setUTCHours(0, 0, 0, 0)`)],
     killed([TIME_OF_DAY]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-21',
     'remainder-not-modulo: hours are normalised into days with Math.floor and %, which disagree on ' +
       'negatives - measured, Math.floor(-25 / 24) is -2 while -25 % 24 is -1, so minus twenty-five ' +
@@ -377,7 +377,7 @@ const lastDayOfMonth = (year: number, monthIndex: number): number => {
     ],
     killed([CANCELS]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'D-22',
     'remembers the last analysis and hands it back whenever the next duration carries the same ' +
       'number of fields - the memoise-last idiom with a cheap fingerprint for a key. It exists to ' +

@@ -32,7 +32,7 @@ import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['reason-blind'] }
 
-const { behavioural, onlySeenUnblinded } = mutantsOn(UNDER)
+const { sameOnEveryLens, onlySeenUnblinded } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites, quoted from `reference.ts`
@@ -131,7 +131,7 @@ const mapCache = (): readonly Edit[] => [
 // ---------------------------------------------------------------------------
 
 const behaviour: readonly Mutant[] = [
-  behavioural(
+  sameOnEveryLens(
     'P-01',
     'normalises negative zero to zero',
     [
@@ -144,13 +144,13 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NEGATIVE_ZERO, NEGATIVE_UNDERFLOW]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-02',
     'memoises into a bare object, consulted after the grammar guard',
     bareCache('trimmed'),
     survived,
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-03',
     'returns NaN instead of reporting failure',
     [
@@ -162,20 +162,20 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NO_STRAY_VALUE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-04',
     'drops the finiteness guard, so overflow escapes as Infinity',
     [reference(FINAL, `  return { ok: true, value }`)],
     killed([OVERFLOW_VALUE, OVERFLOW_REASON, NO_STRAY_VALUE]),
   ),
-  behavioural('P-05', 'omits the trim', [reference(TRIM, `  const trimmed = input`)], killed([WHITESPACE_INSENSITIVE, PADDED_PROFILE])),
-  behavioural(
+  sameOnEveryLens('P-05', 'omits the trim', [reference(TRIM, `  const trimmed = input`)], killed([WHITESPACE_INSENSITIVE, PADDED_PROFILE])),
+  sameOnEveryLens(
     'P-06',
     'uses parseFloat instead of Number',
     [reference(CONVERT, `  const value = parseFloat(trimmed)`)],
     survived,
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-07',
     'guards with !Number.isNaN instead of Number.isFinite, so Infinity passes',
     [
@@ -186,50 +186,50 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([OVERFLOW_VALUE, OVERFLOW_REASON, NO_STRAY_VALUE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-08',
     'adds the global flag to the grammar, which then carries a lastIndex between calls',
     [reference(`?$/`, `?$/g`)],
     killed([DETERMINISTIC, CALL_HISTORY]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-09',
     'accepts "1_000" by stripping underscores first',
     [reference(TRIM, `  const trimmed = input.trim().replace(/_/g, '')`)],
     killed([UNDERSCORE_VALUE, UNDERSCORE_REASON]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-10',
     'strips every whitespace character rather than only the surrounding ones',
     [reference(TRIM, `  const trimmed = input.replace(/\\s/g, '')`)],
     killed([INNER_SPACE_VALUE, INNER_SPACE_REASON]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-11',
     'requires an integer part, rejecting ".5"',
     [reference(`(?:\\d+(?:\\.\\d*)?|\\.\\d+)`, `(?:\\d+(?:\\.\\d*)?)`)],
     killed([BARE_FRACTION, BARE_FRACTION_PARSES, DECIMALS_PROFILE]),
   ),
-  behavioural('P-12', 'leaves the grammar unanchored on the right', [reference(`?$/`, `?/`)], killed([HEX_VALUE, HEX_REASON])),
-  behavioural(
+  sameOnEveryLens('P-12', 'leaves the grammar unanchored on the right', [reference(`?$/`, `?/`)], killed([HEX_VALUE, HEX_REASON])),
+  sameOnEveryLens(
     'P-13',
     'rounds to fifteen significant digits',
     [reference(CONVERT, `  const value = Number(Number(trimmed).toPrecision(15))`)],
     killed([NEGATIVE_ZERO, NEGATIVE_UNDERFLOW, LOST_DIGIT, ROUND_TRIPS]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-14',
     'uses the global isFinite instead of Number.isFinite',
     [reference(`Number.isFinite(value)`, `isFinite(value)`)],
     survived,
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-15',
     'trims only the start',
     [reference(TRIM, `  const trimmed = input.trimStart()`)],
     killed([WHITESPACE_INSENSITIVE, PADDED_PROFILE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-16',
     'writes a call counter onto globalThis',
     [
@@ -256,25 +256,25 @@ const behaviour: readonly Mutant[] = [
     [INHERITED_NAME_REASON],
   ),
 
-  behavioural(
+  sameOnEveryLens(
     'P-18',
     'reports failure for every input',
     [reference(REJECT, `  if (trimmed.length >= 0) return { ok: false, reason: 'not-decimal' }\n${REJECT}`)],
     killed([ROUND_TRIPS]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-19',
     'memoises into a Map, consulted first - the same cache without the inherited keys',
     mapCache(),
     survived,
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-20',
     'writes the trim by hand as /^\\s+|\\s+$/g',
     [reference(TRIM, `  const trimmed = input.replace(/^\\s+|\\s+$/g, '')`)],
     survived,
   ),
-  behavioural(
+  sameOnEveryLens(
     'P-21',
     'remembers the last analysis and hands it back whenever the next input has the same length - the ' +
       'memoise-last idiom with a cheap proxy for identity. It exists to separate two properties this ' +

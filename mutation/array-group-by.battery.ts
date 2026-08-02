@@ -3,9 +3,14 @@
  *
  * M-01 to M-20 are defects of behaviour and carry the mutation score. S-1 to S-7 are defects of the
  * *signature*: they answer every call correctly and are wrong only about the type they declare, which
- * is the question this contract was written third to answer. F-1 and F-2 are probes rather than
+ * is the question this contract was written third to answer. F-5 and F-6 are probes rather than
  * defects - they ask whether a property's generators reach the region it claims to guard - so they
  * are kept out of the score.
+ *
+ * They were written as F-1 and F-2, which `date/add@1` already used for two different probes. A
+ * mutant has one name in the whole project - the rule the `D-` prefix was introduced for - and the
+ * `F-` family is where it is kept globally rather than per contract: `date/add@1` holds F-1 and F-2,
+ * `number/parse@1` took F-3 and F-4 for that reason, and this contract now holds F-5 and F-6.
  *
  * There is one arm. The other two contracts carry a second because the error convention was under
  * measurement there; this contract is total, publishes no reason, and has no convention to compare.
@@ -27,7 +32,7 @@ import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['identity-blind'] }
 
-const { behavioural } = mutantsOn(UNDER)
+const { sameOnEveryLens } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites, quoted from `reference.ts`
@@ -128,7 +133,7 @@ const EMPTY_ARRAY = 'the empty array'
 // ---------------------------------------------------------------------------
 
 const behaviour: readonly Mutant[] = [
-  behavioural(
+  sameOnEveryLens(
     'M-01',
     'accumulates into a bare object keyed by String(key), then builds the Map from it - the whole ' +
       'alternative return type, injected as a defect. It is wrong in three independent ways at ' +
@@ -148,7 +153,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([INTEGER_LIKE_ORDER, PROTO_KEY]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-02',
     'hands back the input array as the group when there is only one - the fast path nobody writes ' +
       'on purpose and everybody writes eventually. It mutates nothing, so the non-mutation property ' +
@@ -165,27 +170,27 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NO_SHARING]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-03',
     'sorts the input in place before walking it, the shape of an implementation that means to group ' +
       'contiguous runs',
     [reference(DECLARE, `  (items as T[]).sort()\n\n${DECLARE}`)],
     killed([NO_MUTATION]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-04',
     'answers an empty Map for every input - the obvious defect the calibration needs, and the one ' +
       'that separates a contract with a liveness property from a contract without one',
     [reference(RETURN, `  return new Map<K, T[]>()`)],
     killed([PARTITION]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-05',
     'drops the last element',
     [reference(LOOP, `  for (const item of items.slice(0, -1)) {`)],
     killed([PARTITION]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-06',
     'prepends rather than appends, so a group comes back in reverse input order',
     [
@@ -196,7 +201,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([COHERENCE]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-07',
     'sorts the groups by key on the way out, which is what a caller who wanted a stable order would ' +
       'reach for and is not the order this contract publishes',
@@ -208,7 +213,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([GROUP_ORDER]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-08',
     'finds the group by scanning the entries with ===, so a NaN key never matches an existing one ' +
       'and the group it had is overwritten',
@@ -222,7 +227,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NAN_KEYS]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-09',
     'asks the key function twice for a key it has not seen - once to look the group up, once to ' +
       'create it. Every other guard in this contract draws a pure key function, so all of them agree ' +
@@ -237,13 +242,13 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([CALL_PROTOCOL, SECOND_LOOK]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-10',
     'passes a one-based index to the key function',
     [reference(KEY_CALL, `    const key = keyOf(item, index + 1)`)],
     killed([CALL_PROTOCOL]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-11',
     'reads the input by counting over `length` and skipping holes - the fastest correct-looking ' +
       'loop, and what lodash does. Every property here draws dense arrays, so none of them can see ' +
@@ -262,7 +267,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([SPARSE, A_SET]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-12',
     'accumulates every element into one array shared by every group',
     [
@@ -271,7 +276,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NO_SHARING]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-13',
     'writes the key onto each element it groups, the shape of an implementation that means to make ' +
       'the grouping inspectable later',
@@ -283,7 +288,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([NO_MUTATION]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-14',
     'memoises the answer in a WeakMap keyed by the input array, ignoring which key function it was ' +
       'given. It was written expecting a survivor - the same shape survives the whole battery of ' +
@@ -312,7 +317,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([A_STRING, REACHES_EVERY_REGION]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-15',
     'memoises the answer keyed by the length of the input - a cache on a cheap proxy for its key, ' +
       'so two different arrays of the same size collide',
@@ -333,7 +338,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([PARTITION, GROUP_ORDER]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-16',
     'hoists the Map to module scope and never clears it, so every call accumulates on top of the ' +
       'calls before it. It was written for the determinism and ambient-input properties and neither ' +
@@ -350,7 +355,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([PARTITION, COHERENCE, GROUP_ORDER]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-17',
     'walks the array backwards, the reverse loop written for speed',
     [
@@ -367,7 +372,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([CALL_PROTOCOL]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-18',
     'rebuilds the group array on every insertion instead of pushing into it. The answer is right on ' +
       'every input and the cost is quadratic in the size of a group - measured, 5392 ms against ' +
@@ -386,7 +391,7 @@ const behaviour: readonly Mutant[] = [
     ],
     survived,
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-19',
     'serialises a key that is an object, so two distinct objects that print alike become one group',
     [
@@ -401,7 +406,7 @@ const behaviour: readonly Mutant[] = [
     ],
     killed([DISTINCT_OBJECT_KEYS, SAME_OBJECT_KEY, COHERENCE, GROUP_ORDER]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-20',
     'recycles one module-scope Map, cleared at the start of every call and handed to every caller. ' +
       'Pinned as a survivor on purpose: the contract requires each *group* to be a fresh array and ' +
@@ -417,7 +422,7 @@ const behaviour: readonly Mutant[] = [
     ],
     survived,
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-21',
     'reverses the input in place before grouping it. It exists because of what M-16 measured: ' +
       'without it, the only mutant in this battery that reddens the determinism and ambient-input ' +
@@ -429,7 +434,7 @@ const behaviour: readonly Mutant[] = [
     [reference(DECLARE, `  (items as T[]).reverse()\n\n${DECLARE}`)],
     killed([DETERMINISTIC, NO_AMBIENT_INPUT, NO_MUTATION]),
   ),
-  behavioural(
+  sameOnEveryLens(
     'M-22',
     'remembers the last answer and hands it back whenever the next input has the same length - the ' +
       'memoise-last idiom with a cheap proxy for identity. It exists to separate two properties this ' +
@@ -567,7 +572,7 @@ const signatures: readonly Mutant[] = [
 const probes: readonly Mutant[] = [
   probe(
     UNDER,
-    'F-1',
+    'F-5',
     'returns the groups in the order an object would have enumerated them - keys that look like ' +
       'array indices first, in ascending numeric order, then the rest in insertion order - and ' +
       'changes nothing else. It asks the question the return type was chosen on: if the group-order ' +
@@ -589,7 +594,7 @@ const probes: readonly Mutant[] = [
   ),
   probe(
     UNDER,
-    'F-2',
+    'F-6',
     'answers a single empty group for the empty input and is correct everywhere else. It asks ' +
       'whether the arbitraries reach the empty array at all under the declared number of runs, the ' +
       'question that found the starved support of P1 on `date/add@1`. The partition property cannot ' +

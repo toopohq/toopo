@@ -80,8 +80,15 @@ const expectedPerCell = (
   )
 
 export type MutantForms = {
-  /** A defect no lens of this arm is blind to: every cell sees it, and sees it alike. */
-  readonly behavioural: (
+  /**
+   * A defect no lens of this arm is blind to: every cell sees it, and sees it alike.
+   *
+   * Named for the axis it is on rather than for the defects that happen to use it. Most of them are
+   * defects of behaviour, and the seven signature defects of `number/parse@1` and `date/add@1` are
+   * not - a lens that blinds the suite to which reason a refusal names cannot blind it to the
+   * declared type, so they belong here too.
+   */
+  readonly sameOnEveryLens: (
     id: string,
     description: string,
     edits: readonly Edit[],
@@ -101,7 +108,7 @@ export type MutantForms = {
 }
 
 export const mutantsOn = (under: ArmUnderTest): MutantForms => ({
-  behavioural: (id, description, edits, expected) => ({
+  sameOnEveryLens: (id, description, edits, expected) => ({
     id,
     kind: 'defect',
     description,
