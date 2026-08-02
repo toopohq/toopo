@@ -1,0 +1,750 @@
+[
+  {
+    "mutant": "P-01",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-0\" -> -0",
+      "\"-1e-400\" -> -0"
+    ]
+  },
+  {
+    "mutant": "P-02",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-03",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> null",
+      "\"- 1\" -> null",
+      "\"--1\" -> null",
+      "\".\" -> null",
+      "\"1.2.3\" -> null",
+      "\"1e\" -> null",
+      "\"\" -> null",
+      "\"   \" -> null",
+      "\"NaN\" -> null",
+      "\"Infinity\" -> null",
+      "\"-Infinity\" -> null",
+      "\"0x1F\" -> null",
+      "\"0o17\" -> null",
+      "\"0b11\" -> null",
+      "\"1_000\" -> null",
+      "\"1,5\" -> null",
+      "\"1,000\" -> null",
+      "\"abc\" -> null",
+      "\"12n\" -> null",
+      "\"\\u0661\\u0662\\u0663\" -> null",
+      "\"constructor\" -> null",
+      "\"1e400\" -> null",
+      "rejected-inputs - every sample is rejected",
+      "P1 - returns null or a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-04",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> null",
+      "P1 - returns null or a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-05",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"\\ufeff9\" -> 9",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace"
+    ]
+  },
+  {
+    "mutant": "P-06",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-07",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> null",
+      "P1 - returns null or a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-08",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-3.5\" -> -3.5",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"01\" -> 1",
+      "\"5.\" -> 5",
+      "\"1E+3\" -> 1000",
+      "\"1e-400\" -> 0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "small-integers - every sample is accepted",
+      "decimals-and-exponents - every sample is accepted",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero",
+      "is deterministic - the same input yields the same output on every call",
+      "has no ambient input - an answer does not depend on the inputs parsed before it"
+    ]
+  },
+  {
+    "mutant": "P-09",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1_000\" -> null"
+    ]
+  },
+  {
+    "mutant": "P-10",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> null",
+      "\"- 1\" -> null"
+    ]
+  },
+  {
+    "mutant": "P-11",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\".5\" -> 0.5",
+      "decimals-and-exponents - every sample is accepted"
+    ]
+  },
+  {
+    "mutant": "P-12",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"0x1F\" -> null",
+      "\"0o17\" -> null",
+      "\"0b11\" -> null",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "P-13",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-0\" -> -0",
+      "\"-1e-400\" -> -0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero"
+    ]
+  },
+  {
+    "mutant": "P-14",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-15",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "whitespace-padded - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace"
+    ]
+  },
+  {
+    "mutant": "P-16",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-17",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"constructor\" -> null",
+      "P1 - returns null or a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-18",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"42\" -> 42",
+      "\"-3.5\" -> -3.5",
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"\\ufeff9\" -> 9",
+      "\"+42\" -> 42",
+      "\"-0\" -> -0",
+      "\"01\" -> 1",
+      "\".5\" -> 0.5",
+      "\"5.\" -> 5",
+      "\"1e3\" -> 1000",
+      "\"1E+3\" -> 1000",
+      "\"1e-7\" -> 1e-7",
+      "\"1e-400\" -> 0",
+      "\"-1e-400\" -> -0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "small-integers - every sample is accepted",
+      "decimals-and-exponents - every sample is accepted",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero"
+    ]
+  },
+  {
+    "mutant": "P-19",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-20",
+    "arm": "A",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-01",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-0\" -> -0",
+      "\"-1e-400\" -> -0"
+    ]
+  },
+  {
+    "mutant": "P-02",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-03",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> not-decimal",
+      "\"- 1\" -> not-decimal",
+      "\"--1\" -> not-decimal",
+      "\".\" -> not-decimal",
+      "\"1.2.3\" -> not-decimal",
+      "\"1e\" -> not-decimal",
+      "\"NaN\" -> not-decimal",
+      "\"Infinity\" -> not-decimal",
+      "\"-Infinity\" -> not-decimal",
+      "\"0x1F\" -> not-decimal",
+      "\"0o17\" -> not-decimal",
+      "\"0b11\" -> not-decimal",
+      "\"1_000\" -> not-decimal",
+      "\"1,5\" -> not-decimal",
+      "\"1,000\" -> not-decimal",
+      "\"abc\" -> not-decimal",
+      "\"12n\" -> not-decimal",
+      "\"\\u0661\\u0662\\u0663\" -> not-decimal",
+      "\"constructor\" -> not-decimal",
+      "\"1e400\" -> overflow",
+      "rejected-inputs - every sample is rejected",
+      "P1 - fails, or succeeds with a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-04",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> overflow",
+      "P1 - fails, or succeeds with a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-05",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"\\ufeff9\" -> 9",
+      "\"   \" -> empty",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace"
+    ]
+  },
+  {
+    "mutant": "P-06",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-07",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> overflow",
+      "P1 - fails, or succeeds with a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-08",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-3.5\" -> -3.5",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"01\" -> 1",
+      "\"5.\" -> 5",
+      "\"1E+3\" -> 1000",
+      "\"1e-400\" -> 0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "small-integers - every sample is accepted",
+      "decimals-and-exponents - every sample is accepted",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero",
+      "is deterministic - the same input yields the same output on every call",
+      "has no ambient input - an answer does not depend on the inputs parsed before it"
+    ]
+  },
+  {
+    "mutant": "P-09",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1_000\" -> not-decimal"
+    ]
+  },
+  {
+    "mutant": "P-10",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> not-decimal",
+      "\"- 1\" -> not-decimal"
+    ]
+  },
+  {
+    "mutant": "P-11",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\".5\" -> 0.5",
+      "decimals-and-exponents - every sample is accepted"
+    ]
+  },
+  {
+    "mutant": "P-12",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> not-decimal",
+      "\"1.2.3\" -> not-decimal",
+      "\"1e\" -> not-decimal",
+      "\"0x1F\" -> not-decimal",
+      "\"0o17\" -> not-decimal",
+      "\"0b11\" -> not-decimal",
+      "\"1_000\" -> not-decimal",
+      "\"1,5\" -> not-decimal",
+      "\"1,000\" -> not-decimal",
+      "\"12n\" -> not-decimal",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "P-13",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-0\" -> -0",
+      "\"-1e-400\" -> -0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero"
+    ]
+  },
+  {
+    "mutant": "P-14",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-15",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "whitespace-padded - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace"
+    ]
+  },
+  {
+    "mutant": "P-16",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-17",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"constructor\" -> not-decimal"
+    ]
+  },
+  {
+    "mutant": "P-18",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"42\" -> 42",
+      "\"-3.5\" -> -3.5",
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"\\ufeff9\" -> 9",
+      "\"+42\" -> 42",
+      "\"-0\" -> -0",
+      "\"01\" -> 1",
+      "\".5\" -> 0.5",
+      "\"5.\" -> 5",
+      "\"1e3\" -> 1000",
+      "\"1E+3\" -> 1000",
+      "\"1e-7\" -> 1e-7",
+      "\"1e400\" -> overflow",
+      "\"1e-400\" -> 0",
+      "\"-1e-400\" -> -0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "small-integers - every sample is accepted",
+      "decimals-and-exponents - every sample is accepted",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero"
+    ]
+  },
+  {
+    "mutant": "P-19",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-20",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-01",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-0\" -> -0",
+      "\"-1e-400\" -> -0"
+    ]
+  },
+  {
+    "mutant": "P-02",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-03",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> not-decimal",
+      "\"- 1\" -> not-decimal",
+      "\"--1\" -> not-decimal",
+      "\".\" -> not-decimal",
+      "\"1.2.3\" -> not-decimal",
+      "\"1e\" -> not-decimal",
+      "\"NaN\" -> not-decimal",
+      "\"Infinity\" -> not-decimal",
+      "\"-Infinity\" -> not-decimal",
+      "\"0x1F\" -> not-decimal",
+      "\"0o17\" -> not-decimal",
+      "\"0b11\" -> not-decimal",
+      "\"1_000\" -> not-decimal",
+      "\"1,5\" -> not-decimal",
+      "\"1,000\" -> not-decimal",
+      "\"abc\" -> not-decimal",
+      "\"12n\" -> not-decimal",
+      "\"\\u0661\\u0662\\u0663\" -> not-decimal",
+      "\"constructor\" -> not-decimal",
+      "\"1e400\" -> overflow",
+      "rejected-inputs - every sample is rejected",
+      "P1 - fails, or succeeds with a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-04",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> overflow",
+      "P1 - fails, or succeeds with a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-05",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"\\ufeff9\" -> 9",
+      "\"   \" -> empty",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace"
+    ]
+  },
+  {
+    "mutant": "P-06",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-07",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> overflow",
+      "P1 - fails, or succeeds with a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-08",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-3.5\" -> -3.5",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"01\" -> 1",
+      "\"5.\" -> 5",
+      "\"1E+3\" -> 1000",
+      "\"1e-400\" -> 0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "small-integers - every sample is accepted",
+      "decimals-and-exponents - every sample is accepted",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero",
+      "is deterministic - the same input yields the same output on every call",
+      "has no ambient input - an answer does not depend on the inputs parsed before it"
+    ]
+  },
+  {
+    "mutant": "P-09",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1_000\" -> not-decimal"
+    ]
+  },
+  {
+    "mutant": "P-10",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> not-decimal",
+      "\"- 1\" -> not-decimal"
+    ]
+  },
+  {
+    "mutant": "P-11",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\".5\" -> 0.5",
+      "decimals-and-exponents - every sample is accepted"
+    ]
+  },
+  {
+    "mutant": "P-12",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"4 2\" -> not-decimal",
+      "\"1.2.3\" -> not-decimal",
+      "\"1e\" -> not-decimal",
+      "\"0x1F\" -> not-decimal",
+      "\"0o17\" -> not-decimal",
+      "\"0b11\" -> not-decimal",
+      "\"1_000\" -> not-decimal",
+      "\"1,5\" -> not-decimal",
+      "\"1,000\" -> not-decimal",
+      "\"12n\" -> not-decimal",
+      "rejected-inputs - every sample is rejected"
+    ]
+  },
+  {
+    "mutant": "P-13",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"-0\" -> -0",
+      "\"-1e-400\" -> -0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero"
+    ]
+  },
+  {
+    "mutant": "P-14",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-15",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "whitespace-padded - every sample is accepted",
+      "P2 - is insensitive to surrounding whitespace"
+    ]
+  },
+  {
+    "mutant": "P-16",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-17",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"constructor\" -> not-decimal",
+      "P1 - fails, or succeeds with a finite number, never NaN and never Infinity"
+    ]
+  },
+  {
+    "mutant": "P-18",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "killed",
+    "failedTests": [
+      "\"42\" -> 42",
+      "\"-3.5\" -> -3.5",
+      "\"  42  \" -> 42",
+      "\"\\t\\n 7 \\r\\n\" -> 7",
+      "\"\\ufeff9\" -> 9",
+      "\"+42\" -> 42",
+      "\"-0\" -> -0",
+      "\"01\" -> 1",
+      "\".5\" -> 0.5",
+      "\"5.\" -> 5",
+      "\"1e3\" -> 1000",
+      "\"1E+3\" -> 1000",
+      "\"1e-7\" -> 1e-7",
+      "\"1e400\" -> overflow",
+      "\"1e-400\" -> 0",
+      "\"-1e-400\" -> -0",
+      "\"9007199254740993\" -> 9007199254740992",
+      "small-integers - every sample is accepted",
+      "decimals-and-exponents - every sample is accepted",
+      "whitespace-padded - every sample is accepted",
+      "long-inputs - every sample is accepted",
+      "P3 - is a right inverse of String on the finite doubles, except negative zero"
+    ]
+  },
+  {
+    "mutant": "P-19",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "survived",
+    "failedTests": []
+  },
+  {
+    "mutant": "P-20",
+    "arm": "B",
+    "lens": "faithful-p1",
+    "verdict": "survived",
+    "failedTests": []
+  }
+]
