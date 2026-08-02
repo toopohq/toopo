@@ -7,15 +7,23 @@
  * `signature.test-d.ts` for 4.2, `properties.test.ts` for 4.3, `edge-cases.test.ts` for 4.4 and
  * `profiles.test.ts` for 4.5.
  *
- * PROVISIONAL: failure is reported as `null`. The catalogue-wide error convention
- * (`null` / throw / `Result`) is still undecided and will be frozen for every contract at once.
- * Every `null` below is a placeholder for that decision, not a settled answer. This contract has
- * six distinct reasons to fail, enumerated rather than counted so that the claim can be checked
- * against `reference.ts` instead of trusted: an input that is not a date, a field the contract does
- * not declare, a field that is not an exact whole number, a month total that is not exactly
- * representable, an elapsed total that is not exactly representable, and a result outside the range
- * a `Date` can hold. `null` collapses all six into one, which is the sharpest argument the
- * catalogue has yet produced against keeping it.
+ * PROVISIONAL: failure is reported as `null`, with the reason published beside the return channel
+ * rather than inside it. The catalogue-wide error convention is still undecided and will be frozen
+ * for every contract at once; this file is the third arm of the experiment that decides it. The
+ * first two are `main`, where failure is `null` and nothing more, and
+ * `experiment/error-convention-round-2`, where the reason travels in the returned value.
+ *
+ * The six reasons are the six rejections `reference.ts` performs, enumerated rather than counted so
+ * that the claim can be checked against it instead of trusted: an input that is not a date, a field
+ * the contract does not declare, a field that is not an exact whole number, a month total that is
+ * not exactly representable, an elapsed total that is not exactly representable, and a result
+ * outside the range a `Date` can hold. `null` alone collapses all six into one, which is the
+ * sharpest argument the catalogue has yet produced against keeping it - and the reason this
+ * contract, rather than `number/parse@1`, is where the argument gets measured.
+ *
+ * Every rationale below is left exactly as it was written under the bare `null` convention. Those
+ * sentences are part of what the experiment measures, and rewriting them here would settle silently
+ * a question that is supposed to be answered by measurement.
  */
 
 // ---------------------------------------------------------------------------
@@ -29,7 +37,8 @@ export const identity = {
 
   summary:
     'Add a duration to a Date and get a new Date back, in UTC, without mutating the input, or null ' +
-    'when the call cannot be answered exactly.',
+    'when the call cannot be answered exactly - with a named reason available beside it for a ' +
+    'caller who needs to know which of the six refusals it was.',
 
   /** Written to answer the natural search query "add days to date javascript". */
   description:
@@ -45,7 +54,9 @@ export const identity = {
     'carries a field this contract does not declare, when the duration is not made of exact whole ' +
     'units, or when the result falls outside the range a Date can hold. It never returns an ' +
     'Invalid Date, the value that propagates as NaN through every later computation and surfaces ' +
-    'far away from the call that produced it.',
+    'far away from the call that produced it. Which of those refusals happened is published by a ' +
+    'second export rather than folded into the return value, so a caller who only needs a date is ' +
+    'not made to unwrap one.',
 
   /**
    * The input domain the contract is written for. It belongs to the identity because the answers in
@@ -104,10 +115,60 @@ export type Duration = {
 }
 
 /**
+ * Why a call could not be answered. There are six, one per rejection the reference performs, and the
+ * literals belong to this contract and to no other: there is no shared failure type in the
+ * catalogue, so a reason means exactly what this contract says it means and nothing has to be kept
+ * compatible across features.
+ *
+ * `invalid-date` and `unknown-field` are the pair this experiment turns on. One is a caller who
+ * never parsed what they were given; the other is a caller who wrote `{ day: 1 }` for `{ days: 1 }`.
+ * They are corrected by different edits in different files, and under `null` alone they arrive as
+ * the same value.
+ */
+export type AddFailureReason =
+  | 'invalid-date'
+  | 'unknown-field'
+  | 'field-not-whole'
+  | 'month-total-not-exact'
+  | 'elapsed-total-not-exact'
+  | 'out-of-range'
+
+/**
  * The declared signature. Every implementation must expose exactly this type; `signature.test-d.ts`
  * fails the suite when an implementation deviates.
  */
 export type AddToDate = (date: Date, duration: Duration) => Date | null
+
+/**
+ * PROVISIONAL, third form. The reason is published beside the return channel rather than inside it:
+ * `addToDate` keeps answering `Date | null`, and a caller who needs to know why asks.
+ *
+ * It exists because of a measurement, not a preference. Measured on `number/parse@1`, the reason
+ * bought zero net detection - 14 of 20 mutants died in all three columns - while the union cost 15
+ * extra unwrappings across thirteen call sites. Measured on this contract, the reason buys two
+ * mutants the bare `null` column misses. So the reason is worth having and the return channel is not
+ * where it has to live; this form is the one that separates the two claims.
+ *
+ * The cost is one extra traversal on the failing path, and only there. On this contract that
+ * traversal is arithmetic rather than a regular expression, which is why the cost is measured here
+ * on real call sites instead of assumed.
+ */
+export type DescribeAddFailure = (date: Date, duration: Duration) => AddFailureReason | null
+
+/**
+ * The coupling between the two exports, stated here because it is a promise of the contract rather
+ * than a detail of one implementation: a call fails exactly when it has a description.
+ *
+ * The reference cannot violate it - both exports derive from one private analysis, so there is one
+ * traversal of the arithmetic in the module and no way for the two to drift. That is not a reason to
+ * drop the property. The contract governs every implementation, not this one, and an implementation
+ * that writes the two independently - the obvious thing to do when the answering path is optimised
+ * and the diagnostic one is not - can absolutely diverge. `properties.test.ts` shows the property
+ * red on exactly that.
+ */
+export const couplingRule =
+  'addToDate(d, u) === null if and only if describeAddFailure(d, u) !== null, for every date d ' +
+  'and duration u'
 
 export const targetEnvironments = ['node', 'browser', 'bun'] as const
 
@@ -362,6 +423,8 @@ export type EdgeCase = {
   readonly date: string
   readonly duration: Duration
   readonly expected: string | null
+  /** What the diagnostic surface must report, and `null` exactly when the call is answered. */
+  readonly reason: AddFailureReason | null
   readonly rationale: string
 }
 
@@ -375,18 +438,21 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-15T10:30:00.000Z',
     duration: { days: 1 },
     expected: '2024-01-16T10:30:00.000Z',
+    reason: null,
     rationale: 'An ordinary day is added, and the time of day is untouched.',
   },
   {
     date: '2024-01-15T10:30:00.000Z',
     duration: { minutes: 90 },
     expected: '2024-01-15T12:00:00.000Z',
+    reason: null,
     rationale: 'Elapsed units carry into the next unit; ninety minutes is an hour and a half.',
   },
   {
     date: '1969-12-31T23:59:59.999Z',
     duration: { milliseconds: 1 },
     expected: '1970-01-01T00:00:00.000Z',
+    reason: null,
     rationale:
       'The epoch is not a boundary. It is listed because implementations that branch on the sign ' +
       'of the timestamp get this one wrong.',
@@ -397,6 +463,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '2024-02-29T00:00:00.000Z',
+    reason: null,
     rationale:
       'A day that the target month does not have is clamped down to the last day it does. There is ' +
       'no 31 February, and the two defensible answers are the end of February or the overflow into ' +
@@ -409,24 +476,28 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2023-01-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '2023-02-28T00:00:00.000Z',
+    reason: null,
     rationale: 'The same clamp in a common year lands on the 28th, since that is the last day.',
   },
   {
     date: '2024-05-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '2024-06-30T00:00:00.000Z',
+    reason: null,
     rationale: 'Clamping is not about February; any 31-day month followed by a 30-day one clamps.',
   },
   {
     date: '2024-03-31T00:00:00.000Z',
     duration: { months: -1 },
     expected: '2024-02-29T00:00:00.000Z',
+    reason: null,
     rationale: 'Clamping applies in both directions; going backwards is not a special case.',
   },
   {
     date: '2024-02-29T00:00:00.000Z',
     duration: { months: -1 },
     expected: '2024-01-29T00:00:00.000Z',
+    reason: null,
     rationale:
       'Adding a month and removing it again does not return where it started: 31 January plus one ' +
       'month is 29 February, and 29 February minus one month is 29 January. The clamp discards the ' +
@@ -438,6 +509,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-31T23:59:59.999Z',
     duration: { months: 1 },
     expected: '2024-02-29T23:59:59.999Z',
+    reason: null,
     rationale:
       'The clamp moves the date and leaves the UTC time of day exactly as it was, down to the ' +
       'millisecond, including at the last instant of a day.',
@@ -448,18 +520,21 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-02-29T00:00:00.000Z',
     duration: { years: 1 },
     expected: '2025-02-28T00:00:00.000Z',
+    reason: null,
     rationale: 'A leap day plus one year clamps, because the target year has no 29 February.',
   },
   {
     date: '2024-02-29T00:00:00.000Z',
     duration: { years: 4 },
     expected: '2028-02-29T00:00:00.000Z',
+    reason: null,
     rationale: 'Four years later the day exists again and nothing is clamped.',
   },
   {
     date: '2096-02-29T00:00:00.000Z',
     duration: { years: 4 },
     expected: '2100-02-28T00:00:00.000Z',
+    reason: null,
     rationale:
       'The century rule bites: 2100 is divisible by 4 but not by 400, so it is not a leap year and ' +
       'the day is clamped. An implementation testing only `year % 4` answers 2100-02-29.',
@@ -468,6 +543,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '0050-01-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '0050-02-28T00:00:00.000Z',
+    reason: null,
     rationale:
       'A two-digit year stays a two-digit year rather than being read as a nineteen-hundreds one. ' +
       'It is listed because `Date.UTC` maps years 0 to 99 onto 1900 to 1999 - measured, ' +
@@ -485,6 +561,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2023-01-31T00:00:00.000Z',
     duration: { months: 2 },
     expected: '2023-03-31T00:00:00.000Z',
+    reason: null,
     rationale:
       'Two months are added as two months, not as one month twice. Measured, adding one month twice ' +
       'gives 2023-03-28, because the clamp to 28 February is never undone. The contract aggregates, ' +
@@ -494,6 +571,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2023-01-31T00:00:00.000Z',
     duration: { years: 1, months: 1 },
     expected: '2024-02-29T00:00:00.000Z',
+    reason: null,
     rationale:
       'Years and months are one total of thirteen months, not a year then a month. Applying months ' +
       'first would give 2024-02-28, one day earlier, because it clamps twice.',
@@ -502,12 +580,14 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-02-25T00:00:00.000Z',
     duration: { weeks: 1, days: 1 },
     expected: '2024-03-04T00:00:00.000Z',
+    reason: null,
     rationale: 'Weeks and days are one total of eight days; a week is seven days and nothing else.',
   },
   {
     date: '2024-01-31T00:00:00.000Z',
     duration: { weeks: 1 },
     expected: '2024-02-07T00:00:00.000Z',
+    reason: null,
     rationale: 'A week never clamps, because it is a count of days rather than a calendar unit.',
   },
 
@@ -516,6 +596,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-30T23:00:00.000Z',
     duration: { months: 1, hours: 2 },
     expected: '2024-03-01T01:00:00.000Z',
+    reason: null,
     rationale:
       'Calendar units are applied before elapsed time, and the order is observable: the calendar ' +
       'step clamps 30 January to 29 February, and the two hours then cross midnight into 1 March. ' +
@@ -526,6 +607,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-30T00:00:00.000Z',
     duration: { months: 1, days: 1 },
     expected: '2024-03-01T00:00:00.000Z',
+    reason: null,
     rationale:
       'The same order between months and days: 30 January clamps to 29 February, then one day is ' +
       'added. Days first would give 31 January, then 29 February.',
@@ -536,12 +618,14 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: -3 },
     expected: '2024-01-12T00:00:00.000Z',
+    reason: null,
     rationale: 'A negative field subtracts; there is no separate subtraction function.',
   },
   {
     date: '2024-01-31T00:00:00.000Z',
     duration: { months: 1, days: -1 },
     expected: '2024-02-28T00:00:00.000Z',
+    reason: null,
     rationale:
       'Fields may disagree in sign. Temporal rejects a mixed-sign duration outright; this contract ' +
       'accepts it, because `{ months: 1, days: -1 }` is how a caller writes "the day before the ' +
@@ -554,6 +638,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-31T12:34:56.789Z',
     duration: {},
     expected: '2024-01-31T12:34:56.789Z',
+    reason: null,
     rationale:
       'The empty duration is the neutral element: it returns the same instant, in a new object. ' +
       'Temporal rejects it - measured, `TypeError: No valid fields` - on the grounds that it ' +
@@ -564,6 +649,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-31T12:34:56.789Z',
     duration: { days: -0 },
     expected: '2024-01-31T12:34:56.789Z',
+    reason: null,
     rationale:
       'Negative zero is a whole number and adds nothing. Unlike `number/parse@1`, where the sign of ' +
       'zero is preserved in the result, it cannot survive here: measured, `new Date(-0).getTime()` ' +
@@ -573,6 +659,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-31T12:34:56.789Z',
     duration: { days: undefined },
     expected: '2024-01-31T12:34:56.789Z',
+    reason: null,
     rationale:
       'A declared field set to `undefined` means zero, not an error. `{ days: form.days }` where the ' +
       'form has no value is ordinary TypeScript, and rejecting it would make the type lie.',
@@ -583,6 +670,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { months: 1.5 },
     expected: null,
+    reason: 'field-not-whole',
     rationale:
       'A fractional month has no meaning the contract can honour, and the established libraries ' +
       'disagree about it - measured, date-fns and dayjs silently truncate to one month, luxon ' +
@@ -595,6 +683,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: 0.5 },
     expected: null,
+    reason: 'field-not-whole',
     rationale:
       'Half a day is rejected even though it has an exact meaning in UTC, because the rule is one ' +
       'rule for every field. `{ hours: 12 }` says the same thing without ambiguity.',
@@ -603,18 +692,21 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: Number.NaN },
     expected: null,
+    reason: 'field-not-whole',
     rationale: 'NaN is not a whole number. Adding it would produce an Invalid Date.',
   },
   {
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: Number.POSITIVE_INFINITY },
     expected: null,
+    reason: 'field-not-whole',
     rationale: 'An infinite duration is not a whole number and has no representable result.',
   },
   {
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: 1e21 },
     expected: null,
+    reason: 'field-not-whole',
     rationale:
       'Beyond 2^53 an integer is no longer exactly representable as a double, so the arithmetic ' +
       'stops being the arithmetic the caller wrote. `Number.isInteger(1e21)` is true and every ' +
@@ -626,6 +718,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { years: Number.MAX_SAFE_INTEGER },
     expected: null,
+    reason: 'month-total-not-exact',
     rationale:
       'Each field is a safe integer here, but the total is not: measured, `MAX_SAFE_INTEGER * 12` ' +
       'is not a safe integer, so the month total could not be computed exactly. The rule applies to ' +
@@ -635,6 +728,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { milliseconds: Number.MAX_SAFE_INTEGER, seconds: Number.MAX_SAFE_INTEGER },
     expected: null,
+    reason: 'elapsed-total-not-exact',
     rationale:
       'The same rule for elapsed time: two safe integers whose sum in milliseconds is not one. Past ' +
       '2^53 milliseconds - about 285 000 years, far outside the range a Date can hold anyway - the ' +
@@ -646,6 +740,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: 'not a date',
     duration: { days: 1 },
     expected: null,
+    reason: 'invalid-date',
     rationale:
       'An Invalid Date in gives null out, never an Invalid Date out. `new Date("nonsense")` is a ' +
       'Date whose timestamp is NaN; measured, date-fns propagates it and returns another Invalid ' +
@@ -655,6 +750,7 @@ export const edgeCases: readonly EdgeCase[] = [
     date: 'not a date',
     duration: {},
     expected: null,
+    reason: 'invalid-date',
     rationale:
       'The neutral duration does not rescue an invalid input. The date is checked before the ' +
       'duration is looked at, so no duration can make an unanswerable call answerable.',
@@ -665,12 +761,14 @@ export const edgeCases: readonly EdgeCase[] = [
     date: LATEST_REPRESENTABLE,
     duration: {},
     expected: LATEST_REPRESENTABLE,
+    reason: null,
     rationale: 'The last representable instant is a valid input and is returned unchanged.',
   },
   {
     date: LATEST_REPRESENTABLE,
     duration: { milliseconds: 1 },
     expected: null,
+    reason: 'out-of-range',
     rationale:
       'One millisecond past the end of the range has no Date. `new Date(8.64e15 + 1)` is an Invalid ' +
       'Date; the contract returns null rather than hand one back.',
@@ -679,12 +777,14 @@ export const edgeCases: readonly EdgeCase[] = [
     date: EARLIEST_REPRESENTABLE,
     duration: { milliseconds: -1 },
     expected: null,
+    reason: 'out-of-range',
     rationale: 'The range is symmetric, and so is the rejection.',
   },
   {
     date: LATEST_REPRESENTABLE,
     duration: { months: 1, days: -40 },
     expected: null,
+    reason: 'out-of-range',
     rationale:
       'The steps are applied in the declared order and each one must land inside the range. Adding ' +
       'a month leaves it, and removing forty days would come back; the contract does not allow the ' +
@@ -707,6 +807,7 @@ export type UntypedEdgeCase = {
   readonly date: string
   readonly duration: Readonly<Record<string, unknown>>
   readonly expected: string | null
+  readonly reason: AddFailureReason | null
   readonly rationale: string
 }
 
@@ -715,6 +816,7 @@ export const untypedEdgeCases: readonly UntypedEdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { day: 1 },
     expected: null,
+    reason: 'unknown-field',
     rationale:
       'A field the contract does not define is a rejection, not a no-op. `{ day: 1 }` for ' +
       '`{ days: 1 }` is the singular-for-plural slip everyone makes, and returning the date ' +
@@ -725,12 +827,14 @@ export const untypedEdgeCases: readonly UntypedEdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { month: 1 },
     expected: null,
+    reason: 'unknown-field',
     rationale: 'The same slip on the calendar side, rejected for the same reason.',
   },
   {
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: 1, day: 1 },
     expected: null,
+    reason: 'unknown-field',
     rationale:
       'One unknown field is enough to reject the whole call, even alongside a valid one. Applying ' +
       'the part that was understood would be the most dangerous answer available: it looks like it ' +
@@ -740,6 +844,7 @@ export const untypedEdgeCases: readonly UntypedEdgeCase[] = [
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: '1' },
     expected: null,
+    reason: 'field-not-whole',
     rationale:
       'A declared field carrying the wrong type is rejected too. A string reaching this function ' +
       'has come from JSON or a form and has not been through the parser it needed.',

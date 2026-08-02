@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import type { Duration } from './contract.js'
+import type { AddFailureReason, Duration } from './contract.js'
 import { edgeCases, outputsAreEqual, untypedEdgeCases } from './contract.js'
-import { addToDate } from './reference.js'
+import { addToDate, describeAddFailure } from './reference.js'
 
 /**
  * Block 4.4, executable. Every entry of the contract's two tables is asserted exactly, using the
- * equality semantics the contract declares - on the instant, never on object identity.
+ * equality semantics the contract declares - on the instant, never on object identity - and every
+ * entry is asserted a second time against the diagnostic surface.
  */
 
 /**
@@ -34,6 +35,18 @@ const rendered = (value: Date | null): string => {
 const asExpected = (expected: string | null): Date | null =>
   expected === null ? null : new Date(expected)
 
+/**
+ * The one place the diagnostic surface is asserted, shared by the two tables so that a reason is
+ * checked identically whether or not TypeScript would have accepted the duration that produced it.
+ */
+const expectDescribedAs = (
+  date: string,
+  duration: Readonly<Record<string, unknown>>,
+  reason: AddFailureReason | null,
+): void => {
+  expect(describeAddFailure(new Date(date), duration as Duration)).toBe(reason)
+}
+
 describe('date/add@1 named edge cases', () => {
   for (const { date, duration, expected } of edgeCases) {
     it(`${date} + ${renderDuration(duration)} -> ${expected ?? 'null'}`, () => {
@@ -59,6 +72,22 @@ describe('date/add@1 edge cases outside the declared type', () => {
         outputsAreEqual(actual, asExpected(expected)),
         `expected ${expected ?? 'null'}, received ${rendered(actual)}`,
       ).toBe(true)
+    })
+  }
+})
+
+describe('date/add@1 named edge cases, described', () => {
+  for (const { date, duration, reason } of edgeCases) {
+    it(`${date} + ${renderDuration(duration)} -> ${reason ?? 'no failure to describe'}`, () => {
+      expectDescribedAs(date, duration, reason)
+    })
+  }
+})
+
+describe('date/add@1 edge cases outside the declared type, described', () => {
+  for (const { date, duration, reason } of untypedEdgeCases) {
+    it(`${date} + ${renderDuration(duration)} -> ${reason ?? 'no failure to describe'}`, () => {
+      expectDescribedAs(date, duration, reason)
     })
   }
 })
