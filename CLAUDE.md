@@ -39,7 +39,11 @@ verification question. What decided it is that this form is **additive**: a cont
 `name@1` with no diagnostic and gain one later without breaking anyone, whereas putting the reason
 in the return type freezes it into the major version on day one. Known costs are recorded in the
 project specification, together with what would invalidate the decision.
-- Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
+
+**The reason set of a contract is frozen with its major version.** Adding a literal, removing one,
+or splitting one all break a caller that switches exhaustively — so the partition is chosen once,
+deliberately, and a later change costs `name@2`. The additivity that decided this convention covers
+gaining a diagnostic, not reshaping one.
 
 ## Rules for this stage
 
@@ -48,7 +52,11 @@ project specification, together with what would invalidate the decision.
 2. **No abstraction across contracts until at least three exist.** Duplication between contract
    folders is expected and correct here — factoring early would fabricate the format instead of
    discovering it. This suspension of the no-duplication rule applies nowhere else.
-3. Dev dependencies are limited to `typescript`, `vitest`, `fast-check`.
+3. Dev dependencies are limited to `typescript`, `vitest`, `fast-check`, and `@types/node`. The last
+   one is types-only, has no runtime footprint and cannot reach distributed code; without it the
+   mutation instrument would either sit outside the typechecker or be written in plain JavaScript,
+   and an unchecked `.ts` file would claim a guarantee the repository does not give it. Feature code
+   still has zero runtime dependencies of any kind.
 4. The root `package.json` carries `"private": true`, so nothing can be published by accident.
 5. Working notes, planning documents and status reports do not belong in this repository. Only
    contracts, implementations, tests, and the evidence produced by running them.
