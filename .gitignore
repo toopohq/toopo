@@ -1,1 +1,6 @@
 node_modules/
+mutation/.vitest-report.json
+
+# The output of one run. What a cell must produce is pinned in its battery, which is the durable
+# record; keeping the measurement as well would put the same claim in two places that can drift.
+mutation/results/

@@ -7,7 +7,8 @@
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },
-  "include": ["contracts"]
+  "include": ["contracts", "mutation", "vitest.config.ts"]
 }

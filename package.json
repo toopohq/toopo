@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run --typecheck"
+    "test": "vitest run --typecheck",
+    "mutation": "node mutation/measure.ts"
   },
   "devDependencies": {
+    "@types/node": "^26.1.2",
     "fast-check": "^4.9.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
