@@ -329,10 +329,10 @@ export const targetEnvironments = ['node', 'browser', 'bun'] as const
  * fewer.
  *
  * The figure is the same 1000 the other two carry, and it was measured here rather than copied.
- * Three runs of this contract's property file at 100, 1000 and 10000 draws cost 34-38 ms, 96-104 ms
- * and 741-812 ms of test time respectively. An order of magnitude over fast-check's default is
- * bought for about 65 ms; the next order costs eight times that to redraw arrays from the same
- * generators.
+ * Three runs of this contract's property file at 100, 1000 and 10000 draws cost 16-17 ms, 51-53 ms
+ * and 300-327 ms of test time respectively. An order of magnitude over fast-check's default is
+ * bought for about 35 ms; the next order costs seven times that to redraw arrays from the same nine
+ * key functions.
  */
 export const propertyRuns = 1000
 
