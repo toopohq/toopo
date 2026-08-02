@@ -1,17 +1,13 @@
 /**
- * Contract `date/add@1`.
- *
- * The contract is the folder, not one file. This one carries identity, signature,
- * universal-property applicability and benchmark profiles; block 4.4, the named and settled edge
- * cases, has its own file because it is the only block that grows. All of it declares behaviour and
- * executes nothing: the reference implementation lives in `reference.ts`, and the executable half of
- * each block lives beside it - `signature.test-d.ts` for 4.2, `properties.test.ts` for 4.3,
- * `edge-cases.ts` and `edge-cases.test.ts` for 4.4, `profiles.test.ts` for 4.5.
+ * Contract `date/add@1`. The anatomy of a contract folder is the catalogue's and is described in
+ * `catalogue/every-contract.ts`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
  *
  * Failure is reported as `null`, with the reason published beside the return channel rather than
  * inside it - the catalogue-wide convention, settled after three forms were built and measured on
  * this contract and on `number/parse@1`.
  */
+
+import { NO_AMBIENT_OUTPUT_FINDING } from '../../../catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity
@@ -238,14 +234,12 @@ export const EARLIEST_REPRESENTABLE = '-271821-04-20T00:00:00.000Z'
 // ---------------------------------------------------------------------------
 
 /**
- * The number of cases every property in this contract is tested on. It is contract data rather than
- * a runner setting: the harness is public and executable by anyone, so the number of draws is part
- * of the strength of what the contract claims.
+ * The number of cases every property in this contract is tested on. Why this is contract data at all
+ * is the catalogue's rule; the figure is this contract's.
  *
- * A floor, not a value - official validation may draw more, nothing may draw fewer. Measured on the
- * time-zone property, the most expensive one here because it runs every case four times: the local
- * time zone mutant it exists to catch diverges on 411 of 1000 pseudo-random draws and is first
- * caught on draw 1, so 1000 is far past the point where the guarantee is real.
+ * Measured on the time-zone property, the most expensive one here because it runs every case four
+ * times: the local time zone mutant it exists to catch diverges on 411 of 1000 pseudo-random draws
+ * and is first caught on draw 1, so 1000 is far past the point where the guarantee is real.
  */
 export const propertyRuns = 1000
 
@@ -379,14 +373,11 @@ export const staticAnalysisRequirements = [
 ] as const
 
 /**
- * The universal properties every contract must consider. A property is only written as a test when
- * it is applicable; one that cannot fail is recorded here with its reason instead, so the green
- * count never carries a guard that proves nothing.
+ * How this contract answers the four universal properties of the catalogue.
  *
- * `no observable side effect` is split in two, following the measurement made on `number/parse@1`.
- * `no ambient input` - the answer depends on the declared arguments and on nothing else - is
- * testable, and on this contract it is the interesting half: the time zone is a real ambient input
- * that a plausible implementation really does read.
+ * `no ambient input` is the interesting one here: the time zone is a real ambient input that a
+ * plausible implementation really does read, which is what makes this contract the one where the
+ * catalogue's split of `no observable side effect` pays for itself.
  */
 export const universalProperties = [
   {
@@ -434,9 +425,8 @@ export const universalProperties = [
     name: 'no ambient output',
     applicable: false,
     reason:
-      'Not reachable by a property, for the reason measured on `number/parse@1`: a test cannot see ' +
-      'a write that happened before it ran, and a correct memoising cache - which is not a defect - ' +
-      'is indistinguishable from one that is. It is a static analysis requirement instead.',
+      `${NO_AMBIENT_OUTPUT_FINDING}. Here it is a static analysis requirement instead, declared in ` +
+      '`staticAnalysisRequirements` above.',
   },
 ] as const
 
@@ -445,12 +435,9 @@ export const universalProperties = [
 // ---------------------------------------------------------------------------
 
 /**
- * Declared as data. Nothing here is executed or measured in this repository: there is no reference
- * machine yet, and a number produced on a developer laptop would be dishonest.
- *
  * Every profile declares the class its samples belong to, and `profiles.test.ts` checks it, because
- * `number/parse@1` shipped a profile named for one path whose samples took the other and nothing
- * said so.
+ * `number/parse@1` shipped a profile named for one path whose samples took the other and nothing said
+ * so.
  */
 export type BenchmarkSample = {
   readonly date: string

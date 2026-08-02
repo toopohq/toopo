@@ -1,22 +1,15 @@
 /**
- * Reference implementation of `date/add@1`.
+ * `date/add@1` - add a duration to a Date and get a new Date back, in UTC, without mutating the
+ * input, or `null` when the call cannot be answered exactly.
  *
- * It is the oracle of the registry's differential test, so it is written to be read: correctness and
- * obviousness come before speed.
+ * Written to be read: correctness and obviousness come before speed.
  *
- * The signature is written out here rather than imported from `contract.ts`. Annotating this
- * function with the contract's own type would make the compiler enforce conformance at authoring
- * time and leave `signature.test-d.ts` unable to fail - a guard that proves nothing. An
- * implementation states its signature independently, and the contract checks it.
- *
- * Every accessor below belongs to the `getUTC*` / `setUTC*` family. The local-time family reads and
- * writes the calendar of whichever time zone the process happens to run in, which would make this
- * function answer differently on two machines running the same code. Block 4.3 tests that by running
- * the function under four time zones at once, and the validation pipeline forbids the local methods
- * lexically.
+ * Every accessor below belongs to the `getUTC*` / `setUTC*` family, and that is load-bearing. The
+ * local-time family reads and writes the calendar of whichever time zone the process happens to run
+ * in, which would make this function answer differently on two machines running the same code.
  *
  * Failure is `null`, and `describeAddFailure` publishes the reason beside it. Both derive from one
- * private analysis, so the module holds a single traversal of the arithmetic and the two exports
+ * private analysis, so this module holds a single traversal of the arithmetic and the two exports
  * cannot drift.
  */
 
@@ -41,18 +34,13 @@ type AddFailureReason =
   | 'out-of-range'
 
 /**
- * The single source both exports derive from, private because it is not the shape this contract
+ * The single source both exports derive from, private because it is not the shape this module
  * publishes: a caller sees `Date | null` and asks for the reason only when it needs one.
  *
- * Private, and one function rather than two, so that the coupling the contract states is true by
- * construction: there is one traversal of the arithmetic in this module, so the two exports cannot
- * disagree about which calls fail. It also keeps one public call to one traversal, which matters
- * more here than on `number/parse@1` - the work being repeated is month arithmetic rather than a
- * regular expression.
- *
- * The type is written out here rather than imported from `contract.ts`, for the same reason the
- * signature is: a reference that borrows the contract's own types cannot fail the conformance check
- * the contract performs on it.
+ * One function rather than two, so that a call fails exactly when it has a description - there is one
+ * traversal of the arithmetic here, so the two exports cannot disagree about which calls fail. It
+ * also keeps one public call to one traversal, which matters because the work that would be repeated
+ * is month arithmetic.
  */
 type AddAnalysis =
   | { readonly ok: true; readonly date: Date }

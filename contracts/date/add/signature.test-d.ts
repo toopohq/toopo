@@ -3,12 +3,8 @@ import type { AddToDate, DescribeAddFailure, Duration } from './contract.js'
 import { addToDate, describeAddFailure } from './reference.js'
 
 /**
- * Block 4.2, executable. The signature is part of the contract, so an implementation that widens its
- * input, narrows its return type, or drops `null` from it fails the suite before any behavioural
- * test runs.
- *
- * `toEqualTypeOf` is used rather than `toMatchTypeOf`: a signature that merely satisfies the
- * contract's shape is not conformant, it has to be identical.
+ * Block 4.2, executable. An implementation that widens its input, narrows its return type, or drops
+ * `null` from it fails the suite before any behavioural test runs.
  */
 describe('date/add@1 signature', () => {
   it('matches the type declared by the contract', () => {

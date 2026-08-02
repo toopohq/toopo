@@ -3,19 +3,16 @@ import type { GroupBy } from './contract.js'
 import { groupBy } from './reference.js'
 
 /**
- * Block 4.2, executable. The signature is part of the contract, so an implementation that widens its
- * input, narrows its return type, or loses a type parameter fails the suite before any behavioural
- * test runs.
+ * Block 4.2, executable. An implementation that widens its input, narrows its return type, or loses a
+ * type parameter fails the suite before any behavioural test runs.
  *
- * This is the first generic signature in the catalogue, and the first place where `toEqualTypeOf`
- * alone is not enough to trust. A monomorphic signature has one shape and one comparison; a generic
- * one is also a promise about *inference*, and a mutant can keep the declared shape while breaking
- * what a caller's `groupBy(users, (u) => u.team)` produces at the call site. The identity check below
- * is therefore followed by call-site checks, and the mutation battery measures which of the two
- * catches which signature mutant rather than assuming the first one covers everything.
- *
- * `toEqualTypeOf` is used rather than `toMatchTypeOf`: a signature that merely satisfies the
- * contract's shape is not conformant, it has to be identical.
+ * This is the first generic signature in the catalogue, and the first place where the catalogue's
+ * `toEqualTypeOf` alone is not enough to trust. A monomorphic signature has one shape and one
+ * comparison; a generic one is also a promise about *inference*, and a mutant can keep the declared
+ * shape while breaking what a caller's `groupBy(users, (u) => u.team)` produces at the call site. The
+ * identity check below is therefore followed by call-site checks, and the mutation battery measures
+ * which of the two catches which signature mutant rather than assuming the first one covers
+ * everything.
  */
 
 type User = { readonly name: string; readonly team: string }

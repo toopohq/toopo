@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { expectEveryCaseIsJustified } from '../../../catalogue/every-contract.js'
 import type { AddFailureReason, Duration } from './contract.js'
 import { failureReasons, outputsAreEqual } from './contract.js'
 import { edgeCases, untypedEdgeCases } from './edge-cases.js'
@@ -112,9 +113,10 @@ describe('date/add@1 edge case tables', () => {
   })
 
   it('publishes a rationale for every decision', () => {
-    const undocumented = allCases.filter(({ rationale }) => rationale.trim() === '')
-
-    expect(undocumented).toEqual([])
+    expectEveryCaseIsJustified(
+      allCases,
+      ({ date, duration }) => `${date} + ${renderDuration(duration)}`,
+    )
   })
 
   it('writes every expected instant in a form that survives a round trip', () => {

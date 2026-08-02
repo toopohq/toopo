@@ -1,5 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it } from 'vitest'
 import fc from 'fast-check'
+import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
 import { outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
 import { describeParseFailure, parseNumber } from './reference.js'
 
@@ -136,9 +137,10 @@ describe('number/parse@1 universal properties', () => {
     // passing test: a guard that cannot fail would inflate the green count with false assurance.
     // Both entries below were measured to be unfalsifiable here - one because strings are
     // immutable, the other because no property can observe a write that already happened.
-    const inapplicable = universalProperties.filter((p) => !p.applicable).map((p) => p.name)
-
-    expect(inapplicable).toEqual(['never mutates its arguments', 'no ambient output'])
+    expectUniversalPropertiesAnswered(universalProperties, [
+      'never mutates its arguments',
+      'no ambient output',
+    ])
   })
 
   it('is deterministic - the same input yields the same output on every call', () => {

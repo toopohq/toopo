@@ -3,12 +3,8 @@ import { benchmarkProfiles } from './contract.js'
 import { addToDate } from './reference.js'
 
 /**
- * Block 4.5, executable.
- *
- * A benchmark profile names what it measures, and that name is a claim about its samples: a profile
- * called `clamping` promises to time the calendar branch, not the refusal path. `number/parse@1`
- * shipped a profile whose samples took the other path and nothing said so, which is the whole reason
- * this file exists in both contracts.
+ * Block 4.5, executable. Here the claim is that `clamping` times the calendar branch and not the
+ * refusal path.
  */
 describe('date/add@1 benchmark profiles', () => {
   for (const { name, sampleClass, samples } of benchmarkProfiles) {

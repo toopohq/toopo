@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { expectEveryCaseIsJustified } from '../../../catalogue/every-contract.js'
 import { failureReasons, outputsAreEqual } from './contract.js'
 import { edgeCases } from './edge-cases.js'
 import { describeParseFailure, parseNumber } from './reference.js'
@@ -65,8 +66,6 @@ describe('number/parse@1 edge case table', () => {
   })
 
   it('publishes a rationale for every decision', () => {
-    const undocumented = edgeCases.filter((edgeCase) => edgeCase.rationale.trim() === '')
-
-    expect(undocumented).toEqual([])
+    expectEveryCaseIsJustified(edgeCases, ({ input }) => printable(input))
   })
 })

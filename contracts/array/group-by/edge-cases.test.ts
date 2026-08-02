@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { expectEveryCaseIsJustified } from '../../../catalogue/every-contract.js'
 import { edgeCases, untypedCallerCases } from './edge-cases.js'
 import { assertOutcome, callOnce, callsMatch, renderCalls, renderGroups } from './outcome.js'
 import { groupBy } from './reference.js'
@@ -68,10 +69,9 @@ describe('array/group-by@1 edge case table', () => {
   })
 
   it('publishes a rationale for every decision', () => {
-    const undocumented = [...edgeCases, ...untypedCallerCases].filter(
-      (edgeCase) => edgeCase.rationale.trim() === '',
+    expectEveryCaseIsJustified(
+      [...edgeCases, ...untypedCallerCases],
+      (edgeCase) => edgeCase.title,
     )
-
-    expect(undocumented.map((edgeCase) => edgeCase.title)).toEqual([])
   })
 })

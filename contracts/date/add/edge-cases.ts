@@ -1,17 +1,9 @@
 /**
  * Block 4.4 of contract `date/add@1` - the named and settled edge cases.
  *
- * Split out of `contract.ts` because it is the one block that grows. The other four declare a fixed
- * number of things - an identity, a signature, a list of universal properties, a set of benchmark
- * profiles - while this one gains an entry every time a defect is found that no existing case
- * caught. Cutting along the block boundary keeps the contract's own numbering as the map: a reader
- * looking for 4.4 finds a file named for it, beside the file that executes it.
- *
- * This is a split inside one contract folder, not an abstraction across two. Nothing here is shared
- * with `number/parse@1`, which carries its own table under the same name and no common type.
- *
- * Each entry is simultaneously an exact test (`edge-cases.test.ts`) and one line of public
- * documentation. `rationale` is the published sentence; it states a measured fact, not an opinion.
+ * What this block is for, and the `Provenance` vocabulary every case carries, belong to the catalogue
+ * and are stated once in `catalogue/every-contract.ts`. What is here is this contract's own two
+ * tables.
  *
  * Dates are written as ISO 8601 strings rather than constructed, so that the table reads as data and
  * survives a diff. A string that is not a date is how the invalid input is expressed.
@@ -20,32 +12,15 @@
  * and luxon - before the reference existed, so the table judges the implementation instead of
  * transcribing it. They agreed on every case except the two where this contract knowingly takes a
  * side, both marked in their rationale.
- */
-
-import type { AddFailureReason, Duration } from './contract.js'
-import { EARLIEST_REPRESENTABLE, LATEST_REPRESENTABLE } from './contract.js'
-
-/**
- * Where a case came from. Without it a contract that has been closing its gaps reads exactly like a
- * contract that never had any, and the difference is the whole claim this project makes.
- *
- * No test can check that a declared provenance is true - a sentence about how a case was found is
- * not a property of the case - and none is written, because a guard that cannot fail would be worse
- * than none. One half of it is checkable, and it is checked without any new machinery: a case marked
- * `found-by-mutation:D-07` claims to kill D-07, the mutation battery pins D-07 as killed, and
- * deleting the case turns that column red.
  *
  * Nothing here is `found-in-the-wild` yet. No defect reported from real use has reached this
- * catalogue, and saying so is more honest than repainting the history of the two cases that came
- * from mutation.
+ * catalogue, and saying so is more honest than repainting the history of the two cases that came from
+ * mutation.
  */
-export type Provenance =
-  /** Written with the contract, before any implementation existed. */
-  | 'specified'
-  /** Added after a mutant survived. The text after the colon names the mutant it kills. */
-  | `found-by-mutation:${string}`
-  /** Added after a defect reported from real use. The text after the colon identifies the report. */
-  | `found-in-the-wild:${string}`
+
+import type { Provenance } from '../../../catalogue/every-contract.js'
+import type { AddFailureReason, Duration } from './contract.js'
+import { EARLIEST_REPRESENTABLE, LATEST_REPRESENTABLE } from './contract.js'
 
 export type EdgeCase = {
   readonly date: string

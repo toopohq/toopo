@@ -1,19 +1,11 @@
 /**
- * Reference implementation of `array/group-by@1`.
+ * `array/group-by@1` - partition an array into groups by a key computed from each element, keeping
+ * the input order everywhere and the key values exactly as the key function returned them.
  *
- * It is the oracle of the registry's differential test, so it is written to be read: correctness and
- * obviousness come before speed.
+ * Written to be read: correctness and obviousness come before speed.
  *
- * The signature is written out here rather than imported from `contract.ts`. Annotating this
- * function with the contract's own type would make the compiler enforce conformance at authoring
- * time and leave `signature.test-d.ts` unable to fail - a guard that proves nothing. An
- * implementation states its signature independently, and the contract checks it.
- *
- * `Map.groupBy` is not called here, and the reason is not that it would be cheating. It is ES2024
- * and absent from this repository's `lib: ["ES2022"]` target, so it is not typed here at all; and
- * delegating would move every line the mutation battery injects a defect into out of this file and
- * into the runtime, leaving a contract whose verification could no longer be shown to catch
- * anything.
+ * `Map.groupBy` does the same job and is not called here: it is ES2024, and this file compiles
+ * against ES2022, where it is not typed at all.
  *
  * There is no diagnostic export beside this one. The function is total: every array has a grouping,
  * so there is no refusal to describe.
@@ -29,8 +21,8 @@
  *
  * The index is counted here rather than read from the iterator, because the iterator does not carry
  * one. It is passed to the key function as its second argument and is never used for anything else,
- * so a sparse array's hole arrives as `undefined` at its own index - the behaviour block 4.4 names,
- * and the behaviour of both ES2024 built-ins, measured.
+ * so a sparse array's hole arrives as `undefined` at its own index - which is what both ES2024
+ * built-ins do, measured.
  */
 export const groupBy = <T, K>(
   items: readonly T[],

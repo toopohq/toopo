@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
+import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
 import type { Duration } from './contract.js'
 import {
   ambientProbeInstants,
@@ -350,9 +351,7 @@ const durationSnapshot = (duration: Duration): string =>
 
 describe('date/add@1 universal properties', () => {
   it('keeps the inapplicable universal properties declared as such', () => {
-    const inapplicable = universalProperties.filter((p) => !p.applicable).map((p) => p.name)
-
-    expect(inapplicable).toEqual(['no ambient output'])
+    expectUniversalPropertiesAnswered(universalProperties, ['no ambient output'])
   })
 
   it('never mutates its arguments', () => {

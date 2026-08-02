@@ -1,12 +1,6 @@
 /**
- * Contract `array/group-by@1`.
- *
- * The contract is the folder, not one file. This one carries identity, signature,
- * universal-property applicability and benchmark profiles; block 4.4, the named and settled edge
- * cases, has its own file because it is the only block that grows. All of it declares behaviour and
- * executes nothing: the reference implementation lives in `reference.ts`, and the executable half of
- * each block lives beside it - `signature.test-d.ts` for 4.2, `properties.test.ts` for 4.3,
- * `edge-cases.ts` and `edge-cases.test.ts` for 4.4, `profiles.test.ts` for 4.5.
+ * Contract `array/group-by@1`. The anatomy of a contract folder is the catalogue's and is described
+ * in `catalogue/every-contract.ts`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
  *
  * This contract is total. It answers every array with a Map and never returns `null`, so it
  * publishes no diagnostic and there is no coupling property here. The catalogue's error convention
@@ -17,6 +11,8 @@
  * rests on. It stays in the repository as the third prototype the contract format was settled on -
  * the one that produced what neither of the other two needed.
  */
+
+import { NO_AMBIENT_OUTPUT_FINDING } from '../../../catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity
@@ -367,14 +363,10 @@ export const targetEnvironments = ['node', 'browser', 'bun'] as const
 // ---------------------------------------------------------------------------
 
 /**
- * The number of cases every property in this contract is tested on.
+ * The number of cases every property in this contract is tested on. Why this is contract data at all
+ * is the catalogue's rule; the figure is this contract's, and it was measured here rather than
+ * copied from the other two that carry the same 1000.
  *
- * Contract data rather than a runner setting, for the reason the other two contracts give: the
- * harness is public and executable by anyone, so the number of draws is part of the strength of what
- * the contract claims. A floor, not a value - official validation may draw more, nothing may draw
- * fewer.
- *
- * The figure is the same 1000 the other two carry, and it was measured here rather than copied.
  * Three runs of this contract's property file at 100, 1000 and 10000 draws cost 16-17 ms, 51-53 ms
  * and 300-327 ms of test time respectively. An order of magnitude over fast-check's default is
  * bought for about 35 ms; the next order costs seven times that to redraw arrays from the same nine
@@ -383,9 +375,7 @@ export const targetEnvironments = ['node', 'browser', 'bun'] as const
 export const propertyRuns = 1000
 
 /**
- * The universal properties every contract must consider. A property is only written as a test when
- * it is applicable; one that cannot fail is recorded here with its reason instead, so the green
- * count never carries a guard that proves nothing.
+ * How this contract answers the four universal properties of the catalogue.
  *
  * `never mutates its arguments` comes back to life here. It was inapplicable on `number/parse@1`,
  * where the single argument is an immutable primitive, and applicable but about one object on
@@ -431,10 +421,7 @@ export const universalProperties = [
     name: 'no ambient output',
     applicable: false,
     reason:
-      'Not reachable by a property, for the reason measured on `number/parse@1` and confirmed on ' +
-      '`date/add@1`: a test cannot observe a write that happened before it ran, and a correct ' +
-      'memoising cache is indistinguishable from a defect by behaviour alone. It is a static ' +
-      'analysis requirement of the validation pipeline instead.',
+      `${NO_AMBIENT_OUTPUT_FINDING}. Confirmed here on a third shape without changing a word of it.`,
   },
 ] as const
 
@@ -443,9 +430,6 @@ export const universalProperties = [
 // ---------------------------------------------------------------------------
 
 /**
- * Declared as data. Nothing here is executed or measured in this repository: there is no reference
- * machine yet, and a number produced on a developer laptop would be dishonest.
- *
  * This block could not stay pure data, and that is a finding rather than a shortcut. One of the two
  * arguments of this contract is a function, so a profile that named only its array would leave the
  * expensive half of the call to whoever runs the benchmark - and grouping a thousand rows under one

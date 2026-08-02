@@ -10,5 +10,5 @@
     "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },
-  "include": ["contracts", "mutation", "vitest.config.ts"]
+  "include": ["catalogue", "contracts", "mutation", "vitest.config.ts"]
 }

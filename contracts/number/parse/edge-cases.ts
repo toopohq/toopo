@@ -1,46 +1,20 @@
 /**
  * Block 4.4 of contract `number/parse@1` - the named and settled edge cases.
  *
- * Split out of `contract.ts` because it is the one block that grows. The other four declare a fixed
- * number of things - an identity, a signature, a list of universal properties, a set of benchmark
- * profiles - while this one gains an entry every time a defect is found that no existing case
- * caught. Cutting along the block boundary keeps the contract's own numbering as the map: a reader
- * looking for 4.4 finds a file named for it, beside the file that executes it.
+ * What this block is for, and the `Provenance` vocabulary every case carries, belong to the catalogue
+ * and are stated once in `catalogue/every-contract.ts`. What is here is this contract's own table.
  *
- * This is a split inside one contract folder, not an abstraction across two. Nothing here is shared
- * with `date/add@1`, which carries its own table under the same name and no common type.
- *
- * Each entry is simultaneously an exact test (`edge-cases.test.ts`) and one line of public
- * documentation. `rationale` is the published sentence; it states a measured fact, not an opinion.
+ * Every case in it is `specified`, and that is still true of the separator family, which arrived after
+ * the rest. No mutant of this contract has ever required a case to be added - a fact about this table
+ * rather than a virtue, and why `date/add@1` carries two entries this one does not. The separator
+ * cases are not an exception to that: they were written with a revision of the partition in block 4.2,
+ * before the branch that produces the reason existed, which is what `specified` means. The revision
+ * was possible because nothing here is published yet; after that, the same change would have cost
+ * `number/parse@2`.
  */
 
+import type { Provenance } from '../../../catalogue/every-contract.js'
 import type { ParseFailureReason } from './contract.js'
-
-/**
- * Where a case came from. Without it a contract that has been closing its gaps reads exactly like a
- * contract that never had any, and the difference is the whole claim this project makes.
- *
- * No test can check that a declared provenance is true - a sentence about how a case was found is
- * not a property of the case - and none is written, because a guard that cannot fail would be worse
- * than none. One half of it is checkable, and it is checked without any new machinery: a case marked
- * `found-by-mutation:P-17` claims to kill P-17, the mutation battery pins P-17 as killed, and
- * deleting the case turns that column red.
- *
- * Every case in this contract is `specified`, and that is still true of the separator family, which
- * arrived after the rest. No mutant of this contract has ever required a case to be added - a fact
- * about this table rather than a virtue, and why `date/add@1` carries two entries this one does
- * not. The separator cases are not an exception to that: they were written with a revision of the
- * partition in block 4.2, before the branch that produces the reason existed, which is what
- * `specified` means. The revision was possible because nothing here is published yet; after that,
- * the same change would have cost `number/parse@2`.
- */
-export type Provenance =
-  /** Written with the contract, before any implementation existed. */
-  | 'specified'
-  /** Added after a mutant survived. The text after the colon names the mutant it kills. */
-  | `found-by-mutation:${string}`
-  /** Added after a defect reported from real use. The text after the colon identifies the report. */
-  | `found-in-the-wild:${string}`
 
 export type EdgeCase = {
   readonly input: string

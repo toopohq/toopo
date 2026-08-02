@@ -1,16 +1,11 @@
 /**
- * Reference implementation of `number/parse@1`.
+ * `number/parse@1` - convert a string to a finite number, or `null` when the string is not a decimal
+ * number.
  *
- * It is the oracle of the registry's differential test, so it is written to be read: correctness
- * and obviousness come before speed.
- *
- * The signature is written out here rather than imported from `contract.ts`. Annotating this
- * function with the contract's own type would make the compiler enforce conformance at authoring
- * time and leave `signature.test-d.ts` unable to fail - a guard that proves nothing. An
- * implementation states its signature independently, and the contract checks it.
+ * Written to be read: correctness and obviousness come before speed.
  *
  * Failure is `null`, and `describeParseFailure` publishes the reason beside it. Both derive from one
- * private analysis, so the module holds a single grammar and the two exports cannot drift.
+ * private analysis, so this module holds a single grammar and the two exports cannot drift.
  */
 
 /**
@@ -33,27 +28,26 @@ const DECIMAL_GRAMMAR = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
  * removal is judged by exactly the same rule, so there is no additional thing that can be wrong and
  * nothing for the coupling property to fail to cover.
  *
- * The characters are escaped rather than pasted because three of them are invisible, and the
- * literal is written inside the call so that this module holds no global-flagged regular expression
- * whose lastIndex could survive a call. Block 4.4 settles which characters belong here, one case
- * each, in both directions.
+ * The family is the comma, the underscore, the apostrophe, the no-break space and the narrow no-break
+ * space - the grouping characters `Intl.NumberFormat` emits, measured over 108 locales. The ordinary
+ * space is not one of them: no locale emits it between digits, so it is a typo rather than formatting.
+ *
+ * The characters are escaped rather than pasted because three of them are invisible, and the literal
+ * is written inside the call so that this module holds no global-flagged regular expression whose
+ * lastIndex could survive a call.
  */
 const withoutSeparators = (input: string): string => input.replace(/[,_'\u00A0\u202F]/g, '')
 
 type ParseFailureReason = 'empty' | 'separator' | 'not-decimal' | 'overflow'
 
 /**
- * The single source both exports derive from, private because it is not the shape this contract
+ * The single source both exports derive from, private because it is not the shape this module
  * publishes: a caller sees `number | null` and asks for the reason only when it needs one.
  *
- * Private, and one function rather than two, so that the coupling the contract states is true by
- * construction: there is one grammar in this module, so the two exports cannot disagree about which
- * strings fail. It also keeps one public call to one traversal - defining `parseNumber` through
- * `describeParseFailure` would trim and convert twice on every accepted input.
- *
- * The type is written out here rather than imported from `contract.ts`, for the same reason the
- * signature is: a reference that borrows the contract's own types cannot fail the conformance check
- * the contract performs on it.
+ * One function rather than two, so that a string fails to parse exactly when it has a description -
+ * there is one grammar here, so the two exports cannot disagree about which strings fail. It also
+ * keeps one public call to one traversal: defining `parseNumber` through `describeParseFailure` would
+ * trim and convert twice on every accepted input.
  */
 type ParseAnalysis =
   | { readonly ok: true; readonly value: number }

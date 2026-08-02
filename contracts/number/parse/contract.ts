@@ -1,17 +1,13 @@
 /**
- * Contract `number/parse@1`.
- *
- * The contract is the folder, not one file. This one carries identity, signature,
- * universal-property applicability and benchmark profiles; block 4.4, the named and settled edge
- * cases, has its own file because it is the only block that grows. All of it declares behaviour and
- * executes nothing: the reference implementation lives in `reference.ts`, and the executable half of
- * each block lives beside it - `signature.test-d.ts` for 4.2, `properties.test.ts` for 4.3,
- * `edge-cases.ts` and `edge-cases.test.ts` for 4.4, `profiles.test.ts` for 4.5.
+ * Contract `number/parse@1`. The anatomy of a contract folder is the catalogue's and is described in
+ * `catalogue/every-contract.ts`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
  *
  * Failure is reported as `null`, with the reason published beside the return channel rather than
  * inside it - the catalogue-wide convention, settled after three forms were built and measured on
  * this contract and on `date/add@1`.
  */
+
+import { NO_AMBIENT_OUTPUT_FINDING } from '../../../catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity
@@ -201,33 +197,24 @@ export const outputsAreEqual = (a: number | null, b: number | null): boolean => 
 // ---------------------------------------------------------------------------
 
 /**
- * The number of cases every property in this contract is tested on.
+ * The number of cases every property in this contract is tested on. Why this is contract data at all
+ * is the catalogue's rule; the figure is this contract's, and comes from measurement rather than
+ * taste.
  *
- * It is contract data rather than a runner setting, because the harness is public and executable by
- * anyone: the number of draws is part of the strength of what the contract claims, and leaving it to
- * whoever types the command would make two runs of the same contract mean different things.
- * fast-check's own default is 100 - a sensible default for a testing library, not a promise made to
- * a reader.
- *
- * It is a floor, not a value: the registry's official validation may draw more, nothing may draw
- * fewer. The figure comes from measurement rather than taste. Three runs of this suite at each of
- * 100, 1000 and 10000 draws cost 16-19 ms, 40-45 ms and 185-239 ms of test time respectively, so an
- * order of magnitude over the library default is bought for about 25 ms, while the next order costs
- * five times that to re-explore a boundary the arbitraries already concentrate on.
+ * Three runs of this suite at each of 100, 1000 and 10000 draws cost 16-19 ms, 40-45 ms and
+ * 185-239 ms of test time respectively, so an order of magnitude over fast-check's default of 100 is
+ * bought for about 25 ms, while the next order costs five times that to re-explore a boundary the
+ * arbitraries already concentrate on.
  */
 export const propertyRuns = 1000
 
 /**
- * The universal properties every contract must consider. A property is only written as a test when
- * it is applicable; one that cannot fail is recorded here with its reason instead, so the green
- * count never carries a guard that proves nothing.
+ * How this contract answers the four universal properties of the catalogue.
  *
  * `no observable side effect` used to be a single entry here, and that was the error: it named two
- * different guarantees at once, and only one of them is reachable by a property. `no ambient input`
- * - the answer depends on the declared arguments and on nothing else - is testable, and is tested.
- * `no ambient output` - the function writes nowhere - is not, and belongs to the static analysis of
- * the validation pipeline. The guard removed from this contract was not proof that side effects are
- * untestable; it was proof that the wrong half was being tested.
+ * different guarantees at once, and only one of them is reachable by a property. This contract is
+ * where that was measured, and the split is now catalogue-wide. The guard removed from here was not
+ * proof that side effects are untestable; it was proof that the wrong half was being tested.
  */
 export const universalProperties = [
   {
@@ -259,13 +246,9 @@ export const universalProperties = [
     name: 'no ambient output',
     applicable: false,
     reason:
-      'Not reachable by a property, and the attempt was removed rather than left decorative. A ' +
-      'test that snapshots globalThis inside its own `it` runs after the earlier tests have called ' +
-      'the function hundreds of times, so it cannot see a write that already happened: measured, ' +
-      'an implementation writing globalThis.__parseNumberCalls passes the whole suite. A correct ' +
-      'memoising cache passes it too, and should - a cache is not a defect. The guarantee is ' +
-      'obtained by static analysis in the validation pipeline, which forbids a feature from ' +
-      'reaching global state at all.',
+      `${NO_AMBIENT_OUTPUT_FINDING}. Measured here first, on the implementation that writes ` +
+      'globalThis.__parseNumberCalls and passes the whole suite, and the attempt was removed rather ' +
+      'than left decorative.',
   },
 ] as const
 
@@ -274,15 +257,11 @@ export const universalProperties = [
 // ---------------------------------------------------------------------------
 
 /**
- * Declared as data. Nothing here is executed or measured in this repository: there is no reference
- * machine yet, and a number produced on a developer laptop would be dishonest.
- *
  * Every profile declares the class its samples belong to, because without it a profile can measure
- * something other than what it names and nothing says so. This one did: `long-inputs` carried
- * '1'.repeat(1000), a thousand digits whose value overflows to Infinity and is therefore rejected,
- * so a third of the profile timed the rejection path instead of the cost of reading a long number.
- * `profiles.test.ts` runs the reference over every sample and fails when a declared class does not
- * hold, which is what turns this block from a comment into a claim.
+ * something other than what it names and nothing says so. This contract is where that happened:
+ * `long-inputs` carried '1'.repeat(1000), a thousand digits whose value overflows to Infinity and is
+ * therefore rejected, so a third of the profile timed the rejection path instead of the cost of
+ * reading a long number.
  */
 export type BenchmarkProfile = {
   readonly name: string

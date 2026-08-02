@@ -4,18 +4,11 @@ import { benchmarkProfiles, profileKeyFunctions } from './contract.js'
 import { groupBy } from './reference.js'
 
 /**
- * Block 4.5, executable.
- *
- * A benchmark profile names what it measures, and that name is a claim about its samples. On the
- * first two contracts the claim was "these samples are accepted" or "these samples are refused";
- * this contract refuses nothing, so the claim it makes is about the *shape* of the grouping - one
- * group, one group per element, or somewhere between - and the check is the same idea: run the
- * reference over every sample and fail when the name is not true of it.
- *
- * Without this, a profile called `many-small-groups` could quietly be measuring sixteen groups over
- * fifty thousand elements, and a benchmark built on it would report the cost of the wrong thing.
- * `number/parse@1` shipped exactly that defect under the other vocabulary before its own profile
- * test existed.
+ * Block 4.5, executable. On the first two contracts the claim a profile makes about its samples was
+ * "these are accepted" or "these are refused"; this contract refuses nothing, so its claim is about
+ * the *shape* of the grouping - one group, one group per element, or somewhere between - and the
+ * check is the same idea. Without it, a profile called `many-small-groups` could quietly be measuring
+ * sixteen groups over fifty thousand elements.
  */
 
 const holds = (shape: ProfileShape, size: number, length: number): boolean => {

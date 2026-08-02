@@ -1,51 +1,27 @@
 /**
  * Block 4.4 of contract `array/group-by@1` - the named and settled edge cases.
  *
- * Split out of `contract.ts` because it is the one block that grows. The other four declare a fixed
- * number of things - an identity, a signature, a list of universal properties, a set of benchmark
- * profiles - while this one gains an entry every time a defect is found that no existing case
- * caught. Cutting along the block boundary keeps the contract's own numbering as the map: a reader
- * looking for 4.4 finds a file named for it, beside the file that executes it.
+ * What this block is for, and the `Provenance` vocabulary every case carries, belong to the catalogue
+ * and are stated once in `catalogue/every-contract.ts`. What is here is this contract's own two
+ * tables.
  *
- * This is a split inside one contract folder, not an abstraction across two. Nothing here is shared
- * with `number/parse@1` or `date/add@1`, which carry their own tables under the same name and no
- * common type.
- *
- * Each entry is simultaneously an exact test (`edge-cases.test.ts`) and one line of public
- * documentation. `rationale` is the published sentence; it states a measured fact, not an opinion.
- *
- * A case here needs two things the first two contracts' tables did not. Half the behaviour arrives
- * as a function, so an entry carries the key function it was settled under; and some entries are
- * about how that function was *used* rather than about the answer, so an entry may also pin the
- * calls it must have received. Both are consequences of block 4.2's `keyFunctionRules`: an
- * obligation nobody executes is a sentence.
+ * A case here needs two things the first two contracts' tables did not. Half the behaviour arrives as
+ * a function, so an entry carries the key function it was settled under; and some entries are about
+ * how that function was *used* rather than about the answer, so an entry may also pin the calls it
+ * must have received. Both are consequences of block 4.2's `keyFunctionRules`: an obligation nobody
+ * executes is a sentence.
  *
  * Every expected grouping below was computed against `Map.groupBy` before this contract's reference
- * existed, so the table judges the implementation rather than transcribing it. It agrees on every
- * non-throwing case; where this contract takes a side the language does not, the rationale says so.
+ * existed, so the table judges the implementation rather than transcribing it. `language.test.ts`
+ * keeps that comparison running: all thirty cases still agree, which is the measurement block 4.1
+ * refuses this contract's admission on.
+ *
+ * Every case here is `specified`: the table was written from the measurements in block 4.2 before the
+ * reference existed, and no mutant has yet required an entry to be added. That is a fact about this
+ * contract's short history rather than a virtue.
  */
 
-/**
- * Where a case came from. Without it a contract that has been closing its gaps reads exactly like a
- * contract that never had any, and the difference is the whole claim this project makes.
- *
- * No test can check that a declared provenance is true - a sentence about how a case was found is
- * not a property of the case - and none is written, because a guard that cannot fail would be worse
- * than none. One half of it is checkable, and it is checked without any new machinery: a case marked
- * `found-by-mutation:M-01` claims to kill M-01, the mutation battery pins M-01 as killed, and
- * deleting the case turns that column red.
- *
- * Every case here is `specified`: this table was written from the measurements in block 4.2 before
- * the reference existed, and no mutant has yet required an entry to be added. That is a fact about
- * this contract's short history rather than a virtue.
- */
-export type Provenance =
-  /** Written with the contract, before any implementation existed. */
-  | 'specified'
-  /** Added after a mutant survived. The text after the colon names the mutant it kills. */
-  | `found-by-mutation:${string}`
-  /** Added after a defect reported from real use. The text after the colon identifies the report. */
-  | `found-in-the-wild:${string}`
+import type { Provenance } from '../../../catalogue/every-contract.js'
 
 /** Key and group, in the order the result must hold them. */
 export type ExpectedGroup = readonly [key: unknown, group: readonly unknown[]]
