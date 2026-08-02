@@ -12,8 +12,14 @@
  * `D-` prefixes the ids because round 1 used `M17` for two different defects in two different
  * contracts: the bare-object memoisation of `number/parse` and `drops-milliseconds` here.
  *
- * The R mutants exist only on the union arm. That is the measurement, not an omission: `null` has
- * nowhere to put a wrong reason, so a defect that reports one cannot be written against it.
+ * The R mutants exist on the two arms that carry a reason and not on the bare `null` one. That is
+ * the measurement, not an omission: `null` alone has nowhere to put a wrong reason, so a defect that
+ * reports one cannot be written against it.
+ *
+ * Arm C's edits are, at every mutant, character for character arm B's. That is a finding rather
+ * than a convenience: the two forms compute the same analysis and differ only in how they publish
+ * it, so an identical defect can be injected into both and any difference between the two columns
+ * is produced by the suite reading the result, never by the defect being a different defect.
  */
 
 import type { Battery, Edit, Mutant } from './run.ts'
@@ -51,32 +57,48 @@ const SHIFT = `  const shifted = totalMonths === 0 ? start : monthShiftedTimesta
 const COMPUTE = `${SHIFT}
   const result = new Date(shifted + elapsed)`
 
-// The four places where the two arms genuinely differ.
+// The three places where the arms genuinely differ.
+//
+// B and C share every one of them. Arm B returns the union from `addToDate`; arm C computes the
+// same union in a private `analyse` and derives two exports from it. The rejection statements are
+// therefore identical text in the two references, and a defect written once applies to both.
 const A_INVALID_DATE = `  if (!Number.isFinite(start)) return null`
 const A_UNKNOWN_FIELD = `  if (!hasOnlyDeclaredFields(duration)) return null\n`
 const A_FINAL = `  return Number.isFinite(result.getTime()) ? result : null`
 
-const B_INVALID_DATE = `  if (!Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }`
-const B_UNKNOWN_FIELD = `  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'unknown-field' }\n`
-const B_FINAL = `  return Number.isFinite(result.getTime())
+const REASONED_INVALID_DATE = `  if (!Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }`
+const REASONED_UNKNOWN_FIELD = `  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'unknown-field' }\n`
+const REASONED_FINAL = `  return Number.isFinite(result.getTime())
     ? { ok: true, date: result }
     : { ok: false, reason: 'out-of-range' }`
 
 const reference = (find: string, replace: string): Edit => ({ file: 'reference.ts', find, replace })
 
-/** A defect that touches neither return path is one edit applied to both arms. */
+/** A defect that touches no return path is one edit applied to all three arms. */
 const shared = (id: string, description: string, edits: readonly Edit[]): Mutant => ({
   id,
   description,
-  arms: { A: edits, B: edits },
+  arms: { A: edits, B: edits, C: edits },
 })
 
-/** A defect that only the union can carry, because it is about the reason reported. */
+/** A defect the bare `null` arm cannot carry, because it is about the reason reported. */
 const reasonOnly = (id: string, description: string, edits: readonly Edit[]): Mutant => ({
   id,
   description,
-  arms: { B: edits },
+  arms: { B: edits, C: edits },
 })
+
+/** D-01 and D-14 on the two reasoned arms, named because they read badly inline. */
+const REFUSE_EVERY_CALL: readonly Edit[] = [
+  reference(
+    REASONED_INVALID_DATE,
+    `  if (Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }\n${REASONED_INVALID_DATE}`,
+  ),
+]
+
+const RETURN_THE_ARGUMENT: readonly Edit[] = [
+  reference(TOTALS, `  if (Object.keys(duration).length === 0) return { ok: true, date }\n\n${TOTALS}`),
+]
 
 const reasonSwap = (from: string, to: string): Edit =>
   reference(`reason: '${from}' }`, `reason: '${to}' }`)
@@ -91,22 +113,13 @@ export const mutants: readonly Mutant[] = [
     description: 'null-always: refuses every call, the implementation that is free to be safe',
     arms: {
       A: [reference(A_INVALID_DATE, `  if (Number.isFinite(start)) return null\n${A_INVALID_DATE}`)],
-      B: [
-        reference(
-          B_INVALID_DATE,
-          `  if (Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }\n${B_INVALID_DATE}`,
-        ),
-      ],
+      B: REFUSE_EVERY_CALL,
+      C: REFUSE_EVERY_CALL,
     },
   },
-  {
-    id: 'D-02',
-    description: "mutates-the-input: shifts the caller's own Date and hands it back",
-    arms: {
-      A: [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = date`)],
-      B: [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = date`)],
-    },
-  },
+  shared('D-02', "mutates-the-input: shifts the caller's own Date and hands it back", [
+    reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = date`),
+  ]),
   shared(
     'D-03',
     'elapsed-before-calendar: applies the two steps in the order the contract forbids',
@@ -169,7 +182,11 @@ export const mutants: readonly Mutant[] = [
     id: 'D-09',
     description:
       'accepts-unknown-fields: applies the part of the duration it understood and ignores the rest',
-    arms: { A: [reference(A_UNKNOWN_FIELD, '')], B: [reference(B_UNKNOWN_FIELD, '')] },
+    arms: {
+      A: [reference(A_UNKNOWN_FIELD, '')],
+      B: [reference(REASONED_UNKNOWN_FIELD, '')],
+      C: [reference(REASONED_UNKNOWN_FIELD, '')],
+    },
   },
   {
     id: 'D-10',
@@ -178,7 +195,8 @@ export const mutants: readonly Mutant[] = [
       'this contract can produce without a cast',
     arms: {
       A: [reference(A_FINAL, `  return result`)],
-      B: [reference(B_FINAL, `  return { ok: true, date: result }`)],
+      B: [reference(REASONED_FINAL, `  return { ok: true, date: result }`)],
+      C: [reference(REASONED_FINAL, `  return { ok: true, date: result }`)],
     },
   },
   {
@@ -190,7 +208,8 @@ export const mutants: readonly Mutant[] = [
       'than invalid-date',
     arms: {
       A: [reference(`${A_INVALID_DATE}\n\n`, '')],
-      B: [reference(`${B_INVALID_DATE}\n\n`, '')],
+      B: [reference(`${REASONED_INVALID_DATE}\n\n`, '')],
+      C: [reference(`${REASONED_INVALID_DATE}\n\n`, '')],
     },
   },
   shared('D-12', 'weeks-are-five-days', [
@@ -214,12 +233,8 @@ export const mutants: readonly Mutant[] = [
       "identity-on-empty-duration: returns the caller's own object for the neutral duration",
     arms: {
       A: [reference(TOTALS, `  if (Object.keys(duration).length === 0) return date\n\n${TOTALS}`)],
-      B: [
-        reference(
-          TOTALS,
-          `  if (Object.keys(duration).length === 0) return { ok: true, date }\n\n${TOTALS}`,
-        ),
-      ],
+      B: RETURN_THE_ARGUMENT,
+      C: RETURN_THE_ARGUMENT,
     },
   },
   shared('D-15', 'clamps-up-not-down: Math.max where the contract clamps with Math.min', [
@@ -274,9 +289,12 @@ export const mutants: readonly Mutant[] = [
     // substitutions makes the first edit's output an anchor for the second: measured, the naive
     // version matched twice and the instrument refused it rather than injecting half a defect.
     [
-      reference(B_INVALID_DATE, `  if (!Number.isFinite(start)) return { ok: false, reason: 'unknown-field' }`),
       reference(
-        B_UNKNOWN_FIELD.trimEnd(),
+        REASONED_INVALID_DATE,
+        `  if (!Number.isFinite(start)) return { ok: false, reason: 'unknown-field' }`,
+      ),
+      reference(
+        REASONED_UNKNOWN_FIELD.trimEnd(),
         `  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'invalid-date' }`,
       ),
     ],
@@ -297,13 +315,14 @@ export const battery: Battery = {
       ref: 'experiment/error-convention-round-2',
       convention: 'failure reported as a discriminated union carrying a reason',
     },
+    { id: 'C', ref: 'HEAD', convention: 'the reason is published beside the return channel' },
   ],
 
   lenses: [
     {
       id: 'as-committed',
-      description: 'the arm exactly as its commit left it - reason-aware on the union arm',
-      arms: ['A', 'B'],
+      description: 'the arm exactly as its commit left it - reason-aware on the two reasoned arms',
+      arms: ['A', 'B', 'C'],
       edits: [],
     },
     {
@@ -323,6 +342,34 @@ export const battery: Battery = {
           file: 'properties.test.ts',
           find: '  result.ok === true ? `at ${result.date.getTime()}` : `refused: ${result.reason}`',
           replace: "  result.ok === true ? `at ${result.date.getTime()}` : 'refused'",
+        },
+      ],
+    },
+    {
+      /**
+       * The same blinding on arm C. It carries the same id as the lens above and a disjoint arm
+       * list, so the two produce two columns rather than one.
+       *
+       * One edit rather than two, because arm C names the reason in exactly one place: `addToDate`
+       * still answers `Date | null`, so no property and no equality function ever sees a reason.
+       * Blinded, the suite still requires a refused call to have a description and no longer
+       * requires it to be the right one - which is the same amount of sight the blinded union arm
+       * has, and the reason the two blind columns are comparable to each other and to `null`.
+       */
+      id: 'reason-blind',
+      description:
+        'the diagnostic surface read as if only its presence were published, never which reason it ' +
+        'names. The difference between this column and the one before it is the entire detection ' +
+        'the reason buys, isolated.',
+      arms: ['C'],
+      edits: [
+        {
+          file: 'edge-cases.test.ts',
+          find: '  expect(describeAddFailure(new Date(date), duration as Duration)).toBe(reason)',
+          replace:
+            '  expect(describeAddFailure(new Date(date), duration as Duration) === null).toBe(\n' +
+            '    reason === null,\n' +
+            '  )',
         },
       ],
     },
