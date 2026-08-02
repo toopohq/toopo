@@ -136,10 +136,19 @@ export type ParseFailureReason = (typeof failureReasons)[number]
  * The reason is published beside the return channel rather than inside it because that form is
  * additive: a contract can ship `name@1` with no diagnostic and gain one later without breaking
  * anyone, where putting the reason in the return type freezes it into the major on day one. On
- * detection the two forms that carry a reason were measured to tie exactly - the error convention is
- * not a verification question. That measurement is replayable rather than asserted: the batteries it
- * comes from are at the annotated tags `evidence/error-convention-round-2` and
- * `evidence/error-convention-round-3`.
+ * detection the two forms that carry a reason were measured to tie, so the error convention is not a
+ * verification question.
+ *
+ * That tie is published here at the strength it was measured on *this* contract, which is not the
+ * strength it has on the other one. On `date/add@1` it is a full-battery tie - every mutant of that
+ * round, under both lenses. Here it rests on four cells: the three reason defects and the coupling
+ * probe, under one lens. Four cells are enough to answer the question that was asked, since two forms
+ * that both publish a reason can only differ where a reason is at stake, and they are not enough to
+ * call it a full-battery tie. An earlier revision of this comment said "measured to tie exactly" of
+ * both contracts at once, which claimed the stronger measurement for the weaker one.
+ *
+ * The measurement is replayable rather than asserted: the batteries it comes from are at the
+ * annotated tags `evidence/error-convention-round-2` and `evidence/error-convention-round-3`.
  *
  * The cost is one extra traversal, on the failing path and only there.
  *
