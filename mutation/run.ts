@@ -120,6 +120,23 @@ export type SilentGuards = {
   readonly reason: string
 }
 
+/**
+ * Two kinds of guard go silent, and they do not ask for the same thing.
+ *
+ * A guard that *claims detection* - a property, a type assertion - exists to fail on a defect. Never
+ * having been red, it is decorative until a mutant reaches it, and the project rule about that has no
+ * nuance. The region has to be probed.
+ *
+ * A guard that *documents a decision* - a named edge case of block 4.4 - has a first job that is
+ * documentary: it publishes what the contract answers and why. A case no mutant violates is not
+ * decorative, and deleting it would delete a published decision; what its silence says is that the
+ * battery does not reach its region. The region should still be probed, and the case stands either
+ * way.
+ */
+export type UnprobedRegion = SilentGuards & {
+  readonly nature: 'claims detection' | 'documents a decision'
+}
+
 export type Battery = {
   readonly name: string
   readonly contractPath: string
@@ -148,10 +165,15 @@ export type Battery = {
    */
   readonly unreachableGuards: readonly SilentGuards[]
   /**
-   * Guards a mutant could redden, and none does. A declared debt rather than a silence: the list is
-   * the work, and a guard that leaves it has to leave it by being witnessed.
+   * Regions of the contract this battery does not probe: a mutant could redden these guards, and no
+   * mutant here does.
+   *
+   * The name is the point. The same list called "unwitnessed guards" reads as an indictment of the
+   * guards and invites deleting them; it is a measurement of the *battery*, and what it asks for is
+   * mutants. `array/group-by@1` carries eight signature defects that redden its block 4.2 guards, and
+   * the other two contracts carry none - so those guards are not weak, they are unprobed.
    */
-  readonly unwitnessedGuards: readonly SilentGuards[]
+  readonly unprobedRegions: readonly UnprobedRegion[]
 }
 
 export type RunResult = {

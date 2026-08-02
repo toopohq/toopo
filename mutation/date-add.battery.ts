@@ -96,10 +96,36 @@ const DETERMINISTIC = 'is deterministic - the same call yields the same answer e
 const CANCELS = 'P4 - an elapsed-time duration and its negation cancel exactly'
 const TIME_OF_DAY = 'P5 - a calendar-only duration never changes the UTC time of day'
 
+const NEUTRAL_DURATION =
+  'P2 - the empty duration is neutral: it always answers, with the same instant in a new object'
+const MILLISECOND_SHIFT = 'P3 - adding milliseconds shifts the instant by exactly that many'
+const DAY_NEVER_GROWS = 'P6 - the day of the month never grows under a calendar-only duration'
+
 /** The two named cases written to kill D-07 and D-08, pinned so that deleting one reddens here. */
 const YEAR_ZERO_CASE = '0000-01-31T00:00:00.000Z + { months: 1 } -> 0000-02-29T00:00:00.000Z'
 const CANCELLING_TOTAL_CASE =
   '2024-01-15T00:00:00.000Z + { years: 9007199254740992, months: -108086391056891900 } -> null'
+
+const CLAMP_FEBRUARY = '2024-01-31T00:00:00.000Z + { months: 1 } -> 2024-02-29T00:00:00.000Z'
+const CLAMP_JUNE = '2024-05-31T00:00:00.000Z + { months: 1 } -> 2024-06-30T00:00:00.000Z'
+const CENTURY_RULE = '2096-02-29T00:00:00.000Z + { years: 4 } -> 2100-02-28T00:00:00.000Z'
+const THIRTEEN_MONTHS = '2023-01-31T00:00:00.000Z + { years: 1, months: 1 } -> 2024-02-29T00:00:00.000Z'
+const ORDER_HOURS = '2024-01-30T23:00:00.000Z + { months: 1, hours: 2 } -> 2024-03-01T01:00:00.000Z'
+const ORDER_DAYS = '2024-01-30T00:00:00.000Z + { months: 1, days: 1 } -> 2024-03-01T00:00:00.000Z'
+const MIXED_SIGN = '2024-01-31T00:00:00.000Z + { months: 1, days: -1 } -> 2024-02-28T00:00:00.000Z'
+const WEEK_AND_DAY = '2024-02-25T00:00:00.000Z + { weeks: 1, days: 1 } -> 2024-03-04T00:00:00.000Z'
+const WEEK_ACROSS_MONTHS = '2024-01-31T00:00:00.000Z + { weeks: 1 } -> 2024-02-07T00:00:00.000Z'
+const EPOCH_CROSSING = '1969-12-31T23:59:59.999Z + { milliseconds: 1 } -> 1970-01-01T00:00:00.000Z'
+
+const UNKNOWN_FIELD_VALUE = '2024-01-15T00:00:00.000Z + { day: 1 } -> null'
+const UNKNOWN_FIELD_REASON = '2024-01-15T00:00:00.000Z + { day: 1 } -> unknown-field'
+const UNKNOWN_MONTH_REASON = '2024-01-15T00:00:00.000Z + { month: 1 } -> unknown-field'
+const UNKNOWN_BOTH_REASON = '2024-01-15T00:00:00.000Z + { days: 1, day: 1 } -> unknown-field'
+const FRACTIONAL_MONTH_REASON = '2024-01-15T00:00:00.000Z + { months: 1.5 } -> field-not-whole'
+const STRING_FIELD_REASON = '2024-01-15T00:00:00.000Z + { days: "1" } -> field-not-whole'
+const MONTH_TOTAL_REASON = '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> total-not-exact'
+const INVALID_DATE_REASON = 'not a date + { days: 1 } -> invalid-date'
+const INVALID_DATE_NEUTRAL_REASON = 'not a date + {} -> invalid-date'
 
 // ---------------------------------------------------------------------------
 // D-01 to D-17 - defects of behaviour
@@ -115,7 +141,7 @@ const behaviour: readonly Mutant[] = [
         `  if (Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }\n${INVALID_DATE}`,
       ),
     ],
-    killed(),
+    killed([NEUTRAL_DURATION, MILLISECOND_SHIFT]),
   ),
   behavioural(
     'D-02',
@@ -133,13 +159,13 @@ const behaviour: readonly Mutant[] = [
           `  const result = new Date(totalMonths === 0 ? moved : monthShiftedTimestamp(moved, totalMonths))`,
       ),
     ],
-    killed(),
+    killed([ORDER_HOURS, ORDER_DAYS, MIXED_SIGN]),
   ),
   behavioural(
     'D-04',
     'overflows-instead-of-clamping: 31 January plus a month lands in March, as setUTCMonth does',
     [reference(CLAMP, `  const clampedDay = shifted.getUTCDate()`)],
-    killed(),
+    killed([CLAMP_FEBRUARY, CLAMP_JUNE]),
   ),
   behavioural(
     'D-05',
@@ -172,7 +198,7 @@ const behaviour: readonly Mutant[] = [
           `  const shifted = years === 0 ? afterMonths : monthShiftedTimestamp(afterMonths, years * 12)`,
       ),
     ],
-    killed(),
+    killed([THIRTEEN_MONTHS]),
   ),
   behavioural(
     'D-07',
@@ -198,7 +224,7 @@ const behaviour: readonly Mutant[] = [
     'D-09',
     'accepts-unknown-fields: applies the part of the duration it understood and ignores the rest',
     [reference(UNKNOWN_FIELD, '')],
-    killed(),
+    killed([UNKNOWN_FIELD_VALUE, UNKNOWN_FIELD_REASON]),
   ),
   behavioural(
     'D-10',
@@ -213,12 +239,14 @@ const behaviour: readonly Mutant[] = [
       'final range check by every path, so the value is unchanged; only the reason moves, from ' +
       'invalid-date to out-of-range',
     [reference(`${INVALID_DATE}\n\n`, '')],
+    [INVALID_DATE_REASON, INVALID_DATE_NEUTRAL_REASON],
   ),
+
   behavioural(
     'D-12',
     'weeks-are-five-days',
     [reference(WEEK, `const MILLISECONDS_PER_WEEK = 432_000_000`)],
-    killed(),
+    killed([WEEK_AND_DAY, WEEK_ACROSS_MONTHS]),
   ),
   behavioural(
     'D-13',
@@ -235,7 +263,7 @@ const behaviour: readonly Mutant[] = [
 }`,
       ),
     ],
-    killed(),
+    killed([CENTURY_RULE]),
   ),
   behavioural(
     'D-14',
@@ -246,7 +274,7 @@ const behaviour: readonly Mutant[] = [
         `  if (Object.keys(duration).length === 0) return { ok: true, date }\n\n${TOTALS}`,
       ),
     ],
-    killed(),
+    killed([NEUTRAL_DURATION]),
   ),
   behavioural(
     'D-15',
@@ -257,7 +285,7 @@ const behaviour: readonly Mutant[] = [
         `  const clampedDay = Math.max(shifted.getUTCDate(), lastDayOfMonth(year, targetMonth))`,
       ),
     ],
-    killed(),
+    killed([DAY_NEVER_GROWS, CLAMP_FEBRUARY]),
   ),
   behavioural(
     'D-16',
@@ -268,13 +296,13 @@ const behaviour: readonly Mutant[] = [
         `  probe.setUTCFullYear(year, monthIndex + 1, 1)`,
       ),
     ],
-    killed(),
+    killed([CLAMP_FEBRUARY, CLAMP_JUNE]),
   ),
   behavioural(
     'D-17',
     'drops-milliseconds: the smallest field is summed as zero',
     [reference(MILLISECONDS_FIELD, `  0`)],
-    killed(),
+    killed([MILLISECOND_SHIFT, EPOCH_CROSSING]),
   ),
 
   // D-18 to D-21 exist because four properties of this contract were declared applicable and had
@@ -358,13 +386,17 @@ const reasons: readonly Mutant[] = [
     'R-1',
     'right value, wrong reason: a field that is not a whole number is reported as out-of-range',
     [reasonSwap('field-not-whole', 'out-of-range')],
+    [FRACTIONAL_MONTH_REASON, STRING_FIELD_REASON],
   ),
+
   onlySeenUnblinded(
     'R-2',
     'a plausible but false reason: an unknown field is reported as field-not-whole, which is what a ' +
       'developer would guess if they had to guess',
     [reasonSwap('unknown-field', 'field-not-whole')],
+    [UNKNOWN_FIELD_REASON, UNKNOWN_MONTH_REASON, UNKNOWN_BOTH_REASON],
   ),
+
   onlySeenUnblinded(
     'R-3',
     'collapse: every reason reported as one. This is a diagnostic carrying exactly as much ' +
@@ -375,7 +407,9 @@ const reasons: readonly Mutant[] = [
       reasonSwap('total-not-exact', 'invalid-date'),
       reasonSwap('out-of-range', 'invalid-date'),
     ],
+    [FRACTIONAL_MONTH_REASON, MONTH_TOTAL_REASON],
   ),
+
   onlySeenUnblinded(
     'R-4',
     'the pair null renders indistinguishable: invalid-date and unknown-field exchanged. Under null ' +
@@ -393,7 +427,9 @@ const reasons: readonly Mutant[] = [
         `  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'invalid-date' }`,
       ),
     ],
+    [INVALID_DATE_REASON, INVALID_DATE_NEUTRAL_REASON, UNKNOWN_FIELD_REASON, UNKNOWN_MONTH_REASON, UNKNOWN_BOTH_REASON],
   ),
+
 ]
 
 // ---------------------------------------------------------------------------
@@ -567,12 +603,13 @@ export const battery: Battery = {
     },
   ],
 
-  unwitnessedGuards: [
+  unprobedRegions: [
     {
+      nature: 'claims detection',
       reason:
         'block 4.2 has no defect in this battery. These five are reachable - `array/group-by@1` ' +
-        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - and simply ' +
-        'unwritten.',
+        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - so what is ' +
+        'missing is a signature mutant, not a better guard.',
       titles: [
         'matches the type declared by the contract',
         'accepts a Date and a Duration, and nothing else',
@@ -582,12 +619,14 @@ export const battery: Battery = {
       ],
     },
     {
+      nature: 'documents a decision',
       reason:
         'the refusal cases of block 4.4, on the value rather than on the reason. No mutant of this ' +
         'battery makes the function *accept* a duration it must refuse - D-08 weakens the field ' +
         'guard and the total guard catches every one of these behind it, which the table already ' +
-        'records. Their `described` twins are witnessed by R-1 to R-4, so what is unwitnessed here is ' +
-        'the value channel of a refusal and not the refusal itself.',
+        'records - so the region is unprobed on the value channel. Their `described` twins are red ' +
+        'on R-1 to R-4, and every one of these publishes a decision a caller reads whether or not a ' +
+        'mutant ever violates it. What is missing is a mutant that accepts a refusal, not a case.',
       titles: [
         '2024-01-15T00:00:00.000Z + { months: 1.5 } -> null',
         '2024-01-15T00:00:00.000Z + { days: 0.5 } -> null',

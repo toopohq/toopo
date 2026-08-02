@@ -29,10 +29,12 @@
  *
  * A guard is *never red* when no mutant of the battery reddens it, and that is where the accounting
  * matters. A battery injects into `reference.ts`, so a guard over the contract's own declarations or
- * over the runtime cannot be reached by construction and is not a hole; a guard a mutant could redden
- * and none does is one. This file cannot tell the two apart, so the battery declares which is which
- * and this file refuses a silence nobody accounts for - and refuses a declaration a mutant
- * contradicts, which is how a debt gets removed from the list when it is paid.
+ * over the runtime cannot be reached by construction; a guard a mutant could redden and none does
+ * marks a region the battery does not probe. That second list measures the battery rather than the
+ * guards, and it is printed under that name so that reading it produces mutants instead of deletions.
+ * This file cannot tell the two apart, so the battery declares which is which, and this file refuses
+ * a silence nobody accounts for - and refuses a declaration a mutant contradicts, which is how a
+ * region leaves the list once it is probed.
  */
 
 import type { Battery, Calibration, GuardIdentity, RunResult, SilentGuards } from './run.ts'
@@ -54,8 +56,10 @@ export type ColumnAttribution = {
   readonly neverAlone: readonly GuardAttribution[]
   /** Never red, and out of this battery's reach by construction. */
   readonly outOfReach: readonly AccountedGuard[]
-  /** Never red, and a mutant could have reddened it. The declared debt. */
-  readonly unwitnessed: readonly AccountedGuard[]
+  /** Never red, claims detection, and no mutant probes its region. Decorative until one does. */
+  readonly unprobedClaims: readonly AccountedGuard[]
+  /** Never red, documents a decision, and no mutant probes its region. The case still stands. */
+  readonly unprobedDecisions: readonly AccountedGuard[]
   /** Never red, and nothing says why: a guard nobody has shown able to fail. */
   readonly unaccountedFor: readonly string[]
   /** Declared silent, and a mutant reddened it anyway, so the declaration is stale. */
@@ -81,7 +85,7 @@ const reasonIn = (
 
 const accountFor = (battery: Battery, guard: GuardIdentity, lens: string): string | undefined =>
   reasonIn(battery.unreachableGuards, guard, lens) ??
-  reasonIn(battery.unwitnessedGuards, guard, lens)
+  reasonIn(battery.unprobedRegions, guard, lens)
 
 const namedIn = (
   groups: readonly SilentGuards[],
@@ -121,7 +125,16 @@ const attributeColumn = (
     loadBearing: attributions.filter((entry) => entry.soleRedOn.length > 0),
     neverAlone: attributions.filter((entry) => entry.soleRedOn.length === 0),
     outOfReach: namedIn(battery.unreachableGuards, silent, lens),
-    unwitnessed: namedIn(battery.unwitnessedGuards, silent, lens),
+    unprobedClaims: namedIn(
+      battery.unprobedRegions.filter((region) => region.nature === 'claims detection'),
+      silent,
+      lens,
+    ),
+    unprobedDecisions: namedIn(
+      battery.unprobedRegions.filter((region) => region.nature === 'documents a decision'),
+      silent,
+      lens,
+    ),
     unaccountedFor: silent
       .filter((guard) => accountFor(battery, guard, lens) === undefined)
       .map((guard) => guard.title),
@@ -164,8 +177,12 @@ export const renderAttribution = (columns: readonly ColumnAttribution[]): string
       ...withRedsListed(column.neverAlone),
       `  never red, out of this battery's reach (${column.outOfReach.length})`,
       ...groupedByReason(column.outOfReach),
-      `  never red, UNWITNESSED - a mutant could redden these and none does (${column.unwitnessed.length})`,
-      ...groupedByReason(column.unwitnessed),
+      `  never red, A REGION THIS BATTERY DOES NOT PROBE - claims detection, so decorative until a ` +
+        `mutant reaches it (${column.unprobedClaims.length})`,
+      ...groupedByReason(column.unprobedClaims),
+      `  never red, a region this battery does not probe - documents a decision, which stands ` +
+        `whether or not a mutant violates it (${column.unprobedDecisions.length})`,
+      ...groupedByReason(column.unprobedDecisions),
       `  never red, UNACCOUNTED FOR (${column.unaccountedFor.length})`,
       ...column.unaccountedFor.map((title) => `    ${title}`),
       ...(column.wronglyDeclaredSilent.length === 0
@@ -183,9 +200,9 @@ export const renderAttribution = (columns: readonly ColumnAttribution[]): string
  * battery declared silent reddened. Both are the same failure as an unpinned cell: a claim nobody
  * has to agree with.
  *
- * A declared debt is not a disagreement. It is already as loud as this instrument can make it - named
- * in the battery, printed in the report - and failing on it would leave an author two ways out, one
- * of which is to write the reason as a lie.
+ * A declared unprobed region is not a disagreement. It is already as loud as this instrument can make
+ * it - named in the battery, printed in the report - and failing on it would leave an author two ways
+ * out, one of which is to write the reason as a lie.
  */
 export const disagreementsIn = (columns: readonly ColumnAttribution[]): readonly string[] =>
   columns.flatMap((column) => [

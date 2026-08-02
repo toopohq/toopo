@@ -117,6 +117,8 @@ const REACHES_EVERY_REGION = 'draws key functions that reach every region the pr
 const INTEGER_LIKE_ORDER =
   'group order is first occurrence, not numeric, for keys that look like integers'
 const NAN_KEYS = 'NaN keys form a single group'
+const DISTINCT_OBJECT_KEYS = 'two distinct objects are two distinct keys'
+const SAME_OBJECT_KEY = 'the same object used as a key twice is one key'
 const PROTO_KEY = 'the key "__proto__"'
 const SECOND_LOOK = 'a key function that would answer differently on a second look is never asked twice'
 const EMPTY_ARRAY = 'the empty array'
@@ -329,7 +331,7 @@ const behaviour: readonly Mutant[] = [
         `  CACHE.set(items.length, groups as unknown as Map<unknown, unknown[]>)\n\n${RETURN}`,
       ),
     ],
-    killed(),
+    killed([PARTITION, GROUP_ORDER]),
   ),
   behavioural(
     'M-16',
@@ -397,7 +399,7 @@ const behaviour: readonly Mutant[] = [
           `    const existing = groups.get(key)`,
       ),
     ],
-    killed(),
+    killed([DISTINCT_OBJECT_KEYS, SAME_OBJECT_KEY, COHERENCE, GROUP_ORDER]),
   ),
   behavioural(
     'M-20',
@@ -643,16 +645,19 @@ export const battery: Battery = {
     },
   ],
 
-  unwitnessedGuards: [
+  unprobedRegions: [
     {
+      nature: 'documents a decision',
       reason:
         'no mutant answers a nullish input instead of refusing it. That is precisely what lodash ' +
         'does - measured, it returns zero groups for `null` - so the defect these two cases refuse is ' +
-        'real and plausible, and the battery does not carry it. The three other untyped-caller cases ' +
-        'are witnessed by M-11, which reads the input by counting over `length`.',
+        'real and plausible, and this battery does not carry it. The three other untyped-caller cases ' +
+        'are red on M-11, which reads the input by counting over `length`. Both cases publish a ' +
+        'decision either way; what is missing is the mutant that violates it.',
       titles: ['null', 'undefined'],
     },
     {
+      nature: 'claims detection',
       reason:
         'the two `@ts-expect-error` guards of block 4.2 that S-8 does not reach. S-8 widened the ' +
         'input and reddened the third; widening the key function to take a third argument, or making ' +

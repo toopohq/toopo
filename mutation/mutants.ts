@@ -21,6 +21,33 @@ export const reference = (find: string, replace: string): Edit => ({
   replace,
 })
 
+/**
+ * Which guards a killed cell names, and where the line is.
+ *
+ * A pin exists so that a defect which stops being caught by the guard that used to catch it is as
+ * loud as a failing test. That is worth doing where a single edit could take the detection away, and
+ * worth nothing where forty guards catch the same defect - so the rule is written here rather than
+ * left to judgement, because the next battery will apply it and two batteries applying different
+ * rules would make the pins incomparable.
+ *
+ * **Five or fewer red guards: name all of them.** At that size the set usually sits in one region -
+ * one property, or the cases of one block - and one commit can remove it.
+ *
+ * **More than five: name the guards the mutant was written to exercise, and nothing else.**
+ *
+ * The line is at five because that is where the measurement puts it, not because it is round.
+ * Measured across the three batteries, over 147 killed cells: the median red set is exactly five, so
+ * the line splits them almost in half. The 77 cells at or below it cost 196 pinned titles between
+ * them; pinning the other 70 in full would cost 1505 more, none of which would pin anything a single
+ * edit could remove, and every one of which would break on a rename. A pin that transcribes a run is
+ * not a claim about the contract.
+ *
+ * Pins are checked by inclusion rather than by equality, and that is measured too. Three consecutive
+ * runs of all three batteries agreed on 173 of 174 cells; the one that moved is `F-1` on `date/add@1`,
+ * which gained `P4` on the third run because `elapsedOnlyDuration` drew the empty record. Requiring
+ * the exact set would have failed that cell on two runs out of three - a battery that reddens on the
+ * seed is a battery nobody can read.
+ */
 export const killed = (by?: readonly string[]): Expectation =>
   by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
 
@@ -65,7 +92,12 @@ export type MutantForms = {
    * contract asks for, so a blinded column is what a contract without that half of its surface would
    * have seen: nothing.
    */
-  readonly onlySeenUnblinded: (id: string, description: string, edits: readonly Edit[]) => Mutant
+  readonly onlySeenUnblinded: (
+    id: string,
+    description: string,
+    edits: readonly Edit[],
+    by?: readonly string[],
+  ) => Mutant
 }
 
 export const mutantsOn = (under: ArmUnderTest): MutantForms => ({
@@ -77,12 +109,14 @@ export const mutantsOn = (under: ArmUnderTest): MutantForms => ({
     expected: expectedPerCell(under, () => expected),
   }),
 
-  onlySeenUnblinded: (id, description, edits) => ({
+  onlySeenUnblinded: (id, description, edits, by) => ({
     id,
     kind: 'defect',
     description,
     arms: { [under.arm]: edits },
-    expected: expectedPerCell(under, (lens) => (lens === under.asCommitted ? killed() : survived)),
+    expected: expectedPerCell(under, (lens) =>
+      lens === under.asCommitted ? killed(by) : survived,
+    ),
   }),
 })
 

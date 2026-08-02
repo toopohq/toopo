@@ -57,7 +57,40 @@ const PARSE_NUMBER = `export const parseNumber = (input: string): number | null 
   return analysis.ok ? analysis.value : null
 }`
 
+// ---------------------------------------------------------------------------
+// Guards the battery pins by name. `mutants.ts` states when a cell names all of
+// its reds and when it names only the region the defect lives in.
+// ---------------------------------------------------------------------------
+
 const COUPLING_PROPERTY = 'P4 - a string fails to parse exactly when it has a description'
+const NO_STRAY_VALUE = 'P1 - returns null or a finite number, never NaN and never Infinity'
+const WHITESPACE_INSENSITIVE = 'P2 - is insensitive to surrounding whitespace'
+const ROUND_TRIPS = 'P3 - is a right inverse of String on the finite doubles, except negative zero'
+const DETERMINISTIC = 'is deterministic - the same input yields the same output on every call'
+const CALL_HISTORY = 'has no ambient input - an answer does not depend on the inputs parsed before it'
+
+const NEGATIVE_ZERO = '"-0" -> -0'
+const NEGATIVE_UNDERFLOW = '"-1e-400" -> -0'
+const LOST_DIGIT = '"9007199254740993" -> 9007199254740992'
+const OVERFLOW_VALUE = '"1e400" -> null'
+const OVERFLOW_REASON = '"1e400" -> overflow'
+const BARE_FRACTION = '".5" -> 0.5'
+const BARE_FRACTION_PARSES = '".5" -> no failure to describe'
+const DECIMALS_PROFILE = 'decimals-and-exponents - every sample is accepted'
+const PADDED_PROFILE = 'whitespace-padded - every sample is accepted'
+const INNER_SPACE_VALUE = '"4 2" -> null'
+const INNER_SPACE_REASON = '"4 2" -> not-decimal'
+const DETACHED_SIGN_REASON = '"- 1" -> not-decimal'
+const ORDINARY_SPACE_REASON = '"1 000" -> not-decimal'
+const HEX_VALUE = '"0x1F" -> null'
+const HEX_REASON = '"0x1F" -> not-decimal'
+const UNDERSCORE_VALUE = '"1_000" -> null'
+const UNDERSCORE_REASON = '"1_000" -> separator'
+const COMMA_DECIMAL_REASON = '"1,5" -> separator'
+const COMMA_GROUPING_REASON = '"1,000" -> separator'
+const INHERITED_NAME_REASON = '"constructor" -> not-decimal'
+const EMPTY_REASON = '"" -> empty'
+const BLANK_REASON = '"   " -> empty'
 
 // ---------------------------------------------------------------------------
 // The three caches - P-02, P-17 and P-19 differ only in where they are consulted
@@ -107,7 +140,7 @@ const behaviour: readonly Mutant[] = [
           `    : { ok: false, reason: 'overflow' }`,
       ),
     ],
-    killed(),
+    killed([NEGATIVE_ZERO, NEGATIVE_UNDERFLOW]),
   ),
   behavioural(
     'P-02',
@@ -125,15 +158,15 @@ const behaviour: readonly Mutant[] = [
         `  return Number.isFinite(value) ? { ok: true, value } : { ok: true, value: Number.NaN }`,
       ),
     ],
-    killed(),
+    killed([NO_STRAY_VALUE]),
   ),
   behavioural(
     'P-04',
     'drops the finiteness guard, so overflow escapes as Infinity',
     [reference(FINAL, `  return { ok: true, value }`)],
-    killed(),
+    killed([OVERFLOW_VALUE, OVERFLOW_REASON, NO_STRAY_VALUE]),
   ),
-  behavioural('P-05', 'omits the trim', [reference(TRIM, `  const trimmed = input`)], killed()),
+  behavioural('P-05', 'omits the trim', [reference(TRIM, `  const trimmed = input`)], killed([WHITESPACE_INSENSITIVE, PADDED_PROFILE])),
   behavioural(
     'P-06',
     'uses parseFloat instead of Number',
@@ -149,38 +182,38 @@ const behaviour: readonly Mutant[] = [
         `  return !Number.isNaN(value) ? { ok: true, value } : { ok: false, reason: 'overflow' }`,
       ),
     ],
-    killed(),
+    killed([OVERFLOW_VALUE, OVERFLOW_REASON, NO_STRAY_VALUE]),
   ),
   behavioural(
     'P-08',
     'adds the global flag to the grammar, which then carries a lastIndex between calls',
     [reference(`?$/`, `?$/g`)],
-    killed(),
+    killed([DETERMINISTIC, CALL_HISTORY]),
   ),
   behavioural(
     'P-09',
     'accepts "1_000" by stripping underscores first',
     [reference(TRIM, `  const trimmed = input.trim().replace(/_/g, '')`)],
-    killed(),
+    killed([UNDERSCORE_VALUE, UNDERSCORE_REASON]),
   ),
   behavioural(
     'P-10',
     'strips every whitespace character rather than only the surrounding ones',
     [reference(TRIM, `  const trimmed = input.replace(/\\s/g, '')`)],
-    killed(),
+    killed([INNER_SPACE_VALUE, INNER_SPACE_REASON]),
   ),
   behavioural(
     'P-11',
     'requires an integer part, rejecting ".5"',
     [reference(`(?:\\d+(?:\\.\\d*)?|\\.\\d+)`, `(?:\\d+(?:\\.\\d*)?)`)],
-    killed(),
+    killed([BARE_FRACTION, BARE_FRACTION_PARSES, DECIMALS_PROFILE]),
   ),
-  behavioural('P-12', 'leaves the grammar unanchored on the right', [reference(`?$/`, `?/`)], killed()),
+  behavioural('P-12', 'leaves the grammar unanchored on the right', [reference(`?$/`, `?/`)], killed([HEX_VALUE, HEX_REASON])),
   behavioural(
     'P-13',
     'rounds to fifteen significant digits',
     [reference(CONVERT, `  const value = Number(Number(trimmed).toPrecision(15))`)],
-    killed(),
+    killed([NEGATIVE_ZERO, NEGATIVE_UNDERFLOW, LOST_DIGIT, ROUND_TRIPS]),
   ),
   behavioural(
     'P-14',
@@ -192,7 +225,7 @@ const behaviour: readonly Mutant[] = [
     'P-15',
     'trims only the start',
     [reference(TRIM, `  const trimmed = input.trimStart()`)],
-    killed(),
+    killed([WHITESPACE_INSENSITIVE, PADDED_PROFILE]),
   ),
   behavioural(
     'P-16',
@@ -218,12 +251,14 @@ const behaviour: readonly Mutant[] = [
       '"not-decimal". The blinded column is what this contract would catch if it published no ' +
       'reason at all: nothing',
     bareCache('input'),
+    [INHERITED_NAME_REASON],
   ),
+
   behavioural(
     'P-18',
     'reports failure for every input',
     [reference(REJECT, `  if (trimmed.length >= 0) return { ok: false, reason: 'not-decimal' }\n${REJECT}`)],
-    killed(),
+    killed([ROUND_TRIPS]),
   ),
   behavioural(
     'P-19',
@@ -246,12 +281,15 @@ const behaviour: readonly Mutant[] = [
 const reasons: readonly Mutant[] = [
   onlySeenUnblinded('N-1', 'right value, wrong reason: overflow reported as not-decimal', [
     reference(`reason: 'overflow' }`, `reason: 'not-decimal' }`),
-  ]),
+  ], [OVERFLOW_REASON]),
+
   onlySeenUnblinded(
     'N-2',
     'a plausible but false reason: the empty string reported as not-decimal, which it also is',
     [reference(EMPTY, `  if (trimmed === '') return { ok: false, reason: 'not-decimal' }`)],
+    [EMPTY_REASON, BLANK_REASON],
   ),
+
   onlySeenUnblinded(
     'N-3',
     'collapse: every reason reported as one. The form carrying exactly as much information as null ' +
@@ -260,7 +298,9 @@ const reasons: readonly Mutant[] = [
       reference(EMPTY, `  if (trimmed === '') return { ok: false, reason: 'not-decimal' }`),
       reference(`reason: 'overflow' }`, `reason: 'not-decimal' }`),
     ],
+    [EMPTY_REASON, BLANK_REASON, OVERFLOW_REASON],
   ),
+
   onlySeenUnblinded(
     'N-4',
     'the separator literal declared and never produced: the second look is dropped and every ' +
@@ -268,7 +308,9 @@ const reasons: readonly Mutant[] = [
       'branches refuse - this is what the contract looked like before the literal existed, and it ' +
       'is the shape a later optimisation of the refusing path would reach by accident',
     [reference(REJECT, `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }`)],
+    [COMMA_DECIMAL_REASON, COMMA_GROUPING_REASON, UNDERSCORE_REASON],
   ),
+
   onlySeenUnblinded(
     'N-5',
     'the separator family widened to whitespace, so "4 2" is reported as a separator mistake. It ' +
@@ -276,14 +318,14 @@ const reasons: readonly Mutant[] = [
       'document emits, never the ordinary space, and without this mutant that line would be a ' +
       'sentence rather than a measurement',
     [reference(SEPARATOR_FAMILY, `input.replace(/[,_'\\s\\u00A0\\u202F]/g, '')`)],
+    [INNER_SPACE_REASON, DETACHED_SIGN_REASON, ORDINARY_SPACE_REASON],
   ),
+
 ]
 
 // ---------------------------------------------------------------------------
 // The coupling probe
 // ---------------------------------------------------------------------------
-
-const NO_STRAY_VALUE = 'P1 - returns null or a finite number, never NaN and never Infinity'
 
 const probes: readonly Mutant[] = [
   probe(
@@ -405,12 +447,13 @@ export const battery: Battery = {
     },
   ],
 
-  unwitnessedGuards: [
+  unprobedRegions: [
     {
+      nature: 'claims detection',
       reason:
         'block 4.2 has no defect in this battery. These four are reachable - `array/group-by@1` ' +
-        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - and simply ' +
-        'unwritten, which is the debt this attribution exists to make visible rather than to hide.',
+        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - so what is ' +
+        'missing is a signature mutant, not a better guard.',
       titles: [
         'matches the type declared by the contract',
         'accepts a string and nothing else',
