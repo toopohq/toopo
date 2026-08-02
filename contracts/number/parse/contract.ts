@@ -136,10 +136,27 @@ export type ParseFailureReason = (typeof failureReasons)[number]
  * The reason is published beside the return channel rather than inside it because that form is
  * additive: a contract can ship `name@1` with no diagnostic and gain one later without breaking
  * anyone, where putting the reason in the return type freezes it into the major on day one. On
- * detection the two forms were measured to tie exactly - the error convention is not a verification
- * question.
+ * detection the two forms that carry a reason were measured to tie exactly - the error convention is
+ * not a verification question.
  *
  * The cost is one extra traversal, on the failing path and only there.
+ *
+ * One measured consequence belongs here rather than in a commit message, because it generalises past
+ * this contract: publishing a reason does not only add detection, it can *move* where the detection
+ * happens. P-17 of the battery memoises into a bare object consulted before anything else, so
+ * `CACHE["constructor"]` is served from `Object.prototype` - a function, not an analysis. Under a
+ * convention that reports failure as `null` alone, the poisoned entry was the answer and
+ * `parseNumber("constructor")` returned a function, which the named case caught on the value. Under
+ * this convention the poisoned entry is read as an analysis whose `ok` is `undefined`, so
+ * `parseNumber` answers `null` - which is the right answer - and the only export that still sees
+ * anything is the diagnostic, which answers `undefined` where the contract requires "not-decimal".
+ * Measured: read blind to which reason it names, this contract catches nothing at all on P-17.
+ *
+ * The general form, for whoever writes the twelfth contract. A value channel that reports failure as
+ * one uninformative value can absorb a defect by accident, because on that input the wrong answer
+ * and the right answer are the same value. A contract that ships without a diagnostic is not merely
+ * less informative about that class of defect - it is blind to it, and it will not find out, because
+ * the named case that used to catch it still passes.
  */
 export type DescribeParseFailure = (input: string) => ParseFailureReason | null
 

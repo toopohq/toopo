@@ -508,7 +508,11 @@ export const edgeCases: readonly EdgeCase[] = [
     provenance: 'specified',
     rationale:
       'An inherited object property name is not a number. It is listed because an implementation ' +
-      'memoising into a plain object answers this one wrongly: "constructor" in {} is true.',
+      'memoising into a plain object serves it from Object.prototype: "constructor" in {} is true. ' +
+      'Which of the two exports catches that depends on the error convention, and under this one it ' +
+      'is no longer the value: measured, parseNumber("constructor") answers null, which is correct, ' +
+      'while describeParseFailure answers undefined where this row requires "not-decimal". Block ' +
+      '4.2 records why that matters to every later contract.',
   },
 
   // --- IEEE-754 limits ----------------------------------------------------
