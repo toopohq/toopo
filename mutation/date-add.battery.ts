@@ -79,6 +79,11 @@ const reasonSwap = (from: string, to: string): Edit =>
 const ZONE_PROPERTY = 'has no ambient input - the answer does not depend on the process time zone'
 const COUPLING_PROPERTY = 'P7 - a call fails exactly when it has a description'
 
+/** The two named cases written to kill D-07 and D-08, pinned so that deleting one reddens here. */
+const YEAR_ZERO_CASE = '0000-01-31T00:00:00.000Z + { months: 1 } -> 0000-02-29T00:00:00.000Z'
+const CANCELLING_TOTAL_CASE =
+  '2024-01-15T00:00:00.000Z + { years: 9007199254740992, months: -108086391056891900 } -> null'
+
 const killed = (by?: readonly string[]): Expectation =>
   by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
 
@@ -195,19 +200,14 @@ const behaviour: readonly Mutant[] = [
   new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate()`,
       ),
     ],
-    survived,
+    killed([YEAR_ZERO_CASE]),
   ),
-  {
-    id: 'D-08',
-    kind: 'defect',
-    description:
-      'isinteger-not-issafeinteger: accepts a field past 2^53, where the arithmetic stops being ' +
-      'exact. Caught only by the reason it reports: `{ days: 1e21 }` passes the field guard it ' +
-      'should have failed and is refused by the total guard instead, so the value is right and the ' +
-      'motive is wrong',
-    arms: { C: [reference(WHOLE_NUMBER, `  value === undefined || Number.isInteger(value)`)] },
-    expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
-  },
+  behavioural(
+    'D-08',
+    'isinteger-not-issafeinteger: accepts a field past 2^53, where the arithmetic stops being exact',
+    [reference(WHOLE_NUMBER, `  value === undefined || Number.isInteger(value)`)],
+    killed([CANCELLING_TOTAL_CASE]),
+  ),
   behavioural(
     'D-09',
     'accepts-unknown-fields: applies the part of the duration it understood and ignores the rest',

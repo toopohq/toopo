@@ -189,9 +189,21 @@ export const edgeCases: readonly EdgeCase[] = [
       'implementation that builds its result through `Date.UTC` answers in the wrong century. The ' +
       'measured limit of this case is published rather than hidden: an implementation using ' +
       '`Date.UTC` only to look up the length of a month passes it, because Y and 1900 + Y are ' +
-      'congruent modulo four and so agree on February everywhere except the century rule. Year 0 ' +
-      'is the only two-digit year where they part - 0 is a leap year and 1900 is not - and this ' +
-      'table does not carry it.',
+      'congruent modulo four and so agree on February everywhere except the century rule. The case ' +
+      'below is the one input where they part.',
+  },
+  {
+    date: '0000-01-31T00:00:00.000Z',
+    duration: { months: 1 },
+    expected: '0000-02-29T00:00:00.000Z',
+    reason: null,
+    provenance: 'found-by-mutation:D-07',
+    rationale:
+      'Year 0 is the single two-digit year where reading a month length through `Date.UTC` and ' +
+      'reading it through `setUTCFullYear` disagree: 0 is a leap year and 1900, which `Date.UTC` ' +
+      'maps it to, is not. Measured, February of year 0 has 29 days by `setUTCFullYear` and 28 by ' +
+      '`Date.UTC`. Every other case in this table is congruent modulo four with the year it would ' +
+      'be mistaken for, so all of them pass under that implementation and this one does not.',
   },
 
   // --- Aggregation within a step ------------------------------------------
@@ -367,6 +379,21 @@ export const edgeCases: readonly EdgeCase[] = [
       'measured library accepts it; this contract requires `Number.isSafeInteger` instead, for the ' +
       'same reason it rejects a fractional month - a wrong answer delivered silently is worse than ' +
       'no answer.',
+  },
+  {
+    date: '2024-01-15T00:00:00.000Z',
+    duration: { years: 2 ** 53, months: -(2 ** 53) * 12 },
+    expected: null,
+    reason: 'field-not-whole',
+    provenance: 'found-by-mutation:D-08',
+    rationale:
+      'Two fields past the safe range whose month total is exactly zero. Measured, `2**53` is an ' +
+      'integer and not a safe integer, and both products are exactly representable as doubles, so ' +
+      'their sum really is 0. An implementation guarding with `Number.isInteger` instead of ' +
+      '`Number.isSafeInteger` therefore accepts both fields, computes a total it can represent, ' +
+      'and returns the date unchanged - a plausible answer rather than an obviously wrong one. ' +
+      'Every other case here is caught by the total guard even when the field guard is weakened; ' +
+      'this is the one that requires the rule to be about the fields as written.',
   },
   {
     date: '2024-01-15T00:00:00.000Z',
