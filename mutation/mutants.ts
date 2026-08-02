@@ -22,6 +22,25 @@ export const reference = (find: string, replace: string): Edit => ({
 })
 
 /**
+ * The two files a specification battery injects into.
+ *
+ * They are named here rather than in each specification battery for the reason `reference` is: three
+ * batteries write the same two path literals, and a path literal repeated three times is a rename
+ * away from being wrong in two places.
+ */
+export const contract = (find: string, replace: string): Edit => ({
+  file: 'contract.ts',
+  find,
+  replace,
+})
+
+export const edgeCases = (find: string, replace: string): Edit => ({
+  file: 'edge-cases.ts',
+  find,
+  replace,
+})
+
+/**
  * Which guards a killed cell names, and where the line is.
  *
  * A pin exists so that a defect which stops being caught by the guard that used to catch it is as
@@ -52,6 +71,18 @@ export const killed = (by?: readonly string[]): Expectation =>
   by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
 
 export const survived: Expectation = { verdict: 'survived' }
+
+/**
+ * Killed by the compiler and by nothing else: the run reddened and no guard reported a failure,
+ * because the defect never reached one.
+ *
+ * It is a real kill and it is counted apart, because what caught it is not a guard anyone wrote. A
+ * specification battery produces these by construction - removing a reason literal breaks the union
+ * every table entry is typed against - and the share of a contract that only this verdict holds is
+ * worth reading rather than folding into the score. The type system is part of the verification;
+ * pretending a test did the work would misattribute it.
+ */
+export const killedByTypecheck: Expectation = { verdict: 'killed-by-typecheck' }
 
 /**
  * The arm a battery declares its mutants against, and how its lenses read it.
