@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
+import { expectEveryCaseIsJustified } from '../../../catalogue/every-contract.js'
+import type { EdgeCase, ExpectedGroup } from './edge-cases.js'
 import { edgeCases, untypedCallerCases } from './edge-cases.js'
-import { assertOutcome, callOnce, callsMatch, renderCalls } from './outcome.js'
+import { assertOutcome, callOnce, callsMatch, groupingMatches, renderCalls, renderGroups } from './outcome.js'
 import type { Grouper } from './outcome.js'
 
 /**
@@ -69,4 +71,136 @@ describe('array/group-by@1 against Map.groupBy', () => {
       assertOutcome(outcome, attempt)
     })
   }
+})
+
+/**
+ * The other half of what block 4.1 publishes about the language, and it needs the opposite assertion.
+ *
+ * `Map.groupBy` answers what this contract requires, so replaying block 4.4 against it is enough.
+ * `Object.groupBy` is claimed to *disagree*, on group order and on key identity, and a claim of
+ * disagreement is not replayed by running a table and hoping it fails: nothing would say whether it
+ * failed for the declared reason or for a different one, and a version of the runtime that silently
+ * started agreeing would leave the published sentence standing with nothing behind it. Each case
+ * below therefore asserts both halves - that the language and this contract part, and exactly what
+ * the language answers instead.
+ *
+ * The cases are looked up in block 4.4 by title rather than restated, so a divergence is measured
+ * against the row the contract actually settles. Renaming or deleting one of those rows reddens
+ * here, which is the coupling that keeps this file a measurement of the table.
+ *
+ * It was written because the sentence was inherited and unmeasured while the sentence beside it was
+ * replayed. A published claim with no replay behind it is the one thing this repository sells
+ * against, and it does not stop being one because the claim is about somebody else's function.
+ */
+
+type LanguageObjectGroupBy = (
+  items: Iterable<unknown>,
+  keyOf: (item: unknown, index: number) => PropertyKey,
+) => Partial<Record<PropertyKey, readonly unknown[]>>
+
+/** Reached through a cast because `Object.groupBy` is ES2024 and this repository compiles to ES2022. */
+const objectGrouper = (): ((
+  items: readonly unknown[],
+  keyOf: (item: unknown, index: number) => unknown,
+) => readonly ExpectedGroup[]) => {
+  const groupBy = (Object as unknown as { readonly groupBy?: LanguageObjectGroupBy }).groupBy
+
+  if (typeof groupBy !== 'function') {
+    throw new Error(
+      'this runtime has no Object.groupBy, so the divergence block 4.1 publishes cannot be ' +
+        'measured here. The contract fails rather than skips.',
+    )
+  }
+
+  return (items, keyOf) =>
+    Object.entries(
+      groupBy(items, keyOf as (item: unknown, index: number) => PropertyKey),
+    ).map(([key, group]) => [key, group ?? []] as const)
+}
+
+const caseTitled = (title: string): EdgeCase => {
+  const settled = edgeCases.find((entry) => entry.title === title)
+
+  if (settled === undefined) {
+    throw new Error(`block 4.4 no longer carries a case titled "${title}"`)
+  }
+
+  return settled
+}
+
+/**
+ * What `Object.groupBy` answers where this contract answers something else. Every one of these was
+ * measured on Node 24.15.0 before being written down, and each names which half of the published
+ * sentence it carries.
+ */
+const objectGroupByDivergences: readonly {
+  readonly settledAs: string
+  readonly disagreesOn: string
+  readonly answers: readonly ExpectedGroup[]
+  readonly rationale: string
+}[] = [
+  {
+    settledAs: 'group order is first occurrence, not numeric, for keys that look like integers',
+    disagreesOn: 'the order of the groups',
+    answers: [['1', ['1']], ['2', ['2']], ['10', ['10']], ['b', ['b']], ['a', ['a']]],
+    rationale:
+      'An object enumerates integer-like property names first and in ascending numeric order, ' +
+      'whatever order they were inserted in. This is the whole reason the return type is a Map, and ' +
+      'it is the half of the sentence that is about order.',
+  },
+  {
+    settledAs: 'the number 1 and the string "1" are different keys',
+    disagreesOn: 'the identity of the keys',
+    answers: [['1', [1, '1']]],
+    rationale:
+      'An object key is a string, so the number and the string collapse into one group. Nothing ' +
+      'about a caller\'s data says they are the same thing.',
+  },
+  {
+    settledAs: 'true and the string "true" are different keys',
+    disagreesOn: 'the identity of the keys',
+    answers: [['true', [true, 'true']]],
+    rationale: 'The same collapse for the other primitive an object silently stringifies.',
+  },
+  {
+    settledAs: 'two distinct objects are two distinct keys',
+    disagreesOn: 'the identity of the keys',
+    answers: [['[object Object]', ['x', 'y']]],
+    rationale:
+      'Two objects that print alike become one property name, so two groups become one. It is the ' +
+      'sharpest of the four: no coercion rule a caller could learn makes this recoverable.',
+  },
+]
+
+describe('array/group-by@1 against Object.groupBy', () => {
+  for (const { settledAs, disagreesOn, answers } of objectGroupByDivergences) {
+    it(`${settledAs}: Object.groupBy disagrees on ${disagreesOn}`, () => {
+      const settled = caseTitled(settledAs)
+
+      if (settled.outcome.kind !== 'groups') {
+        throw new Error(`"${settledAs}" does not settle a grouping, so nothing here can diverge`)
+      }
+
+      const actual = objectGrouper()(settled.items, settled.keyOf)
+
+      expect(
+        groupingMatches(actual, settled.outcome.groups),
+        `Object.groupBy was expected to disagree with this contract and answered ` +
+          `${renderGroups(actual)}, which is what the contract requires`,
+      ).toBe(false)
+
+      expect(
+        groupingMatches(actual, answers),
+        `expected Object.groupBy to answer ${renderGroups(answers)}, it answered ` +
+          `${renderGroups(actual)}`,
+      ).toBe(true)
+    })
+  }
+
+  it('publishes a rationale for every divergence', () => {
+    // The catalogue's own guard, over a table that is not block 4.4 but is the same kind of thing:
+    // an exact test and one line of public documentation. Without it the sentences above would be
+    // a field nothing reads.
+    expectEveryCaseIsJustified(objectGroupByDivergences, (entry) => entry.settledAs)
+  })
 })

@@ -89,6 +89,8 @@ const INTEGER_LIKE_ORDER =
   'group order is first occurrence, not numeric, for keys that look like integers'
 const INDEX_PROTOCOL = 'the key function receives the element and its index'
 const IN_THE_LANGUAGE = ', in the language'
+const KEY_IDENTITY_DIVERGENCE = ': Object.groupBy disagrees on the identity of the keys'
+const ORDER_DIVERGENCE = ': Object.groupBy disagrees on the order of the groups'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -160,7 +162,11 @@ const mutants: readonly Mutant[] = [
       'red together and that pair is the point: the contract\'s own case, and its twin in ' +
       '`language.test.ts`, which the reference battery cannot reach at all. A wrong table entry ' +
       'reddens what the language answers as well as what the reference does, which is what makes ' +
-      'that file a replay of this table rather than a second opinion about it',
+      'that file a replay of this table rather than a second opinion about it. Three guards go red ' +
+      'and the third is the sharpest: the answer this mutant writes into the table is exactly what ' +
+      '`Object.groupBy` gives, so the guard that requires the two to *disagree* stops being able to ' +
+      'find a disagreement. A specification that drifts towards the object-shaped answer takes the ' +
+      'measurement refusing that answer with it',
     [
       edgeCases(
         INTEGER_LIKE_OUTCOME,
@@ -170,7 +176,11 @@ const mutants: readonly Mutant[] = [
     },`,
       ),
     ],
-    killed([INTEGER_LIKE_ORDER, `${INTEGER_LIKE_ORDER}${IN_THE_LANGUAGE}`]),
+    killed([
+      INTEGER_LIKE_ORDER,
+      `${INTEGER_LIKE_ORDER}${IN_THE_LANGUAGE}`,
+      `${INTEGER_LIKE_ORDER}${ORDER_DIVERGENCE}`,
+    ]),
   ),
   sameOnEveryLens(
     'AG-9',
@@ -236,6 +246,7 @@ export const battery: Battery = {
         'refuses a call with no key function',
         'never mutates its arguments',
         'draws key functions that reach every region the properties police',
+        'publishes a rationale for every divergence',
       ],
     },
     {
@@ -348,6 +359,20 @@ export const battery: Battery = {
         'a number, in the language, from an untyped caller',
         'a Set, in the language, from an untyped caller',
         'a string, in the language, from an untyped caller',
+      ],
+    },
+    {
+      nature: 'documents a decision',
+      reason:
+        'the three divergences from `Object.groupBy` AG-8 does not reach. Like the language twins ' +
+        'above they read block 4.4 by title, so a defect injected into the table reaches them - AG-8 ' +
+        'is the proof, on the fourth. What they publish is the half of block 4.1 that says the ' +
+        'object-shaped grouper disagrees, and each of the three would need its own mutant to say ' +
+        'that about a different row.',
+      titles: [
+        `the number 1 and the string "1" are different keys${KEY_IDENTITY_DIVERGENCE}`,
+        `true and the string "true" are different keys${KEY_IDENTITY_DIVERGENCE}`,
+        `two distinct objects are two distinct keys${KEY_IDENTITY_DIVERGENCE}`,
       ],
     },
     {

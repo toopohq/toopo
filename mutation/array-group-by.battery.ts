@@ -666,10 +666,14 @@ export const battery: Battery = {
     {
       reason:
         'over the runtime rather than over the implementation. `language.test.ts` runs block 4.4 ' +
-        'against `Map.groupBy`, which no defect injected into `reference.ts` can touch. It is the ' +
-        'measurement `catalogueAdmission` rests on, and it is silent here by construction rather than ' +
-        'for want of a mutant.',
-      suites: ['array/group-by@1 against Map.groupBy'],
+        'against `Map.groupBy`, and the four divergences block 4.1 publishes against ' +
+        '`Object.groupBy`, neither of which a defect injected into `reference.ts` can touch. It is ' +
+        'the measurement `catalogueAdmission` rests on, and it is silent here by construction rather ' +
+        'than for want of a mutant.',
+      suites: [
+        'array/group-by@1 against Map.groupBy',
+        'array/group-by@1 against Object.groupBy',
+      ],
     },
     {
       lenses: ['identity-blind'],
