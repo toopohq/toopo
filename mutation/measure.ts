@@ -55,20 +55,88 @@ const matrix = (results: readonly RunResult[]): string => {
   return [header, ...body].join('\n')
 }
 
-const scoreOf = (battery: Battery, results: readonly RunResult[]): string => {
-  const defects = new Set(
-    battery.mutants.filter((m) => m.kind === 'defect').map((m) => m.id),
-  )
-  const applicable = results.filter(
-    (r) => defects.has(r.mutant) && r.verdict !== 'not-applicable',
-  )
-  const killed = applicable.filter((r) => r.verdict !== 'survived')
-  const survivors = [...new Set(applicable.filter((r) => r.verdict === 'survived').map((r) => r.mutant))]
+type ColumnScore = {
+  readonly column: string
+  readonly applicable: number
+  readonly killed: readonly string[]
+  readonly surviving: readonly string[]
+}
 
-  return (
-    `defects killed: ${killed.length}/${applicable.length} cells` +
-    (survivors.length === 0 ? '' : `, surviving: ${survivors.join(', ')}`)
+const armOf = (column: string): string => column.slice(0, column.indexOf('/'))
+
+const scoreColumn = (
+  results: readonly RunResult[],
+  defects: ReadonlySet<string>,
+  column: string,
+): ColumnScore => {
+  const cells = results.filter(
+    (r) =>
+      `${r.arm}/${r.lens}` === column && defects.has(r.mutant) && r.verdict !== 'not-applicable',
   )
+
+  return {
+    column,
+    applicable: cells.length,
+    killed: cells.filter((r) => r.verdict !== 'survived').map((r) => r.mutant),
+    surviving: cells.filter((r) => r.verdict === 'survived').map((r) => r.mutant),
+  }
+}
+
+/**
+ * What one lens catches that another lens of the same arm does not.
+ *
+ * This is the quantity the whole error convention was decided on, so it is printed rather than left
+ * to a reader to subtract: `as-committed` measures the contract, `reason-blind` measures what the
+ * same contract would catch if it published no reason at all, and the difference is exactly the
+ * detection the reason buys.
+ *
+ * Written over every ordered pair of lenses on an arm rather than over the two that exist today, so
+ * that a third lens is reported instead of silently averaged into the others.
+ */
+const gapsBetweenLenses = (scores: readonly ColumnScore[]): readonly string[] =>
+  scores.flatMap((seeing) =>
+    scores
+      .filter((other) => other.column !== seeing.column && armOf(other.column) === armOf(seeing.column))
+      .map((blind) => ({ blind, only: seeing.killed.filter((id) => blind.surviving.includes(id)) }))
+      .filter(({ only }) => only.length > 0)
+      .map(
+        ({ blind, only }) =>
+          `${seeing.column} catches ${only.length} defect(s) that ${blind.column} does not: ` +
+          only.join(', '),
+      ),
+  )
+
+/**
+ * Reported by column, and never as one number.
+ *
+ * The figure this replaced added the cells of both lenses - "37/42" - which is a count of nothing a
+ * reader wants: the two lenses answer different questions, so their sum measures neither, and it
+ * reads as a score the contract earned when half of it is the score of a contract that publishes no
+ * reason. A number that invites the wrong reading is a defect in an instrument whose whole job is
+ * honest measurement.
+ */
+const scoreOf = (battery: Battery, results: readonly RunResult[]): string => {
+  const defects = new Set(battery.mutants.filter((m) => m.kind === 'defect').map((m) => m.id))
+  const scores = [...new Set(results.map((r) => `${r.arm}/${r.lens}`))].map((column) =>
+    scoreColumn(results, defects, column),
+  )
+
+  const rows = scores.map(
+    (s) =>
+      `${s.column.padEnd(22)}${`${s.killed.length}/${s.applicable}`.padEnd(18)}` +
+      `${s.surviving.length === 0 ? '-' : s.surviving.join(', ')}`,
+  )
+
+  const gaps = gapsBetweenLenses(scores)
+
+  return [
+    `${'column'.padEnd(22)}${'defects killed'.padEnd(18)}surviving`,
+    ...rows,
+    '',
+    ...(gaps.length === 0
+      ? ['no lens of any arm catches a defect another lens of that arm misses']
+      : gaps),
+  ].join('\n')
 }
 
 const report = (battery: Battery, results: readonly RunResult[]): number => {
