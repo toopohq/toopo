@@ -96,6 +96,23 @@ export type Lens = {
   readonly edits: readonly Edit[]
 }
 
+/**
+ * Guards no mutant of this battery reddens, named and explained.
+ *
+ * "Cannot be reached" and "nothing reaches it yet" look identical from the outside and are not the
+ * same thing at all, so a battery declares which of the two each silent guard is, and
+ * `attribution.ts` refuses a silence nobody accounts for. It also refuses a declaration a mutant
+ * contradicts: a guard listed here that reddens means the list is stale, which has to be as loud as
+ * anything else this instrument pins.
+ */
+export type SilentGuards = {
+  /** Whole top-level `describe` blocks. */
+  readonly suites?: readonly string[]
+  /** Individual guards, for a block that is only partly silent. */
+  readonly titles?: readonly string[]
+  readonly reason: string
+}
+
 export type Battery = {
   readonly name: string
   readonly contractPath: string
@@ -116,6 +133,18 @@ export type Battery = {
   readonly arms: readonly Arm[]
   readonly lenses: readonly Lens[]
   readonly mutants: readonly Mutant[]
+  /**
+   * Guards this battery cannot redden by construction. It injects into `reference.ts`, so a guard
+   * over the contract's own declarations, or over the runtime, is out of its reach whatever it does.
+   * Those guards are not decorative and not gaps; they police something this instrument does not
+   * touch.
+   */
+  readonly unreachableGuards: readonly SilentGuards[]
+  /**
+   * Guards a mutant could redden, and none does. A declared debt rather than a silence: the list is
+   * the work, and a guard that leaves it has to leave it by being witnessed.
+   */
+  readonly unwitnessedGuards: readonly SilentGuards[]
 }
 
 export type RunResult = {
@@ -128,15 +157,28 @@ export type RunResult = {
   readonly agrees: boolean
 }
 
+/** A guard as the report identifies it: its own title, the block it sits in, and its file. */
+export type GuardIdentity = {
+  readonly title: string
+  readonly suite: string
+  readonly file: string
+}
+
 /**
  * What calibration establishes and every later run of the battery is measured against.
  *
- * The count is per cell rather than per battery because an arm is a git ref: two arms of the same
- * contract may legitimately name a different number of cases, and a figure shared between them
- * would either be wrong for one or too loose for both.
+ * Both figures are per cell rather than per battery because an arm is a git ref: two arms of the same
+ * contract may legitimately name a different number of cases, and a figure shared between them would
+ * either be wrong for one or too loose for both.
+ *
+ * `guardsPerCell` holds only the guards of the contract under measurement. The run executes the whole
+ * repository suite - which is what makes the count check possible - but a guard belonging to another
+ * contract cannot be reddened by a defect injected into this one, so attributing it here would drown
+ * the answer in three hundred irrelevant silences.
  */
 export type Calibration = {
   readonly testsPerCell: Readonly<Record<string, number>>
+  readonly guardsPerCell: Readonly<Record<string, readonly GuardIdentity[]>>
 }
 
 const HERE = dirname(fileURLToPath(import.meta.url))
@@ -187,11 +229,18 @@ const applyEdits = (contractPath: string, edits: readonly Edit[], label: string)
   }
 }
 
-type Assertion = { readonly status: string; readonly title: string }
-
-type VitestReport = {
-  readonly testResults?: readonly { readonly assertionResults?: readonly Assertion[] }[]
+type Assertion = {
+  readonly status: string
+  readonly title: string
+  readonly ancestorTitles?: readonly string[]
 }
+
+type ReportedFile = {
+  readonly name?: string
+  readonly assertionResults?: readonly Assertion[]
+}
+
+type VitestReport = { readonly testResults?: readonly ReportedFile[] }
 
 type SuiteRun = {
   readonly green: boolean
@@ -201,19 +250,25 @@ type SuiteRun = {
    * an import failure. That is still a kill; it simply has no per-test detail to attribute it to.
    */
   readonly testsSeen: number | null
+  readonly guards: readonly GuardIdentity[]
 }
 
-const assertionsOf = (): readonly Assertion[] | null => {
-  let report: VitestReport
-
+const reportedFiles = (): readonly ReportedFile[] | null => {
   try {
-    report = JSON.parse(readFileSync(REPORT, 'utf8')) as VitestReport
+    return (JSON.parse(readFileSync(REPORT, 'utf8')) as VitestReport).testResults ?? []
   } catch {
     return null
   }
-
-  return (report.testResults ?? []).flatMap((file) => file.assertionResults ?? [])
 }
+
+const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
+  files.flatMap((file) =>
+    (file.assertionResults ?? []).map((assertion) => ({
+      title: assertion.title,
+      suite: assertion.ancestorTitles?.[0] ?? '',
+      file: (file.name ?? '').replaceAll('\\', '/'),
+    })),
+  )
 
 const runSuite = (timeZone: string): SuiteRun => {
   rmSync(REPORT, { force: true })
@@ -246,13 +301,16 @@ const runSuite = (timeZone: string): SuiteRun => {
     green = false
   }
 
-  const assertions = assertionsOf()
-  if (assertions === null) return { green, failedTests: [], testsSeen: null }
+  const files = reportedFiles()
+  if (files === null) return { green, failedTests: [], testsSeen: null, guards: [] }
+
+  const assertions = files.flatMap((file) => file.assertionResults ?? [])
 
   return {
     green,
     failedTests: assertions.filter((t) => t.status === 'failed').map((t) => t.title),
     testsSeen: assertions.length,
+    guards: guardsIn(files),
   }
 }
 
@@ -345,6 +403,7 @@ export const calibrate = (battery: Battery): Calibration => {
   }
 
   const testsPerCell: Record<string, number> = {}
+  const guardsPerCell: Record<string, readonly GuardIdentity[]> = {}
 
   try {
     for (const { arm, lens } of cellsOf(battery)) {
@@ -372,6 +431,9 @@ export const calibrate = (battery: Battery): Calibration => {
         )
       }
       testsPerCell[cellKey(arm, lens)] = control.testsSeen
+      guardsPerCell[cellKey(arm, lens)] = control.guards.filter((guard) =>
+        guard.file.includes(`${battery.contractPath}/`),
+      )
 
       const injected = measureCell(battery, arm, lens, obvious, control.testsSeen)
       process.stdout.write(
@@ -389,7 +451,7 @@ export const calibrate = (battery: Battery): Calibration => {
     rmSync(REPORT, { force: true })
   }
 
-  return { testsPerCell }
+  return { testsPerCell, guardsPerCell }
 }
 
 export const runBattery = (
@@ -442,8 +504,21 @@ export const runBattery = (
   return results
 }
 
-export const writeResults = (name: string, results: readonly RunResult[]): void => {
+/**
+ * A partial run writes somewhere else, and says so.
+ *
+ * Measured the hard way: `--only=M-15` overwrote a complete measurement of sixty-two cells with two,
+ * and nothing said anything. The results folder is the output of one run rather than a durable
+ * record - what a cell must produce is pinned in its battery - but silently replacing a complete
+ * measurement with a fragment of one is the same family of defect as an edit that does not apply. It
+ * leaves behind something that looks exactly like a result.
+ */
+export const writeResults = (name: string, payload: unknown, complete: boolean): string => {
   const out = join(HERE, 'results')
   mkdirSync(out, { recursive: true })
-  writeFileSync(join(out, `${name}.json`), `${JSON.stringify(results, null, 2)}\n`)
+
+  const file = join(out, complete ? `${name}.json` : `${name}.partial.json`)
+  writeFileSync(file, `${JSON.stringify(payload, null, 2)}\n`)
+
+  return file
 }

@@ -17,6 +17,7 @@
 
 import type { Battery, RunResult } from './run.ts'
 import { calibrate, runBattery, writeResults } from './run.ts'
+import { attributionOf, disagreementsIn, renderAttribution } from './attribution.ts'
 
 const [name, ...flags] = process.argv.slice(2)
 
@@ -164,9 +165,41 @@ const report = (battery: Battery, results: readonly RunResult[]): number => {
 
 const module: { battery: Battery } = (await import(`./${name}.battery.ts`)) as { battery: Battery }
 
+const only = valueOf('--only')
+const onlyArms = valueOf('--arm')
+const complete = only === undefined && onlyArms === undefined
+
 const calibration = calibrate(module.battery)
 
-const results = runBattery(module.battery, calibration, valueOf('--only'), valueOf('--arm'))
-writeResults(name, results)
+const results = runBattery(module.battery, calibration, only, onlyArms)
 
-process.exitCode = report(module.battery, results)
+const cellsDisagree = report(module.battery, results) !== 0
+
+/**
+ * Attribution is only meaningful on a complete battery. Under `--only` almost every guard is silent
+ * because almost every mutant was skipped, and reporting that as a coverage hole would be an
+ * artefact of the command line rather than a fact about the contract.
+ */
+if (!complete) {
+  process.stdout.write(
+    '\nthis run was filtered, so no attribution was computed and the complete results file was ' +
+      'left untouched\n',
+  )
+  writeResults(name, { results }, false)
+  process.exitCode = cellsDisagree ? 1 : 0
+} else {
+  const attribution = attributionOf(module.battery, calibration, results)
+  const disagreements = disagreementsIn(attribution)
+
+  process.stdout.write(`\n${renderAttribution(attribution)}`)
+
+  if (disagreements.length === 0) {
+    process.stdout.write('every guard of this contract is either witnessed or accounted for\n')
+  } else {
+    process.stdout.write(`\n${disagreements.length} guard(s) disagree with the battery:\n`)
+    for (const disagreement of disagreements) process.stdout.write(`  ${disagreement}\n`)
+  }
+
+  writeResults(name, { results, attribution }, true)
+  process.exitCode = cellsDisagree || disagreements.length > 0 ? 1 : 0
+}

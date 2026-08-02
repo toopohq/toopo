@@ -19,6 +19,11 @@ import type { Grouper } from './outcome.js'
  * A runtime without `Map.groupBy` fails here, loudly, instead of skipping. The claim is about what
  * the language does; a runtime that cannot answer has not agreed, and a guard that did not run is
  * not a guard that passed - the same rule the time-zone property of `date/add@1` follows.
+ *
+ * Every title carries its own suffix rather than reusing the one block 4.4 gave the case. The
+ * mutation instrument identifies a guard by its title, so two guards sharing one would be attributed
+ * to each other - measured, and it made twenty-four of these read as reddened by defects they cannot
+ * see.
  */
 
 type LanguageGroupBy = (
@@ -42,7 +47,7 @@ const languageGrouper = (): Grouper => {
 
 describe('array/group-by@1 against Map.groupBy', () => {
   for (const { title, items, keyOf, outcome, expectedCalls } of edgeCases) {
-    it(title, () => {
+    it(`${title}, in the language`, () => {
       const { attempt, calls } = callOnce(languageGrouper(), items, keyOf)
 
       assertOutcome(outcome, attempt)
@@ -58,7 +63,7 @@ describe('array/group-by@1 against Map.groupBy', () => {
   }
 
   for (const { title, items, keyOf, outcome } of untypedCallerCases) {
-    it(`${title}, from an untyped caller`, () => {
+    it(`${title}, in the language, from an untyped caller`, () => {
       const { attempt } = callOnce(languageGrouper(), items as readonly unknown[], keyOf)
 
       assertOutcome(outcome, attempt)

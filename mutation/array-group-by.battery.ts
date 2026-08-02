@@ -607,5 +607,52 @@ export const battery: Battery = {
     },
   ],
 
+  unreachableGuards: [
+    {
+      reason:
+        'over the contract\'s own declarations rather than over the implementation. This battery ' +
+        'injects into `reference.ts`, so nothing it can do reaches a guard that reads the two tables, ' +
+        'the profile list, the key-function rules or the universal-property declarations.',
+      titles: [
+        'titles each case exactly once, across both tables',
+        'publishes a rationale for every decision',
+        'declares a non-empty sample set for every profile',
+        'names every declared shape at least once, and describes every profile',
+        'keeps the inapplicable universal properties declared as such',
+        'publishes a statement for every rule about the key function',
+        'declares exactly one precondition, and declares the obligations that make the rest testable',
+      ],
+    },
+    {
+      reason:
+        'over the runtime rather than over the implementation. `language.test.ts` runs block 4.4 ' +
+        'against `Map.groupBy`, which no defect injected into `reference.ts` can touch. It is the ' +
+        'measurement `catalogueAdmission` rests on, and it is silent here by construction rather than ' +
+        'for want of a mutant.',
+      suites: ['array/group-by@1 against Map.groupBy'],
+    },
+  ],
+
+  unwitnessedGuards: [
+    {
+      reason:
+        'no mutant answers a nullish input instead of refusing it. That is precisely what lodash ' +
+        'does - measured, it returns zero groups for `null` - so the defect these two cases refuse is ' +
+        'real and plausible, and the battery does not carry it. The three other untyped-caller cases ' +
+        'are witnessed by M-11, which reads the input by counting over `length`.',
+      titles: ['null', 'undefined'],
+    },
+    {
+      reason:
+        'the two `@ts-expect-error` guards of block 4.2 that S-8 does not reach. S-8 widened the ' +
+        'input and reddened the third; widening the key function to take a third argument, or making ' +
+        'it optional, would reach these two, and neither mutant is written.',
+      titles: [
+        'refuses a key function that asks for more than the contract passes',
+        'refuses a call with no key function',
+      ],
+    },
+  ],
+
   mutants: [...behaviour, ...signatures, ...probes],
 }

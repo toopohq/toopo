@@ -389,5 +389,36 @@ export const battery: Battery = {
     },
   ],
 
+  unreachableGuards: [
+    {
+      reason:
+        'over the contract\'s own declarations rather than over the implementation. This battery ' +
+        'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, the ' +
+        'profile list or the universal-property declarations.',
+      titles: [
+        'settles each input exactly once',
+        'names a case for every declared reason, and declares every reason it names',
+        'publishes a rationale for every decision',
+        'declares a non-empty sample set for every profile',
+        'keeps the inapplicable universal properties declared as such',
+      ],
+    },
+  ],
+
+  unwitnessedGuards: [
+    {
+      reason:
+        'block 4.2 has no defect in this battery. These four are reachable - `array/group-by@1` ' +
+        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - and simply ' +
+        'unwritten, which is the debt this attribution exists to make visible rather than to hide.',
+      titles: [
+        'matches the type declared by the contract',
+        'accepts a string and nothing else',
+        'returns a number that may be absent, never NaN-as-number-only',
+        'publishes the diagnostic surface with the type the contract declares',
+      ],
+    },
+  ],
+
   mutants: [...behaviour, ...reasons, ...probes],
 }

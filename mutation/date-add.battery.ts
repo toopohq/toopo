@@ -514,5 +514,73 @@ export const battery: Battery = {
     },
   ],
 
+  unreachableGuards: [
+    {
+      reason:
+        'over the contract\'s own declarations rather than over the implementation. This battery ' +
+        'injects into `reference.ts`, so nothing it can do reaches a guard that reads the two tables, ' +
+        'the profile list, the application order or the static analysis requirements.',
+      titles: [
+        'names a case for every declared reason, and declares every reason it names',
+        'settles each call exactly once across both tables',
+        'publishes a rationale for every decision',
+        'writes every expected instant in a form that survives a round trip',
+        'declares a non-empty sample set for every profile',
+        'keeps the inapplicable universal properties declared as such',
+        'the declared application order covers every duration field exactly once',
+        'publishes a reason for every static analysis requirement',
+      ],
+    },
+    {
+      reason:
+        'over the harness rather than over the implementation: these establish that the runtime ' +
+        'honours `process.env.TZ` and that the zone property puts it back. No defect injected into ' +
+        '`reference.ts` can change either answer, which is exactly why they are the support the zone ' +
+        'property rests on rather than part of what it measures.',
+      titles: [
+        'the declared time zones take effect in this runtime',
+        'the declared time zones do not all agree with each other',
+        'has left the ambient time zone exactly as it found it',
+        'restores both a zone that was set and a zone that was absent',
+      ],
+    },
+  ],
+
+  unwitnessedGuards: [
+    {
+      reason:
+        'block 4.2 has no defect in this battery. These five are reachable - `array/group-by@1` ' +
+        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - and simply ' +
+        'unwritten.',
+      titles: [
+        'matches the type declared by the contract',
+        'accepts a Date and a Duration, and nothing else',
+        'returns a Date that may be absent, never an Invalid Date',
+        'leaves every duration field optional',
+        'publishes the diagnostic surface with the type the contract declares',
+      ],
+    },
+    {
+      reason:
+        'the refusal cases of block 4.4, on the value rather than on the reason. No mutant of this ' +
+        'battery makes the function *accept* a duration it must refuse - D-08 weakens the field ' +
+        'guard and the total guard catches every one of these behind it, which the table already ' +
+        'records. Their `described` twins are witnessed by R-1 to R-4, so what is unwitnessed here is ' +
+        'the value channel of a refusal and not the refusal itself.',
+      titles: [
+        '2024-01-15T00:00:00.000Z + { months: 1.5 } -> null',
+        '2024-01-15T00:00:00.000Z + { days: 0.5 } -> null',
+        '2024-01-15T00:00:00.000Z + { days: NaN } -> null',
+        '2024-01-15T00:00:00.000Z + { days: Infinity } -> null',
+        '2024-01-15T00:00:00.000Z + { days: 1e+21 } -> null',
+        '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> null',
+        '2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> null',
+        '2024-01-15T00:00:00.000Z + { days: "1" } -> null',
+        'not a date + { days: 1 } -> null',
+        'not a date + {} -> null',
+      ],
+    },
+  ],
+
   mutants: [...behaviour, ...reasons, ...probes],
 }
