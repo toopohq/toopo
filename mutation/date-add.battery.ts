@@ -22,7 +22,13 @@
  * buys, isolated - which is the measurement that justifies the diagnostic existing at all.
  */
 
-import type { Battery, Edit, Expectation, Mutant } from './run.ts'
+import type { Battery, Edit, Mutant } from './run.ts'
+import type { ArmUnderTest } from './mutants.ts'
+import { killed, mutantsOn, probe, reference } from './mutants.ts'
+
+const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['reason-blind'] }
+
+const { behavioural, onlySeenUnblinded } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites, quoted from `reference.ts`
@@ -79,8 +85,6 @@ const ADD_TO_DATE = `export const addToDate = (date: Date, duration: Duration): 
   return analysis.ok ? analysis.date : null
 }`
 
-const reference = (find: string, replace: string): Edit => ({ file: 'reference.ts', find, replace })
-
 const reasonSwap = (from: string, to: string): Edit =>
   reference(`reason: '${from}' }`, `reason: '${to}' }`)
 
@@ -96,37 +100,6 @@ const TIME_OF_DAY = 'P5 - a calendar-only duration never changes the UTC time of
 const YEAR_ZERO_CASE = '0000-01-31T00:00:00.000Z + { months: 1 } -> 0000-02-29T00:00:00.000Z'
 const CANCELLING_TOTAL_CASE =
   '2024-01-15T00:00:00.000Z + { years: 9007199254740992, months: -108086391056891900 } -> null'
-
-const killed = (by?: readonly string[]): Expectation =>
-  by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
-
-const survived: Expectation = { verdict: 'survived' }
-
-/** A defect that is not about the reason: both lenses see it, and see it the same way. */
-const behavioural = (
-  id: string,
-  description: string,
-  edits: readonly Edit[],
-  expected: Expectation,
-): Mutant => ({
-  id,
-  kind: 'defect',
-  description,
-  arms: { C: edits },
-  expected: { 'C/as-committed': expected, 'C/reason-blind': expected },
-})
-
-/**
- * A defect of reason. Every one of them answers every call with the value the contract asks for, so
- * the blinded column is what the bare `null` convention would have seen: nothing.
- */
-const reasonDefect = (id: string, description: string, edits: readonly Edit[]): Mutant => ({
-  id,
-  kind: 'defect',
-  description,
-  arms: { C: edits },
-  expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
-})
 
 // ---------------------------------------------------------------------------
 // D-01 to D-17 - defects of behaviour
@@ -234,16 +207,13 @@ const behaviour: readonly Mutant[] = [
     [reference(FINAL, `  return { ok: true, date: result }`)],
     killed([NO_INVALID_DATE]),
   ),
-  {
-    id: 'D-11',
-    kind: 'defect',
-    description:
-      'no-input-validity-check: drops the early rejection of an Invalid Date input. NaN reaches the ' +
+  onlySeenUnblinded(
+    'D-11',
+    'no-input-validity-check: drops the early rejection of an Invalid Date input. NaN reaches the ' +
       'final range check by every path, so the value is unchanged; only the reason moves, from ' +
       'invalid-date to out-of-range',
-    arms: { C: [reference(`${INVALID_DATE}\n\n`, '')] },
-    expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
-  },
+    [reference(`${INVALID_DATE}\n\n`, '')],
+  ),
   behavioural(
     'D-12',
     'weeks-are-five-days',
@@ -384,18 +354,18 @@ const lastDayOfMonth = (year: number, monthIndex: number): number => {
 // ---------------------------------------------------------------------------
 
 const reasons: readonly Mutant[] = [
-  reasonDefect(
+  onlySeenUnblinded(
     'R-1',
     'right value, wrong reason: a field that is not a whole number is reported as out-of-range',
     [reasonSwap('field-not-whole', 'out-of-range')],
   ),
-  reasonDefect(
+  onlySeenUnblinded(
     'R-2',
     'a plausible but false reason: an unknown field is reported as field-not-whole, which is what a ' +
       'developer would guess if they had to guess',
     [reasonSwap('unknown-field', 'field-not-whole')],
   ),
-  reasonDefect(
+  onlySeenUnblinded(
     'R-3',
     'collapse: every reason reported as one. This is a diagnostic carrying exactly as much ' +
       'information as null, and a contract that cannot kill it has bought nothing but syntax',
@@ -406,7 +376,7 @@ const reasons: readonly Mutant[] = [
       reasonSwap('out-of-range', 'invalid-date'),
     ],
   ),
-  reasonDefect(
+  onlySeenUnblinded(
     'R-4',
     'the pair null renders indistinguishable: invalid-date and unknown-field exchanged. Under null ' +
       'this defect has no observable consequence whatsoever',
@@ -431,65 +401,53 @@ const reasons: readonly Mutant[] = [
 // ---------------------------------------------------------------------------
 
 const probes: readonly Mutant[] = [
-  {
-    id: 'F-1',
-    kind: 'probe',
-    description:
-      'returns an Invalid Date on the neutral duration - the same defect as D-10, moved off the ' +
+  probe(
+    UNDER,
+    'F-1',
+    'returns an Invalid Date on the neutral duration - the same defect as D-10, moved off the ' +
       'representable-range boundary and onto an input the generators were assumed to draw. It ' +
       'separates "P1 cannot see this" from "P1 was never given the chance", and it answered the ' +
       'second: P1 stayed green on it until the neutral duration became a branch that is drawn',
-    arms: {
-      C: [
-        reference(
-          FINAL,
-          `  if (totalMonths === 0 && elapsed === 0) return { ok: true, date: new Date(Number.NaN) }\n\n${FINAL}`,
-        ),
-      ],
-    },
-    expected: {
-      'C/as-committed': killed([NO_INVALID_DATE]),
-      'C/reason-blind': killed([NO_INVALID_DATE]),
-    },
-  },
-  {
-    id: 'F-2',
-    kind: 'probe',
-    description:
-      'returns an Invalid Date for every call. The control that separates "P1 cannot fail" from ' +
+    [
+      reference(
+        FINAL,
+        `  if (totalMonths === 0 && elapsed === 0) return { ok: true, date: new Date(Number.NaN) }\n\n${FINAL}`,
+      ),
+    ],
+    killed([NO_INVALID_DATE]),
+  ),
+  probe(
+    UNDER,
+    'F-2',
+    'returns an Invalid Date for every call. The control that separates "P1 cannot fail" from ' +
       '"P1 was never reached": if F-2 does not redden P1, the property is decorative; if it does, ' +
       'the property is sound and its generators are the defect',
-    arms: { C: [reference(FINAL, `  return { ok: true, date: new Date(Number.NaN) }`)] },
-    expected: {
-      'C/as-committed': killed([NO_INVALID_DATE]),
-      'C/reason-blind': killed([NO_INVALID_DATE]),
-    },
-  },
-  {
-    id: 'X-2',
-    kind: 'probe',
-    description:
-      'the two exports written independently, and drifting. `addToDate` gets its own arithmetic - ' +
+    [reference(FINAL, `  return { ok: true, date: new Date(Number.NaN) }`)],
+    killed([NO_INVALID_DATE]),
+  ),
+  probe(
+    UNDER,
+    'X-2',
+    'the two exports written independently, and drifting. `addToDate` gets its own arithmetic - ' +
       'the obvious shape when the answering path is optimised and the diagnostic one is left alone ' +
       '- and `analyse`, which now only `describeAddFailure` reaches, acquires a rule that a week ' +
       'cannot be combined with a calendar unit. Every entry of both tables still answers correctly ' +
       'on both exports, because no named case carries weeks and months at once; only the coupling ' +
       'property can see it',
-    arms: {
-      C: [
-        // The guard is injected before `addToDate` is rewritten. The independent implementation
-        // names its locals differently, so neither edit can turn the other's anchor ambiguous - the
-        // instrument would refuse rather than inject half a defect.
-        reference(
-          BOTH_TOTALS,
-          `${BOTH_TOTALS}\n\n` +
-            `  if (totalMonths !== 0 && valueOf(duration, 'weeks') !== 0) {\n` +
-            `    return { ok: false, reason: 'field-not-whole' }\n` +
-            `  }`,
-        ),
-        reference(
-          ADD_TO_DATE,
-          `export const addToDate = (date: Date, duration: Duration): Date | null => {
+    [
+      // The guard is injected before `addToDate` is rewritten. The independent implementation names
+      // its locals differently, so neither edit can turn the other's anchor ambiguous - the
+      // instrument would refuse rather than inject half a defect.
+      reference(
+        BOTH_TOTALS,
+        `${BOTH_TOTALS}\n\n` +
+          `  if (totalMonths !== 0 && valueOf(duration, 'weeks') !== 0) {\n` +
+          `    return { ok: false, reason: 'field-not-whole' }\n` +
+          `  }`,
+      ),
+      reference(
+        ADD_TO_DATE,
+        `export const addToDate = (date: Date, duration: Duration): Date | null => {
   const start = date.getTime()
   if (!Number.isFinite(start)) return null
 
@@ -504,14 +462,10 @@ const probes: readonly Mutant[] = [
 
   return Number.isFinite(result.getTime()) ? result : null
 }`,
-        ),
-      ],
-    },
-    expected: {
-      'C/as-committed': killed([COUPLING_PROPERTY]),
-      'C/reason-blind': killed([COUPLING_PROPERTY]),
-    },
-  },
+      ),
+    ],
+    killed([COUPLING_PROPERTY]),
+  ),
 ]
 
 export const battery: Battery = {

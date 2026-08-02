@@ -22,6 +22,12 @@
  */
 
 import type { Battery, Edit, Expectation, Mutant } from './run.ts'
+import type { ArmUnderTest } from './mutants.ts'
+import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
+
+const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['identity-blind'] }
+
+const { behavioural } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites, quoted from `reference.ts`
@@ -61,33 +67,6 @@ ${INSERT}
 
 ${STEP}
   }`
-
-const reference = (find: string, replace: string): Edit => ({ file: 'reference.ts', find, replace })
-
-// ---------------------------------------------------------------------------
-// Expectations
-// ---------------------------------------------------------------------------
-
-const killed = (by?: readonly string[]): Expectation =>
-  by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
-
-const killedByTypecheck: Expectation = { verdict: 'killed-by-typecheck' }
-
-const survived: Expectation = { verdict: 'survived' }
-
-/** A defect the type-identity assertion has no part in: both lenses see it, and see it alike. */
-const behavioural = (
-  id: string,
-  description: string,
-  edits: readonly Edit[],
-  expected: Expectation,
-): Mutant => ({
-  id,
-  kind: 'defect',
-  description,
-  arms: { C: edits },
-  expected: { 'C/as-committed': expected, 'C/identity-blind': expected },
-})
 
 /**
  * A defect of the declared type. Every one of them groups exactly as the contract requires, so the
@@ -551,55 +530,43 @@ const signatures: readonly Mutant[] = [
 // ---------------------------------------------------------------------------
 
 const probes: readonly Mutant[] = [
-  {
-    id: 'F-1',
-    kind: 'probe',
-    description:
-      'returns the groups in the order an object would have enumerated them - keys that look like ' +
+  probe(
+    UNDER,
+    'F-1',
+    'returns the groups in the order an object would have enumerated them - keys that look like ' +
       'array indices first, in ascending numeric order, then the rest in insertion order - and ' +
       'changes nothing else. It asks the question the return type was chosen on: if the group-order ' +
       'property does not redden here, then nothing in this contract but one named case separates a ' +
       'Map-shaped answer from the object-shaped one that lodash, Ramda and Object.groupBy all give',
-    arms: {
-      C: [
-        reference(
-          RETURN,
-          `  const entries = [...groups.entries()]\n` +
-            `  const looksNumeric = ([key]: readonly [K, T[]]): boolean =>\n` +
-            `    typeof key === 'string' && key !== '' && String(Number(key)) === key\n\n` +
-            `  return new Map([\n` +
-            `    ...entries.filter(looksNumeric).sort((a, b) => Number(a[0]) - Number(b[0])),\n` +
-            `    ...entries.filter((entry) => !looksNumeric(entry)),\n` +
-            `  ])`,
-        ),
-      ],
-    },
-    expected: {
-      'C/as-committed': killed([GROUP_ORDER, INTEGER_LIKE_ORDER]),
-      'C/identity-blind': killed([GROUP_ORDER, INTEGER_LIKE_ORDER]),
-    },
-  },
-  {
-    id: 'F-2',
-    kind: 'probe',
-    description:
-      'answers a single empty group for the empty input and is correct everywhere else. It asks ' +
+    [
+      reference(
+        RETURN,
+        `  const entries = [...groups.entries()]\n` +
+          `  const looksNumeric = ([key]: readonly [K, T[]]): boolean =>\n` +
+          `    typeof key === 'string' && key !== '' && String(Number(key)) === key\n\n` +
+          `  return new Map([\n` +
+          `    ...entries.filter(looksNumeric).sort((a, b) => Number(a[0]) - Number(b[0])),\n` +
+          `    ...entries.filter((entry) => !looksNumeric(entry)),\n` +
+          `  ])`,
+      ),
+    ],
+    killed([GROUP_ORDER, INTEGER_LIKE_ORDER]),
+  ),
+  probe(
+    UNDER,
+    'F-2',
+    'answers a single empty group for the empty input and is correct everywhere else. It asks ' +
       'whether the arbitraries reach the empty array at all under the declared number of runs, the ' +
       'question that found the starved support of P1 on `date/add@1`. The partition property cannot ' +
       'see it - an empty group flattens to nothing - so the group-order property is the one to watch',
-    arms: {
-      C: [
-        reference(
-          RETURN,
-          `  if (items.length === 0) return new Map([[undefined as K, [] as T[]]])\n\n${RETURN}`,
-        ),
-      ],
-    },
-    expected: {
-      'C/as-committed': killed([GROUP_ORDER, EMPTY_ARRAY]),
-      'C/identity-blind': killed([GROUP_ORDER, EMPTY_ARRAY]),
-    },
-  },
+    [
+      reference(
+        RETURN,
+        `  if (items.length === 0) return new Map([[undefined as K, [] as T[]]])\n\n${RETURN}`,
+      ),
+    ],
+    killed([GROUP_ORDER, EMPTY_ARRAY]),
+  ),
 ]
 
 export const battery: Battery = {

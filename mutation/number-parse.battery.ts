@@ -26,7 +26,13 @@
  * buys, isolated.
  */
 
-import type { Battery, Edit, Expectation, Mutant } from './run.ts'
+import type { Battery, Edit, Mutant } from './run.ts'
+import type { ArmUnderTest } from './mutants.ts'
+import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
+
+const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['reason-blind'] }
+
+const { behavioural, onlySeenUnblinded } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites, quoted from `reference.ts`
@@ -51,40 +57,7 @@ const PARSE_NUMBER = `export const parseNumber = (input: string): number | null 
   return analysis.ok ? analysis.value : null
 }`
 
-const reference = (find: string, replace: string): Edit => ({ file: 'reference.ts', find, replace })
-
 const COUPLING_PROPERTY = 'P4 - a string fails to parse exactly when it has a description'
-
-const killed = (by?: readonly string[]): Expectation =>
-  by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
-
-const survived: Expectation = { verdict: 'survived' }
-
-/** A defect that is not about the reason: both lenses see it, and see it the same way. */
-const behavioural = (
-  id: string,
-  description: string,
-  edits: readonly Edit[],
-  expected: Expectation,
-): Mutant => ({
-  id,
-  kind: 'defect',
-  description,
-  arms: { C: edits },
-  expected: { 'C/as-committed': expected, 'C/reason-blind': expected },
-})
-
-/**
- * A defect of reason. Every one of them answers every call with the value the contract asks for, so
- * the blinded column is what the bare `null` convention would have seen: nothing.
- */
-const reasonDefect = (id: string, description: string, edits: readonly Edit[]): Mutant => ({
-  id,
-  kind: 'defect',
-  description,
-  arms: { C: edits },
-  expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
-})
 
 // ---------------------------------------------------------------------------
 // The three caches - P-02, P-17 and P-19 differ only in where they are consulted
@@ -233,11 +206,9 @@ const behaviour: readonly Mutant[] = [
     ],
     survived,
   ),
-  {
-    id: 'P-17',
-    kind: 'defect',
-    description:
-      'memoises into a bare object, consulted first - so an inherited key such as "constructor" is ' +
+  onlySeenUnblinded(
+    'P-17',
+    'memoises into a bare object, consulted first - so an inherited key such as "constructor" is ' +
       'served from Object.prototype. Measured, and the one place where publishing a reason changed ' +
       'which guard catches a defect rather than adding one: under the bare `null` convention the ' +
       'poisoned entry was the answer, and `parseNumber("constructor")` returned a function, so the ' +
@@ -246,9 +217,8 @@ const behaviour: readonly Mutant[] = [
       'diagnostic still sees anything, returning undefined where the contract requires ' +
       '"not-decimal". The blinded column is what this contract would catch if it published no ' +
       'reason at all: nothing',
-    arms: { C: bareCache('input') },
-    expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
-  },
+    bareCache('input'),
+  ),
   behavioural(
     'P-18',
     'reports failure for every input',
@@ -274,15 +244,15 @@ const behaviour: readonly Mutant[] = [
 // ---------------------------------------------------------------------------
 
 const reasons: readonly Mutant[] = [
-  reasonDefect('N-1', 'right value, wrong reason: overflow reported as not-decimal', [
+  onlySeenUnblinded('N-1', 'right value, wrong reason: overflow reported as not-decimal', [
     reference(`reason: 'overflow' }`, `reason: 'not-decimal' }`),
   ]),
-  reasonDefect(
+  onlySeenUnblinded(
     'N-2',
     'a plausible but false reason: the empty string reported as not-decimal, which it also is',
     [reference(EMPTY, `  if (trimmed === '') return { ok: false, reason: 'not-decimal' }`)],
   ),
-  reasonDefect(
+  onlySeenUnblinded(
     'N-3',
     'collapse: every reason reported as one. The form carrying exactly as much information as null ' +
       'while looking like it carries more',
@@ -291,7 +261,7 @@ const reasons: readonly Mutant[] = [
       reference(`reason: 'overflow' }`, `reason: 'not-decimal' }`),
     ],
   ),
-  reasonDefect(
+  onlySeenUnblinded(
     'N-4',
     'the separator literal declared and never produced: the second look is dropped and every ' +
       'separator mistake falls back into the residual reason. No value changes, because both ' +
@@ -299,7 +269,7 @@ const reasons: readonly Mutant[] = [
       'is the shape a later optimisation of the refusing path would reach by accident',
     [reference(REJECT, `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }`)],
   ),
-  reasonDefect(
+  onlySeenUnblinded(
     'N-5',
     'the separator family widened to whitespace, so "4 2" is reported as a separator mistake. It ' +
       'polices the line block 4.4 draws from the other side: the family is the formatting a ' +
@@ -316,11 +286,10 @@ const reasons: readonly Mutant[] = [
 const NO_STRAY_VALUE = 'P1 - returns null or a finite number, never NaN and never Infinity'
 
 const probes: readonly Mutant[] = [
-  {
-    id: 'F-3',
-    kind: 'probe',
-    description:
-      'returns NaN for every call, accepted or refused. The control that separates "P1 cannot fail" ' +
+  probe(
+    UNDER,
+    'F-3',
+    'returns NaN for every call, accepted or refused. The control that separates "P1 cannot fail" ' +
       'from "P1 was never reached", written here because `date/add@1` carries the same pair and this ' +
       'contract carried neither: if F-3 does not redden P1, the property is decorative whatever its ' +
       'generators draw; if it does, the property is sound and only its support is in question. ' +
@@ -328,26 +297,20 @@ const probes: readonly Mutant[] = [
       'Object.is calls NaN equal to NaN so a uniformly broken answer is still insensitive to ' +
       'whitespace, and not the coupling, because a call that never refuses never disagrees with a ' +
       'diagnostic that never describes',
-    arms: {
-      C: [
-        reference(EMPTY, `  if (trimmed === '') return { ok: true, value: Number.NaN }`),
-        reference(
-          REJECT,
-          `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: true, value: Number.NaN }`,
-        ),
-        reference(FINAL, `  return { ok: true, value: Number.NaN }`),
-      ],
-    },
-    expected: {
-      'C/as-committed': killed([NO_STRAY_VALUE]),
-      'C/reason-blind': killed([NO_STRAY_VALUE]),
-    },
-  },
-  {
-    id: 'F-4',
-    kind: 'probe',
-    description:
-      'returns NaN on the overflow path and nowhere else - the same forbidden value as F-3, moved ' +
+    [
+      reference(EMPTY, `  if (trimmed === '') return { ok: true, value: Number.NaN }`),
+      reference(
+        REJECT,
+        `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: true, value: Number.NaN }`,
+      ),
+      reference(FINAL, `  return { ok: true, value: Number.NaN }`),
+    ],
+    killed([NO_STRAY_VALUE]),
+  ),
+  probe(
+    UNDER,
+    'F-4',
+    'returns NaN on the overflow path and nowhere else - the same forbidden value as F-3, moved ' +
       'off every input the named cases pin and onto the one region P1 exists to police at its ' +
       'boundary. It asks the question F-1 asked of `date/add@1` and answered against it there: are ' +
       'the generators reaching the region, or is the named case 1e400 the only thing standing ' +
@@ -356,34 +319,27 @@ const probes: readonly Mutant[] = [
       '`wellFormedDecimal` draws up to twelve exponent digits - and this contract does not carry ' +
       'the gap that made `date/add@1` widen the support of its P1. The named case 1e400 is not the ' +
       'only thing standing between this contract and a stray value',
-    arms: {
-      C: [
-        reference(
-          FINAL,
-          `  return Number.isFinite(value) ? { ok: true, value } : { ok: true, value: Number.NaN }`,
-        ),
-      ],
-    },
-    expected: {
-      'C/as-committed': killed([NO_STRAY_VALUE]),
-      'C/reason-blind': killed([NO_STRAY_VALUE]),
-    },
-  },
-  {
-    id: 'X-1',
-    kind: 'probe',
-    description:
-      'the two exports written independently, and drifting. `parseNumber` gets its own grammar - ' +
+    [
+      reference(
+        FINAL,
+        `  return Number.isFinite(value) ? { ok: true, value } : { ok: true, value: Number.NaN }`,
+      ),
+    ],
+    killed([NO_STRAY_VALUE]),
+  ),
+  probe(
+    UNDER,
+    'X-1',
+    'the two exports written independently, and drifting. `parseNumber` gets its own grammar - ' +
       'the obvious shape when the parsing path is optimised - and `analyse`, which now only ' +
       '`describeParseFailure` reaches, acquires a length cap. Every named case still answers ' +
       'correctly on both, because none of them is longer than twenty characters; only the coupling ' +
       'property can see it',
-    arms: {
-      C: [
-        reference(EMPTY, `${EMPTY}\n  if (trimmed.length > 20) return { ok: false, reason: 'not-decimal' }`),
-        reference(
-          PARSE_NUMBER,
-          `export const parseNumber = (input: string): number | null => {
+    [
+      reference(EMPTY, `${EMPTY}\n  if (trimmed.length > 20) return { ok: false, reason: 'not-decimal' }`),
+      reference(
+        PARSE_NUMBER,
+        `export const parseNumber = (input: string): number | null => {
   const trimmed = input.trim()
   if (!DECIMAL_GRAMMAR.test(trimmed)) return null
 
@@ -391,14 +347,10 @@ const probes: readonly Mutant[] = [
 
   return Number.isFinite(value) ? value : null
 }`,
-        ),
-      ],
-    },
-    expected: {
-      'C/as-committed': killed([COUPLING_PROPERTY]),
-      'C/reason-blind': killed([COUPLING_PROPERTY]),
-    },
-  },
+      ),
+    ],
+    killed([COUPLING_PROPERTY]),
+  ),
 ]
 
 export const battery: Battery = {
