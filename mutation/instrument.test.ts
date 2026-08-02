@@ -1,0 +1,261 @@
+import { describe, it, expect } from 'vitest'
+import { execFileSync } from 'node:child_process'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
+import { calibrate, runBattery } from './run.ts'
+import { attributionOf, disagreementsIn } from './attribution.ts'
+import { killed, mutantsOn, reference, survived } from './mutants.ts'
+import { battery, DOUBLED, DOUBLES_A_POSITIVE, DOUBLES_ZERO } from './fixture.battery.ts'
+
+/**
+ * The instrument, measured.
+ *
+ * Every number this repository publishes comes out of `mutation/`, and every guard in there is a
+ * guard nothing was measuring. Each one exists because the instrument can produce a cell that reads
+ * exactly like a result and is not one, and each is written below with its real failure condition:
+ * an apparatus deliberately broken in that one way, and the requirement that the instrument refuse
+ * it. A guard that has never been seen red is decorative, and that rule does not stop at the edge of
+ * the catalogue.
+ *
+ * Three of the eight have been observed for real. The truncated suite and the partial run that
+ * overwrote a complete one both happened by accident and are recorded in `run.ts` where they bit.
+ * The third is the healthy case and the one worth citing: D-22 of `date/add@1` reddened five named
+ * cases that battery had declared silent, and the instrument refused the stale declaration rather
+ * than letting it stand. That is this file's subject catching something in production before this
+ * file existed.
+ *
+ * Measured, and this is the whole claim: nine meta-mutants were applied one at a time, each removing
+ * from `run.ts` or `attribution.ts` the single guard one test below covers. Every time, exactly one
+ * test went red, and every time it was the one that covers the guard that had been removed. None of
+ * them is decorative and none of them stands in for another.
+ *
+ * A complete pass costs 6.9 seconds of wall clock on the machine this was written on, against 65
+ * seconds for the cheapest contract battery. That ratio is the fixture's entire justification: the
+ * price of running a guard is what decides whether it is ever run.
+ *
+ * **Where the chain stops.** These meta-tests are themselves guards, and nothing measures them. The
+ * regression is cut here, deliberately and not by oversight: each was shown red by the hand that
+ * wrote it, and that hand is the last link this repository accepts. A meta-meta battery would need a
+ * meta-fixture and would itself be unmeasured, one level further out, at the same cost and with the
+ * same honest ending. What is *not* accepted is leaving a reader to assume the chain closes. It does
+ * not.
+ *
+ * These run under their own configuration - `npm run meta`, not `npm test` - because a fixture
+ * collected by the contracts' suite would appear to be one of them, and because each guard below
+ * spawns real vitest processes. Like the batteries, they require a clean working tree: the
+ * instrument checks out arms into the tree it is measuring, and a restore would destroy anything
+ * uncommitted.
+ */
+
+const HERE = dirname(fileURLToPath(import.meta.url))
+const REPO = join(HERE, '..')
+
+/**
+ * Every guard here spawns child processes, so its verdict can depend on elapsed time, so it declares
+ * its own timeout - the catalogue's clock rule, applied to the instrument that enforces it. Measured,
+ * the slowest of them takes about two seconds; a limit twenty times that is not a duration
+ * assertion, and vitest's five-second default would have been one.
+ */
+const META_TIMEOUT_MS = 60_000
+
+const { sameOnEveryLens } = mutantsOn({ arm: 'C', asCommitted: 'as-committed', blinded: [] })
+
+/**
+ * Calibrated once and shared, because calibration is two runs of the fixture suite and every guard
+ * below would otherwise pay for them again. It is also the first assertion of this file: if the
+ * fixture cannot be calibrated, nothing underneath is worth reading, and the failure arrives as a
+ * collection error rather than as eight confusing ones.
+ */
+const calibration: Calibration = calibrate(battery)
+
+const runOne = (mutant: Mutant, changes: Partial<Battery> = {}): readonly RunResult[] =>
+  runBattery({ ...battery, ...changes, mutants: [mutant] }, calibration)
+
+const disagreementsFrom = (variant: Battery): readonly string[] => {
+  const results = runBattery(variant, calibration)
+
+  return disagreementsIn(attributionOf(variant, calibration, results))
+}
+
+describe('the mutation instrument refuses an apparatus that would lie', () => {
+  it(
+    'refuses an edit that does not apply, which would be counted as a survivor',
+    () => {
+      // The dangerous half is that nothing looks wrong: the anchor stops matching after an
+      // unrelated rewrite of the reference, no defect is injected, the suite is green, and the cell
+      // reports that the contract failed to catch a defect it was never shown.
+      const anchoredOnTextThatIsGone = sameOnEveryLens(
+        'FX-M1',
+        'anchored on a line the reference does not contain',
+        [reference(`export const doubled = (value: number): number => value * 3`, DOUBLED)],
+        survived,
+      )
+
+      expect(() => runOne(anchoredOnTextThatIsGone)).toThrow(/must match exactly once/)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a cell that ran only part of the suite, which would be counted as a kill',
+    () => {
+      // The mirror of the one above, arriving from the other side: most of the suite never ran, the
+      // run reddens because of that rather than because of the defect, and the cell reads as a
+      // contract catching something. Measured for real on vitest 4.1.10, where naming the json
+      // reporter alone under `--typecheck` collected 9 tests instead of 215 and every cell of every
+      // battery read as a kill.
+      const breaksOneFileAtImport = sameOnEveryLens(
+        'FX-M2',
+        'makes the second test file throw while it is being collected',
+        [
+          {
+            file: 'second-file.test.ts',
+            find: `import { doubled } from './reference.js'`,
+            replace: `import { doubled } from './reference.js'\nthrow new Error('collection failed')`,
+          },
+        ],
+        killed(),
+      )
+
+      expect(() => runOne(breaksOneFileAtImport)).toThrow(
+        /reported 2 tests where the unmutated arm reported 3/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses an apparatus that is stuck red, which would call every mutant killed',
+    () => {
+      const lensThatReddensTheControl = {
+        id: 'as-committed',
+        description: 'a lens whose own edit makes the unmutated fixture fail',
+        arms: ['C'],
+        edits: [
+          {
+            file: 'guards.test.ts',
+            find: 'expect(doubled(21)).toBe(42)',
+            replace: 'expect(doubled(21)).toBe(43)',
+          },
+        ],
+      }
+
+      expect(() => calibrate({ ...battery, lenses: [lensThatReddensTheControl] })).toThrow(
+        /is red, so every verdict from this battery would be noise/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses an apparatus that cannot be shown able to see anything, which would call every mutant a survivor',
+    () => {
+      // Half a calibration is not a calibration. A green control proves the apparatus is not stuck
+      // red and proves nothing about whether it can see; FX-2 answers every call correctly, so an
+      // apparatus calibrated on it has been shown nothing at all.
+      expect(() => calibrate({ ...battery, calibrationMutant: 'FX-2' })).toThrow(
+        /is not killed on C\/as-committed, so the apparatus cannot be shown able to see anything/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a cell nobody pinned, which would be a verdict nobody has to agree with',
+    () => {
+      const unpinned: Mutant = {
+        id: 'FX-M5',
+        kind: 'defect',
+        description: 'a mutant that declares no expected verdict for the cell it runs on',
+        arms: { C: [reference(DOUBLED, `export const doubled = (value: number): number => value`)] },
+        expected: {},
+      }
+
+      expect(() => runOne(unpinned)).toThrow(/declares no expected verdict for C\/as-committed/)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'disagrees when the guard a cell names is not among the guards that reddened',
+    () => {
+      // A defect that migrates from one guard to another leaves the verdict and the score untouched,
+      // so nothing else in this instrument can see it. This is the whole reason a pin names titles
+      // rather than counting them.
+      const pinnedOnAGuardItCannotRedden = sameOnEveryLens(
+        'FX-M6',
+        'the fixture defect, pinned on a guard that is green under it',
+        [reference(DOUBLED, `export const doubled = (value: number): number => value`)],
+        killed([DOUBLES_A_POSITIVE, DOUBLES_ZERO]),
+      )
+
+      const [cell] = runOne(pinnedOnAGuardItCannotRedden)
+
+      expect({ verdict: cell?.verdict, agrees: cell?.agrees }).toEqual({
+        verdict: 'killed',
+        agrees: false,
+      })
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'disagrees when a guard nothing reddens is not accounted for',
+    () => {
+      const declaresNothing = { ...battery, unprobedRegions: [] }
+
+      expect(disagreementsFrom(declaresNothing).join('\n')).toMatch(
+        /nothing reddens "doubles zero", and the battery does not say why/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'disagrees when a mutant reddens a guard the battery declared silent',
+    () => {
+      // The one of these eight the instrument has already caught in the wild: D-22 of `date/add@1`
+      // reddened five cases that battery had declared unprobed, and this is what refused the stale
+      // declaration. Half the refusal region of that contract was reclassified because of it.
+      const reddensTheDeclaredSilentGuard = sameOnEveryLens(
+        'FX-M8',
+        'off by one on zero alone, so the guard nothing was supposed to reach goes red',
+        [
+          reference(
+            DOUBLED,
+            `export const doubled = (value: number): number => value * 2 + (value === 0 ? 1 : 0)`,
+          ),
+        ],
+        killed([DOUBLES_ZERO]),
+      )
+
+      const staleDeclaration = { ...battery, mutants: [reddensTheDeclaredSilentGuard] }
+
+      expect(disagreementsFrom(staleDeclaration).join('\n')).toMatch(
+        /"doubles zero" is declared silent and a mutant reddened it, so the declaration is stale/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses to measure a working tree that is not what git says it is',
+    () => {
+      // Arms are git refs and the instrument materialises them by checking out over the working
+      // tree, so measuring a dirty tree would both destroy the operator's uncommitted work and
+      // measure an arm that is not the commit it claims to be.
+      const path = join(REPO, 'mutation', 'fixture', 'reference.ts')
+
+      try {
+        writeFileSync(path, `${readFileSync(path, 'utf8')}\nexport const dirt = 1\n`)
+
+        expect(() => calibrate(battery)).toThrow(/the working tree carries uncommitted changes/)
+      } finally {
+        execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: REPO })
+      }
+    },
+    META_TIMEOUT_MS,
+  )
+})

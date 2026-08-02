@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest run --typecheck",
-    "mutation": "node mutation/measure.ts"
+    "mutation": "node mutation/measure.ts",
+    "meta": "vitest run --config mutation/vitest.config.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

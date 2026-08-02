@@ -148,6 +148,17 @@ export type Battery = {
    */
   readonly timeZone: string
   /**
+   * The vitest configuration a run of this battery collects under, relative to the repository root.
+   * Absent means the repository's own, which collects the contracts and nothing else.
+   *
+   * It exists for the instrument's own fixture and for nothing else. A toy shaped like a contract has
+   * to be executable to be useful and must not be collected by `npm test`, where it would appear in
+   * the contracts' output as though it were one of them and would enter every cell of every contract
+   * battery. Naming a configuration here is what lets `vitest.config.ts` keep saying "the contracts'
+   * own suite, and nothing else" and mean it.
+   */
+  readonly vitestConfig?: string
+  /**
    * The mutant used to calibrate the instrument before the battery runs. It must be an obvious
    * defect that every arm expresses and every lens catches: an unmutated arm that is green proves
    * the apparatus is not stuck red, and an obvious mutant that is red proves it is not stuck green.
@@ -299,7 +310,7 @@ const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
     })),
   )
 
-const runSuite = (timeZone: string): SuiteRun => {
+const runSuite = (battery: Battery): SuiteRun => {
   rmSync(REPORT, { force: true })
 
   let green: boolean
@@ -322,8 +333,9 @@ const runSuite = (timeZone: string): SuiteRun => {
         '--reporter=default',
         '--reporter=json',
         `--outputFile.json=${REPORT}`,
+        ...(battery.vitestConfig === undefined ? [] : ['--config', battery.vitestConfig]),
       ],
-      { cwd: REPO, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, TZ: timeZone } },
+      { cwd: REPO, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, TZ: battery.timeZone } },
     )
     green = true
   } catch {
@@ -407,7 +419,7 @@ const measureCell = (
   applyEdits(battery.contractPath, lens.edits, `lens ${lens.id}`)
   applyEdits(battery.contractPath, edits, `mutant ${mutant.id} on arm ${arm.id}`)
 
-  const run = runSuite(battery.timeZone)
+  const run = runSuite(battery)
   assertWholeSuiteRan(`${mutant.id} on ${cellKey(arm, lens)}`, run, expectedTests)
 
   return { verdict: verdictOf(run.green, run.failedTests), failedTests: run.failedTests }
@@ -440,7 +452,7 @@ export const calibrate = (battery: Battery): Calibration => {
       checkoutArm(battery.contractPath, arm.ref)
       applyEdits(battery.contractPath, lens.edits, `lens ${lens.id}`)
 
-      const control = runSuite(battery.timeZone)
+      const control = runSuite(battery)
       process.stdout.write(
         `calibration ${cellKey(arm, lens).padEnd(20)} control ${control.green ? 'green' : 'RED'} ` +
           `(${control.testsSeen ?? 'no'} tests)\n`,
