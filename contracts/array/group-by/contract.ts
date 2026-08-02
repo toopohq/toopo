@@ -12,6 +12,10 @@
  * publishes no diagnostic and there is no coupling property here. The catalogue's error convention
  * is for fallible functions; a contract that cannot fail declaring a failure reason would be
  * declaring a literal nobody can ever receive.
+ *
+ * It will not be published. `catalogueAdmission` below carries that decision and the measurement it
+ * rests on. It stays in the repository as the third prototype the contract format was settled on -
+ * the one that produced what neither of the other two needed.
  */
 
 // ---------------------------------------------------------------------------
@@ -57,30 +61,27 @@ export const identity = {
     'function returns one key - and not an aggregator: it partitions, and the caller reduces.',
 
   /**
-   * Why this exists next to two built-ins that already do it, written here rather than left for a
-   * reader to wonder about.
+   * How this contract stands to the language, replayed rather than argued.
    *
    * `Object.groupBy` and `Map.groupBy` are ES2024. They are absent from this repository's own
-   * compilation target (`lib: ["ES2022"]`), and from every runtime older than Node 21, Safari 17.4
-   * or Firefox 119. Against those two the behavioural content of this contract is small, and that
-   * is stated rather than hidden: on the runtimes that have it, `Map.groupBy` answers what this
-   * contract requires on every case in block 4.4 that does not throw.
+   * compilation target (`lib: ["ES2022"]`) and from every runtime older than Node 21, Safari 17.4 or
+   * Firefox 119 - and present on the runtimes people are actually on, which is the fact that decided
+   * this contract's admission.
    *
-   * What is not small is the disagreement measured above between the implementations people
-   * actually reach for, and the class of defect it produces: an element dropped on a key named
-   * `__proto__`, a group order that is silently numeric, two different keys merged into one. The
-   * value here is the settled answer and the battery that keeps it settled, which is the claim the
-   * whole registry makes.
+   * Against `Map.groupBy` the behavioural content here is nothing at all. Measured on Node 24.15.0
+   * by `language.test.ts`, which runs both tables of block 4.4 against it rather than against the
+   * reference: all thirty cases answer what this contract requires, including the two that throw and
+   * the three that pin the calls the key function receives.
    *
-   * That argument is offered rather than assumed. Permanent rule 7 forbids anything trivial in the
-   * catalogue, and whether a specification of a method the language now ships clears that bar is a
-   * catalogue-admission question, decided at admission and not by this file.
+   * Against the implementations people used to reach for, the content is real - an element dropped
+   * on a key named `__proto__`, a group order that is silently numeric, two different keys merged
+   * into one. That is what this contract settles, and `catalogueAdmission` below records why
+   * settling it is not a reason to publish it.
    */
   relationToTheLanguage:
-    'ES2024 added Object.groupBy and Map.groupBy. Map.groupBy agrees with this contract on every ' +
-    'non-throwing case of block 4.4, measured; Object.groupBy disagrees on group order and on key ' +
-    'identity, because its result is an object. Neither is available under this repository\'s ' +
-    'ES2022 target.',
+    'ES2024 added Object.groupBy and Map.groupBy. Map.groupBy answers what this contract requires ' +
+    'on all thirty cases of block 4.4, replayed by language.test.ts; Object.groupBy disagrees on ' +
+    'group order and on key identity, because its result is an object.',
 
   searchAliases: [
     'group by',
@@ -98,6 +99,51 @@ export const identity = {
     'Map.groupBy',
     'array to map',
   ],
+} as const
+
+/**
+ * Whether this contract enters the catalogue. It does not, and a reader is owed the reason here
+ * rather than in a commit message: a contract that exists and will not be published is otherwise
+ * indistinguishable from one nobody has got round to publishing.
+ *
+ * The measurement that decided it is above and is replayable: `Map.groupBy` answers what this
+ * contract requires on all thirty cases of block 4.4, on the runtime the decision was taken on.
+ * Permanent rule 7 forbids anything trivial in the catalogue, and a specification of a method the
+ * language already ships is exactly that - the TC39 specification is then the contract, and it is
+ * more rigorous and more public than this one.
+ *
+ * This contract offered two arguments in its own defence and both are polyfill arguments rather than
+ * contract arguments, which is the distinction worth keeping.
+ *
+ * "Not available on older runtimes" describes a commodity that is already being resolved, so the
+ * argument expires on its own: a contract whose value has an expiry date is a polyfill wearing a
+ * specification. The registry does not sell availability.
+ *
+ * "The widely used implementations disagree" is true - lodash, Ramda, d3 and the two built-ins really
+ * do give four different answers, measured, and block 4.4 settles them. But the answer to a
+ * disagreement among libraries, once the language has ruled, is to use the language, not to publish a
+ * fifth thing a caller now also has to choose between.
+ *
+ * The rule this generalises to is the catalogue's, not this contract's: the language moves, so the
+ * catalogue re-examines itself against it. Clearing rule 7 is not a property a contract acquires once
+ * and keeps.
+ *
+ * What this contract is kept for is the format. It was written third, deliberately unlike the other
+ * two - total where they are fallible, generic where they are monomorphic, higher-order where they
+ * are closed over their arguments - and it is the only one of the three that produced
+ * `keyFunctionRules`, the `ProfileShape` vocabulary that replaced `sampleClass`, and the measurement
+ * that a generic signature needs call-site inference checks beside a type-identity assertion. None of
+ * that came from the first two, and none of it would have been discovered by writing two more
+ * contracts shaped like them.
+ */
+export const catalogueAdmission = {
+  admitted: false,
+  decidedAgainst: 'permanent rule 7 - nothing trivial in the catalogue',
+  measurement:
+    'Map.groupBy answers what this contract requires on all thirty cases of block 4.4, replayed by ' +
+    'language.test.ts on Node 24.15.0. Where the language ships the function, the TC39 ' +
+    'specification is the contract.',
+  keptAs: 'the third prototype the contract format was settled on',
 } as const
 
 // ---------------------------------------------------------------------------
