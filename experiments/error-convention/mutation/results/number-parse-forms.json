@@ -1,0 +1,78 @@
+[
+  {
+    "mutant": "X-1",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "not-applicable",
+    "failedTests": []
+  },
+  {
+    "mutant": "N-1",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> overflow"
+    ]
+  },
+  {
+    "mutant": "N-2",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"\" -> empty",
+      "\"   \" -> empty"
+    ]
+  },
+  {
+    "mutant": "N-3",
+    "arm": "B",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"\" -> empty",
+      "\"   \" -> empty",
+      "\"1e400\" -> overflow"
+    ]
+  },
+  {
+    "mutant": "X-1",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "P4 - a string fails to parse exactly when it has a description"
+    ]
+  },
+  {
+    "mutant": "N-1",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"1e400\" -> overflow"
+    ]
+  },
+  {
+    "mutant": "N-2",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"\" -> empty",
+      "\"   \" -> empty"
+    ]
+  },
+  {
+    "mutant": "N-3",
+    "arm": "C",
+    "lens": "as-committed",
+    "verdict": "killed",
+    "failedTests": [
+      "\"\" -> empty",
+      "\"   \" -> empty",
+      "\"1e400\" -> overflow"
+    ]
+  }
+]

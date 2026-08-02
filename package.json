@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "vitest run --typecheck"
+    "test": "vitest run --typecheck",
+    "test:experiment": "vitest run --config experiments/error-convention/sites/vitest.sites.config.ts"
   },
   "devDependencies": {
     "fast-check": "^4.9.0",
