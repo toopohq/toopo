@@ -544,6 +544,27 @@ export const battery: Battery = {
         'restores both a zone that was set and a zone that was absent',
       ],
     },
+    {
+      lenses: ['reason-blind'],
+      reason:
+        'the `described` twins of the ten refusals below, silent on this column and only on it. ' +
+        'Blinded, the suite requires a refused call to have a description and no longer requires it ' +
+        'to be the right one, so R-1 to R-4 - the only mutants that reddened these - stop being ' +
+        'visible. That is the lens working rather than a gap, and those cells are part of the ' +
+        'five-defect difference this battery reports between its two columns.',
+      titles: [
+        '2024-01-15T00:00:00.000Z + { months: 1.5 } -> field-not-whole',
+        '2024-01-15T00:00:00.000Z + { days: 0.5 } -> field-not-whole',
+        '2024-01-15T00:00:00.000Z + { days: NaN } -> field-not-whole',
+        '2024-01-15T00:00:00.000Z + { days: Infinity } -> field-not-whole',
+        '2024-01-15T00:00:00.000Z + { days: 1e+21 } -> field-not-whole',
+        '2024-01-15T00:00:00.000Z + { years: 9007199254740991 } -> total-not-exact',
+        '2024-01-15T00:00:00.000Z + { milliseconds: 9007199254740991, seconds: 9007199254740991 } -> total-not-exact',
+        '2024-01-15T00:00:00.000Z + { days: "1" } -> field-not-whole',
+        'not a date + { days: 1 } -> invalid-date',
+        'not a date + {} -> invalid-date',
+      ],
+    },
   ],
 
   unwitnessedGuards: [
