@@ -142,10 +142,12 @@ const behaviour: readonly Mutant[] = [
   sameOnEveryLens(
     'L-05',
     'prices a substitution at zero whenever either side is a space - "ignore whitespace ' +
-      'differences", written as an equality that is not transitive. Two strings of spaces sit at ' +
-      'distance zero from anything of the same length, so a detour through them is shorter than the ' +
-      'direct route: the triangle inequality is the only axiom that can see a comparison which is ' +
-      'not an equivalence, and no named case compares three strings at once',
+      'differences", written as an equality that is not transitive. A detour through a string of ' +
+      'spaces is then shorter than the direct route: the triangle inequality is the only axiom that ' +
+      'can see a comparison which is not an equivalence, and no named case compares three strings at ' +
+      'once. It is also the mutant that found the starved support of that property: measured over ' +
+      'two hundred runs of a thousand draws, it reddened P4 on 189 of them under independently drawn ' +
+      'triples and on 200 under the blended mediator the property now draws',
     [
       reference(
         SUBSTITUTION,
@@ -250,12 +252,16 @@ const behaviour: readonly Mutant[] = [
   ),
   sameOnEveryLens(
     'L-18',
-    'memoises into a bare object keyed by the two strings run together. `levenshtein("ab", "c")` and ' +
-      '`levenshtein("a", "bc")` are then one entry, which is the classic defect of a key built by ' +
-      'concatenation. It is pinned as a survivor and that is the finding: the ambient-input property ' +
-      'cannot see it, because the probe fills the slot itself and a later colliding call reads rather ' +
-      'than writes it - the same shape `number/parse@1` measured twice with P-02 and P-19 - and block ' +
-      '4.4 does not carry two pairs that collide',
+    'memoises into a bare object keyed by the two strings run together, so `levenshtein("ab", "c")` ' +
+      'and `levenshtein("a", "bc")` are one entry - the classic defect of a key built by ' +
+      'concatenation. It was written expecting a survivor and it is killed, which is the finding. ' +
+      'The reasoning that expected a survivor was about the ambient-input property alone, and it ' +
+      'holds: the probe fills the slot itself and a later colliding call reads rather than writes it, ' +
+      'so that property is green here exactly as `number/parse@1` measured twice with P-02 and P-19. ' +
+      'What kills it is that a collision inside one property run answers a *wrong number* for the ' +
+      'second pair, and six of the eight guards in block 4.3 check the number rather than its ' +
+      'stability. A cache survives a contract whose properties only compare answers with each other; ' +
+      'it does not survive one that knows what the answer should be',
     [
       reference(SIGNATURE, `const CACHE: Record<string, number> = {}\n\n${SIGNATURE}`),
       reference(
@@ -264,7 +270,7 @@ const behaviour: readonly Mutant[] = [
       ),
       reference(ANSWER, `  CACHE[a + b] = distance[left.length][right.length]\n\n${ANSWER}`),
     ],
-    survived,
+    killed([DISCERNIBILITY, ONE_EDIT]),
   ),
   sameOnEveryLens(
     'L-19',
@@ -469,6 +475,18 @@ export const battery: Battery = {
         'draws pairs that really are one code point apart',
         'draws texts that reach every region the properties police',
       ],
+    },
+    {
+      lenses: ['identity-blind'],
+      reason:
+        'the assertion this lens replaces. `identity-blind` reads ' +
+        '`expectTypeOf(levenshtein).toEqualTypeOf<Levenshtein>()` as a check that the export is a ' +
+        'function, so on that column the guard cannot fail whatever is injected - which is the point ' +
+        'of the lens. On `as-committed` it is red on all four signature defects, and the difference ' +
+        'between the two columns is the answer to the question `array/group-by@1` could only ask of a ' +
+        'generic signature: on a monomorphic one, does the identity assertion carry anything the ' +
+        'directives beside it do not?',
+      titles: ['matches the type declared by the contract'],
     },
   ],
 
