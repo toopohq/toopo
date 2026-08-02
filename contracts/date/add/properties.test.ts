@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import type { Duration } from './contract.js'
+import type { AddToDateResult, Duration } from './contract.js'
 import {
   ambientProbeInstants,
   ambientTimeZoneProbes,
@@ -25,6 +25,11 @@ import { addToDate } from './reference.js'
  * property a contract can state - it never returns a bad value, it is invariant, it is
  * deterministic - because forbidding wrong answers is free for a function that gives none. At least
  * one property here must force an answer out.
+ *
+ * Every safety property below enumerates the licit output forms - `result.ok === true` and
+ * `result.ok === false`, never `!result.ok`. Measured on `number/parse@1`: a property written the
+ * short way stayed green on an implementation returning a function, because `undefined` is falsy and
+ * the negated discriminant sent the stray value down the branch that asserts nothing about it.
  */
 
 // ---------------------------------------------------------------------------
@@ -161,24 +166,28 @@ const withTimeZone = <T>(timeZone: string, run: () => T): T => {
   }
 }
 
-const answerUnder = (timeZone: string, date: Date, duration: Duration): number | null =>
-  withTimeZone(timeZone, () => {
-    const result = addToDate(new Date(date.getTime()), duration)
+/**
+ * The answer, rendered as a value a `Set` can compare. Under `null` the zone property compared
+ * `number | null` directly; a result carrying a `Date` is an object, so four zones would produce
+ * four distinct members whatever the implementation did.
+ */
+const comparableAnswer = (result: AddToDateResult): string =>
+  result.ok === true ? `at ${result.date.getTime()}` : `refused: ${result.reason}`
 
-    return result === null ? null : result.getTime()
-  })
+const answerUnder = (timeZone: string, date: Date, duration: Duration): string =>
+  withTimeZone(timeZone, () => comparableAnswer(addToDate(new Date(date.getTime()), duration)))
 
 // ---------------------------------------------------------------------------
 // Specific properties
 // ---------------------------------------------------------------------------
 
 describe('date/add@1 specific properties', () => {
-  it('P1 - returns null or a valid Date, never an Invalid Date', () => {
+  it('P1 - refuses, or answers with a valid Date, never an Invalid Date', () => {
     fc.assert(
       fc.property(anyDate, anyDuration, (date, duration) => {
         const result = addToDate(date, duration)
 
-        return result === null || Number.isFinite(result.getTime())
+        return result.ok === false || (result.ok === true && Number.isFinite(result.date.getTime()))
       }),
       { numRuns: propertyRuns },
     )
@@ -189,7 +198,7 @@ describe('date/add@1 specific properties', () => {
       fc.property(anyDate, (date) => {
         const result = addToDate(date, {})
 
-        return result !== null && result !== date && result.getTime() === date.getTime()
+        return result.ok === true && result.date !== date && result.date.getTime() === date.getTime()
       }),
       { numRuns: propertyRuns },
     )
@@ -200,7 +209,7 @@ describe('date/add@1 specific properties', () => {
       fc.property(anyDate, fc.integer({ min: -1_000_000_000, max: 1_000_000_000 }), (date, ms) => {
         const result = addToDate(date, { milliseconds: ms })
 
-        return result !== null && result.getTime() === date.getTime() + ms
+        return result.ok === true && result.date.getTime() === date.getTime() + ms
       }),
       { numRuns: propertyRuns },
     )
@@ -210,11 +219,11 @@ describe('date/add@1 specific properties', () => {
     fc.assert(
       fc.property(anyDate, elapsedOnlyDuration, (date, duration) => {
         const forward = addToDate(date, duration)
-        if (forward === null) return false
+        if (forward.ok !== true) return false
 
-        const back = addToDate(forward, negated(duration))
+        const back = addToDate(forward.date, negated(duration))
 
-        return back !== null && back.getTime() === date.getTime()
+        return back.ok === true && back.date.getTime() === date.getTime()
       }),
       { numRuns: propertyRuns },
     )
@@ -224,13 +233,13 @@ describe('date/add@1 specific properties', () => {
     fc.assert(
       fc.property(anyDate, calendarOnlyDuration, (date, duration) => {
         const result = addToDate(date, duration)
-        if (result === null) return false
+        if (result.ok !== true) return false
 
         return (
-          result.getUTCHours() === date.getUTCHours() &&
-          result.getUTCMinutes() === date.getUTCMinutes() &&
-          result.getUTCSeconds() === date.getUTCSeconds() &&
-          result.getUTCMilliseconds() === date.getUTCMilliseconds()
+          result.date.getUTCHours() === date.getUTCHours() &&
+          result.date.getUTCMinutes() === date.getUTCMinutes() &&
+          result.date.getUTCSeconds() === date.getUTCSeconds() &&
+          result.date.getUTCMilliseconds() === date.getUTCMilliseconds()
         )
       }),
       { numRuns: propertyRuns },
@@ -244,11 +253,11 @@ describe('date/add@1 specific properties', () => {
     fc.assert(
       fc.property(anyDate, calendarOnlyDuration, (date, duration) => {
         const result = addToDate(date, duration)
-        if (result === null) return false
+        if (result.ok !== true) return false
 
-        const clamped = result.getUTCDate() !== date.getUTCDate()
+        const clamped = result.date.getUTCDate() !== date.getUTCDate()
 
-        return !clamped || result.getUTCDate() < date.getUTCDate()
+        return !clamped || result.date.getUTCDate() < date.getUTCDate()
       }),
       { numRuns: propertyRuns },
     )
@@ -280,7 +289,7 @@ describe('date/add@1 universal properties', () => {
         return (
           date.getTime() === instantBefore &&
           durationSnapshot(duration) === durationBefore &&
-          result !== date
+          (result.ok !== true || result.date !== date)
         )
       }),
       { numRuns: propertyRuns },

@@ -16,7 +16,7 @@ describe('date/add@1 benchmark profiles', () => {
       const offenders = samples
         .filter(
           ({ date, duration }) =>
-            (addToDate(new Date(date), duration) === null) === (sampleClass === 'accepted'),
+            (addToDate(new Date(date), duration).ok === false) === (sampleClass === 'accepted'),
         )
         .map(({ date, duration }) => `${date} + ${JSON.stringify(duration)}`)
 

@@ -1,11 +1,11 @@
 import { describe, it, expectTypeOf } from 'vitest'
-import type { AddToDate, Duration } from './contract.js'
+import type { AddToDate, AddToDateResult, Duration } from './contract.js'
 import { addToDate } from './reference.js'
 
 /**
  * Block 4.2, executable. The signature is part of the contract, so an implementation that widens its
- * input, narrows its return type, or drops `null` from it fails the suite before any behavioural
- * test runs.
+ * input, narrows its return type, or drops the failure arm from it fails the suite before any
+ * behavioural test runs.
  *
  * `toEqualTypeOf` is used rather than `toMatchTypeOf`: a signature that merely satisfies the
  * contract's shape is not conformant, it has to be identical.
@@ -28,8 +28,8 @@ describe('date/add@1 signature', () => {
     addToDate(new Date(), { day: 1 })
   })
 
-  it('returns a Date that may be absent, never an Invalid Date', () => {
-    expectTypeOf(addToDate).returns.toEqualTypeOf<Date | null>()
+  it('returns either a Date or a named reason, never an Invalid Date', () => {
+    expectTypeOf(addToDate).returns.toEqualTypeOf<AddToDateResult>()
   })
 
   it('leaves every duration field optional', () => {

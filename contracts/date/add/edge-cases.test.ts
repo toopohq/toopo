@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import type { Duration } from './contract.js'
+import type { AddToDateResult, Duration, ExpectedOutcome } from './contract.js'
 import { edgeCases, outputsAreEqual, untypedEdgeCases } from './contract.js'
 import { addToDate } from './reference.js'
 
 /**
  * Block 4.4, executable. Every entry of the contract's two tables is asserted exactly, using the
- * equality semantics the contract declares - on the instant, never on object identity.
+ * equality semantics the contract declares - on the instant, never on object identity, and on the
+ * reason when the call was refused.
  */
 
 /**
@@ -25,23 +26,28 @@ const renderDuration = (duration: Readonly<Record<string, unknown>>): string => 
   return entries.length === 0 ? '{}' : `{ ${entries.join(', ')} }`
 }
 
-const rendered = (value: Date | null): string => {
-  if (value === null) return 'null'
+const rendered = (value: AddToDateResult): string => {
+  if (value.ok === true) {
+    return Number.isNaN(value.date.getTime()) ? 'Invalid Date' : value.date.toISOString()
+  }
 
-  return Number.isNaN(value.getTime()) ? 'Invalid Date' : value.toISOString()
+  return `refused: ${value.reason}`
 }
 
-const asExpected = (expected: string | null): Date | null =>
-  expected === null ? null : new Date(expected)
+const renderExpected = (expected: ExpectedOutcome): string =>
+  expected.ok ? expected.date : `refused: ${expected.reason}`
+
+const asResult = (expected: ExpectedOutcome): AddToDateResult =>
+  expected.ok ? { ok: true, date: new Date(expected.date) } : { ok: false, reason: expected.reason }
 
 describe('date/add@1 named edge cases', () => {
   for (const { date, duration, expected } of edgeCases) {
-    it(`${date} + ${renderDuration(duration)} -> ${expected ?? 'null'}`, () => {
+    it(`${date} + ${renderDuration(duration)} -> ${renderExpected(expected)}`, () => {
       const actual = addToDate(new Date(date), duration)
 
       expect(
-        outputsAreEqual(actual, asExpected(expected)),
-        `expected ${expected ?? 'null'}, received ${rendered(actual)}`,
+        outputsAreEqual(actual, asResult(expected)),
+        `expected ${renderExpected(expected)}, received ${rendered(actual)}`,
       ).toBe(true)
     })
   }
@@ -49,15 +55,15 @@ describe('date/add@1 named edge cases', () => {
 
 describe('date/add@1 edge cases outside the declared type', () => {
   for (const { date, duration, expected } of untypedEdgeCases) {
-    it(`${date} + ${renderDuration(duration)} -> ${expected ?? 'null'}`, () => {
+    it(`${date} + ${renderDuration(duration)} -> ${renderExpected(expected)}`, () => {
       // The cast is the point of this table rather than a shortcut around it: these durations are
       // what reaches the function from JSON, from a form, or from a JavaScript caller, none of whom
       // were stopped by the type. Removing the cast would delete the case, not fix it.
       const actual = addToDate(new Date(date), duration as Duration)
 
       expect(
-        outputsAreEqual(actual, asExpected(expected)),
-        `expected ${expected ?? 'null'}, received ${rendered(actual)}`,
+        outputsAreEqual(actual, asResult(expected)),
+        `expected ${renderExpected(expected)}, received ${rendered(actual)}`,
       ).toBe(true)
     })
   }
@@ -83,8 +89,7 @@ describe('date/add@1 edge case tables', () => {
     // equal to nothing, turning a real assertion into an unfalsifiable one.
     const unparseable = allCases
       .map(({ expected }) => expected)
-      .filter((expected) => expected !== null)
-      .filter((expected) => new Date(expected).toISOString() !== expected)
+      .filter((expected) => expected.ok === true && new Date(expected.date).toISOString() !== expected.date)
 
     expect(unparseable).toEqual([])
   })

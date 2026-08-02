@@ -15,7 +15,8 @@
  * the function under four time zones at once, and the validation pipeline forbids the local methods
  * lexically.
  *
- * PROVISIONAL: `null` marks failure. The catalogue-wide error convention is still undecided.
+ * PROVISIONAL: failure is reported as a discriminated union carrying a reason. The catalogue-wide
+ * error convention is still undecided.
  */
 
 type Duration = {
@@ -30,6 +31,24 @@ type Duration = {
 }
 
 type DurationField = keyof Duration
+
+/**
+ * The result type is written out here rather than imported from `contract.ts`, for the same reason
+ * the signature is: a reference that borrows the contract's own types cannot fail the conformance
+ * check the contract performs on it.
+ */
+type AddToDateResult =
+  | { readonly ok: true; readonly date: Date }
+  | {
+      readonly ok: false
+      readonly reason:
+        | 'invalid-date'
+        | 'unknown-field'
+        | 'field-not-whole'
+        | 'month-total-not-exact'
+        | 'elapsed-total-not-exact'
+        | 'out-of-range'
+    }
 
 const DECLARED_FIELDS: readonly DurationField[] = [
   'years',
@@ -96,16 +115,18 @@ const elapsedMilliseconds = (duration: Duration): number =>
   valueOf(duration, 'seconds') * MILLISECONDS_PER_SECOND +
   valueOf(duration, 'milliseconds')
 
-export const addToDate = (date: Date, duration: Duration): Date | null => {
-  // Measured redundant and kept deliberately: NaN propagates through every path below, so deleting
-  // this line changes no answer on any input tried, including 200 000 random draws. The contract
-  // declares that an invalid date is rejected, and the reference states that where a reader looks
-  // for it rather than leaving it to emerge from the arithmetic three steps later.
+export const addToDate = (date: Date, duration: Duration): AddToDateResult => {
+  // No longer measured redundant. Under `null` this line changed no answer on any input tried,
+  // including 200 000 random draws, because NaN propagates to the final range check by every path.
+  // It now decides between two different answers: an unparsed input is `invalid-date`, and the range
+  // check would call it `out-of-range`.
   const start = date.getTime()
-  if (!Number.isFinite(start)) return null
+  if (!Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }
 
-  if (!hasOnlyDeclaredFields(duration)) return null
-  if (!DECLARED_FIELDS.every((field) => isExactWholeNumber(duration[field]))) return null
+  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'unknown-field' }
+  if (!DECLARED_FIELDS.every((field) => isExactWholeNumber(duration[field]))) {
+    return { ok: false, reason: 'field-not-whole' }
+  }
 
   const totalMonths = valueOf(duration, 'years') * 12 + valueOf(duration, 'months')
   const elapsed = elapsedMilliseconds(duration)
@@ -113,10 +134,17 @@ export const addToDate = (date: Date, duration: Duration): Date | null => {
   // Each field is a safe integer on its own, but a total need not be, and past 2^53 these sums round
   // instead of adding. Rejecting there keeps every answer exact; the widest shift it costs is one
   // spanning the whole representable range, which no caller can want more than approximately.
-  if (!Number.isSafeInteger(totalMonths) || !Number.isSafeInteger(elapsed)) return null
+  //
+  // One test under `null`, two here. The rejection is identical - no input changes side - but a
+  // caller who overflowed the month total and one who overflowed the elapsed total wrote different
+  // fields, and the convention now has room to say which.
+  if (!Number.isSafeInteger(totalMonths)) return { ok: false, reason: 'month-total-not-exact' }
+  if (!Number.isSafeInteger(elapsed)) return { ok: false, reason: 'elapsed-total-not-exact' }
 
   const shifted = totalMonths === 0 ? start : monthShiftedTimestamp(start, totalMonths)
   const result = new Date(shifted + elapsed)
 
-  return Number.isFinite(result.getTime()) ? result : null
+  return Number.isFinite(result.getTime())
+    ? { ok: true, date: result }
+    : { ok: false, reason: 'out-of-range' }
 }
