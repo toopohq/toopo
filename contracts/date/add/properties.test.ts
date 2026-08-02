@@ -90,6 +90,57 @@ const anyDuration: fc.Arbitrary<Duration> = fc.record(
   { requiredKeys: [] },
 )
 
+/**
+ * The support P1 needs, and the reason it is a second pair of arbitraries rather than a widening of
+ * the ones above.
+ *
+ * P1 forbids an Invalid Date from ever being returned. It is a safety property: true everywhere, so
+ * its support should be everywhere. `anyDate` is not everywhere. Measured, it spans at most 1.36e13
+ * ms from the epoch and the widest duration the arbitraries can draw is about 1.14e10 ms and 90
+ * months, while the range a `Date` can hold ends at 8.64e15 - so no draw could leave the range, by
+ * arithmetic rather than by luck, and the only region where P1 can fail was unreachable. The probe
+ * that proved it is in the battery: F-2 returns an Invalid Date for every call and P1 reddens, so
+ * the property is sound; F-1 returns one only on the neutral duration and P1 stayed green, because
+ * the neutral duration came out of `anyDuration` about once in two hundred thousand draws - measured
+ * - and the properties run a thousand.
+ *
+ * P2 to P6 keep `anyDate` on purpose. They are liveness properties: each one requires an answer, and
+ * a date at the edge of the range legitimately has none, so widening their support would make them
+ * fail on a correct implementation. Widening everything would have broken five properties to repair
+ * one.
+ */
+const REPRESENTABLE_RANGE_MS = 8_640_000_000_000_000
+
+const boundaryDate = fc.oneof(
+  { weight: 2, arbitrary: fc.constantFrom(REPRESENTABLE_RANGE_MS, -REPRESENTABLE_RANGE_MS) },
+  {
+    weight: 3,
+    arbitrary: fc
+      .tuple(fc.constantFrom(1, -1), fc.integer({ min: 0, max: 7 * 86_400_000 }))
+      .map(([side, inwards]) => side * (REPRESENTABLE_RANGE_MS - inwards)),
+  },
+  {
+    weight: 1,
+    arbitrary: fc.integer({ min: -REPRESENTABLE_RANGE_MS, max: REPRESENTABLE_RANGE_MS }),
+  },
+).map((timestamp) => new Date(timestamp))
+
+/** Wider than `anyDate`, and a superset of it: P1 must still see everything it saw before. */
+const anyRepresentableDate = fc.oneof(
+  { weight: 3, arbitrary: anyDate },
+  { weight: 2, arbitrary: boundaryDate },
+)
+
+/**
+ * The neutral duration as a branch that is drawn rather than one that is hoped for. It is the input
+ * F-1 corrupts, and leaving it to the chance that eight independent optional fields are all absent
+ * put it out of reach of any run this contract declares.
+ */
+const anyDurationOrNeutral: fc.Arbitrary<Duration> = fc.oneof(
+  { weight: 6, arbitrary: anyDuration },
+  { weight: 1, arbitrary: fc.constant({}) },
+)
+
 const calendarOnlyDuration: fc.Arbitrary<Duration> = fc.record(calendarFields, { requiredKeys: [] })
 
 const elapsedOnlyDuration: fc.Arbitrary<Duration> = fc.record(elapsedFields, { requiredKeys: [] })
@@ -175,7 +226,7 @@ const answerUnder = (timeZone: string, date: Date, duration: Duration): number |
 describe('date/add@1 specific properties', () => {
   it('P1 - returns null or a valid Date, never an Invalid Date', () => {
     fc.assert(
-      fc.property(anyDate, anyDuration, (date, duration) => {
+      fc.property(anyRepresentableDate, anyDurationOrNeutral, (date, duration) => {
         const result = addToDate(date, duration)
 
         return result === null || Number.isFinite(result.getTime())

@@ -78,6 +78,7 @@ const reasonSwap = (from: string, to: string): Edit =>
 
 const ZONE_PROPERTY = 'has no ambient input - the answer does not depend on the process time zone'
 const COUPLING_PROPERTY = 'P7 - a call fails exactly when it has a description'
+const NO_INVALID_DATE = 'P1 - returns null or a valid Date, never an Invalid Date'
 
 /** The two named cases written to kill D-07 and D-08, pinned so that deleting one reddens here. */
 const YEAR_ZERO_CASE = '0000-01-31T00:00:00.000Z + { months: 1 } -> 0000-02-29T00:00:00.000Z'
@@ -217,9 +218,9 @@ const behaviour: readonly Mutant[] = [
   behavioural(
     'D-10',
     'no-final-range-check: hands back an Invalid Date rather than refusing. The one stray value ' +
-      'this contract can produce without a cast',
+      'this contract can produce without a cast, and the real defect P1 exists to catch',
     [reference(FINAL, `  return { ok: true, date: result }`)],
-    killed(),
+    killed([NO_INVALID_DATE]),
   ),
   {
     id: 'D-11',
@@ -353,7 +354,8 @@ const probes: readonly Mutant[] = [
     description:
       'returns an Invalid Date on the neutral duration - the same defect as D-10, moved off the ' +
       'representable-range boundary and onto an input the generators were assumed to draw. It ' +
-      'separates "P1 cannot see this" from "P1 was never given the chance"',
+      'separates "P1 cannot see this" from "P1 was never given the chance", and it answered the ' +
+      'second: P1 stayed green on it until the neutral duration became a branch that is drawn',
     arms: {
       C: [
         reference(
@@ -362,7 +364,10 @@ const probes: readonly Mutant[] = [
         ),
       ],
     },
-    expected: { 'C/as-committed': killed(), 'C/reason-blind': killed() },
+    expected: {
+      'C/as-committed': killed([NO_INVALID_DATE]),
+      'C/reason-blind': killed([NO_INVALID_DATE]),
+    },
   },
   {
     id: 'F-2',
@@ -372,7 +377,10 @@ const probes: readonly Mutant[] = [
       '"P1 was never reached": if F-2 does not redden P1, the property is decorative; if it does, ' +
       'the property is sound and its generators are the defect',
     arms: { C: [reference(FINAL, `  return { ok: true, date: new Date(Number.NaN) }`)] },
-    expected: { 'C/as-committed': killed(), 'C/reason-blind': killed() },
+    expected: {
+      'C/as-committed': killed([NO_INVALID_DATE]),
+      'C/reason-blind': killed([NO_INVALID_DATE]),
+    },
   },
   {
     id: 'X-2',
