@@ -10,8 +10,12 @@
  * PROVISIONAL: failure is reported as `null`. The catalogue-wide error convention
  * (`null` / throw / `Result`) is still undecided and will be frozen for every contract at once.
  * Every `null` below is a placeholder for that decision, not a settled answer. This contract has
- * three distinct reasons to fail and `null` collapses them into one, which is the sharpest argument
- * the catalogue has yet produced against keeping it.
+ * six distinct reasons to fail, enumerated rather than counted so that the claim can be checked
+ * against `reference.ts` instead of trusted: an input that is not a date, a field the contract does
+ * not declare, a field that is not an exact whole number, a month total that is not exactly
+ * representable, an elapsed total that is not exactly representable, and a result outside the range
+ * a `Date` can hold. `null` collapses all six into one, which is the sharpest argument the
+ * catalogue has yet produced against keeping it.
  */
 
 // ---------------------------------------------------------------------------
@@ -37,10 +41,11 @@ export const identity = {
     'that is too short - setUTCMonth on 31 January lands on 2 or 3 March rather than the end of ' +
     'February. This contract computes in absolute UTC time, clamps a day that does not exist in the ' +
     'target month down to the last day that does, applies calendar units before elapsed time, and ' +
-    'returns null rather than an Invalid Date when the input is not a date, when the duration is ' +
-    'not made of exact whole units, or when the result falls outside the range a Date can hold. It ' +
-    'never returns an Invalid Date, the value that propagates as NaN through every later ' +
-    'computation and surfaces far away from the call that produced it.',
+    'returns null rather than an Invalid Date when the input is not a date, when the duration ' +
+    'carries a field this contract does not declare, when the duration is not made of exact whole ' +
+    'units, or when the result falls outside the range a Date can hold. It never returns an ' +
+    'Invalid Date, the value that propagates as NaN through every later computation and surfaces ' +
+    'far away from the call that produced it.',
 
   /**
    * The input domain the contract is written for. It belongs to the identity because the answers in
