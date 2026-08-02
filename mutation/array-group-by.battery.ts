@@ -129,7 +129,7 @@ const INFERS_KEY = 'infers the key type from the key function, and constrains it
 const INDEX_IS_SECOND = 'passes the index as a number, second'
 const READONLY_INPUT = 'accepts an array the caller may not modify'
 const OWNED_GROUPS = 'returns groups the caller owns'
-const REFUSES_THIRD_ARGUMENT = 'refuses a key function that asks for more than the contract passes'
+const REFUSES_A_NON_ARRAY = 'refuses an input that is not an array'
 
 const SPARSE = 'a hole in a sparse array is an element whose value is undefined'
 const A_SET = 'a Set'
@@ -531,6 +531,18 @@ const signatures: readonly Mutant[] = [
     [reference(`  items: readonly T[],`, `  items: T[],`)],
     killed([TYPE_IDENTITY, READONLY_INPUT]),
     killed([READONLY_INPUT]),
+  ),
+  signatureDefect(
+    'S-8',
+    'widens the input to `Iterable<T>`. It is the only mutant of this battery that reaches the ' +
+      'three `@ts-expect-error` guards, and it exists because the first seven measured that those ' +
+      'guards had never fired at all. It is also the real design pressure on this contract rather ' +
+      'than an invented one: block 4.4 pins that a Set is grouped correctly, so widening the type to ' +
+      'say so out loud is the change a reader will propose - and it would silently move the domain ' +
+      'the whole table is defensible relative to',
+    [reference(`  items: readonly T[],`, `  items: Iterable<T>,`)],
+    killed([TYPE_IDENTITY, REFUSES_A_NON_ARRAY]),
+    killed([REFUSES_A_NON_ARRAY]),
   ),
 ]
 
