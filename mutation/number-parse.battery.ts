@@ -323,7 +323,11 @@ const probes: readonly Mutant[] = [
       'returns NaN for every call, accepted or refused. The control that separates "P1 cannot fail" ' +
       'from "P1 was never reached", written here because `date/add@1` carries the same pair and this ' +
       'contract carried neither: if F-3 does not redden P1, the property is decorative whatever its ' +
-      'generators draw; if it does, the property is sound and only its support is in question',
+      'generators draw; if it does, the property is sound and only its support is in question. ' +
+      'Measured, it reddens P1 and P3 and nothing else among the properties - not P2, because ' +
+      'Object.is calls NaN equal to NaN so a uniformly broken answer is still insensitive to ' +
+      'whitespace, and not the coupling, because a call that never refuses never disagrees with a ' +
+      'diagnostic that never describes',
     arms: {
       C: [
         reference(EMPTY, `  if (trimmed === '') return { ok: true, value: Number.NaN }`),
@@ -347,8 +351,11 @@ const probes: readonly Mutant[] = [
       'off every input the named cases pin and onto the one region P1 exists to police at its ' +
       'boundary. It asks the question F-1 asked of `date/add@1` and answered against it there: are ' +
       'the generators reaching the region, or is the named case 1e400 the only thing standing ' +
-      'between this contract and a stray value? P1 reddening means the arbitraries really do build ' +
-      'an exponent past 308 on their own',
+      'between this contract and a stray value? Measured, P1 reddens on its own, so the answer is ' +
+      'the opposite of the one F-1 got: the arbitraries really do build an exponent past 308 - ' +
+      '`wellFormedDecimal` draws up to twelve exponent digits - and this contract does not carry ' +
+      'the gap that made `date/add@1` widen the support of its P1. The named case 1e400 is not the ' +
+      'only thing standing between this contract and a stray value',
     arms: {
       C: [
         reference(

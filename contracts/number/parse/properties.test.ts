@@ -74,6 +74,15 @@ const finiteDouble = fc.double({ noNaN: true, noDefaultInfinity: true })
 
 describe('number/parse@1 specific properties', () => {
   it('P1 - returns null or a finite number, never NaN and never Infinity', () => {
+    // The support of this property was probed rather than assumed, because the same property on
+    // `date/add@1` turned out to be sound and starved: its generators could not reach the region
+    // where it fails, and it stayed green on a defect that returned a forbidden value there.
+    // Measured here with the same pair of probes. F-3 returns NaN for every call and reddens this
+    // property, so it is not decorative. F-4 returns NaN only on the overflow path - the one region
+    // this property polices at its boundary - and reddens it too, so the arbitraries do build an
+    // exponent past 308 on their own and the named case 1e400 is not carrying this alone. No
+    // widening was needed here.
+
     fc.assert(
       fc.property(candidateInput, (input) => {
         const result = parseNumber(input)
