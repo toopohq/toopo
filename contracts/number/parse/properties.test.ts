@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
 import { outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
-import { parseNumber } from './reference.js'
+import { describeParseFailure, parseNumber } from './reference.js'
 
 /**
  * Block 4.3 - behavioural properties.
@@ -97,6 +97,24 @@ describe('number/parse@1 specific properties', () => {
       fc.property(
         finiteDouble.filter((n) => !Object.is(n, -0)),
         (n) => outputsAreEqual(parseNumber(String(n)), n),
+      ),
+      { numRuns: propertyRuns },
+    )
+  })
+})
+
+describe('number/parse@1 coupling between the two exports', () => {
+  it('P4 - a string fails to parse exactly when it has a description', () => {
+    // The reference cannot fail this one: both exports derive from one private analysis, so the
+    // module holds a single grammar and the two cannot drift. That is not what makes a property
+    // decorative or not. It governs every implementation, and one that writes the two independently
+    // - which is what optimising the parsing path and leaving the diagnostic one alone looks like -
+    // can diverge on any input the named cases do not carry. The X-1 probe of the mutation battery
+    // is that implementation, and this property is the only guard in the contract that reddens on it.
+    fc.assert(
+      fc.property(
+        candidateInput,
+        (input) => (parseNumber(input) === null) === (describeParseFailure(input) !== null),
       ),
       { numRuns: propertyRuns },
     )

@@ -1,6 +1,6 @@
 import { describe, it, expectTypeOf } from 'vitest'
-import type { AddToDate, Duration } from './contract.js'
-import { addToDate } from './reference.js'
+import type { AddToDate, DescribeAddFailure, Duration } from './contract.js'
+import { addToDate, describeAddFailure } from './reference.js'
 
 /**
  * Block 4.2, executable. The signature is part of the contract, so an implementation that widens its
@@ -34,5 +34,9 @@ describe('date/add@1 signature', () => {
 
   it('leaves every duration field optional', () => {
     expectTypeOf<Duration>().toEqualTypeOf<Partial<Duration>>()
+  })
+
+  it('publishes the diagnostic surface with the type the contract declares', () => {
+    expectTypeOf(describeAddFailure).toEqualTypeOf<DescribeAddFailure>()
   })
 })

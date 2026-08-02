@@ -1,4 +1,19 @@
 /**
+ * Reference implementation of `number/parse@1`.
+ *
+ * It is the oracle of the registry's differential test, so it is written to be read: correctness
+ * and obviousness come before speed.
+ *
+ * The signature is written out here rather than imported from `contract.ts`. Annotating this
+ * function with the contract's own type would make the compiler enforce conformance at authoring
+ * time and leave `signature.test-d.ts` unable to fail - a guard that proves nothing. An
+ * implementation states its signature independently, and the contract checks it.
+ *
+ * Failure is `null`, and `describeParseFailure` publishes the reason beside it. Both derive from one
+ * private analysis, so the module holds a single grammar and the two exports cannot drift.
+ */
+
+/**
  * The decimal grammar this contract accepts, anchored at both ends: an optional sign, then either
  * digits with an optional fractional part or a bare fractional part, then an optional exponent.
  *
@@ -11,26 +26,52 @@
  */
 const DECIMAL_GRAMMAR = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/
 
+type ParseFailureReason = 'empty' | 'not-decimal' | 'overflow'
+
 /**
- * Reference implementation of `number/parse@1`.
+ * The single source both exports derive from, private because it is not the shape this contract
+ * publishes: a caller sees `number | null` and asks for the reason only when it needs one.
  *
- * It is the oracle of the registry's differential test, so it is written to be read: correctness
- * and obviousness come before speed.
+ * Private, and one function rather than two, so that the coupling the contract states is true by
+ * construction: there is one grammar in this module, so the two exports cannot disagree about which
+ * strings fail. It also keeps one public call to one traversal - defining `parseNumber` through
+ * `describeParseFailure` would trim and convert twice on every accepted input.
  *
- * The signature is written out here rather than imported from `contract.ts`. Annotating this
- * function with the contract's own type would make the compiler enforce conformance at authoring
- * time and leave `signature.test-d.ts` unable to fail - a guard that proves nothing. An
- * implementation states its signature independently, and the contract checks it.
- *
- * PROVISIONAL: `null` marks failure. The catalogue-wide error convention is still undecided.
+ * The type is written out here rather than imported from `contract.ts`, for the same reason the
+ * signature is: a reference that borrows the contract's own types cannot fail the conformance check
+ * the contract performs on it.
  */
-export const parseNumber = (input: string): number | null => {
+type ParseAnalysis =
+  | { readonly ok: true; readonly value: number }
+  | { readonly ok: false; readonly reason: ParseFailureReason }
+
+const analyse = (input: string): ParseAnalysis => {
   const trimmed = input.trim()
-  if (!DECIMAL_GRAMMAR.test(trimmed)) return null
+  if (trimmed === '') return { ok: false, reason: 'empty' }
+  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }
 
   const value = Number(trimmed)
 
   // Overflow is the one failure the grammar cannot express: "1e400" is a well-formed decimal that
   // has no finite double. Underflow ("1e-400" -> 0) stays finite and is accepted.
-  return Number.isFinite(value) ? value : null
+  return Number.isFinite(value) ? { ok: true, value } : { ok: false, reason: 'overflow' }
+}
+
+export const parseNumber = (input: string): number | null => {
+  const analysis = analyse(input)
+
+  return analysis.ok ? analysis.value : null
+}
+
+/**
+ * Why a string is not a decimal number, or `null` when it is one.
+ *
+ * A caller that asks for the reason after a refusal repeats the whole analysis. That is affordable
+ * here - a trim and a regular expression - and it is the price of keeping the answering path free of
+ * a wrapper no caller asked for.
+ */
+export const describeParseFailure = (input: string): ParseFailureReason | null => {
+  const analysis = analyse(input)
+
+  return analysis.ok ? null : analysis.reason
 }

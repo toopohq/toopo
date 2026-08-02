@@ -15,7 +15,9 @@
  * the function under four time zones at once, and the validation pipeline forbids the local methods
  * lexically.
  *
- * PROVISIONAL: `null` marks failure. The catalogue-wide error convention is still undecided.
+ * Failure is `null`, and `describeAddFailure` publishes the reason beside it. Both derive from one
+ * private analysis, so the module holds a single traversal of the arithmetic and the two exports
+ * cannot drift.
  */
 
 type Duration = {
@@ -30,6 +32,31 @@ type Duration = {
 }
 
 type DurationField = keyof Duration
+
+type AddFailureReason =
+  | 'invalid-date'
+  | 'unknown-field'
+  | 'field-not-whole'
+  | 'total-not-exact'
+  | 'out-of-range'
+
+/**
+ * The single source both exports derive from, private because it is not the shape this contract
+ * publishes: a caller sees `Date | null` and asks for the reason only when it needs one.
+ *
+ * Private, and one function rather than two, so that the coupling the contract states is true by
+ * construction: there is one traversal of the arithmetic in this module, so the two exports cannot
+ * disagree about which calls fail. It also keeps one public call to one traversal, which matters
+ * more here than on `number/parse@1` - the work being repeated is month arithmetic rather than a
+ * regular expression.
+ *
+ * The type is written out here rather than imported from `contract.ts`, for the same reason the
+ * signature is: a reference that borrows the contract's own types cannot fail the conformance check
+ * the contract performs on it.
+ */
+type AddAnalysis =
+  | { readonly ok: true; readonly date: Date }
+  | { readonly ok: false; readonly reason: AddFailureReason }
 
 const DECLARED_FIELDS: readonly DurationField[] = [
   'years',
@@ -96,16 +123,18 @@ const elapsedMilliseconds = (duration: Duration): number =>
   valueOf(duration, 'seconds') * MILLISECONDS_PER_SECOND +
   valueOf(duration, 'milliseconds')
 
-export const addToDate = (date: Date, duration: Duration): Date | null => {
-  // Measured redundant and kept deliberately: NaN propagates through every path below, so deleting
-  // this line changes no answer on any input tried, including 200 000 random draws. The contract
-  // declares that an invalid date is rejected, and the reference states that where a reader looks
-  // for it rather than leaving it to emerge from the arithmetic three steps later.
+const analyse = (date: Date, duration: Duration): AddAnalysis => {
+  // No longer measured redundant. Under `null` alone this line changed no answer on any input tried,
+  // including 200 000 random draws, because NaN propagates to the final range check by every path.
+  // It now decides between two different reasons: an unparsed input is `invalid-date`, and the range
+  // check would call it `out-of-range`.
   const start = date.getTime()
-  if (!Number.isFinite(start)) return null
+  if (!Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }
 
-  if (!hasOnlyDeclaredFields(duration)) return null
-  if (!DECLARED_FIELDS.every((field) => isExactWholeNumber(duration[field]))) return null
+  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'unknown-field' }
+  if (!DECLARED_FIELDS.every((field) => isExactWholeNumber(duration[field]))) {
+    return { ok: false, reason: 'field-not-whole' }
+  }
 
   const totalMonths = valueOf(duration, 'years') * 12 + valueOf(duration, 'months')
   const elapsed = elapsedMilliseconds(duration)
@@ -113,10 +142,38 @@ export const addToDate = (date: Date, duration: Duration): Date | null => {
   // Each field is a safe integer on its own, but a total need not be, and past 2^53 these sums round
   // instead of adding. Rejecting there keeps every answer exact; the widest shift it costs is one
   // spanning the whole representable range, which no caller can want more than approximately.
-  if (!Number.isSafeInteger(totalMonths) || !Number.isSafeInteger(elapsed)) return null
+  //
+  // One reason for both totals, and so one statement. A caller who overflowed the month total and
+  // one who overflowed the elapsed total repair the same way - they look at the duration they wrote
+  // and make it smaller - so telling them apart would be a literal frozen into the major that no
+  // caller acts on.
+  if (!Number.isSafeInteger(totalMonths) || !Number.isSafeInteger(elapsed)) {
+    return { ok: false, reason: 'total-not-exact' }
+  }
 
   const shifted = totalMonths === 0 ? start : monthShiftedTimestamp(start, totalMonths)
   const result = new Date(shifted + elapsed)
 
-  return Number.isFinite(result.getTime()) ? result : null
+  return Number.isFinite(result.getTime())
+    ? { ok: true, date: result }
+    : { ok: false, reason: 'out-of-range' }
+}
+
+export const addToDate = (date: Date, duration: Duration): Date | null => {
+  const analysis = analyse(date, duration)
+
+  return analysis.ok ? analysis.date : null
+}
+
+/**
+ * Why a call could not be answered, or `null` when it can be.
+ *
+ * Only `out-of-range` is decided after the month arithmetic has run; the four others are settled by
+ * inspecting the arguments. A caller that asks for the reason after a refusal therefore repeats the
+ * whole computation on exactly one of the five paths and almost none of it on the other four.
+ */
+export const describeAddFailure = (date: Date, duration: Duration): AddFailureReason | null => {
+  const analysis = analyse(date, duration)
+
+  return analysis.ok ? null : analysis.reason
 }

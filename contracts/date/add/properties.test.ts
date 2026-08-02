@@ -11,7 +11,7 @@ import {
   staticAnalysisRequirements,
   universalProperties,
 } from './contract.js'
-import { addToDate } from './reference.js'
+import { addToDate, describeAddFailure } from './reference.js'
 
 /**
  * Block 4.3 - behavioural properties.
@@ -250,6 +250,31 @@ describe('date/add@1 specific properties', () => {
 
         return !clamped || result.getUTCDate() < date.getUTCDate()
       }),
+      { numRuns: propertyRuns },
+    )
+  })
+})
+
+// ---------------------------------------------------------------------------
+// The coupling between the two exports
+// ---------------------------------------------------------------------------
+
+describe('date/add@1 coupling between the two exports', () => {
+  it('P7 - a call fails exactly when it has a description', () => {
+    // The reference cannot fail this one: both exports derive from one private analysis, so the
+    // module holds a single traversal of the arithmetic and the two cannot drift. That is not what
+    // makes a property decorative or not. It governs every implementation, and one that writes the
+    // two independently - which is what optimising the answering path and leaving the diagnostic
+    // one alone looks like - can diverge on any input the named cases do not carry. The X-2 probe of
+    // the mutation battery is that implementation, and this property is the only guard in the
+    // contract that reddens on it.
+    fc.assert(
+      fc.property(
+        anyDate,
+        anyDuration,
+        (date, duration) =>
+          (addToDate(date, duration) === null) === (describeAddFailure(date, duration) !== null),
+      ),
       { numRuns: propertyRuns },
     )
   })

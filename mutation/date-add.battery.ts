@@ -16,6 +16,10 @@
  * where the zone-independence property is the only thing standing between this contract and a
  * defect that answers differently on two machines running the same code, which makes it the setting
  * worth pinning.
+ *
+ * The `reason-blind` lens reads the suite as if the diagnostic published only its presence and never
+ * which reason it names. The difference between the two columns is the entire detection the reason
+ * buys, isolated - which is the measurement that justifies the diagnostic existing at all.
  */
 
 import type { Battery, Edit, Expectation, Mutant } from './run.ts'
@@ -47,32 +51,63 @@ const MILLISECONDS_FIELD = `  valueOf(duration, 'milliseconds')`
 
 const TOTALS = `  const totalMonths = valueOf(duration, 'years') * 12 + valueOf(duration, 'months')`
 
+const BOTH_TOTALS = `${TOTALS}
+  const elapsed = elapsedMilliseconds(duration)`
+
 const SHIFT = `  const shifted = totalMonths === 0 ? start : monthShiftedTimestamp(start, totalMonths)`
 
 const COMPUTE = `${SHIFT}
   const result = new Date(shifted + elapsed)`
 
-const INVALID_DATE = `  if (!Number.isFinite(start)) return null`
-const UNKNOWN_FIELD = `  if (!hasOnlyDeclaredFields(duration)) return null\n`
-const FINAL = `  return Number.isFinite(result.getTime()) ? result : null`
+const INVALID_DATE = `  if (!Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }`
+const UNKNOWN_FIELD = `  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'unknown-field' }\n`
+const FINAL = `  return Number.isFinite(result.getTime())
+    ? { ok: true, date: result }
+    : { ok: false, reason: 'out-of-range' }`
+
+const ADD_TO_DATE = `export const addToDate = (date: Date, duration: Duration): Date | null => {
+  const analysis = analyse(date, duration)
+
+  return analysis.ok ? analysis.date : null
+}`
 
 const reference = (find: string, replace: string): Edit => ({ file: 'reference.ts', find, replace })
 
+const reasonSwap = (from: string, to: string): Edit =>
+  reference(`reason: '${from}' }`, `reason: '${to}' }`)
+
 const ZONE_PROPERTY = 'has no ambient input - the answer does not depend on the process time zone'
+const COUPLING_PROPERTY = 'P7 - a call fails exactly when it has a description'
 
 const killed = (by?: readonly string[]): Expectation =>
   by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
 
 const survived: Expectation = { verdict: 'survived' }
-const notApplicable: Expectation = { verdict: 'not-applicable' }
 
-/** A defect the bare `null` arm cannot carry, because it is about the reason reported. */
-const reasonDefect = (id: string, description: string): Mutant => ({
+/** A defect that is not about the reason: both lenses see it, and see it the same way. */
+const behavioural = (
+  id: string,
+  description: string,
+  edits: readonly Edit[],
+  expected: Expectation,
+): Mutant => ({
   id,
   kind: 'defect',
   description,
-  arms: {},
-  expected: { 'A/as-committed': notApplicable },
+  arms: { C: edits },
+  expected: { 'C/as-committed': expected, 'C/reason-blind': expected },
+})
+
+/**
+ * A defect of reason. Every one of them answers every call with the value the contract asks for, so
+ * the blinded column is what the bare `null` convention would have seen: nothing.
+ */
+const reasonDefect = (id: string, description: string, edits: readonly Edit[]): Mutant => ({
+  id,
+  kind: 'defect',
+  description,
+  arms: { C: edits },
+  expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
 })
 
 // ---------------------------------------------------------------------------
@@ -80,236 +115,230 @@ const reasonDefect = (id: string, description: string): Mutant => ({
 // ---------------------------------------------------------------------------
 
 const behaviour: readonly Mutant[] = [
-  {
-    id: 'D-01',
-    kind: 'defect',
-    description: 'null-always: refuses every call, the implementation that is free to be safe',
-    arms: { A: [reference(INVALID_DATE, `  if (Number.isFinite(start)) return null\n${INVALID_DATE}`)] },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-02',
-    kind: 'defect',
-    description: "mutates-the-input: shifts the caller's own Date and hands it back",
-    arms: {
-      A: [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = date`)],
-    },
-    expected: { 'A/as-committed': killed(['never mutates its arguments']) },
-  },
-  {
-    id: 'D-03',
-    kind: 'defect',
-    description: 'elapsed-before-calendar: applies the two steps in the order the contract forbids',
-    arms: {
-      A: [
-        reference(
-          COMPUTE,
-          `  const moved = start + elapsed\n` +
-            `  const result = new Date(totalMonths === 0 ? moved : monthShiftedTimestamp(moved, totalMonths))`,
-        ),
-      ],
-    },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-04',
-    kind: 'defect',
-    description:
-      'overflows-instead-of-clamping: 31 January plus a month lands in March, as setUTCMonth does',
-    arms: { A: [reference(CLAMP, `  const clampedDay = shifted.getUTCDate()`)] },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-05',
-    kind: 'defect',
-    description: 'local-time-methods: reads and writes the calendar of the process time zone',
-    arms: {
-      A: [
-        reference(
-          MONTH_SHIFT,
-          `  const year = shifted.getFullYear()
+  behavioural(
+    'D-01',
+    'null-always: refuses every call, the implementation that is free to be safe',
+    [
+      reference(
+        INVALID_DATE,
+        `  if (Number.isFinite(start)) return { ok: false, reason: 'invalid-date' }\n${INVALID_DATE}`,
+      ),
+    ],
+    killed(),
+  ),
+  behavioural(
+    'D-02',
+    "mutates-the-input: shifts the caller's own Date and hands it back",
+    [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = date`)],
+    killed(['never mutates its arguments']),
+  ),
+  behavioural(
+    'D-03',
+    'elapsed-before-calendar: applies the two steps in the order the contract forbids',
+    [
+      reference(
+        COMPUTE,
+        `  const moved = start + elapsed\n` +
+          `  const result = new Date(totalMonths === 0 ? moved : monthShiftedTimestamp(moved, totalMonths))`,
+      ),
+    ],
+    killed(),
+  ),
+  behavioural(
+    'D-04',
+    'overflows-instead-of-clamping: 31 January plus a month lands in March, as setUTCMonth does',
+    [reference(CLAMP, `  const clampedDay = shifted.getUTCDate()`)],
+    killed(),
+  ),
+  behavioural(
+    'D-05',
+    'local-time-methods: reads and writes the calendar of the process time zone',
+    [
+      reference(
+        MONTH_SHIFT,
+        `  const year = shifted.getFullYear()
   const targetMonth = shifted.getMonth() + totalMonths
   const clampedDay = Math.min(shifted.getDate(), lastDayOfMonth(year, targetMonth))
 
   shifted.setFullYear(year, targetMonth, clampedDay)`,
-        ),
-      ],
-    },
+      ),
+    ],
     // The most valuable single verdict in the repository, and the reason this battery pins its time
     // zone. Under UTC the named cases cannot see this defect at all - a local calendar and a UTC one
     // agree when they are the same calendar - and the zone-independence property is the only guard
     // left. Naming it here means a rewrite that quietly stops varying the zone reddens the battery.
-    expected: { 'A/as-committed': killed([ZONE_PROPERTY]) },
-  },
-  {
-    id: 'D-06',
-    kind: 'defect',
-    description:
-      'months-then-years: applies the two calendar fields one after the other, clamping twice',
-    arms: {
-      A: [
-        reference(
-          SHIFT,
-          `  const months = valueOf(duration, 'months')\n` +
-            `  const years = valueOf(duration, 'years')\n` +
-            `  const afterMonths = months === 0 ? start : monthShiftedTimestamp(start, months)\n` +
-            `  const shifted = years === 0 ? afterMonths : monthShiftedTimestamp(afterMonths, years * 12)`,
-        ),
-      ],
-    },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-07',
-    kind: 'defect',
-    description:
-      'date-utc-two-digit-year: looks up a month length through Date.UTC, which maps years 0-99 ' +
-      'onto 1900-1999. Y and 1900 + Y are congruent modulo four, so they agree on February ' +
-      'everywhere except the century rule; year 0 is the only two-digit year where they part',
-    arms: {
-      A: [
-        reference(
-          LAST_DAY,
-          `const lastDayOfMonth = (year: number, monthIndex: number): number =>
+    killed([ZONE_PROPERTY]),
+  ),
+  behavioural(
+    'D-06',
+    'months-then-years: applies the two calendar fields one after the other, clamping twice',
+    [
+      reference(
+        SHIFT,
+        `  const months = valueOf(duration, 'months')\n` +
+          `  const years = valueOf(duration, 'years')\n` +
+          `  const afterMonths = months === 0 ? start : monthShiftedTimestamp(start, months)\n` +
+          `  const shifted = years === 0 ? afterMonths : monthShiftedTimestamp(afterMonths, years * 12)`,
+      ),
+    ],
+    killed(),
+  ),
+  behavioural(
+    'D-07',
+    'date-utc-two-digit-year: looks up a month length through Date.UTC, which maps years 0-99 onto ' +
+      '1900-1999. Y and 1900 + Y are congruent modulo four, so they agree on February everywhere ' +
+      'except the century rule; year 0 is the only two-digit year where they part',
+    [
+      reference(
+        LAST_DAY,
+        `const lastDayOfMonth = (year: number, monthIndex: number): number =>
   new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate()`,
-        ),
-      ],
-    },
-    expected: { 'A/as-committed': survived },
-  },
+      ),
+    ],
+    survived,
+  ),
   {
     id: 'D-08',
     kind: 'defect',
     description:
-      'isinteger-not-issafeinteger: accepts a field past 2^53, where the arithmetic stops being exact',
-    arms: { A: [reference(WHOLE_NUMBER, `  value === undefined || Number.isInteger(value)`)] },
-    expected: { 'A/as-committed': survived },
+      'isinteger-not-issafeinteger: accepts a field past 2^53, where the arithmetic stops being ' +
+      'exact. Caught only by the reason it reports: `{ days: 1e21 }` passes the field guard it ' +
+      'should have failed and is refused by the total guard instead, so the value is right and the ' +
+      'motive is wrong',
+    arms: { C: [reference(WHOLE_NUMBER, `  value === undefined || Number.isInteger(value)`)] },
+    expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
   },
-  {
-    id: 'D-09',
-    kind: 'defect',
-    description:
-      'accepts-unknown-fields: applies the part of the duration it understood and ignores the rest',
-    arms: { A: [reference(UNKNOWN_FIELD, '')] },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-10',
-    kind: 'defect',
-    description:
-      'no-final-range-check: hands back an Invalid Date rather than refusing. The one stray value ' +
+  behavioural(
+    'D-09',
+    'accepts-unknown-fields: applies the part of the duration it understood and ignores the rest',
+    [reference(UNKNOWN_FIELD, '')],
+    killed(),
+  ),
+  behavioural(
+    'D-10',
+    'no-final-range-check: hands back an Invalid Date rather than refusing. The one stray value ' +
       'this contract can produce without a cast',
-    arms: { A: [reference(FINAL, `  return result`)] },
-    expected: { 'A/as-committed': killed() },
-  },
+    [reference(FINAL, `  return { ok: true, date: result }`)],
+    killed(),
+  ),
   {
     id: 'D-11',
     kind: 'defect',
     description:
       'no-input-validity-check: drops the early rejection of an Invalid Date input. NaN reaches the ' +
-      'final range check by every path, so under `null` alone this defect changes no answer',
-    arms: { A: [reference(`${INVALID_DATE}\n\n`, '')] },
-    expected: { 'A/as-committed': survived },
+      'final range check by every path, so the value is unchanged; only the reason moves, from ' +
+      'invalid-date to out-of-range',
+    arms: { C: [reference(`${INVALID_DATE}\n\n`, '')] },
+    expected: { 'C/as-committed': killed(), 'C/reason-blind': survived },
   },
-  {
-    id: 'D-12',
-    kind: 'defect',
-    description: 'weeks-are-five-days',
-    arms: { A: [reference(WEEK, `const MILLISECONDS_PER_WEEK = 432_000_000`)] },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-13',
-    kind: 'defect',
-    description: 'naive-leap-rule: year % 4 with no century rule, so 2100 gets a 29 February',
-    arms: {
-      A: [
-        reference(
-          LAST_DAY,
-          `const lastDayOfMonth = (year: number, monthIndex: number): number => {
+  behavioural(
+    'D-12',
+    'weeks-are-five-days',
+    [reference(WEEK, `const MILLISECONDS_PER_WEEK = 432_000_000`)],
+    killed(),
+  ),
+  behavioural(
+    'D-13',
+    'naive-leap-rule: year % 4 with no century rule, so 2100 gets a 29 February',
+    [
+      reference(
+        LAST_DAY,
+        `const lastDayOfMonth = (year: number, monthIndex: number): number => {
   const shiftedYear = year + Math.floor(monthIndex / 12)
   const month = ((monthIndex % 12) + 12) % 12
   const lengths = [31, shiftedYear % 4 === 0 ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
   return lengths[month]
 }`,
-        ),
-      ],
-    },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-14',
-    kind: 'defect',
-    description: "identity-on-empty-duration: returns the caller's own object for the neutral duration",
-    arms: {
-      A: [reference(TOTALS, `  if (Object.keys(duration).length === 0) return date\n\n${TOTALS}`)],
-    },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-15',
-    kind: 'defect',
-    description: 'clamps-up-not-down: Math.max where the contract clamps with Math.min',
-    arms: {
-      A: [
-        reference(
-          CLAMP,
-          `  const clampedDay = Math.max(shifted.getUTCDate(), lastDayOfMonth(year, targetMonth))`,
-        ),
-      ],
-    },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-16',
-    kind: 'defect',
-    description: 'last-day-off-by-one: asks for day 1 of the next month rather than day 0',
-    arms: {
-      A: [
-        reference(
-          `  probe.setUTCFullYear(year, monthIndex + 1, 0)`,
-          `  probe.setUTCFullYear(year, monthIndex + 1, 1)`,
-        ),
-      ],
-    },
-    expected: { 'A/as-committed': killed() },
-  },
-  {
-    id: 'D-17',
-    kind: 'defect',
-    description: 'drops-milliseconds: the smallest field is summed as zero',
-    arms: { A: [reference(MILLISECONDS_FIELD, `  0`)] },
-    expected: { 'A/as-committed': killed() },
-  },
+      ),
+    ],
+    killed(),
+  ),
+  behavioural(
+    'D-14',
+    "identity-on-empty-duration: returns the caller's own object for the neutral duration",
+    [
+      reference(
+        TOTALS,
+        `  if (Object.keys(duration).length === 0) return { ok: true, date }\n\n${TOTALS}`,
+      ),
+    ],
+    killed(),
+  ),
+  behavioural(
+    'D-15',
+    'clamps-up-not-down: Math.max where the contract clamps with Math.min',
+    [
+      reference(
+        CLAMP,
+        `  const clampedDay = Math.max(shifted.getUTCDate(), lastDayOfMonth(year, targetMonth))`,
+      ),
+    ],
+    killed(),
+  ),
+  behavioural(
+    'D-16',
+    'last-day-off-by-one: asks for day 1 of the next month rather than day 0',
+    [
+      reference(
+        `  probe.setUTCFullYear(year, monthIndex + 1, 0)`,
+        `  probe.setUTCFullYear(year, monthIndex + 1, 1)`,
+      ),
+    ],
+    killed(),
+  ),
+  behavioural(
+    'D-17',
+    'drops-milliseconds: the smallest field is summed as zero',
+    [reference(MILLISECONDS_FIELD, `  0`)],
+    killed(),
+  ),
 ]
 
 // ---------------------------------------------------------------------------
 // R-1 to R-4 - defects of reason
-//
-// None of them can be written against this arm. That is the measurement rather than an omission: a
-// form with no reason has nowhere to put a wrong one, so a defect that reports one cannot exist here.
 // ---------------------------------------------------------------------------
 
 const reasons: readonly Mutant[] = [
   reasonDefect(
     'R-1',
     'right value, wrong reason: a field that is not a whole number is reported as out-of-range',
+    [reasonSwap('field-not-whole', 'out-of-range')],
   ),
   reasonDefect(
     'R-2',
     'a plausible but false reason: an unknown field is reported as field-not-whole, which is what a ' +
       'developer would guess if they had to guess',
+    [reasonSwap('unknown-field', 'field-not-whole')],
   ),
   reasonDefect(
     'R-3',
     'collapse: every reason reported as one. This is a diagnostic carrying exactly as much ' +
       'information as null, and a contract that cannot kill it has bought nothing but syntax',
+    [
+      reasonSwap('unknown-field', 'invalid-date'),
+      reasonSwap('field-not-whole', 'invalid-date'),
+      reasonSwap('total-not-exact', 'invalid-date'),
+      reasonSwap('out-of-range', 'invalid-date'),
+    ],
   ),
   reasonDefect(
     'R-4',
     'the pair null renders indistinguishable: invalid-date and unknown-field exchanged. Under null ' +
       'this defect has no observable consequence whatsoever',
+    // Anchored on whole statements rather than on the literals. Swapping two values by two
+    // substitutions would make the first edit's output an anchor for the second: measured, the naive
+    // version matched twice and the instrument refused it rather than injecting half a defect.
+    [
+      reference(
+        INVALID_DATE,
+        `  if (!Number.isFinite(start)) return { ok: false, reason: 'unknown-field' }`,
+      ),
+      reference(
+        UNKNOWN_FIELD.trimEnd(),
+        `  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'invalid-date' }`,
+      ),
+    ],
   ),
 ]
 
@@ -323,13 +352,17 @@ const probes: readonly Mutant[] = [
     kind: 'probe',
     description:
       'returns an Invalid Date on the neutral duration - the same defect as D-10, moved off the ' +
-      'representable-range boundary and onto an input the generators were assumed to draw',
+      'representable-range boundary and onto an input the generators were assumed to draw. It ' +
+      'separates "P1 cannot see this" from "P1 was never given the chance"',
     arms: {
-      A: [
-        reference(FINAL, `  if (totalMonths === 0 && elapsed === 0) return new Date(Number.NaN)\n\n${FINAL}`),
+      C: [
+        reference(
+          FINAL,
+          `  if (totalMonths === 0 && elapsed === 0) return { ok: true, date: new Date(Number.NaN) }\n\n${FINAL}`,
+        ),
       ],
     },
-    expected: { 'A/as-committed': killed() },
+    expected: { 'C/as-committed': killed(), 'C/reason-blind': killed() },
   },
   {
     id: 'F-2',
@@ -338,17 +371,55 @@ const probes: readonly Mutant[] = [
       'returns an Invalid Date for every call. The control that separates "P1 cannot fail" from ' +
       '"P1 was never reached": if F-2 does not redden P1, the property is decorative; if it does, ' +
       'the property is sound and its generators are the defect',
-    arms: { A: [reference(FINAL, `  return new Date(Number.NaN)`)] },
-    expected: { 'A/as-committed': killed() },
+    arms: { C: [reference(FINAL, `  return { ok: true, date: new Date(Number.NaN) }`)] },
+    expected: { 'C/as-committed': killed(), 'C/reason-blind': killed() },
   },
   {
     id: 'X-2',
     kind: 'probe',
     description:
-      'the two exports written independently, and drifting. Not expressible here: this arm has one ' +
-      'export, so there is nothing for it to drift from',
-    arms: {},
-    expected: { 'A/as-committed': notApplicable },
+      'the two exports written independently, and drifting. `addToDate` gets its own arithmetic - ' +
+      'the obvious shape when the answering path is optimised and the diagnostic one is left alone ' +
+      '- and `analyse`, which now only `describeAddFailure` reaches, acquires a rule that a week ' +
+      'cannot be combined with a calendar unit. Every entry of both tables still answers correctly ' +
+      'on both exports, because no named case carries weeks and months at once; only the coupling ' +
+      'property can see it',
+    arms: {
+      C: [
+        // The guard is injected before `addToDate` is rewritten. The independent implementation
+        // names its locals differently, so neither edit can turn the other's anchor ambiguous - the
+        // instrument would refuse rather than inject half a defect.
+        reference(
+          BOTH_TOTALS,
+          `${BOTH_TOTALS}\n\n` +
+            `  if (totalMonths !== 0 && valueOf(duration, 'weeks') !== 0) {\n` +
+            `    return { ok: false, reason: 'field-not-whole' }\n` +
+            `  }`,
+        ),
+        reference(
+          ADD_TO_DATE,
+          `export const addToDate = (date: Date, duration: Duration): Date | null => {
+  const start = date.getTime()
+  if (!Number.isFinite(start)) return null
+
+  if (!hasOnlyDeclaredFields(duration)) return null
+  if (!DECLARED_FIELDS.every((field) => isExactWholeNumber(duration[field]))) return null
+
+  const months = valueOf(duration, 'years') * 12 + valueOf(duration, 'months')
+  const ms = elapsedMilliseconds(duration)
+  if (!Number.isSafeInteger(months) || !Number.isSafeInteger(ms)) return null
+
+  const result = new Date((months === 0 ? start : monthShiftedTimestamp(start, months)) + ms)
+
+  return Number.isFinite(result.getTime()) ? result : null
+}`,
+        ),
+      ],
+    },
+    expected: {
+      'C/as-committed': killed([COUPLING_PROPERTY]),
+      'C/reason-blind': killed([COUPLING_PROPERTY]),
+    },
   },
 ]
 
@@ -358,14 +429,43 @@ export const battery: Battery = {
   timeZone: 'UTC',
   calibrationMutant: 'D-01',
 
-  arms: [{ id: 'A', ref: 'HEAD', convention: 'failure reported as null, with no diagnostic' }],
+  arms: [
+    {
+      id: 'C',
+      ref: 'HEAD',
+      convention: 'failure reported as null, with the reason published beside the return channel',
+    },
+  ],
 
   lenses: [
     {
       id: 'as-committed',
       description: 'the arm exactly as its commit left it',
-      arms: ['A'],
+      arms: ['C'],
       edits: [],
+    },
+    {
+      /**
+       * One edit rather than several, because the contract names a reason in exactly one place:
+       * `addToDate` still answers `Date | null`, so no property and no equality function ever sees
+       * one. Blinded, the suite still requires a refused call to have a description and no longer
+       * requires it to be the right one - which is exactly as much sight as the bare `null`
+       * convention had.
+       */
+      id: 'reason-blind',
+      description:
+        'the diagnostic read as if only its presence were published, never which reason it names',
+      arms: ['C'],
+      edits: [
+        {
+          file: 'edge-cases.test.ts',
+          find: '  expect(describeAddFailure(new Date(date), duration as Duration)).toBe(reason)',
+          replace:
+            '  expect(describeAddFailure(new Date(date), duration as Duration) === null).toBe(\n' +
+            '    reason === null,\n' +
+            '  )',
+        },
+      ],
     },
   ],
 

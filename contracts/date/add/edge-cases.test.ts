@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import type { Duration } from './contract.js'
-import { edgeCases, outputsAreEqual, untypedEdgeCases } from './contract.js'
-import { addToDate } from './reference.js'
+import type { AddFailureReason, Duration } from './contract.js'
+import { edgeCases, failureReasons, outputsAreEqual, untypedEdgeCases } from './contract.js'
+import { addToDate, describeAddFailure } from './reference.js'
 
 /**
  * Block 4.4, executable. Every entry of the contract's two tables is asserted exactly, using the
- * equality semantics the contract declares - on the instant, never on object identity.
+ * equality semantics the contract declares - on the instant, never on object identity - and every
+ * entry is asserted a second time against the diagnostic surface.
  */
 
 /**
@@ -33,6 +34,18 @@ const rendered = (value: Date | null): string => {
 
 const asExpected = (expected: string | null): Date | null =>
   expected === null ? null : new Date(expected)
+
+/**
+ * The one place the diagnostic surface is asserted, shared by the two tables so that a reason is
+ * checked identically whether or not TypeScript would have accepted the duration that produced it.
+ */
+const expectDescribedAs = (
+  date: string,
+  duration: Readonly<Record<string, unknown>>,
+  reason: AddFailureReason | null,
+): void => {
+  expect(describeAddFailure(new Date(date), duration as Duration)).toBe(reason)
+}
 
 describe('date/add@1 named edge cases', () => {
   for (const { date, duration, expected } of edgeCases) {
@@ -63,8 +76,33 @@ describe('date/add@1 edge cases outside the declared type', () => {
   }
 })
 
+describe('date/add@1 named edge cases, described', () => {
+  for (const { date, duration, reason } of edgeCases) {
+    it(`${date} + ${renderDuration(duration)} -> ${reason ?? 'no failure to describe'}`, () => {
+      expectDescribedAs(date, duration, reason)
+    })
+  }
+})
+
+describe('date/add@1 edge cases outside the declared type, described', () => {
+  for (const { date, duration, reason } of untypedEdgeCases) {
+    it(`${date} + ${renderDuration(duration)} -> ${reason ?? 'no failure to describe'}`, () => {
+      expectDescribedAs(date, duration, reason)
+    })
+  }
+})
+
 describe('date/add@1 edge case tables', () => {
   const allCases = [...edgeCases, ...untypedEdgeCases]
+
+  it('names a case for every declared reason, and declares every reason it names', () => {
+    // The partition is frozen with the major, so a literal nobody produces any more would survive
+    // as documentation of a refusal that no longer exists - and a reason the tables produce without
+    // declaring it would be invisible to a caller reading the contract. Both directions, one guard.
+    const produced = allCases.map(({ reason }) => reason).filter((reason) => reason !== null)
+
+    expect([...new Set(produced)].sort()).toEqual([...failureReasons].sort())
+  })
 
   it('settles each call exactly once across both tables', () => {
     const calls = allCases.map(({ date, duration }) => `${date} + ${renderDuration(duration)}`)

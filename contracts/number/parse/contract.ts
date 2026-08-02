@@ -7,9 +7,9 @@
  * `signature.test-d.ts` for 4.2, `properties.test.ts` for 4.3, `edge-cases.test.ts` for 4.4 and
  * `profiles.test.ts` for 4.5.
  *
- * PROVISIONAL: failure is reported as `null`. The catalogue-wide error convention
- * (`null` / throw / `Result`) is still undecided and will be frozen for every contract at once.
- * Every `null` below is a placeholder for that decision, not a settled answer.
+ * Failure is reported as `null`, with the reason published beside the return channel rather than
+ * inside it - the catalogue-wide convention, settled after three forms were built and measured on
+ * this contract and on `date/add@1`.
  */
 
 // ---------------------------------------------------------------------------
@@ -34,7 +34,9 @@ export const identity = {
     'accepts the decimal grammar a human writes - optional surrounding whitespace, optional sign, ' +
     'leading zeros, a fractional part, scientific notation - and rejects everything else, ' +
     'including hexadecimal, octal, binary, digit separators, "NaN" and "Infinity". The result is ' +
-    'either null or a finite number: never NaN, never Infinity.',
+    'either null or a finite number: never NaN, never Infinity. Which of the three refusals ' +
+    'happened is published by a second export rather than folded into the return value, so a ' +
+    'caller who only needs a number is not made to unwrap one.',
 
   /**
    * The input domain the contract is written for. It belongs to the identity because the answers
@@ -75,6 +77,66 @@ export const identity = {
  * fails the suite when an implementation deviates.
  */
 export type ParseNumber = (input: string) => number | null
+
+/**
+ * Why a string is not a decimal number. Declared as a list rather than only as a type, so that the
+ * partition is a value the contract can check itself against: `edge-cases.test.ts` requires the
+ * reasons the tables actually produce to be exactly these three, which is what stops a literal
+ * nobody names any more from surviving as documentation.
+ *
+ * The literals belong to this contract and to no other. There is no shared failure type in the
+ * catalogue, so a reason means exactly what this contract says it means and nothing has to be kept
+ * compatible across features.
+ *
+ * The partition is frozen with the major, so it was chosen against a test rather than by taxonomy:
+ * two motives share a literal only when one message covers both without lying AND no caller acts
+ * differently on them.
+ *
+ * `empty` and `overflow` each earn theirs. "Not a decimal number" is simply false of `1e400`, which
+ * is a well-formed decimal with no finite double; and a blank field is a caller telling its user
+ * "this is required" where a malformed one says "this is not a number" - the distinction a caller
+ * would otherwise have to rebuild by restating this contract's grammar in its own code.
+ *
+ * `not-decimal` is the residual, and it is written here as one rather than dressed up as a peer:
+ * nineteen of the twenty-two refusals in block 4.4 carry it. The split that nearly earned a literal
+ * was a `separator` reason for `1,5`, `1_000` and `1,000` - two of the three domains this contract
+ * names for itself would message those differently. It is refused because the contract could only
+ * define membership by a second grammar: the naive rule, "it matches once commas and underscores
+ * are removed", classifies `1,2,3` as a separator mistake, and the correct rule is a whole second
+ * grammar - a second thing that can be wrong, and one the coupling property does not cover. A
+ * `wrong-radix` reason is refused for a plainer reason: `0o17` would be a radix prefix while `0777`
+ * parses as seven hundred and seventy-seven, so the category is inconsistent at its own edge.
+ */
+export const failureReasons = ['empty', 'not-decimal', 'overflow'] as const
+
+export type ParseFailureReason = (typeof failureReasons)[number]
+
+/**
+ * The diagnostic surface. `parseNumber` keeps answering `number | null`, and a caller who needs to
+ * know why asks.
+ *
+ * The reason is published beside the return channel rather than inside it because that form is
+ * additive: a contract can ship `name@1` with no diagnostic and gain one later without breaking
+ * anyone, where putting the reason in the return type freezes it into the major on day one. On
+ * detection the two forms were measured to tie exactly - the error convention is not a verification
+ * question.
+ *
+ * The cost is one extra traversal, on the failing path and only there.
+ */
+export type DescribeParseFailure = (input: string) => ParseFailureReason | null
+
+/**
+ * The coupling between the two exports, stated here because it is a promise of the contract rather
+ * than a detail of one implementation: a string fails to parse exactly when it has a description.
+ *
+ * The reference cannot violate it - both exports derive from one private analysis, so the module
+ * holds one grammar and there is no way for the two to drift. That is not a reason to drop the
+ * property. The contract governs every implementation, not this one, and an implementation that
+ * writes the two independently - the obvious thing to do when the parsing path is optimised and the
+ * diagnostic one is left alone - can diverge on any input the named cases do not carry.
+ */
+export const couplingRule =
+  'parseNumber(s) === null if and only if describeParseFailure(s) !== null, for every string s'
 
 export const targetEnvironments = ['node', 'browser', 'bun'] as const
 
@@ -172,6 +234,8 @@ export const universalProperties = [
 export type EdgeCase = {
   readonly input: string
   readonly expected: number | null
+  /** What the diagnostic surface must report, and `null` exactly when the input parses. */
+  readonly reason: ParseFailureReason | null
   readonly rationale: string
 }
 
@@ -184,11 +248,13 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '42',
     expected: 42,
+    reason: null,
     rationale: 'An ordinary integer parses to itself.',
   },
   {
     input: '-3.5',
     expected: -3.5,
+    reason: null,
     rationale: 'An ordinary negative decimal parses to itself.',
   },
 
@@ -196,6 +262,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '  42  ',
     expected: 42,
+    reason: null,
     rationale:
       'Surrounding whitespace is ignored, because text arriving from a form field or a ' +
       'spreadsheet cell routinely carries it. Trimming uses String.prototype.trim.',
@@ -203,11 +270,13 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '\t\n 7 \r\n',
     expected: 7,
+    reason: null,
     rationale: 'Tabs and newlines are whitespace for String.prototype.trim, so they are ignored too.',
   },
   {
     input: BYTE_ORDER_MARK + '9',
     expected: 9,
+    reason: null,
     rationale:
       'A leading byte-order mark parses, because String.prototype.trim removes U+FEFF: ' +
       '"\\uFEFF9".trim() has length 1. This is derived from the whitespace rule rather than a ' +
@@ -217,6 +286,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '4 2',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'Whitespace inside the number is not ignored; only leading and trailing whitespace is.',
   },
 
@@ -224,21 +294,25 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '+42',
     expected: 42,
+    reason: null,
     rationale: 'A leading plus sign is accepted and has no effect on the value.',
   },
   {
     input: '- 1',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'A sign separated from its digits is not a number.',
   },
   {
     input: '--1',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'A repeated sign is not a number.',
   },
   {
     input: '-0',
     expected: -0,
+    reason: null,
     rationale:
       'Negative zero is preserved, because it is a distinct IEEE-754 value carrying the sign of ' +
       'an underflowing computation. Comparing results with === would hide the difference, since ' +
@@ -249,6 +323,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '01',
     expected: 1,
+    reason: null,
     rationale:
       'Leading zeros are accepted and carry no meaning. They are not read as octal - that legacy ' +
       'of old parseInt implementations is not part of this contract.',
@@ -256,21 +331,25 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '.5',
     expected: 0.5,
+    reason: null,
     rationale: 'A fraction with no integer part is accepted, matching how people write it.',
   },
   {
     input: '5.',
     expected: 5,
+    reason: null,
     rationale: 'An integer with a trailing decimal point is accepted; it is a common typing artefact.',
   },
   {
     input: '.',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'A decimal point with no digits on either side is not a number.',
   },
   {
     input: '1.2.3',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'Two decimal points is not a number. parseFloat("1.2.3") returns 1.2, silently discarding ' +
       'the rest of the input; this contract rejects it instead.',
@@ -280,6 +359,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '1e3',
     expected: 1000,
+    reason: null,
     rationale:
       'Scientific notation is accepted, because it is how spreadsheets and scientific exports ' +
       'write large numbers. parseInt("1e3") returns 1, keeping only the leading digit.',
@@ -287,16 +367,19 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '1E+3',
     expected: 1000,
+    reason: null,
     rationale: 'The exponent marker is case-insensitive and its sign is optional.',
   },
   {
     input: '1e-7',
     expected: 1e-7,
+    reason: null,
     rationale: 'A negative exponent is accepted.',
   },
   {
     input: '1e',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'An exponent marker with no digits is not a number. parseFloat("1e") returns 1, silently ' +
       'dropping the incomplete exponent.',
@@ -306,6 +389,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '',
     expected: null,
+    reason: 'empty',
     rationale:
       'The empty string is not a number. Number("") returns 0, the single most damaging trap in ' +
       'JavaScript numeric conversion: an empty form field becomes a legitimate-looking zero. ' +
@@ -314,6 +398,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '   ',
     expected: null,
+    reason: 'empty',
     rationale: 'A blank string is not a number, for the same reason: Number("   ") also returns 0.',
   },
 
@@ -321,6 +406,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: 'NaN',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'The word "NaN" is not a number. Number("NaN") returns NaN, which is indistinguishable from ' +
       'the failure value of every other invalid input.',
@@ -328,14 +414,18 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: 'Infinity',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'The word "Infinity" is rejected, because a parser that can return an infinite value forces ' +
       'every caller to guard with isFinite afterwards. Number("Infinity") returns Infinity and ' +
-      'Python accepts float("Infinity"); this contract knowingly diverges from both.',
+      'Python accepts float("Infinity"); this contract knowingly diverges from both. It is ' +
+      'not-decimal rather than overflow: the rejection is about the word, not about a magnitude ' +
+      'that was computed and lost.',
   },
   {
     input: '-Infinity',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'Rejected for the same reason as "Infinity".',
   },
 
@@ -343,6 +433,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '0x1F',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'Hexadecimal is rejected: this contract reads human decimal text, where "0x1F" is a typo ' +
       'rather than the number 31. Number("0x1F") returns 31, but JavaScript\'s own numeric parser ' +
@@ -351,11 +442,13 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '0o17',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'Octal notation is rejected, consistently with hexadecimal.',
   },
   {
     input: '0b11',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'Binary notation is rejected, consistently with hexadecimal.',
   },
 
@@ -363,6 +456,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '1_000',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'Numeric separators are a feature of JavaScript source literals, not of strings. ' +
       'Number("1_000") returns NaN while Python\'s float("1_000") returns 1000; this contract ' +
@@ -371,13 +465,17 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '1,5',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'A comma is never a decimal separator here. Which separator is decimal depends on locale, ' +
-      'and this contract is deliberately not locale-aware.',
+      'and this contract is deliberately not locale-aware. It carries the residual reason rather ' +
+      'than one of its own, because naming the motive "you used a separator" would require the ' +
+      'same guess about the writer that refusing the value avoids.',
   },
   {
     input: '1,000',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'A thousands separator is rejected for the same reason; reading it as 1000 or as 1 would ' +
       'both be guesses about the writer\'s locale.',
@@ -387,11 +485,13 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: 'abc',
     expected: null,
+    reason: 'not-decimal',
     rationale: 'Arbitrary text is not a number.',
   },
   {
     input: '12n',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'A BigInt literal suffix is rejected. parseFloat("12n") returns 12, silently discarding the ' +
       'suffix that carried the meaning.',
@@ -399,6 +499,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: ARABIC_INDIC_123,
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'Digits outside ASCII 0-9 are rejected. Number() also returns NaN for the Arabic-Indic ' +
       'digits U+0661 U+0662 U+0663, even though they spell 123.',
@@ -406,6 +507,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: 'constructor',
     expected: null,
+    reason: 'not-decimal',
     rationale:
       'An inherited object property name is not a number. It is listed because an implementation ' +
       'memoising into a plain object answers this one wrongly: "constructor" in {} is true.',
@@ -415,6 +517,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '1e400',
     expected: null,
+    reason: 'overflow',
     rationale:
       'A value too large for a double is rejected, because Number("1e400") returns Infinity and ' +
       'the contract guarantees a finite result. The magnitude is lost either way; returning null ' +
@@ -423,6 +526,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '1e-400',
     expected: 0,
+    reason: null,
     rationale:
       'A value too small for a double becomes 0, the nearest representable double under ' +
       'IEEE-754. Unlike overflow this stays finite, so it is accepted - the contract cannot ' +
@@ -431,6 +535,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '-1e-400',
     expected: -0,
+    reason: null,
     rationale:
       'A negative underflow becomes -0, keeping the sign of the value that was lost. This is ' +
       'where preserving negative zero pays for itself.',
@@ -438,6 +543,7 @@ export const edgeCases: readonly EdgeCase[] = [
   {
     input: '9007199254740993',
     expected: 9007199254740992,
+    reason: null,
     rationale:
       'Above 2^53 consecutive integers are no longer representable, so this input parses to the ' +
       'nearest double, 9007199254740992. Every JavaScript number parser loses this digit; the ' +
