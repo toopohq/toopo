@@ -73,11 +73,11 @@ const candidateInput = fc.oneof(
 const finiteDouble = fc.double({ noNaN: true, noDefaultInfinity: true })
 
 describe('number/parse@1 specific properties', () => {
-  it('P1 - returns null or a finite number, never NaN and never Infinity', () => {
+  it('P1 - fails, or succeeds with a finite number, never NaN and never Infinity', () => {
     fc.assert(
       fc.property(candidateInput, (input) => {
         const result = parseNumber(input)
-        return result === null || Number.isFinite(result)
+        return !result.ok || Number.isFinite(result.value)
       }),
       { numRuns: propertyRuns },
     )
@@ -96,7 +96,7 @@ describe('number/parse@1 specific properties', () => {
     fc.assert(
       fc.property(
         finiteDouble.filter((n) => !Object.is(n, -0)),
-        (n) => outputsAreEqual(parseNumber(String(n)), n),
+        (n) => outputsAreEqual(parseNumber(String(n)), { ok: true, value: n }),
       ),
       { numRuns: propertyRuns },
     )

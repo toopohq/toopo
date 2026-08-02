@@ -16,7 +16,7 @@ describe('number/parse@1 benchmark profiles', () => {
   for (const { name, sampleClass, samples } of benchmarkProfiles) {
     it(`${name} - every sample is ${sampleClass}`, () => {
       const offenders = samples.filter(
-        (sample) => (parseNumber(sample) === null) === (sampleClass === 'accepted'),
+        (sample) => parseNumber(sample).ok !== (sampleClass === 'accepted'),
       )
 
       expect(offenders.map((sample) => `${sample.slice(0, 16)} (length ${sample.length})`)).toEqual(

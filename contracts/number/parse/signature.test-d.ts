@@ -1,11 +1,11 @@
 import { describe, it, expectTypeOf } from 'vitest'
-import type { ParseNumber } from './contract.js'
+import type { ParseNumber, ParseNumberResult } from './contract.js'
 import { parseNumber } from './reference.js'
 
 /**
  * Block 4.2, executable. The signature is part of the contract, so an implementation that widens
- * its input, narrows its return type, or drops `null` from it fails the suite before any
- * behavioural test runs.
+ * its input, narrows its return type, or drops a member of the result union fails the suite before
+ * any behavioural test runs.
  *
  * `toEqualTypeOf` is used rather than `toMatchTypeOf`: a signature that merely satisfies the
  * contract's shape is not conformant, it has to be identical.
@@ -22,7 +22,7 @@ describe('number/parse@1 signature', () => {
     parseNumber(42)
   })
 
-  it('returns a number that may be absent, never NaN-as-number-only', () => {
-    expectTypeOf(parseNumber).returns.toEqualTypeOf<number | null>()
+  it('returns a result that is either a number or a named failure', () => {
+    expectTypeOf(parseNumber).returns.toEqualTypeOf<ParseNumberResult>()
   })
 })
