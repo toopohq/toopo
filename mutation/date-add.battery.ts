@@ -1,7 +1,7 @@
 /**
  * The `date/add@1` battery.
  *
- * D-01 to D-17 are defects of behaviour and carry the mutation score. R-1 to R-4 are defects of
+ * D-01 to D-21 are defects of behaviour and carry the mutation score. R-1 to R-4 are defects of
  * reason: they answer every call with the value the contract asks for and are wrong only about why
  * a refusal happened. F-1, F-2 and X-2 are probes rather than defects - they ask whether a guard can
  * reach the region it claims to cover, and whether two exports can drift apart - so they are kept
@@ -49,6 +49,14 @@ const CLAMP = `  const clampedDay = Math.min(shifted.getUTCDate(), lastDayOfMont
 
 const MILLISECONDS_FIELD = `  valueOf(duration, 'milliseconds')`
 
+const ELAPSED = `const elapsedMilliseconds = (duration: Duration): number =>
+  valueOf(duration, 'weeks') * MILLISECONDS_PER_WEEK +
+  valueOf(duration, 'days') * MILLISECONDS_PER_DAY +
+  valueOf(duration, 'hours') * MILLISECONDS_PER_HOUR +
+  valueOf(duration, 'minutes') * MILLISECONDS_PER_MINUTE +
+  valueOf(duration, 'seconds') * MILLISECONDS_PER_SECOND +
+  valueOf(duration, 'milliseconds')`
+
 const TOTALS = `  const totalMonths = valueOf(duration, 'years') * 12 + valueOf(duration, 'months')`
 
 const BOTH_TOTALS = `${TOTALS}
@@ -79,6 +87,10 @@ const reasonSwap = (from: string, to: string): Edit =>
 const ZONE_PROPERTY = 'has no ambient input - the answer does not depend on the process time zone'
 const COUPLING_PROPERTY = 'P7 - a call fails exactly when it has a description'
 const NO_INVALID_DATE = 'P1 - returns null or a valid Date, never an Invalid Date'
+const CALL_HISTORY = 'has no ambient input - an answer does not depend on the calls made before it'
+const DETERMINISTIC = 'is deterministic - the same call yields the same answer every time'
+const CANCELS = 'P4 - an elapsed-time duration and its negation cancel exactly'
+const TIME_OF_DAY = 'P5 - a calendar-only duration never changes the UTC time of day'
 
 /** The two named cases written to kill D-07 and D-08, pinned so that deleting one reddens here. */
 const YEAR_ZERO_CASE = '0000-01-31T00:00:00.000Z + { months: 1 } -> 0000-02-29T00:00:00.000Z'
@@ -293,6 +305,77 @@ const behaviour: readonly Mutant[] = [
     'drops-milliseconds: the smallest field is summed as zero',
     [reference(MILLISECONDS_FIELD, `  0`)],
     killed(),
+  ),
+
+  // D-18 to D-21 exist because four properties of this contract were declared applicable and had
+  // never been seen red on anything but a defect that reddens everything. A property whose only
+  // witness is "refuses every call" has been shown to be a test, not to be this test.
+  behavioural(
+    'D-18',
+    'mutates-the-input-and-copies: shifts the caller\'s own Date, then returns a fresh one holding ' +
+      'the same instant. D-02 hands the mutated object back, which makes the second of two ' +
+      'identical calls compare the same object against itself and leaves determinism green; ' +
+      'returning a copy is the shape where the second call starts from an instant the first one ' +
+      'moved. Every named case survives it, because each of them calls once on a fresh Date',
+    [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = new Date(date.getTime())`)],
+    killed([DETERMINISTIC]),
+  ),
+  behavioural(
+    'D-19',
+    'shared-month-probe: the Date used to look up the length of a month is hoisted to module scope ' +
+      'and only its month and day are set, so the year it was left at by the previous call decides ' +
+      'the answer to this one. This is the analogue of the global-flag regular expression that ' +
+      'witnesses the same property on `number/parse@1`: state that advances with every call, which ' +
+      'is the one thing this property can see - a cache consulted first is primed by the probe ' +
+      'itself and stays invisible to it, measured there as P-02 and P-19 surviving',
+    [
+      reference(
+        LAST_DAY,
+        `const monthProbe = new Date(0)
+
+const lastDayOfMonth = (year: number, monthIndex: number): number => {
+  monthProbe.setUTCMonth(monthIndex + 1, 0)
+
+  return monthProbe.getUTCDate()
+}`,
+      ),
+    ],
+    killed([CALL_HISTORY]),
+  ),
+  behavioural(
+    'D-20',
+    'midnight-normalising: the calendar step zeroes the UTC time of day, the mistake of an ' +
+      'implementation that assumes a date is a day',
+    [reference(MONTH_SHIFT, `${MONTH_SHIFT}\n  shifted.setUTCHours(0, 0, 0, 0)`)],
+    killed([TIME_OF_DAY]),
+  ),
+  behavioural(
+    'D-21',
+    'remainder-not-modulo: hours are normalised into days with Math.floor and %, which disagree on ' +
+      'negatives - measured, Math.floor(-25 / 24) is -2 while -25 % 24 is -1, so minus twenty-five ' +
+      'hours is applied as minus forty-nine. The defect is invisible to every other guard: no named ' +
+      'case carries an hour field past a day, P3 draws milliseconds only, and the zone property sees ' +
+      'four zones agreeing on the same wrong answer. Only the cancellation property looks at a ' +
+      'duration and its negation, which is exactly where an odd function stops being one',
+    [
+      reference(
+        ELAPSED,
+        `const elapsedMilliseconds = (duration: Duration): number => {
+  const hours = valueOf(duration, 'hours')
+  const carriedDays = Math.floor(hours / 24)
+
+  return (
+    valueOf(duration, 'weeks') * MILLISECONDS_PER_WEEK +
+    (valueOf(duration, 'days') + carriedDays) * MILLISECONDS_PER_DAY +
+    (hours % 24) * MILLISECONDS_PER_HOUR +
+    valueOf(duration, 'minutes') * MILLISECONDS_PER_MINUTE +
+    valueOf(duration, 'seconds') * MILLISECONDS_PER_SECOND +
+    valueOf(duration, 'milliseconds')
+  )
+}`,
+      ),
+    ],
+    killed([CANCELS]),
   ),
 ]
 
