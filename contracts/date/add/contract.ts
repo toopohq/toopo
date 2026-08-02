@@ -7,7 +7,10 @@
  * this contract and on `number/parse@1`.
  */
 
-import { NO_AMBIENT_OUTPUT_FINDING } from '../../../catalogue/every-contract.js'
+import {
+  DETERMINISM_ORDERING_FINDING,
+  NO_AMBIENT_OUTPUT_FINDING,
+} from '../../../catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity
@@ -403,7 +406,8 @@ export const universalProperties = [
       'either: consulted first, it is primed by the property\'s own first call and returns that ' +
       'same answer to the second. D-02, which mutates the input and hands the object back rather ' +
       'than a copy, leaves this property green for a third reason - measured - because both calls ' +
-      'then return the one object and it is compared against itself.',
+      `then return the one object and it is compared against itself. ${DETERMINISM_ORDERING_FINDING} - ` +
+      'D-22 is that mutant here.',
   },
   {
     name: 'no ambient input',
@@ -419,7 +423,8 @@ export const universalProperties = [
       'length of a month hoisted to module scope, so the year the previous call left in it decides ' +
       'the next one. State that advances with every call is the only thing this instance can see - ' +
       'a cache consulted first is primed by the probe and stays invisible, measured on ' +
-      '`number/parse@1` where two such caches survive the whole battery.',
+      '`number/parse@1` where two such caches survive the whole battery. D-22 is the witness that ' +
+      'belongs to this instance alone: measured, it reddens here and leaves determinism green.',
   },
   {
     name: 'no ambient output',

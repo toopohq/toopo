@@ -460,7 +460,7 @@ const behaviour: readonly Mutant[] = [
           `  }\n\n${RETURN}`,
       ),
     ],
-    killed(),
+    killed([NO_AMBIENT_INPUT]),
   ),
 ]
 

@@ -100,6 +100,45 @@ export const referenceImplementationRules = [
 ] as const
 
 // ---------------------------------------------------------------------------
+// Guards and the clock
+// ---------------------------------------------------------------------------
+
+/**
+ * Every guard whose verdict can depend on the clock declares a timeout, or removes the dependency.
+ *
+ * A test framework's default limit is a duration assertion nobody wrote. Measured on
+ * `array/group-by@1`: M-18 rebuilds a group array on every insertion, answers correctly on every
+ * sample, and takes 5392 ms against the reference's 0.7 ms on the fifty-thousand-element sample.
+ * Under vitest's five-second default it failed the block 4.5 shape test - a test that asserts a shape
+ * and was silently asserting a duration as well, eight per cent away from flipping with the speed of
+ * the machine. A verdict that flips with the speed of the computer is the one thing the mutation
+ * instrument exists to prevent, so it would have been pinned as a defect that contract catches.
+ *
+ * The rule bites where a guard feeds the implementation an input whose size a defect's complexity can
+ * act on. Audited across the three prototypes, with the per-guard durations of a full run:
+ *
+ * Two guards qualify, both in block 4.5, and both now declare a timeout - the shape test of
+ * `array/group-by@1`, which groups fifty thousand elements, and the class test of `number/parse@1`,
+ * whose `long-inputs` profile carries a five-thousand-character sample. The second was measured
+ * rather than assumed, and the first version of the claim was wrong: a nested-quantifier grammar that
+ * still accepts those samples costs 0.032 ms against the reference's 0.031 ms. One that rejects them
+ * does not terminate on forty characters. The size axis is real; what makes it bite is a defect that
+ * refuses, which is precisely what that guard is there to catch.
+ *
+ * No other guard does. The slowest guard in the whole suite is the time-zone property of
+ * `date/add@1`, at 69 ms against a five-second default - seventy times of headroom - and every
+ * property draws inputs its arbitraries bound small: arrays of at most twenty-four elements, strings
+ * of at most a dozen digits, dates in one range. A quadratic defect on twenty-four elements is five
+ * hundred and seventy-six operations.
+ *
+ * A guard that reads the clock at all, even where its verdict does not depend on the value, uses a
+ * pinned instant instead. A rule with an exception it does not name is a sentence.
+ */
+export const CLOCK_DEPENDENCE_RULE =
+  'a guard whose verdict can depend on elapsed time declares its own timeout; a guard that reads ' +
+  'the clock without needing to uses a pinned instant instead'
+
+// ---------------------------------------------------------------------------
 // Block 4.4 - the named and settled edge cases
 //
 // Block 4.4 lives in its own `edge-cases.ts`, beside the `edge-cases.test.ts` that executes it, in
@@ -199,6 +238,31 @@ export type UniversalPropertyDeclaration = {
  * observe and not about parsing, dates or grouping. A contract still declares its own entry: this is
  * the reason it is allowed to give, not a declaration it is spared.
  */
+/**
+ * `deterministic` and `no ambient input` are ordered rather than independent, measured on all three
+ * prototypes.
+ *
+ * The determinism property calls the function twice in a row; the ambient-input property calls it,
+ * runs an arbitrary history, and calls it again. Anything that makes two consecutive calls disagree
+ * makes two calls with a history between them disagree as well, so every mutant that reddens the
+ * first reddens the second - measured, with no exception across three batteries.
+ *
+ * The converse is false, and the mutant that shows it now exists on each contract: P-21, D-22 and
+ * M-22 remember their last answer under a cheap proxy for identity, written on a miss and read on a
+ * hit. Two identical consecutive calls read one slot, so determinism compares an answer against
+ * itself and stays green; one foreign call in between replaces the slot, which is the only thing the
+ * ambient instance can see. Measured, all three redden `no ambient input` and none reddens
+ * `deterministic`.
+ *
+ * Both stay declared. Determinism is red on real mutants - a global-flagged regular expression, an
+ * array reversed in place, a Date the implementation moved under itself - so it is not decorative.
+ * What it is not is independent, and that is worth publishing rather than leaving a reader to assume
+ * two guards where there is one and a half.
+ */
+export const DETERMINISM_ORDERING_FINDING =
+  'ordered under `no ambient input` rather than independent of it: every mutant measured to redden ' +
+  'this property reddens that one too, and the memoise-last mutant reddens that one and not this'
+
 export const NO_AMBIENT_OUTPUT_FINDING =
   'not reachable by a property - a test cannot observe a write that happened before it ran, and a ' +
   'correct memoising cache is indistinguishable from a defect by behaviour alone'

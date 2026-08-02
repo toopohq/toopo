@@ -7,7 +7,10 @@
  * this contract and on `date/add@1`.
  */
 
-import { NO_AMBIENT_OUTPUT_FINDING } from '../../../catalogue/every-contract.js'
+import {
+  DETERMINISM_ORDERING_FINDING,
+  NO_AMBIENT_OUTPUT_FINDING,
+} from '../../../catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity
@@ -229,8 +232,9 @@ export const universalProperties = [
     name: 'deterministic',
     applicable: true,
     reason:
-      'Violable in practice: a regular expression carrying the global flag keeps a lastIndex ' +
-      'between calls and answers differently on the second one.',
+      'Violable in practice, and witnessed by P-08 of the battery: a regular expression carrying the ' +
+      `global flag keeps a lastIndex between calls and answers differently on the second one. ${DETERMINISM_ORDERING_FINDING} - ` +
+      'P-21 is that mutant here.',
   },
   {
     name: 'no ambient input',
@@ -240,7 +244,10 @@ export const universalProperties = [
       'lastIndex survives a call, makes an answer depend on which inputs were parsed before it. ' +
       'The property interleaves a probe with an arbitrary history and requires the probe to answer ' +
       'identically either way. This contract reads a string and returns a number, so the call ' +
-      'history is the only ambient input it can plausibly acquire.',
+      'history is the only ambient input it can plausibly acquire. Witnessed alone by P-21, which ' +
+      'remembers its last analysis under the length of the input: measured, ten guards redden and ' +
+      'determinism is not one of them. The caches that are consulted first and never advance - P-02, ' +
+      'P-17, P-19 - stay invisible to it, because the probe primes them itself.',
   },
   {
     name: 'no ambient output',

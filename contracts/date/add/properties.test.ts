@@ -451,15 +451,22 @@ describe('date/add@1 property preconditions', () => {
   it('restores both a zone that was set and a zone that was absent', () => {
     // The check above depends on the properties having run first. This one does not depend on
     // anything having run at all: it drives both branches of the restore from inside the test.
+    //
+    // The instant is pinned rather than read from the clock. Nothing here asserts the offset, so the
+    // verdict does not depend on it today - and the catalogue's clock rule has no exception for a
+    // guard that reads the clock and happens not to need the value, because that is one edit away
+    // from a guard that does.
     const environment = hostEnvironment()
     const sentinel = 'Asia/Kathmandu'
+    const pinned = (): number =>
+      new Date(ambientProbeInstants.january).getTimezoneOffset()
 
     environment.TZ = sentinel
-    withTimeZone('Pacific/Chatham', () => new Date().getTimezoneOffset())
+    withTimeZone('Pacific/Chatham', pinned)
     const afterSet = environment.TZ
 
     delete environment.TZ
-    withTimeZone('Pacific/Chatham', () => new Date().getTimezoneOffset())
+    withTimeZone('Pacific/Chatham', pinned)
     const afterAbsent = environment.TZ
 
     if (ambientTimeZoneAtLoad === undefined) delete environment.TZ

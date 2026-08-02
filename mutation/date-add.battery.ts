@@ -401,7 +401,7 @@ const lastDayOfMonth = (year: number, monthIndex: number): number => {
           `const analyseFully = (date: Date, duration: Duration): AddAnalysis => {`,
       ),
     ],
-    killed(),
+    killed([CALL_HISTORY]),
   ),
 ]
 

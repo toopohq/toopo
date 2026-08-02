@@ -284,7 +284,7 @@ const behaviour: readonly Mutant[] = [
       'determinism cannot see it; a foreign call in between replaces it, which is exactly what the ' +
       'ambient-input property interleaves. P-02, P-17 and P-19 are the same family without the ' +
       'advance - a cache consulted first is primed by the probe itself and survives the whole ' +
-      'battery, measured twice',
+      'battery, measured twice. Measured: ten guards redden and determinism is not among them',
     [
       reference(
         ANALYSE,
@@ -300,7 +300,7 @@ const behaviour: readonly Mutant[] = [
           `const analyseFully = (input: string): ParseAnalysis => {`,
       ),
     ],
-    killed(),
+    killed([CALL_HISTORY]),
   ),
 ]
 

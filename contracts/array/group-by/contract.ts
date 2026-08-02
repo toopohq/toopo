@@ -12,7 +12,10 @@
  * the one that produced what neither of the other two needed.
  */
 
-import { NO_AMBIENT_OUTPUT_FINDING } from '../../../catalogue/every-contract.js'
+import {
+  DETERMINISM_ORDERING_FINDING,
+  NO_AMBIENT_OUTPUT_FINDING,
+} from '../../../catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity
@@ -400,10 +403,11 @@ export const universalProperties = [
     name: 'deterministic',
     applicable: true,
     reason:
-      'Violable in practice: an accumulator array hoisted out of the loop, or a Map reused between ' +
-      'calls, makes the second answer differ from the first. Conditional on a deterministic key ' +
-      'function, which the generators supply - see `keyFunctionRules`, where that restriction is ' +
-      'published together with the obligation that stops it from hiding anything.',
+      'Violable in practice, and witnessed by M-21, which reverses the input in place: reversal is an ' +
+      'involution, so two identical consecutive calls really do answer differently. Conditional on a ' +
+      'deterministic key function, which the generators supply - see `keyFunctionRules`, where that ' +
+      `restriction is published together with the obligation that stops it from hiding anything. ${DETERMINISM_ORDERING_FINDING} - ` +
+      'M-22 is that mutant here.',
   },
   {
     name: 'no ambient input',
@@ -415,7 +419,10 @@ export const universalProperties = [
       'ambient input of the kind `date/add@1` has - this contract reads no clock, no locale and no ' +
       'time zone - so the call history is the only one it can plausibly acquire. A cache consulted ' +
       'first stays invisible to it, measured twice already on `number/parse@1`, and that is ' +
-      'recorded rather than papered over.',
+      'recorded rather than papered over - M-15 is the same story here, keyed by length in a Map ' +
+      'that is never overwritten, and neither this property nor determinism sees it. M-22 is the ' +
+      'witness that belongs to this property alone: one slot rather than a Map, so it keeps ' +
+      'advancing, and measured it reddens here while determinism stays green.',
   },
   {
     name: 'no ambient output',
