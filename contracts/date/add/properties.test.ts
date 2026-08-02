@@ -258,6 +258,12 @@ describe('date/add@1 specific properties', () => {
   })
 
   it('P4 - an elapsed-time duration and its negation cancel exactly', () => {
+    // What this asserts beyond P3 is that the elapsed step is an odd function of the duration, and
+    // that is not a distinction without a defect: D-21 of the battery normalises hours into days
+    // with Math.floor and %, which disagree on negatives, so minus twenty-five hours is applied as
+    // minus forty-nine. Measured, it is the only mutant in the battery this property catches and
+    // the only guard in the contract that catches it - no named case carries an hour field past a
+    // day, and P3 draws milliseconds alone.
     fc.assert(
       fc.property(anyDate, elapsedOnlyDuration, (date, duration) => {
         const forward = addToDate(date, duration)
@@ -272,6 +278,10 @@ describe('date/add@1 specific properties', () => {
   })
 
   it('P5 - a calendar-only duration never changes the UTC time of day', () => {
+    // Witnessed by D-20, which zeroes the time of day in the calendar step - the mistake of an
+    // implementation that assumes a date is a day. Two named cases catch it as well, and that is
+    // published rather than hidden: this property is a guard with a defect of its own to answer
+    // for, not the only thing standing between the contract and that defect.
     fc.assert(
       fc.property(anyDate, calendarOnlyDuration, (date, duration) => {
         const result = addToDate(date, duration)

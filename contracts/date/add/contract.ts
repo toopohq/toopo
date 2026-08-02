@@ -394,8 +394,16 @@ export const universalProperties = [
     name: 'deterministic',
     applicable: true,
     reason:
-      'Violable in practice: an implementation that reads the current clock to decide anything, or ' +
-      'that caches on a mutable key, answers differently on the second call.',
+      'Violable in practice, and witnessed by D-18 of the battery: an implementation that shifts ' +
+      'the caller\'s own Date and returns a copy answers from a moved instant on the second call. ' +
+      'Two candidate witnesses were measured and rejected, because a property pinned to a flaky ' +
+      'or silent mutant is worse than an open gap. A clock read is not observable here - Date.now ' +
+      'has millisecond resolution and the two calls this property makes are microseconds apart, so ' +
+      'the mutant would be green almost always and red by accident. A cache is not observable ' +
+      'either: consulted first, it is primed by the property\'s own first call and returns that ' +
+      'same answer to the second. D-02, which mutates the input and hands the object back rather ' +
+      'than a copy, leaves this property green for a third reason - measured - because both calls ' +
+      'then return the one object and it is compared against itself.',
   },
   {
     name: 'no ambient input',
@@ -405,8 +413,13 @@ export const universalProperties = [
       'zone: `getMonth` and `setDate` read and write the local calendar, so an implementation built ' +
       'on them is a different function on a machine in Paris and a machine in UTC. Measured, such ' +
       'an implementation diverges from the UTC answer on 411 of 1000 pseudo-random draws once the ' +
-      'zone is varied - and on 0 of 1000 if the zone is never varied. The call history is tested as ' +
-      'a second instance of the same property.',
+      'zone is varied - and on 0 of 1000 if the zone is never varied. The zone instance is ' +
+      'witnessed by D-05, which reads and writes the local calendar. The call history is tested as ' +
+      'a second instance of the same property, and witnessed by D-19: the Date used to look up the ' +
+      'length of a month hoisted to module scope, so the year the previous call left in it decides ' +
+      'the next one. State that advances with every call is the only thing this instance can see - ' +
+      'a cache consulted first is primed by the probe and stays invisible, measured on ' +
+      '`number/parse@1` where two such caches survive the whole battery.',
   },
   {
     name: 'no ambient output',
