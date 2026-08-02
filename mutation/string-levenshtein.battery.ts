@@ -80,6 +80,7 @@ const ASTRAL_INSIDE = 'an-astral-character-inside-a-word'
 const TWO_ASTRAL = 'two-astral-characters-and-one'
 const A_GRAPHEME = 'a-grapheme-is-not-the-unit'
 const NORMALISATION = 'normalisation-is-not-applied'
+const A_COMBINING_MARK = 'a-combining-mark-is-one-unit'
 const A_SPACE = 'a-space-is-a-code-point'
 const A_TRANSPOSITION = 'a-transposition'
 const ONE_SUBSTITUTION = 'one-substitution'
@@ -128,7 +129,7 @@ const behaviour: readonly Mutant[] = [
         `  const left = [...a.normalize('NFC')]\n  const right = [...b.normalize('NFC')]`,
       ),
     ],
-    killed([NORMALISATION]),
+    killed([NORMALISATION, BOUNDS, ONE_EDIT, AFFIXES]),
   ),
   sameOnEveryLens(
     'L-04',
@@ -137,7 +138,7 @@ const behaviour: readonly Mutant[] = [
       'is not a metric at all: it is asymmetric, and the same pair of strings measures differently ' +
       'depending on which one is given first',
     [reference(DECOMPOSE, `  const left = [...a]\n  const right = [...b.normalize('NFD')]`)],
-    killed([SYMMETRY]),
+    killed([IDENTITY, SYMMETRY, BOUNDS, ONE_EDIT, AFFIXES]),
   ),
   sameOnEveryLens(
     'L-05',
@@ -147,7 +148,10 @@ const behaviour: readonly Mutant[] = [
       'can see a comparison which is not an equivalence, and no named case compares three strings at ' +
       'once. It is also the mutant that found the starved support of that property: measured over ' +
       'two hundred runs of a thousand draws, it reddened P4 on 189 of them under independently drawn ' +
-      'triples and on 200 under the blended mediator the property now draws',
+      'triples and on 200 under the blended mediator the property now draws. Three guards go red and ' +
+      'only two are pinned: P2 reddens on 175 runs out of 200 - the pair it needs is two strings of ' +
+      'one length whose every mismatch involves a space, which the arbitraries draw on 0.221% of ' +
+      'pairs - so naming it would make this cell red on the seed rather than on the defect',
     [
       reference(
         SUBSTITUTION,
@@ -156,7 +160,7 @@ const behaviour: readonly Mutant[] = [
           `        (left[i - 1] === right[j - 1] || left[i - 1] === ' ' || right[j - 1] === ' ' ? 0 : 1)`,
       ),
     ],
-    killed([TRIANGLE]),
+    killed([TRIANGLE, ONE_EDIT]),
   ),
   sameOnEveryLens(
     'L-06',
@@ -293,7 +297,9 @@ const behaviour: readonly Mutant[] = [
       'the memoise-last idiom with a cheap proxy for identity, and the fourth contract it has been ' +
       'written on. The slot is written on a miss and read on a hit, so two identical consecutive ' +
       'calls agree and determinism cannot see it; a foreign call in between replaces it, which is ' +
-      'the only thing the ambient-input property can see',
+      'the only thing the ambient-input property can see. Four guards are pinned and up to three ' +
+      'more redden depending on the seed - measured over four runs - so the pin names the four that ' +
+      'were red on all of them',
     [
       reference(
         SIGNATURE,
@@ -310,7 +316,7 @@ const behaviour: readonly Mutant[] = [
           `const computeDistance = (a: string, b: string): number => {`,
       ),
     ],
-    killed([CALL_HISTORY]),
+    killed([A_COMBINING_MARK, SEPARATES_FROM_THE_ECOSYSTEM, SYMMETRY, CALL_HISTORY]),
   ),
 ]
 
@@ -359,8 +365,8 @@ const signatures: readonly Mutant[] = [
       'one of them passes two arguments; what is lost is the compile error a caller gets today',
     [reference(SIGNATURE, `export const levenshtein = (a: string, b: string = ''): number => {`)],
     {
-      'as-committed': killed([TYPE_IDENTITY, REFUSES_ONE_STRING]),
-      'identity-blind': killed([REFUSES_ONE_STRING]),
+      'as-committed': killed([TYPE_IDENTITY, ACCEPTS_TWO_STRINGS, REFUSES_ONE_STRING]),
+      'identity-blind': killed([ACCEPTS_TWO_STRINGS, REFUSES_ONE_STRING]),
     },
   ),
   perLens(
@@ -400,7 +406,7 @@ const probes: readonly Mutant[] = [
         `  if (left.length > 12 || right.length > 12) return Math.max(left.length, right.length)\n\n${ANSWER}`,
       ),
     ],
-    killed([IDENTICAL_PROFILE, ONE_EDIT_PROFILE]),
+    killed([IDENTICAL_PROFILE, ONE_EDIT_PROFILE, AFFIXES]),
   ),
   probe(
     UNDER,

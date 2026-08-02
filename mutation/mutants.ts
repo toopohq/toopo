@@ -59,21 +59,28 @@ export const edgeCases = (find: string, replace: string): Edit => ({
  * was measured is a distribution of red-set sizes; where to cut that distribution is a choice, and it
  * was calibrated against a snapshot rather than against a law.
  *
- * The snapshot has already moved, inside one unit of work, which is the whole argument for saying so.
- * When the line was drawn there were three batteries and 147 killed cells and the median red set was
- * exactly five, so five split them almost in half. There are now six - seventeen mutants added and
- * three specification batteries written - and over 197 killed cells the median is three: 121 cells
- * sit at or below the line and 76 above it. Pinning the 121 in full costs 260 titles; pinning the
- * other 76 in full would cost 1656, none of which would pin anything a single edit could remove, and
- * every one of which would break on a rename. A pin that transcribes a run is not a claim about the
- * contract.
+ * The snapshot has already moved twice, which is the whole argument for saying so. When the line was
+ * drawn there were three batteries and 147 killed cells and the median red set was exactly five, so
+ * five split them almost in half. A second measurement over six batteries and 197 cells put the
+ * median at three. There are now eight batteries and 262 killed cells - `string/levenshtein@1` and
+ * its specification battery - and the median is four: 151 cells sit at or below the line and 111
+ * above it. Pinning the 151 in full costs 324 titles; pinning the other 111 in full would cost 2248,
+ * none of which would pin anything a single edit could remove, and every one of which would break on
+ * a rename. A pin that transcribes a run is not a claim about the contract.
  *
- * The line stays at five, and it must be remeasured when contracts 4 and 5 move it again. It is
+ * The line stays at five, and it must be remeasured when the fifth contract moves it again. It is
  * defensible across a range rather than at a point - what it has to separate is a set one commit can
  * remove from a transcript of a run - and moving it with every measurement would make two batteries
- * written a month apart incomparable. If the median keeps falling, the argument for five becomes a
- * ceiling on what a reader can check by hand, which is a different argument from the one that chose
- * it and has to be written as such rather than inherited quietly.
+ * written a month apart incomparable. The median has now gone three, then four, on the same line;
+ * that it moves in both directions is the evidence that five is a convention rather than a
+ * consequence.
+ *
+ * **A pin names what is red on every run, not what is red on this one.** Naming all of a set of five
+ * is the rule; naming a guard whose red depends on the seed is a battery that fails on the seed.
+ * Measured on `string/levenshtein@1`: L-05 reddens three guards and two are pinned, because the third
+ * needs a pair the arbitraries draw on 0.221% of runs and is therefore red on 175 runs out of 200.
+ * The intersection over four runs is what a pin should carry, and it is cheap to take - the
+ * instrument's `--only` flag runs one mutant in seconds.
  *
  * Pins are checked by inclusion rather than by equality, and that is measured too. Three consecutive
  * runs of the three batteries that existed then agreed on 173 of 174 cells; the one that moved is

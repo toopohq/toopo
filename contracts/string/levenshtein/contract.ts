@@ -272,9 +272,13 @@ export const universalProperties = [
       'Violable in practice, and witnessed by L-19 of the battery: an implementation that counts the ' +
       'edits into an accumulator hoisted out of the function - the shape a variable reaches when it ' +
       'is made "reusable" - answers d on the first call and 2d on the second. It is the only witness ' +
-      'this contract has, and that is a measurement rather than an omission: every other candidate ' +
-      `was a cache, and a cache answers a repeated call from its own first answer. ${DETERMINISM_ORDERING_FINDING} - ` +
-      'L-20 is that mutant here.',
+      'that reddens this property on its own failure condition. Measured, one other mutant reddens ' +
+      'it - L-15, which reads the answer out of the transposed corner of the matrix and throws when ' +
+      'the two lengths differ - and a property that has only ever been red on a mutant that throws ' +
+      'has not been seen red on the sentence it makes, which is the standard `array/group-by@1` set ' +
+      'when it wrote M-21. That there is no third witness is a measurement rather than an omission: ' +
+      'every other candidate was a cache, and a cache answers a repeated call from its own first ' +
+      `answer. ${DETERMINISM_ORDERING_FINDING} - L-20 is that mutant here.`,
   },
   {
     name: 'no ambient input',
