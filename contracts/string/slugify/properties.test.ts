@@ -202,6 +202,36 @@ const hasSomethingToKeep = (text: string): boolean => /[\p{L}\p{Nd}]/u.test(text
 const absorbs = (base: string, mark: string): boolean =>
   [...`${base}${mark}`.normalize('NFC')].length === 1
 
+/**
+ * Whether a slug carries a mark that the base of its own run would absorb - the invariant that
+ * makes this function a fixed point, read off an answer rather than off the fold that produced it.
+ *
+ * It asks about the base of the run and never about the code point to the left, and the first
+ * version of this helper made exactly the mistake it exists to catch: measured, it stayed green on
+ * G-07 of the battery, which is the mutant that tests the left-hand neighbour. Unicode lets a mark
+ * of high combining class compose onto the starter across a mark of lower class, so a neighbour
+ * test cannot see an acute reaching an `e` from behind an Arabic fatha.
+ */
+const carriesAnAbsorbableMark = (slug: string): boolean => {
+  let runBase: string | null = null
+
+  for (const point of slug) {
+    if (point === '-') {
+      runBase = null
+      continue
+    }
+
+    if (/\p{M}/u.test(point)) {
+      if (runBase !== null && absorbs(runBase, point)) return true
+      continue
+    }
+
+    runBase = point
+  }
+
+  return false
+}
+
 // ---------------------------------------------------------------------------
 // The six steps of the rule
 // ---------------------------------------------------------------------------
@@ -247,19 +277,12 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P3 - no mark in the answer composes onto the base in front of it', () => {
+  it('P3 - no mark in the answer composes onto the base of its run', () => {
     // The invariant idempotence rests on, asserted directly rather than inferred from it. A slug
-    // carrying a base immediately followed by a mark that composes onto it is a slug the next call
-    // would shorten, and this guard names that as the defect instead of waiting for P2 to notice
-    // the symptom.
+    // carrying a mark its run's base would absorb is a slug the next call would shorten, and this
+    // guard names that as the defect instead of waiting for P2 to notice the symptom.
     fc.assert(
-      fc.property(anyTextOrStack, (text) => {
-        const points = [...slugify(text)]
-
-        return points.every(
-          (point, at) => at === 0 || !absorbs(points[at - 1] ?? '', point),
-        )
-      }),
+      fc.property(anyTextOrStack, (text) => !carriesAnAbsorbableMark(slugify(text))),
       { numRuns: propertyRuns },
     )
   })
@@ -392,7 +415,7 @@ describe('string/slugify@1 property preconditions', () => {
         return (
           outputAlphabet.pattern.test(slug) &&
           slug === points.map((point) => point.toLowerCase()).join('') &&
-          points.every((point, at) => at === 0 || !absorbs(points[at - 1] ?? '', point))
+          !carriesAnAbsorbableMark(slug)
         )
       }),
       { numRuns: propertyRuns },
