@@ -1,11 +1,20 @@
 /**
  * The `date/add@1` battery.
  *
- * D-01 to D-21 are defects of behaviour and carry the mutation score. R-1 to R-4 are defects of
+ * D-01 to D-22 are defects of behaviour and carry the mutation score. R-1 to R-4 are defects of
  * reason: they answer every call with the value the contract asks for and are wrong only about why
- * a refusal happened. F-1, F-2 and X-2 are probes rather than defects - they ask whether a guard can
- * reach the region it claims to cover, and whether two exports can drift apart - so they are kept
- * out of the score.
+ * a refusal happened. S-12 to S-15 are defects of the declared type: they answer every call with the
+ * value *and* the reason the contract asks for, and are wrong only about what they promise, so
+ * nothing outside block 4.2 can see them. F-1, F-2 and X-2 are probes rather than defects - they ask
+ * whether a guard can reach the region it claims to cover, and whether two exports can drift apart -
+ * so they are kept out of the score.
+ *
+ * Four signature defects for five block 4.2 guards, and the fifth is the finding. `leaves every
+ * duration field optional` compares `Duration` against `Partial<Duration>`, and both sides are read
+ * out of `contract.ts` - so no edit to `reference.ts` can reach it, whatever it says. It was
+ * declared a region this battery does not probe, on the grounds that `array/group-by@1` reddens the
+ * equivalent guard on all eight of its signature defects; that reason was false here, and the guard
+ * is now declared out of reach with the rest of the contract's own declarations.
  *
  * The `D-` prefix exists because an earlier battery used `M17` for two different defects in two
  * different contracts. A mutant has one name in the whole project.
@@ -87,6 +96,8 @@ const ADD_TO_DATE = `export const addToDate = (date: Date, duration: Duration): 
   return analysis.ok ? analysis.date : null
 }`
 
+const DESCRIBE_ADD_FAILURE = `export const describeAddFailure = (date: Date, duration: Duration): AddFailureReason | null => {`
+
 const reasonSwap = (from: string, to: string): Edit =>
   reference(`reason: '${from}' }`, `reason: '${to}' }`)
 
@@ -102,6 +113,11 @@ const NEUTRAL_DURATION =
   'P2 - the empty duration is neutral: it always answers, with the same instant in a new object'
 const MILLISECOND_SHIFT = 'P3 - adding milliseconds shifts the instant by exactly that many'
 const DAY_NEVER_GROWS = 'P6 - the day of the month never grows under a calendar-only duration'
+
+const TYPE_IDENTITY = 'matches the type declared by the contract'
+const ACCEPTS_A_DATE_AND_A_DURATION = 'accepts a Date and a Duration, and nothing else'
+const RETURNS_A_DATE_OR_NOTHING = 'returns a Date that may be absent, never an Invalid Date'
+const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
 
 /** The two named cases written to kill D-07 and D-08, pinned so that deleting one reddens here. */
 const YEAR_ZERO_CASE = '0000-01-31T00:00:00.000Z + { months: 1 } -> 0000-02-29T00:00:00.000Z'
@@ -461,6 +477,96 @@ const reasons: readonly Mutant[] = [
 ]
 
 // ---------------------------------------------------------------------------
+// S-12 to S-15 - defects of the declared type
+//
+// Every one of them answers every call exactly as the contract requires, on both
+// exports, so the whole behavioural suite is blind to all four by construction
+// and the only question is which type assertion notices.
+// ---------------------------------------------------------------------------
+
+const signatures: readonly Mutant[] = [
+  sameOnEveryLens(
+    'S-12',
+    'widens the first parameter to `Date | number`, so the signature becomes the place where units ' +
+      'are guessed - the exact widening block 4.2 refuses in writing, because a caller holding a ' +
+      'timestamp cannot say whether it means milliseconds or seconds and this contract would have ' +
+      'to. `valueOf` is the identity on the instant a Date carries, so every call in the suite ' +
+      'answers as before, including the Invalid Date whose valueOf is NaN. It is the mutant that ' +
+      'makes the `addToDate(0, {})` directive stop being used, which is itself an error',
+    [
+      reference(
+        ADD_TO_DATE,
+        `export const addToDate = (date: Date | number, duration: Duration): Date | null => {
+  const analysis = analyse(new Date(date.valueOf()), duration)
+
+  return analysis.ok ? analysis.date : null
+}`,
+      ),
+    ],
+    killed([TYPE_IDENTITY, ACCEPTS_A_DATE_AND_A_DURATION]),
+  ),
+  sameOnEveryLens(
+    'S-13',
+    'drops `null` from the declared return and keeps returning it. The cast is what makes this a ' +
+      'defect of the signature rather than of behaviour: an implementer who believes every call has ' +
+      'an answer writes `: Date`, the compiler refuses the `return null` underneath, and the cast ' +
+      'is what the refusal gets silenced with. Measured, the runtime half of the suite typechecks ' +
+      'unchanged - `result === null` on a `Date` is not a TypeScript error - so nothing but block ' +
+      '4.2 sees a contract that has stopped promising the refusal five of its reasons describe',
+    [
+      reference(
+        ADD_TO_DATE,
+        `export const addToDate = (date: Date, duration: Duration): Date => {
+  const analysis = analyse(date, duration)
+
+  return analysis.ok ? analysis.date : (null as unknown as Date)
+}`,
+      ),
+    ],
+    killed([TYPE_IDENTITY, RETURNS_A_DATE_OR_NOTHING]),
+  ),
+  sameOnEveryLens(
+    'S-14',
+    'widens the diagnostic to `string | null` - the shape it reaches the moment its reason type ' +
+      'stops being exported, or its literals are inlined. The five reasons are still declared, and ' +
+      'the implementation still answers one of them, so every entry of both tables is green on both ' +
+      'exports. What is lost is the caller\'s exhaustive switch, which is the entire reason the ' +
+      'reason set is frozen with the major. It reddens the diagnostic\'s own type assertion and ' +
+      'nothing else, which is what separates that guard from the identity assertion beside it',
+    [
+      reference(
+        DESCRIBE_ADD_FAILURE,
+        `export const describeAddFailure = (date: Date, duration: Duration): string | null => {`,
+      ),
+    ],
+    killed([DIAGNOSTIC_TYPE]),
+  ),
+  sameOnEveryLens(
+    'S-15',
+    'widens the second parameter to an open record, so a duration carrying a field this contract ' +
+      'does not declare stops being a compile error and becomes a runtime refusal only. The answer ' +
+      'is unchanged everywhere - `hasOnlyDeclaredFields` still refuses `{ day: 1 }`, and the untyped ' +
+      'table still passes - which is exactly the point: the type was the first of two lines, and ' +
+      'this removes it silently. It exists beside S-12 because the two directives of that guard are ' +
+      'reached by different widenings, and the second had never fired',
+    [
+      reference(
+        ADD_TO_DATE,
+        `export const addToDate = (
+  date: Date,
+  duration: Readonly<Record<string, unknown>>,
+): Date | null => {
+  const analysis = analyse(date, duration as Duration)
+
+  return analysis.ok ? analysis.date : null
+}`,
+      ),
+    ],
+    killed([TYPE_IDENTITY, ACCEPTS_A_DATE_AND_A_DURATION]),
+  ),
+]
+
+// ---------------------------------------------------------------------------
 // Probes - questions about the shape of the contract, kept out of the score
 // ---------------------------------------------------------------------------
 
@@ -583,8 +689,12 @@ export const battery: Battery = {
       reason:
         'over the contract\'s own declarations rather than over the implementation. This battery ' +
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the two tables, ' +
-        'the profile list, the application order or the static analysis requirements.',
+        'the profile list, the application order, the static analysis requirements or the `Duration` ' +
+        'type. The last of those is the one that had to move: it compares `Duration` against ' +
+        '`Partial<Duration>`, reads both sides out of `contract.ts`, and was listed as a region ' +
+        'awaiting a signature mutant until S-12 to S-15 measured that no such mutant can exist here.',
       titles: [
+        'leaves every duration field optional',
         'names a case for every declared reason, and declares every reason it names',
         'settles each call exactly once across both tables',
         'publishes a rationale for every decision',
@@ -628,20 +738,6 @@ export const battery: Battery = {
 
   unprobedRegions: [
     {
-      nature: 'claims detection',
-      reason:
-        'block 4.2 has no defect in this battery. These five are reachable - `array/group-by@1` ' +
-        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - so what is ' +
-        'missing is a signature mutant, not a better guard.',
-      titles: [
-        'matches the type declared by the contract',
-        'accepts a Date and a Duration, and nothing else',
-        'returns a Date that may be absent, never an Invalid Date',
-        'leaves every duration field optional',
-        'publishes the diagnostic surface with the type the contract declares',
-      ],
-    },
-    {
       nature: 'documents a decision',
       reason:
         'what is left of the refusal region on the value channel, and the list shrank by half when ' +
@@ -663,5 +759,5 @@ export const battery: Battery = {
     },
   ],
 
-  mutants: [...behaviour, ...reasons, ...probes],
+  mutants: [...behaviour, ...reasons, ...signatures, ...probes],
 }

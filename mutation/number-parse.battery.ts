@@ -1,11 +1,18 @@
 /**
  * The `number/parse@1` battery.
  *
- * P-01 to P-20 are defects of behaviour and carry the mutation score. N-1 to N-5 are defects of
+ * P-01 to P-21 are defects of behaviour and carry the mutation score. N-1 to N-5 are defects of
  * reason: they answer every call with the value the contract asks for and are wrong only about why
- * a refusal happened. F-3, F-4 and X-1 are probes rather than defects - they ask whether a property
- * can reach the region it claims to guard, and whether two exports can drift apart - so they are
- * kept out of the score.
+ * a refusal happened. S-9 to S-11 are defects of the declared type: they answer every call with the
+ * value *and* the reason the contract asks for, and are wrong only about what they promise, so
+ * nothing outside block 4.2 can see them. F-3, F-4 and X-1 are probes rather than defects - they ask
+ * whether a property can reach the region it claims to guard, and whether two exports can drift
+ * apart - so they are kept out of the score.
+ *
+ * The `S-` family is numbered across the project rather than per contract, like `F-` and `X-`:
+ * `array/group-by@1` holds S-1 to S-8, which is where the form was written, and this contract
+ * continues at S-9. Those eight measured that a type assertion is a guard like any other, and this
+ * battery had none - which the attribution reported as four block 4.2 guards no mutant reaches.
  *
  * N-4 and N-5 police the `separator` literal from both sides: one stops producing it and lets every
  * separator mistake fall back into the residual reason, the other produces it for an ordinary space.
@@ -59,6 +66,8 @@ const PARSE_NUMBER = `export const parseNumber = (input: string): number | null 
   return analysis.ok ? analysis.value : null
 }`
 
+const DESCRIBE_PARSE_FAILURE = `export const describeParseFailure = (input: string): ParseFailureReason | null => {`
+
 // ---------------------------------------------------------------------------
 // Guards the battery pins by name. `mutants.ts` states when a cell names all of
 // its reds and when it names only the region the defect lives in.
@@ -70,6 +79,11 @@ const WHITESPACE_INSENSITIVE = 'P2 - is insensitive to surrounding whitespace'
 const ROUND_TRIPS = 'P3 - is a right inverse of String on the finite doubles, except negative zero'
 const DETERMINISTIC = 'is deterministic - the same input yields the same output on every call'
 const CALL_HISTORY = 'has no ambient input - an answer does not depend on the inputs parsed before it'
+
+const TYPE_IDENTITY = 'matches the type declared by the contract'
+const ACCEPTS_A_STRING = 'accepts a string and nothing else'
+const RETURNS_A_NUMBER_OR_NOTHING = 'returns a number that may be absent, never NaN-as-number-only'
+const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
 
 const NEGATIVE_ZERO = '"-0" -> -0'
 const NEGATIVE_UNDERFLOW = '"-1e-400" -> -0'
@@ -354,6 +368,73 @@ const reasons: readonly Mutant[] = [
 ]
 
 // ---------------------------------------------------------------------------
+// S-9 to S-11 - defects of the declared type
+//
+// Every one of them parses exactly what the contract requires and names exactly
+// the reason it requires, so the whole behavioural suite is blind to all three
+// by construction and the only question is which type assertion notices.
+// ---------------------------------------------------------------------------
+
+const signatures: readonly Mutant[] = [
+  sameOnEveryLens(
+    'S-9',
+    'widens the input to `string | number`, so a contract written to read human text starts ' +
+      'accepting the thing it exists to produce. `String` is the identity on a string, so every ' +
+      'input the suite carries answers exactly as before. It is the mutant that reaches both halves ' +
+      'of one guard: the parameter assertion fails, and the `@ts-expect-error` on `parseNumber(42)` ' +
+      'stops being used, which is itself an error - the negative half of block 4.2 had never fired ' +
+      'in this battery, measured, exactly as `array/group-by@1` found of its three',
+    [
+      reference(
+        PARSE_NUMBER,
+        `export const parseNumber = (input: string | number): number | null => {
+  const analysis = analyse(String(input))
+
+  return analysis.ok ? analysis.value : null
+}`,
+      ),
+    ],
+    killed([TYPE_IDENTITY, ACCEPTS_A_STRING]),
+  ),
+  sameOnEveryLens(
+    'S-10',
+    'drops `null` from the declared return and keeps returning it. The cast is what makes this a ' +
+      'defect of the signature rather than of behaviour: an implementer who believes the function ' +
+      'is total writes `: number`, the compiler refuses the `return null` underneath, and the cast ' +
+      'is what the refusal gets silenced with. Measured, the runtime half of the suite typechecks ' +
+      'unchanged - `result === null` on a `number` is not a TypeScript error - so nothing but block ' +
+      '4.2 sees a function that has quietly stopped promising the absence this contract is about',
+    [
+      reference(
+        PARSE_NUMBER,
+        `export const parseNumber = (input: string): number => {
+  const analysis = analyse(input)
+
+  return analysis.ok ? analysis.value : (null as unknown as number)
+}`,
+      ),
+    ],
+    killed([TYPE_IDENTITY, RETURNS_A_NUMBER_OR_NOTHING]),
+  ),
+  sameOnEveryLens(
+    'S-11',
+    'widens the diagnostic to `string | null` - the shape it reaches the moment its reason type ' +
+      'stops being exported, or its literals are inlined. The four reasons are still declared, and ' +
+      'the implementation still answers one of them, so every named case is green on both exports. ' +
+      'What is lost is the caller\'s exhaustive switch, which is the entire reason the reason set is ' +
+      'frozen with the major. It reddens the diagnostic\'s own type assertion and nothing else, ' +
+      'which is what separates that guard from the identity assertion beside it',
+    [
+      reference(
+        DESCRIBE_PARSE_FAILURE,
+        `export const describeParseFailure = (input: string): string | null => {`,
+      ),
+    ],
+    killed([DIAGNOSTIC_TYPE]),
+  ),
+]
+
+// ---------------------------------------------------------------------------
 // The coupling probe
 // ---------------------------------------------------------------------------
 
@@ -477,21 +558,7 @@ export const battery: Battery = {
     },
   ],
 
-  unprobedRegions: [
-    {
-      nature: 'claims detection',
-      reason:
-        'block 4.2 has no defect in this battery. These four are reachable - `array/group-by@1` ' +
-        'carries S-1 to S-8 and every one of them reddens the equivalent guard there - so what is ' +
-        'missing is a signature mutant, not a better guard.',
-      titles: [
-        'matches the type declared by the contract',
-        'accepts a string and nothing else',
-        'returns a number that may be absent, never NaN-as-number-only',
-        'publishes the diagnostic surface with the type the contract declares',
-      ],
-    },
-  ],
+  unprobedRegions: [],
 
-  mutants: [...behaviour, ...reasons, ...probes],
+  mutants: [...behaviour, ...reasons, ...signatures, ...probes],
 }
