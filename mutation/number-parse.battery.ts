@@ -3,8 +3,9 @@
  *
  * P-01 to P-20 are defects of behaviour and carry the mutation score. N-1 to N-5 are defects of
  * reason: they answer every call with the value the contract asks for and are wrong only about why
- * a refusal happened. X-1 is a probe - it asks whether two exports written independently can drift
- * apart - so it is kept out of the score.
+ * a refusal happened. F-3, F-4 and X-1 are probes rather than defects - they ask whether a property
+ * can reach the region it claims to guard, and whether two exports can drift apart - so they are
+ * kept out of the score.
  *
  * N-4 and N-5 police the `separator` literal from both sides: one stops producing it and lets every
  * separator mistake fall back into the residual reason, the other produces it for an ordinary space.
@@ -312,7 +313,55 @@ const reasons: readonly Mutant[] = [
 // The coupling probe
 // ---------------------------------------------------------------------------
 
+const NO_STRAY_VALUE = 'P1 - returns null or a finite number, never NaN and never Infinity'
+
 const probes: readonly Mutant[] = [
+  {
+    id: 'F-3',
+    kind: 'probe',
+    description:
+      'returns NaN for every call, accepted or refused. The control that separates "P1 cannot fail" ' +
+      'from "P1 was never reached", written here because `date/add@1` carries the same pair and this ' +
+      'contract carried neither: if F-3 does not redden P1, the property is decorative whatever its ' +
+      'generators draw; if it does, the property is sound and only its support is in question',
+    arms: {
+      C: [
+        reference(EMPTY, `  if (trimmed === '') return { ok: true, value: Number.NaN }`),
+        reference(
+          REJECT,
+          `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: true, value: Number.NaN }`,
+        ),
+        reference(FINAL, `  return { ok: true, value: Number.NaN }`),
+      ],
+    },
+    expected: {
+      'C/as-committed': killed([NO_STRAY_VALUE]),
+      'C/reason-blind': killed([NO_STRAY_VALUE]),
+    },
+  },
+  {
+    id: 'F-4',
+    kind: 'probe',
+    description:
+      'returns NaN on the overflow path and nowhere else - the same forbidden value as F-3, moved ' +
+      'off every input the named cases pin and onto the one region P1 exists to police at its ' +
+      'boundary. It asks the question F-1 asked of `date/add@1` and answered against it there: are ' +
+      'the generators reaching the region, or is the named case 1e400 the only thing standing ' +
+      'between this contract and a stray value? P1 reddening means the arbitraries really do build ' +
+      'an exponent past 308 on their own',
+    arms: {
+      C: [
+        reference(
+          FINAL,
+          `  return Number.isFinite(value) ? { ok: true, value } : { ok: true, value: Number.NaN }`,
+        ),
+      ],
+    },
+    expected: {
+      'C/as-committed': killed([NO_STRAY_VALUE]),
+      'C/reason-blind': killed([NO_STRAY_VALUE]),
+    },
+  },
   {
     id: 'X-1',
     kind: 'probe',
