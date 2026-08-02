@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { edgeCases, failureReasons, outputsAreEqual } from './contract.js'
+import { failureReasons, outputsAreEqual } from './contract.js'
+import { edgeCases } from './edge-cases.js'
 import { describeParseFailure, parseNumber } from './reference.js'
 
 /**

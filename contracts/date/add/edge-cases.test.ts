@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import type { AddFailureReason, Duration } from './contract.js'
-import { edgeCases, failureReasons, outputsAreEqual, untypedEdgeCases } from './contract.js'
+import { failureReasons, outputsAreEqual } from './contract.js'
+import { edgeCases, untypedEdgeCases } from './edge-cases.js'
 import { addToDate, describeAddFailure } from './reference.js'
 
 /**
