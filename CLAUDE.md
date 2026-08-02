@@ -19,10 +19,12 @@ contract format emerges from repetition rather than being designed up front. The
 this project lies in the contract format, not in the API or the CLI — which is why neither exists
 yet.
 
-- Contracts written so far: `number/parse@1`.
-- Error convention (`null` / throw / `Result`) is **undecided**, and will be frozen for the whole
-  catalogue once chosen. Any convention in use today is provisional and must be labelled as such
-  in the code.
+- Contracts written so far: `number/parse@1`, `date/add@1`.
+- Error convention is **undecided**, and will be frozen for the whole catalogue once chosen. Any
+  convention in use today is provisional and must be labelled as such in the code. Three forms are
+  being measured on throwaway `experiment/*` branches: `null`; a discriminated union
+  `{ ok: true, value } | { ok: false, reason }`; and `null` plus a separate diagnostic export.
+  `throw` is ruled out — for a parser, failure is ordinary control flow, not an exception.
 - Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
 
 ## Rules for this stage
