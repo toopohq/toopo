@@ -28,6 +28,38 @@
  * slug exactly as far as the alphabet of its arbitrary reaches, so `P7` is a table in disguise and
  * what this one catches alone is what no arbitrary samples.
  *
+ * What a `rationale` rests on when there is no oracle
+ * ---------------------------------------------------
+ *
+ * The other four contracts could each point at something that settles an answer: what `Number`
+ * does, what six libraries agree clamping means, what an axiom forces. Nothing settles a slug. The
+ * question that leaves open is whether `rationale` degrades into an opinion once it has no fact to
+ * cite, and the answer is counted here rather than asserted - the forty-one rows below were read
+ * one at a time.
+ *
+ * **Thirty-five of the forty-one cite a fact.** It is never a fact about slugs, because there is no
+ * such fact, and it is always one of two kinds. Eighteen cite a measurement of the ecosystem - what
+ * the four libraries answer for this input, and how many of them disagree with each other about it.
+ * Fifteen cite something the alphabet already says: a canonical decomposition, a combining class, a
+ * compatibility mapping, or the one JavaScript rule that reads a character to lower-case its
+ * neighbour. Two cite the apparatus, and name the formulation of this contract they broke.
+ *
+ * So the field keeps exactly the role it had. What changed is the direction of the citation. On the
+ * other contracts a rationale cites evidence that the answer is *right*; here it cites evidence that
+ * every other answer *costs something* - an empty slug for a whole writing system, a table that has
+ * to be wrong for somebody, a mapping that reads a locale. That is a weaker claim and it is the
+ * honest one, and it is also why block 4.2 states the rule in six steps rather than shipping a table
+ * of two thousand entries: a rule short enough to be read can be argued with, and a table of
+ * correspondences can only be inherited.
+ *
+ * Six rows cite nothing outside this contract, and which six is the result worth reading. They are
+ * `the-empty-string`, `an-existing-slug-is-unchanged`, `a-doubled-separator-collapses`,
+ * `a-lone-surrogate-inside-a-word`, and the two halves of the collision pair. **Not one of them
+ * settles a decision about what a slug should contain.** Every one is the rule applied to an input
+ * that tests its own shape. Where curation is actually happening, the rationale had something to
+ * cite - and the day a row settles a curation decision with nothing behind it but a preference is
+ * the day this block has stopped working.
+ *
  * Every expected slug below was computed by two independent implementations of the rule before the
  * reference existed: one streaming code points and carrying a boundary flag, one grouping survivors
  * into runs. They agreed on all forty cases, and the reference agrees with both.
