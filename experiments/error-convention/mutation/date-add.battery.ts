@@ -268,9 +268,15 @@ export const mutants: readonly Mutant[] = [
     'R-4',
     'the pair null renders indistinguishable: invalid-date and unknown-field exchanged. Under null ' +
       'this defect has no observable consequence whatsoever',
+    // Anchored on the whole statement rather than on the literal. Swapping two values by two
+    // substitutions makes the first edit's output an anchor for the second: measured, the naive
+    // version matched twice and the instrument refused it rather than injecting half a defect.
     [
-      reference(`reason: 'invalid-date' }`, `reason: 'unknown-field' }`),
-      reference(`reason: 'unknown-field' }\n`, `reason: 'invalid-date' }\n`),
+      reference(B_INVALID_DATE, `  if (!Number.isFinite(start)) return { ok: false, reason: 'unknown-field' }`),
+      reference(
+        B_UNKNOWN_FIELD.trimEnd(),
+        `  if (!hasOnlyDeclaredFields(duration)) return { ok: false, reason: 'invalid-date' }`,
+      ),
     ],
   ),
 ]
