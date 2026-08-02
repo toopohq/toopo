@@ -79,6 +79,8 @@ const FINAL = `  return Number.isFinite(result.getTime())
     ? { ok: true, date: result }
     : { ok: false, reason: 'out-of-range' }`
 
+const ANALYSE = `const analyse = (date: Date, duration: Duration): AddAnalysis => {`
+
 const ADD_TO_DATE = `export const addToDate = (date: Date, duration: Duration): Date | null => {
   const analysis = analyse(date, duration)
 
@@ -374,6 +376,32 @@ const lastDayOfMonth = (year: number, monthIndex: number): number => {
       ),
     ],
     killed([CANCELS]),
+  ),
+  behavioural(
+    'D-22',
+    'remembers the last analysis and hands it back whenever the next duration carries the same ' +
+      'number of fields - the memoise-last idiom with a cheap fingerprint for a key. It exists to ' +
+      'separate two properties this battery had never separated: determinism and the call-history ' +
+      'instance of freedom from ambient input were red on D-18 and D-19, together and on nothing ' +
+      'else, so neither had been seen red on the sentence it alone makes. The zone instance is ' +
+      'already separated, by D-05. The slot is written on a miss and read on a hit, so two identical ' +
+      'consecutive calls agree and determinism cannot see it; a foreign call in between replaces it, ' +
+      'which is exactly what the ambient-input property interleaves',
+    [
+      reference(
+        ANALYSE,
+        `let lastAnalysis: { readonly fields: number; readonly analysis: AddAnalysis } | null = null\n\n` +
+          `const analyse = (date: Date, duration: Duration): AddAnalysis => {\n` +
+          `  const fields = Object.keys(duration).length\n` +
+          `  if (lastAnalysis !== null && lastAnalysis.fields === fields) return lastAnalysis.analysis\n\n` +
+          `  const computed = analyseFully(date, duration)\n` +
+          `  lastAnalysis = { fields, analysis: computed }\n\n` +
+          `  return computed\n` +
+          `}\n\n` +
+          `const analyseFully = (date: Date, duration: Duration): AddAnalysis => {`,
+      ),
+    ],
+    killed(),
   ),
 ]
 

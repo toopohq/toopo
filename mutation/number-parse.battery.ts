@@ -51,6 +51,8 @@ const REJECT = `  if (!DECIMAL_GRAMMAR.test(trimmed)) {
 const SEPARATOR_FAMILY = `input.replace(/[,_'\\u00A0\\u202F]/g, '')`
 const FINAL = `  return Number.isFinite(value) ? { ok: true, value } : { ok: false, reason: 'overflow' }`
 
+const ANALYSE = `const analyse = (input: string): ParseAnalysis => {`
+
 const PARSE_NUMBER = `export const parseNumber = (input: string): number | null => {
   const analysis = analyse(input)
 
@@ -271,6 +273,34 @@ const behaviour: readonly Mutant[] = [
     'writes the trim by hand as /^\\s+|\\s+$/g',
     [reference(TRIM, `  const trimmed = input.replace(/^\\s+|\\s+$/g, '')`)],
     survived,
+  ),
+  behavioural(
+    'P-21',
+    'remembers the last analysis and hands it back whenever the next input has the same length - the ' +
+      'memoise-last idiom with a cheap proxy for identity. It exists to separate two properties this ' +
+      'battery had never separated: determinism and freedom from ambient input were red on P-08 and ' +
+      'on nothing else, together, so neither had been seen red on the sentence it alone makes. The ' +
+      'slot is written on a miss and read on a hit, so two identical consecutive calls agree and ' +
+      'determinism cannot see it; a foreign call in between replaces it, which is exactly what the ' +
+      'ambient-input property interleaves. P-02, P-17 and P-19 are the same family without the ' +
+      'advance - a cache consulted first is primed by the probe itself and survives the whole ' +
+      'battery, measured twice',
+    [
+      reference(
+        ANALYSE,
+        `let lastAnalysis: { readonly length: number; readonly analysis: ParseAnalysis } | null = null\n\n` +
+          `const analyse = (input: string): ParseAnalysis => {\n` +
+          `  if (lastAnalysis !== null && lastAnalysis.length === input.length) {\n` +
+          `    return lastAnalysis.analysis\n` +
+          `  }\n\n` +
+          `  const computed = analyseFully(input)\n` +
+          `  lastAnalysis = { length: input.length, analysis: computed }\n\n` +
+          `  return computed\n` +
+          `}\n\n` +
+          `const analyseFully = (input: string): ParseAnalysis => {`,
+      ),
+    ],
+    killed(),
   ),
 ]
 

@@ -429,6 +429,39 @@ const behaviour: readonly Mutant[] = [
     [reference(DECLARE, `  (items as T[]).reverse()\n\n${DECLARE}`)],
     killed([DETERMINISTIC, NO_AMBIENT_INPUT, NO_MUTATION]),
   ),
+  behavioural(
+    'M-22',
+    'remembers the last answer and hands it back whenever the next input has the same length - the ' +
+      'memoise-last idiom with a cheap proxy for identity. It exists to separate two properties this ' +
+      'battery had never separated: every mutant that reddened determinism reddened freedom from ' +
+      'ambient input with it, so neither had been seen red on the sentence it alone makes. The slot ' +
+      'is written only on a miss, so two identical consecutive calls both read it and determinism ' +
+      'compares one object against itself; a foreign call in between replaces it, which is the only ' +
+      'thing the ambient-input property can see. M-15 is the same cache without that: keyed by length ' +
+      'in a Map that is never overwritten, it freezes after warm-up and both properties stay green on ' +
+      'it - measured',
+    [
+      reference(
+        SIGNATURE,
+        `let lastGrouping: { readonly length: number; readonly groups: Map<unknown, unknown[]> } | null =\n` +
+          `  null\n\n${SIGNATURE}`,
+      ),
+      reference(
+        DECLARE,
+        `  if (lastGrouping !== null && lastGrouping.length === items.length) {\n` +
+          `    return lastGrouping.groups as unknown as Map<K, T[]>\n` +
+          `  }\n\n${DECLARE}`,
+      ),
+      reference(
+        RETURN,
+        `  lastGrouping = {\n` +
+          `    length: items.length,\n` +
+          `    groups: groups as unknown as Map<unknown, unknown[]>,\n` +
+          `  }\n\n${RETURN}`,
+      ),
+    ],
+    killed(),
+  ),
 ]
 
 // ---------------------------------------------------------------------------
