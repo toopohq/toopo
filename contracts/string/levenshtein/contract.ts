@@ -67,9 +67,12 @@ export const identity = {
    * the catalogue re-examines itself against a moving language rather than clearing permanent rule 7
    * once and keeping it.
    *
-   * ECMAScript ships no string distance of any kind and no proposal for one. The nearest thing in the
-   * platform is `Intl.Collator`, which orders two strings and does not measure the gap between them,
-   * and `Intl.Segmenter`, which cuts a string into units and says nothing about two strings at all.
+   * ECMAScript ships no string distance of any kind. The nearest things in the platform are
+   * `Intl.Collator`, which orders two strings and does not measure the gap between them, and
+   * `Intl.Segmenter`, which cuts one string into units and says nothing about two. Whether TC39 has a
+   * proposal for one is not claimed here, because it was not checked - and it would not change the
+   * answer, since the rule `array/group-by@1` established is that the catalogue re-examines itself
+   * against what the language *ships*.
    */
   relationToTheLanguage:
     'the language ships no edit distance, and nothing in Intl measures the gap between two strings',
