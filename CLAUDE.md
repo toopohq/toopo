@@ -34,8 +34,10 @@ optimises the answering path while leaving the diagnostic one alone will diverge
 named cases do not cover.
 
 Three forms were built and measured across both prototype contracts. The union
-`{ ok, value } | { ok, reason }` ties this one exactly on detection — the error convention is not a
-verification question. What decided it is that this form is **additive**: a contract can ship
+`{ ok, value } | { ok, reason }` ties this one on detection, so the error convention is not a
+verification question. Read that tie at the strength it was actually measured: on `date/add@1` it is
+a full-battery tie, every mutant under both lenses; on `number/parse@1` it rests on four mutants
+under one lens. What decided it is that this form is **additive**: a contract can ship
 `name@1` with no diagnostic and gain one later without breaking anyone, whereas putting the reason
 in the return type freezes it into the major version on day one. Known costs are recorded in the
 project specification, together with what would invalidate the decision.
