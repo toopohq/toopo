@@ -54,15 +54,30 @@ export const edgeCases = (find: string, replace: string): Edit => ({
  *
  * **More than five: name the guards the mutant was written to exercise, and nothing else.**
  *
- * The line is at five because that is where the measurement puts it, not because it is round.
- * Measured across the three batteries, over 147 killed cells: the median red set is exactly five, so
- * the line splits them almost in half. The 77 cells at or below it cost 196 pinned titles between
- * them; pinning the other 70 in full would cost 1505 more, none of which would pin anything a single
- * edit could remove, and every one of which would break on a rename. A pin that transcribes a run is
- * not a claim about the contract.
+ * **Five is a convention.** It is not derived from anything, and it is written down as a convention
+ * because the number reads as though it were derived - which is a trap for whoever inherits it. What
+ * was measured is a distribution of red-set sizes; where to cut that distribution is a choice, and it
+ * was calibrated against a snapshot rather than against a law.
+ *
+ * The snapshot has already moved, inside one unit of work, which is the whole argument for saying so.
+ * When the line was drawn there were three batteries and 147 killed cells and the median red set was
+ * exactly five, so five split them almost in half. There are now six - seventeen mutants added and
+ * three specification batteries written - and over 197 killed cells the median is three: 121 cells
+ * sit at or below the line and 76 above it. Pinning the 121 in full costs 260 titles; pinning the
+ * other 76 in full would cost 1656, none of which would pin anything a single edit could remove, and
+ * every one of which would break on a rename. A pin that transcribes a run is not a claim about the
+ * contract.
+ *
+ * The line stays at five, and it must be remeasured when contracts 4 and 5 move it again. It is
+ * defensible across a range rather than at a point - what it has to separate is a set one commit can
+ * remove from a transcript of a run - and moving it with every measurement would make two batteries
+ * written a month apart incomparable. If the median keeps falling, the argument for five becomes a
+ * ceiling on what a reader can check by hand, which is a different argument from the one that chose
+ * it and has to be written as such rather than inherited quietly.
  *
  * Pins are checked by inclusion rather than by equality, and that is measured too. Three consecutive
- * runs of all three batteries agreed on 173 of 174 cells; the one that moved is `F-1` on `date/add@1`,
+ * runs of the three batteries that existed then agreed on 173 of 174 cells; the one that moved is
+ * `F-1` on `date/add@1`,
  * which gained `P4` on the third run because `elapsedOnlyDuration` drew the empty record. Requiring
  * the exact set would have failed that cell on two runs out of three - a battery that reddens on the
  * seed is a battery nobody can read.
