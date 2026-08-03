@@ -19,7 +19,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { ContractAddress } from './address.js'
+import type { ContractAddress, GuardAddress } from './address.js'
 import type {
   BenchmarksRecord,
   CaseRecord,
@@ -39,7 +39,7 @@ import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { VerificationStratum } from './field-map.js'
 import type { BatteryRecord, CaseProvenance } from './evidence.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
-import { resolveProvenance } from './evidence.js'
+import { resolveGuard, resolveProvenance } from './evidence.js'
 import { encode } from './value.js'
 
 /** Anchored on this file rather than on the working directory, as `mutation/run.ts` anchors its own. */
@@ -76,6 +76,8 @@ export type ProfileSource = {
 export type OwnDeclarationSource = {
   readonly name: string
   readonly verification: VerificationStratum
+  /** The guard that makes this declaration executable. Required by exactly that stratum. */
+  readonly executableBy?: GuardAddress
 }
 
 /**
@@ -332,15 +334,49 @@ export const harnessOf = (
   })
 }
 
+/**
+ * The strongest stratum is the one that has to point at something.
+ *
+ * Both directions are refused, because both have happened in this repository under other names. A
+ * declaration claiming `executable` and naming no guard is the decorative claim; an address naming a
+ * guard no battery holds is the same claim after the guard was renamed. And a guard named beside a
+ * *weaker* stratum would be a record saying two things at once - `one-directional` exists precisely
+ * to say that a guard keeps one half - so it is refused rather than ignored.
+ */
 const ownDeclarationsOf = (
   module: Readonly<Record<string, unknown>>,
   sources: readonly OwnDeclarationSource[],
+  where: string,
+  batteries: readonly BatteryRecord[],
 ): readonly OwnDeclaration[] =>
-  sources.map((source) => ({
-    name: source.name,
-    value: encode(read(module, source.name), source.name),
-    verification: source.verification,
-  }))
+  sources.map((source) => {
+    const cited = `${where}.${source.name}`
+
+    if (source.verification === 'executable') {
+      if (source.executableBy === undefined) {
+        throw new Error(
+          `${cited} is declared executable and names no guard, so the strongest stratum in this ` +
+            `schema would rest on a word. Name the guard that reddens when an implementation ` +
+            `contradicts it, or classify the declaration by what actually keeps it.`,
+        )
+      }
+
+      resolveGuard(cited, source.executableBy, batteries)
+    } else if (source.executableBy !== undefined) {
+      throw new Error(
+        `${cited} is classified ${source.verification} and names a guard, which are two different ` +
+          `claims about the same declaration. Only \`executable\` says a guard refuses an ` +
+          `implementation that contradicts it.`,
+      )
+    }
+
+    return {
+      name: source.name,
+      value: encode(read(module, source.name), source.name),
+      verification: source.verification,
+      ...(source.executableBy === undefined ? {} : { executableBy: source.executableBy }),
+    }
+  })
 
 /**
  * The one implementation every contract of the catalogue has today: its own reference.
@@ -413,6 +449,11 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
     }),
   ),
   benchmarks: benchmarksOf(source.benchmarks),
-  ownDeclarations: ownDeclarationsOf(source.module, source.ownDeclarations),
+  ownDeclarations: ownDeclarationsOf(
+    source.module,
+    source.ownDeclarations,
+    source.address.name,
+    source.batteries,
+  ),
   harness: harnessOf(root, source.folder, source.files),
 })

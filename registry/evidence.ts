@@ -7,8 +7,8 @@
  * building the storage of a measurement the instrument already writes, and storage is the next unit.
  */
 
-import type { ContractAddress, MutantAddress } from './address.js'
-import { renderContract, renderMutant, sameContract } from './address.js'
+import type { ContractAddress, GuardAddress, MutantAddress } from './address.js'
+import { guardAddressFaults, renderContract, renderGuard, renderMutant, sameContract } from './address.js'
 
 // ---------------------------------------------------------------------------
 // Provenance - a free string becomes an address
@@ -39,13 +39,25 @@ export type CaseProvenance =
   | { readonly kind: 'found-in-the-wild'; readonly report: string }
 
 /**
- * A battery, reduced to what makes a citation resolvable: which contract it measures, and which
- * mutants it declares.
+ * A battery, reduced to what makes a citation resolvable: which contract it measures, which mutants
+ * it declares, and which guards it names.
+ *
+ * **`contract` is absent for a battery that measures no contract**, and that absence is load-bearing
+ * rather than tidy. `validation-stage-1` measures the pipeline and `registry-storage` measures the
+ * storage; both hold guards a contract record may legitimately cite, and neither may ever answer a
+ * case's `found-by-mutation`. `resolveProvenance` matches on the contract, so a battery without one
+ * can never resolve a provenance - the honest citation stays possible and the wrong one becomes
+ * unrepresentable, with no second list to keep apart.
  */
 export type BatteryRecord = {
   readonly name: string
-  readonly contract: ContractAddress
+  readonly contract?: ContractAddress
   readonly mutants: readonly string[]
+  /**
+   * Every guard identifier this battery names - pinned by a cell, declared out of reach, or declared
+   * unprobed. Derived from the battery rather than transcribed beside it, so the two cannot drift.
+   */
+  readonly guards: readonly string[]
 }
 
 export class UnresolvedProvenance extends Error {
@@ -71,7 +83,9 @@ export const resolveProvenance = (
   const { mutant } = provenance
   const battery = batteries.find(
     (candidate) =>
-      candidate.name === mutant.battery && sameContract(candidate.contract, mutant.contract),
+      candidate.name === mutant.battery &&
+      candidate.contract !== undefined &&
+      sameContract(candidate.contract, mutant.contract),
   )
 
   if (battery === undefined) {
@@ -87,6 +101,55 @@ export const resolveProvenance = (
       where,
       mutant,
       `the battery "${mutant.battery}" declares no mutant "${mutant.mutant}"`,
+    )
+  }
+}
+
+// ---------------------------------------------------------------------------
+// The guard that makes a declaration executable - a claim becomes an address
+// ---------------------------------------------------------------------------
+
+export class UnresolvedGuard extends Error {
+  constructor(where: string, address: GuardAddress, detail: string) {
+    super(`${where} is declared executable by ${renderGuard(address)}, and ${detail}`)
+    this.name = 'UnresolvedGuard'
+  }
+}
+
+/**
+ * Resolve the guard a declaration names as what makes it executable, or refuse the record.
+ *
+ * `executable` is the strongest stratum this schema has - *a guard of the suite reddens when an
+ * implementation contradicts it* - and until this existed it was a word. A declaration could claim it
+ * and name nothing, exactly as a case could claim `found-by-mutation:D-07` and name nothing before
+ * `resolveProvenance`. The failure that makes it worth the code is not a lie, it is decay: a guard
+ * renamed or deleted three units later leaves the claim standing and pointing nowhere.
+ */
+export const resolveGuard = (
+  where: string,
+  address: GuardAddress,
+  batteries: readonly BatteryRecord[],
+): void => {
+  const faults = guardAddressFaults(address)
+  if (faults.length > 0) {
+    throw new UnresolvedGuard(where, address, faults.join('; '))
+  }
+
+  const battery = batteries.find((candidate) => candidate.name === address.battery)
+  if (battery === undefined) {
+    throw new UnresolvedGuard(
+      where,
+      address,
+      `no battery named "${address.battery}" is cited by this contract`,
+    )
+  }
+
+  if (!battery.guards.includes(address.guard)) {
+    throw new UnresolvedGuard(
+      where,
+      address,
+      `the battery "${address.battery}" names no guard "${address.guard}", so nothing there ` +
+        `establishes that an implementation contradicting this declaration is refused`,
     )
   }
 }

@@ -208,6 +208,12 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   'ownDeclarations[].name': { visibility: 'public', verification: 'documentary' },
   'ownDeclarations[].verification': { visibility: 'public', verification: 'documentary' },
   'ownDeclarations[].value': { visibility: 'public', verification: 'stated-per-declaration' },
+  // The address of the guard an `executable` declaration rests on. `serialise.ts` refuses a stratum
+  // with no guard, a guard with no stratum, and an address naming a guard no battery holds - which is
+  // the discipline `found-by-mutation` already carries, applied to the other claim a record makes
+  // about its own verification.
+  'ownDeclarations[].executableBy.battery': { visibility: 'public', verification: 'structural' },
+  'ownDeclarations[].executableBy.guard': { visibility: 'public', verification: 'structural' },
 
   'harness[].path': { visibility: 'public', verification: 'structural' },
   'harness[].sha256': { visibility: 'public', verification: 'structural' },

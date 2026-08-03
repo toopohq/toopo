@@ -67,8 +67,8 @@
  * was declared" and leaves them to find out; this answers "these six files collected nothing".
  *
  * It costs no more to maintain. Adding a guard moves exactly one number either way - the file's, or
- * the total - so the number of edits per change is identical. What it costs is thirty-six entries
- * to hold instead of three, and one edit whenever a file is added, renamed or removed.
+ * the total - so the number of edits per change is identical. What it costs is forty-two entries
+ * to hold instead of four, and one edit whenever a file is added, renamed or removed.
  *
  * **The maintenance cost, stated plainly rather than discovered.** Adding a test breaks this pin.
  * That is the same price as a pinned verdict, already paid deliberately everywhere else in this
@@ -76,6 +76,11 @@
  * five of the entries it declared: four new test files, and one existing file whose count changed.
  * Measured again on the read API, the unit after it: four entries, three of them new files. A unit
  * that adds a contract touches four. A unit that only changes behaviour touches none.
+ *
+ * **And measured a third time on the unit that gave the validation pipeline its first battery**, which
+ * is the one that exercised the other half of this file: six new entries under a fourth configuration,
+ * and that configuration had never been counted, so `censusFor` refused the battery before it measured
+ * anything. The refusal fired on the first unit to reach it, which is what it was written for.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -120,9 +125,18 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'registry/round-trip.test.ts': 19,
     'registry/served-files.test.ts': 10,
     'registry/snapshot.test.ts': 45,
-    'registry/the-sixth-contract.test.ts': 13,
+    'registry/the-sixth-contract.test.ts': 14,
     'registry/verifiability.test.ts': 12,
     'registry/visibility.test.ts': 10,
+  },
+
+  'validation/vitest.config.ts': {
+    'validation/forbidden-constructs.test.ts': 9,
+    'validation/source.test.ts': 3,
+    'validation/states-its-own-signature.test.ts': 3,
+    'validation/the-boundary.test.ts': 3,
+    'validation/the-five.test.ts': 7,
+    'validation/typescript-api.test.ts': 2,
   },
 
   'mutation/fixture/vitest.config.ts': {

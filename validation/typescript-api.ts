@@ -52,12 +52,20 @@
  * something the list does not name. `TYPESCRIPT_SURFACE` is therefore not a list *about* the surface,
  * it *is* the surface. Everything the analyser uses is read off this object, so a name the package
  * stopped exporting arrives here as `undefined`, and `missingFromTheSurface` names it.
+ *
+ * **The converse has to be kept by hand, and it is what makes the trick worth anything.** An entry
+ * nothing reads is a dependency the analyser does not have, guarded as though it did - the shape this
+ * repository calls a declaration nothing keeps. Ten of them were deleted when the permitted-name rule
+ * moved to the compiler's binder and stopped needing to recognise declarations for itself; a rule that
+ * stops using something takes its entry with it.
  */
 
 import { API } from 'typescript/unstable/sync'
+import type { Checker } from 'typescript/unstable/sync'
 import * as ast from 'typescript/unstable/ast'
 
 export type { Node, SourceFile } from 'typescript/unstable/ast'
+export type { Checker, Program } from 'typescript/unstable/sync'
 export { API }
 
 /**
@@ -78,28 +86,27 @@ export const TYPESCRIPT_SURFACE = {
 
   isCallExpression: ast.isCallExpression,
   isNewExpression: ast.isNewExpression,
-  isTaggedTemplateExpression: ast.isTaggedTemplateExpression,
   isPropertyAccessExpression: ast.isPropertyAccessExpression,
   isElementAccessExpression: ast.isElementAccessExpression,
+  isShorthandPropertyAssignment: ast.isShorthandPropertyAssignment,
   isBinaryExpression: ast.isBinaryExpression,
-  isTemplateExpression: ast.isTemplateExpression,
+
+  /**
+   * Whether a node is part of a type rather than of the code that runs.
+   *
+   * The permitted-name rule reads it, because a type is erased: `Record`, `InspectOptions` and a
+   * contract's own `Duration` are names a submission mentions and never reaches. Refusing them would
+   * mean admitting the whole of `lib.*.d.ts` into the permitted list to buy nothing.
+   */
+  isTypeNode: ast.isTypeNode,
 
   isImportDeclaration: ast.isImportDeclaration,
   isImportEqualsDeclaration: ast.isImportEqualsDeclaration,
   isExportDeclaration: ast.isExportDeclaration,
   isImportTypeNode: ast.isImportTypeNode,
-  isImportSpecifier: ast.isImportSpecifier,
-  isNamespaceImport: ast.isNamespaceImport,
   isMetaProperty: ast.isMetaProperty,
   isLiteralTypeNode: ast.isLiteralTypeNode,
   isExternalModuleReference: ast.isExternalModuleReference,
-
-  isTypeReferenceNode: ast.isTypeReferenceNode,
-  isTypeAliasDeclaration: ast.isTypeAliasDeclaration,
-  isVariableDeclaration: ast.isVariableDeclaration,
-  isBindingElement: ast.isBindingElement,
-  isObjectBindingPattern: ast.isObjectBindingPattern,
-  isQualifiedName: ast.isQualifiedName,
 
   /**
    * Parentheses, `as`, `satisfies` and `!` wrap an expression without changing what it is, and every
@@ -124,3 +131,24 @@ export const missingFromTheSurface = (): readonly string[] =>
       name === 'SyntaxKind' ? typeof value !== 'object' || value === null : typeof value !== 'function',
     )
     .map(([name]) => name)
+
+/**
+ * What the analyser reads off a checker, and why this one is a list where the surface above is an
+ * object.
+ *
+ * `TYPESCRIPT_SURFACE` can *be* the surface because `unstable/ast` is a module: there is one of it,
+ * and reading every name off it means a name the package stopped exporting arrives as `undefined` at
+ * the place that uses it. A checker is not a module. It is created per project, inside a reading that
+ * is closed again, so there is no single object to hold and read from - and the honest consequence is
+ * that this half of the dependency is declared rather than embodied.
+ *
+ * What replaces the missing trick is when the check runs: `readSources` refuses a checker that does
+ * not answer to all of this before any rule is asked anything, so the failure is a named refusal
+ * rather than a rule quietly finding nothing.
+ */
+export const CHECKER_SURFACE = ['getSymbolAtLocation', 'getShorthandAssignmentValueSymbol'] as const
+
+export const missingFromTheChecker = (checker: Checker): readonly string[] =>
+  CHECKER_SURFACE.filter(
+    (name) => typeof (checker as unknown as Record<string, unknown>)[name] !== 'function',
+  )

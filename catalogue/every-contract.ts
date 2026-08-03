@@ -68,7 +68,7 @@ import { isFrozenIdentifier } from './identifier.js'
 /**
  * What a reviewer can establish about a contract in front of them, without running it.
  *
- * It belongs here by the criterion this file already applies to `referenceImplementationRules`: a
+ * It belongs to the catalogue by the criterion `reference-implementation.ts` applies to itself: a
  * requirement a reviewer can check by reading a contract is a rule of the catalogue, and a rule kept
  * in a planning document is a rule the person writing the sixth contract never reads. Every entry
  * was established by reading the five prototypes and carries what that reading measured, rather than
@@ -89,15 +89,58 @@ import { isFrozenIdentifier } from './identifier.js'
  * hand-written contracts were spent avoiding.
  *
  * Nothing below is enforced by a test, and that is deliberate. These are established by reading a
- * contract rather than by running one, exactly like `referenceImplementationRules`, so the
- * validation pipeline is what will enforce them - and a requirement that lived only inside that tool
- * would not be part of a catalogue whose whole product is auditability.
+ * contract rather than by running one, exactly like `referenceImplementationRules` in
+ * `reference-implementation.ts`, so the validation pipeline is what will enforce them - and a
+ * requirement that lived only inside that tool would not be part of a catalogue whose whole product
+ * is auditability.
+ *
+ * ---------------------------------------------------------------------------
+ * What the pipeline can take, and what stays a reader's
+ * ---------------------------------------------------------------------------
+ *
+ * Every entry carries `checkableFrom`, and the three values are a *measurement of where the frontier
+ * falls* rather than a wish list. The criterion is stage 1's own constraint, stated in
+ * `validation/source.ts`: **it never imports what it analyses**, because importing is executing and
+ * stage 1 is what runs before anything executes. So a requirement is `the source alone` when a syntax
+ * tree settles it, and it is `the module` when it needs the *value* of a declaration - which belongs
+ * to a stage that has already decided the code is safe to evaluate.
+ *
+ * The triage, and the count is published because a checklist that claimed to be automatable would be
+ * the decorative guard applied to the tool that hunts decorative guards. **Three of the eleven are
+ * settled by the source alone; four need the module; four are a reader's and no stage will ever take
+ * them.** One entry is split across two of those and is counted with the reader, because half of a
+ * requirement enforced is not a requirement enforced: `referenceImplementationRules` has two rules,
+ * and stage 1 refuses an implementation that imports its own contract while nothing can decide
+ * whether a reference *delegates to a built-in that does the same job*.
+ *
+ * **What `a reader` means, said plainly.** Not "not yet built". These four ask whether a guard's
+ * verdict *can* depend on elapsed time, whether a contract *diverges* from the ecosystem, whether a
+ * comment records a real measurement, and whether an implementation does the same job as a built-in.
+ * Each is a judgement about intent, and a tool that claimed to settle one would be claiming to check
+ * what it cannot.
+ *
+ * Nothing enforces `checkableFrom` either, and one guard keeps the one half of it that can be kept: a
+ * new entry with no verdict is refused, so the next requirement is triaged when it is written rather
+ * than left for whoever builds the checker.
  */
+
+/**
+ * Where a requirement can be settled from.
+ *
+ * `the source alone` is stage 1's reach - a syntax tree, no evaluation. `the module` needs the value
+ * of a declaration and therefore a stage that has already vetted the code. `a reader` is a judgement
+ * no stage takes.
+ */
+export type CheckableFrom = 'the source alone' | 'the module' | 'a reader'
+
 export const contractAnatomy = {
   required: [
     {
       requirement: 'a folder of seven files with fixed names',
       measured: 'five of five. `array/group-by@1` carries nine; the two extras are its own.',
+      checkableFrom: 'the source alone',
+      // The submission's own file list, which stage 1 is handed before it parses anything.
+      because: 'a list of names, and not the content of any of them',
     },
     {
       requirement:
@@ -106,6 +149,10 @@ export const contractAnatomy = {
       measured:
         'five of five, and no other export is carried by more than two of them: failureReasons, ' +
         'couplingRule and BenchmarkSample sit at two, everything else at one.',
+      checkableFrom: 'the source alone',
+      because:
+        'which names a module exports is syntax. What each one is worth is not, and this ' +
+        'requirement does not ask',
     },
     {
       requirement:
@@ -115,23 +162,40 @@ export const contractAnatomy = {
         'five of five for those seven. `relationToTheLanguage` is an eighth field and sits at three ' +
         'of five - missing from exactly the two contracts that also owe the divergence replay below. ' +
         'One debt with two symptoms, and the reason it is a debt is in the project specification.',
+      checkableFrom: 'the module',
+      because:
+        'carrying a field is a property of the value. All five write an object literal and a reader ' +
+        'of syntax could see its keys, but a contract that computed its identity would satisfy the ' +
+        'requirement and defeat the reader - so the source settles it only under a stricter rule ' +
+        'than the one written here',
     },
     {
       requirement:
         'a named signature type, checked with `toEqualTypeOf` and never with `toMatchTypeOf`',
       measured: 'five of five - and `toMatchTypeOf` appears zero times in the catalogue.',
+      checkableFrom: 'the source alone',
+      because: 'a type alias is a declaration and a matcher is a call, and both are written down',
     },
     {
       requirement:
         '`propertyRuns` is published with the measurement that chose it: three draw counts and ' +
         'three durations',
       measured: 'five of five, three independent measurements behind one shared figure.',
+      checkableFrom: 'a reader',
+      because:
+        'the measurement is a sentence in a comment. A reader of syntax can see that a comment is ' +
+        'there; whether it records three real draw counts and three real durations is what the ' +
+        'requirement asks, and it is prose',
     },
     {
       requirement:
         '`universalProperties` answers the catalogue\'s four names, in order, each with ' +
         '`applicable` and a non-empty reason, and the inapplicable list is passed explicitly',
       measured: 'five of five - `expectUniversalPropertiesAnswered` is the guard.',
+      checkableFrom: 'the module',
+      because:
+        'the answers are values. `expectUniversalPropertiesAnswered` already establishes this by ' +
+        'running the contract, which is exactly the stage this entry belongs to',
     },
     {
       requirement:
@@ -139,10 +203,20 @@ export const contractAnatomy = {
         'non-empty `rationale`, and every guard is addressed by an identifier',
       measured:
         'five of five for the cases; 467 of 467 for the guards, none duplicated inside a contract.',
+      checkableFrom: 'the module',
+      because:
+        'a case table is a value, and the guard half is stronger still - a guard cannot enumerate ' +
+        'the tests vitest collected, so `calibrate()` is what asks it and a run is what answers',
     },
     {
-      requirement: '`reference.ts` follows `referenceImplementationRules` in this file',
+      requirement: '`reference.ts` follows `referenceImplementationRules`',
       measured: 'five of five.',
+      checkableFrom: 'a reader',
+      because:
+        'the two rules do not fall on the same side, and half of a requirement enforced is not a ' +
+        'requirement enforced. Stage 1 refuses an implementation that imports its own contract - it ' +
+        'reads the specifier - and nothing decides whether an implementation delegates to a built-in ' +
+        '*that does the same job*, which is a judgement about what the job is',
     },
     {
       requirement:
@@ -150,10 +224,19 @@ export const contractAnatomy = {
         'every silent guard declared - out of this battery\'s reach, or an unprobed region with ' +
         'its nature',
       measured: 'five of five, over ten batteries and 365 cells.',
+      checkableFrom: 'the module',
+      because:
+        'a battery is a value, and `run.ts` already refuses an unpinned cell and a silence nobody ' +
+        'accounts for. What a reader of syntax could establish is that two files exist',
     },
     {
       requirement: 'a guard whose verdict can depend on elapsed time declares its own timeout',
       measured: 'five of five - the rule and what it rests on are `CLOCK_DEPENDENCE_RULE`.',
+      checkableFrom: 'a reader',
+      because:
+        'which guards *can* depend on elapsed time is the whole content of the rule, and it is a ' +
+        'judgement about what a defect could do to a guard. A reader of syntax sees which `it` calls ' +
+        'carry a third argument and never which ones need one',
     },
     {
       requirement:
@@ -162,6 +245,10 @@ export const contractAnatomy = {
       measured:
         'three of five. Which two are in debt, and why it is a debt rather than an exception, are ' +
         'recorded in the project specification.',
+      checkableFrom: 'a reader',
+      because:
+        'whether a contract diverges is a comparison with four libraries this repository takes no ' +
+        'dependency on, and with a language that moves. Nothing here can be asked it',
     },
   ],
 
@@ -182,42 +269,6 @@ export const contractAnatomy = {
       'another. Two shapes, so an observation and not a rule.',
   ],
 } as const
-
-// ---------------------------------------------------------------------------
-// How a reference implementation is written
-// ---------------------------------------------------------------------------
-
-/**
- * A `reference.ts` is the oracle of the registry's differential test, and it is also the one file in
- * this repository that becomes somebody else's code. Its comments say what the function does and why
- * a non-obvious step is there. They do not explain the registry's rules of authorship to a reader who
- * has never heard of the registry, and they never point at a path that will not exist in the codebase
- * the file lands in - which is why the two rules below are stated here and not in the three files
- * they govern.
- *
- * Declared as data, in the shape `date/add@1` already uses for its own static analysis requirements:
- * these are established by reading an implementation rather than by running it, so the validation
- * pipeline is what will enforce them. A requirement that lived only inside that tool would not be part
- * of a contract whose whole product is auditability.
- */
-export const referenceImplementationRules = [
-  {
-    name: 'states its own signature and private types',
-    reason:
-      'A reference that annotated its export with the contract\'s own type would make the compiler ' +
-      'enforce conformance at authoring time and leave `signature.test-d.ts` unable to fail - a ' +
-      'guard that proves nothing. An implementation declares what it is; the contract checks it. The ' +
-      'same holds for the private types it computes with, for the same reason.',
-  },
-  {
-    name: 'does not delegate to a built-in that does the same job',
-    reason:
-      'The mutation battery injects its defects into `reference.ts`. A reference that forwards to the ' +
-      'runtime has no lines left to inject them into, so the contract\'s verification could no longer ' +
-      'be shown to catch anything. Measured on `array/group-by@1`, where `Map.groupBy` would have ' +
-      'answered every case of block 4.4 and emptied the battery in the same move.',
-  },
-] as const
 
 // ---------------------------------------------------------------------------
 // Guards and the clock

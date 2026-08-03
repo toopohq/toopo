@@ -20,6 +20,12 @@
  * Building a program is not running one. The compiler resolves imports and binds symbols; it never
  * evaluates a module body.
  *
+ * **The binder is on this side of that line, and the permitted-name rule is built on it.** Asking
+ * where a name is bound is asking the compiler what it resolved, not what the module computes: a
+ * submission that never runs still has parameters, locals and imports. What that buys is the
+ * difference between a parameter somebody called `process` and a read of the real one, which no
+ * amount of reading names can tell apart.
+ *
  * ---------------------------------------------------------------------------
  * Why the reading is scoped
  * ---------------------------------------------------------------------------
@@ -29,15 +35,31 @@
  * callback and closed in a `finally`, which is the only shape where forgetting is not possible.
  */
 
-import { API, TYPESCRIPT_SURFACE } from './typescript-api.js'
-import type { Node, SourceFile } from './typescript-api.js'
+import { API, TYPESCRIPT_SURFACE, missingFromTheChecker } from './typescript-api.js'
+import type { Checker, Node, Program, SourceFile } from './typescript-api.js'
 
-const { isSourceFile } = TYPESCRIPT_SURFACE
+const { isShorthandPropertyAssignment, isSourceFile } = TYPESCRIPT_SURFACE
+
+/**
+ * Where the name an identifier reads is bound.
+ *
+ * `free` covers two cases that are one question here: a name declared outside the submission - a
+ * library type, an ambient declaration, a package - and a name declared nowhere at all. `globalThis`
+ * is the measured instance of the second: the checker resolves it to a symbol with no declaration.
+ * Neither is something the submission brought with it, and that is the whole of what the rule asks.
+ */
+export type Binding = 'the-submission' | 'free'
 
 /** One file of a submission, parsed. `path` is as the caller named it. */
 export type ParsedSource = {
   readonly path: string
   readonly file: SourceFile
+  /**
+   * Where the name this identifier reads is bound, relative to the whole submission rather than to
+   * this file: a submission of several files imports between them by relative path, and a name that
+   * arrived that way is as local as a parameter.
+   */
+  readonly bindingOf: (identifier: Node) => Binding
 }
 
 export type SourceRequest = {
@@ -65,12 +87,70 @@ export class UnreadableSource extends Error {
   }
 }
 
+/**
+ * A checker that does not answer to what the analyser reads off it is refused before any rule runs.
+ *
+ * The same failure `missingFromTheSurface` exists for, arriving through the other half of the
+ * dependency: a method the package moved would leave the permitted-name rule resolving nothing, and
+ * a rule that resolves nothing calls every name free - so a clean submission would be refused
+ * wholesale rather than silently accepted. Loud either way is not the point; being a named refusal
+ * rather than an avalanche of findings is.
+ */
+export class UnusableChecker extends Error {
+  constructor(missing: readonly string[]) {
+    super(
+      `the TypeScript checker does not provide ${missing.join(', ')}, so where a name is bound ` +
+        `cannot be established and no rule that asks would mean anything.`,
+    )
+    this.name = 'UnusableChecker'
+  }
+}
+
 /** Absolute paths reach the compiler with forward slashes whatever the platform wrote them with. */
 const normalised = (path: string): string => path.replaceAll('\\', '/')
 
 /**
+ * Where a name is bound, asked of the compiler rather than reconstructed.
+ *
+ * A declaration comes back as a handle carrying the path of the file that holds it, and the program's
+ * own lookup turns that path into the very `SourceFile` object the submission was parsed into. So the
+ * comparison is object identity and never string arithmetic - which matters more than it looks:
+ * measured on this platform, a handle's path is lower-cased (`c:/users/...`) where the file's own
+ * `fileName` is not, so comparing the two as text would answer `free` for every local in the
+ * submission.
+ *
+ * A shorthand property is asked differently because it is two things at once. `{ fetch }` declares a
+ * property *and* reads a value, and `getSymbolAtLocation` answers with the property - so the value
+ * would come back bound to the object literal the submission just wrote.
+ */
+const bindingIn = (
+  program: Program,
+  checker: Checker,
+  submission: ReadonlySet<SourceFile>,
+  identifier: Node,
+): Binding => {
+  const parent = identifier.parent
+  const symbol =
+    parent !== undefined && isShorthandPropertyAssignment(parent) && parent.name === identifier
+      ? checker.getShorthandAssignmentValueSymbol(parent)
+      : checker.getSymbolAtLocation(identifier)
+
+  const brought = (symbol?.declarations ?? []).some((handle) => {
+    const declaring = program.getSourceFile(handle.path)
+
+    return declaring !== undefined && submission.has(declaring)
+  })
+
+  return brought ? 'the-submission' : 'free'
+}
+
+/**
  * Parse the requested files and hand them to `use`, closing the compiler afterwards whatever
  * happens.
+ *
+ * The files of one call are one submission. That is what makes a name imported from a sibling file
+ * local rather than free, and it is why a caller hands over everything the submission is made of
+ * rather than one file at a time.
  */
 export const readSources = <T>(
   request: SourceRequest,
@@ -86,17 +166,32 @@ export const readSources = <T>(
       throw new UnreadableSource(project, request.files)
     }
 
-    const read = request.files.map((path) => ({
-      path,
-      file: loaded.program.getSourceFile(normalised(path)),
-    }))
+    const unusable = missingFromTheChecker(loaded.checker)
+    if (unusable.length > 0) {
+      throw new UnusableChecker(unusable)
+    }
 
-    const missing = read.filter((entry) => entry.file === undefined).map((entry) => entry.path)
+    const missing: string[] = []
+    const read: { readonly path: string; readonly file: SourceFile }[] = []
+    for (const path of request.files) {
+      const file = loaded.program.getSourceFile(normalised(path))
+      if (file === undefined) missing.push(path)
+      else read.push({ path, file })
+    }
+
     if (missing.length > 0) {
       throw new UnreadableSource(project, missing)
     }
 
-    return use(read as readonly ParsedSource[])
+    const submission = new Set(read.map((entry) => entry.file))
+
+    return use(
+      read.map((entry) => ({
+        ...entry,
+        bindingOf: (identifier: Node): Binding =>
+          bindingIn(loaded.program, loaded.checker, submission, identifier),
+      })),
+    )
   } finally {
     api.close()
   }

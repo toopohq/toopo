@@ -226,7 +226,11 @@ const behaviour: readonly Mutant[] = [
           `    const existing = found === undefined ? undefined : found[1]`,
       ),
     ],
-    killed([NAN_KEYS]),
+    // Four guards redden and the rule in `mutants.ts` says to name all of a set of five or fewer, so
+    // this pin named one where it owed four. Found while giving `profileKeyFunctions` an address: the
+    // benchmark guard below is what establishes that those key functions are run against an
+    // implementation at all, and it was red on a complete run while nothing named it.
+    killed([NAN_KEYS, 'profile-one-group-per-element', 'p1-the-groups-partition-the-input', 'p2-a-group-is-coherent-and-stable']),
   ),
   sameOnEveryLens(
     'M-09',

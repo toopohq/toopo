@@ -1,13 +1,11 @@
 /**
  * The refusal that is invisible at run time.
  *
- * An implementation never imports the type its contract declares. `catalogue/every-contract.ts` has
- * carried the rule and its reason since the first contract was written, in
- * `referenceImplementationRules`, and nothing has ever enforced it:
- *
- *   > A reference that annotated its export with the contract's own type would make the compiler
- *   > enforce conformance at authoring time and leave `signature.test-d.ts` unable to fail - a guard
- *   > that proves nothing. An implementation declares what it is; the contract checks it.
+ * An implementation never imports the type its contract declares. The catalogue has carried the rule
+ * and its reason since the first contract was written, in `referenceImplementationRules`, and nothing
+ * enforced it - so the reason is **read from that declaration** rather than restated here. A
+ * transcription is a second sentence that can drift from the one the catalogue publishes, which is
+ * the failure `analyse.ts` already refuses for `staticAnalysisRequirements`.
  *
  * **This is the most dangerous thing stage 1 refuses, and it is dangerous because it is quiet.** Every
  * other rule here refuses something that does something. A submission that imports its contract's type
@@ -27,6 +25,8 @@
  * the folder that specifies it. Measured on the catalogue, that is what all five already do - four of
  * them import nothing at all.
  */
+
+import { STATES_ITS_OWN_SIGNATURE } from '../catalogue/reference-implementation.js'
 
 import type { Finding } from './finding.js'
 import { findingAt } from './finding.js'
@@ -64,21 +64,20 @@ const namesTheContractModule = (resolved: string): boolean => {
   return last === CONTRACT_MODULE || last.startsWith(`${CONTRACT_MODULE}.`)
 }
 
+/**
+ * The catalogue's own sentence, and the one the catalogue does not carry.
+ *
+ * The first half is `referenceImplementationRules[0].reason`, read rather than retold, so a rule
+ * reworded in the catalogue is reworded in every refusal this pipeline makes. The second half is the
+ * pipeline's: it is about where a submission is *installed*, which is a fact about distribution and
+ * not about how a reference is written, so putting it in the catalogue would be putting the registry's
+ * business inside a rule that governs a file.
+ */
+const WHY = `an implementation ${STATES_ITS_OWN_SIGNATURE.name}. ${STATES_ITS_OWN_SIGNATURE.reason} An implementation is also installed alone, so this import resolves here and dangles in the codebase it is copied into.`
+
 export const importsItsOwnContract = (source: ParsedSource): readonly Finding[] =>
   importSpecifiersIn(source).flatMap((specifier) => {
     if (!namesTheContractModule(resolvedAgainst(source.path, specifier.text))) return []
 
-    return [
-      findingAt(
-        OWN_SIGNATURE_RULE,
-        specifier.at,
-        source,
-        'an implementation states its own signature and never imports the one its contract ' +
-          'declares. Annotating an export with the contract\'s own type makes the compiler enforce ' +
-          'conformance while it is being written, which leaves `signature.test-d.ts` unable to fail - ' +
-          'so the submission would neutralise its own signature check and stay green. An ' +
-          'implementation is also installed alone, so this import resolves here and dangles in the ' +
-          'codebase it is copied into.',
-      ),
-    ]
+    return [findingAt(OWN_SIGNATURE_RULE, specifier.at, source, WHY)]
   })

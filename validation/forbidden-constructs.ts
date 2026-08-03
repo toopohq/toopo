@@ -16,10 +16,20 @@
  * path is the only thing allowed, and everything else is refused by default. A list of the bad names
  * fails open on the name nobody thought of; a list of the one good shape fails closed.
  *
- * **A global is reached by name**, and here the check is genuinely lexical. It is written to catch
- * the mistake, not the adversary, and `date/add@1` already says so of its own requirement in as many
- * words - *lexical and therefore evadable on purpose*. Exactly where the boundary sits is measured
- * rather than asserted, in `the-boundary.test.ts`.
+ * **A name a feature has not declared is refused unless it is permitted**, which is the same shape as
+ * the import rule and was arrived at the same way. A list of the bad names fails open on the global
+ * nobody thought of, and *nobody thought of it* is the failure mode that matters rather than the one
+ * already written down. On the mechanism that carries this project's supply-chain argument, failing
+ * closed is the only defensible direction.
+ *
+ * What makes the closed form affordable is the catalogue's perimeter rather than any cleverness here.
+ * Pure functions with no dependency need a small, enumerable set of names, and it was measured rather
+ * than assumed: **the five reference implementations between them read seven free identifiers -
+ * `Array`, `Date`, `Map`, `Math`, `Number`, `Object`, `undefined` - and every `.ts` file of
+ * `contracts/` adds only seven more**: `String`, `Set`, `Error`, `Symbol`, `JSON`, `WeakMap` and
+ * `globalThis`, the last of which appears twice, in a property test that writes to it on purpose.
+ *
+ * Exactly where the boundary sits is measured rather than asserted, in `the-boundary.test.ts`.
  *
  * **A method a contract forbids** is named by that contract and by no other, so the rule takes the
  * list rather than holding it. `date/add@1` publishes twenty local-time methods; a second contract
@@ -49,7 +59,9 @@ const {
   isNewExpression,
   isNoSubstitutionTemplateLiteral,
   isPropertyAccessExpression,
+  isShorthandPropertyAssignment,
   isStringLiteral,
+  isTypeNode,
   skipOuterExpressions,
 } = TYPESCRIPT_SURFACE
 
@@ -145,21 +157,163 @@ export const importsOutsideTheRegistry = (source: ParsedSource): readonly Findin
 export const GLOBAL_RULE = 'reaches-no-ambient-state'
 
 /**
- * The globals a pure function may not name, each with what it reaches.
+ * Every name a feature may read without having declared it.
  *
- * Declared rather than regex-matched, and grouped by what the reach *is*, because a submitter who is
- * refused deserves to know which guarantee they crossed rather than a list they must interpret. The
- * catalogue's own vocabulary is used: `no ambient input` and `no ambient output` are two of the four
- * universal properties every contract answers, and `every-contract.ts` records that the second is not
- * reachable by any property - *the guarantee is obtained by static analysis in the validation
- * pipeline, which forbids a feature from reaching global state at all*. This is that sentence, made
- * executable.
+ * **This list decides, and nothing else does.** A free identifier that is not here is refused,
+ * whatever it is and whether or not anybody anticipated it - which is what makes the rule fail closed
+ * and is the only reason it is worth more than the twenty-three names it replaced.
+ *
+ * The line it draws is the ECMAScript standard library, minus what reaches beyond the call. That is a
+ * frontier a reader can check rather than a curation: everything below is a pure value API by
+ * specification, and everything the language ships that is *not* below is absent for a reason
+ * recorded in `WHAT_A_REFUSED_NAME_REACHES`. Whole families of host globals - `fetch`, `document`,
+ * `localStorage`, `crypto`, `performance`, `require`, `__dirname` - need no entry anywhere to be
+ * refused, and neither does the one nobody has thought of.
+ *
+ * The catalogue's own vocabulary is what this serves: `no ambient input` and `no ambient output` are
+ * two of the four universal properties every contract answers, and `every-contract.ts` records that
+ * the second is not reachable by any property - *the guarantee is obtained by static analysis in the
+ * validation pipeline, which forbids a feature from reaching global state at all*. This is that
+ * sentence, made executable.
  */
-export const FORBIDDEN_GLOBALS: readonly { readonly name: string; readonly reaches: string }[] = [
+export const PERMITTED_GLOBALS: readonly {
+  readonly family: string
+  readonly why: string
+  readonly names: readonly string[]
+}[] = [
+  {
+    family: 'the value properties of the global object',
+    why: 'constants. `undefined` in particular is a name no submission can avoid reading',
+    names: ['undefined', 'NaN', 'Infinity'],
+  },
+  {
+    family: 'the global functions',
+    why: 'total conversions between text and numbers, and between text and its percent-encoding',
+    names: [
+      'isFinite',
+      'isNaN',
+      'parseFloat',
+      'parseInt',
+      'decodeURI',
+      'decodeURIComponent',
+      'encodeURI',
+      'encodeURIComponent',
+    ],
+  },
+  {
+    family: 'the fundamental objects',
+    why: 'operations on values a caller already handed over, and on nothing else',
+    names: ['Object', 'Boolean', 'Symbol', 'Reflect', 'Proxy'],
+  },
+  {
+    family: 'numbers, dates and text',
+    why:
+      'the arithmetic and the parsing three of the five contracts are built on. `Math.random` and ' +
+      '`Date.now` are the two members that turn one of these into ambient input, and they are ' +
+      'refused below rather than their holders',
+    names: ['Number', 'BigInt', 'Math', 'Date', 'String', 'RegExp'],
+  },
+  {
+    family: 'collections',
+    why: 'containers a feature builds from its arguments and returns',
+    names: ['Array', 'Map', 'Set', 'WeakMap', 'WeakSet'],
+  },
+  {
+    family: 'binary data',
+    why: 'buffers a feature allocates for itself. `SharedArrayBuffer` is not here and says why below',
+    names: [
+      'ArrayBuffer',
+      'DataView',
+      'Int8Array',
+      'Uint8Array',
+      'Uint8ClampedArray',
+      'Int16Array',
+      'Uint16Array',
+      'Int32Array',
+      'Uint32Array',
+      'Float32Array',
+      'Float64Array',
+      'BigInt64Array',
+      'BigUint64Array',
+    ],
+  },
+  {
+    family: 'errors',
+    why: 'the catalogue answers `T | null` rather than throwing, but a feature may still be handed one',
+    names: [
+      'Error',
+      'AggregateError',
+      'EvalError',
+      'RangeError',
+      'ReferenceError',
+      'SyntaxError',
+      'TypeError',
+      'URIError',
+    ],
+  },
+  { family: 'structured text', why: 'a total encoding of values, reaching nothing', names: ['JSON'] },
+  {
+    family: 'deferred work',
+    why:
+      'no contract of the five is asynchronous, and a promise still reaches nothing: it defers a ' +
+      'computation over values already in hand. The scheduler that would - `setTimeout`, ' +
+      '`queueMicrotask` - is a host global and is absent',
+    names: ['Promise'],
+  },
+  {
+    family: 'the call itself',
+    why:
+      'the one thing a feature is unconditionally allowed to read. It is here because refusing it ' +
+      'would be refusing a parameter under another spelling, not because anything needs it: `...rest` ' +
+      'is what the five write',
+    names: ['arguments'],
+  },
+]
+
+const PERMITTED = new Set(PERMITTED_GLOBALS.flatMap((family) => family.names))
+
+/**
+ * What a refused name reaches, for the names where saying so is worth more than the general refusal.
+ *
+ * **This does not decide anything.** The list above does, and a name absent from both is refused with
+ * the general sentence. What this buys is the half of the refusal a submitter is owed: *which
+ * guarantee did I cross*, which "not in the permitted set" cannot answer.
+ *
+ * It matters most for the names that are language APIs and are still refused. A submitter told that
+ * `Intl` is "not a language API" would be told something false; told that every `Intl` constructor
+ * falls back to the host's default locale when none is supplied, they know what to do about it.
+ *
+ * Nothing here may be permitted above, and `forbidden-constructs.test.ts` refuses the overlap - two
+ * lists that can be edited apart is the failure this repository keeps finding.
+ */
+export const WHAT_A_REFUSED_NAME_REACHES: readonly {
+  readonly name: string
+  readonly reaches: string
+}[] = [
+  { name: 'eval', reaches: 'the evaluator, which runs text as code, so what a feature does is not what it says' },
+  { name: 'Function', reaches: 'the evaluator under another name, compiling text into a function in global scope' },
+  {
+    name: 'Intl',
+    reaches:
+      'the host\'s default locale, which every constructor of it falls back to when no locale is ' +
+      'supplied - ambient input the signature does not declare',
+  },
+  {
+    name: 'WeakRef',
+    reaches: 'the garbage collector\'s timing, so two identical calls may legitimately disagree',
+  },
+  {
+    name: 'FinalizationRegistry',
+    reaches: 'the garbage collector\'s timing, so two identical calls may legitimately disagree',
+  },
+  { name: 'SharedArrayBuffer', reaches: 'memory shared with other agents, which is ambient output' },
+  { name: 'Atomics', reaches: 'memory shared with other agents, which is ambient output' },
+
   { name: 'process', reaches: 'the process: its environment, its arguments, its streams and its exit' },
   { name: 'require', reaches: 'the module loader, which is an import the specifier rule cannot see' },
   { name: '__dirname', reaches: 'the location of the installed file, which differs per installation' },
   { name: '__filename', reaches: 'the location of the installed file, which differs per installation' },
+  { name: 'console', reaches: 'the process output stream, which is ambient output' },
 
   { name: 'globalThis', reaches: 'global state, both to read it and to write it' },
   { name: 'global', reaches: 'global state, under the name Node gives it' },
@@ -184,8 +338,6 @@ export const FORBIDDEN_GLOBALS: readonly { readonly name: string; readonly reach
   { name: 'crypto', reaches: 'the entropy source, so two calls with one argument may disagree' },
 ]
 
-const GLOBAL_NAMES = new Set(FORBIDDEN_GLOBALS.map((entry) => entry.name))
-
 /**
  * Members of an otherwise permitted global that reach ambient state.
  *
@@ -206,17 +358,40 @@ export const FORBIDDEN_MEMBERS: readonly {
 /**
  * A name used as a value rather than as a property or a declaration.
  *
- * The distinction is what stops the rule from refusing `{ fetch: 1 }.fetch` or a parameter somebody
- * called `document`. It is not a scope analysis: an identifier the submission itself declared is
- * still reported, and that is measured rather than glossed over in `the-boundary.test.ts`.
+ * The distinction is what stops the rule from refusing `{ fetch: 1 }.fetch`, where the name is a
+ * member of an object the submission wrote and reaches nothing.
+ *
+ * **The shorthand property is the exception, and it is the one the general form gets wrong.**
+ * `{ fetch }` is a declaration *and* a read: it names a property and it reads the value beside it.
+ * A reader that stopped at "this identifier is its parent's name" would let it through, which is
+ * evasion 11 of `fixtures/the-boundary.ts`.
  */
 const isReadAsAValue = (node: Node): boolean => {
   const parent = node.parent
   if (parent === undefined) return true
 
+  if (isShorthandPropertyAssignment(parent) && parent.name === node) return true
+
   if (isPropertyAccessExpression(parent) && parent.name === node) return false
 
   return !('name' in parent && parent.name === node)
+}
+
+/**
+ * Whether a name is part of a type rather than of the code that runs.
+ *
+ * A type is erased, so it reaches nothing and refusing one would buy nothing. What it would cost is
+ * the whole of `lib.*.d.ts` in the permitted list: measured on the catalogue and the fixtures, the
+ * free identifiers in type position are `Record`, `Date`, `Map` and `InspectOptions` - three library
+ * types and one that arrives through `import('node:util')`, which the import rule refuses by its
+ * specifier and in no way needs this rule's help with.
+ */
+const inATypePosition = (node: Node): boolean => {
+  for (let at = node.parent; at !== undefined; at = at.parent) {
+    if (isTypeNode(at)) return true
+  }
+
+  return false
 }
 
 /**
@@ -247,6 +422,19 @@ const memberReached = (node: Node): { readonly holder: string; readonly member: 
   return null
 }
 
+/** The closing half of every refusal this rule makes, so that the two forms end the same way. */
+const WHAT_A_FEATURE_MAY_REACH =
+  'A feature may read and write its arguments and its own module scope, and nothing else.'
+
+const whyThisNameIsRefused = (name: string): string => {
+  const known = WHAT_A_REFUSED_NAME_REACHES.find((entry) => entry.name === name)
+
+  return known === undefined
+    ? `\`${name}\` is not a parameter, a local, an import of this submission, or one of the names ` +
+        `\`PERMITTED_GLOBALS\` admits, so nothing establishes what it reaches. ${WHAT_A_FEATURE_MAY_REACH}`
+    : `\`${name}\` reaches ${known.reaches}. ${WHAT_A_FEATURE_MAY_REACH}`
+}
+
 export const ambientStateReached = (source: ParsedSource): readonly Finding[] =>
   [...everyNode(source.file)].flatMap((node) => {
     const member = memberReached(node)
@@ -264,19 +452,11 @@ export const ambientStateReached = (source: ParsedSource): readonly Finding[] =>
       ]
     }
 
-    if (!isIdentifier(node) || !GLOBAL_NAMES.has(node.text) || !isReadAsAValue(node)) return []
+    if (!isIdentifier(node) || !isReadAsAValue(node) || inATypePosition(node)) return []
+    if (PERMITTED.has(node.text)) return []
+    if (source.bindingOf(node) === 'the-submission') return []
 
-    const global = FORBIDDEN_GLOBALS.find((entry) => entry.name === node.text)!
-
-    return [
-      findingAt(
-        GLOBAL_RULE,
-        node,
-        source,
-        `\`${global.name}\` reaches ${global.reaches}. A feature may read and write its arguments ` +
-          `and its own module scope, and nothing else.`,
-      ),
-    ]
+    return [findingAt(GLOBAL_RULE, node, source, whyThisNameIsRefused(node.text))]
   })
 
 // ---------------------------------------------------------------------------
@@ -311,6 +491,14 @@ const isEvaluator = (expression: Node, name: string): boolean => {
  * A dynamic `import()` with a literal specifier is not here: it names a module, so the import rule
  * reads it like any other. One whose argument is computed is here, because that is the case where
  * nothing static can say which module it is.
+ *
+ * **`eval` and `Function` are refused twice over, and that is deliberate rather than left over.**
+ * Since the permitted-name rule became a closed list, naming either of them is already a refusal -
+ * and that rule is the one that catches `const evaluate = eval`, where nothing is built yet and there
+ * is no call to read. This rule catches the construct: a submitter who writes `eval(input)` is owed
+ * the sentence that names what they did, not only the one that names a list they are not on. Two
+ * rules answer two questions about one line, both answers are true, and repairing the line removes
+ * both findings.
  */
 export const codeBuiltAtRunTime = (source: ParsedSource): readonly Finding[] =>
   [...everyNode(source.file)].flatMap((node) => {

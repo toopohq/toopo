@@ -29,7 +29,7 @@
  * language never has to rename the first one's addresses.
  */
 
-import type { ContractAddress } from './address.js'
+import type { ContractAddress, GuardAddress } from './address.js'
 import type { EncodedValue } from './value.js'
 import type { CaseProvenance } from './evidence.js'
 import type { HarnessFile } from './implementation-record.js'
@@ -390,6 +390,15 @@ export type OwnDeclaration = {
    * `ecosystem` is prose about four libraries this repository does not depend on.
    */
   readonly verification: VerificationStratum
+  /**
+   * The guard that makes an `executable` declaration executable, resolvable rather than asserted.
+   *
+   * Optional because only `executable` carries one: the weaker strata name what *cannot* be
+   * established, and pointing at a guard would be claiming the opposite. `serialise.ts` refuses the
+   * two ways that could go wrong - an `executable` declaration with no guard, and an address naming a
+   * guard no battery holds.
+   */
+  readonly executableBy?: GuardAddress
 }
 
 // ---------------------------------------------------------------------------

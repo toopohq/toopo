@@ -72,12 +72,24 @@ export type CaseAddress = {
 /**
  * A guard, addressed by the pair and only by the pair.
  *
- * Uniqueness is per contract - a battery injects into one folder, and attribution already filters
- * guards to the contract under measurement - so two contracts may legitimately answer to one string.
- * `determinism` is held by five of the five.
+ * **The first coordinate is a battery and not a contract, and that is a correction rather than a
+ * preference.** Uniqueness is per *suite*: a battery injects into one folder, `calibrate()` refuses
+ * two guards of that folder answering to one identifier, and attribution filters to it - so the scope
+ * that can break is the folder a battery measures. For five of the twelve batteries that folder is a
+ * contract and the two coordinates coincide; for `registry-storage` and `validation-stage-1` there is
+ * no contract at all, and a pair built on one could not name their guards. `determinism` is held by
+ * five of the five, which is what the pair absorbs either way.
+ *
+ * What it costs is that a guard measured by two batteries of one folder has two true addresses -
+ * `date-add` and `date-add-spec` both name the guards of `contracts/date/add`. This is a citation
+ * rather than a permalink, exactly as a `found-by-mutation` provenance is, and a citation naming the
+ * measurement it comes from is right rather than ambiguous. A permalink to a guard, when the site
+ * needs one, is the contract's page and the identifier - which is the pair `renderGuard` does not
+ * print and nothing yet asks for.
  */
 export type GuardAddress = {
-  readonly contract: ContractAddress
+  /** The battery whose suite carries this guard. */
+  readonly battery: string
   readonly guard: string
 }
 
@@ -102,7 +114,7 @@ export const renderCase = (address: CaseAddress): string =>
   `${renderContract(address.contract)}#${address.case}`
 
 export const renderGuard = (address: GuardAddress): string =>
-  `${renderContract(address.contract)}:${address.guard}`
+  `${address.battery}/${address.guard}`
 
 export const renderMutant = (address: MutantAddress): string =>
   `${renderContract(address.contract)}:${address.battery}/${address.mutant}`
@@ -129,6 +141,6 @@ export const caseAddressFaults = (address: CaseAddress): readonly string[] => [
 ]
 
 export const guardAddressFaults = (address: GuardAddress): readonly string[] => [
-  ...contractAddressFaults(address.contract),
+  ...(address.battery.trim() === '' ? ['the battery is unnamed'] : []),
   ...(isFrozenIdentifier(address.guard) ? [] : [`"${address.guard}" is not a frozen identifier`]),
 ]

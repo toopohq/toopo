@@ -11,6 +11,9 @@
  * `date/add@1` already says of its own static analysis requirement that the check is *lexical and
  * therefore evadable on purpose* - written to catch the mistake, while the property catches the
  * adversary. This file is where "on purpose" stops being a word and becomes a list.
+ *
+ * It is typechecked by nothing, like `refused.ts` beside it: several spellings below are a type error
+ * as well as a refusal, and the analyser reads them under the fixtures' own configuration.
  */
 
 declare const untrusted: string
@@ -49,5 +52,19 @@ export const eight = (): unknown => evaluate(untrusted)
 // 9. The Function constructor, parenthesised.
 export const nine = (): unknown => new (Function)('return 1')()
 
-// 10. A local binding that shadows a forbidden global. Nothing ambient is reached at all.
+// 10. A local binding that shadows a global. Nothing ambient is reached at all, and the rule has to
+//     say so: this is the only entry here that is not an evasion.
 export const ten = (process: string): string => process
+
+// 11. The value read that is spelled as a declaration. `{ fetch }` names a property and reads the
+//     global beside it, so a reader that stops at "this identifier is its parent's name" is blind.
+export const eleven = (): unknown => ({ fetch })
+
+// 12. The same name, bound in one scope and free in another. A reader that asked whether the file
+//     declares `crypto` anywhere would answer yes and let the second one through.
+export const twelveDeclares = (): string => {
+  const crypto = 'a local, and this one reaches nothing'
+
+  return crypto
+}
+export const twelve = (): unknown => crypto

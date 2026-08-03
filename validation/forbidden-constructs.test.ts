@@ -6,6 +6,8 @@ import {
   EVALUATION_RULE,
   GLOBAL_RULE,
   IMPORT_RULE,
+  PERMITTED_GLOBALS,
+  WHAT_A_REFUSED_NAME_REACHES,
   ambientStateReached,
   codeBuiltAtRunTime,
   contractForbiddenMethods,
@@ -89,12 +91,32 @@ describe('the security filter refuses what it says it refuses', () => {
     ANALYSIS_TIMEOUT_MS,
   )
 
+  /**
+   * `eval` and `Function` are here as well as under the rule below, and that is the permitted-name
+   * rule doing its job rather than an accident: naming the evaluator is already a refusal, which is
+   * what catches a capture that never becomes a call.
+   *
+   * The imported names - `readFileSync`, `everything`, `legacy`, `PERMITTED` - are absent, and that
+   * is the measurement worth reading in this list. They are bound by import declarations of the
+   * submission itself, so the binder answers `the-submission` for every use of them and a bad import
+   * produces one finding rather than one per use. Which modules a submission may name is the import
+   * rule's question and this rule stays out of it.
+   */
   it(
     'the-ambient-reaches-are-named-one-by-one',
     () => {
       const quoted = analyse(REFUSED, ambientStateReached).map((finding) => finding.quoted)
 
-      expect(quoted.sort()).toEqual(['Date.now', 'Math.random', 'URL', 'fetch', 'globalThis', 'process'])
+      expect(quoted.sort()).toEqual([
+        'Date.now',
+        'Function',
+        'Math.random',
+        'URL',
+        'eval',
+        'fetch',
+        'globalThis',
+        'process',
+      ])
     },
     ANALYSIS_TIMEOUT_MS,
   )
@@ -130,6 +152,42 @@ describe('the security filter refuses what it says it refuses', () => {
     },
     ANALYSIS_TIMEOUT_MS,
   )
+})
+
+describe('the two lists of the permitted-name rule', () => {
+  /**
+   * One list decides and the other explains, so a name in both would be a contradiction the rule
+   * resolves silently in favour of the first. Two statements that can be edited apart is the failure
+   * this repository has now found in a count, in a stratum, in a guard identifier and in a profile
+   * name; here it is refused before it can happen.
+   */
+  it('nothing-is-both-permitted-and-a-known-reach', () => {
+    const permitted = new Set(PERMITTED_GLOBALS.flatMap((family) => family.names))
+
+    expect(WHAT_A_REFUSED_NAME_REACHES.filter((entry) => permitted.has(entry.name))).toEqual([])
+  })
+
+  /**
+   * A name in two families would make the list read as though the second family justified it while
+   * the first already did, and `why` is the only thing that admits a name here.
+   */
+  it('every-permitted-name-is-admitted-by-one-family', () => {
+    const names = PERMITTED_GLOBALS.flatMap((family) => family.names)
+
+    expect([...new Set(names.filter((name, at) => names.indexOf(name) !== at))]).toEqual([])
+  })
+
+  /**
+   * The three the whole rule turns on. `globalThis` is the reach the catalogue's own
+   * `NO_AMBIENT_OUTPUT_FINDING` says no property can see, and the two evaluators are what the
+   * `builds-no-code-at-run-time` rule reads as constructions - so a list that admitted any of them
+   * would leave both of those claims resting on nothing.
+   */
+  it('the-evaluators-and-global-state-are-not-permitted', () => {
+    const permitted = new Set(PERMITTED_GLOBALS.flatMap((family) => family.names))
+
+    expect(['eval', 'Function', 'globalThis'].filter((name) => permitted.has(name))).toEqual([])
+  })
 })
 
 describe('the security filter refuses nothing else', () => {

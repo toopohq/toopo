@@ -46,28 +46,31 @@ describe('the boundary of the lexical filter', () => {
   /**
    * What is caught, and by which route.
    *
-   * Five evasions are caught and they are caught for one reason, worth naming because it is the rule
-   * behind the rules: **the holder is still written down.** A computed member, a captured binding, a
-   * literal key under two casts and a `!`, a parenthesised constructor - each of them still leaves
-   * `globalThis`, `eval`, `Function` or a named receiver in the source, and the reader reads names.
-   * What defeats it is never the computation; it is putting the *holder* out of reach of a name.
+   * Two rules answer here and they answer differently, which is what the columns below are for.
    *
-   * Three of the five were closed during this unit rather than described. `(0, eval)(text)`,
-   * `new (Function)('...')` and `(when as Record<string, () => number>)['getMonth']!()` all passed a
-   * reader that asked an expression to *be* an identifier and found a wrapper. The compiler's own
-   * `skipOuterExpressions` is what closed them, so the set of things that count as a wrapper is
-   * TypeScript's rather than a list maintained here.
+   * **A name the submission did not declare is refused unless it is permitted**, and that is not a
+   * lexical reading at all: the compiler's binder says where a name is bound, so a capture, a
+   * shorthand property and a read in a scope that does not hold the binding are all caught, while a
+   * parameter that happens to be called `process` is not. Three of the entries below exist only
+   * because of it - 8, 11 and 12 - and 12 is the one that would defeat any reader that asked whether
+   * the *file* declares a name rather than whether this *read* is bound to it.
+   *
+   * **A forbidden method is read lexically**, and there the rule behind the rule still holds: the
+   * holder is written down. A literal key under two casts and a `!` is caught because `when` is still
+   * a name; the same spelling with the key in a variable is not.
    */
   it(
     'what-the-reader-sees',
     () => {
-      // 1 (19): globalThis reached through a computed member - the holder is still named.
-      // 2 (22): globalThis captured under another name - the capture itself is the reach.
-      // 5 (36): a forbidden method under a literal key, through two `as` casts and a `!`.
-      // 7 (43): indirect eval, `(0, eval)(text)`.
-      // 9 (50): the Function constructor, parenthesised.
-      // 10 (53): a parameter named `process`, which reaches nothing. See below.
-      expect(linesRefused()).toEqual([19, 22, 36, 43, 50, 53])
+      // 1  (22): globalThis reached through a computed member - the holder is still named.
+      // 2  (25): globalThis captured under another name - the capture itself is the reach.
+      // 5  (39): a forbidden method under a literal key, through two `as` casts and a `!`.
+      // 7  (46): indirect eval, `(0, eval)(text)`.
+      // 8  (49): `eval` captured into a local. Nothing is built yet and there is no call to read.
+      // 9  (53): the Function constructor, parenthesised.
+      // 11 (61): `{ fetch }`, which declares a property and reads a global in one token.
+      // 12 (70): a free read of a name another scope of the same file binds.
+      expect(linesRefused()).toEqual([22, 25, 39, 46, 49, 53, 61, 70])
     },
     ANALYSIS_TIMEOUT_MS,
   )
@@ -75,28 +78,30 @@ describe('the boundary of the lexical filter', () => {
   /**
    * What passes, pinned as passing.
    *
-   * Every one of them puts the holder beyond a name: the prototype reached as a member access rather
-   * than as an identifier, a method destructured into a free function, a key held in a variable, and
-   * `eval` bound to a local before it is called. The one family that is not an evasion at all is the
-   * last: a parameter that happens to be named `process` reaches nothing, and the rule refuses it -
-   * an over-refusal rather than a hole, and the only one measured here.
+   * All three are evasions of one rule, and it is the rule that reads a *method* rather than a name:
+   * the prototype reached as a member access, a method destructured into a free function, a key held
+   * in a variable. `date/add@1` said so of its own requirement before any analyser existed - the
+   * check is lexical and therefore evadable on purpose, written to catch the mistake while the
+   * property catches the adversary.
    *
-   * A scope-aware or symbol-aware reading would close some of these. What it buys is measured rather
-   * than assumed, and the measurement is reported with this unit rather than promised.
+   * **The fourth line here is not an evasion and is the one that changed.** A parameter called
+   * `process` reaches nothing, and the deny-list refused it because a deny-list can only read names.
+   * The permitted-name rule asks the binder instead, so a local is a local. It is pinned as passing
+   * because an over-refusal on legitimate code is a defect of this filter exactly as a hole is.
    */
   it(
     'what-the-reader-does-not-see',
     () => {
       const refused = linesRefused()
 
-      // 3 (28): the prototype is a member access, so no name holds the forbidden method.
-      // 4 (32): destructured into a free function, so no member call is left to read.
-      // 6 (40): the key is in a variable.
-      // 8 (47): `eval` bound to a local before it is called.
-      expect(refused).not.toContain(28)
-      expect(refused).not.toContain(32)
-      expect(refused).not.toContain(40)
-      expect(refused).not.toContain(47)
+      // 3  (31): the prototype is a member access, so no name holds the forbidden method.
+      // 4  (35): destructured into a free function, so no member call is left to read.
+      // 6  (43): the key is in a variable.
+      // 10 (57): a parameter named `process`, bound in the submission, reaching nothing.
+      expect(refused).not.toContain(31)
+      expect(refused).not.toContain(35)
+      expect(refused).not.toContain(43)
+      expect(refused).not.toContain(57)
     },
     ANALYSIS_TIMEOUT_MS,
   )
@@ -109,7 +114,7 @@ describe('the boundary of the lexical filter', () => {
   it(
     'the-boundary-is-a-measurement-and-not-a-claim',
     () => {
-      expect(linesRefused()).toHaveLength(6)
+      expect(linesRefused()).toHaveLength(8)
     },
     ANALYSIS_TIMEOUT_MS,
   )

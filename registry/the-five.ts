@@ -18,6 +18,7 @@
  * declaration - and the measurement is recorded beside each entry that is not obvious.
  */
 
+import type { Battery } from '../mutation/run.js'
 import type { BatteryRecord } from './evidence.js'
 import type { ContractSource } from './serialise.js'
 import { SERVED_AS_A_FILE } from './serialise.js'
@@ -45,6 +46,7 @@ import { battery as levenshteinBattery } from '../mutation/string-levenshtein.ba
 import { battery as levenshteinSpec } from '../mutation/string-levenshtein-spec.battery.js'
 import { battery as slugifyBattery } from '../mutation/string-slugify.battery.js'
 import { battery as slugifySpec } from '../mutation/string-slugify-spec.battery.js'
+import { battery as validationStageOne } from '../mutation/validation-stage-1.battery.js'
 
 const addressOf = (name: string): ContractAddress => ({ language: 'typescript', name, major: 1 })
 
@@ -56,14 +58,55 @@ const SLUGIFY = addressOf('string/slugify')
 
 const NOT_YET_PUBLISHED: Lifecycle = { state: 'not-yet-published' }
 
+/**
+ * The two guards an `executable` declaration of the five names, written once because two declarations
+ * each rest on the same one. A string repeated here is a rename away from being wrong twice.
+ */
+const ZONE_PROPERTY = 'no-ambient-input-from-the-time-zone'
+const A_PROFILE_KEEPS_ITS_SHAPE = 'profile-one-group-per-element'
+
+/**
+ * Every guard identifier a battery names: pinned by a cell, declared out of its reach, or declared
+ * unprobed.
+ *
+ * Read off the battery rather than transcribed beside it. A transcription is a second statement, and
+ * a guard address that resolved against a transcription would establish that two lists agree rather
+ * than that the guard exists.
+ *
+ * `suites` are deliberately not here: a suite is a `describe` title and a guard is not, so folding
+ * them in would let an address resolve against a block name.
+ */
+const guardsNamedBy = (battery: Battery): readonly string[] => [
+  ...new Set([
+    ...battery.mutants.flatMap((mutant) =>
+      Object.values(mutant.expected).flatMap((expectation) => expectation.by ?? []),
+    ),
+    ...battery.unreachableGuards.flatMap((silent) => silent.guards ?? []),
+    ...battery.unprobedRegions.flatMap((region) => region.guards ?? []),
+  ]),
+]
+
 /** Reduce a battery to what makes a citation resolvable. Nothing else of it is registry data. */
-const batteryRecord = (
-  contract: ContractAddress,
-  battery: { readonly name: string; readonly mutants: readonly { readonly id: string }[] },
-): BatteryRecord => ({
+const batteryRecord = (contract: ContractAddress, battery: Battery): BatteryRecord => ({
   name: battery.name,
   contract,
   mutants: battery.mutants.map((mutant) => mutant.id),
+  guards: guardsNamedBy(battery),
+})
+
+/**
+ * A battery that measures the repository's machinery rather than a contract, and whose guards a
+ * contract record may still cite.
+ *
+ * It carries no contract, and `evidence.ts` says why that absence is the mechanism rather than a
+ * gap: `resolveProvenance` matches on the contract, so a case of block 4.4 can never resolve
+ * `found-by-mutation` against one of these. The honest citation stays possible and the wrong one is
+ * unrepresentable, with no second list to keep in step.
+ */
+const machineryRecord = (battery: Battery): BatteryRecord => ({
+  name: battery.name,
+  mutants: battery.mutants.map((mutant) => mutant.id),
+  guards: guardsNamedBy(battery),
 })
 
 const ACCEPTED_AND_REJECTED = [
@@ -201,21 +244,47 @@ export const theFive: readonly ContractSource[] = [
       { name: 'applicationOrder', verification: 'structural' },
       // Read by the ambient-input property, which runs the function under each zone and requires the
       // declared offset. D-05 reddens it, so an implementation really is refused by these.
-      { name: 'ambientProbeInstants', verification: 'executable' },
-      { name: 'ambientTimeZoneProbes', verification: 'executable' },
+      {
+        name: 'ambientProbeInstants',
+        verification: 'executable',
+        executableBy: { battery: dateAddBattery.name, guard: ZONE_PROPERTY },
+      },
+      {
+        name: 'ambientTimeZoneProbes',
+        verification: 'executable',
+        executableBy: { battery: dateAddBattery.name, guard: ZONE_PROPERTY },
+      },
       // Both flow into a case and a benchmark sample, so a wrong constant reddens a guard - but no
       // implementation is involved, which is what separates this from `executable`.
       { name: 'LATEST_REPRESENTABLE', verification: 'structural' },
       { name: 'EARLIEST_REPRESENTABLE', verification: 'structural' },
       /**
-       * The second `one-directional` case in the catalogue, and it is the same shape as GS-11. The
-       * only guard over it requires every entry to carry a non-empty reason; nothing refuses an
-       * implementation that calls `getMonth`, because the check is the validation pipeline's and the
-       * pipeline does not exist. The declaration claims more than any guard here keeps.
+       * **The debt this field carried is closed, and this is the record of it.** It was the second
+       * `one-directional` case in the catalogue and said so in as many words: the only guard over it
+       * required every entry to carry a non-empty reason, nothing refused an implementation that
+       * called `getMonth`, because the check was the validation pipeline's and the pipeline did not
+       * exist. Stage 1 reads the twenty methods off this very declaration and refuses a submission
+       * that calls one, so the stratum is now the strongest this schema has.
+       *
+       * It carries the address rather than the sentence. `executable` names a guard that could be
+       * renamed or deleted three units from now, leaving the claim standing and pointing nowhere -
+       * which is the failure `found-by-mutation` was given an address to prevent, arriving on the
+       * other claim a record makes about its own verification.
        */
-      { name: 'staticAnalysisRequirements', verification: 'one-directional' },
+      {
+        name: 'staticAnalysisRequirements',
+        verification: 'executable',
+        executableBy: {
+          battery: validationStageOne.name,
+          guard: 'an-implementation-that-calls-a-forbidden-method-is-refused',
+        },
+      },
     ],
-    batteries: [batteryRecord(DATE_ADD, dateAddBattery), batteryRecord(DATE_ADD, dateAddSpec)],
+    batteries: [
+      batteryRecord(DATE_ADD, dateAddBattery),
+      batteryRecord(DATE_ADD, dateAddSpec),
+      machineryRecord(validationStageOne),
+    ],
   },
 
   {
@@ -308,12 +377,22 @@ export const theFive: readonly ContractSource[] = [
       { name: 'returnsAMap', verification: 'documentary' },
       { name: 'keyEquality', verification: 'documentary' },
       { name: 'inputIsReadBy', verification: 'documentary' },
-      // The obligations are tested unconditionally by a key function that records what happened to
-      // it, which is what stops the conditionals from hiding a defect.
-      { name: 'keyFunctionRules', verification: 'executable' },
+      /**
+       * **Reclassified from `executable`, and the mechanism that required an address is what found
+       * it.** Two guards read this declaration - one requires every rule to carry a statement, the
+       * other requires the kinds to partition as the contract claims - and neither runs an
+       * implementation against it. What the obligations are tested by is the properties, which read
+       * the key functions rather than these rules. So the stratum is the one that describes a guard
+       * over a declaration's own shape, and the stronger word was a word.
+       */
+      { name: 'keyFunctionRules', verification: 'structural' },
       // Five functions, run over every sample by `profiles.test.ts`. The names are data and the
       // bodies are not: they encode as the marker this registry uses for what it serves as a file.
-      { name: 'profileKeyFunctions', verification: 'executable' },
+      {
+        name: 'profileKeyFunctions',
+        verification: 'executable',
+        executableBy: { battery: groupByBattery.name, guard: A_PROFILE_KEEPS_ITS_SHAPE },
+      },
     ],
     batteries: [batteryRecord(GROUP_BY, groupByBattery), batteryRecord(GROUP_BY, groupBySpec)],
   },
