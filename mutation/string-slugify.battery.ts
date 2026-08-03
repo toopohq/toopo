@@ -662,7 +662,7 @@ export const battery: Battery = {
         'over the contract\'s own declarations rather than over the implementation. This battery ' +
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, ' +
         'the profile list, the rule, the universal-property declarations or the arbitraries.',
-      titles: [
+      guards: [
         'addresses each case with a unique identifier',
         'settles each text exactly once',
         'publishes a rationale for every decision',
@@ -692,7 +692,7 @@ export const battery: Battery = {
         'G-19: that mutant makes every call return the whole history of the run, and the guard dies ' +
         'of a string too long to build rather than of an expectation. A blinding removes a ' +
         'verdict, not an execution.',
-      titles: [
+      guards: [
         'a-non-latin-script-is-kept',
         'cyrillic-is-kept',
         'arabic-is-kept',

@@ -549,7 +549,7 @@ export const battery: Battery = {
         'over the contract\'s own declarations rather than over the implementation. This battery ' +
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, the ' +
         'profile list or the universal-property declarations.',
-      titles: [
+      guards: [
         'addresses each case with a unique identifier',
         'settles each input exactly once',
         'names a case for every declared reason, and declares every reason it names',

@@ -53,10 +53,10 @@ export type Edit = {
 export type Verdict = 'killed' | 'killed-by-typecheck' | 'survived' | 'not-applicable'
 
 /**
- * What a cell must produce. `by` names test titles that must be among the failures, which is what
- * makes a guard replayable rather than merely counted: a defect killed by a different test than the
- * one that used to catch it is a silent loss of coverage, and naming the test turns it into a red
- * battery.
+ * What a cell must produce. `by` names guard identifiers that must be among the reddened, which is
+ * what makes a guard replayable rather than merely counted: a defect killed by a different guard
+ * than the one that used to catch it is a silent loss of coverage, and naming the guard turns it
+ * into a red battery.
  */
 export type Expectation = {
   readonly verdict: Verdict
@@ -108,8 +108,8 @@ export type Lens = {
 export type SilentGuards = {
   /** Whole top-level `describe` blocks. */
   readonly suites?: readonly string[]
-  /** Individual guards, for a block that is only partly silent. */
-  readonly titles?: readonly string[]
+  /** Individual guards, named by identifier, for a block that is only partly silent. */
+  readonly guards?: readonly string[]
   /**
    * The lenses this declaration applies to; absent means every lens. A lens that blinds part of the
    * suite removes a guard's sight on its column and on no other, so a silence that belongs to the
@@ -192,13 +192,42 @@ export type RunResult = {
   readonly arm: string
   readonly lens: string
   readonly verdict: Verdict
-  readonly failedTests: readonly string[]
+  readonly failedGuards: readonly string[]
   readonly expected: Expectation
   readonly agrees: boolean
 }
 
-/** A guard as the report identifies it: its own title, the block it sits in, and its file. */
+/**
+ * How a guard is addressed: a name, unique within its contract, frozen with the contract's major -
+ * the discipline block 4.4 already applies to a case, applied to the guard that asserts it.
+ *
+ * A guard needs two different things and they are not the same object. It needs an address, which a
+ * battery pins, an attribution cites and a validation report will one day put in front of a
+ * submitter; and it needs a sentence, for whoever reads the runner's output. A title that is only a
+ * sentence makes every reword a broken pin, and a title rendered from the contract's own data makes
+ * a specification mutant rename the guard it reddens.
+ *
+ * So the title carries both: the identifier, then ` :: `, then the sentence. A guard whose
+ * identifier says everything carries no sentence and no separator, which is what every case of block
+ * 4.4 already looked like before this rule existed.
+ *
+ * ` :: ` cannot occur inside an identifier, because an identifier has no spaces - so the split
+ * cannot be wrong. It is ASCII rather than an em dash, which reads better and would have been the
+ * first non-ASCII code point in any title in the catalogue: measured, none of the 467 guards carries
+ * one, and `number/parse@1` is where the cost of a stray non-ASCII character in a source file was
+ * paid once already.
+ */
+const GUARD_SEPARATOR = ' :: '
+
+export const guardIdOf = (title: string): string => {
+  const at = title.indexOf(GUARD_SEPARATOR)
+
+  return at === -1 ? title : title.slice(0, at)
+}
+
+/** A guard as the report identifies it: its address, its title, the block it sits in, and its file. */
 export type GuardIdentity = {
+  readonly id: string
   readonly title: string
   readonly suite: string
   readonly file: string
@@ -284,7 +313,7 @@ type VitestReport = { readonly testResults?: readonly ReportedFile[] }
 
 type SuiteRun = {
   readonly green: boolean
-  readonly failedTests: readonly string[]
+  readonly failedGuards: readonly string[]
   /**
    * Tests the run reported, or `null` when it died before writing a report at all - a type error or
    * an import failure. That is still a kill; it simply has no per-test detail to attribute it to.
@@ -304,6 +333,7 @@ const reportedFiles = (): readonly ReportedFile[] | null => {
 const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
   files.flatMap((file) =>
     (file.assertionResults ?? []).map((assertion) => ({
+      id: guardIdOf(assertion.title),
       title: assertion.title,
       suite: assertion.ancestorTitles?.[0] ?? '',
       file: (file.name ?? '').replaceAll('\\', '/'),
@@ -343,32 +373,32 @@ const runSuite = (battery: Battery): SuiteRun => {
   }
 
   const files = reportedFiles()
-  if (files === null) return { green, failedTests: [], testsSeen: null, guards: [] }
+  if (files === null) return { green, failedGuards: [], testsSeen: null, guards: [] }
 
   const assertions = files.flatMap((file) => file.assertionResults ?? [])
 
   return {
     green,
-    failedTests: assertions.filter((t) => t.status === 'failed').map((t) => t.title),
+    failedGuards: assertions.filter((t) => t.status === 'failed').map((t) => guardIdOf(t.title)),
     testsSeen: assertions.length,
     guards: guardsIn(files),
   }
 }
 
-const verdictOf = (green: boolean, failedTests: readonly string[]): Verdict => {
+const verdictOf = (green: boolean, failedGuards: readonly string[]): Verdict => {
   if (green) return 'survived'
 
-  return failedTests.length === 0 ? 'killed-by-typecheck' : 'killed'
+  return failedGuards.length === 0 ? 'killed-by-typecheck' : 'killed'
 }
 
 const agreesWith = (
   expectation: Expectation,
   verdict: Verdict,
-  failedTests: readonly string[],
+  failedGuards: readonly string[],
 ): boolean => {
   if (expectation.verdict !== verdict) return false
 
-  return (expectation.by ?? []).every((title) => failedTests.includes(title))
+  return (expectation.by ?? []).every((id) => failedGuards.includes(id))
 }
 
 const cellKey = (arm: Arm, lens: Lens): string => `${arm.id}/${lens.id}`
@@ -410,9 +440,9 @@ const measureCell = (
   lens: Lens,
   mutant: Mutant,
   expectedTests: number,
-): { readonly verdict: Verdict; readonly failedTests: readonly string[] } => {
+): { readonly verdict: Verdict; readonly failedGuards: readonly string[] } => {
   const edits = mutant.arms[arm.id]
-  if (edits === undefined) return { verdict: 'not-applicable', failedTests: [] }
+  if (edits === undefined) return { verdict: 'not-applicable', failedGuards: [] }
 
   restore(battery.contractPath)
   checkoutArm(battery.contractPath, arm.ref)
@@ -422,7 +452,46 @@ const measureCell = (
   const run = runSuite(battery)
   assertWholeSuiteRan(`${mutant.id} on ${cellKey(arm, lens)}`, run, expectedTests)
 
-  return { verdict: verdictOf(run.green, run.failedTests), failedTests: run.failedTests }
+  return { verdict: verdictOf(run.green, run.failedGuards), failedGuards: run.failedGuards }
+}
+
+/**
+ * Two guards of one contract answering to one identifier.
+ *
+ * Attribution addresses a guard by its identifier and by nothing else, so two guards carrying one
+ * are read as reddening each other. That is not hypothetical: measured on `array/group-by@1`, where
+ * `language.test.ts` reused the titles block 4.4 had given its cases and made twenty-four guards
+ * claim defects they cannot see.
+ *
+ * The scope is the contract under measurement, which is the scope that can break: a battery injects
+ * into one contract folder, so two contracts may legitimately choose the same identifier and the
+ * pair `(contract, identifier)` is what the registry will address a guard by.
+ *
+ * **What this does not cover, said out loud.** `npm test` will not see a duplicate. A guard cannot
+ * enumerate the tests vitest collected, so the refusal has to live where the identities are already
+ * gathered - here, once per cell, before any verdict is worth reading. A contributor who writes a
+ * duplicate learns it from the first battery they run, not from the suite.
+ */
+const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[]): void => {
+  const ids = guards.map((guard) => guard.id)
+  const duplicated = [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))]
+
+  if (duplicated.length === 0) return
+
+  throw new Error(
+    `${label}: ${duplicated.length} identifier(s) address more than one guard of this contract, so ` +
+      `attribution would read each of them as reddening the others:\n` +
+      duplicated
+        .map(
+          (id) =>
+            `  ${id}\n` +
+            guards
+              .filter((guard) => guard.id === id)
+              .map((guard) => `    ${guard.file} :: ${guard.suite}`)
+              .join('\n'),
+        )
+        .join('\n'),
+  )
 }
 
 const cellsOf = (battery: Battery): readonly { arm: Arm; lens: Lens }[] =>
@@ -460,7 +529,7 @@ export const calibrate = (battery: Battery): Calibration => {
       if (!control.green) {
         throw new Error(
           `the unmutated ${cellKey(arm, lens)} is red, so every verdict from this battery would be ` +
-            `noise:\n  ${control.failedTests.join('\n  ')}`,
+            `noise:\n  ${control.failedGuards.join('\n  ')}`,
         )
       }
       // A green control that ran nothing is the third way this apparatus can be stuck, beside stuck
@@ -472,9 +541,11 @@ export const calibrate = (battery: Battery): Calibration => {
         )
       }
       testsPerCell[cellKey(arm, lens)] = control.testsSeen
-      guardsPerCell[cellKey(arm, lens)] = control.guards.filter((guard) =>
+      const ownGuards = control.guards.filter((guard) =>
         guard.file.includes(`${battery.contractPath}/`),
       )
+      assertGuardsAreAddressed(cellKey(arm, lens), ownGuards)
+      guardsPerCell[cellKey(arm, lens)] = ownGuards
 
       const injected = measureCell(battery, arm, lens, obvious, control.testsSeen)
       process.stdout.write(
@@ -518,15 +589,15 @@ export const runBattery = (
 
       for (const mutant of selected) {
         const expected = expectationFor(mutant, arm, lens)
-        const { verdict, failedTests } = measureCell(battery, arm, lens, mutant, expectedTests)
-        const agrees = agreesWith(expected, verdict, failedTests)
+        const { verdict, failedGuards } = measureCell(battery, arm, lens, mutant, expectedTests)
+        const agrees = agreesWith(expected, verdict, failedGuards)
 
         results.push({
           mutant: mutant.id,
           arm: arm.id,
           lens: lens.id,
           verdict,
-          failedTests,
+          failedGuards,
           expected,
           agrees,
         })

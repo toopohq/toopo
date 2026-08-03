@@ -229,7 +229,7 @@ export const battery: Battery = {
         'reference\'s own type against a type written beside them, and two quantify over answers ' +
         'this battery does not change. They are the reference battery\'s to witness, and it does - ' +
         'S-9, S-10, P-03, P-04, P-07 and X-1 among them.',
-      titles: [
+      guards: [
         'accepts a string and nothing else',
         'returns a number that may be absent, never NaN-as-number-only',
         'P1 - returns null or a finite number, never NaN and never Infinity',
@@ -247,7 +247,7 @@ export const battery: Battery = {
         'equality, so a mutant that broke that function would redden them - and a defect of the ' +
         'contract\'s own comparison is a fifth family, not one of the four written here. The ' +
         'reference battery witnesses every one of them.',
-      titles: [
+      guards: [
         'P2 - is insensitive to surrounding whitespace',
         'P3 - is a right inverse of String on the finite doubles, except negative zero',
         'is deterministic - the same input yields the same output on every call',
@@ -261,7 +261,7 @@ export const battery: Battery = {
         '`ParseNumber` in `contract.ts` reddens it - and the mutant is not written, because S-9 and ' +
         'S-10 of the reference battery already redden this guard from the implementation side and a ' +
         'declaration mutant would be the same failure read from the mirror.',
-      titles: ['matches the type declared by the contract'],
+      guards: ['matches the type declared by the contract'],
     },
     {
       nature: 'documents a decision',
@@ -270,7 +270,7 @@ export const battery: Battery = {
         'its samples do, and one mutant per profile would repeat one sentence five times; NP-7 ' +
         'measures that the claim is executed and NP-9 that an empty list is caught, which is what ' +
         'block 4.5 has to answer for here.',
-      titles: [
+      guards: [
         'small-integers - every sample is accepted',
         'decimals-and-exponents - every sample is accepted',
         'whitespace-padded - every sample is accepted',
@@ -290,7 +290,7 @@ export const battery: Battery = {
         'described suite is whole because no mutant here changes a reason: NP-6 moves a value and ' +
         'leaves `overflow` in place, which is the asymmetry the two tables exist to keep.',
       suites: ['number/parse@1 named edge cases, described'],
-      titles: [
+      guards: [
         'ordinary-integer',
         'ordinary-negative-decimal',
         'surrounding-whitespace',

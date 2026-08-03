@@ -151,7 +151,7 @@ const report = (battery: Battery, results: readonly RunResult[]): number => {
 
   process.stdout.write(`\n${disagreements.length} cell(s) disagree with the battery:\n`)
   for (const cell of disagreements) {
-    const missing = (cell.expected.by ?? []).filter((title) => !cell.failedTests.includes(title))
+    const missing = (cell.expected.by ?? []).filter((id) => !cell.failedGuards.includes(id))
 
     process.stdout.write(
       `  ${cell.mutant} on ${cell.arm}/${cell.lens}: expected ${cell.expected.verdict}, ` +

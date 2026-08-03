@@ -26,10 +26,10 @@ import { battery, DOUBLED, DOUBLES_A_POSITIVE, DOUBLES_ZERO } from './fixture.ba
  * than letting it stand. That is this file's subject catching something in production before this
  * file existed.
  *
- * Measured, and this is the whole claim: nine meta-mutants were applied one at a time, each removing
- * from `run.ts` or `attribution.ts` the single guard one test below covers. Every time, exactly one
- * test went red, and every time it was the one that covers the guard that had been removed. None of
- * them is decorative and none of them stands in for another.
+ * Measured, and this is the whole claim: a meta-mutant per test below was applied one at a time,
+ * each removing from `run.ts` or `attribution.ts` the single guard that test covers. Every time,
+ * exactly one test went red, and every time it was the one that covers the guard that had been
+ * removed. None of them is decorative and none of them stands in for another.
  *
  * A complete pass costs 6.9 seconds of wall clock on the machine this was written on, against 65
  * seconds for the cheapest contract battery. That ratio is the fixture's entire justification: the
@@ -207,7 +207,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
       const declaresNothing = { ...battery, unprobedRegions: [] }
 
       expect(disagreementsFrom(declaresNothing).join('\n')).toMatch(
-        /nothing reddens "doubles zero", and the battery does not say why/,
+        /nothing reddens "doubles-zero", and the battery does not say why/,
       )
     },
     META_TIMEOUT_MS,
@@ -234,7 +234,36 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
       const staleDeclaration = { ...battery, mutants: [reddensTheDeclaredSilentGuard] }
 
       expect(disagreementsFrom(staleDeclaration).join('\n')).toMatch(
-        /"doubles zero" is declared silent and a mutant reddened it, so the declaration is stale/,
+        /"doubles-zero" is declared silent and a mutant reddened it, so the declaration is stale/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses two guards of one contract that answer to one identifier',
+    () => {
+      // Attribution addresses a guard by its identifier alone, so two guards carrying one are read
+      // as reddening each other. Measured for real on `array/group-by@1` before this refusal
+      // existed: `language.test.ts` reused the titles block 4.4 had given its cases, and twenty-four
+      // guards claimed defects they cannot see. The lens below is that collision, injected on
+      // purpose - it renames the third guard onto the identifier of the first, leaving the sentence
+      // after ` :: ` alone so that nothing but the address collides.
+      const lensThatDuplicatesAnIdentifier = {
+        id: 'as-committed',
+        description: 'a lens that gives two guards of the fixture one identifier',
+        arms: ['C'],
+        edits: [
+          {
+            file: 'second-file.test.ts',
+            find: `it('doubles-a-negative-number :: minus three doubles to minus six'`,
+            replace: `it('doubles-a-positive-number :: minus three doubles to minus six'`,
+          },
+        ],
+      }
+
+      expect(() => calibrate({ ...battery, lenses: [lensThatDuplicatesAnIdentifier] })).toThrow(
+        /identifier\(s\) address more than one guard of this contract/,
       )
     },
     META_TIMEOUT_MS,

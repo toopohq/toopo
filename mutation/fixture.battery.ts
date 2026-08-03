@@ -22,9 +22,9 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
 
 export const DOUBLED = `export const doubled = (value: number): number => value * 2`
 
-export const DOUBLES_A_POSITIVE = 'doubles a positive number'
-export const DOUBLES_ZERO = 'doubles zero'
-export const DOUBLES_A_NEGATIVE = 'doubles a negative number'
+export const DOUBLES_A_POSITIVE = 'doubles-a-positive-number'
+export const DOUBLES_ZERO = 'doubles-zero'
+export const DOUBLES_A_NEGATIVE = 'doubles-a-negative-number'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -73,7 +73,7 @@ export const battery: Battery = {
         'writes exactly that mutant to measure what happens to this declaration when one arrives - ' +
         'and it is deliberately left unreached, because the meta-tests need a declared silence to ' +
         'measure the declaration machinery on.',
-      titles: [DOUBLES_ZERO],
+      guards: [DOUBLES_ZERO],
     },
   ],
 

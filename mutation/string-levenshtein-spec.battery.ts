@@ -284,7 +284,7 @@ export const battery: Battery = {
         'compares the reference\'s own type against a type written beside it, and the properties ' +
         'quantify over answers this battery does not change. The reference battery witnesses every ' +
         'one of them - S-16 to S-19 on the first five, L-01 to L-20 on the rest.',
-      titles: [
+      guards: [
         'matches the type declared by the contract',
         'accepts two strings and nothing else',
         'always returns a number',
@@ -313,7 +313,7 @@ export const battery: Battery = {
         'the cases of block 4.4 no mutant here rewrites. Every one is reachable - LS-6 and LS-11 are ' +
         'the proof - and each of the rest would need its own mutant to say the same sentence about a ' +
         'different row. What is missing is a mutant, not a case.',
-      titles: [
+      guards: [
         'both-empty',
         'identical-text',
         'one-side-empty',
@@ -343,7 +343,7 @@ export const battery: Battery = {
         'the five benchmark profiles LS-8, LS-9 and LS-10 leave alone. Each publishes a claim about ' +
         'where its answer sits between the two bounds, and one mutant per profile would repeat one ' +
         'sentence six times.',
-      titles: [
+      guards: [
         'identical - every sample is zero',
         'unrelated - every sample is far',
         'against-the-empty-string - every sample is the-whole-of-one-side',

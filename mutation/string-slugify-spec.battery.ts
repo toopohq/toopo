@@ -279,7 +279,7 @@ export const battery: Battery = {
         'properties quantify over answers this battery does not change, and the arbitrary ' +
         'preconditions measure generators declared in their own file. The reference battery ' +
         'witnesses every one of them.',
-      titles: [
+      guards: [
         'P1 - two spellings of one text answer one slug',
         'P2 - slugging a slug changes nothing',
         'P3 - no mark in the answer composes onto the base of its run',
@@ -304,7 +304,7 @@ export const battery: Battery = {
         '`Slugify` in `contract.ts` would redden all five, and this battery carries no such mutant ' +
         'because the four signature defects of the reference battery already measure what each of ' +
         'them catches. What is missing is a mutant, not a guard.',
-      titles: [
+      guards: [
         'matches the type declared by the contract',
         'accepts one string and nothing else',
         'always returns a string',
@@ -318,7 +318,7 @@ export const battery: Battery = {
         'the two guards that read the declared alphabet. GS-11 widens it and both go on passing, ' +
         'which is that mutant\'s finding: the alphabet is checked in one direction only. A mutant ' +
         'that narrowed it would redden them, and this battery does not carry one.',
-      titles: [
+      guards: [
         'P4 - the answer belongs to the declared alphabet',
         'draws slugs that really are well formed, without asking the function under test',
       ],
@@ -329,7 +329,7 @@ export const battery: Battery = {
         'the cases of block 4.4 no mutant here rewrites. Every one is reachable - GS-6 and GS-13 ' +
         'are the proof - and each of the rest would need its own mutant to say the same sentence ' +
         'about a different row. What is missing is a mutant, not a case.',
-      titles: [
+      guards: [
         'cyrillic-is-kept',
         'arabic-is-kept',
         'an-indic-mark-is-kept',
@@ -381,7 +381,7 @@ export const battery: Battery = {
         'the five benchmark profiles GS-8, GS-9 and GS-10 leave alone. Each publishes a claim about ' +
         'how much of its input survives, and one mutant per profile would repeat one sentence six ' +
         'times.',
-      titles: [
+      guards: [
         'ascii-prose - every sample retains most',
         'latin-diacritics - every sample retains most',
         'other-writing-systems - every sample retains most',

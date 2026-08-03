@@ -698,7 +698,7 @@ export const battery: Battery = {
         'type. The last of those is the one that had to move: it compares `Duration` against ' +
         '`Partial<Duration>`, reads both sides out of `contract.ts`, and was listed as a region ' +
         'awaiting a signature mutant until S-12 to S-15 measured that no such mutant can exist here.',
-      titles: [
+      guards: [
         'leaves every duration field optional',
         'addresses each case with a unique identifier',
         'names a case for every declared reason, and declares every reason it names',
@@ -717,7 +717,7 @@ export const battery: Battery = {
         'honours `process.env.TZ` and that the zone property puts it back. No defect injected into ' +
         '`reference.ts` can change either answer, which is exactly why they are the support the zone ' +
         'property rests on rather than part of what it measures.',
-      titles: [
+      guards: [
         'the declared time zones take effect in this runtime',
         'the declared time zones do not all agree with each other',
         'has left the ambient time zone exactly as it found it',
@@ -732,7 +732,7 @@ export const battery: Battery = {
         'to be the right one, so R-1 to R-4 - the only mutants that reddened these - stop being ' +
         'visible. That is the lens working rather than a gap, and those cells are part of the ' +
         'five-defect difference this battery reports between its two columns.',
-      titles: [
+      guards: [
         'a-month-total-that-is-not-exact, described',
         'an-elapsed-total-that-is-not-exact, described',
         'a-declared-field-carrying-a-string, described',
@@ -755,7 +755,7 @@ export const battery: Battery = {
         'it stand. The five below carry no field, two fields, or a field whose type is wrong, so the ' +
         'collision never reaches them. Every one publishes a decision a caller reads whether or not a ' +
         'mutant violates it; what is missing is still a mutant, not a case.',
-      titles: [
+      guards: [
         'a-month-total-that-is-not-exact',
         'an-elapsed-total-that-is-not-exact',
         'a-declared-field-carrying-a-string',

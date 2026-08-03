@@ -654,7 +654,7 @@ export const battery: Battery = {
         'over the contract\'s own declarations rather than over the implementation. This battery ' +
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the two tables, ' +
         'the profile list, the key-function rules or the universal-property declarations.',
-      titles: [
+      guards: [
         'addresses each case with a unique identifier',
         'publishes a rationale for every decision',
         'declares a non-empty sample set for every profile',
@@ -684,7 +684,7 @@ export const battery: Battery = {
         'so on that column the guard cannot fail whatever is injected - which is the point of the ' +
         'lens, and the difference between the two columns is what it measures. On `as-committed` it ' +
         'is red on all eight signature defects.',
-      titles: ['matches the type declared by the contract'],
+      guards: ['matches the type declared by the contract'],
     },
   ],
 
@@ -697,7 +697,7 @@ export const battery: Battery = {
         'real and plausible, and this battery does not carry it. The three other untyped-caller cases ' +
         'are red on M-11, which reads the input by counting over `length`. Both cases publish a ' +
         'decision either way; what is missing is the mutant that violates it.',
-      titles: ['a-null-input', 'an-undefined-input'],
+      guards: ['a-null-input', 'an-undefined-input'],
     },
     {
       nature: 'claims detection',
@@ -705,7 +705,7 @@ export const battery: Battery = {
         'the two `@ts-expect-error` guards of block 4.2 that S-8 does not reach. S-8 widened the ' +
         'input and reddened the third; widening the key function to take a third argument, or making ' +
         'it optional, would reach these two, and neither mutant is written.',
-      titles: [
+      guards: [
         'refuses a key function that asks for more than the contract passes',
         'refuses a call with no key function',
       ],

@@ -41,7 +41,7 @@ export const edgeCases = (find: string, replace: string): Edit => ({
 })
 
 /**
- * Which guards a killed cell names, and where the line is.
+ * Which guards a killed cell names, by identifier, and where the line is.
  *
  * A pin exists so that a defect which stops being caught by the guard that used to catch it is as
  * loud as a failing test. That is worth doing where a single edit could take the detection away, and
@@ -81,6 +81,12 @@ export const edgeCases = (find: string, replace: string): Edit => ({
  * needs a pair the arbitraries draw on 0.221% of runs and is therefore red on 175 runs out of 200.
  * The intersection over four runs is what a pin should carry, and it is cheap to take - the
  * instrument's `--only` flag runs one mutant in seconds.
+ *
+ * **A pin names an identifier, never a title.** `run.ts` states the rule; the consequence here is
+ * that rewording the sentence a guard shows in the runner's output leaves every pin standing, and
+ * that a pin naming a string no guard of the contract answers to is not an address at all - which
+ * is what LS-13 of `string-levenshtein-spec` was written to demonstrate, and what it stopped being
+ * able to demonstrate once this rule existed.
  *
  * Pins are checked by inclusion rather than by equality, and that is measured too. Three consecutive
  * runs of the three batteries that existed then agreed on 173 of 174 cells; the one that moved is

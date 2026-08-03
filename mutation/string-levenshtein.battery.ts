@@ -475,7 +475,7 @@ export const battery: Battery = {
         'over the contract\'s own declarations rather than over the implementation. This battery ' +
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, the ' +
         'profile list, the axiom list, the universal-property declarations or the arbitraries.',
-      titles: [
+      guards: [
         'addresses each case with a unique identifier',
         'settles each pair exactly once',
         'publishes a rationale for every decision',
@@ -498,7 +498,7 @@ export const battery: Battery = {
         'between the two columns is the answer to the question `array/group-by@1` could only ask of a ' +
         'generic signature: on a monomorphic one, does the identity assertion carry anything the ' +
         'directives beside it do not?',
-      titles: ['matches the type declared by the contract'],
+      guards: ['matches the type declared by the contract'],
     },
   ],
 

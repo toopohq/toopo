@@ -9,9 +9,14 @@
  * - and a control that finds a defect in a contract twice in two sessions belongs in the instrument
  * rather than in a script somebody remembers to run.
  *
- * It reads `failedTests`, which every run already collects, so nothing new is measured. What the `by`
- * pins in a battery add on top is durability: the attribution below is what is true today, and a pin
- * is what makes tomorrow's change to it loud.
+ * It reads `failedGuards`, which every run already collects, so nothing new is measured. What the
+ * `by` pins in a battery add on top is durability: the attribution below is what is true today, and
+ * a pin is what makes tomorrow's change to it loud.
+ *
+ * A guard is addressed by its identifier throughout - never by its title. `run.ts` says why the two
+ * are different objects; what matters here is that a guard reddening under a title calibration never
+ * saw is a guard this file cannot see at all, and the silence it leaves is indistinguishable from a
+ * region no mutant reaches.
  *
  * Only the guards of the contract under measurement are attributed. A run executes the whole
  * repository suite - that is what makes the count check possible - but a guard of another contract
@@ -80,7 +85,7 @@ const reasonIn = (
   groups.find(
     (group) =>
       (group.lenses === undefined || group.lenses.includes(lens)) &&
-      ((group.suites ?? []).includes(guard.suite) || (group.titles ?? []).includes(guard.title)),
+      ((group.suites ?? []).includes(guard.suite) || (group.guards ?? []).includes(guard.id)),
   )?.reason
 
 const accountFor = (battery: Battery, guard: GuardIdentity, lens: string): string | undefined =>
@@ -93,7 +98,7 @@ const namedIn = (
   lens: string,
 ): readonly AccountedGuard[] =>
   guards
-    .map((guard) => ({ guard: guard.title, reason: reasonIn(groups, guard, lens) }))
+    .map((guard) => ({ guard: guard.id, reason: reasonIn(groups, guard, lens) }))
     .filter((entry): entry is AccountedGuard => entry.reason !== undefined)
 
 const attributeColumn = (
@@ -105,7 +110,7 @@ const attributeColumn = (
   const lens = lensOf(column)
   const cells = results.filter((result) => `${result.arm}/${result.lens}` === column)
   const reddenedBy = (guard: GuardIdentity): readonly RunResult[] =>
-    cells.filter((cell) => cell.failedTests.includes(guard.title))
+    cells.filter((cell) => cell.failedGuards.includes(guard.id))
 
   const speaking = guards.filter((guard) => reddenedBy(guard).length > 0)
   const silent = guards.filter((guard) => reddenedBy(guard).length === 0)
@@ -114,9 +119,9 @@ const attributeColumn = (
     const reddened = reddenedBy(guard)
 
     return {
-      guard: guard.title,
+      guard: guard.id,
       reddenedBy: reddened.map((cell) => cell.mutant),
-      soleRedOn: reddened.filter((cell) => cell.failedTests.length === 1).map((cell) => cell.mutant),
+      soleRedOn: reddened.filter((cell) => cell.failedGuards.length === 1).map((cell) => cell.mutant),
     }
   })
 
@@ -137,10 +142,10 @@ const attributeColumn = (
     ),
     unaccountedFor: silent
       .filter((guard) => accountFor(battery, guard, lens) === undefined)
-      .map((guard) => guard.title),
+      .map((guard) => guard.id),
     wronglyDeclaredSilent: speaking
       .filter((guard) => accountFor(battery, guard, lens) !== undefined)
-      .map((guard) => guard.title),
+      .map((guard) => guard.id),
   }
 }
 
@@ -184,12 +189,12 @@ export const renderAttribution = (columns: readonly ColumnAttribution[]): string
         `whether or not a mutant violates it (${column.unprobedDecisions.length})`,
       ...groupedByReason(column.unprobedDecisions),
       `  never red, UNACCOUNTED FOR (${column.unaccountedFor.length})`,
-      ...column.unaccountedFor.map((title) => `    ${title}`),
+      ...column.unaccountedFor.map((id) => `    ${id}`),
       ...(column.wronglyDeclaredSilent.length === 0
         ? []
         : [
             `  DECLARED SILENT AND REDDENED ANYWAY (${column.wronglyDeclaredSilent.length})`,
-            ...column.wronglyDeclaredSilent.map((title) => `    ${title}`),
+            ...column.wronglyDeclaredSilent.map((id) => `    ${id}`),
           ]),
       '',
     ])
@@ -207,13 +212,13 @@ export const renderAttribution = (columns: readonly ColumnAttribution[]): string
 export const disagreementsIn = (columns: readonly ColumnAttribution[]): readonly string[] =>
   columns.flatMap((column) => [
     ...column.unaccountedFor.map(
-      (title) =>
-        `${column.column}: nothing reddens "${title}", and the battery does not say why. Either it ` +
+      (id) =>
+        `${column.column}: nothing reddens "${id}", and the battery does not say why. Either it ` +
         `is out of this battery's reach, or it is a debt - both are declared, neither is silence.`,
     ),
     ...column.wronglyDeclaredSilent.map(
-      (title) =>
-        `${column.column}: "${title}" is declared silent and a mutant reddened it, so the ` +
+      (id) =>
+        `${column.column}: "${id}" is declared silent and a mutant reddened it, so the ` +
         `declaration is stale and must be removed.`,
     ),
   ])

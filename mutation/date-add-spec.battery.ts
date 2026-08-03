@@ -331,7 +331,7 @@ export const battery: Battery = {
         'into `contract.ts` and `edge-cases.ts`, and these read neither: one compares the reference\'s ' +
         'own return type against a type written beside it, and the rest quantify over answers this ' +
         'battery does not change. The reference battery witnesses every one of them.',
-      titles: [
+      guards: [
         'returns a Date that may be absent, never an Invalid Date',
         'P1 - returns null or a valid Date, never an Invalid Date',
         'P2 - the empty duration is neutral: it always answers, with the same instant in a new object',
@@ -351,7 +351,7 @@ export const battery: Battery = {
         'reference battery cannot reach them either, for the mirror reason, so they are the two ' +
         'guards of this contract no battery in this repository can redden - which is stated here ' +
         'rather than left for a reader to notice.',
-      titles: [
+      guards: [
         'has left the ambient time zone exactly as it found it',
         'restores both a zone that was set and a zone that was absent',
       ],
@@ -363,7 +363,7 @@ export const battery: Battery = {
         'implementation is zone-independent whatever list it is given; a wrong list makes it ' +
         'vacuous, not red. DA-13 is that list, and the guard that catches it is the one requiring ' +
         'the zones to disagree, which is why the two exist as a pair.',
-      titles: ['has no ambient input - the answer does not depend on the process time zone'],
+      guards: ['has no ambient input - the answer does not depend on the process time zone'],
     },
   ],
 
@@ -376,7 +376,7 @@ export const battery: Battery = {
         'equality, so a mutant that broke that function would redden them - and a defect of the ' +
         'contract\'s own comparison is a fifth family, not one of the four written here. The ' +
         'reference battery witnesses both: D-18 and D-22.',
-      titles: [
+      guards: [
         'is deterministic - the same call yields the same answer every time',
         'has no ambient input - an answer does not depend on the calls made before it',
       ],
@@ -386,7 +386,7 @@ export const battery: Battery = {
       reason:
         'the four benchmark profiles DA-9 leaves alone. Each publishes a claim about what its ' +
         'samples do, and one mutant per profile would repeat one sentence five times.',
-      titles: [
+      guards: [
         'calendar-only - every sample is accepted',
         'clamping - every sample is accepted',
         'every-field - every sample is accepted',
@@ -411,7 +411,7 @@ export const battery: Battery = {
         'date/add@1 edge cases outside the declared type',
         'date/add@1 edge cases outside the declared type, described',
       ],
-      titles: [
+      guards: [
         'an-ordinary-day',
         'minutes-carry-into-hours',
         'the-epoch-is-not-a-boundary',

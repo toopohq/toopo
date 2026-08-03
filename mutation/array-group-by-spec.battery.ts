@@ -236,7 +236,7 @@ export const battery: Battery = {
         'compares the reference\'s own generic type against types written beside it, and the ' +
         'properties quantify over answers this battery does not change. The reference battery ' +
         'witnesses all of them - S-1 to S-8 on the first nine, M-01 to M-22 on the rest.',
-      titles: [
+      guards: [
         'matches the type declared by the contract',
         'infers the element type from the array and hands it to the key function',
         'infers the key type from the key function, and constrains it to nothing',
@@ -270,7 +270,7 @@ export const battery: Battery = {
         'equality, so a mutant that broke that function would redden them - and a defect of the ' +
         'contract\'s own comparison is a fifth family, not one of the four written here. The ' +
         'reference battery witnesses both: M-21 and M-22.',
-      titles: [
+      guards: [
         'is deterministic - the same call yields the same answer every time',
         'has no ambient input - an answer does not depend on the calls made before it',
       ],
@@ -282,7 +282,7 @@ export const battery: Battery = {
         'shape of the grouping its samples produce, and one mutant per profile would repeat one ' +
         'sentence six times; AG-6 measures that an empty list is caught and AG-7 that a profile ' +
         'with no description is.',
-      titles: [
+      guards: [
         'one-group-per-element - every sample is one-group-per-element',
         'single-group - every sample is single-group',
         'few-large-groups - every sample is few-large-groups',
@@ -299,7 +299,7 @@ export const battery: Battery = {
         'contract where a case carries its own title and a mutant therefore reddens the guard it was ' +
         'written for - and each of the rest would need its own mutant to say the same sentence about ' +
         'a different row. What is missing is a mutant, not a case.',
-      titles: [
+      guards: [
         'numbers-by-parity',
         'objects-by-a-field',
         'the-empty-array',
@@ -332,7 +332,7 @@ export const battery: Battery = {
         'true of it and not of this one: these guards read the table, so a defect injected into the ' +
         'table reaches them. Two of the thirty are probed, which is what establishes that the file ' +
         'replays this table; the other twenty-eight would each need a mutant to repeat it.',
-      titles: [
+      guards: [
         'numbers-by-parity, in the language',
         'objects-by-a-field, in the language',
         'the-empty-array, in the language',
@@ -371,7 +371,7 @@ export const battery: Battery = {
         'is the proof, on the fourth. What they publish is the half of block 4.1 that says the ' +
         'object-shaped grouper disagrees, and each of the three would need its own mutant to say ' +
         'that about a different row.',
-      titles: [
+      guards: [
         `a-number-and-its-string-are-different-keys${KEY_IDENTITY_DIVERGENCE}`,
         `a-boolean-and-its-string-are-different-keys${KEY_IDENTITY_DIVERGENCE}`,
         `two-distinct-objects-are-two-keys${KEY_IDENTITY_DIVERGENCE}`,
