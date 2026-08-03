@@ -337,15 +337,23 @@ export const battery: Battery = {
   unreachableGuards: [],
 
   /**
-   * Fifty-one of the sixty-eight guards of `registry/` are not reddened by any of the ten, and they
-   * are declared as a region this battery does not probe rather than as guards out of its reach.
+   * The guards of `registry/` that no mutant of this battery reddens, declared as regions it does not
+   * probe rather than as guards out of its reach.
    *
-   * The difference is a claim about what is possible, and it has not been measured. These ten aim at
-   * the storage - the canonical form, the served bytes, the projection, the ledger - and most of what
-   * is listed below belongs to the schema, which was the previous unit and has no battery of its own
-   * yet. Some of these are certainly out of reach of an edit to three files; establishing which would
-   * take a mutant apiece, and asserting it without one is the kind of sentence this instrument exists
-   * to replace. So the honest name is the loud one, and what it asks for is mutants.
+   * The difference is a claim about what is possible, and for the first two lists it has not been
+   * measured. Those mutants aim at the storage - the canonical form, the served bytes, the projection,
+   * the ledger - and most of what they leave silent belongs to the schema, which was an earlier unit
+   * and has no battery of its own. Some of it is certainly out of reach of an edit to three files;
+   * establishing which would take a mutant apiece, and asserting it without one is the kind of
+   * sentence this instrument exists to replace. So the honest name is the loud one, and what it asks
+   * for is mutants.
+   *
+   * **The last two lists are different, and they are the read API's.** Fifty guards arrived with it,
+   * and twenty-eight of them are not a question: a perturbation was written for each one while the
+   * unit was being built, applied one at a time against a calibrated control, and every one went red
+   * on the guard written for it. They are reachable, demonstrated, and the mutant was not promoted
+   * into this battery - which is a debt with a name rather than an open question. The other
+   * twenty-two had no perturbation written at all.
    */
   unprobedRegions: [
     {
@@ -416,6 +424,81 @@ export const battery: Battery = {
         'the-harness-is-in-one-order-string-slugify',
         'the-limit-of-a-signature-is-published',
         'two-majors-of-one-name-coexist',
+      ],
+    },
+
+    {
+      nature: 'claims detection',
+      reason:
+        'read-API guards shown reachable and not promoted into this battery. A perturbation was ' +
+        'written for each one while the unit was built - applied one at a time against a control ' +
+        'calibrated at 268 assertions - and every one went red on the guard written for it. Five of ' +
+        'that pass became I-11 to I-15; these twenty-eight did not, and the reason is cost rather ' +
+        'than doubt. A debt with a name, which is what this list is for.',
+      guards: [
+        'a-content-addressed-answer-is-cached-for-ever',
+        'a-contract-is-refused-or-published-and-never-both',
+        'a-cycle-is-refused-rather-than-deduplicated-away',
+        'a-named-answer-is-always-revalidated',
+        'a-refused-entry-is-answered-by-endpoints-that-exist-for-other-reasons',
+        'a-snapshot-answer-that-was-altered-is-refused',
+        'a-snapshot-answer-under-another-format-version-means-nothing-here',
+        'an-edge-the-registry-does-not-hold-is-refused',
+        'an-unpublished-implementation-cannot-be-depended-on',
+        'every-claim-is-about-an-endpoint-that-exists',
+        'every-endpoint-answers-a-need-somebody-has',
+        'every-field-a-snapshot-serves-is-classified-array-group-by',
+        'every-field-a-snapshot-serves-is-classified-date-add',
+        'every-field-a-snapshot-serves-is-classified-number-parse',
+        'every-field-a-snapshot-serves-is-classified-string-levenshtein',
+        'every-field-a-snapshot-serves-is-classified-string-slugify',
+        'every-identifier-is-an-address',
+        'every-need-is-answered-exactly-once',
+        'every-stratum-is-translated-and-no-translation-is-orphaned',
+        'nothing-that-held-is-content-addressed',
+        'the-believed-column-is-longer-and-is-mostly-opinion',
+        'the-depth-is-derived-from-the-edges',
+        'the-endpoints-no-entry-anticipated',
+        'the-methodology-answer-carries-every-field-of-a-record',
+        'the-refusals-page-has-a-source',
+        'the-two-endpoints-that-carry-the-bulk-are-the-cacheable-ones',
+        'three-believed-claims-have-no-mitigation-and-are-named',
+        'three-needs-are-answered-without-the-api',
+        'update-compares-two-digests-and-nothing-else',
+      ],
+    },
+
+    {
+      nature: 'claims detection',
+      reason:
+        'read-API guards no perturbation was written for, so whether an edit to this folder can ' +
+        'redden them is unmeasured rather than known. Two families sit here for a reason worth ' +
+        'naming. The implementation binding is guarded on the same claim as the contract binding, ' +
+        'which I-12 reddens, so that pair is half probed. And the private-field guards cannot redden ' +
+        'until a private field exists: not one field of a contract record is private today, which is ' +
+        'a finding `field-map.ts` already records rather than a gap a mutant here could close.',
+      guards: [
+        'a-blob-answer-with-one-byte-changed-is-refused',
+        'a-shared-file-is-recognised-by-its-digest-and-never-by-its-path',
+        'a-translation-is-addressed-to-a-reader',
+        'an-implementation-binding-carries-no-frozen-field-array-group-by',
+        'an-implementation-binding-carries-no-frozen-field-date-add',
+        'an-implementation-binding-carries-no-frozen-field-number-parse',
+        'an-implementation-binding-carries-no-frozen-field-string-levenshtein',
+        'an-implementation-binding-carries-no-frozen-field-string-slugify',
+        'every-claim-is-an-address',
+        'every-entry-became-an-endpoint-that-exists',
+        'every-entry-says-why',
+        'every-verifiable-claim-says-what-it-does-not-establish',
+        'no-private-field-reaches-a-snapshot-answer-array-group-by',
+        'no-private-field-reaches-a-snapshot-answer-date-add',
+        'no-private-field-reaches-a-snapshot-answer-number-parse',
+        'no-private-field-reaches-a-snapshot-answer-string-levenshtein',
+        'no-private-field-reaches-a-snapshot-answer-string-slugify',
+        'one-check-needs-nothing-from-the-registry',
+        'the-believed-column-has-three-natures-and-none-of-them-is-withholding',
+        'the-methodology-answer-carries-both-columns-and-the-seeding-policy',
+        'the-methodology-answer-is-named-and-therefore-revalidated',
       ],
     },
   ],
