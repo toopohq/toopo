@@ -112,13 +112,29 @@ const specifierOf = (node: Node): { readonly text: string; readonly at: Node } |
   return null
 }
 
-export const importsOutsideTheRegistry = (source: ParsedSource): readonly Finding[] =>
+/** One module a file names, and the node that names it. */
+export type ImportSpecifier = { readonly text: string; readonly at: Node }
+
+/**
+ * Every module a file names, in every shape it can name one.
+ *
+ * Exported because two rules ask the same question of a file - which modules does it name - and read
+ * different answers out of it: this file refuses the ones outside the registry,
+ * `states-its-own-signature.ts` refuses the one that is the submission's own contract. Two
+ * traversals of the same six forms would be the duplication that lets one of them learn about a
+ * seventh and the other not.
+ */
+export const importSpecifiersIn = (source: ParsedSource): readonly ImportSpecifier[] =>
   [...everyNode(source.file)].flatMap((node) => {
     const specifier = specifierOf(node)
-    if (specifier === null || isRelative(specifier.text)) return []
 
-    return [findingAt(IMPORT_RULE, specifier.at, source, IMPORT_REASON)]
+    return specifier === null ? [] : [specifier]
   })
+
+export const importsOutsideTheRegistry = (source: ParsedSource): readonly Finding[] =>
+  importSpecifiersIn(source).flatMap((specifier) =>
+    isRelative(specifier.text) ? [] : [findingAt(IMPORT_RULE, specifier.at, source, IMPORT_REASON)],
+  )
 
 // ---------------------------------------------------------------------------
 // What a feature may reach

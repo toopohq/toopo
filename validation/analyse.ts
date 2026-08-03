@@ -31,6 +31,7 @@ import {
   importsOutsideTheRegistry,
 } from './forbidden-constructs.js'
 import type { ParsedSource } from './source.js'
+import { importsItsOwnContract } from './states-its-own-signature.js'
 
 /**
  * One requirement a contract publishes about what its implementations may not call.
@@ -80,6 +81,7 @@ export const analyseImplementation = (
   requirements: readonly StaticAnalysisRequirement[],
 ): readonly Finding[] => [
   ...importsOutsideTheRegistry(source),
+  ...importsItsOwnContract(source),
   ...ambientStateReached(source),
   ...codeBuiltAtRunTime(source),
   ...requirements.flatMap((requirement) =>
