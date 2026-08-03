@@ -184,8 +184,17 @@ than as an exception to it.
 
 ## Rules for this stage
 
-1. Contracts and their reference implementations only. No backend, no API, no CLI, no website, no
-   CI configuration, no publishing tooling. Those come after the five prototypes, deliberately.
+1. **The registry is being designed, one piece at a time, in this order**: data schema, then
+   immutable storage, then the read API, then the publishing tool. Only the piece currently under
+   way exists; the others do not, deliberately, because each one constrains the next. The CLI and
+   the website come after all four. Everything lives in this one repository, in folders — releases
+   are independent, the history is not.
+
+   **The catalogue ships at five contracts.** The showcase domain moves to after the launch: every
+   remaining uncertainty is on the user's side — whether `toopo add` feels good, whether search
+   finds something in ten seconds, whether a contract page convinces — and none of them is
+   answerable in private. Anything published freezes for life, so the known debts close before the
+   launch, not after.
 2. **The no-abstraction suspension has ended**, having done its job: three contracts were written by
    hand with no shared code, and what they turned out to repeat *identically* now lives in
    `catalogue/`, under the freeze discipline stated at the top of that file. The bar for adding
