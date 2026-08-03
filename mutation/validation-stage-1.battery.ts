@@ -94,6 +94,35 @@ const THE_REQUIREMENTS_ARE_APPLIED = `  ...requirements.flatMap((requirement) =>
 
 const THE_TYPE_NODE_PREDICATE = '  isTypeNode: ast.isTypeNode,'
 
+const NUMBERS_DATES_AND_TEXT = `    names: ['Number', 'BigInt', 'Math', 'Date', 'String', 'RegExp'],`
+
+const A_CONTRACT_MODULE_IS_RECOGNISED =
+  '  return last === CONTRACT_MODULE || last.startsWith(`${CONTRACT_MODULE}.`)'
+
+const THE_DECLARATION_IS_READ = `  const declared = contractModule['staticAnalysisRequirements']`
+
+const THE_SURFACE_IS_THE_OBJECT = `export const TYPESCRIPT_SURFACE = {
+  SyntaxKind: ast.SyntaxKind,`
+
+const THE_SURFACE_ENDS = `  skipOuterExpressions: ast.skipOuterExpressions,
+} as const`
+
+// Guards several mutants name, written once because a string repeated is a rename away from being
+// wrong twice.
+const THE_REACHES_ARE_NAMED = 'the-ambient-reaches-are-named-one-by-one'
+const THE_READER_SEES = 'what-the-reader-sees'
+const THE_READER_DOES_NOT_SEE = 'what-the-reader-does-not-see'
+const THE_BOUNDARY_IS_MEASURED = 'the-boundary-is-a-measurement-and-not-a-claim'
+const EVERY_SHAPE_OF_IMPORT = 'every-shape-of-import-is-read-and-a-relative-one-is-not-refused'
+const THE_FORBIDDEN_METHOD_IS_REFUSED = 'an-implementation-that-calls-a-forbidden-method-is-refused'
+const THE_FIVE_PASS = [
+  'the-reference-crosses-no-rule-number-parse',
+  'the-reference-crosses-no-rule-date-add',
+  'the-reference-crosses-no-rule-array-group-by',
+  'the-reference-crosses-no-rule-string-levenshtein',
+  'the-reference-crosses-no-rule-string-slugify',
+]
+
 // ---------------------------------------------------------------------------
 // The defects
 // ---------------------------------------------------------------------------
@@ -113,7 +142,7 @@ const mutants: readonly Mutant[] = [
 }`,
       ),
     ],
-    killed(),
+    killed(['every-rule-fires-on-a-real-construction', EVERY_SHAPE_OF_IMPORT]),
   ),
 
   sameOnEveryLens(
@@ -121,7 +150,7 @@ const mutants: readonly Mutant[] = [
     'stops reading one of the six ways a module can be named, so `import legacy = require(\'node:path\')` ' +
       'passes a rule that refuses the other five',
     [constructsFile(READ_AN_IMPORT_EQUALS, '')],
-    killed(),
+    killed([EVERY_SHAPE_OF_IMPORT]),
   ),
 
   sameOnEveryLens(
@@ -135,7 +164,7 @@ const mutants: readonly Mutant[] = [
         replace: '  return last === CONTRACT_MODULE',
       },
     ],
-    killed(),
+    killed(['a-type-imported-from-the-contract-is-refused', 'the-refusal-carries-the-catalogues-own-reason']),
   ),
 
   sameOnEveryLens(
@@ -145,7 +174,7 @@ const mutants: readonly Mutant[] = [
     [sourceFile(WHERE_A_NAME_IS_BOUND, `  void brought
 
   return 'the-submission'`)],
-    killed(),
+    killed([THE_REACHES_ARE_NAMED, THE_READER_SEES, THE_BOUNDARY_IS_MEASURED]),
   ),
 
   sameOnEveryLens(
@@ -155,7 +184,9 @@ const mutants: readonly Mutant[] = [
     [sourceFile(WHERE_A_NAME_IS_BOUND, `  void brought
 
   return 'free'`)],
-    killed(),
+    // Ten guards redden; the six named are what this mutant was written for. A filter that refuses
+    // the catalogue it protects is worse than no filter, and these are the six that would say so.
+    killed(['a-legitimate-submission-is-answered-with-nothing', ...THE_FIVE_PASS]),
   ),
 
   sameOnEveryLens(
@@ -163,7 +194,13 @@ const mutants: readonly Mutant[] = [
     'admits `globalThis` into the permitted list, so the one name that reaches all of global state ' +
       'is read as a language API',
     [constructsFile(THE_VALUE_PROPERTIES, `    names: ['undefined', 'NaN', 'Infinity', 'globalThis'],`)],
-    killed(),
+    killed([
+      THE_REACHES_ARE_NAMED,
+      'nothing-is-both-permitted-and-a-known-reach',
+      'the-evaluators-and-global-state-are-not-permitted',
+      THE_READER_SEES,
+      THE_BOUNDARY_IS_MEASURED,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -176,7 +213,7 @@ const mutants: readonly Mutant[] = [
         '    if (!isIdentifier(node) || !isReadAsAValue(node)) return []',
       ),
     ],
-    killed(),
+    killed([THE_REACHES_ARE_NAMED, THE_READER_SEES, THE_READER_DOES_NOT_SEE, THE_BOUNDARY_IS_MEASURED]),
   ),
 
   sameOnEveryLens(
@@ -189,7 +226,7 @@ const mutants: readonly Mutant[] = [
         '  if (isPropertyAccessExpression(parent) && parent.name === node) return false',
       ),
     ],
-    killed(),
+    killed([THE_READER_SEES, THE_BOUNDARY_IS_MEASURED]),
   ),
 
   sameOnEveryLens(
@@ -197,7 +234,7 @@ const mutants: readonly Mutant[] = [
     'drops `Math.random` from the members that turn a permitted holder impure, so the entropy source ' +
       'is reached through an object the rule admits',
     [constructsFile(RANDOM_IS_FORBIDDEN, '')],
-    killed(),
+    killed([THE_REACHES_ARE_NAMED]),
   ),
 
   sameOnEveryLens(
@@ -205,7 +242,7 @@ const mutants: readonly Mutant[] = [
     'stops reading the `Function` constructor as a construction, leaving `builds-no-code-at-run-time` ' +
       'naming three ways of building code where it claims four',
     [constructsFile(THE_FUNCTION_CONSTRUCTOR, `      isEvaluator(node.expression, 'NotTheConstructor')`)],
-    killed(),
+    killed(['the-four-ways-of-building-code-are-refused']),
   ),
 
   sameOnEveryLens(
@@ -213,7 +250,7 @@ const mutants: readonly Mutant[] = [
     'stops unwrapping parentheses and casts, so a forbidden method behind an `as` is unreachable ' +
       'again - the evasion this rule was measured closing',
     [constructsFile(WRAPPERS_ARE_SKIPPED, 'const under = (node: Node): Node => node')],
-    killed(),
+    killed([THE_READER_SEES, THE_BOUNDARY_IS_MEASURED]),
   ),
 
   sameOnEveryLens(
@@ -229,7 +266,12 @@ const mutants: readonly Mutant[] = [
     if (called === null || !forbiddenBySubstring) return []`,
       ),
     ],
-    killed(),
+    killed([
+      'a-contract-forbidden-method-is-refused-and-its-utc-twin-is-not',
+      'a-legitimate-submission-is-answered-with-nothing',
+      'the-reference-crosses-no-rule-date-add',
+      THE_FORBIDDEN_METHOD_IS_REFUSED,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -247,7 +289,7 @@ const mutants: readonly Mutant[] = [
     'answers an empty analysis for a file the program does not hold, so a submission passes every ' +
       'rule by not being read',
     [sourceFile(A_MISSING_FILE_IS_REFUSED, '    void missing')],
-    killed(),
+    killed(['a-file-outside-the-program-is-refused']),
   ),
 
   sameOnEveryLens(
@@ -255,14 +297,16 @@ const mutants: readonly Mutant[] = [
     'stops walking past the file itself, so every rule reads one node and finds nothing - the ' +
       'failure that looks exactly like a clean submission',
     [sourceFile(WALK_EVERY_CHILD, '  void children')],
-    killed(),
+    // Eleven guards redden; the one named is what this mutant was written for. The reader answering
+    // a real file with one node is the failure that reads exactly like a clean submission.
+    killed(['a-contract-file-is-parsed-and-walkable']),
   ),
 
   sameOnEveryLens(
     'S-16',
     'drops the file from a refusal, leaving a position a submitter cannot open',
     [sourceFile(A_POSITION_NAMES_A_FILE, '  return `${line + 1}`')],
-    killed(),
+    killed(['a-refusal-can-be-opened']),
   ),
 
   sameOnEveryLens(
@@ -275,7 +319,72 @@ const mutants: readonly Mutant[] = [
         '  isTypeNode: undefined as unknown as typeof ast.isTypeNode,',
       ),
     ],
-    killed(),
+    // Thirteen guards redden; the one named is the dependency guard this mutant simulates a package
+    // move against. The other twelve are the analyser reaching for `undefined` afterwards.
+    killed(['the-typescript-surface-is-intact']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // Four defects written for four silences, rather than four silences declared.
+  //
+  // The first complete run left `every-permitted-name-is-admitted-by-one-family`,
+  // `a-relative-import-of-anything-else-is-not-refused`, `a-published-requirement-reaches-the-analyser`
+  // and `the-surface-is-not-empty` red on nothing. Each of the four names a defect that could be
+  // written, so writing it is what the instrument asks for rather than a declaration that it is out
+  // of reach.
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'S-18',
+    'admits one name into two families of the permitted list, so the reason a name is permitted stops ' +
+      'being the one thing that admits it',
+    [
+      constructsFile(
+        NUMBERS_DATES_AND_TEXT,
+        `    names: ['Number', 'BigInt', 'Math', 'Date', 'String', 'RegExp', 'undefined'],`,
+      ),
+    ],
+    killed(['every-permitted-name-is-admitted-by-one-family']),
+  ),
+
+  sameOnEveryLens(
+    'S-19',
+    'reads every relative import as the submission\'s own contract, so a multi-file implementation is ' +
+      'refused for importing the file beside it - the over-refusal that would make the rule unusable',
+    [
+      {
+        file: 'states-its-own-signature.ts',
+        find: A_CONTRACT_MODULE_IS_RECOGNISED,
+        replace: "  return last !== ''",
+      },
+    ],
+    killed(['a-relative-import-of-anything-else-is-not-refused']),
+  ),
+
+  sameOnEveryLens(
+    'S-20',
+    'stops reading the requirements off the contract module, so a contract may publish twenty ' +
+      'forbidden methods and the analyser never hears of them',
+    [analyseFile(THE_DECLARATION_IS_READ, '  const declared: unknown = undefined')],
+    killed(['a-published-requirement-reaches-the-analyser', THE_FORBIDDEN_METHOD_IS_REFUSED]),
+  ),
+
+  sameOnEveryLens(
+    'S-21',
+    'answers an empty object for the declared TypeScript surface, which `missingFromTheSurface` reads ' +
+      'as nothing missing - the failure the surface is an object rather than a list to prevent',
+    [
+      apiFile(THE_SURFACE_IS_THE_OBJECT, `const THE_REAL_SURFACE = {
+  SyntaxKind: ast.SyntaxKind,`),
+      apiFile(
+        THE_SURFACE_ENDS,
+        `  skipOuterExpressions: ast.skipOuterExpressions,
+} as const
+
+export const TYPESCRIPT_SURFACE = {} as typeof THE_REAL_SURFACE`,
+      ),
+    ],
+    killed(['the-surface-is-not-empty']),
   ),
 ]
 
