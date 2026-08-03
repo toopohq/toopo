@@ -22,6 +22,8 @@
  */
 
 import { parseArguments, USAGE } from './arguments.js'
+import type { Lockfile } from '../registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import {
   CONFIGURATION_FILE,
@@ -30,7 +32,7 @@ import {
   readConfiguration,
   writeConfiguration,
 } from './configuration.js'
-import { lockfileAfter, prepareInstallation } from './install.js'
+import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
 import { UnusableLockfile, readLockfile } from './lockfile.js'
 import {
@@ -81,7 +83,7 @@ const theConfiguration = (): Configuration => {
   return held
 }
 
-const EMPTY = { version: 1 as const, features: [] }
+const EMPTY: Lockfile = { version: LOCKFILE_VERSION, features: [] }
 
 try {
   if (parsed.command.name === 'init') {
@@ -132,7 +134,7 @@ try {
       )
     } else {
       const written = commit(root, configuration.directory, {
-        writes: outcome.installation.writes,
+        writes: filesToWrite(outcome.installation),
         removals: [],
         lockfile: lockfileAfter(lockfile, outcome.installation.features),
       })

@@ -72,7 +72,7 @@ import type { ContractAddress } from '../registry/address.js'
 import { renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { InstalledFile, LockedFeature, Lockfile } from '../registry/implementation-record.js'
-import { resolveDependencies } from '../registry/implementation-record.js'
+import { LOCKFILE_VERSION, resolveDependencies } from '../registry/implementation-record.js'
 import type { FrozenImplementation } from '../registry/snapshot.js'
 import type { Configuration } from './configuration.js'
 import type { FileDiff } from './diff.js'
@@ -478,7 +478,7 @@ const assemble = (
   const features: FeatureOutcome[] = []
   const writes: FileToWrite[] = []
   const removals: string[] = []
-  let lockfile: Lockfile = { version: 1, features: [] }
+  let lockfile: Lockfile = { version: LOCKFILE_VERSION, features: [] }
 
   for (const planning of plan.features) {
     const what = keyOf(planning.implementation.contract)

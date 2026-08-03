@@ -6,9 +6,9 @@ import { describe, it, expect } from 'vitest'
 
 import { WHAT_BREAKS } from './breakage.js'
 import { CONFIGURATION_FILE } from './configuration.js'
-import { UnusableLockfile, readLockfile } from './lockfile.js'
+import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
 import { imaginedSource } from './imagined-source.js'
-import { prepareInstallation } from './install.js'
+import { filesToWrite, prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
 import { EMPTY_LOCKFILE, A_PINNED_INSTANT, aProject, committing } from './temporary-project.js'
 import type { Installation, InstallOutcome } from './install.js'
@@ -42,6 +42,16 @@ const installing = (
     at: A_PINNED_INSTANT,
   })
 
+/**
+ * **The two refusals below assert the refusal and nothing after it, and that is a repair.**
+ *
+ * Each used to end with `expect(project.installed(...))` naming the bytes the user had put there -
+ * which reads as "and their file survived" and is structurally incapable of failing: everything
+ * `prepareInstallation` does is arithmetic over values and reads of the disk, so a run that answered
+ * faults could not have written anything to survive. Seeing `an-edited-file-is-never-replaced` red on
+ * its real condition is what exposed it: the refusal is what fails, and the line under it never got
+ * the chance. A guard that cannot fail is recorded as inapplicable rather than left green.
+ */
 const mustInstall = (outcome: InstallOutcome): Installation => {
   if ('faults' in outcome) throw new Error(outcome.faults.join('\n'))
   if ('unchanged' in outcome) throw new Error('nothing was installed')
@@ -74,10 +84,9 @@ describe('what breaks for somebody', () => {
       const outcome = installing(localSource(), project, 'string/slugify')
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'src/lib/toopo/string/slugify/slugify.ts is already there and toopo.lock does not claim it, ' +
-          'so it is not ours to overwrite',
+        'src/lib/toopo/string/slugify/slugify.ts is already there, toopo.lock does not claim it, ' +
+          'and its bytes are not the ones toopo would write - so it is not ours to overwrite',
       ])
-      expect(project.installed('string/slugify/slugify.ts')).toBe('export const slugify = "mine"\n')
     } finally {
       project.remove()
     }
@@ -96,7 +105,60 @@ describe('what breaks for somebody', () => {
         'src/lib/toopo/string/slugify/slugify.ts was edited after it was installed. Toopo never ' +
           'replaces your changes: move them aside, or keep them and skip this install.',
       ])
-      expect(project.installed('string/slugify/slugify.ts')).toBe('export const slugify = "edited"\n')
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * The other side of the guard above, and the pair is the whole rule: what decides whether a file
+   * nothing claims may be written is its *bytes*, and never the absence of a claim.
+   *
+   * The state is reached by installing, committing, and then deleting only the lockfile - which is
+   * what a version-1 lockfile leaves behind, and equally what a project that gitignores `toopo.lock`
+   * hands to the next person who checks it out.
+   */
+  it('a-file-already-holding-our-bytes-is-claimed-and-not-rewritten', () => {
+    const project = aProject()
+    try {
+      alreadyInstalled(project)
+      const before = project.installed('string/slugify/slugify.ts')
+
+      const installation = mustInstall(installing(localSource(), project, 'string/slugify'))
+
+      expect(installation.writes.map((write) => [write.path, write.alreadyOnDisk])).toEqual(
+        installation.writes.map((write) => [write.path, true]),
+      )
+      expect(filesToWrite(installation)).toEqual([])
+      expect(project.installed('string/slugify/slugify.ts')).toBe(before)
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * A lockfile written before `askedFor` existed, refused rather than migrated, with the remedy the
+   * guard above is what makes true.
+   *
+   * Both shapes went out carrying `"version": 1`, so the number discriminated nothing on the one file
+   * this tool writes into somebody else's project. What is asserted here is the pair a reader needs:
+   * that it is refused, and that the refusal names the feature to type back.
+   */
+  it('a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run', () => {
+    const project = aProject()
+    try {
+      const lockfile = alreadyInstalled(project)
+      const asVersionOne = {
+        version: 1,
+        features: lockfile.features.map(({ askedFor: _askedFor, ...rest }) => rest),
+      }
+
+      project.write('toopo.lock', JSON.stringify(asVersionOne))
+      expect(() => readLockfile(project.root)).toThrow(UnusableLockfile)
+
+      const faults = lockfileFaults(asVersionOne).join('\n')
+      expect(faults).toContain('Version 1 did not record which features you asked for')
+      expect(faults).toContain('toopo add string/slugify')
     } finally {
       project.remove()
     }

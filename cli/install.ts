@@ -35,6 +35,18 @@ export type Cost = {
 export type PlannedWrite = FileToWrite & {
   /** True when the installer changed the bytes on the way in, by repointing an import. */
   readonly repointed: boolean
+  /**
+   * True when this exact file is already on disk, byte for byte, and no lockfile claims it.
+   *
+   * It is not written and it is not refused. **Byte-for-byte identity over a source file is not a
+   * coincidence anybody meets**: it is our file, or an exact copy of it, and claiming it is the same
+   * rule `toopo update` already applies under the verdict `already-written` - a file whose bytes are
+   * the ones we were about to write is a write that already happened, not somebody's edit.
+   *
+   * What it does *not* cover is a file that differs by one byte, which stays the refusal it was.
+   * Permanent rule 4 is about not replacing somebody's work, and there is no work here to replace.
+   */
+  readonly alreadyOnDisk: boolean
 }
 
 /**
@@ -119,41 +131,67 @@ export type InstallRequest = {
 // ---------------------------------------------------------------------------
 
 /**
- * Why the files this install would write cannot be written. Empty when they can.
+ * What is already sitting where this install would write, decided once.
  *
- * Three answers and they are not the same. A path this project's lockfile does not claim is somebody
- * else's file, and overwriting it is out of the question whatever is in it. A path the lockfile claims
- * whose bytes have moved is the user's own edit, and permanent rule 4 forbids replacing it silently. A
- * path the lockfile claims that still hashes to what was written is ours and untouched.
+ * Four answers and they are not the same. A path the lockfile claims whose bytes have moved is the
+ * user's own edit, and permanent rule 4 forbids replacing it silently. A path the lockfile claims that
+ * still hashes to what was written is ours and untouched. A path nothing claims whose bytes are
+ * *exactly* the ones we would write is ours too - see `PlannedWrite.alreadyOnDisk` - and is recorded
+ * rather than rewritten. A path nothing claims holding anything else is somebody else's file, and
+ * overwriting it is out of the question whatever is in it.
+ *
+ * The would-be digests are passed in rather than recomputed here, because they are the digests of the
+ * *rewritten* bytes: a file whose import was repointed is not the bytes the registry served, and
+ * comparing against the served digest would report it as somebody else's file for ever.
  */
-const diskFaults = (request: InstallRequest, plan: InstallPlan): readonly string[] => {
+type DiskStanding = {
+  readonly faults: readonly string[]
+  /** Paths that already hold the bytes this install would write, with nothing claiming them. */
+  readonly alreadyOnDisk: ReadonlySet<string>
+}
+
+const diskStanding = (
+  request: InstallRequest,
+  plan: InstallPlan,
+  wouldWrite: ReadonlyMap<string, string>,
+): DiskStanding => {
   const claimed = new Map(
     request.lockfile.features.flatMap((feature) =>
       feature.files.map((file) => [file.path, file] as const),
     ),
   )
+  const faults: string[] = []
+  const alreadyOnDisk = new Set<string>()
 
-  return plan.files
-    .filter((file) => file.written)
-    .flatMap((file) => {
-      const onDisk = digestOnDisk(request.root, request.configuration.directory, file.path)
-      if (onDisk === null) return []
+  for (const file of plan.files) {
+    if (!file.written) continue
 
-      const held = claimed.get(file.path)
-      const where = `${request.configuration.directory}/${file.path}`
+    const onDisk = digestOnDisk(request.root, request.configuration.directory, file.path)
+    if (onDisk === null) continue
 
-      if (held === undefined) {
-        return [`${where} is already there and toopo.lock does not claim it, so it is not ours to overwrite`]
+    const held = claimed.get(file.path)
+    const where = `${request.configuration.directory}/${file.path}`
+
+    if (held === undefined) {
+      if (onDisk === wouldWrite.get(file.path)) alreadyOnDisk.add(file.path)
+      else {
+        faults.push(
+          `${where} is already there, toopo.lock does not claim it, and its bytes are not the ones ` +
+            `toopo would write - so it is not ours to overwrite`,
+        )
       }
-      if (held.sha256 !== onDisk) {
-        return [
-          `${where} was edited after it was installed. Toopo never replaces your changes: move them ` +
-            `aside, or keep them and skip this install.`,
-        ]
-      }
+      continue
+    }
 
-      return []
-    })
+    if (held.sha256 !== onDisk) {
+      faults.push(
+        `${where} was edited after it was installed. Toopo never replaces your changes: move them ` +
+          `aside, or keep them and skip this install.`,
+      )
+    }
+  }
+
+  return { faults, alreadyOnDisk }
 }
 
 // ---------------------------------------------------------------------------
@@ -200,8 +238,22 @@ export const prepareInstallation = (
   const rewritten = rewrittenSources(fetched.found, planned.plan.relocation)
   if ('faults' in rewritten) return { faults: rewritten.faults }
 
-  const onDisk = diskFaults(request, planned.plan)
-  if (onDisk.length > 0) return { faults: onDisk }
+  // The bytes first, because what is on disk is judged against what *this install* would write and
+  // not against what the registry served - the two differ on every file whose import was repointed.
+  const bytesFor = new Map(
+    planned.plan.files
+      .filter((file) => file.written)
+      .map((file) => [
+        file.path,
+        Buffer.from(rewritten.sources.get(file.servedAt) as string, 'utf8'),
+      ]),
+  )
+  const standing = diskStanding(
+    request,
+    planned.plan,
+    new Map([...bytesFor].map(([path, bytes]) => [path, digestOfBytes(bytes)])),
+  )
+  if (standing.faults.length > 0) return { faults: standing.faults }
 
   const writes: PlannedWrite[] = []
   const features: LockedFeature[] = []
@@ -212,10 +264,15 @@ export const prepareInstallation = (
     for (const file of planning.files) {
       if (!file.written) continue
 
-      const bytes = Buffer.from(rewritten.sources.get(file.servedAt) as string, 'utf8')
+      const bytes = bytesFor.get(file.path) as Buffer
       const sha256 = digestOfBytes(bytes)
 
-      writes.push({ path: file.path, bytes, repointed: sha256 !== file.served.sha256 })
+      writes.push({
+        path: file.path,
+        bytes,
+        repointed: sha256 !== file.served.sha256,
+        alreadyOnDisk: standing.alreadyOnDisk.has(file.path),
+      })
       files.push({ path: file.path, served: file.served, sha256, bytes: bytes.byteLength })
     }
 
@@ -330,6 +387,17 @@ const isAlreadyInstalled = (request: InstallRequest, feature: LockedFeature): bo
     )
   )
 }
+
+/**
+ * The files a commit actually puts on disk.
+ *
+ * A file already holding the exact bytes is recorded and not rewritten, so that the lines the report
+ * prints and the writes the commit makes are the same set of events. Rewriting it would be harmless
+ * to its contents and would still be a write - a changed timestamp under a line saying nothing was
+ * written - and this repository does not print one thing and do another.
+ */
+export const filesToWrite = (installation: Installation): readonly FileToWrite[] =>
+  installation.writes.filter((write) => !write.alreadyOnDisk)
 
 /** The lockfile these features leave behind, so that no caller folds them itself. */
 export const lockfileAfter = (

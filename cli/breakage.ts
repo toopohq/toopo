@@ -42,7 +42,32 @@ export const WHAT_BREAKS: readonly Breakage[] = [
     verdict: 'refused-cleanly',
     guard: 'a-file-we-did-not-write-is-never-overwritten',
     detail:
-      'the path is named, the sentence says it is not ours to overwrite, and nothing is written at all',
+      'the path is named, the sentence says it is not ours to overwrite, and nothing is written at ' +
+      'all. What decides it is the *bytes* and never the absence of a claim: a file already holding ' +
+      'exactly what toopo would write is ours, or an exact copy of ours, and is recorded rather than ' +
+      'refused - which is the pair below.',
+  },
+  {
+    situation: 'a file is already there holding exactly the bytes toopo would write',
+    verdict: 'refused-cleanly',
+    guard: 'a-file-already-holding-our-bytes-is-claimed-and-not-rewritten',
+    detail:
+      'not a refusal at all, and listed here because it is the other half of the entry above. Byte ' +
+      'identity over a source file is not a coincidence anybody meets, so the file is claimed, not ' +
+      'written, and reported with `=` rather than `+` - two different events, said apart. It is the ' +
+      'same rule `toopo update` carries as `already-written`, and it is what makes the lockfile ' +
+      'refusal below survivable.',
+  },
+  {
+    situation: 'toopo.lock was written before `askedFor` existed',
+    verdict: 'refused-cleanly',
+    guard: 'a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run',
+    detail:
+      'refused rather than migrated, because the missing field is not derivable from anything on ' +
+      'disk - both ways of guessing it are recorded as wrong in `implementation-record.ts`. The ' +
+      'refusal names every feature the file holds and the `toopo add` line for each, and the entry ' +
+      'above is what makes those lines cost nothing: no file is rewritten and no edit is at risk. ' +
+      'Both shapes shipped under `"version": 1`, which is what made the number worth nothing.',
   },
   {
     situation: 'a file was edited after it was installed',

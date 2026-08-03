@@ -91,17 +91,29 @@ export const renderInit = (configuration: Configuration, existed: boolean): stri
     '',
   ].join('\n')
 
+/**
+ * The mark on a file's line: what happened to it, in one character.
+ *
+ * `=` is a file that was already there holding exactly these bytes, and it is a different mark from
+ * `+` because it is a different event. Printing `+` under it would say this install put it there,
+ * when the install found it there and wrote nothing - and a report that describes something other
+ * than what happened is one more thing that has to be true and is not.
+ */
+const markOf = (write: Installation['writes'][number]): string => (write.alreadyOnDisk ? '=' : '+')
+
 export const renderInstallation = (
   installation: Installation,
   configuration: Configuration,
 ): string => {
   const { cost } = installation
+  const found = installation.writes.filter((write) => write.alreadyOnDisk).length
   const notes = new Map<string, string>()
   for (const file of installation.shared) {
     notes.set(file.path, `shared with ${file.alsoCarriedBy.join(', ')}`)
   }
   for (const write of installation.writes) {
-    if (write.repointed && !notes.has(write.path)) notes.set(write.path, 'import repointed')
+    if (write.alreadyOnDisk) notes.set(write.path, 'already there, byte for byte')
+    else if (write.repointed && !notes.has(write.path)) notes.set(write.path, 'import repointed')
   }
 
   // Wide enough to align the notes, and applied only to the lines that have one - a padded line with
@@ -128,10 +140,20 @@ export const renderInstallation = (
       const note = notes.get(write.path)
 
       return note === undefined
-        ? `${INDENT}  + ${path}`
-        : `${INDENT}  + ${path.padEnd(width)}  ${note}`
+        ? `${INDENT}  ${markOf(write)} ${path}`
+        : `${INDENT}  ${markOf(write)} ${path.padEnd(width)}  ${note}`
     }),
     '',
+    ...(found === 0
+      ? []
+      : [
+          ...paragraph(
+            `${countOf(found, 'file was', 'files were')} already on disk holding exactly these ` +
+              `bytes. Nothing was written over ${found === 1 ? 'it' : 'them'}, and ` +
+              `${found === 1 ? 'it is' : 'they are'} now recorded in toopo.lock.`,
+          ).map((line) => `${INDENT}${line}`),
+          '',
+        ]),
     ...(installation.dependencies.length === 0
       ? []
       : [
@@ -341,11 +363,28 @@ export const renderUpToDate = (held: readonly string[]): string =>
     '',
   ].join('\n')
 
+/**
+ * A refusal, with the sentences that say what was wrong and that nothing was written.
+ *
+ * **A fault that carries its own newlines is laid out rather than reflowed.** Most faults are a
+ * sentence and want wrapping; one is a sentence *and* a list of commands to type, and running those
+ * together into a paragraph would hand the reader a line they cannot copy. Each line keeps whatever
+ * indentation it was written with, so a fault can indent a command under its own explanation.
+ */
 export const renderRefusal = (faults: readonly string[]): string =>
   [
     '',
     `${INDENT}Refused, and nothing was written.`,
     '',
-    ...faults.flatMap((fault) => [...paragraph(fault, 72).map((line) => `${INDENT}  ${line}`), '']),
+    ...faults.flatMap((fault) => [
+      ...fault.split('\n').flatMap((line) => {
+        const indented = line.length - line.trimStart().length
+
+        return paragraph(line.trimStart(), 72 - indented).map(
+          (wrapped) => `${INDENT}  ${' '.repeat(indented)}${wrapped}`,
+        )
+      }),
+      '',
+    ]),
   ].join('\n')
 

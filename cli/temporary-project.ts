@@ -12,9 +12,10 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 
 import type { Lockfile } from '../registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import type { Installation } from './install.js'
-import { lockfileAfter } from './install.js'
+import { filesToWrite, lockfileAfter } from './install.js'
 import { commit } from './write.js'
 
 export type TemporaryProject = {
@@ -27,7 +28,7 @@ export type TemporaryProject = {
   readonly remove: () => void
 }
 
-export const EMPTY_LOCKFILE: Lockfile = { version: 1, features: [] }
+export const EMPTY_LOCKFILE: Lockfile = { version: LOCKFILE_VERSION, features: [] }
 
 /** The instant every guard records, so that two runs of one guard produce one lockfile. */
 export const A_PINNED_INSTANT = '2026-08-03T00:00:00.000Z'
@@ -46,7 +47,7 @@ export const committing = (
 ): Lockfile => {
   const after = lockfileAfter(lockfile, installation.features)
   const written = commit(project.root, project.configuration.directory, {
-    writes: installation.writes,
+    writes: filesToWrite(installation),
     removals: [],
     lockfile: after,
   })

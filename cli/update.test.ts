@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest'
 import { renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { Lockfile } from '../registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
 import { imaginedSource, updatedImaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import { renderUpdate } from './report.js'
@@ -337,7 +338,7 @@ describe('comparing a project with what the registry serves now', () => {
   it('a-lockfile-with-no-root-has-nowhere-to-start', () => {
     inProject((project, lockfile) => {
       const rootless: Lockfile = {
-        version: 1,
+        version: LOCKFILE_VERSION,
         features: lockfile.features.map((feature) => ({ ...feature, askedFor: false })),
       }
 
@@ -454,7 +455,7 @@ describe('comparing a project with what the registry serves now', () => {
   it('a-file-toopo-did-not-write-is-never-overwritten-by-an-update', () => {
     inProject((project, lockfile) => {
       const disowned: Lockfile = {
-        version: 1,
+        version: LOCKFILE_VERSION,
         features: lockfile.features.filter((feature) => feature.contract.name !== 'string/pad'),
       }
 

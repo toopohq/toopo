@@ -335,7 +335,28 @@ export type LockedFeature = {
   readonly askedFor: boolean
 }
 
+/**
+ * The version of `toopo.lock` this schema describes.
+ *
+ * **It is 2 because `askedFor` was added to `LockedFeature` above, and a number that does not move
+ * when the shape moves discriminates nothing.** Both shapes went out under the number 1 before that
+ * was noticed - on the only file this project writes into somebody else's repository, whose whole
+ * value is that it can be checked against a published fact.
+ *
+ * What stops it happening again is not this comment. `cli/lockfile.ts` validates through a record
+ * keyed by `keyof LockedFeature`, so a field added here does not compile until a check for it is
+ * written - and the compiler asks the question at the moment the shape changes rather than leaving
+ * it to be remembered.
+ */
+export const LOCKFILE_VERSION = 2
+
+/**
+ * The whole of what a project holds, as `toopo.lock` records it.
+ *
+ * `version` is typed by the constant rather than by a literal of its own, so the number the reader
+ * checks and the number the writer writes are one fact.
+ */
 export type Lockfile = {
-  readonly version: 1
+  readonly version: typeof LOCKFILE_VERSION
   readonly features: readonly LockedFeature[]
 }

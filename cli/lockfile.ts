@@ -20,61 +20,162 @@ import { join } from 'node:path'
 
 import { renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
-import type { LockedFeature, Lockfile } from '../registry/implementation-record.js'
+import type { InstalledFile, LockedFeature, Lockfile } from '../registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
 
 export const LOCKFILE = 'toopo.lock'
 
 const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
-const fileFaults = (value: unknown, where: string): readonly string[] => {
-  if (!isRecord(value)) return [`${where} is not an object`]
-
-  const served = value['served']
-
-  return [
-    ...(typeof value['path'] === 'string' ? [] : [`${where} has no path`]),
-    ...(typeof value['sha256'] === 'string' ? [] : [`${where} has no sha256`]),
-    ...(typeof value['bytes'] === 'number' ? [] : [`${where} has no byte count`]),
-    ...(isRecord(served) &&
-    typeof served['path'] === 'string' &&
-    typeof served['sha256'] === 'string' &&
-    typeof served['bytes'] === 'number'
-      ? []
-      : [`${where} does not say what the registry served`]),
-  ]
+/**
+ * One field of the shape, and what a reader is told when it is not there.
+ *
+ * The sentence is about the *feature* rather than about the field, because a person opening a
+ * refusal wants to know which entry of their lockfile is unusable before they want to know which
+ * key of it is.
+ */
+type Check = {
+  readonly holds: (value: unknown) => boolean
+  readonly missing: string
 }
+
+/**
+ * Every field of `InstalledFile`, total by construction.
+ *
+ * `served` is checked here as a shape rather than delegated further: it is `HarnessFile`, which the
+ * registry owns and this file does not get to redefine, so the check is one statement about the
+ * three parts a comparison with the registry needs.
+ */
+const FILE_FIELDS_OF: Readonly<Record<keyof InstalledFile, Check>> = {
+  path: { holds: (value) => typeof value === 'string', missing: 'has no path' },
+  sha256: { holds: (value) => typeof value === 'string', missing: 'has no sha256' },
+  bytes: { holds: (value) => typeof value === 'number', missing: 'has no byte count' },
+  served: {
+    holds: (value) =>
+      isRecord(value) &&
+      typeof value['path'] === 'string' &&
+      typeof value['sha256'] === 'string' &&
+      typeof value['bytes'] === 'number',
+    missing: 'does not say what the registry served',
+  },
+}
+
+/**
+ * Every field of `LockedFeature`, total by construction.
+ *
+ * `files` is checked as a list here and its elements are checked by `FILE_FIELDS_OF` below. That is
+ * the one place this record does not carry the whole answer, and it is said rather than glossed: what
+ * the totality guarantees is that no field of the type goes *unconsidered*, not that every check is
+ * written in one expression.
+ */
+const FIELDS_OF: Readonly<Record<keyof LockedFeature, Check>> = {
+  contract: {
+    holds: (value) =>
+      isRecord(value) &&
+      typeof value['language'] === 'string' &&
+      typeof value['name'] === 'string' &&
+      typeof value['major'] === 'number',
+    missing: 'does not name a contract',
+  },
+  implementation: {
+    holds: (value) =>
+      isRecord(value) && typeof value['id'] === 'string' && typeof value['version'] === 'string',
+    missing: 'does not name an implementation',
+  },
+  files: { holds: (value) => Array.isArray(value), missing: 'carries no file list' },
+  installedAt: {
+    holds: (value) => typeof value === 'string',
+    missing: 'does not say when it was installed',
+  },
+  locallyModified: {
+    holds: (value) => typeof value === 'boolean',
+    missing: 'does not say whether it was edited',
+  },
+  askedFor: {
+    holds: (value) => typeof value === 'boolean',
+    missing: 'does not say whether it was asked for or pulled in',
+  },
+}
+
+const faultsAgainst = (
+  fields: Readonly<Record<string, Check>>,
+  value: Readonly<Record<string, unknown>>,
+  where: string,
+): readonly string[] =>
+  Object.entries(fields)
+    .filter(([name, check]) => !check.holds(value[name]))
+    .map(([, check]) => `${where} ${check.missing}`)
 
 const featureFaults = (value: unknown, at: number): readonly string[] => {
   if (!isRecord(value)) return [`feature ${at} is not an object`]
 
   const contract = value['contract']
-  const implementation = value['implementation']
   const files = value['files']
-  const where = isRecord(contract) && typeof contract['name'] === 'string' ? contract['name'] : `feature ${at}`
+  const where =
+    isRecord(contract) && typeof contract['name'] === 'string' ? contract['name'] : `feature ${at}`
 
   return [
-    ...(isRecord(contract) &&
-    typeof contract['language'] === 'string' &&
-    typeof contract['name'] === 'string' &&
-    typeof contract['major'] === 'number'
-      ? []
-      : [`${where} does not name a contract`]),
-    ...(isRecord(implementation) &&
-    typeof implementation['id'] === 'string' &&
-    typeof implementation['version'] === 'string'
-      ? []
-      : [`${where} does not name an implementation`]),
-    ...(typeof value['installedAt'] === 'string' ? [] : [`${where} does not say when it was installed`]),
-    ...(typeof value['locallyModified'] === 'boolean'
-      ? []
-      : [`${where} does not say whether it was edited`]),
-    ...(typeof value['askedFor'] === 'boolean'
-      ? []
-      : [`${where} does not say whether it was asked for or pulled in`]),
+    ...faultsAgainst(FIELDS_OF, value, where),
     ...(Array.isArray(files)
-      ? files.flatMap((file, index) => fileFaults(file, `${where} file ${index}`))
-      : [`${where} carries no file list`]),
+      ? files.flatMap((file, index) =>
+          isRecord(file)
+            ? faultsAgainst(FILE_FIELDS_OF, file, `${where} file ${index}`)
+            : [`${where} file ${index} is not an object`],
+        )
+      : []),
+  ]
+}
+
+/** The contract names a lockfile of any version carries, for a refusal that can name them. */
+const featureNamesIn = (value: Readonly<Record<string, unknown>>): readonly string[] => {
+  const features = value['features']
+  if (!Array.isArray(features)) return []
+
+  return features.flatMap((feature: unknown) => {
+    const contract = isRecord(feature) ? feature['contract'] : undefined
+
+    return isRecord(contract) && typeof contract['name'] === 'string' ? [contract['name']] : []
+  })
+}
+
+/**
+ * Why a lockfile written under an older version cannot be read, and what to do about it.
+ *
+ * **Version 1 is refused rather than migrated, and the reason is that the field it lacks is not
+ * derivable.** `askedFor` says which features the user typed, and `implementation-record.ts` records
+ * that both ways of guessing it are wrong: treating every entry as a root climbs a dependency to
+ * whatever its own binding names today, which is a combination nobody published, and deriving the
+ * roots from the edges reads precisely what an update is trying to find out has moved. A migration
+ * that invented the answer would be this tool deciding something only the user knows.
+ *
+ * **What makes the refusal usable is that `toopo add` recognises a file whose bytes are already the
+ * ones it would write.** Re-adding a feature therefore writes nothing, keeps every file exactly where
+ * it is, and records the one fact that was missing. Without that the only way out would be deleting
+ * the folder, which would destroy files that were perfectly good.
+ */
+const migrationFaults = (
+  version: unknown,
+  value: Readonly<Record<string, unknown>>,
+): readonly string[] => {
+  if (version !== 1) {
+    return [
+      `${LOCKFILE} carries version ${JSON.stringify(version)}, and this \`toopo\` reads version ` +
+        `${LOCKFILE_VERSION}`,
+    ]
+  }
+
+  const names = featureNamesIn(value)
+
+  return [
+    `${LOCKFILE} was written by an earlier \`toopo\`. Version 1 did not record which features you ` +
+      `asked for and which arrived as dependencies, and that cannot be worked out from the file - ` +
+      `guessing it would either move a dependency to a version nothing was published against, or ` +
+      `drop something you had asked for.`,
+    `Delete ${LOCKFILE} and add back the features you want, by name. Nothing on disk is rewritten: ` +
+      `a file whose bytes are already the ones toopo would write is recognised and recorded rather ` +
+      `than replaced.` +
+      (names.length === 0 ? '' : `\n${names.map((name) => `  toopo add ${name}`).join('\n')}`),
   ]
 }
 
@@ -85,27 +186,31 @@ const featureFaults = (value: unknown, at: number): readonly string[] => {
  * written - a merge, an editor, a hand. An installer that read a malformed entry as an absent one would
  * decide a file it did not write was safe to overwrite, which is exactly the decision permanent rule 4
  * exists to prevent.
+ *
+ * A version this `toopo` does not read is answered *instead of* the field checks rather than beside
+ * them: the fields of another version are another version's business, and reporting them would bury
+ * the one sentence that says what to do under a list about a shape nobody is being asked to fix.
  */
 export const lockfileFaults = (value: unknown): readonly string[] => {
   if (!isRecord(value)) return [`${LOCKFILE} does not hold an object`]
 
+  if (value['version'] !== LOCKFILE_VERSION) return migrationFaults(value['version'], value)
+
   const features = value['features']
 
-  return [
-    ...(value['version'] === 1
-      ? []
-      : [`${LOCKFILE} carries version ${JSON.stringify(value['version'])}, and this \`toopo\` writes version 1`]),
-    ...(Array.isArray(features)
-      ? features.flatMap(featureFaults)
-      : [`${LOCKFILE} carries no feature list`]),
-  ]
+  return Array.isArray(features)
+    ? features.flatMap(featureFaults)
+    : [`${LOCKFILE} carries no feature list`]
 }
 
 export class UnusableLockfile extends Error {
   constructor(faults: readonly string[]) {
+    // Not indented here: `renderRefusal` lays a fault out and preserves whatever indentation the
+    // fault itself carries, so indenting again would indent twice and would bury the one line of
+    // this message a reader is meant to copy.
     super(
       `${LOCKFILE} cannot be read, so nothing can be established about what is already installed:\n` +
-        faults.map((fault) => `  ${fault}`).join('\n'),
+        faults.join('\n'),
     )
     this.name = 'UnusableLockfile'
   }
@@ -158,9 +263,12 @@ export const withFeature = (lockfile: Lockfile, feature: LockedFeature): Lockfil
     askedFor: feature.askedFor || (held?.askedFor ?? false),
   }
 
-  return { version: 1, features: [...others, kept].sort((a, b) =>
-    renderContract(a.contract) < renderContract(b.contract) ? -1 : 1,
-  ) }
+  return {
+    version: LOCKFILE_VERSION,
+    features: [...others, kept].sort((a, b) =>
+      renderContract(a.contract) < renderContract(b.contract) ? -1 : 1,
+    ),
+  }
 }
 
 /** What a file on disk hashes to under the served form, or `null` when it is not there. */

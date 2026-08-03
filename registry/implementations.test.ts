@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { renderContract, sameContract } from './address.js'
 import type { LockedFeature, Lockfile } from './implementation-record.js'
-import { dependencyDepthOf } from './implementation-record.js'
+import { LOCKFILE_VERSION, dependencyDepthOf } from './implementation-record.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
 import { eachContract, theFive } from './the-five.js'
 
@@ -123,7 +123,7 @@ describe('the implementations under the five contracts', () => {
 
   it('a-lockfile-is-json :: it lives on the user disk and nothing decodes it', () => {
     const lockfile: Lockfile = {
-      version: 1,
+      version: LOCKFILE_VERSION,
       features: theFive.map((source) =>
         lockedFeatureOf(
           referenceImplementationOf(REPOSITORY_ROOT, source),
