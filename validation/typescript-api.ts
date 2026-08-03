@@ -91,6 +91,8 @@ export const TYPESCRIPT_SURFACE = {
   isImportSpecifier: ast.isImportSpecifier,
   isNamespaceImport: ast.isNamespaceImport,
   isMetaProperty: ast.isMetaProperty,
+  isLiteralTypeNode: ast.isLiteralTypeNode,
+  isExternalModuleReference: ast.isExternalModuleReference,
 
   isTypeReferenceNode: ast.isTypeReferenceNode,
   isTypeAliasDeclaration: ast.isTypeAliasDeclaration,

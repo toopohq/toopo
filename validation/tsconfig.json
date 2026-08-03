@@ -1,4 +1,9 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["."]
+  "include": ["."],
+  // The fixtures are submissions, not source of this folder. They carry the constructions the rules
+  // refuse - and a refused construction is frequently a type error as well, which would make
+  // `npm run validation` fail before any rule was asked anything. They are parsed by the analyser
+  // under their own configuration, which is the only thing that has any business reading them.
+  "exclude": ["fixtures"]
 }
