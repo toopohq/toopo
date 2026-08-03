@@ -27,7 +27,7 @@
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
-import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
+import { killed, mutantsOn, probe, reference } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: ['identity-blind'] }
 
@@ -81,12 +81,6 @@ const TWO_ASTRAL = 'two-astral-characters-and-one'
 const A_GRAPHEME = 'a-grapheme-is-not-the-unit'
 const NORMALISATION = 'normalisation-is-not-applied'
 const A_COMBINING_MARK = 'a-combining-mark-is-one-unit'
-const A_SPACE = 'a-space-is-a-code-point'
-const A_TRANSPOSITION = 'a-transposition'
-const ONE_SUBSTITUTION = 'one-substitution'
-const THE_OTHER_SIDE_EMPTY = 'the-other-side-empty'
-const BOTH_EMPTY = 'both-empty'
-const IDENTICAL_TEXT = 'identical-text'
 
 const SEPARATES_FROM_THE_ECOSYSTEM =
   'the-cases-that-separate-from-the-ecosystem'

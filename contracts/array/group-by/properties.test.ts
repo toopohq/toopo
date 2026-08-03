@@ -114,9 +114,6 @@ const anyElement = fc.oneof(
 
 const anyItems = fc.array(anyElement, { maxLength: 24 })
 
-/** A non-empty input, for the properties that have nothing to say about an empty one. */
-const anyNonEmptyItems = fc.array(anyElement, { minLength: 1, maxLength: 24 })
-
 type NamedKeyFunction = {
   readonly name: string
   readonly keyOf: (item: unknown, index: number) => unknown
