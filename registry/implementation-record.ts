@@ -123,6 +123,27 @@ export class UnresolvedDependency extends Error {
 }
 
 /**
+ * What the walk below needs of an implementation, which is exactly what a snapshot carries.
+ *
+ * **Written by approaching the consumer, like the edges themselves.** The walk used to require a whole
+ * `ImplementationRecord`, and the client that performs it holds no such thing: `toopo add` fetches
+ * snapshots, and a snapshot is a *projection* that deliberately leaves out the standing - the status,
+ * the tags, the benchmarks, the minified size. An installer would have had to invent all four to call
+ * a function whose answer depends on none of them, and inventing a standing is exactly how a client
+ * comes to publish an opinion it was never given.
+ *
+ * So the parameter is the subset that decides the answer, and the walk is generic over it: a caller
+ * holding records gets records back, a caller holding snapshots gets snapshots back, and neither has
+ * to widen or narrow anything.
+ */
+export type DependencyNode = {
+  readonly id: string
+  readonly contract: ContractAddress
+  readonly version: string | null
+  readonly dependsOn: readonly ImplementationAddress[]
+}
+
+/**
  * The implementation an edge names, or a refusal saying which one is missing.
  *
  * One lookup with one refusal, used by both walks below, because "the registry holds no such
@@ -133,10 +154,10 @@ export class UnresolvedDependency extends Error {
  * an address carries a `string` version and an unpublished record carries `null`, so the comparison
  * cannot match. Every record below therefore has a version, by construction.
  */
-const mustHold = (
-  holdings: readonly ImplementationRecord[],
+const mustHold = <T extends DependencyNode>(
+  holdings: readonly T[],
   address: ImplementationAddress,
-): ImplementationRecord => {
+): T => {
   const found = holdings.find(
     (candidate) =>
       candidate.id === address.id &&
@@ -174,14 +195,14 @@ const mustHold = (
  * the executable half this registry serves and never models. The registry cannot serve it, and an
  * endpoint that claimed to would be publishing an opinion about code it does not parse.
  */
-export const resolveDependencies = (
-  root: ImplementationRecord,
-  holdings: readonly ImplementationRecord[],
-): readonly ImplementationRecord[] => {
-  const resolved: ImplementationRecord[] = []
+export const resolveDependencies = <T extends DependencyNode>(
+  root: T,
+  holdings: readonly T[],
+): readonly T[] => {
+  const resolved: T[] = []
   const seen = new Set<string>()
 
-  const walk = (record: ImplementationRecord, open: readonly string[]): void => {
+  const walk = (record: T, open: readonly string[]): void => {
     for (const edge of record.dependsOn) {
       const what = renderImplementation(edge)
       if (open.includes(what)) {
@@ -217,8 +238,8 @@ export const resolveDependencies = (
  * with one number, not because anything downstream computes with it.
  */
 export const dependencyDepthOf = (
-  root: ImplementationRecord,
-  holdings: readonly ImplementationRecord[],
+  root: DependencyNode,
+  holdings: readonly DependencyNode[],
 ): number => {
   // Resolved first, so that a cycle is refused before this recursion meets it. Termination below
   // rests on that call having returned, and on nothing else.
@@ -246,6 +267,30 @@ export const dependencyDepthOf = (
 // ---------------------------------------------------------------------------
 
 /**
+ * One file of an installed feature, as `toopo.lock` records it.
+ *
+ * **Two digests and not one, and that is a finding of the unit that wrote the installer rather than a
+ * field somebody wanted.** This type used to be `HarnessFile`, on the reading that what was written is
+ * what was served. It is not: a file whose import had to be pointed at a shared copy is written with
+ * different bytes from the ones the registry served, so a lockfile holding only the served digest
+ * would report every rewritten file as locally modified from the instant it was written - which is the
+ * failure `canonical.ts` closes for line endings, arriving through a door the installer itself opens.
+ *
+ * `served` is the registry's fact, carried whole: the file as an implementation record addresses it,
+ * under the name it has inside the contract folder. It is what a comparison with the registry is made
+ * against. `path` is where it went, relative to the configured folder, and it differs from
+ * `served.path` whenever the installer renamed or relocated the file. `sha256` and `bytes` describe
+ * what is on disk, and they are what the offline check - the one whose whole value is that it needs
+ * nothing from us - compares against.
+ */
+export type InstalledFile = {
+  readonly path: string
+  readonly served: HarnessFile
+  readonly sha256: string
+  readonly bytes: number
+}
+
+/**
  * One installed feature, as `toopo.lock` records it.
  *
  * It is in this unit because the CLI must not have to guess any of it: every part below is already
@@ -263,8 +308,8 @@ export type LockedFeature = {
     readonly id: string
     readonly version: string
   }
-  /** Every file that was written into the project, with the hash the registry served. */
-  readonly files: readonly HarnessFile[]
+  /** Every file that was written into the project, with what was served and what landed. */
+  readonly files: readonly InstalledFile[]
   readonly installedAt: string
   readonly locallyModified: boolean
 }

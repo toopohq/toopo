@@ -20,6 +20,13 @@ import { eachContract, theFive } from './the-five.js'
  * changes.
  */
 
+/**
+ * The lockfile entry an install of this implementation would write, if nothing were rewritten on the
+ * way in - which is true of all five, none of which depends on anything.
+ *
+ * `path` and `served.path` coincide here and are two fields for a reason: an installer that renames a
+ * file or points an import at a shared copy makes them differ, and `cli/` is where that happens.
+ */
 const lockedFeatureOf = (
   implementation: ReturnType<typeof referenceImplementationOf>,
   version: string,
@@ -27,7 +34,12 @@ const lockedFeatureOf = (
 ): LockedFeature => ({
   contract: implementation.contract,
   implementation: { id: implementation.id, version },
-  files: implementation.files,
+  files: implementation.files.map((file) => ({
+    path: file.path,
+    served: file,
+    sha256: file.sha256,
+    bytes: file.bytes,
+  })),
   installedAt,
   locallyModified: false,
 })
@@ -103,7 +115,7 @@ describe('the implementations under the five contracts', () => {
 
       const inTheHarness = record.harness.find((file) => file.path === 'reference.ts')
 
-      expect(locked.files).toEqual([inTheHarness])
+      expect(locked.files.map((file) => file.served)).toEqual([inTheHarness])
       expect(renderContract(locked.contract)).toBe(renderContract(record.address))
     },
   )
