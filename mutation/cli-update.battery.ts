@@ -120,6 +120,10 @@ const ONLY_THE_ROOT_IS_ASKED_FOR = `      askedFor: sameContract(planning.implem
 
 const AN_UNCHANGED_INSTALL_STILL_CARRIES_ITS_FEATURES = `    return { unchanged: rootAddress, entry, features }`
 
+const HUNKS_MERGE_WHEN_THEY_MEET = `    if (last !== undefined && from <= last.to + 1) last.to = Math.max(last.to, to)`
+
+const APPLY_IS_A_SWITCH = `    const flags = flagsIn(rest, { valued: [], switches: ['apply'] })`
+
 // Guards several mutants name, written once because a string repeated is a rename away from being
 // wrong twice.
 const THE_NOMINAL = 'an-update-writes-the-bytes-the-registry-now-serves'
@@ -214,12 +218,20 @@ const mutants: readonly Mutant[] = [
   // The two phases
   // -------------------------------------------------------------------------
 
+  /**
+   * The first run of this battery pinned this to the wrong guard, and the correction is the finding.
+   *
+   * A commit that writes straight to each destination ends in the same state as one that stages,
+   * because the cleanup that removes a staged file removes a directly written one too - so the guard
+   * that starts from an empty project cannot see it. What staging protects is the file that was
+   * **already there**: written straight, it is truncated before anybody knows the commit can finish.
+   */
   sameOnEveryLens(
     'U-09',
-    'writes each file straight to its destination, so a commit that cannot finish leaves a project ' +
-      'half changed and nobody to tell which half',
+    'writes each file straight to its destination, so a commit that refuses three files later has ' +
+      'already replaced the ones before it and the user is left with neither their version nor ours',
     [writeFile(A_FILE_IS_STAGED_BESIDE_ITS_DESTINATION, `    const temporary = destination`)],
-    killed(['a-file-where-a-folder-must-go-is-refused-with-nothing-staged']),
+    killed(['a-refused-commit-does-not-touch-the-file-it-would-replace']),
   ),
 
   sameOnEveryLens(
@@ -403,7 +415,7 @@ const mutants: readonly Mutant[] = [
     'lets a feature stop being a root, so installing something by name and then having it pulled in ' +
       'as a dependency turns it back into one an update may remove',
     [{ file: 'lockfile.ts', find: ASKED_FOR_IS_STICKY, replace: `    askedFor: feature.askedFor,` }],
-    killed(['a-feature-pulled-in-and-then-asked-for-becomes-a-root']),
+    killed(['a-root-stays-one-when-something-else-pulls-it-in']),
   ),
 
   sameOnEveryLens(
@@ -426,6 +438,44 @@ const mutants: readonly Mutant[] = [
       },
     ],
     killed(['a-feature-pulled-in-and-then-asked-for-becomes-a-root']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // Four defects written for four silences the first complete run left.
+  //
+  // Every one of them named a defect that could be written, which is what the instrument asks for
+  // rather than a declaration that the region is out of reach - the same answer `cli-install` and
+  // `validation-stage-1` gave to the same question.
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'U-32',
+    'treats every line as a change, so two identical files are shown as a diff of the whole file and ' +
+      'a user is asked to accept something that changes nothing',
+    [diffFile(A_MARKER_FORCES_ITS_HUNK, `    if (false) continue`)],
+    killed(['two-identical-texts-have-nothing-to-show']),
+  ),
+
+  sameOnEveryLens(
+    'U-33',
+    'merges every hunk into one whatever the distance between them, so two changes at opposite ends ' +
+      'of a file arrive as one hunk carrying the whole file between them',
+    [diffFile(HUNKS_MERGE_WHEN_THEY_MEET, `    if (last !== undefined) last.to = Math.max(last.to, to)`)],
+    killed(['two-changes-far-apart-are-two-hunks']),
+  ),
+
+  sameOnEveryLens(
+    'U-34',
+    'reads `--apply` as a flag that takes a value, so the acceptance permanent rule 4 asks for is ' +
+      'refused for having no value and `toopo update --apply` can never write anything',
+    [
+      {
+        file: 'arguments.ts',
+        find: APPLY_IS_A_SWITCH,
+        replace: `    const flags = flagsIn(rest, { valued: ['apply'], switches: [] })`,
+      },
+    ],
+    killed(['update-writes-only-when-it-is-asked-to', 'a-switch-takes-no-value-and-swallows-nothing']),
   ),
 ]
 
@@ -452,7 +502,92 @@ export const battery: Battery = {
 
   unreachableGuards: [],
 
-  unprobedRegions: [],
+  /**
+   * The guards of `cli/` this battery leaves silent, and they are one folder measured by two batteries
+   * rather than a coverage hole.
+   *
+   * `cli-install` injects into the plan, the rewrite, the port, the local adapter, the argument
+   * grammar and the configuration, with forty-five defects. This one injects into the diff, the
+   * two-phase write, the comparison, the import line and the two places `askedFor` is decided. The
+   * two lists below are what the first probes and the second does not touch - so they are declared
+   * here as a region rather than as a debt, and the sentence that makes that honest is that a defect
+   * in them *is* measured, by the battery next door.
+   *
+   * Four guards that looked like they belonged here turned out not to: the first complete run left
+   * them silent, each named a defect that could be written, and U-32 to U-34 write it.
+   */
+  unprobedRegions: [
+    {
+      nature: 'claims detection',
+      reason:
+        'the argument grammar and the configuration file. Nothing in this battery reads what the ' +
+        'user typed or what `toopo.json` holds - it starts from a request already parsed - and ' +
+        '`cli-install` carries twelve defects over exactly these. The two guards this unit *added* to ' +
+        'the grammar are not here: `--apply` is this command\'s own acceptance, so U-34 probes it.',
+      guards: [
+        'a-command-with-no-flag-is-read',
+        'a-configuration-round-trips-through-the-file',
+        'a-directory-that-does-not-travel-is-refused',
+        'a-field-this-toopo-does-not-honour-is-refused',
+        'a-file-that-is-not-json-is-refused-by-name',
+        'a-flag-and-its-value-are-read',
+        'a-flag-with-no-value-is-refused',
+        'a-project-that-was-never-initialised-answers-nothing',
+        'a-repeated-flag-and-a-stray-word-are-refused',
+        'a-version-this-toopo-does-not-write-is-refused',
+        'add-without-a-contract-is-refused',
+        'an-unknown-command-and-an-unknown-flag-are-refused',
+        'nothing-at-all-is-refused',
+        'the-proposed-directory-follows-the-shape-of-the-project',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the install path: where a file lands, what its imports point at afterwards, what is checked ' +
+        'on arrival, what the port may ask for, and the report an install prints. An update reuses ' +
+        'every one of those and perturbs none of them - it starts from a plan and asks what is on ' +
+        'disk - so a defect in any of them is measured by `cli-install`, which is where the thirty ' +
+        'defects aimed at them live.',
+      guards: [
+        'a-blob-that-is-not-what-its-address-names-is-refused',
+        'a-contract-the-catalogue-refused-is-not-installable',
+        'a-feature-with-no-dependency-lands-exactly-as-it-was-served',
+        'a-file-we-did-not-write-is-never-overwritten',
+        'a-line-says-what-was-done-to-that-file',
+        'a-name-the-catalogue-does-not-hold-is-refused',
+        'a-refusal-leaves-the-project-exactly-as-it-was',
+        'a-refusal-says-nothing-was-written-before-it-says-why',
+        'a-refused-contract-is-in-the-index-and-is-not-installable',
+        'a-renamed-entry-file-is-repointed',
+        'a-shared-blob-is-repointed-across-features',
+        'a-shared-file-is-written-once-and-still-appears-in-the-plan',
+        'a-size-is-read-the-way-a-file-manager-shows-it',
+        'a-snapshot-that-is-not-what-its-digest-names-is-refused',
+        'a-source-carrying-more-than-the-port-declares-is-refused',
+        'add-before-init-says-what-to-run',
+        'an-edge-the-registry-does-not-hold-is-refused',
+        'an-entry-file-is-named-after-its-feature',
+        'an-entry-file-is-never-deduplicated',
+        'an-import-of-a-file-this-install-does-not-carry-is-refused',
+        'an-import-of-something-outside-the-registry-is-refused',
+        'an-unchanged-specifier-is-left-alone',
+        'an-unreadable-lockfile-stops-the-install',
+        'every-breakage-is-classified',
+        'every-method-of-the-port-answers-an-endpoint-that-exists',
+        'every-shape-of-import-is-repointed-and-not-only-the-obvious-one',
+        'nothing-but-the-local-adapter-reaches-the-serialisation',
+        'the-cost-is-stated-before-the-files',
+        'the-local-source-binds-a-visibly-unpublished-version',
+        'the-plan-is-in-the-resolutions-order',
+        'the-port-answers-every-need-add-has-and-nothing-else',
+        'the-three-spellings-of-one-file-all-resolve',
+        'two-different-files-on-one-destination-are-refused',
+        'two-versions-of-one-feature-are-refused',
+        'two-versions-of-one-feature-are-refused-before-anything-is-written',
+      ],
+    },
+  ],
 
   mutants,
 }

@@ -364,6 +364,11 @@ describe('comparing a project with what the registry serves now', () => {
   /**
    * Applied twice, the second run has nothing to do and leaves the lockfile it found - the instant
    * included, which is what stops a no-op run from rewriting a committed file.
+   *
+   * The second run is at a *different* instant, and that is the whole guard: measured by U-23, which
+   * stamps every feature with the run's own instant. With both runs pinned to one moment the defect is
+   * invisible, and a guard that cannot see it is a guard that would let every project acquire a diff
+   * nobody made.
    */
   it('applying-an-update-twice-changes-nothing-the-second-time', () => {
     inProject((project, lockfile) => {
@@ -375,7 +380,14 @@ describe('comparing a project with what the registry serves now', () => {
       })
       expect('written' in written).toBe(true)
 
-      const again = updating(project, first.lockfile)
+      const later = prepareUpdate(updatedImaginedSource(), {
+        root: project.root,
+        configuration: project.configuration,
+        lockfile: first.lockfile,
+        at: '2027-01-01T00:00:00.000Z',
+      })
+      if (!('update' in later)) throw new Error(later.faults.join('\n'))
+      const again = later.update
 
       expect(again.writes).toEqual([])
       expect(again.removals).toEqual([])

@@ -59,6 +59,11 @@ const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts'
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
+
+const THE_DIAGNOSTIC_TRAVELS_WITH_THE_ANSWER = `  ...exports.filter((entry) => entry.role === 'the-answer'),
+  ...exports.filter((entry) => entry.role !== 'the-answer'),`
+
+const THE_INDEX_CARRIES_WHAT_A_SEARCH_PAYS_FOR = `      exports: identity.exports,`
 const implementationFile = (find: string, replace: string) => ({
   file: 'implementation-record.ts',
   find,
@@ -312,6 +317,38 @@ const mutants: readonly Mutant[] = [
       'there yet',
     [implementationFile(WALK_BEFORE_PUSHING, WALKS_AFTER_PUSHING)],
     killed(['a-shared-dependency-is-resolved-once', 'nothing-is-written-before-what-it-imports']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // Two defects of the row a client reads before it can name what it installed.
+  //
+  // `exports` was put on the index by a consumer that could not print an import line, and the two
+  // guards that arrived with it would otherwise be silent under this battery - which is the state
+  // `unprobedRegions` exists to refuse, and which this repository answers with a mutant rather than
+  // with a declaration wherever a defect can be written.
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'I-16',
+    'serves only the answer of a contract that publishes a diagnostic beside it, so `toopo add` ' +
+      'prints an import line naming half the surface and every caller writes their own error message',
+    [responseFile(THE_DIAGNOSTIC_TRAVELS_WITH_THE_ANSWER, `  ...exports.filter((entry) => entry.role === 'the-answer'),`)],
+    killed(['the-index-names-what-a-caller-imports', 'the-index-stays-the-smallest-thing-the-registry-serves']),
+  ),
+
+  sameOnEveryLens(
+    'I-17',
+    'puts the description into the row fetched before every search, which is the field this type ' +
+      'says in as many words it does not carry - and the claim it makes about its own size stops ' +
+      'being true without anybody noticing',
+    [
+      responseFile(
+        THE_INDEX_CARRIES_WHAT_A_SEARCH_PAYS_FOR,
+        `      exports: identity.exports,
+      description: identity.summary.repeat(8),`,
+      ),
+    ],
+    killed(['the-index-stays-the-smallest-thing-the-registry-serves']),
   ),
 ]
 

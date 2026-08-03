@@ -173,10 +173,38 @@ export const clamp = (value: number, low: number, high: number): number =>
   })
 
   /**
-   * And it is sticky towards true. A feature that arrived as a dependency and is later installed by
-   * name becomes a root; the reverse never happens, because an upstream graph gaining an edge does not
-   * unask what the user asked for.
+   * And it is sticky towards true, in both directions - which is two claims and needs two scenarios.
+   *
+   * A feature that arrived as a dependency and is later installed by name becomes a root. And a
+   * feature installed by name that later arrives as somebody else's dependency **stays** one, which is
+   * the direction stickiness is actually for: the second install records it as pulled in, and an
+   * upstream graph gaining an edge does not unask what the user asked for. Measured by U-29, which the
+   * first scenario alone could not see.
    */
+  it('a-root-stays-one-when-something-else-pulls-it-in', () => {
+    const project = aProject()
+    try {
+      const asked = mustInstall(installing(imaginedSource(), project, 'string/pad'))
+      const first = committing(project, asked)
+
+      expect(first.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor).toBe(
+        true,
+      )
+
+      const graph = mustInstall(installing(imaginedSource(), project, 'number/round', first))
+      const after = lockfileAfter(first, graph.features)
+
+      expect(
+        graph.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor,
+      ).toBe(false)
+      expect(after.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor).toBe(
+        true,
+      )
+    } finally {
+      project.remove()
+    }
+  })
+
   it('a-feature-pulled-in-and-then-asked-for-becomes-a-root', () => {
     const project = aProject()
     try {

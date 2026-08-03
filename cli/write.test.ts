@@ -97,6 +97,33 @@ describe('writing into somebody else project', () => {
   })
 
   /**
+   * What the two phases are actually worth, and the guard above could not see it.
+   *
+   * Measured by U-09, which writes each file straight to its destination: the project ends in the
+   * same state either way, because the cleanup that removes a staged file removes a directly written
+   * one too. What only staging protects is a file that was **already there** - written straight, it is
+   * truncated before anybody knows whether the commit can finish, and a refusal three files later
+   * leaves the user with neither their version nor ours.
+   */
+  it('a-refused-commit-does-not-touch-the-file-it-would-replace', () => {
+    inProject((project) => {
+      project.write('src/lib/toopo/string/pad/pad.ts', 'export const pad = "what was there"\n')
+      mkdirSync(join(project.root, project.configuration.directory, 'number/sign/sign.ts'), {
+        recursive: true,
+      })
+
+      const written = commit(project.root, project.configuration.directory, {
+        writes: [A_FILE('export const pad = 2\n'), ANOTHER('export const sign = 2\n')],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect('faults' in written).toBe(true)
+      expect(project.installed('string/pad/pad.ts')).toBe('export const pad = "what was there"\n')
+    })
+  })
+
+  /**
    * The second one. Measured on Windows, renaming onto a directory is EPERM and says nothing a caller
    * can act on, so the kind of what sits at the destination is asked before anything is staged.
    */
@@ -151,9 +178,14 @@ describe('writing into somebody else project', () => {
         lockfile: EMPTY_LOCKFILE,
       })
 
+      // The folder and not only the files: an emptied directory holds nothing, so a walk that lists
+      // files alone cannot tell one that was tidied away from one that was left behind. Measured by
+      // U-13, which this assertion did not see until it asked about the folder itself.
       expect(everythingUnder(join(project.root, project.configuration.directory))).toEqual([
         'number/sign/sign.ts',
       ])
+      expect(existsSync(join(project.root, project.configuration.directory, 'string/pad'))).toBe(false)
+      expect(existsSync(join(project.root, project.configuration.directory, 'string'))).toBe(false)
     })
   })
 
