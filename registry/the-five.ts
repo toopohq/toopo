@@ -124,6 +124,14 @@ export const theFive: readonly ContractSource[] = [
       classField: 'sampleClass',
       vocabulary: ACCEPTED_AND_REJECTED,
       profiles: numberParse.benchmarkProfiles,
+      /**
+       * One profile of the five here, and the only one of this contract whose value is worth less to
+       * a reader than the expression: its samples encode to 7.3 kB of which five thousand characters
+       * are the digit zero. The other four encode to between 0.3 and 0.5 kB and are carried.
+       */
+      producedBy: {
+        'long-inputs': `['0.' + '1'.repeat(1000), '0'.repeat(5000) + '1', ' '.repeat(1000) + '42']`,
+      },
     },
     // The only contract of the five that publishes nothing beyond the shared seven.
     ownDeclarations: [],
@@ -275,6 +283,25 @@ export const theFive: readonly ContractSource[] = [
         { name: 'empty', meaning: 'no elements at all' },
       ],
       profiles: groupBy.benchmarkProfiles,
+      /**
+       * Five of the six, and this contract is why the arm exists at all: three of these encode to
+       * 1.73 MB each, one to 100.9 kB and one to 14.1 kB, against 0.4 kB for `empty`, which is
+       * carried. Its record was 5.22 MB and 99.2 per cent block 4.5 before this map existed.
+       *
+       * **Two entries hold the same text, and that is the residual gap the transcription guard
+       * cannot see.** `one-group-per-element` and `single-group` genuinely draw the same three
+       * ranges and differ only in the key function, so if one of them became literal tomorrow the
+       * other would keep the text alive in `contract.ts` and the guard would stay green. It is the
+       * only instance in the five, it is named here rather than left for a reader to find, and it is
+       * why `benchmarks.profiles[].samples.producedBy` is classified `one-directional`.
+       */
+      producedBy: {
+        'one-group-per-element': '[range(10), range(1_000), range(50_000)]',
+        'single-group': '[range(10), range(1_000), range(50_000)]',
+        'few-large-groups': '[range(1_000), range(50_000)]',
+        'many-small-groups': '[range(60), range(3_000)]',
+        'string-keys': '[range(400).map((n) => String(n * 3))]',
+      },
     },
     ownDeclarations: [
       // Prose. Nothing imports them, so nothing refuses a wrong value.
@@ -324,6 +351,10 @@ export const theFive: readonly ContractSource[] = [
         { name: 'far', meaning: 'more than a quarter of the longer side, where no band helps' },
       ],
       profiles: levenshtein.benchmarkProfiles,
+      // Every profile here produces at least one sample with `wordOfLength` or `repeated`, and every
+      // one of them is carried anyway: they encode to between 0.9 and 3.1 kB, so the value tells a
+      // reader more than the call would. Producing a sample and pointing at it are two different
+      // questions, and this contract is where they come apart.
     },
     ownDeclarations: [
       // Prose, imported by nothing. The decision they record is real; no guard refuses a wrong one.

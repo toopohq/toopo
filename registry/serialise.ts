@@ -31,10 +31,11 @@ import type {
   OwnDeclaration,
   ProfileClassRecord,
   ProfileRecord,
+  ProfileSamples,
   SupportingTypeRecord,
   UniversalPropertyRecord,
 } from './contract-record.js'
-import { digestOfBytes, servedBytes } from './canonical.js'
+import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { VerificationStratum } from './field-map.js'
 import type { BatteryRecord, CaseProvenance } from './evidence.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
@@ -47,7 +48,8 @@ export const REPOSITORY_ROOT = join(import.meta.dirname, '..')
 /** The three fields every table of every contract shares, and the only three. */
 const SHARED_CASE_FIELDS = ['id', 'provenance', 'rationale'] as const
 
-const PROFILE_FIELDS_THE_SCHEMA_NAMES = ['name', 'description'] as const
+/** `samples` is here because five of five call it that, which is the catalogue's bar for naming. */
+const PROFILE_FIELDS_THE_SCHEMA_NAMES = ['name', 'description', 'samples'] as const
 
 export type CaseTableSource = {
   readonly name: string
@@ -60,6 +62,15 @@ export type ProfileSource = {
   readonly classField: string
   readonly vocabulary: readonly ProfileClassRecord[]
   readonly profiles: readonly Readonly<Record<string, unknown>>[]
+  /**
+   * The profiles whose samples the record points at rather than carries, by name, each with the
+   * expression in `contract.ts` that produces them.
+   *
+   * A profile absent from this map is carried. The choice is a judgement frozen with the major and
+   * not a size policy - `ProfileSamples` says why - and the expression is the only transcribed thing
+   * in the whole arm, guarded by occurrence in the contract's own source.
+   */
+  readonly producedBy?: Readonly<Record<string, string>>
 }
 
 export type OwnDeclarationSource = {
@@ -201,21 +212,57 @@ const caseOf = (
   }
 }
 
-const profileOf = (entry: Readonly<Record<string, unknown>>, classField: string): ProfileRecord => {
-  const named = [...PROFILE_FIELDS_THE_SCHEMA_NAMES, classField]
-  const data = Object.fromEntries(Object.entries(entry).filter(([name]) => !named.includes(name)))
+/**
+ * The samples of one profile, carried or pointed at.
+ *
+ * Everything in the pointing arm except the expression is read from the module rather than declared,
+ * and that is the whole reason the arm is safe. A count and a digest read off the values are facts,
+ * so there are not two statements about them for a record to make disagree - and a guard that
+ * compared a declared size against the samples it was declared from would be comparing the contract
+ * against itself.
+ */
+const samplesOf = (
+  entry: Readonly<Record<string, unknown>>,
+  where: string,
+  producedBy: string | undefined,
+): ProfileSamples => {
+  const samples = entry['samples'] as readonly unknown[]
+  const values = samples.map((sample, at) => encode(sample, `${where}.samples[${at}]`))
+
+  if (producedBy === undefined) return { kind: 'carried', values }
 
   return {
-    name: entry['name'] as string,
+    kind: 'produced',
+    producedBy,
+    count: values.length,
+    encodedBytes: Buffer.byteLength(canonical(values, `${where}.samples`), 'utf8'),
+    sha256: digestOf(values, `${where}.samples`),
+  }
+}
+
+const profileOf = (
+  entry: Readonly<Record<string, unknown>>,
+  classField: string,
+  producedBy: Readonly<Record<string, string>>,
+): ProfileRecord => {
+  const name = entry['name'] as string
+  const named = [...PROFILE_FIELDS_THE_SCHEMA_NAMES, classField]
+  const data = Object.fromEntries(Object.entries(entry).filter(([field]) => !named.includes(field)))
+
+  return {
+    name,
     description: entry['description'] as string,
     class: entry[classField] as string,
-    data: encode(data, `profile ${String(entry['name'])}`),
+    samples: samplesOf(entry, `profile ${name}`, producedBy[name]),
+    data: encode(data, `profile ${name}`),
   }
 }
 
 const benchmarksOf = (source: ProfileSource): BenchmarksRecord => ({
   vocabulary: source.vocabulary,
-  profiles: source.profiles.map((entry) => profileOf(entry, source.classField)),
+  profiles: source.profiles.map((entry) =>
+    profileOf(entry, source.classField, source.producedBy ?? {}),
+  ),
   // Declared and never measured, on all five, which is the state they will be published in.
   measurements: [],
 })

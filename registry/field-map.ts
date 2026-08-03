@@ -173,6 +173,28 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   // true of them, which is the guard `number/parse@1` shipped without and paid for.
   'benchmarks.profiles[].class': { visibility: 'public', verification: 'executable' },
   'benchmarks.profiles[].data': { visibility: 'public', verification: 'executable' },
+
+  // Which arm of `ProfileSamples` a profile uses. Not representable wrong: the serialiser derives it
+  // from whether the source names a producing expression, and the union refuses anything else.
+  'benchmarks.profiles[].samples.kind': { visibility: 'public', verification: 'structural' },
+  // The samples themselves, which is where `profiles.test.ts` actually bites.
+  'benchmarks.profiles[].samples.values[]': { visibility: 'public', verification: 'executable' },
+  /**
+   * The third `one-directional` field in the catalogue, and the same shape as GS-11 and as
+   * `staticAnalysisRequirements`. The guard requires this text to occur in the contract's own
+   * `contract.ts`; nothing establishes that it is the expression that produced *these* samples. The
+   * concrete gap is named in `the-five.ts`: `one-group-per-element` and `single-group` transcribe the
+   * same three ranges, so either could become literal while the other kept the text alive.
+   */
+  'benchmarks.profiles[].samples.producedBy': {
+    visibility: 'public',
+    verification: 'one-directional',
+  },
+  // Read off the values rather than declared, so there is one statement and nothing to make disagree.
+  // What can still be wrong is the serialiser, and `registry-storage` is the battery that shows it.
+  'benchmarks.profiles[].samples.count': { visibility: 'public', verification: 'structural' },
+  'benchmarks.profiles[].samples.encodedBytes': { visibility: 'public', verification: 'structural' },
+  'benchmarks.profiles[].samples.sha256': { visibility: 'public', verification: 'structural' },
   'benchmarks.measurements[]': {
     visibility: 'public',
     verification: 'documentary',
@@ -204,6 +226,7 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
 const LEAF_FIELDS = new Set([
   'caseTables[].cases[].data',
   'benchmarks.profiles[].data',
+  'benchmarks.profiles[].samples.values[]',
   'ownDeclarations[].value',
   'caseTables[].cases[].provenance.mutant',
   'benchmarks.measurements[]',

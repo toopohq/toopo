@@ -229,17 +229,85 @@ export type ProfileClassRecord = {
   readonly meaning: string
 }
 
+/**
+ * The samples of one profile, carried or pointed at.
+ *
+ * **Why the schema names `samples` at all.** It is the one field of a profile beyond the three
+ * already named that all five contracts call by the same name, with the same role - measured, five of
+ * five, over five vocabularies that share nothing else. That is the catalogue's own bar for naming
+ * something, and letting it fall into `data` would throw away a measurement.
+ *
+ * **Why there are two arms.** A contract may write its samples or produce them, and four of the five
+ * produce at least one - `.repeat`, `range`, `wordOfLength`, `repeated`; only `date/add@1` is
+ * entirely written. The frontier this record is built on is why the second arm cannot be avoided:
+ * `range` is a function, so by the time the registry reads a module the fifty thousand numbers are
+ * there and the three lines that made them are not. A record can hold the numbers or nothing.
+ *
+ * So the second arm holds neither, and holds instead what makes the omission checkable: the
+ * expression, the count, the size of what was left out, and the digest of the canonical encoding the
+ * first arm would have carried. A reader fetches `contract.ts` - already served, already hashed -
+ * evaluates it, re-encodes, and compares. Nothing has to be taken on trust.
+ *
+ * **The union is written before anything is published, and that is the whole reason it is written
+ * now.** Adding an arm to a union a caller switches on is a breaking change, so a record that shipped
+ * with one arm would cost `name@2` across the catalogue the first time a contract needed the other.
+ *
+ * **Which arm a profile uses is a judgement, made once, and frozen with the major.** It is not a size
+ * policy: a threshold would let a contract's record change shape because it gained an argument, and
+ * the shape of a record is exactly what publication freezes. The judgement is stated instead - a
+ * sample is carried when a reader is better served by the value than by the expression that produced
+ * it - and measured, that flips between 3.1 kB and 7.3 kB of encoded samples. Six profiles of the
+ * five sit above it and twenty-two below, and the six are the six whose values are repetition.
+ */
+export type ProfileSamples =
+  /** Carried. Twenty-two of the twenty-eight profiles of the five. */
+  | { readonly kind: 'carried'; readonly values: readonly EncodedValue[] }
+  /**
+   * Pointed at. Six of the twenty-eight: the five generated profiles of `array/group-by@1`, whose
+   * samples encode to 1.73 MB each for three of them, and `long-inputs` of `number/parse@1`, whose
+   * value is five thousand zeros and whose expression says so in eleven characters.
+   */
+  | {
+      readonly kind: 'produced'
+      /**
+       * The expression in the contract's own `contract.ts` that produces them, transcribed.
+       *
+       * The one transcribed thing in this arm, and therefore the only one that can be wrong.
+       * `against-the-five.test.ts` requires it to occur in that file, whitespace normalised - the
+       * discipline a declared type already carries - so a contract that replaced `range(50_000)` with
+       * fifty thousand literals would take the text with it and redden the guard. What that does not
+       * catch is a text that survives for another reason: the same expression written twice, or left
+       * behind in a comment. Recorded as `one-directional` in `field-map.ts` for exactly that gap.
+       *
+       * **It does not close before the launch, and it is the assumed price of this arm.** Tying an
+       * expression to the samples of one particular profile would mean evaluating it, and the
+       * frontier this record is built on is precisely that a generator is a function the registry
+       * cannot hold - so any stronger guard would have to re-run the contract's own module and
+       * compare it with itself. Requiring the transcribed texts to be distinct within a contract
+       * would close it and would force a lie, because the instance in the five is two profiles that
+       * genuinely draw the same three ranges.
+       */
+      readonly producedBy: string
+      /** Read from the module. How many samples the expression produced. */
+      readonly count: number
+      /** Read from the module. The size of the omission, in bytes of canonical encoding. */
+      readonly encodedBytes: number
+      /** Read from the module. The digest of the canonical encoding of the carried arm. */
+      readonly sha256: string
+    }
+
 export type ProfileRecord = {
   readonly name: string
   readonly description: string
   /** The class every sample of this profile must belong to, from the vocabulary above. */
   readonly class: string
+  readonly samples: ProfileSamples
   /**
    * Everything else the profile declares, by the same rule `CaseRecord.data` follows: what is left
-   * after the fields the schema names. Four of the five leave the samples; `array/group-by@1` leaves
-   * the samples and the key function they are grouped under, because half of its behaviour arrives
-   * as a function and a profile that named only its array would leave the expensive half of the call
-   * to whoever runs the benchmark.
+   * after the fields the schema names. Empty for four of the five; `array/group-by@1` leaves the key
+   * function its samples are grouped under, because half of its behaviour arrives as a function and a
+   * profile that named only its array would leave the expensive half of the call to whoever runs the
+   * benchmark.
    */
   readonly data: EncodedValue
 }
@@ -266,18 +334,27 @@ export type ProfileMeasurement = {
 /**
  * Block 4.5, and the one place where the code/data frontier has a size you can measure.
  *
- * A benchmark sample is data, so the record carries it - and a contract may *generate* its samples.
- * Measured over the five: four of them write their samples as literals and their whole records come
- * to between 71 and 152 kilobytes. `array/group-by@1` writes `range(50_000)` three times, and its
- * record is **24.2 megabytes, of which 99.4 per cent is this block**. The encoding accounts for some
- * of it - between 1.6 and 4.4 times the raw JSON, since every leaf becomes a tagged record - but the
- * size is the samples, not the tagging.
+ * Measured over the five, as the canonical text of a whole record in bytes - which is the form a
+ * digest is taken over, and therefore the only size worth publishing. `array/group-by@1` writes
+ * `range(50_000)` three times, and its record was **5.22 MB, of which 99.2 per cent was this
+ * block**, before `ProfileSamples` gained its second arm. With the six large profiles pointed at
+ * rather than carried, the five records are 32.1, 49.6, 44.6, 32.1 and 41.7 kB and block 4.5 is
+ * between 7.5 and 35.8 per cent of each. The one that used to be a hundred times the size of the
+ * others is now the third largest.
  *
- * The frontier is why it cannot be helped here: `range` is a function, so the record can hold the
- * fifty thousand numbers or nothing, never the three lines that produced them. What that costs is a
- * real question for the read API and for the site, and it is a question about *transport* rather than
- * about this schema - so it is measured here and left for the unit that serves records. The contract
- * that provokes it will never be published, which makes it a warning rather than a bill.
+ * What the six omit, measured: 1730.6, 1730.6, 1730.3, 100.4, 13.7 and 6.9 kB. Two of those digests
+ * are equal - `one-group-per-element` and `single-group` really do draw the same three ranges - which
+ * is the same fact from underneath as the transcription gap `the-five.ts` names beside them.
+ *
+ * **An earlier version of this comment published 71-152 kB, 24.2 MB and 99.4 per cent, and none of
+ * the three reproduces.** Measured again three ways on the records those figures described: flat
+ * gives 32.2-49.7 kB, 5.22 MB and 99.2 per cent; two-space indent gives 52.5-113.6 kB, 19.92 MB and
+ * 93.4 per cent; four-space indent gives 70.8-172.1 kB, 33.72 MB and 92.4 per cent. No serialisation
+ * produces that triple, and the share and the sizes cannot have come from one measurement - 99.4 per
+ * cent belongs to the flat family and 71-152 kB does not. Which figure was intended is not
+ * recoverable and is not worth guessing; what is recoverable is the rule it breaks, so it is written
+ * here rather than quietly replaced: **a published size names the serialisation it was taken under**,
+ * because there are three and they differ by a factor of six.
  */
 export type BenchmarksRecord = {
   readonly vocabulary: readonly ProfileClassRecord[]

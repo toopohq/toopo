@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto'
 import { describe, it, expect } from 'vitest'
 
 import { caseAddressFaults, contractAddressFaults } from './address.js'
+import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { ContractRecord, Lifecycle } from './contract-record.js'
 import { FIELD_MAP, pathsIn, publicContract } from './field-map.js'
 import { decode, encode } from './value.js'
@@ -33,10 +33,19 @@ const CONTRACT = { language: 'typescript', name: 'number/round', major: 1 } as c
 
 const NOT_YET_PUBLISHED: Lifecycle = { state: 'not-yet-published' }
 
-/** A real digest over a real string, so that nothing here is a fabricated measurement. */
-const digestOf = (text: string): string => createHash('sha256').update(text).digest('hex')
-
+/**
+ * A real digest over real bytes, so that nothing here is a fabricated measurement - and taken by the
+ * same two functions a real file goes through, so that the hand-written record is not hashed by a
+ * path no contract uses.
+ */
 const REFERENCE_SOURCE = 'export const round = (value: number, places: number): number | null => null\n'
+const REFERENCE_BYTES = servedBytes(Buffer.from(REFERENCE_SOURCE, 'utf8'))
+
+/** The values the `produced` arm below points at, so that its count and digest are read off them. */
+const TIE_SAMPLES = [
+  encode({ value: 1.005, places: 2 }, 'sixth'),
+  encode({ value: 2.675, places: 2 }, 'sixth'),
+]
 
 const theSixth: ContractRecord = {
   address: CONTRACT,
@@ -145,13 +154,26 @@ const theSixth: ContractRecord = {
         name: 'money',
         description: 'Two decimal places on ordinary amounts, the dominant shape.',
         class: 'ordinary',
-        data: encode({ samples: [{ value: 3.14159, places: 2 }] }, 'sixth'),
+        samples: { kind: 'carried', values: [encode({ value: 3.14159, places: 2 }, 'sixth')] },
+        data: encode({}, 'sixth'),
       },
       {
+        /**
+         * The other arm of `ProfileSamples`, so that the sixth contract exercises both. Every figure
+         * below is computed from the values rather than written, which is what the arm requires of a
+         * real contract and what stops this file from fabricating a measurement.
+         */
         name: 'ties',
         description: 'Values exactly halfway, where the rounding rule is the whole answer.',
         class: 'at-a-tie',
-        data: encode({ samples: [{ value: 1.005, places: 2 }, { value: 2.675, places: 2 }] }, 'sixth'),
+        samples: {
+          kind: 'produced',
+          producedBy: 'tiesBelow(3)',
+          count: TIE_SAMPLES.length,
+          encodedBytes: Buffer.byteLength(canonical(TIE_SAMPLES, 'sixth'), 'utf8'),
+          sha256: digestOf(TIE_SAMPLES, 'sixth'),
+        },
+        data: encode({}, 'sixth'),
       },
     ],
     measurements: [],
@@ -172,11 +194,7 @@ const theSixth: ContractRecord = {
     },
   ],
   harness: [
-    {
-      path: 'reference.ts',
-      sha256: digestOf(REFERENCE_SOURCE),
-      bytes: Buffer.byteLength(REFERENCE_SOURCE),
-    },
+    { path: 'reference.ts', sha256: digestOfBytes(REFERENCE_BYTES), bytes: REFERENCE_BYTES.byteLength },
   ],
 }
 

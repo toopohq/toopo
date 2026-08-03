@@ -147,6 +147,41 @@ describe('the five, read against their own source', () => {
     },
   )
 
+  /**
+   * The one transcribed thing in the pointing arm of `ProfileSamples`.
+   *
+   * Same discipline as a declared type, for the same reason and with the same normalisation: a
+   * contract that stopped producing its samples would take the expression out of `contract.ts` and
+   * redden this. What it cannot see is a text that survives for another reason, which is why the
+   * field is `one-directional` and why `the-five.ts` names the one instance in the five.
+   */
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'every-produced-expression-occurs-in-the-contract :: %s',
+    (_name, source) => {
+      const contract = flattened(sourceOf(source.folder, 'contract.ts'))
+      const missing = Object.entries(source.benchmarks.producedBy ?? {})
+        .filter(([, expression]) => !contract.includes(flattened(expression)))
+        .map(([profile]) => profile)
+
+      expect(missing).toEqual([])
+    },
+  )
+
+  /**
+   * A profile the source names and the contract does not have would be a pointing arm attached to
+   * nothing, and the record would silently keep carrying the samples it was meant to omit.
+   */
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'every-produced-profile-exists :: %s',
+    (_name, source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const known = new Set(record.benchmarks.profiles.map((profile) => profile.name))
+      const named = Object.keys(source.benchmarks.producedBy ?? {})
+
+      expect(named.filter((name) => !known.has(name))).toEqual([])
+    },
+  )
+
   it.each(theFive.map((source) => [source.address.name, source] as const))(
     'every-harness-file-is-hashed :: %s',
     (_name, source) => {
