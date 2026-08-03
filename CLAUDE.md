@@ -65,7 +65,8 @@ gaining a diagnostic, not reshaping one.
 ## Case identifiers — settled, catalogue-wide
 
 Every case of block 4.4 carries an `id`: a **name**, in kebab-case, unique within the contract and
-**frozen with its major version**. Guards are titled by it and by nothing else.
+**frozen with its major version**. The guards that assert a case are addressed by it — see
+*Guard identifiers* below, which generalised this rule to every guard in the catalogue.
 
 A name, and not a rendering of the case's own data. `"1e400" -> overflow` restates the row it
 addresses, so it can be wrong about it, and §4.4 makes every case one line of public documentation —
@@ -82,6 +83,59 @@ The reason that outlives the instrument is the registry's: an API response citin
 anchor on a contract's page, a validation report naming the case a submission failed — each needs an
 address, and an address that changes breaks links. Renaming one therefore costs `name@2`, exactly as
 reshaping a reason set does.
+
+## Guard identifiers — settled, catalogue-wide
+
+Every guard carries an **identifier**: a name, in kebab-case, unique within its contract and **frozen
+with its major version**. A guard's title is that identifier, then ` :: `, then a sentence for
+whoever reads the runner's output — or the identifier alone, when it says everything. Batteries pin
+identifiers, attribution reports identifiers, and `calibrate()` refuses a guard whose title carries
+no well-formed one, or two guards of one contract answering to one.
+
+A guard needs two things and they are not the same object. It needs an **address** — a battery pins
+it, an attribution cites it, and a validation report will one day put it in front of a submitter. And
+it needs a **sentence**, because test output is read by people. One string doing both means every
+reword breaks a pin, and it means a title rendered from the contract's own data renames the guard a
+specification mutant reddens.
+
+That second failure was measured rather than argued. LS-13 of `string-levenshtein-spec` relabels the
+`identical` benchmark profile as `far` — a profile that claims to time the fast path, published as
+timing the worst case. Before this rule its guard reddened under `identical - every sample is far`, a
+title the unmutated contract does not contain, so calibration never saw it and attribution had
+nothing to attribute. The battery passed, reported thirteen of thirteen defects killed, and went on
+calling that region one no mutant probes — while a mutant probed it. The refusal the instrument is
+built around, *a declaration a mutant contradicts is stale*, could not fire. After the change it
+fires, the declaration had to go, and `identical` left the unprobed list. **That is the one class of
+defect these identifiers make detectable.** The other 466 guards are a tidying for the registry, and
+it is recorded as one rather than dressed up.
+
+**Uniqueness is per contract.** The instrument can only break inside a contract — a battery injects
+into one folder, and attribution already filters guards to the contract under measurement — and the
+registry will address a guard by the pair `(contract identity, guard identifier)`, exactly as it
+addresses a case. A globally unique identifier would encode the contract into the name, duplicating
+what the pair already carries and making a contract rename a rename of every guard. The cost is
+stated so it is not discovered later: **the registry schema must always carry the pair, never the
+identifier alone.** Fifteen identifier strings are held by more than one contract today.
+
+**Three identifiers belong to the catalogue rather than to a contract**, and only three:
+`every-case-is-addressed`, `every-case-is-justified` and `universal-properties-answered`. Those are
+not five guards that resemble each other — the helper *is* the guard, one function applied five times
+— so each is a constant exported from `catalogue/every-contract.ts` and a contract cannot rename it
+locally. Renaming one costs a major on the whole catalogue, the discipline everything in that file
+already carries. The other twelve shared strings are five contracts asking the same question about
+different data: *resemblance is not duplication*, the rule the catalogue already applies to
+`outputsAreEqual`, so each contract owns its own and two may coincide.
+
+**The separator is ` :: `, and it is ASCII on purpose.** It cannot occur inside an identifier,
+because an identifier has no spaces, so the split cannot be wrong. An em dash reads better and would
+have been the first non-ASCII code point in any title in the catalogue: measured, none of the 467
+carries one, and `number/parse@1` is where the cost of a stray non-ASCII character in a source file
+was paid once already.
+
+**What this does not cover, and it is not an oversight.** `npm test` will never see a duplicate
+identifier: a guard cannot enumerate the tests vitest collected, so the refusal lives in
+`calibrate()`, where the identities are already gathered. A contributor who writes a duplicate learns
+it from the first battery they run, not from the suite.
 
 ## What a property settles — settled, catalogue-wide
 

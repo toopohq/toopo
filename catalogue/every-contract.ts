@@ -63,6 +63,124 @@ import { expect } from 'vitest'
 // it.
 // ---------------------------------------------------------------------------
 
+/**
+ * What a reviewer can establish about a contract in front of them, without running it.
+ *
+ * It belongs here by the criterion this file already applies to `referenceImplementationRules`: a
+ * requirement a reviewer can check by reading a contract is a rule of the catalogue, and a rule kept
+ * in a planning document is a rule the person writing the sixth contract never reads. Every entry
+ * was established by reading the five prototypes and carries what that reading measured, rather than
+ * what it hoped for.
+ *
+ * Three strata, and they are not worth the same.
+ *
+ * `required` was measured present in all five. A sixth contract omitting one is departing from
+ * something rather than choosing freely, and the two entries not yet at five say so with a number
+ * instead of being quietly promoted.
+ *
+ * `dependsOnTheFunction` cannot be universal: what it asks for depends on what the function does. A
+ * reviewer checks that it is present and justified, never that it holds a particular value.
+ *
+ * `observedOnce` is the honest stratum. Each entry was proved by exactly one contract, so it is an
+ * observation and the most likely thing here to be wrong. It is published rather than promoted,
+ * because a rule with one exemplar is a guess wearing a rule's clothes - the mistake three
+ * hand-written contracts were spent avoiding.
+ *
+ * Nothing below is enforced by a test, and that is deliberate. These are established by reading a
+ * contract rather than by running one, exactly like `referenceImplementationRules`, so the
+ * validation pipeline is what will enforce them - and a requirement that lived only inside that tool
+ * would not be part of a catalogue whose whole product is auditability.
+ */
+export const contractAnatomy = {
+  required: [
+    {
+      requirement: 'a folder of seven files with fixed names',
+      measured: 'five of five. `array/group-by@1` carries nine; the two extras are its own.',
+    },
+    {
+      requirement:
+        '`contract.ts` exports exactly seven shared names - identity, targetEnvironments, ' +
+        'outputsAreEqual, propertyRuns, universalProperties, BenchmarkProfile, benchmarkProfiles',
+      measured:
+        'five of five, and no other export is carried by more than two of them: failureReasons, ' +
+        'couplingRule and BenchmarkSample sit at two, everything else at one.',
+    },
+    {
+      requirement:
+        '`identity` carries name, major, exportName, summary, description, inputDomain and ' +
+        'searchAliases',
+      measured:
+        'five of five for those seven. `relationToTheLanguage` is an eighth field and sits at three ' +
+        'of five - missing from exactly the two contracts that also owe the divergence replay below. ' +
+        'One debt with two symptoms, and the reason it is a debt is in the project specification.',
+    },
+    {
+      requirement:
+        'a named signature type, checked with `toEqualTypeOf` and never with `toMatchTypeOf`',
+      measured: 'five of five - and `toMatchTypeOf` appears zero times in the catalogue.',
+    },
+    {
+      requirement:
+        '`propertyRuns` is published with the measurement that chose it: three draw counts and ' +
+        'three durations',
+      measured: 'five of five, three independent measurements behind one shared figure.',
+    },
+    {
+      requirement:
+        '`universalProperties` answers the catalogue\'s four names, in order, each with ' +
+        '`applicable` and a non-empty reason, and the inapplicable list is passed explicitly',
+      measured: 'five of five - `expectUniversalPropertiesAnswered` is the guard.',
+    },
+    {
+      requirement:
+        'every case of block 4.4 carries a unique frozen kebab-case `id`, a `provenance` and a ' +
+        'non-empty `rationale`, and every guard is addressed by an identifier',
+      measured:
+        'five of five for the cases; 467 of 467 for the guards, none duplicated inside a contract.',
+    },
+    {
+      requirement: '`reference.ts` follows `referenceImplementationRules` in this file',
+      measured: 'five of five.',
+    },
+    {
+      requirement:
+        'two batteries, one calibration mutant, arms that are git refs, every cell pinned, and ' +
+        'every silent guard declared - out of this battery\'s reach, or an unprobed region with ' +
+        'its nature',
+      measured: 'five of five, over ten batteries and 365 cells.',
+    },
+    {
+      requirement: 'a guard whose verdict can depend on elapsed time declares its own timeout',
+      measured: 'five of five - the rule and what it rests on are `CLOCK_DEPENDENCE_RULE`.',
+    },
+    {
+      requirement:
+        'a contract that diverges from the ecosystem or from the language replays the divergence ' +
+        'on its own table',
+      measured:
+        'three of five. Which two are in debt, and why it is a debt rather than an exception, are ' +
+        'recorded in the project specification.',
+    },
+  ],
+
+  dependsOnTheFunction: [
+    'a diagnostic export and a coupling property, and only if the function can fail - two of five',
+    'the vocabulary of block 4.5: five contracts produced five vocabularies with no overlap, which ' +
+      'is exactly why it must never be mutualised',
+    'the size of the table and the number of properties, which trade against each other',
+    'the second lens: five contracts asked five different questions with it',
+  ],
+
+  observedOnce: [
+    '`outcome.ts` and `language.test.ts`',
+    '`ecosystem`, `composeInsteadOfConfiguring` and `lossiness` as data exports',
+    'the `table-blind` lens',
+    '`identity-blind` on a monomorphic signature',
+    'the central claim published as a list of data - `metricAxioms` in one contract, `theRule` in ' +
+      'another. Two shapes, so an observation and not a rule.',
+  ],
+} as const
+
 // ---------------------------------------------------------------------------
 // How a reference implementation is written
 // ---------------------------------------------------------------------------
