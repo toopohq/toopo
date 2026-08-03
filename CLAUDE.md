@@ -20,9 +20,11 @@ repetition instead of being designed up front; what they turned out to repeat id
 in `catalogue/`, and the checklist a sixth contract is measured against is `contractAnatomy` in that
 same file. The uncertainty of this project was in the contract format, and it has been spent.
 
-Next comes the registry — data schema, immutable storage, read API, publishing tool — and before any
-of it, the conformance controller that makes `contractAnatomy` executable. No API, CLI or website
-exists yet, deliberately and in that order.
+Next comes the registry — data schema, immutable storage, read API, publishing tool — and beside it the
+conformance controller. That controller does **not** make `contractAnatomy` executable, and the triage
+below says why: three of its eleven entries are settled by a syntax tree, four need a module a stage
+has already vetted, and four are a reader's for ever. No API, CLI or website exists yet, deliberately
+and in that order.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -221,6 +223,37 @@ table rather than described.
 month — and neither carries such a guard. That is recorded here as a debt against this rule rather
 than as an exception to it.
 
+## The security filter fails closed — settled
+
+**A name a submission has not declared is refused unless it is permitted.** The rule that replaced a
+list of twenty-three forbidden globals is a list of what a pure function may name, and everything
+else — `fetch`, `document`, `crypto`, `require`, and the one nobody has thought of — is refused with
+no entry anywhere. A list of the bad names fails open on the global nobody anticipated, and *nobody
+anticipated it* is the failure mode that matters. On the mechanism the whole supply-chain argument
+rests on, failing closed is the only defensible direction.
+
+**What makes the closed form affordable is the catalogue's perimeter, and it was measured rather than
+assumed.** The five reference implementations between them read seven free identifiers — `Array`,
+`Date`, `Map`, `Math`, `Number`, `Object`, `undefined` — and every `.ts` file of `contracts/` adds
+only seven more. The permitted list is drawn at the ECMAScript standard library minus what reaches
+beyond the call, which a reader can check; `eval`, `Function`, `globalThis`, `Intl`, `WeakRef`,
+`FinalizationRegistry`, `SharedArrayBuffer` and `Atomics` are the language's own names that stay out,
+each with its reason. **`Intl` is the one I decided against the brief on**: every one of its
+constructors falls back to the host's default locale when none is supplied, which is ambient input of
+exactly the family `Date.now` is.
+
+**The false-refusal cost is zero on the catalogue, and one existing false refusal was closed.** The
+rule asks the compiler's binder where a name is bound rather than reading names, so a parameter
+called `process` is a parameter. That is what makes the closed list strictly stronger than the open
+one in both directions at once — without it, the same lexical reading either refuses the parameter or
+lets a shadowed global through, and there is no third answer. The measured boundary moved from six
+refused lines to eight: one evasion closed (`const evaluate = eval`, a capture with no call to read),
+two new spellings caught (`{ fetch }`, and a free read of a name another scope binds), and the
+over-refusal gone.
+
+**Types are out of scope on purpose.** A type is erased and reaches nothing, so refusing one would buy
+nothing and would cost the whole of `lib.*.d.ts` in the permitted list.
+
 ## What the repository declares and nothing keeps — closes before the launch
 
 One form, found four times in a single sweep and certain to be found again: **a thing that behaves
@@ -229,19 +262,51 @@ like a rule, with nothing making it hold.** The vocabulary for it already exists
 close. A published version is frozen for life, so a declaration that is decorative at launch is
 decorative for ever.
 
-- `staticAnalysisRequirements` of `date/add@1` — twenty forbidden local-time methods, and the only
-  guard requires the reasons to be non-empty.
-- `referenceImplementationRules`, `contractAnatomy` and `CLOCK_DEPENDENCE_RULE` in
-  `catalogue/every-contract.ts` — declared, cited in prose, imported by nothing executable.
+**Closed by stage 1 of the validation pipeline.**
+
+- `staticAnalysisRequirements` of `date/add@1` — stage 1 reads the twenty forbidden local-time methods
+  off the contract itself and refuses a submission that calls one. The record classifies the field
+  `executable` and **carries the address of the guard**, which serialisation refuses if it does not
+  resolve — the treatment `found-by-mutation` already had, applied to the other claim a record makes
+  about its own verification.
+- `referenceImplementationRules` — its first rule is what `states-its-own-signature` refuses, and the
+  refusal a submitter reads is **that declaration's own sentence** rather than a retelling of it. It
+  moved to `catalogue/reference-implementation.ts` for a mechanical reason worth recording: production
+  code cannot import a file that imports vitest, and `every-contract.ts` does because three of its
+  exports *are* guards. Its second rule stays a reader's and `contractAnatomy` says why.
+
+**Still open, and what each one now costs.**
+
+- `contractAnatomy` — triaged entry by entry against stage 1's own constraint, *readable in the source
+  alone, without evaluating the module*: **three of the eleven are settled by the source alone, four
+  need the module, four are a reader's and no stage will ever take them.** So the conformance
+  controller is not "`contractAnatomy` made executable"; it is three entries, and a fourth stage that
+  evaluates a vetted module takes four more. The triage is data on each entry and one guard keeps the
+  half that can be kept — a new entry with no verdict is refused.
+- `CLOCK_DEPENDENCE_RULE` — declared, cited in prose, imported by nothing executable. It is one of the
+  four a reader keeps: which guards *can* depend on elapsed time is a judgement about what a defect
+  could do to a guard.
 - `benchmarks.profiles[].name` — frozen by the section above, enforced by nothing.
 - `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
   `one-directional` fields the schema already carried, with GS-11 as the measurement.
+
+**Four more instances were found by building the address rather than by looking for them, and that is
+the argument for building mechanisms rather than lists.** Ten entries of `TYPESCRIPT_SURFACE` were
+guarded and read by nothing, so the guard covered a dependency the analyser did not have.
+`GuardAddress`, `renderGuard` and `guardAddressFaults` were declared in `address.ts` and used by
+nothing — the address this unit needed already existed, unused. Four `ownDeclarations` claimed
+`executable` and named no guard; one of them, `keyFunctionRules`, turned out to be `structural` — no
+guard runs an implementation against it. And M-08 of `array/group-by@1` pinned one of the four guards
+it reddens where the repository's own rule says name all of a set of five or fewer, which is how
+`profileKeyFunctions` had no citable guard to point at.
 
 **The mechanism that closes the class for every address at once is a pre-flight refusal of a pin that
 names a guard no guard carries.** It is cheap — seconds against the ten minutes a battery costs — and
 it turns a stale case identifier, guard identifier or profile name from a silence into an error, with
 no renaming anywhere. It has been set aside twice. It opens the unit after the validation pipeline's
-first stage, and it is written down here so that there is no third time.
+first stage, and it is written down here so that there is no third time. Note what it is *not*: a
+guard address today resolves against the guards a battery **names**, which is a real refusal and a
+weaker one than asking whether the guard exists.
 
 ## Rules for this stage
 
