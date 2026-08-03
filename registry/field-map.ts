@@ -167,7 +167,17 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
 
   'benchmarks.vocabulary[].name': { visibility: 'public', verification: 'executable' },
   'benchmarks.vocabulary[].meaning': { visibility: 'public', verification: 'documentary' },
-  'benchmarks.profiles[].name': { visibility: 'public', verification: 'documentary' },
+  /**
+   * The fourth `one-directional` field, and it arrived from the guard-identifier sweep rather than
+   * from a mutant. A profile's name is frozen with the major - the registry cites it in a benchmark
+   * figure, the site anchors on it, a validation report names the profile a submission failed - and
+   * it was already an address in fact, since the five specification batteries pin `profile-<name>`
+   * identifiers. Nothing enforces the freeze. A mutant that renamed a profile would rename the guard
+   * built from it; where a battery pins that identifier the rename is caught by the pin no longer
+   * matching, and where it only appears in a silence declaration what comes out is a declaration
+   * naming nothing beside a new unaccounted silence. Neither is a guard over the freeze.
+   */
+  'benchmarks.profiles[].name': { visibility: 'public', verification: 'one-directional' },
   'benchmarks.profiles[].description': { visibility: 'public', verification: 'documentary' },
   // `profiles.test.ts` runs the reference over every sample and refuses a profile whose name is not
   // true of them, which is the guard `number/parse@1` shipped without and paid for.

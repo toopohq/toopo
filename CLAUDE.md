@@ -123,11 +123,35 @@ API without anyone saying so. A fourth appeared, the list was updated, the name 
 written to detect a silent change was blinded by its own name. Renaming is the repair rather than
 correcting the number, because a name that has to be edited whenever the data moves is not an address.
 
+**A count and a state are not the same thing, and this is what separates them: falsifying the name and
+reddening the guard are the same event, or they are not.** An identifier that renders a *state*
+disappears with the claim it carries — `nothing-is-measured-yet` asserts `toEqual([])` three times and
+holds no number to drift from, so the day a figure is measured the guard is retired rather than
+renumbered. An identifier that renders a *count* survives the data: the list grows, the assertion is
+edited, the name stays, and it has become a lie. That is the rule to apply to the next case, and it
+decides it without a second opinion.
+
 What this does *not* forbid is a number that names the subject of a case rather than tallying a
-collection — `two-decimal-points`, `p4-triangle-inequality`, `signature-accepts-two-strings` — nor a
-claim whose falsification retires the guard instead of editing it: `nothing-is-measured-yet` asserts
-`toEqual([])` three times and carries no number to drift from. An identifier derived from a *frozen*
-address stays an address, which is what `${id}-described` and the `eachContract` slug are.
+collection — `two-decimal-points`, `p4-triangle-inequality`, `signature-accepts-two-strings`. An
+identifier derived from a *frozen* address stays an address, which is what `${id}-described` and the
+`eachContract` slug are.
+
+**A benchmark profile's name is frozen with the major version**, for the reason a case identifier and
+a guard identifier already are: the registry will cite it in a benchmark figure, the site will make it
+a URL anchor, and a validation report will name the profile a submission failed. It was already an
+address in fact — the five specification batteries pin `profile-<name>` identifiers and one of them
+documents `profile-identical` as *the address* in as many words — and it was the only derived
+identifier in the catalogue that nothing declared frozen. Twenty-eight guards were left alone: the gap
+was the missing declaration, not the names.
+
+**And the freeze is a policy, not a mechanism, which is said here rather than discovered later.** A
+mutant that renames a profile still renames the guard built from it. Where a battery pins that
+identifier the rename is caught, because the pinned `by` no longer matches; where it only appears in a
+silence declaration, what the rename produces is a declaration naming nothing and a new unaccounted
+silence. Neither is a guard over the freeze itself. `benchmarks.profiles[].name` is therefore
+classified `one-directional` in `field-map.ts` — a real declaration that nothing here enforces — and
+what closes the class for every address at once is the pre-flight refusal of a pin naming a guard no
+guard carries, recorded in the launch debts below.
 
 **Uniqueness is per contract.** The instrument can only break inside a contract — a battery injects
 into one folder, and attribution already filters guards to the contract under measurement — and the
@@ -196,6 +220,28 @@ table rather than described.
 `number/parse@1` and `date/add@1` both diverge — from `Number` and from every library's fractional
 month — and neither carries such a guard. That is recorded here as a debt against this rule rather
 than as an exception to it.
+
+## What the repository declares and nothing keeps — closes before the launch
+
+One form, found four times in a single sweep and certain to be found again: **a thing that behaves
+like a rule, with nothing making it hold.** The vocabulary for it already exists — `one-directional`
+— and the list is kept here rather than scattered, because it is what the publishing tool has to
+close. A published version is frozen for life, so a declaration that is decorative at launch is
+decorative for ever.
+
+- `staticAnalysisRequirements` of `date/add@1` — twenty forbidden local-time methods, and the only
+  guard requires the reasons to be non-empty.
+- `referenceImplementationRules`, `contractAnatomy` and `CLOCK_DEPENDENCE_RULE` in
+  `catalogue/every-contract.ts` — declared, cited in prose, imported by nothing executable.
+- `benchmarks.profiles[].name` — frozen by the section above, enforced by nothing.
+- `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
+  `one-directional` fields the schema already carried, with GS-11 as the measurement.
+
+**The mechanism that closes the class for every address at once is a pre-flight refusal of a pin that
+names a guard no guard carries.** It is cheap — seconds against the ten minutes a battery costs — and
+it turns a stale case identifier, guard identifier or profile name from a silence into an error, with
+no renaming anywhere. It has been set aside twice. It opens the unit after the validation pipeline's
+first stage, and it is written down here so that there is no third time.
 
 ## Rules for this stage
 
