@@ -67,6 +67,10 @@ const ASTRAL_PROFILE_DESCRIPTION = `    description:
 
 const ONE_EDIT_SAMPLE = `      { a: 'address', b: 'adress' },`
 
+const IDENTICAL_PROFILE_CLASS = `    distanceClass: 'zero',
+    samples: [
+      { a: 'levenshtein', b: 'levenshtein' },`
+
 const IDENTITY_RATIONALE = `    rationale: 'A string is at distance zero from itself, which is the first axiom made concrete.',`
 
 const BOTH_EMPTY_CASE = `    id: 'both-empty',
@@ -111,6 +115,17 @@ const EVERY_AXIOM_STATED = 'publishes a statement for every metric axiom'
 
 const A_TRANSPOSITION = 'a-transposition'
 const ASTRAL_ALONE = 'an-astral-character-is-one-unit'
+
+/**
+ * The title the `identical` profile's guard carries **only while LS-13 is injected**, and the reason
+ * that sentence is possible to write at all.
+ *
+ * A block 4.5 guard is titled by rendering the profile's own declared class, so a specification
+ * mutant that rewrites the class rewrites the guard. This constant is therefore not the address of
+ * anything in the unmutated contract - it names a guard that exists in one cell of one battery - and
+ * it is the state the guard identifiers of this unit exist to end.
+ */
+const IDENTICAL_PROFILE_UNDER_LS_13 = 'identical - every sample is far'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -220,6 +235,21 @@ const mutants: readonly Mutant[] = [
       'guard about the table sees that one of the two decisions has stopped being made',
     [edgeCases(ONE_INSERTION_CASE, `    id: 'one-insertion',\n    a: 'abc',\n    b: 'ab',`)],
     killed([EVERY_PAIR_ONCE]),
+  ),
+  sameOnEveryLens(
+    'LS-13',
+    'the `identical` profile relabelled as a pair of unrelated strings - a benchmark that claims to ' +
+      'time the fast path and is published as timing the worst case. It is a real specification ' +
+      'defect on its own, and it is here for a second reason: it is the one mutant in the ten ' +
+      'batteries that rewrites data a guard\'s *title* is rendered from, which is the question this ' +
+      'unit had to answer with a measurement rather than with an argument. The guard reddens, and ' +
+      'reddens under a title the unmutated contract does not contain, so calibration never saw it: ' +
+      'the instrument attributes nothing to it, and the declaration below that calls its region ' +
+      'unprobed is not reported stale, which is the one refusal `instrument.test.ts` exists to ' +
+      'guarantee. The pin can only name the mutated title, and a pin that names a string no contract ' +
+      'carries is not an address.',
+    [contract(IDENTICAL_PROFILE_CLASS, IDENTICAL_PROFILE_CLASS.replace(`'zero'`, `'far'`))],
+    killed([IDENTICAL_PROFILE_UNDER_LS_13]),
   ),
 ]
 
