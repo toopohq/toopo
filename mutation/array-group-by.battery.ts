@@ -229,7 +229,11 @@ const behaviour: readonly Mutant[] = [
     // Four guards redden and the rule in `mutants.ts` says to name all of a set of five or fewer, so
     // this pin named one where it owed four. Found while giving `profileKeyFunctions` an address: the
     // benchmark guard below is what establishes that those key functions are run against an
-    // implementation at all, and it was red on a complete run while nothing named it.
+    // implementation at all, and it was red while nothing named it.
+    //
+    // Taken as the intersection of three independent runs, which is `attributionRuns` - two of these
+    // four are properties, and a pin naming a guard whose red depends on the draw is a battery that
+    // fails on the seed.
     killed([NAN_KEYS, 'profile-one-group-per-element', 'p1-the-groups-partition-the-input', 'p2-a-group-is-coherent-and-stable']),
   ),
   sameOnEveryLens(
