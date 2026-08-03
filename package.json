@@ -7,7 +7,9 @@
     "mutation": "node mutation/measure.ts",
     "meta": "vitest run --config mutation/vitest.config.ts",
     "registry": "tsc -p registry/tsconfig.json && vitest run --config registry/vitest.config.ts",
-    "validation": "tsc -p validation/tsconfig.json && vitest run --config validation/vitest.config.ts"
+    "validation": "tsc -p validation/tsconfig.json && vitest run --config validation/vitest.config.ts",
+    "cli": "tsc -p cli/tsconfig.json && vitest run --config cli/vitest.config.ts",
+    "toopo": "node cli/toopo.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
