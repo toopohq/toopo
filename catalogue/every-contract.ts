@@ -455,6 +455,35 @@ export const DETERMINISM_ORDERING_FINDING =
   'ordered under `no ambient input` rather than independent of it: every mutant measured to redden ' +
   'this property reddens that one too, and the memoise-last mutant reddens that one and not this'
 
+/**
+ * A guard perturbs the claim, never the object derived from it.
+ *
+ * The two instances are ten units apart and share no subject, which is what makes this a rule rather
+ * than an anecdote.
+ *
+ * `number/parse@1` wrote a property over `!result.ok`. The value it perturbed was the one the answer
+ * had already been derived into, so the property held for any implementation that derived it
+ * consistently - including a wrong one. It tested that a projection was a projection.
+ *
+ * The registry's storage wrote a guard that perturbed a *snapshot* field and required the digest to
+ * move. That establishes only that the digest covers what the projection already holds, which is true
+ * of every projection including one with a hole in it. Measured: a mutant that dropped the harness
+ * digests out of the projection passed it. Perturbing the *record* asks the question the guard exists
+ * for - can this contract change without its digest changing - and the mutant dies.
+ *
+ * The shape is the same both times. Something is derived, and a guard is written over the derived
+ * thing because that is what the code has to hand. What it then proves is that the derivation is
+ * self-consistent, which no defect this catalogue cares about would violate. The claim is always
+ * upstream of the derivation, and that is where a perturbation has to go in.
+ *
+ * `expectUniversalPropertiesAnswered` is the same rule, applied once, to one guard: the inapplicable
+ * list is passed in rather than computed, because deriving it from the array it checks would compare
+ * that array with itself. This is that sentence generalised, after it was needed twice more.
+ */
+export const GUARD_PERTURBATION_RULE =
+  'a guard perturbs the claim, never the object derived from it: perturbing the derived object ' +
+  'establishes that the derivation is self-consistent, which is true of a derivation with a hole in it'
+
 export const NO_AMBIENT_OUTPUT_FINDING =
   'not reachable by a property - a test cannot observe a write that happened before it ran, and a ' +
   'correct memoising cache is indistinguishable from a defect by behaviour alone'
