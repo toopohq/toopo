@@ -67,8 +67,8 @@
  * was declared" and leaves them to find out; this answers "these six files collected nothing".
  *
  * It costs no more to maintain. Adding a guard moves exactly one number either way - the file's, or
- * the total - so the number of edits per change is identical. What it costs is forty-two entries
- * to hold instead of four, and one edit whenever a file is added, renamed or removed.
+ * the total - so the number of edits per change is identical. What it costs is forty-nine entries
+ * to hold instead of five, and one edit whenever a file is added, renamed or removed.
  *
  * **The maintenance cost, stated plainly rather than discovered.** Adding a test breaks this pin.
  * That is the same price as a pinned verdict, already paid deliberately everywhere else in this
@@ -81,6 +81,11 @@
  * is the one that exercised the other half of this file: six new entries under a fourth configuration,
  * and that configuration had never been counted, so `censusFor` refused the battery before it measured
  * anything. The refusal fired on the first unit to reach it, which is what it was written for.
+ *
+ * A fourth time on the installer: seven new entries under a fifth configuration, counted before the
+ * battery was first run rather than after `censusFor` refused it. That the refusal did not fire is
+ * worth writing down beside the three measurements above: it is the only figure here that was not
+ * produced by being caught out.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -137,6 +142,16 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'validation/the-boundary.test.ts': 3,
     'validation/the-five.test.ts': 7,
     'validation/typescript-api.test.ts': 2,
+  },
+
+  'cli/vitest.config.ts': {
+    'cli/arguments.test.ts': 7,
+    'cli/breakage.test.ts': 8,
+    'cli/configuration.test.ts': 7,
+    'cli/install.test.ts': 15,
+    'cli/plan.test.ts': 6,
+    'cli/rewrite.test.ts': 7,
+    'cli/source.test.ts': 6,
   },
 
   'mutation/fixture/vitest.config.ts': {
