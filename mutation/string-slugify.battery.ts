@@ -472,11 +472,18 @@ const behaviour: readonly Mutant[] = [
       'writes, and it dies on both columns - which is what makes G-21 a measurement rather than an ' +
       'anecdote. What separates them is not the decision, it is the arbitrary: the generator that ' +
       'draws well-formed slugs carries a sharp s and carries no Cyrillic, so one of the two ' +
-      'curation decisions is reachable by a property and the other is not',
+      'curation decisions is reachable by a property and the other is not. P7 is what carries this ' +
+      'cell. P2 and P3 are red on it too and neither is pinned: breaking the fixed point this way ' +
+      'needs a sharp s immediately followed by a mark its base would absorb, and the stacked ' +
+      'generator built for those two properties carries no sharp s among its bases at all, so the ' +
+      'shape only arrives when `anyText` draws the two adjacent out of thirty symbols - measured ' +
+      'red on eight runs out of nine, and seven out of nine for P3 on the blinded column. That is a ' +
+      'gap in the generator rather than in the properties, and it is recorded here rather than ' +
+      'closed, because widening a support that no defect needs buys nothing this battery can show',
     [reference(LOWERED, `    const lowered = base.toLowerCase() === 'ß' ? 'ss' : base.toLowerCase()`)],
     {
-      'as-committed': killed([A_SHARP_S, IDEMPOTENCE, NO_COMPOSING_MARK, FIXED_POINT]),
-      'table-blind': killed([IDEMPOTENCE, NO_COMPOSING_MARK, FIXED_POINT]),
+      'as-committed': killed([A_SHARP_S, FIXED_POINT]),
+      'table-blind': killed([FIXED_POINT]),
     },
   ),
 ]

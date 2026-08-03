@@ -265,7 +265,13 @@ const behaviour: readonly Mutant[] = [
       'What kills it is that a collision inside one property run answers a *wrong number* for the ' +
       'second pair, and six of the eight guards in block 4.3 check the number rather than its ' +
       'stability. A cache survives a contract whose properties only compare answers with each other; ' +
-      'it does not survive one that knows what the answer should be',
+      'it does not survive one that knows what the answer should be. Seven guards go red and only ' +
+      'one is pinned, for the reason L-05 states above: P2 needs two pairs drawn inside one run ' +
+      'whose two strings concatenate to the same text, with the cached answer then wrong for the ' +
+      'second pair in a way discernibility can see, and the arbitraries produce that often but not ' +
+      'always - measured red on twenty-three runs out of twenty-five, and the two it missed were ' +
+      'reported by this instrument as a stale pin rather than as a defect. P7 is red on every one ' +
+      'of them',
     [
       reference(SIGNATURE, `const CACHE: Record<string, number> = {}\n\n${SIGNATURE}`),
       reference(
@@ -274,7 +280,7 @@ const behaviour: readonly Mutant[] = [
       ),
       reference(ANSWER, `  CACHE[a + b] = distance[left.length][right.length]\n\n${ANSWER}`),
     ],
-    killed([DISCERNIBILITY, ONE_EDIT]),
+    killed([ONE_EDIT]),
   ),
   sameOnEveryLens(
     'L-19',
