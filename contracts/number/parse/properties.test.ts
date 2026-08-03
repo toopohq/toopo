@@ -1,6 +1,9 @@
 import { describe, it } from 'vitest'
 import fc from 'fast-check'
-import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
+import {
+  UNIVERSAL_PROPERTIES_ARE_ANSWERED,
+  expectUniversalPropertiesAnswered,
+} from '../../../catalogue/every-contract.js'
 import { outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
 import { describeParseFailure, parseNumber } from './reference.js'
 
@@ -132,7 +135,7 @@ describe('number/parse@1 coupling between the two exports', () => {
 })
 
 describe('number/parse@1 universal properties', () => {
-  it('universal-properties-answered', () => {
+  it(UNIVERSAL_PROPERTIES_ARE_ANSWERED, () => {
     // The contract must never silently promote an inapplicable universal property back into a
     // passing test: a guard that cannot fail would inflate the green count with false assurance.
     // Both entries below were measured to be unfalsifiable here - one because strings are

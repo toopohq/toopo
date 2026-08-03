@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
+import {
+  UNIVERSAL_PROPERTIES_ARE_ANSWERED,
+  expectUniversalPropertiesAnswered,
+} from '../../../catalogue/every-contract.js'
 import { keyFunctionRules, outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
 import { groupBy } from './reference.js'
 
@@ -187,7 +190,7 @@ const callsUnder = (calls: readonly Call[], key: unknown): readonly Call[] =>
 // ---------------------------------------------------------------------------
 
 describe('array/group-by@1 specific properties', () => {
-  it('P1 - the groups partition the input: every element appears once, in exactly one group', () => {
+  it('p1-the-groups-partition-the-input :: every element appears once, in exactly one group', () => {
     // The liveness property of this contract, and the reason it is stated as a multiset rather than
     // as a count. A count catches an implementation that loses an element and misses one that files
     // an element under two keys; the multiset catches both, and catches an implementation that
@@ -202,7 +205,7 @@ describe('array/group-by@1 specific properties', () => {
     )
   })
 
-  it('P2 - a group holds exactly the elements that were given its key, in the order they were given it', () => {
+  it('p2-a-group-is-coherent-and-stable :: a group holds exactly the elements given its key, in the order they were given it', () => {
     // Coherence and stability are one statement rather than two, because separating them would
     // assert the same thing twice: a guard requiring every element of a group to carry that group's
     // key, and a second requiring the group to be in input order, are both this one walk. Written as
@@ -224,7 +227,7 @@ describe('array/group-by@1 specific properties', () => {
     )
   })
 
-  it('P3 - the groups come back in the order their keys were first seen', () => {
+  it('p3-groups-come-back-in-first-seen-order :: the groups come back in the order their keys were first seen', () => {
     // The property the return type was chosen for. It is the only guard that separates a Map-shaped
     // answer from an object-shaped one on the general case, and it is only able to do so on the
     // draws where `integerLikeStrings` supplies keys an object would reorder - which is why that key
@@ -250,7 +253,7 @@ describe('array/group-by@1 specific properties', () => {
     )
   })
 
-  it('P4 - no group is the input array, and no two groups are the same array', () => {
+  it('p4-no-group-is-shared-or-aliased :: no group is the input array, and no two groups are the same array', () => {
     // The guard against the fast path nobody writes on purpose and everybody writes eventually:
     // "one key, so hand back the array we were given". It has mutated nothing, so the non-mutation
     // property is green on it, and it answers the right elements in the right order, so P1, P2 and
@@ -268,7 +271,7 @@ describe('array/group-by@1 specific properties', () => {
     )
   })
 
-  it('P5 - the key function is called exactly once per element, in index order, with the element and its index', () => {
+  it('p5-one-call-per-element :: in index order, with the element and its index', () => {
     // The obligation of block 4.2, and the load-bearing one. It assumes nothing about the key
     // function, so it holds where the conditional properties below are restricted - and it is what
     // makes that restriction safe: an implementation allowed one look per element has no second look
@@ -292,11 +295,11 @@ describe('array/group-by@1 specific properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('array/group-by@1 universal properties', () => {
-  it('keeps the inapplicable universal properties declared as such', () => {
+  it(UNIVERSAL_PROPERTIES_ARE_ANSWERED, () => {
     expectUniversalPropertiesAnswered(universalProperties, ['no ambient output'])
   })
 
-  it('never mutates its arguments', () => {
+  it('no-mutation-of-arguments', () => {
     // Two claims, and the third one a reader expects here is deliberately not among them: that no
     // group is the input array is P4, because it is a statement about the result rather than about
     // the input, and an implementation can satisfy this property while failing it.
@@ -317,7 +320,7 @@ describe('array/group-by@1 universal properties', () => {
     )
   })
 
-  it('is deterministic - the same call yields the same answer every time', () => {
+  it('determinism :: the same call yields the same answer every time', () => {
     fc.assert(
       fc.property(anyItems, anyKeyFunction, (items, named) =>
         outputsAreEqual(groupBy(items, named.keyOf), groupBy(items, named.keyOf)),
@@ -326,7 +329,7 @@ describe('array/group-by@1 universal properties', () => {
     )
   })
 
-  it('has no ambient input - an answer does not depend on the calls made before it', () => {
+  it('no-ambient-input-from-history :: an answer does not depend on the calls made before it', () => {
     fc.assert(
       fc.property(
         anyItems,
@@ -349,13 +352,13 @@ describe('array/group-by@1 universal properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('array/group-by@1 property preconditions', () => {
-  it('publishes a statement for every rule about the key function', () => {
+  it('declares-a-statement-for-every-key-function-rule', () => {
     const unexplained = keyFunctionRules.filter((rule) => rule.statement.trim() === '')
 
     expect(unexplained.map((rule) => rule.name)).toEqual([])
   })
 
-  it('declares exactly one precondition, and declares the obligations that make the rest testable', () => {
+  it('declares-one-precondition-and-its-obligations :: exactly one precondition, and the obligations that make the rest testable', () => {
     // The shape of block 4.2 is itself a claim: that delegating purity to the caller produces one
     // requirement no test can enforce, and that everything else is either owed by the contract or
     // conditional on a well-behaved argument. If a later revision quietly turned an obligation into
@@ -369,7 +372,7 @@ describe('array/group-by@1 property preconditions', () => {
     }).toEqual({ obligations: 4, conditionals: 1, preconditions: 1 })
   })
 
-  it('draws key functions that reach every region the properties police', () => {
+  it('support-the-key-functions-reach-every-region', () => {
     // Without this the properties above are guards whose support is a matter of hope. Each entry is
     // a region some property can only fail in, and the assertion is that the declared key functions
     // put a result there at all - the battery's probes then check that the *arbitraries* reach them

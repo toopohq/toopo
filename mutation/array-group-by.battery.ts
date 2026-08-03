@@ -98,29 +98,29 @@ const signatureDefect = (
 // Test titles the battery pins by name
 // ---------------------------------------------------------------------------
 
-const PARTITION = 'P1 - the groups partition the input: every element appears once, in exactly one group'
+const PARTITION = 'p1-the-groups-partition-the-input'
 const COHERENCE =
-  'P2 - a group holds exactly the elements that were given its key, in the order they were given it'
-const GROUP_ORDER = 'P3 - the groups come back in the order their keys were first seen'
-const NO_SHARING = 'P4 - no group is the input array, and no two groups are the same array'
+  'p2-a-group-is-coherent-and-stable'
+const GROUP_ORDER = 'p3-groups-come-back-in-first-seen-order'
+const NO_SHARING = 'p4-no-group-is-shared-or-aliased'
 const CALL_PROTOCOL =
-  'P5 - the key function is called exactly once per element, in index order, with the element and its index'
-const NO_MUTATION = 'never mutates its arguments'
-const DETERMINISTIC = 'is deterministic - the same call yields the same answer every time'
-const NO_AMBIENT_INPUT = 'has no ambient input - an answer does not depend on the calls made before it'
+  'p5-one-call-per-element'
+const NO_MUTATION = 'no-mutation-of-arguments'
+const DETERMINISTIC = 'determinism'
+const NO_AMBIENT_INPUT = 'no-ambient-input-from-history'
 
-const TYPE_IDENTITY = 'matches the type declared by the contract'
-const INFERS_ELEMENT = 'infers the element type from the array and hands it to the key function'
-const INFERS_KEY = 'infers the key type from the key function, and constrains it to nothing'
-const INDEX_IS_SECOND = 'passes the index as a number, second'
-const READONLY_INPUT = 'accepts an array the caller may not modify'
-const OWNED_GROUPS = 'returns groups the caller owns'
-const REFUSES_A_NON_ARRAY = 'refuses an input that is not an array'
+const TYPE_IDENTITY = 'signature-is-the-declared-type'
+const INFERS_ELEMENT = 'signature-infers-the-element-type'
+const INFERS_KEY = 'signature-infers-the-key-type'
+const INDEX_IS_SECOND = 'signature-passes-the-index'
+const READONLY_INPUT = 'signature-accepts-a-readonly-array'
+const OWNED_GROUPS = 'signature-returns-owned-groups'
+const REFUSES_A_NON_ARRAY = 'signature-refuses-a-non-array'
 
 const SPARSE = 'a-hole-in-a-sparse-array'
 const A_SET = 'a-set'
 const A_STRING = 'a-string'
-const REACHES_EVERY_REGION = 'draws key functions that reach every region the properties police'
+const REACHES_EVERY_REGION = 'support-the-key-functions-reach-every-region'
 const INTEGER_LIKE_ORDER = 'integer-like-keys-keep-first-occurrence-order'
 const NAN_KEYS = 'nan-keys-form-one-group'
 const DISTINCT_OBJECT_KEYS = 'two-distinct-objects-are-two-keys'
@@ -655,13 +655,13 @@ export const battery: Battery = {
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the two tables, ' +
         'the profile list, the key-function rules or the universal-property declarations.',
       guards: [
-        'addresses each case with a unique identifier',
-        'publishes a rationale for every decision',
-        'declares a non-empty sample set for every profile',
-        'names every declared shape at least once, and describes every profile',
-        'keeps the inapplicable universal properties declared as such',
-        'publishes a statement for every rule about the key function',
-        'declares exactly one precondition, and declares the obligations that make the rest testable',
+        'every-case-is-addressed',
+        'every-case-is-justified',
+        'every-profile-has-samples',
+        'every-shape-is-named-and-described',
+        'universal-properties-answered',
+        'declares-a-statement-for-every-key-function-rule',
+        'declares-one-precondition-and-its-obligations',
       ],
     },
     {
@@ -684,7 +684,7 @@ export const battery: Battery = {
         'so on that column the guard cannot fail whatever is injected - which is the point of the ' +
         'lens, and the difference between the two columns is what it measures. On `as-committed` it ' +
         'is red on all eight signature defects.',
-      guards: ['matches the type declared by the contract'],
+      guards: ['signature-is-the-declared-type'],
     },
   ],
 
@@ -706,8 +706,8 @@ export const battery: Battery = {
         'input and reddened the third; widening the key function to take a third argument, or making ' +
         'it optional, would reach these two, and neither mutant is written.',
       guards: [
-        'refuses a key function that asks for more than the contract passes',
-        'refuses a call with no key function',
+        'signature-refuses-a-third-argument',
+        'signature-refuses-a-missing-key-function',
       ],
     },
   ],

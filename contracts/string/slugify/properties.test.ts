@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
+import {
+  UNIVERSAL_PROPERTIES_ARE_ANSWERED,
+  expectUniversalPropertiesAnswered,
+} from '../../../catalogue/every-contract.js'
 import {
   outputAlphabet,
   outputsAreEqual,
@@ -290,7 +293,7 @@ const POLICED: Readonly<Record<string, readonly string[]>> = {
 }
 
 describe('string/slugify@1 specific properties', () => {
-  it('P1 - two spellings of one text answer one slug', () => {
+  it('p1-two-spellings-one-slug :: two spellings of one text answer one slug', () => {
     // The `unify` and `fold` steps together, tested without a copy of the fold: the two strings are
     // built side by side from a table of equivalent spellings, so the property knows what should be
     // equal without knowing how the function gets there.
@@ -302,7 +305,7 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P2 - slugging a slug changes nothing', () => {
+  it('p2-idempotence :: slugging a slug changes nothing', () => {
     // Idempotence. It is a safety property and the constant-empty implementation satisfies it, so
     // it is not what makes this contract live - but it is the property two successive formulations
     // of the `absorb` step failed, and the two counterexamples are named in block 4.4.
@@ -316,7 +319,7 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P3 - no mark in the answer composes onto the base of its run', () => {
+  it('p3-no-absorbable-mark :: no mark in the answer composes onto the base of its run', () => {
     // The invariant idempotence rests on, asserted directly rather than inferred from it. A slug
     // carrying a mark its run's base would absorb is a slug the next call would shorten, and this
     // guard names that as the defect instead of waiting for P2 to notice the symptom.
@@ -326,7 +329,7 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P4 - the answer belongs to the declared alphabet', () => {
+  it('p4-the-declared-alphabet :: the answer belongs to the declared alphabet', () => {
     // The `keep`, `lower` and `join` steps read off the result at once. It is a safety property,
     // free for a function that answers nothing, and its support is everywhere.
     fc.assert(
@@ -335,7 +338,7 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P5 - swapping one discarded character for another changes nothing', () => {
+  it('p5-discarded-characters-are-interchangeable :: swapping one discarded character for another changes nothing', () => {
     // The `lower` step, stated as what it protects: an answer must not depend on a character that
     // does not survive it. It is the property that fails on an implementation lower-casing the
     // whole text at once, because JavaScript's lower-casing reads the character after a Greek sigma
@@ -348,7 +351,7 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P6 - a text with a letter or a digit answers a non-empty slug', () => {
+  it('p6-a-letter-or-a-digit-answers :: a text with a letter or a digit answers a non-empty slug', () => {
     // Liveness. The constant-empty implementation dies here, and so does one that drops a whole
     // script. The condition is deliberately weaker than the rule - it asks about letters and digits
     // only, never about marks - so that it cannot be satisfied by copying the implementation.
@@ -358,7 +361,7 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P7 - a well-formed slug is returned unchanged', () => {
+  it('p7-a-slug-is-a-fixed-point :: a well-formed slug is returned unchanged', () => {
     // The second liveness property, and the strongest single statement in this block: it pins the
     // answer exactly on a whole family of inputs rather than constraining its shape. An
     // implementation that answers the empty string, that drops the last run, or that folds a letter
@@ -370,7 +373,7 @@ describe('string/slugify@1 specific properties', () => {
     )
   })
 
-  it('P8 - a separator appears exactly between two runs', () => {
+  it('p8-one-separator-per-gap :: a separator appears exactly between two runs', () => {
     // The `join` step. P4 already refuses a leading, trailing or doubled separator through the
     // alphabet pattern; what this adds is that the count is right - a slug of n runs carries n - 1
     // separators - which is what catches an implementation that emits one per boundary rather than
@@ -397,21 +400,21 @@ describe('string/slugify@1 specific properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('string/slugify@1 universal properties', () => {
-  it('keeps the inapplicable universal properties declared as such', () => {
+  it(UNIVERSAL_PROPERTIES_ARE_ANSWERED, () => {
     expectUniversalPropertiesAnswered(universalProperties, [
       'never mutates its arguments',
       'no ambient output',
     ])
   })
 
-  it('is deterministic - the same call yields the same answer every time', () => {
+  it('determinism :: the same call yields the same answer every time', () => {
     fc.assert(
       fc.property(anyText, (text) => outputsAreEqual(slugify(text), slugify(text))),
       { numRuns: propertyRuns },
     )
   })
 
-  it('has no ambient input - an answer does not depend on the calls made before it', () => {
+  it('no-ambient-input-from-history :: an answer does not depend on the calls made before it', () => {
     fc.assert(
       fc.property(anyText, fc.array(anyText, { maxLength: 12 }), (text, history) => {
         const first = slugify(text)
@@ -429,19 +432,19 @@ describe('string/slugify@1 universal properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('string/slugify@1 property preconditions', () => {
-  it('answers every declared step of the rule with a property, and declares every step it answers', () => {
+  it('declares-a-property-for-every-step :: and declares every step it answers', () => {
     // A step published in block 4.2 with no property behind it would be a claim this contract makes
     // and does not check, which is the one thing it sells against. Both directions, one guard.
     expect(Object.keys(POLICED).sort()).toEqual([...theRule].map((step) => step.name).sort())
   })
 
-  it('publishes a statement for every step of the rule', () => {
+  it('declares-a-statement-for-every-step', () => {
     const unexplained = theRule.filter((step) => step.statement.trim() === '')
 
     expect(unexplained.map((step) => step.name)).toEqual([])
   })
 
-  it('draws slugs that really are well formed, without asking the function under test', () => {
+  it('support-the-slugs-are-well-formed :: measured without asking the function under test', () => {
     // P7 asserts an exact answer, so it is only sound if the arbitrary really produces slugs. The
     // risk is not hypothetical: a run alphabet gaining a mark that its neighbour absorbs would make
     // P7 fail on a correct implementation. This measures the three things that make a string a
@@ -461,7 +464,7 @@ describe('string/slugify@1 property preconditions', () => {
     )
   })
 
-  it('draws stacks where a mark the base absorbs sits behind one it does not', () => {
+  it('support-the-stacks-reach-the-hidden-base :: a mark the base absorbs sits behind one it does not', () => {
     // The support P2 and P3 rest on, measured rather than hoped for. A defect that mistakes the
     // base of a run for the code point to its left is invisible unless a mark that composes onto
     // the base sits behind a mark that does not, and this counts how often the generator produces
@@ -482,7 +485,7 @@ describe('string/slugify@1 property preconditions', () => {
     expect(reaching.length).toBeGreaterThan(propertyRuns / 20)
   })
 
-  it('draws gaps with a sigma before them and a cased letter after', () => {
+  it('support-the-gaps-carry-a-sigma :: a sigma before the gap and a cased letter after it', () => {
     // The support P5 rests on. A swap of one discarded character for another can only change an
     // answer where a sigma's lower case is context sensitive, and this counts how often the
     // generator produces that shape under the declared number of draws. It asks nothing of
@@ -496,7 +499,7 @@ describe('string/slugify@1 property preconditions', () => {
     expect(reaching.length).toBeGreaterThan(propertyRuns / 5)
   })
 
-  it('draws texts that reach every region the properties police', () => {
+  it('support-the-texts-reach-every-region', () => {
     // Without this the properties above are guards whose support is a matter of hope. Each entry is
     // a region some property can only fail in, and the assertion is that the alphabet reaches it at
     // all; the battery's probes then ask whether the arbitraries reach it under the declared number

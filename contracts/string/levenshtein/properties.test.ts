@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
+import {
+  UNIVERSAL_PROPERTIES_ARE_ANSWERED,
+  expectUniversalPropertiesAnswered,
+} from '../../../catalogue/every-contract.js'
 import { metricAxioms, outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
 import { levenshtein } from './reference.js'
 
@@ -139,14 +142,14 @@ const triangleTriple: fc.Arbitrary<readonly [string, string, string]> = fc
 const axiomsAnswered = ['identity', 'discernibility', 'symmetry', 'triangle inequality'] as const
 
 describe('string/levenshtein@1 specific properties', () => {
-  it('P1 - identity: a string is at distance zero from itself', () => {
+  it('p1-identity :: a string is at distance zero from itself', () => {
     fc.assert(
       fc.property(anyText, (text) => levenshtein(text, text) === 0),
       { numRuns: propertyRuns },
     )
   })
 
-  it('P2 - discernibility: two different strings are at a distance of at least one', () => {
+  it('p2-discernibility :: two different strings are at a distance of at least one', () => {
     // The liveness property of this contract, and the only one of the four axioms that forces an
     // answer out. An implementation returning zero for every pair satisfies P1, P3 and P4 exactly,
     // and satisfies P6 as well, because forbidding wrong answers is free for a function that gives
@@ -157,14 +160,14 @@ describe('string/levenshtein@1 specific properties', () => {
     )
   })
 
-  it('P3 - symmetry: the distance does not depend on which string comes first', () => {
+  it('p3-symmetry :: the distance does not depend on which string comes first', () => {
     fc.assert(
       fc.property(anyText, anyText, (a, b) => outputsAreEqual(levenshtein(a, b), levenshtein(b, a))),
       { numRuns: propertyRuns },
     )
   })
 
-  it('P4 - the triangle inequality: no detour through a third string is shorter', () => {
+  it('p4-triangle-inequality :: no detour through a third string is shorter', () => {
     // The axiom that catches an implementation whose notion of two code points being equal is not
     // transitive - a tolerance, a fuzzy comparison, a unit applied to one side and another to the
     // other. None of those answers an obviously wrong number on any single pair, so no named case
@@ -184,7 +187,7 @@ describe('string/levenshtein@1 specific properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('string/levenshtein@1 specific properties beyond the axioms', () => {
-  it('P5 - the distance sits between the difference of the lengths and the longer length', () => {
+  it('p5-bounds :: the distance sits between the difference of the lengths and the longer length', () => {
     // The lower bound is the second liveness property, and it is not implied by P2: the discrete
     // metric - zero on equal strings, one on everything else - satisfies all four axioms and is not
     // this function. It answers one where the empty string meets a string of three code points, and
@@ -200,7 +203,7 @@ describe('string/levenshtein@1 specific properties beyond the axioms', () => {
     )
   })
 
-  it('P6 - the answer is a whole number and never negative', () => {
+  it('p6-a-whole-non-negative-number :: the answer is a whole number and never negative', () => {
     // `Number.isInteger` is false for NaN and for both infinities, so one call covers the three
     // values a broken arithmetic produces. It is a safety property and its support is everywhere,
     // which is why it draws the same texts as the rest rather than a region of its own.
@@ -214,7 +217,7 @@ describe('string/levenshtein@1 specific properties beyond the axioms', () => {
     )
   })
 
-  it('P7 - one edit apart is a distance of exactly one', () => {
+  it('p7-one-edit-is-one :: one edit apart is a distance of exactly one', () => {
     // P5 gives the lower bound on the pairs whose lengths differ and says nothing about a
     // substitution; P2 gives one in every direction. What this adds is the upper bound: an
     // implementation that prices an edit at two, or that offers no substitution at all, satisfies
@@ -225,7 +228,7 @@ describe('string/levenshtein@1 specific properties beyond the axioms', () => {
     )
   })
 
-  it('P8 - a shared prefix and a shared suffix cost nothing', () => {
+  it('p8-shared-affixes-cost-nothing :: a shared prefix and a shared suffix cost nothing', () => {
     // The strongest statement in this block, and the one that pins the recurrence rather than its
     // boundary: wrapping two strings in text they both carry leaves the answer alone. It is what an
     // implementation that trims common affixes relies on, and it is the property that catches an
@@ -244,14 +247,14 @@ describe('string/levenshtein@1 specific properties beyond the axioms', () => {
 // ---------------------------------------------------------------------------
 
 describe('string/levenshtein@1 universal properties', () => {
-  it('keeps the inapplicable universal properties declared as such', () => {
+  it(UNIVERSAL_PROPERTIES_ARE_ANSWERED, () => {
     expectUniversalPropertiesAnswered(universalProperties, [
       'never mutates its arguments',
       'no ambient output',
     ])
   })
 
-  it('is deterministic - the same call yields the same answer every time', () => {
+  it('determinism :: the same call yields the same answer every time', () => {
     fc.assert(
       fc.property(anyText, anyText, (a, b) =>
         outputsAreEqual(levenshtein(a, b), levenshtein(a, b)),
@@ -260,7 +263,7 @@ describe('string/levenshtein@1 universal properties', () => {
     )
   })
 
-  it('has no ambient input - an answer does not depend on the calls made before it', () => {
+  it('no-ambient-input-from-history :: an answer does not depend on the calls made before it', () => {
     fc.assert(
       fc.property(
         anyText,
@@ -283,19 +286,19 @@ describe('string/levenshtein@1 universal properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('string/levenshtein@1 property preconditions', () => {
-  it('answers every declared metric axiom with a property, and declares every axiom it answers', () => {
+  it('declares-a-property-for-every-axiom :: and declares every axiom it answers', () => {
     // An axiom published in block 4.2 with no property behind it would be a claim this contract
     // makes and does not check, which is the one thing it sells against. Both directions, one guard.
     expect([...metricAxioms].map((axiom) => axiom.name).sort()).toEqual([...axiomsAnswered].sort())
   })
 
-  it('publishes a statement for every metric axiom', () => {
+  it('declares-a-statement-for-every-axiom', () => {
     const unexplained = metricAxioms.filter((axiom) => axiom.statement.trim() === '')
 
     expect(unexplained.map((axiom) => axiom.name)).toEqual([])
   })
 
-  it('draws pairs that really are one code point apart', () => {
+  it('support-the-pairs-are-one-edit-apart :: drawn pairs really are one code point apart', () => {
     // P7 asserts an exact answer, so it is only sound if the generator really applies one edit. The
     // risk is not hypothetical: an alphabet gaining an unpaired *low* surrogate would let an
     // insertion merge with its neighbour into a single code point, and P7 would fail on a correct
@@ -309,7 +312,7 @@ describe('string/levenshtein@1 property preconditions', () => {
     )
   })
 
-  it('draws texts that reach every region the properties police', () => {
+  it('support-the-texts-reach-every-region', () => {
     // Without this the properties above are guards whose support is a matter of hope. Each entry is
     // a region some property can only fail in, and the assertion is that the alphabet reaches it at
     // all; the battery's probes then ask whether the arbitraries reach it under the declared number

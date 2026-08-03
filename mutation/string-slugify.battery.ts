@@ -92,23 +92,23 @@ const ANSWER = `  return out.join('')`
 // below is the intersection of three complete runs.
 // ---------------------------------------------------------------------------
 
-const SPELLINGS = 'P1 - two spellings of one text answer one slug'
-const IDEMPOTENCE = 'P2 - slugging a slug changes nothing'
-const NO_COMPOSING_MARK = 'P3 - no mark in the answer composes onto the base of its run'
-const ALPHABET = 'P4 - the answer belongs to the declared alphabet'
-const DISCARDED_SWAP = 'P5 - swapping one discarded character for another changes nothing'
-const NON_EMPTY = 'P6 - a text with a letter or a digit answers a non-empty slug'
-const FIXED_POINT = 'P7 - a well-formed slug is returned unchanged'
-const SEPARATOR_COUNT = 'P8 - a separator appears exactly between two runs'
+const SPELLINGS = 'p1-two-spellings-one-slug'
+const IDEMPOTENCE = 'p2-idempotence'
+const NO_COMPOSING_MARK = 'p3-no-absorbable-mark'
+const ALPHABET = 'p4-the-declared-alphabet'
+const DISCARDED_SWAP = 'p5-discarded-characters-are-interchangeable'
+const NON_EMPTY = 'p6-a-letter-or-a-digit-answers'
+const FIXED_POINT = 'p7-a-slug-is-a-fixed-point'
+const SEPARATOR_COUNT = 'p8-one-separator-per-gap'
 
-const DETERMINISTIC = 'is deterministic - the same call yields the same answer every time'
-const CALL_HISTORY = 'has no ambient input - an answer does not depend on the calls made before it'
+const DETERMINISTIC = 'determinism'
+const CALL_HISTORY = 'no-ambient-input-from-history'
 
-const TYPE_IDENTITY = 'matches the type declared by the contract'
-const ACCEPTS_ONE_STRING = 'accepts one string and nothing else'
-const ALWAYS_A_STRING = 'always returns a string'
-const REFUSES_NO_ARGUMENT = 'refuses a call with no argument'
-const REFUSES_OPTIONS = 'refuses a call carrying options'
+const TYPE_IDENTITY = 'signature-is-the-declared-type'
+const ACCEPTS_ONE_STRING = 'signature-accepts-one-string'
+const ALWAYS_A_STRING = 'signature-returns-a-string'
+const REFUSES_NO_ARGUMENT = 'signature-refuses-no-argument'
+const REFUSES_OPTIONS = 'signature-refuses-options'
 
 const CYRILLIC_IS_KEPT = 'cyrillic-is-kept'
 const AN_ASTRAL_LETTER = 'an-astral-letter-is-kept'
@@ -123,14 +123,14 @@ const A_DOTTED_I = 'the-turkish-dotted-i-loses-its-dot'
 const A_NON_LATIN_DIGIT = 'a-non-latin-digit-is-a-digit'
 const A_SHARP_S = 'a-letter-with-no-decomposition-is-kept'
 
-const ASCII_DIVERGENCE = 'names exactly the cases that an ASCII-only alphabet answers differently'
+const ASCII_DIVERGENCE = 'the-cases-an-ascii-alphabet-answers-differently'
 
-const PROFILE_ALREADY_A_SLUG = 'already-a-slug - every sample retains all'
-const PROFILE_ASCII_PROSE = 'ascii-prose - every sample retains most'
-const PROFILE_LATIN = 'latin-diacritics - every sample retains most'
-const PROFILE_OTHER_WRITING = 'other-writing-systems - every sample retains most'
-const PROFILE_PUNCTUATION = 'punctuation-heavy - every sample retains few'
-const PROFILE_NOTHING = 'nothing-retainable - every sample retains none'
+const PROFILE_ALREADY_A_SLUG = 'profile-already-a-slug'
+const PROFILE_ASCII_PROSE = 'profile-ascii-prose'
+const PROFILE_LATIN = 'profile-latin-diacritics'
+const PROFILE_OTHER_WRITING = 'profile-other-writing-systems'
+const PROFILE_PUNCTUATION = 'profile-punctuation-heavy'
+const PROFILE_NOTHING = 'profile-nothing-retainable'
 
 // ---------------------------------------------------------------------------
 // G-01 to G-22 - defects of behaviour
@@ -663,23 +663,23 @@ export const battery: Battery = {
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, ' +
         'the profile list, the rule, the universal-property declarations or the arbitraries.',
       guards: [
-        'addresses each case with a unique identifier',
-        'settles each text exactly once',
-        'publishes a rationale for every decision',
-        'declares a non-empty sample set for every profile',
-        'names every declared class at least once, and describes every profile',
-        'keeps the inapplicable universal properties declared as such',
-        'answers every declared step of the rule with a property, and declares every step it answers',
-        'publishes a statement for every step of the rule',
-        'draws slugs that really are well formed, without asking the function under test',
-        'draws stacks where a mark the base absorbs sits behind one it does not',
-        'draws gaps with a sigma before them and a cased letter after',
-        'draws texts that reach every region the properties police',
+        'every-case-is-addressed',
+        'settles-each-text-once',
+        'every-case-is-justified',
+        'every-profile-has-samples',
+        'every-class-is-named-and-described',
+        'universal-properties-answered',
+        'declares-a-property-for-every-step',
+        'declares-a-statement-for-every-step',
+        'support-the-slugs-are-well-formed',
+        'support-the-stacks-reach-the-hidden-base',
+        'support-the-gaps-carry-a-sigma',
+        'support-the-texts-reach-every-region',
         // Measured on the first run of this battery: this guard groups the table by its declared
         // answers and never calls the function, so no defect injected into `reference.ts` can
         // reach it. The collision it publishes is a fact about two rows of block 4.4, not about
         // any implementation.
-        'names exactly the texts of this table that share one slug',
+        'the-texts-that-share-one-slug',
       ],
     },
     {

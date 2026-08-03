@@ -13,11 +13,11 @@ import { levenshtein } from './reference.js'
  * why the battery carries a mutant for each of them.
  */
 describe('string/levenshtein@1 signature', () => {
-  it('matches the type declared by the contract', () => {
+  it('signature-is-the-declared-type', () => {
     expectTypeOf(levenshtein).toEqualTypeOf<Levenshtein>()
   })
 
-  it('accepts two strings and nothing else', () => {
+  it('signature-accepts-two-strings :: and nothing else', () => {
     expectTypeOf(levenshtein).parameter(0).toEqualTypeOf<string>()
     expectTypeOf(levenshtein).parameter(1).toEqualTypeOf<string>()
 
@@ -27,20 +27,20 @@ describe('string/levenshtein@1 signature', () => {
     levenshtein(1, 2)
   })
 
-  it('always returns a number', () => {
+  it('signature-returns-a-number :: always, never a number that may be absent', () => {
     // Never `number | null`, and that is the shape of the contract rather than an accident: this
     // function is total, so an implementation declaring an absent answer would be promising a
     // refusal it can never deliver, and every caller would unwrap something that is always there.
     expectTypeOf(levenshtein).returns.toEqualTypeOf<number>()
   })
 
-  it('refuses a call with one string', () => {
+  it('signature-refuses-one-string', () => {
     // @ts-expect-error neither argument has a default: this contract has no opinion about what a
     // caller meant to compare a single string against.
     levenshtein('kitten')
   })
 
-  it('refuses a call carrying options', () => {
+  it('signature-refuses-options', () => {
     // @ts-expect-error every option a caller might reach for changes what is computed rather than
     // how, so it belongs to another contract rather than to a third parameter here.
     levenshtein('kitten', 'sitting', { caseSensitive: false })

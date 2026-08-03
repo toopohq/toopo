@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
+  CASE_TABLE_IS_ADDRESSED,
   expectEveryCaseIsAddressed,
+  CASE_TABLE_IS_JUSTIFIED,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
 import { edgeCases, untypedCallerCases } from './edge-cases.js'
@@ -67,11 +69,11 @@ describe('array/group-by@1 inputs only an untyped caller can pass', () => {
 describe('array/group-by@1 edge case table', () => {
   const allCases = [...edgeCases, ...untypedCallerCases]
 
-  it('addresses each case with a unique identifier', () => {
+  it(CASE_TABLE_IS_ADDRESSED, () => {
     expectEveryCaseIsAddressed(allCases.map((edgeCase) => edgeCase.id))
   })
 
-  it('publishes a rationale for every decision', () => {
+  it(CASE_TABLE_IS_JUSTIFIED, () => {
     expectEveryCaseIsJustified(allCases, (edgeCase) => edgeCase.id)
   })
 })

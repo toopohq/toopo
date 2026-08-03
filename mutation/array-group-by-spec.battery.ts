@@ -76,21 +76,27 @@ const INDEX_CALLS = `    expectedCalls: [['a', 0], ['b', 1], ['c', 2]],`
 // Guards this battery pins by name
 // ---------------------------------------------------------------------------
 
-const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
-const EVERY_CASE_JUSTIFIED = 'publishes a rationale for every decision'
-const EVERY_PROFILE_POPULATED = 'declares a non-empty sample set for every profile'
+const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
+const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
 const EVERY_SHAPE_AND_DESCRIPTION =
-  'names every declared shape at least once, and describes every profile'
-const INAPPLICABLE_STAY_INAPPLICABLE = 'keeps the inapplicable universal properties declared as such'
-const EVERY_RULE_STATED = 'publishes a statement for every rule about the key function'
+  'every-shape-is-named-and-described'
+const INAPPLICABLE_STAY_INAPPLICABLE = 'universal-properties-answered'
+const EVERY_RULE_STATED = 'declares-a-statement-for-every-key-function-rule'
 const ONE_PRECONDITION =
-  'declares exactly one precondition, and declares the obligations that make the rest testable'
+  'declares-one-precondition-and-its-obligations'
 
 const INTEGER_LIKE_ORDER = 'integer-like-keys-keep-first-occurrence-order'
 const INDEX_PROTOCOL = 'the-key-function-receives-the-element-and-its-index'
-const IN_THE_LANGUAGE = ', in the language'
-const KEY_IDENTITY_DIVERGENCE = ': Object.groupBy disagrees on the identity of the keys'
-const ORDER_DIVERGENCE = ': Object.groupBy disagrees on the order of the groups'
+/**
+ * The two suffixes `language.test.ts` adds to a case identifier to address its own guards.
+ *
+ * There used to be three. Two of them - one for the divergence on key identity, one for the
+ * divergence on group order - differed only in the sentence they carried, and a sentence is no
+ * longer part of an address, so they are one constant.
+ */
+const IN_THE_LANGUAGE = '-in-the-language'
+const DIVERGES_IN_THE_LANGUAGE = '-diverges-in-object-groupby'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -181,7 +187,7 @@ const mutants: readonly Mutant[] = [
     killed([
       INTEGER_LIKE_ORDER,
       `${INTEGER_LIKE_ORDER}${IN_THE_LANGUAGE}`,
-      `${INTEGER_LIKE_ORDER}${ORDER_DIVERGENCE}`,
+      `${INTEGER_LIKE_ORDER}${DIVERGES_IN_THE_LANGUAGE}`,
     ]),
   ),
   sameOnEveryLens(
@@ -237,18 +243,18 @@ export const battery: Battery = {
         'properties quantify over answers this battery does not change. The reference battery ' +
         'witnesses all of them - S-1 to S-8 on the first nine, M-01 to M-22 on the rest.',
       guards: [
-        'matches the type declared by the contract',
-        'infers the element type from the array and hands it to the key function',
-        'infers the key type from the key function, and constrains it to nothing',
-        'passes the index as a number, second',
-        'accepts an array the caller may not modify',
-        'returns groups the caller owns',
-        'refuses a key function that asks for more than the contract passes',
-        'refuses an input that is not an array',
-        'refuses a call with no key function',
-        'never mutates its arguments',
-        'draws key functions that reach every region the properties police',
-        'publishes a rationale for every divergence',
+        'signature-is-the-declared-type',
+        'signature-infers-the-element-type',
+        'signature-infers-the-key-type',
+        'signature-passes-the-index',
+        'signature-accepts-a-readonly-array',
+        'signature-returns-owned-groups',
+        'signature-refuses-a-third-argument',
+        'signature-refuses-a-non-array',
+        'signature-refuses-a-missing-key-function',
+        'no-mutation-of-arguments',
+        'support-the-key-functions-reach-every-region',
+        'every-divergence-is-justified',
       ],
     },
     {
@@ -271,8 +277,8 @@ export const battery: Battery = {
         'contract\'s own comparison is a fifth family, not one of the four written here. The ' +
         'reference battery witnesses both: M-21 and M-22.',
       guards: [
-        'is deterministic - the same call yields the same answer every time',
-        'has no ambient input - an answer does not depend on the calls made before it',
+        'determinism',
+        'no-ambient-input-from-history',
       ],
     },
     {
@@ -283,12 +289,12 @@ export const battery: Battery = {
         'sentence six times; AG-6 measures that an empty list is caught and AG-7 that a profile ' +
         'with no description is.',
       guards: [
-        'one-group-per-element - every sample is one-group-per-element',
-        'single-group - every sample is single-group',
-        'few-large-groups - every sample is few-large-groups',
-        'many-small-groups - every sample is many-small-groups',
-        'string-keys - every sample is few-large-groups',
-        'empty - every sample is empty',
+        'profile-one-group-per-element',
+        'profile-single-group',
+        'profile-few-large-groups',
+        'profile-many-small-groups',
+        'profile-string-keys',
+        'profile-empty',
       ],
     },
     {
@@ -333,34 +339,34 @@ export const battery: Battery = {
         'table reaches them. Two of the thirty are probed, which is what establishes that the file ' +
         'replays this table; the other twenty-eight would each need a mutant to repeat it.',
       guards: [
-        'numbers-by-parity, in the language',
-        'objects-by-a-field, in the language',
-        'the-empty-array, in the language',
-        'a-single-element, in the language',
-        'numeric-keys-keep-first-occurrence-order, in the language',
-        'a-group-keeps-input-order, in the language',
-        'nan-keys-form-one-group, in the language',
-        'a-negative-zero-key-is-stored-as-a-positive-zero, in the language',
-        'a-number-and-its-string-are-different-keys, in the language',
-        'a-boolean-and-its-string-are-different-keys, in the language',
-        'two-distinct-objects-are-two-keys, in the language',
-        'one-object-used-twice-is-one-key, in the language',
-        'symbols-are-keys, in the language',
-        'undefined-and-null-are-two-keys, in the language',
-        'the-key-proto, in the language',
-        'the-key-constructor, in the language',
-        'the-keys-tostring-and-hasownproperty, in the language',
-        'a-hole-in-a-sparse-array, in the language',
-        'an-explicit-undefined-element, in the language',
-        'a-key-function-is-never-asked-twice, in the language',
-        'a-key-function-that-writes-to-its-element, in the language',
-        'an-exception-propagates-unchanged, in the language',
-        'a-null-input, in the language, from an untyped caller',
-        'an-undefined-input, in the language, from an untyped caller',
-        'a-plain-object, in the language, from an untyped caller',
-        'a-number, in the language, from an untyped caller',
-        'a-set, in the language, from an untyped caller',
-        'a-string, in the language, from an untyped caller',
+        'numbers-by-parity-in-the-language',
+        'objects-by-a-field-in-the-language',
+        'the-empty-array-in-the-language',
+        'a-single-element-in-the-language',
+        'numeric-keys-keep-first-occurrence-order-in-the-language',
+        'a-group-keeps-input-order-in-the-language',
+        'nan-keys-form-one-group-in-the-language',
+        'a-negative-zero-key-is-stored-as-a-positive-zero-in-the-language',
+        'a-number-and-its-string-are-different-keys-in-the-language',
+        'a-boolean-and-its-string-are-different-keys-in-the-language',
+        'two-distinct-objects-are-two-keys-in-the-language',
+        'one-object-used-twice-is-one-key-in-the-language',
+        'symbols-are-keys-in-the-language',
+        'undefined-and-null-are-two-keys-in-the-language',
+        'the-key-proto-in-the-language',
+        'the-key-constructor-in-the-language',
+        'the-keys-tostring-and-hasownproperty-in-the-language',
+        'a-hole-in-a-sparse-array-in-the-language',
+        'an-explicit-undefined-element-in-the-language',
+        'a-key-function-is-never-asked-twice-in-the-language',
+        'a-key-function-that-writes-to-its-element-in-the-language',
+        'an-exception-propagates-unchanged-in-the-language',
+        'a-null-input-in-the-language-from-an-untyped-caller',
+        'an-undefined-input-in-the-language-from-an-untyped-caller',
+        'a-plain-object-in-the-language-from-an-untyped-caller',
+        'a-number-in-the-language-from-an-untyped-caller',
+        'a-set-in-the-language-from-an-untyped-caller',
+        'a-string-in-the-language-from-an-untyped-caller',
       ],
     },
     {
@@ -372,9 +378,9 @@ export const battery: Battery = {
         'object-shaped grouper disagrees, and each of the three would need its own mutant to say ' +
         'that about a different row.',
       guards: [
-        `a-number-and-its-string-are-different-keys${KEY_IDENTITY_DIVERGENCE}`,
-        `a-boolean-and-its-string-are-different-keys${KEY_IDENTITY_DIVERGENCE}`,
-        `two-distinct-objects-are-two-keys${KEY_IDENTITY_DIVERGENCE}`,
+        `a-number-and-its-string-are-different-keys${DIVERGES_IN_THE_LANGUAGE}`,
+        `a-boolean-and-its-string-are-different-keys${DIVERGES_IN_THE_LANGUAGE}`,
+        `two-distinct-objects-are-two-keys${DIVERGES_IN_THE_LANGUAGE}`,
       ],
     },
     {

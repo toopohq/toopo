@@ -44,7 +44,7 @@ const SHAPE_CHECK_TIMEOUT_MS = 30_000
 describe('array/group-by@1 benchmark profiles', () => {
   for (const { name, shape, keyFunction, samples } of benchmarkProfiles) {
     it(
-      `${name} - every sample is ${shape}`,
+      `profile-${name} :: every sample is ${shape}`,
       () => {
         const keyOf = profileKeyFunctions[keyFunction]
 
@@ -60,13 +60,13 @@ describe('array/group-by@1 benchmark profiles', () => {
     )
   }
 
-  it('declares a non-empty sample set for every profile', () => {
+  it('every-profile-has-samples', () => {
     const empty = benchmarkProfiles.filter((profile) => profile.samples.length === 0)
 
     expect(empty.map((profile) => profile.name)).toEqual([])
   })
 
-  it('names every declared shape at least once, and describes every profile', () => {
+  it('every-shape-is-named-and-described :: every declared shape is measured at least once, and every profile has a description', () => {
     // A shape nobody measures is a vocabulary entry pretending to be a plan, and a profile with no
     // description is a name with nothing behind it.
     const shapes = new Set(benchmarkProfiles.map((profile) => profile.shape))

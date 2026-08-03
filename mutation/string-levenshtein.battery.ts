@@ -57,23 +57,23 @@ const ANSWER = `  return distance[left.length][right.length]`
 // its reds and when it names only the region the defect lives in.
 // ---------------------------------------------------------------------------
 
-const IDENTITY = 'P1 - identity: a string is at distance zero from itself'
-const DISCERNIBILITY = 'P2 - discernibility: two different strings are at a distance of at least one'
-const SYMMETRY = 'P3 - symmetry: the distance does not depend on which string comes first'
-const TRIANGLE = 'P4 - the triangle inequality: no detour through a third string is shorter'
-const BOUNDS = 'P5 - the distance sits between the difference of the lengths and the longer length'
-const SHAPE = 'P6 - the answer is a whole number and never negative'
-const ONE_EDIT = 'P7 - one edit apart is a distance of exactly one'
-const AFFIXES = 'P8 - a shared prefix and a shared suffix cost nothing'
+const IDENTITY = 'p1-identity'
+const DISCERNIBILITY = 'p2-discernibility'
+const SYMMETRY = 'p3-symmetry'
+const TRIANGLE = 'p4-triangle-inequality'
+const BOUNDS = 'p5-bounds'
+const SHAPE = 'p6-a-whole-non-negative-number'
+const ONE_EDIT = 'p7-one-edit-is-one'
+const AFFIXES = 'p8-shared-affixes-cost-nothing'
 
-const DETERMINISTIC = 'is deterministic - the same call yields the same answer every time'
-const CALL_HISTORY = 'has no ambient input - an answer does not depend on the calls made before it'
+const DETERMINISTIC = 'determinism'
+const CALL_HISTORY = 'no-ambient-input-from-history'
 
-const TYPE_IDENTITY = 'matches the type declared by the contract'
-const ACCEPTS_TWO_STRINGS = 'accepts two strings and nothing else'
-const ALWAYS_A_NUMBER = 'always returns a number'
-const REFUSES_ONE_STRING = 'refuses a call with one string'
-const REFUSES_OPTIONS = 'refuses a call carrying options'
+const TYPE_IDENTITY = 'signature-is-the-declared-type'
+const ACCEPTS_TWO_STRINGS = 'signature-accepts-two-strings'
+const ALWAYS_A_NUMBER = 'signature-returns-a-number'
+const REFUSES_ONE_STRING = 'signature-refuses-one-string'
+const REFUSES_OPTIONS = 'signature-refuses-options'
 
 const ASTRAL_ALONE = 'an-astral-character-is-one-unit'
 const ASTRAL_INSIDE = 'an-astral-character-inside-a-word'
@@ -89,10 +89,10 @@ const BOTH_EMPTY = 'both-empty'
 const IDENTICAL_TEXT = 'identical-text'
 
 const SEPARATES_FROM_THE_ECOSYSTEM =
-  'names exactly the cases that separate this contract from the ecosystem'
+  'the-cases-that-separate-from-the-ecosystem'
 
-const IDENTICAL_PROFILE = 'identical - every sample is zero'
-const ONE_EDIT_PROFILE = 'one-edit-apart - every sample is one-edit'
+const IDENTICAL_PROFILE = 'profile-identical'
+const ONE_EDIT_PROFILE = 'profile-one-edit-apart'
 
 // ---------------------------------------------------------------------------
 // L-01 to L-20 - defects of behaviour
@@ -476,16 +476,16 @@ export const battery: Battery = {
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, the ' +
         'profile list, the axiom list, the universal-property declarations or the arbitraries.',
       guards: [
-        'addresses each case with a unique identifier',
-        'settles each pair exactly once',
-        'publishes a rationale for every decision',
-        'declares a non-empty sample set for every profile',
-        'names every declared class at least once, and describes every profile',
-        'keeps the inapplicable universal properties declared as such',
-        'answers every declared metric axiom with a property, and declares every axiom it answers',
-        'publishes a statement for every metric axiom',
-        'draws pairs that really are one code point apart',
-        'draws texts that reach every region the properties police',
+        'every-case-is-addressed',
+        'settles-each-pair-once',
+        'every-case-is-justified',
+        'every-profile-has-samples',
+        'every-class-is-named-and-described',
+        'universal-properties-answered',
+        'declares-a-property-for-every-axiom',
+        'declares-a-statement-for-every-axiom',
+        'support-the-pairs-are-one-edit-apart',
+        'support-the-texts-reach-every-region',
       ],
     },
     {
@@ -498,7 +498,7 @@ export const battery: Battery = {
         'between the two columns is the answer to the question `array/group-by@1` could only ask of a ' +
         'generic signature: on a monomorphic one, does the identity assertion carry anything the ' +
         'directives beside it do not?',
-      guards: ['matches the type declared by the contract'],
+      guards: ['signature-is-the-declared-type'],
     },
   ],
 

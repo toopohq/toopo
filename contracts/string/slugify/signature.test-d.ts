@@ -12,11 +12,11 @@ import { slugify } from './reference.js'
  * carries a mutant for each of them.
  */
 describe('string/slugify@1 signature', () => {
-  it('matches the type declared by the contract', () => {
+  it('signature-is-the-declared-type', () => {
     expectTypeOf(slugify).toEqualTypeOf<Slugify>()
   })
 
-  it('accepts one string and nothing else', () => {
+  it('signature-accepts-one-string :: and nothing else', () => {
     expectTypeOf(slugify).parameter(0).toEqualTypeOf<string>()
 
     // @ts-expect-error the domain is text. A number reaching this function has not been through the
@@ -25,7 +25,7 @@ describe('string/slugify@1 signature', () => {
     slugify(1)
   })
 
-  it('always returns a string', () => {
+  it('signature-returns-a-string :: always, never a string that may be absent', () => {
     // Never `string | null`, and that is the shape of the contract rather than an accident: this
     // function is total, and the empty slug is an answer rather than a refusal. An implementation
     // declaring an absent answer would promise a refusal it can never deliver, and every caller
@@ -33,13 +33,13 @@ describe('string/slugify@1 signature', () => {
     expectTypeOf(slugify).returns.toEqualTypeOf<string>()
   })
 
-  it('refuses a call with no argument', () => {
+  it('signature-refuses-no-argument', () => {
     // @ts-expect-error the parameter has no default: this contract has no opinion about what a
     // caller meant to slugify when they passed nothing.
     slugify()
   })
 
-  it('refuses a call carrying options', () => {
+  it('signature-refuses-options', () => {
     // @ts-expect-error every option a caller might reach for - a separator, a length bound, ASCII
     // output - changes what is computed rather than how, so it belongs to another contract rather
     // than to a second parameter here. `composeInsteadOfConfiguring` names where each one goes.

@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import {
+  CASE_TABLE_IS_ADDRESSED,
   expectEveryCaseIsAddressed,
+  CASE_TABLE_IS_JUSTIFIED,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
 import { outputsAreEqual } from './contract.js'
@@ -70,21 +72,21 @@ const inCodeUnits = (a: string, b: string): number => {
 }
 
 describe('string/levenshtein@1 edge case table', () => {
-  it('addresses each case with a unique identifier', () => {
+  it(CASE_TABLE_IS_ADDRESSED, () => {
     expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
   })
 
-  it('settles each pair exactly once', () => {
+  it('settles-each-pair-once', () => {
     const pairs = edgeCases.map(({ a, b }) => `${printable(a)} ${printable(b)}`)
 
     expect(pairs).toHaveLength(new Set(pairs).size)
   })
 
-  it('publishes a rationale for every decision', () => {
+  it(CASE_TABLE_IS_JUSTIFIED, () => {
     expectEveryCaseIsJustified(edgeCases, ({ id }) => id)
   })
 
-  it('names exactly the cases that separate this contract from the ecosystem', () => {
+  it('the-cases-that-separate-from-the-ecosystem :: named exactly, on the rows where counting code points and counting code units part', () => {
     // The table is small because the axioms of block 4.2 carry the arithmetic, so what is left for
     // it to do is the region no axiom reaches: the answers that differ between counting code points
     // and counting UTF-16 code units. This guard is that claim, replayed rather than asserted - the

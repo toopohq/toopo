@@ -263,7 +263,35 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
       }
 
       expect(() => calibrate({ ...battery, lenses: [lensThatDuplicatesAnIdentifier] })).toThrow(
-        /identifier\(s\) address more than one guard of this contract/,
+        /identifier\(s\) address more than one guard/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a guard that carries no well-formed identifier',
+    () => {
+      // The other half of the same question, and it needs its own guard because it is a different
+      // failure: a title that is only a sentence gives the instrument an address nobody can cite,
+      // and every pin naming it breaks the day the sentence is reworded. Written as a lens that
+      // replaces the identifier with the words it stands for - which is exactly what every guard in
+      // this repository looked like before the rule existed.
+      const lensThatDropsAnIdentifier = {
+        id: 'as-committed',
+        description: 'a lens that turns one fixture identifier back into a sentence',
+        arms: ['C'],
+        edits: [
+          {
+            file: 'guards.test.ts',
+            find: `it('doubles-zero :: zero doubles to zero'`,
+            replace: `it('doubles zero'`,
+          },
+        ],
+      }
+
+      expect(() => calibrate({ ...battery, lenses: [lensThatDropsAnIdentifier] })).toThrow(
+        /carry no kebab-case identifier/,
       )
     },
     META_TIMEOUT_MS,

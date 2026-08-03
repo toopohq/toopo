@@ -94,19 +94,19 @@ const A_PLUS_CASE = `    id: 'a-plus-is-not-a-letter',
 // Guards this battery pins by name
 // ---------------------------------------------------------------------------
 
-const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
-const EVERY_TEXT_ONCE = 'settles each text exactly once'
-const EVERY_CASE_JUSTIFIED = 'publishes a rationale for every decision'
-const ASCII_DIVERGENCE = 'names exactly the cases that an ASCII-only alphabet answers differently'
-const COLLISIONS = 'names exactly the texts of this table that share one slug'
-const EVERY_PROFILE_POPULATED = 'declares a non-empty sample set for every profile'
+const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_TEXT_ONCE = 'settles-each-text-once'
+const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
+const ASCII_DIVERGENCE = 'the-cases-an-ascii-alphabet-answers-differently'
+const COLLISIONS = 'the-texts-that-share-one-slug'
+const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
 const EVERY_CLASS_AND_DESCRIPTION =
-  'names every declared class at least once, and describes every profile'
-const ALREADY_A_SLUG_PROFILE = 'already-a-slug - every sample retains all'
-const INAPPLICABLE_STAY_INAPPLICABLE = 'keeps the inapplicable universal properties declared as such'
+  'every-class-is-named-and-described'
+const ALREADY_A_SLUG_PROFILE = 'profile-already-a-slug'
+const INAPPLICABLE_STAY_INAPPLICABLE = 'universal-properties-answered'
 const EVERY_STEP_ANSWERED =
-  'answers every declared step of the rule with a property, and declares every step it answers'
-const EVERY_STEP_STATED = 'publishes a statement for every step of the rule'
+  'declares-a-property-for-every-step'
+const EVERY_STEP_STATED = 'declares-a-statement-for-every-step'
 
 const A_NON_LATIN_SCRIPT = 'a-non-latin-script-is-kept'
 
@@ -280,18 +280,18 @@ export const battery: Battery = {
         'preconditions measure generators declared in their own file. The reference battery ' +
         'witnesses every one of them.',
       guards: [
-        'P1 - two spellings of one text answer one slug',
-        'P2 - slugging a slug changes nothing',
-        'P3 - no mark in the answer composes onto the base of its run',
-        'P5 - swapping one discarded character for another changes nothing',
-        'P6 - a text with a letter or a digit answers a non-empty slug',
-        'P7 - a well-formed slug is returned unchanged',
-        'P8 - a separator appears exactly between two runs',
-        'is deterministic - the same call yields the same answer every time',
-        'has no ambient input - an answer does not depend on the calls made before it',
-        'draws stacks where a mark the base absorbs sits behind one it does not',
-        'draws gaps with a sigma before them and a cased letter after',
-        'draws texts that reach every region the properties police',
+        'p1-two-spellings-one-slug',
+        'p2-idempotence',
+        'p3-no-absorbable-mark',
+        'p5-discarded-characters-are-interchangeable',
+        'p6-a-letter-or-a-digit-answers',
+        'p7-a-slug-is-a-fixed-point',
+        'p8-one-separator-per-gap',
+        'determinism',
+        'no-ambient-input-from-history',
+        'support-the-stacks-reach-the-hidden-base',
+        'support-the-gaps-carry-a-sigma',
+        'support-the-texts-reach-every-region',
       ],
     },
   ],
@@ -305,11 +305,11 @@ export const battery: Battery = {
         'because the four signature defects of the reference battery already measure what each of ' +
         'them catches. What is missing is a mutant, not a guard.',
       guards: [
-        'matches the type declared by the contract',
-        'accepts one string and nothing else',
-        'always returns a string',
-        'refuses a call with no argument',
-        'refuses a call carrying options',
+        'signature-is-the-declared-type',
+        'signature-accepts-one-string',
+        'signature-returns-a-string',
+        'signature-refuses-no-argument',
+        'signature-refuses-options',
       ],
     },
     {
@@ -319,8 +319,8 @@ export const battery: Battery = {
         'which is that mutant\'s finding: the alphabet is checked in one direction only. A mutant ' +
         'that narrowed it would redden them, and this battery does not carry one.',
       guards: [
-        'P4 - the answer belongs to the declared alphabet',
-        'draws slugs that really are well formed, without asking the function under test',
+        'p4-the-declared-alphabet',
+        'support-the-slugs-are-well-formed',
       ],
     },
     {
@@ -382,11 +382,11 @@ export const battery: Battery = {
         'how much of its input survives, and one mutant per profile would repeat one sentence six ' +
         'times.',
       guards: [
-        'ascii-prose - every sample retains most',
-        'latin-diacritics - every sample retains most',
-        'other-writing-systems - every sample retains most',
-        'punctuation-heavy - every sample retains few',
-        'nothing-retainable - every sample retains none',
+        'profile-ascii-prose',
+        'profile-latin-diacritics',
+        'profile-other-writing-systems',
+        'profile-punctuation-heavy',
+        'profile-nothing-retainable',
       ],
     },
   ],

@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
+  CASE_TABLE_IS_ADDRESSED,
+  CASE_TABLE_IS_JUSTIFIED,
   expectEveryCaseIsAddressed,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
@@ -118,7 +120,7 @@ describe('date/add@1 edge cases outside the declared type, described', () => {
 describe('date/add@1 edge case tables', () => {
   const allCases = [...edgeCases, ...untypedEdgeCases]
 
-  it('every-case-is-addressed', () => {
+  it(CASE_TABLE_IS_ADDRESSED, () => {
     expectEveryCaseIsAddressed(allCases.map((edgeCase) => edgeCase.id))
   })
 
@@ -137,7 +139,7 @@ describe('date/add@1 edge case tables', () => {
     expect(calls).toHaveLength(new Set(calls).size)
   })
 
-  it('every-case-is-justified', () => {
+  it(CASE_TABLE_IS_JUSTIFIED, () => {
     expectEveryCaseIsJustified(allCases, ({ id }) => id)
   })
 

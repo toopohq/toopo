@@ -49,7 +49,7 @@ const languageGrouper = (): Grouper => {
 
 describe('array/group-by@1 against Map.groupBy', () => {
   for (const { id, items, keyOf, outcome, expectedCalls } of edgeCases) {
-    it(`${id}, in the language`, () => {
+    it(`${id}-in-the-language`, () => {
       const { attempt, calls } = callOnce(languageGrouper(), items, keyOf)
 
       assertOutcome(outcome, attempt)
@@ -65,7 +65,7 @@ describe('array/group-by@1 against Map.groupBy', () => {
   }
 
   for (const { id, items, keyOf, outcome } of untypedCallerCases) {
-    it(`${id}, in the language, from an untyped caller`, () => {
+    it(`${id}-in-the-language-from-an-untyped-caller`, () => {
       const { attempt } = callOnce(languageGrouper(), items as readonly unknown[], keyOf)
 
       assertOutcome(outcome, attempt)
@@ -174,7 +174,7 @@ const objectGroupByDivergences: readonly {
 
 describe('array/group-by@1 against Object.groupBy', () => {
   for (const { settledAs, disagreesOn, answers } of objectGroupByDivergences) {
-    it(`${settledAs}: Object.groupBy disagrees on ${disagreesOn}`, () => {
+    it(`${settledAs}-diverges-in-object-groupby :: Object.groupBy disagrees on ${disagreesOn}`, () => {
       const settled = caseIdentified(settledAs)
 
       if (settled.outcome.kind !== 'groups') {
@@ -197,7 +197,7 @@ describe('array/group-by@1 against Object.groupBy', () => {
     })
   }
 
-  it('publishes a rationale for every divergence', () => {
+  it('every-divergence-is-justified', () => {
     // The catalogue's own guard, over a table that is not block 4.4 but is the same kind of thing:
     // an exact test and one line of public documentation. Without it the sentences above would be
     // a field nothing reads.

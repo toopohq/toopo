@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { expectUniversalPropertiesAnswered } from '../../../catalogue/every-contract.js'
+import {
+  UNIVERSAL_PROPERTIES_ARE_ANSWERED,
+  expectUniversalPropertiesAnswered,
+} from '../../../catalogue/every-contract.js'
 import type { Duration } from './contract.js'
 import {
   ambientProbeInstants,
@@ -350,7 +353,7 @@ const durationSnapshot = (duration: Duration): string =>
   `${Object.keys(duration).join('|')} :: ${durationFields.map((f) => String(duration[f])).join(',')}`
 
 describe('date/add@1 universal properties', () => {
-  it('universal-properties-answered', () => {
+  it(UNIVERSAL_PROPERTIES_ARE_ANSWERED, () => {
     expectUniversalPropertiesAnswered(universalProperties, ['no ambient output'])
   })
 

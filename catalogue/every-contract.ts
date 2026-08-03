@@ -183,10 +183,36 @@ export const CLOCK_DEPENDENCE_RULE =
 const CASE_IDENTIFIER = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 /**
+ * The three guards this file owns, and the reason they are named here rather than by each contract.
+ *
+ * A guard carries an identifier - a name, kebab-case, unique within its contract, frozen with its
+ * major - and a contract chooses its own. These three are the exception, and the exception is
+ * narrow: the helper below *is* the guard. `expectEveryCaseIsAddressed` is one function applied five
+ * times, not five guards that resemble each other, so it answers to one name everywhere and a
+ * contract cannot rename it locally. Renaming one costs a major on the whole catalogue, which is the
+ * discipline everything in this file already carries.
+ *
+ * The test that a contract has not quietly renamed one is the battery: a pin naming
+ * `every-case-is-addressed` on a contract whose guard answers to something else fails to match, and
+ * the cell disagrees.
+ *
+ * Twelve other identifier strings are shared by more than one contract today - `determinism`,
+ * `signature-is-the-declared-type`, `every-profile-has-samples` and so on. Those are *not* here, and
+ * the difference is the rule this file already states about `outputsAreEqual`: five contracts asking
+ * the same question about different data is resemblance, not duplication. Each of them owns its own,
+ * and two contracts choosing the same string is a coincidence the pair `(contract, identifier)`
+ * absorbs.
+ */
+export const CASE_TABLE_IS_ADDRESSED = 'every-case-is-addressed'
+export const CASE_TABLE_IS_JUSTIFIED = 'every-case-is-justified'
+export const UNIVERSAL_PROPERTIES_ARE_ANSWERED = 'universal-properties-answered'
+
+/**
  * Every case of every table of one contract answers to a distinct name, shaped like an address.
  *
  * Both halves in one assertion, because they are one question - whether these strings can be used as
- * addresses - and a failure has to say which half gave way.
+ * addresses - and a failure has to say which half gave way. `mutation/run.ts` asks the same pair of
+ * the *guards* of a contract, for the same reason and with the same shape of identifier.
  *
  * This is not the guard that a contract settles each *input* exactly once. Two contracts carry that
  * one as well and it is theirs, over data this file knows nothing about; a table can legitimately

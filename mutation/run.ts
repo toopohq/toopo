@@ -219,6 +219,9 @@ export type RunResult = {
  */
 const GUARD_SEPARATOR = ' :: '
 
+/** Kebab-case, exactly as a case of block 4.4 - the same shape for the same reason. */
+const GUARD_IDENTIFIER = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
 export const guardIdOf = (title: string): string => {
   const at = title.indexOf(GUARD_SEPARATOR)
 
@@ -456,7 +459,11 @@ const measureCell = (
 }
 
 /**
- * Two guards of one contract answering to one identifier.
+ * A guard with no well-formed identifier, and two guards of one contract answering to one.
+ *
+ * Both halves in one refusal, because they are one question - whether these strings can be used as
+ * addresses - and a failure has to say which half gave way. It is the same pair
+ * `expectEveryCaseIsAddressed` asks of block 4.4, asked of the guards instead of the cases.
  *
  * Attribution addresses a guard by its identifier and by nothing else, so two guards carrying one
  * are read as reddening each other. That is not hypothetical: measured on `array/group-by@1`, where
@@ -474,23 +481,30 @@ const measureCell = (
  */
 const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[]): void => {
   const ids = guards.map((guard) => guard.id)
+  const malformed = guards.filter((guard) => !GUARD_IDENTIFIER.test(guard.id))
   const duplicated = [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))]
 
-  if (duplicated.length === 0) return
+  if (malformed.length === 0 && duplicated.length === 0) return
+
+  const where = (id: string): string =>
+    guards
+      .filter((guard) => guard.id === id)
+      .map((guard) => `      ${guard.file} > ${guard.suite}`)
+      .join('\n')
 
   throw new Error(
-    `${label}: ${duplicated.length} identifier(s) address more than one guard of this contract, so ` +
-      `attribution would read each of them as reddening the others:\n` +
-      duplicated
-        .map(
-          (id) =>
-            `  ${id}\n` +
-            guards
-              .filter((guard) => guard.id === id)
-              .map((guard) => `    ${guard.file} :: ${guard.suite}`)
-              .join('\n'),
-        )
-        .join('\n'),
+    `${label}: this contract's guards cannot all be used as addresses.\n` +
+      (malformed.length === 0
+        ? ''
+        : `  ${malformed.length} guard(s) carry no kebab-case identifier before ` +
+          `"${GUARD_SEPARATOR.trim()}":\n` +
+          malformed.map((guard) => `    ${JSON.stringify(guard.title)}`).join('\n') +
+          '\n') +
+      (duplicated.length === 0
+        ? ''
+        : `  ${duplicated.length} identifier(s) address more than one guard, so attribution would ` +
+          `read each of them as reddening the others:\n` +
+          duplicated.map((id) => `    ${id}\n${where(id)}`).join('\n')),
   )
 }
 

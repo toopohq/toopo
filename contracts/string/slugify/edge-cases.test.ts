@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
+  CASE_TABLE_IS_ADDRESSED,
+  CASE_TABLE_IS_JUSTIFIED,
   expectEveryCaseIsAddressed,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
@@ -81,21 +83,21 @@ const DIVERGING_UNDER_AN_ASCII_ALPHABET = [
 ] as const
 
 describe('string/slugify@1 edge case table', () => {
-  it('addresses each case with a unique identifier', () => {
+  it(CASE_TABLE_IS_ADDRESSED, () => {
     expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
   })
 
-  it('settles each text exactly once', () => {
+  it('settles-each-text-once', () => {
     const texts = edgeCases.map(({ text }) => printable(text))
 
     expect(texts).toHaveLength(new Set(texts).size)
   })
 
-  it('publishes a rationale for every decision', () => {
+  it(CASE_TABLE_IS_JUSTIFIED, () => {
     expectEveryCaseIsJustified(edgeCases, ({ id }) => id)
   })
 
-  it('names exactly the cases that an ASCII-only alphabet answers differently', () => {
+  it('the-cases-an-ascii-alphabet-answers-differently :: named exactly, on the rows where a Unicode alphabet and an ASCII one part', () => {
     // The decision this contract is most likely to be argued with is that the output alphabet is
     // Unicode rather than `[a-z0-9-]`, and block 4.1 puts it in front for that reason. This guard
     // is that decision replayed rather than asserted: the rows named below are where the two
@@ -109,7 +111,7 @@ describe('string/slugify@1 edge case table', () => {
     expect(differing).toEqual([...DIVERGING_UNDER_AN_ASCII_ALPHABET])
   })
 
-  it('names exactly the texts of this table that share one slug', () => {
+  it('the-texts-that-share-one-slug :: named exactly, because this function is not injective', () => {
     // `lossiness` in block 4.1 says this function is not injective, and a sentence a reader has to
     // believe is worth less than a measurement they can run. These are the collisions the table
     // itself contains, and the `c` group is the one that makes the cost concrete: two different

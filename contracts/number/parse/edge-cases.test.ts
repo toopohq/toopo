@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
+  CASE_TABLE_IS_ADDRESSED,
+  CASE_TABLE_IS_JUSTIFIED,
   expectEveryCaseIsAddressed,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
@@ -60,7 +62,7 @@ describe('number/parse@1 named edge cases, described', () => {
 })
 
 describe('number/parse@1 edge case table', () => {
-  it('every-case-is-addressed', () => {
+  it(CASE_TABLE_IS_ADDRESSED, () => {
     expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
   })
 
@@ -81,7 +83,7 @@ describe('number/parse@1 edge case table', () => {
     expect([...new Set(produced)].sort()).toEqual([...failureReasons].sort())
   })
 
-  it('every-case-is-justified', () => {
+  it(CASE_TABLE_IS_JUSTIFIED, () => {
     expectEveryCaseIsJustified(edgeCases, ({ id }) => id)
   })
 })

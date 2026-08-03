@@ -99,33 +99,24 @@ const ONE_DELETION_ID = `    id: 'one-deletion',`
 // Guards this battery pins by name
 // ---------------------------------------------------------------------------
 
-const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
-const EVERY_PAIR_ONCE = 'settles each pair exactly once'
-const EVERY_CASE_JUSTIFIED = 'publishes a rationale for every decision'
+const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_PAIR_ONCE = 'settles-each-pair-once'
+const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
 const SEPARATES_FROM_THE_ECOSYSTEM =
-  'names exactly the cases that separate this contract from the ecosystem'
-const EVERY_PROFILE_POPULATED = 'declares a non-empty sample set for every profile'
+  'the-cases-that-separate-from-the-ecosystem'
+const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
 const EVERY_CLASS_AND_DESCRIPTION =
-  'names every declared class at least once, and describes every profile'
-const ONE_EDIT_PROFILE = 'one-edit-apart - every sample is one-edit'
-const INAPPLICABLE_STAY_INAPPLICABLE = 'keeps the inapplicable universal properties declared as such'
+  'every-class-is-named-and-described'
+const ONE_EDIT_PROFILE = 'profile-one-edit-apart'
+const INAPPLICABLE_STAY_INAPPLICABLE = 'universal-properties-answered'
 const EVERY_AXIOM_ANSWERED =
-  'answers every declared metric axiom with a property, and declares every axiom it answers'
-const EVERY_AXIOM_STATED = 'publishes a statement for every metric axiom'
+  'declares-a-property-for-every-axiom'
+const EVERY_AXIOM_STATED = 'declares-a-statement-for-every-axiom'
 
 const A_TRANSPOSITION = 'a-transposition'
 const ASTRAL_ALONE = 'an-astral-character-is-one-unit'
 
-/**
- * The title the `identical` profile's guard carries **only while LS-13 is injected**, and the reason
- * that sentence is possible to write at all.
- *
- * A block 4.5 guard is titled by rendering the profile's own declared class, so a specification
- * mutant that rewrites the class rewrites the guard. This constant is therefore not the address of
- * anything in the unmutated contract - it names a guard that exists in one cell of one battery - and
- * it is the state the guard identifiers of this unit exist to end.
- */
-const IDENTICAL_PROFILE_UNDER_LS_13 = 'identical - every sample is far'
+const IDENTICAL_PROFILE = 'profile-identical'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -240,16 +231,16 @@ const mutants: readonly Mutant[] = [
     'LS-13',
     'the `identical` profile relabelled as a pair of unrelated strings - a benchmark that claims to ' +
       'time the fast path and is published as timing the worst case. It is a real specification ' +
-      'defect on its own, and it is here for a second reason: it is the one mutant in the ten ' +
-      'batteries that rewrites data a guard\'s *title* is rendered from, which is the question this ' +
-      'unit had to answer with a measurement rather than with an argument. The guard reddens, and ' +
-      'reddens under a title the unmutated contract does not contain, so calibration never saw it: ' +
-      'the instrument attributes nothing to it, and the declaration below that calls its region ' +
-      'unprobed is not reported stale, which is the one refusal `instrument.test.ts` exists to ' +
-      'guarantee. The pin can only name the mutated title, and a pin that names a string no contract ' +
-      'carries is not an address.',
+      'defect on its own, and it is the mutant that measured what a guard identifier buys. A block ' +
+      '4.5 guard renders its declared class into its title, so before identifiers this defect ' +
+      'reddened its guard under `identical - every sample is far`, a title the unmutated contract ' +
+      'does not contain: calibration never saw it, attribution had nothing to attribute, and this ' +
+      'battery passed thirteen of thirteen while reporting the region as one no mutant probes. The ' +
+      'pin could only name the mutated title, which is not an address. It now names ' +
+      '`profile-identical`, the guard carries that address whatever its class says, and the ' +
+      'declaration that called this region unprobed had to go - because it is probed.',
     [contract(IDENTICAL_PROFILE_CLASS, IDENTICAL_PROFILE_CLASS.replace(`'zero'`, `'far'`))],
-    killed([IDENTICAL_PROFILE_UNDER_LS_13]),
+    killed([IDENTICAL_PROFILE]),
   ),
 ]
 
@@ -285,23 +276,23 @@ export const battery: Battery = {
         'quantify over answers this battery does not change. The reference battery witnesses every ' +
         'one of them - S-16 to S-19 on the first five, L-01 to L-20 on the rest.',
       guards: [
-        'matches the type declared by the contract',
-        'accepts two strings and nothing else',
-        'always returns a number',
-        'refuses a call with one string',
-        'refuses a call carrying options',
-        'P1 - identity: a string is at distance zero from itself',
-        'P2 - discernibility: two different strings are at a distance of at least one',
-        'P3 - symmetry: the distance does not depend on which string comes first',
-        'P4 - the triangle inequality: no detour through a third string is shorter',
-        'P5 - the distance sits between the difference of the lengths and the longer length',
-        'P6 - the answer is a whole number and never negative',
-        'P7 - one edit apart is a distance of exactly one',
-        'P8 - a shared prefix and a shared suffix cost nothing',
-        'is deterministic - the same call yields the same answer every time',
-        'has no ambient input - an answer does not depend on the calls made before it',
-        'draws pairs that really are one code point apart',
-        'draws texts that reach every region the properties police',
+        'signature-is-the-declared-type',
+        'signature-accepts-two-strings',
+        'signature-returns-a-number',
+        'signature-refuses-one-string',
+        'signature-refuses-options',
+        'p1-identity',
+        'p2-discernibility',
+        'p3-symmetry',
+        'p4-triangle-inequality',
+        'p5-bounds',
+        'p6-a-whole-non-negative-number',
+        'p7-one-edit-is-one',
+        'p8-shared-affixes-cost-nothing',
+        'determinism',
+        'no-ambient-input-from-history',
+        'support-the-pairs-are-one-edit-apart',
+        'support-the-texts-reach-every-region',
       ],
     },
   ],
@@ -340,15 +331,12 @@ export const battery: Battery = {
     {
       nature: 'documents a decision',
       reason:
-        'the five benchmark profiles LS-8, LS-9 and LS-10 leave alone. Each publishes a claim about ' +
-        'where its answer sits between the two bounds, and one mutant per profile would repeat one ' +
-        'sentence six times.',
-      guards: [
-        'identical - every sample is zero',
-        'unrelated - every sample is far',
-        'against-the-empty-string - every sample is the-whole-of-one-side',
-        'astral-text - every sample is far',
-      ],
+        'the benchmark profiles LS-8, LS-9, LS-10 and LS-13 leave alone. Each publishes a claim ' +
+        'about where its answer sits between the two bounds, and one mutant per profile would ' +
+        'repeat one sentence five times. `identical` left this list when LS-13 was written: it is ' +
+        'the row that measured what an address buys, because the same mutant reddened the same ' +
+        'guard before identifiers existed and this declaration went on calling the region unprobed.',
+      guards: ['profile-unrelated', 'profile-against-the-empty-string', 'profile-astral-text'],
     },
   ],
 

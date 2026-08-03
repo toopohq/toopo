@@ -50,7 +50,7 @@ const CLASS_CHECK_TIMEOUT_MS = 30_000
 describe('string/slugify@1 benchmark profiles', () => {
   for (const { name, retention, samples } of benchmarkProfiles) {
     it(
-      `${name} - every sample retains ${retention}`,
+      `profile-${name} :: every sample retains ${retention}`,
       () => {
         const offenders = samples
           .filter((sample) => !holds(retention, sample))
@@ -66,13 +66,13 @@ describe('string/slugify@1 benchmark profiles', () => {
     )
   }
 
-  it('declares a non-empty sample set for every profile', () => {
+  it('every-profile-has-samples', () => {
     const empty = benchmarkProfiles.filter((profile) => profile.samples.length === 0)
 
     expect(empty.map((profile) => profile.name)).toEqual([])
   })
 
-  it('names every declared class at least once, and describes every profile', () => {
+  it('every-class-is-named-and-described :: every declared class is measured at least once, and every profile has a description', () => {
     // A class nobody measures is a vocabulary entry pretending to be a plan, and a profile with no
     // description is a name with nothing behind it.
     const classes = new Set(benchmarkProfiles.map((profile) => profile.retention))
