@@ -70,4 +70,32 @@ describe('what the user typed', () => {
   it('nothing-at-all-is-refused', () => {
     expect(parseArguments([])).toEqual({ faults: ['no command was given'] })
   })
+
+  /**
+   * The acceptance permanent rule 4 asks for, as a word the user types rather than as an answer to a
+   * prompt. Without the flag the command shows and writes nothing, which is why its default is the
+   * safe one and not the convenient one.
+   */
+  it('update-writes-only-when-it-is-asked-to', () => {
+    expect(parseArguments(['update'])).toEqual({ command: { name: 'update', apply: false } })
+    expect(parseArguments(['update', '--apply'])).toEqual({
+      command: { name: 'update', apply: true },
+    })
+  })
+
+  /**
+   * A switch is a flag that is its own answer, and it must never swallow the word after it. `--apply
+   * --dir x` is a user asking for two things, not a switch that ate one of them.
+   */
+  it('a-switch-takes-no-value-and-swallows-nothing', () => {
+    expect(parseArguments(['update', '--apply', '--dir'])).toEqual({
+      faults: ['`--dir` is not a flag this command takes (--apply)'],
+    })
+    expect(parseArguments(['update', '--apply', '--apply'])).toEqual({
+      faults: ['`--apply` was given twice'],
+    })
+    expect(parseArguments(['update', 'string/slugify'])).toEqual({
+      faults: ['`string/slugify` is not a flag, and this command takes no further argument'],
+    })
+  })
 })

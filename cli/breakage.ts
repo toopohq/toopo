@@ -103,35 +103,54 @@ export const WHAT_BREAKS: readonly Breakage[] = [
       'nothing in an install reads it. Imports are parsed in a temporary project with a configuration ' +
       'of our own, and what lands is source the user compiles with whatever they use.',
   },
+  {
+    situation: 'the target folder cannot be written to',
+    verdict: 'refused-cleanly',
+    guard: 'a-file-where-a-folder-must-go-is-refused-with-nothing-staged',
+    detail:
+      'the failure happens while staging, where nothing has been committed, so it is a sentence ' +
+      'naming the path and a project that was not touched. It used to be an unhandled EACCES. What ' +
+      'closed it is not a pre-flight writability check - a check that passes and is then contradicted ' +
+      'by the write is two answers to one question - it is that the write itself now happens in a ' +
+      'phase whose whole property is that abandoning it costs nothing. **What the guard measures is a ' +
+      'file sitting where one of our folders has to go**, which fails on the same line, in the same ' +
+      'phase, through the same catch; a permission denial is not something a guard can arrange on ' +
+      'every platform this runs on, and claiming it was measured would be claiming more than was.',
+  },
+  {
+    situation: 'a directory sits where an installed file should go',
+    verdict: 'refused-cleanly',
+    guard: 'a-directory-where-a-file-goes-is-refused-by-name',
+    detail:
+      'measured on Windows, renaming onto a directory is EPERM and says nothing a caller can act on, ' +
+      'so the kind of what sits at the destination is asked before staging. A question about a kind, ' +
+      'not a prediction about permissions.',
+  },
+  {
+    situation: 'the process is killed between the first file and the lockfile',
+    verdict: 'refused-cleanly',
+    guard: 'a-file-already-equal-to-what-we-would-write-is-not-a-conflict',
+    detail:
+      'a single file is never half-written - it is renamed or it is not - and the lockfile is renamed ' +
+      'last, so the window always resolves backwards: the lockfile still describes the old install. ' +
+      '`toopo update` finishes the job on the next run without a journal, because a file whose bytes ' +
+      'are exactly the ones we are about to write is a write that already happened rather than an ' +
+      'edit. What is *not* claimed: the files staged by the killed run are left behind under ' +
+      '`.toopo-part`, inert and under our own folder, and the next run overwrites them.',
+  },
 
   // -------------------------------------------------------------------------
   // Breaks badly, and left open deliberately
   // -------------------------------------------------------------------------
   {
-    situation: 'the target folder cannot be written to',
+    situation: 'a rename fails after every file has been staged',
     verdict: 'breaks-badly',
     detail:
-      'an unhandled EACCES with a stack trace. Left open because the honest repair is a pre-flight ' +
-      'writability check, and a check that passes and is then contradicted by the write is two ' +
-      'answers to one question - the shape this repository refuses. What closes it properly is ' +
-      'writing through a temporary file and renaming, which is the same change that closes the ' +
-      'interruption below.',
-  },
-  {
-    situation: 'the process is killed between the first file and the lockfile',
-    verdict: 'breaks-badly',
-    detail:
-      'files on disk that no lockfile claims, so the next `toopo add` of the same feature refuses ' +
-      'them as "not ours to overwrite" and the user has to delete them by hand. The plan is computed ' +
-      'entirely before anything is written, so the window is the writing loop alone - but it is a ' +
-      'real window and it is not closed.',
-  },
-  {
-    situation: 'a directory sits where an installed file should go',
-    verdict: 'breaks-badly',
-    detail:
-      'an unhandled EISDIR. The existence check that precedes it answers about a path rather than ' +
-      'about a file, and narrowing it belongs with the same repair as the two above.',
+      'a file held open by another process is the realistic case on Windows. It throws rather than ' +
+      'answering a sentence, and some files already carry the new bytes when it does. Nothing is ' +
+      'lost - it resolves backwards like any interruption, and the run above finishes it - but it is ' +
+      'a stack trace. Closing it would mean every rename being reversible, which is a journal, and ' +
+      'the interruption above is what a journal would otherwise have been for.',
   },
   {
     situation: 'the working tree is edited while an install is reading it',
@@ -140,5 +159,25 @@ export const WHAT_BREAKS: readonly Breakage[] = [
       'a named refusal - `ServedBytesDisagree` - with a stack trace rather than a sentence, because ' +
       'it is a fault of the local stand-in for a registry and not of the install. It disappears the ' +
       'day a server exists, which is why it was not given a report of its own.',
+  },
+
+  // -------------------------------------------------------------------------
+  // Not ours, and the person who meets it does not care whose it is
+  // -------------------------------------------------------------------------
+  {
+    situation: 'a feature of more than one file is run under node\'s own TypeScript, with no compiler',
+    verdict: 'breaks-badly',
+    detail:
+      'ERR_MODULE_NOT_FOUND on an import *inside* an installed file. Node strips types and does not ' +
+      'remap a `.js` specifier to its `.ts` sibling, and a published source has to write `.js` - it ' +
+      'is the only spelling `tsc` resolves under bundler, node16 and nodenext alike. So a feature ' +
+      'that carries a second file cannot be run by node directly, however the user spells their own ' +
+      'import. Measured on node v24.15.0 with `"type": "module"`: an entry spelled `.ts` importing ' +
+      '`./digits.ts` runs, and the same entry whose own file imports `./digits.js` does not. ' +
+      'Invisible today because all five contracts are one file, and certain to bite on the first one ' +
+      'that is not. It is a limit of node rather than of us, and `cli/toopo.ts` shows what it costs ' +
+      'to work around - fifteen lines of `node:module` that this repository can register for itself ' +
+      'and cannot register inside somebody else\'s program. Declared rather than discovered, because ' +
+      'whoever meets it wants to know it is known.',
   },
 ]

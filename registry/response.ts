@@ -50,7 +50,7 @@ import type { ContractAddress, ImplementationAddress } from './address.js'
 import { renderContract, renderImplementation } from './address.js'
 import type { Attestation } from './attestation.js'
 import { DIGEST, canonical, digestOfBytes, servedBytes } from './canonical.js'
-import type { Lifecycle } from './contract-record.js'
+import type { ExportRole, Lifecycle } from './contract-record.js'
 import type { BenchmarkFigure, ImplementationStatus } from './implementation-record.js'
 import type {
   Ledger,
@@ -240,6 +240,19 @@ export const servedImplementationBinding = (
 })
 
 /**
+ * One export of a contract, as a client that has to *name* it needs it.
+ *
+ * The declared type is not here and the transcribed text is not here: both belong to the frozen half,
+ * and a reader who wants them fetches the snapshot. What is here is the pair a caller writes - the
+ * name, and what it is for - because the error convention ships a diagnostic *beside* the answer and a
+ * client that knew only the answer would leave every caller writing their own error message.
+ */
+export type ServedExport = {
+  readonly name: string
+  readonly role: ExportRole
+}
+
+/**
  * One row of the search index.
  *
  * Deliberately small. It is fetched before a query is answered, so anything in it is paid for by every
@@ -248,6 +261,29 @@ export const servedImplementationBinding = (
  * `installable` is a field rather than a filter, and the difference matters: a refused contract must
  * still be findable, because somebody searching for `groupBy` should be told the catalogue considered
  * it and why, rather than being told nothing. What must never happen is offering to install it.
+ *
+ * ---------------------------------------------------------------------------
+ * `exports` is here, and it was put here by a consumer rather than by design
+ * ---------------------------------------------------------------------------
+ *
+ * `toopo add` could not name what it had just installed. It printed a file system path, and the one
+ * line the user actually needs - `import { parseNumber } from '...'` - was unreachable: an export name
+ * is not derivable from an address (`number/parse` exports `parseNumber`), it lives in
+ * `identity.exportName` and `surface.exports` on the *contract* record, and the installer's port
+ * deliberately carries no `contract-binding`, so nothing it fetches held it.
+ *
+ * Three repairs were possible and this is the cheapest of the three in every direction. Reading the
+ * exports off the installed source would have the installer publish an opinion drawn from code rather
+ * than from the contract - it would print whatever the file happens to export, declared or not. Adding
+ * `contract-binding` to the port would cost two round trips per install to obtain one string, and
+ * would contradict the argument `cli/source.ts` records about why that endpoint is not there. This
+ * costs no request at all: the index is already built from each contract's identity, and an export
+ * name *is* identity - it is what somebody types into a search box.
+ *
+ * The size it adds is measured rather than waved past, because "deliberately small" is a claim this
+ * type makes about itself: over the five, the canonical index goes from 2 731 to 3 106 bytes - 375
+ * bytes for the whole catalogue, 13.7 per cent of a document that is still, by a factor of ten, the
+ * smallest thing the registry serves.
  */
 export type ServedIndexEntry = {
   readonly address: ContractAddress
@@ -256,6 +292,8 @@ export type ServedIndexEntry = {
   /** `domain/name` split, because the site's navigation is built on the domain. */
   readonly domain: string
   readonly installable: boolean
+  /** The answer first, then whatever diagnostic ships beside it. */
+  readonly exports: readonly ServedExport[]
 }
 
 export type ServedIndex = {
@@ -317,6 +355,7 @@ export const servedIndex = (
     readonly address: ContractAddress
     readonly summary: string
     readonly searchAliases: readonly string[]
+    readonly exports: readonly ServedExport[]
   }[],
 ): ServedIndex => {
   const published = new Set(ledger.contracts.map((entry) => renderContract(entry.address)))
@@ -329,9 +368,24 @@ export const servedIndex = (
       searchAliases: identity.searchAliases,
       domain: domainOf(identity.address.name),
       installable: published.has(renderContract(identity.address)),
+      exports: identity.exports,
     })),
   }
 }
+
+/**
+ * The exports of a contract in the order a caller writes them: the answer, then the diagnostic.
+ *
+ * Ordered here rather than left to the record, because the order a record happens to declare them in
+ * is not a promise the record makes, and the line `toopo add` prints puts the answer first for a
+ * reason - it is the export the user came for.
+ */
+export const servedExportsOf = (
+  exports: readonly { readonly name: string; readonly role: ExportRole }[],
+): readonly ServedExport[] => [
+  ...exports.filter((entry) => entry.role === 'the-answer'),
+  ...exports.filter((entry) => entry.role !== 'the-answer'),
+].map((entry) => ({ name: entry.name, role: entry.role }))
 
 export const servedRefusals = (ledger: Ledger): ServedRefusals => ({
   addressing: 'named',

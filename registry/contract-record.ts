@@ -120,6 +120,15 @@ export type IdentityRecord = {
 // ---------------------------------------------------------------------------
 
 /**
+ * What an export is for. Two of the five publish a diagnostic beside the answer.
+ *
+ * Named rather than written inline, because a second consumer needs it: the index a client reads
+ * before it can name what it installed carries the pair, and a union spelled out in two places is a
+ * union that comes to disagree with itself the day a third role exists.
+ */
+export type ExportRole = 'the-answer' | 'the-diagnostic'
+
+/**
  * One export of a contract, with the type it must expose.
  *
  * `text` is TypeScript source and it is transcribed rather than derived, because a type is not a
@@ -132,8 +141,7 @@ export type ExportRecord = {
   readonly name: string
   readonly typeName: string
   readonly text: string
-  /** What this export is for. Two of the five publish a diagnostic beside the answer. */
-  readonly role: 'the-answer' | 'the-diagnostic'
+  readonly role: ExportRole
 }
 
 /** A type the signature refers to. One of the five needs one: `Duration` on `date/add@1`. */

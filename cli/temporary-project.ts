@@ -13,6 +13,9 @@ import { dirname, join } from 'node:path'
 
 import type { Lockfile } from '../registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
+import type { Installation } from './install.js'
+import { lockfileAfter } from './install.js'
+import { commit } from './write.js'
 
 export type TemporaryProject = {
   readonly root: string
@@ -28,6 +31,30 @@ export const EMPTY_LOCKFILE: Lockfile = { version: 1, features: [] }
 
 /** The instant every guard records, so that two runs of one guard produce one lockfile. */
 export const A_PINNED_INSTANT = '2026-08-03T00:00:00.000Z'
+
+/**
+ * Commit an installation the way the command does, and answer the lockfile it leaves behind.
+ *
+ * Through `commit` rather than through a `writeFileSync` of its own, so that every guard which sets a
+ * project up goes through the staging the real command goes through - a fixture that wrote files
+ * directly would be a fixture measuring a path the product does not take.
+ */
+export const committing = (
+  project: TemporaryProject,
+  installation: Installation,
+  lockfile: Lockfile = EMPTY_LOCKFILE,
+): Lockfile => {
+  const after = lockfileAfter(lockfile, installation.features)
+  const written = commit(project.root, project.configuration.directory, {
+    writes: installation.writes,
+    removals: [],
+    lockfile: after,
+  })
+
+  if ('faults' in written) throw new Error(written.faults.join('\n'))
+
+  return after
+}
 
 export const aProject = (directory = 'src/lib/toopo'): TemporaryProject => {
   const root = mkdtempSync(join(tmpdir(), 'toopo-project-'))

@@ -45,8 +45,10 @@ import type { ContractAddress } from '../registry/address.js'
 import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { ImplementationRecord } from '../registry/implementation-record.js'
+import type { ServedExport } from '../registry/response.js'
 import {
   servedBlob,
+  servedExportsOf,
   servedImplementationBinding,
   servedIndex,
   servedSnapshot,
@@ -89,6 +91,7 @@ type Holding = {
   readonly address: ContractAddress
   readonly summary: string
   readonly searchAliases: readonly string[]
+  readonly exports: readonly ServedExport[]
   readonly contractDigest: string
   readonly implementation: ImplementationRecord
   readonly implementationDigest: string
@@ -178,6 +181,7 @@ const gather = (): {
       address: record.address,
       summary: record.identity.summary,
       searchAliases: record.identity.searchAliases,
+      exports: servedExportsOf(record.surface.exports),
       contractDigest,
       implementation,
       implementationDigest,

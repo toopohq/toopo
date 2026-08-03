@@ -42,6 +42,7 @@ const lockedFeatureOf = (
   })),
   installedAt,
   locallyModified: false,
+  askedFor: true,
 })
 
 describe('the implementations under the five contracts', () => {

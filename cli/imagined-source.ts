@@ -22,7 +22,13 @@
 
 import type { ContractAddress } from '../registry/address.js'
 import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
-import { HOLDINGS, IMAGINED_BLOBS, IMAGINED_VERSION } from '../registry/imagined-graph.js'
+import {
+  HOLDINGS,
+  IMAGINED_BLOBS,
+  IMAGINED_NEXT_VERSION,
+  IMAGINED_VERSION,
+  NEXT_HOLDINGS,
+} from '../registry/imagined-graph.js'
 import type { ImplementationRecord } from '../registry/implementation-record.js'
 import type { ServedImplementationBinding, ServedIndex } from '../registry/response.js'
 import { servedBlob, servedSnapshot } from '../registry/response.js'
@@ -46,51 +52,46 @@ const SUMMARIES: Readonly<Record<string, string>> = {
 
 const indexEntryOf = (record: ImplementationRecord) => {
   const name = record.contract.name
+  const action = name.slice(name.indexOf('/') + 1)
   const summary = SUMMARIES[name]
   if (summary === undefined) throw new Error(`the imagined index has no summary for ${name}`)
 
   return {
     address: record.contract,
     summary,
-    searchAliases: [name.slice(name.indexOf('/') + 1)],
+    searchAliases: [action],
     domain: name.slice(0, name.indexOf('/')),
     installable: true,
+    // Every imagined body exports its action and nothing else, so the index says so rather than
+    // inventing a diagnostic none of them publishes.
+    exports: [{ name: action, role: 'the-answer' as const }],
   }
 }
 
 const snapshotOf = (record: ImplementationRecord) => implementationSnapshot(record)
 
-/**
- * A source over the imagined graph.
- *
- * `refuse` names an implementation address this source pretends not to hold, so that a caller can
- * measure what happens when an edge resolves to nothing without having to build a second graph. It is
- * a parameter rather than a second source because the two differ in one answer, and two sources
- * differing in one answer is a copy waiting to drift.
- */
-export const imaginedSource = (refuse: readonly string[] = []): RegistrySource => {
-  const held = HOLDINGS.filter(
-    (record) =>
-      !refuse.includes(
-        renderImplementation({ contract: record.contract, id: record.id, version: IMAGINED_VERSION }),
-      ),
-  )
+const bindingOf = (record: ImplementationRecord): ServedImplementationBinding => ({
+  addressing: 'named',
+  address: { contract: record.contract, id: record.id, version: record.version ?? IMAGINED_VERSION },
+  digest: digestOfSnapshot(snapshotOf(record)),
+  publishedAt: '1970-01-01T00:00:00.000Z',
+  status: record.status,
+  benchmarks: record.benchmarks,
+  minifiedBytes: record.minifiedBytes,
+  tags: record.tags,
+})
 
+/**
+ * A source serving exactly these implementations, over the graph's blobs and index.
+ *
+ * One builder for the three sources this file publishes, because they differ only in *which* records
+ * they hold - which is the whole of what each of them is for - and three copies of the four methods
+ * would be three places to keep one port implemented.
+ */
+const sourceOver = (held: readonly ImplementationRecord[]): RegistrySource => {
   const snapshots = new Map(
     held.map((record) => [digestOfSnapshot(snapshotOf(record)), servedSnapshot(snapshotOf(record))]),
   )
-
-  const bindingOf = (record: ImplementationRecord): ServedImplementationBinding => ({
-    addressing: 'named',
-    address: { contract: record.contract, id: record.id, version: IMAGINED_VERSION },
-    digest: digestOfSnapshot(snapshotOf(record)),
-    publishedAt: '1970-01-01T00:00:00.000Z',
-    status: record.status,
-    benchmarks: record.benchmarks,
-    minifiedBytes: record.minifiedBytes,
-    tags: record.tags,
-  })
-
   const index: ServedIndex = { addressing: 'named', entries: HOLDINGS.map(indexEntryOf) }
 
   return {
@@ -110,6 +111,34 @@ export const imaginedSource = (refuse: readonly string[] = []): RegistrySource =
 }
 
 /**
+ * A source over the imagined graph.
+ *
+ * `refuse` names an implementation address this source pretends not to hold, so that a caller can
+ * measure what happens when an edge resolves to nothing without having to build a second graph. It is
+ * a parameter rather than a second source because the two differ in one answer, and two sources
+ * differing in one answer is a copy waiting to drift.
+ */
+export const imaginedSource = (refuse: readonly string[] = []): RegistrySource =>
+  sourceOver(
+    HOLDINGS.filter(
+      (record) =>
+        !refuse.includes(
+          renderImplementation({ contract: record.contract, id: record.id, version: IMAGINED_VERSION }),
+        ),
+    ),
+  )
+
+/**
+ * The same registry, one publication later. What `toopo update` is measured against.
+ *
+ * It serves the second publication as the binding every name resolves to today, which is what a
+ * registry does: the first publication is still addressable by digest and is still served as blobs -
+ * permanent rule 6 - but a name resolves to what is current, and finding out that it moved is the
+ * whole of what an update asks.
+ */
+export const updatedImaginedSource = (): RegistrySource => sourceOver(NEXT_HOLDINGS)
+
+/**
  * A source whose `string/pad@1` is held at two versions at once, which is the collision no fixture of
  * the schema produced and every real catalogue eventually will.
  *
@@ -119,7 +148,7 @@ export const imaginedSource = (refuse: readonly string[] = []): RegistrySource =
  * second write would overwrite the first and the dependent that asked for it would silently get the
  * other one's code.
  */
-export const TWO_VERSIONS_OF_ONE_FEATURE = '1.0.1'
+export const TWO_VERSIONS_OF_ONE_FEATURE = IMAGINED_NEXT_VERSION
 
 export const sourceWithTwoVersionsOfPad = (): RegistrySource => {
   const pad = HOLDINGS.find((record) => record.contract.name === 'string/pad')
@@ -136,43 +165,11 @@ export const sourceWithTwoVersionsOfPad = (): RegistrySource => {
     ],
   }
 
-  const held = HOLDINGS.map((record) =>
-    record.contract.name === 'number/clamp' ? clampOnTheNewerPad : record,
-  ).concat(newerPad)
-
-  const snapshots = new Map(
-    held.map((record) => [digestOfSnapshot(snapshotOf(record)), servedSnapshot(snapshotOf(record))]),
+  return sourceOver(
+    HOLDINGS.map((record) =>
+      record.contract.name === 'number/clamp' ? clampOnTheNewerPad : record,
+    ).concat(newerPad),
   )
-
-  return {
-    contractIndex: () => ({ addressing: 'named', entries: HOLDINGS.map(indexEntryOf) }),
-
-    implementationBindings: (address: ContractAddress) =>
-      held
-        .filter((record) => sameContract(record.contract, address))
-        .map((record) => ({
-          addressing: 'named' as const,
-          address: {
-            contract: record.contract,
-            id: record.id,
-            version: record.version ?? IMAGINED_VERSION,
-          },
-          digest: digestOfSnapshot(snapshotOf(record)),
-          publishedAt: '1970-01-01T00:00:00.000Z',
-          status: record.status,
-          benchmarks: record.benchmarks,
-          minifiedBytes: record.minifiedBytes,
-          tags: record.tags,
-        })),
-
-    snapshot: (digest) => snapshots.get(digest) ?? null,
-
-    blob: (sha256) => {
-      const bytes = IMAGINED_BLOBS.get(sha256)
-
-      return bytes === undefined ? null : servedBlob(bytes)
-    },
-  }
 }
 
 /** The contract the imagined graph is rooted at, so that a caller does not transcribe the name. */

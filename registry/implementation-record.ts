@@ -312,6 +312,27 @@ export type LockedFeature = {
   readonly files: readonly InstalledFile[]
   readonly installedAt: string
   readonly locallyModified: boolean
+  /**
+   * True when the user typed this feature's name, false when it arrived through an edge.
+   *
+   * **The second finding this file owes to a consumer, and it is `toopo update`'s.** Without it the
+   * lockfile is a flat set of features with no root, and an update has two ways to guess which of them
+   * to resolve from - both of which are wrong, each for its own reason.
+   *
+   * Treating every entry as a root resolves a *dependency* independently, so it climbs to whatever
+   * version its own binding names today rather than to the one its dependent was published against -
+   * and the project ends up holding a combination nobody ever published. Deriving the roots instead
+   * from "what no other locked feature depends on" reads the edges as they are *now*, which is
+   * precisely what an update is trying to find out has moved; and it gets the ordinary case wrong
+   * anyway, because a `string/pad` that was installed directly *and* is pulled in by `number/round`
+   * would never again be updated on its own.
+   *
+   * So it is not derivable, and an absent field would produce an unpublished combination rather than a
+   * missing convenience. It is **sticky towards true**: a feature that arrived as a dependency and is
+   * later asked for by name becomes a root and stays one, because the user has said they want it, and
+   * nothing an upstream graph does afterwards unsays that.
+   */
+  readonly askedFor: boolean
 }
 
 export type Lockfile = {

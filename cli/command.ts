@@ -4,10 +4,16 @@
  *   node cli/toopo.ts init
  *   node cli/toopo.ts add string/slugify
  *   node cli/toopo.ts add number/parse --implementation reference
+ *   node cli/toopo.ts update
+ *   node cli/toopo.ts update --apply
  *
- * It is thin on purpose. Everything it does is read the arguments, read the project, hand the two to
- * something that decides, and print the answer - so that every decision this tool takes is reachable
- * from a guard without a process, a working directory or a clock being involved.
+ * It is thin on purpose, and the thinness is a property worth naming because it is the one this folder
+ * would lose first. **Everything this tool decides is reachable from a guard, with no process, no
+ * working directory and no clock.** Reading the arguments, reading the project, handing the two to
+ * something that decides, and printing the answer is the whole of what happens here - which is why
+ * `add` could be measured end to end without a sandbox, and why `update` asks for its acceptance as a
+ * second command rather than as a prompt. An interactive prompt written here would take that away, and
+ * would take it away silently.
  *
  * The project root is the working directory, and `toopo.json` is the marker of a project rather than a
  * `package.json`. Nothing this tool does needs a package manager to have been used: it copies source
@@ -24,10 +30,19 @@ import {
   readConfiguration,
   writeConfiguration,
 } from './configuration.js'
-import { commitInstallation, prepareInstallation } from './install.js'
+import { lockfileAfter, prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
-import { UnusableLockfile, readLockfile, withFeature, writeLockfile } from './lockfile.js'
-import { renderInit, renderInstallation, renderRefusal, renderUnchanged } from './report.js'
+import { UnusableLockfile, readLockfile } from './lockfile.js'
+import {
+  renderInit,
+  renderInstallation,
+  renderRefusal,
+  renderUnchanged,
+  renderUpToDate,
+  renderUpdate,
+} from './report.js'
+import { prepareUpdate } from './update.js'
+import { commit } from './write.js'
 import { renderContract } from '../registry/address.js'
 
 const out = (text: string): void => {
@@ -53,6 +68,21 @@ if ('faults' in parsed) {
   process.exit(1)
 }
 
+/** The configuration, or the refusal that names the one command which writes it. */
+const theConfiguration = (): Configuration => {
+  const held = readConfiguration(root)
+  if (held === null) {
+    refuse([
+      `this folder has no ${CONFIGURATION_FILE}, so nothing knows where a feature should go. Run ` +
+        `\`toopo init\` first - it takes no answer and writes one file.`,
+    ])
+  }
+
+  return held
+}
+
+const EMPTY = { version: 1 as const, features: [] }
+
 try {
   if (parsed.command.name === 'init') {
     const held = readConfiguration(root)
@@ -63,16 +93,9 @@ try {
 
     writeConfiguration(root, configuration)
     out(renderInit(configuration, held !== null))
-  } else {
-    const configuration = readConfiguration(root)
-    if (configuration === null) {
-      refuse([
-        `this folder has no ${CONFIGURATION_FILE}, so nothing knows where a feature should go. Run ` +
-          `\`toopo init\` first - it takes no answer and writes one file.`,
-      ])
-    }
-
-    const lockfile = readLockfile(root) ?? { version: 1 as const, features: [] }
+  } else if (parsed.command.name === 'add') {
+    const configuration = theConfiguration()
+    const lockfile = readLockfile(root) ?? EMPTY
     const outcome = prepareInstallation(localSource(), {
       root,
       configuration,
@@ -83,11 +106,81 @@ try {
     })
 
     if ('faults' in outcome) refuse(outcome.faults)
-    else if ('unchanged' in outcome) out(renderUnchanged(renderContract(outcome.unchanged.contract)))
-    else {
-      commitInstallation(root, configuration.directory, outcome.installation)
-      writeLockfile(root, outcome.installation.features.reduce(withFeature, lockfile))
+    else if ('unchanged' in outcome) {
+      // No file moves, and the lockfile may still: asking by name for something the project holds as
+      // a dependency is the user making it a root, and that is recorded rather than answered away.
+      const after = lockfileAfter(lockfile, outcome.features)
+      const recorded = JSON.stringify(after) !== JSON.stringify(lockfile)
+
+      if (recorded) {
+        const written = commit(root, configuration.directory, {
+          writes: [],
+          removals: [],
+          lockfile: after,
+        })
+
+        if ('faults' in written) refuse(written.faults)
+      }
+
+      out(
+        renderUnchanged(
+          renderContract(outcome.unchanged.contract),
+          outcome.entry,
+          configuration,
+          recorded,
+        ),
+      )
+    } else {
+      const written = commit(root, configuration.directory, {
+        writes: outcome.installation.writes,
+        removals: [],
+        lockfile: lockfileAfter(lockfile, outcome.installation.features),
+      })
+
+      if ('faults' in written) refuse(written.faults)
       out(renderInstallation(outcome.installation, configuration))
+    }
+  } else {
+    const configuration = theConfiguration()
+    const lockfile = readLockfile(root)
+    if (lockfile === null) {
+      refuse([
+        `this folder has no toopo.lock, so nothing is installed and there is nothing to update. ` +
+          `Install something with \`toopo add string/slugify\`.`,
+      ])
+    }
+
+    const outcome = prepareUpdate(localSource(), {
+      root,
+      configuration,
+      lockfile,
+      at: new Date().toISOString(),
+    })
+
+    if ('faults' in outcome) refuse(outcome.faults)
+
+    const { update } = outcome
+    const touched = update.writes.length + update.removals.length
+
+    if (touched === 0 && update.features.every((feature) => feature.heldBack === null)) {
+      out(
+        renderUpToDate(
+          update.features
+            .filter((feature) => feature.files.some((file) => file.verdict === 'kept'))
+            .map((feature) => renderContract(feature.contract)),
+        ),
+      )
+    } else if (!parsed.command.apply) {
+      out(renderUpdate(update, configuration, false))
+    } else {
+      const written = commit(root, configuration.directory, {
+        writes: update.writes,
+        removals: update.removals,
+        lockfile: update.lockfile,
+      })
+
+      if ('faults' in written) refuse(written.faults)
+      out(renderUpdate(update, configuration, true))
     }
   }
 } catch (error) {

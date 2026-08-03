@@ -12,6 +12,7 @@ import {
   servedBlobFaults,
   servedContractBinding,
   servedImplementationBinding,
+  servedExportsOf,
   servedIndex,
   servedRefusals,
   servedSnapshot,
@@ -80,6 +81,22 @@ const theCatalogue = (): Ledger => {
     )
   }, withRefusals)
 }
+
+/** The index over the whole catalogue, built the way the local source builds it. */
+const theServedIndex = () =>
+  servedIndex(
+    theCatalogue(),
+    theFive.map((source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+
+      return {
+        address: record.address,
+        summary: record.identity.summary,
+        searchAliases: record.identity.searchAliases,
+        exports: servedExportsOf(record.surface.exports),
+      }
+    }),
+  )
 
 describe('a content-addressed answer carries its own proof', () => {
   it.each(eachContract)('a-snapshot-answer-hashes-to-its-address-%s', (_name, source) => {
@@ -269,15 +286,7 @@ describe('the index, the refusals, and what update compares', () => {
    * something the catalogue's own page says it turned down.
    */
   it('a-refused-contract-is-findable-and-not-installable', () => {
-    const index = servedIndex(
-      theCatalogue(),
-      theFive.map((source) => ({
-        address: source.address,
-        summary: (source.module['identity'] as { summary: string }).summary,
-        searchAliases: (source.module['identity'] as { searchAliases: readonly string[] })
-          .searchAliases,
-      })),
-    )
+    const index = theServedIndex()
 
     const groupByEntry = index.entries.find((entry) => entry.address.name === 'array/group-by')
 
@@ -285,6 +294,53 @@ describe('the index, the refusals, and what update compares', () => {
     expect(groupByEntry?.domain).toBe('array')
     expect(index.entries.filter((entry) => entry.installable)).toHaveLength(4)
     expect(index.entries.every((entry) => entry.searchAliases.length > 0)).toBe(true)
+  })
+
+  /**
+   * The index carries the names a caller writes, because `toopo add` has to print an import line and
+   * an export name is not derivable from an address - `number/parse` exports `parseNumber`.
+   *
+   * The answer comes first and the diagnostic after it, which is the order the printed line uses; and
+   * the answer is the export the identity names, which `against-the-five.test.ts` holds one level down.
+   */
+  it('the-index-names-what-a-caller-imports', () => {
+    const index = theServedIndex()
+    const named = Object.fromEntries(
+      index.entries.map((entry) => [entry.address.name, entry.exports.map((held) => held.name)]),
+    )
+
+    expect(named).toEqual({
+      'array/group-by': ['groupBy'],
+      'date/add': ['addToDate', 'describeAddFailure'],
+      'number/parse': ['parseNumber', 'describeParseFailure'],
+      'string/levenshtein': ['levenshtein'],
+      'string/slugify': ['slugify'],
+    })
+    expect(
+      index.entries.every((entry) => entry.exports[0]?.role === 'the-answer'),
+    ).toBe(true)
+  })
+
+  /**
+   * The claim this type makes about itself, held to a number. `exports` was added by a consumer that
+   * could not name what it had installed, and a row nobody measured is how "deliberately small"
+   * becomes a sentence rather than a constraint.
+   */
+  it('the-index-stays-the-smallest-thing-the-registry-serves', () => {
+    const index = theServedIndex()
+    const withoutExports = {
+      ...index,
+      entries: index.entries.map(({ exports: _exports, ...rest }) => rest),
+    }
+
+    const grown = canonical(index, 'index').length
+    const before = canonical(withoutExports, 'index').length
+
+    expect({ before, grown, added: grown - before }).toEqual({
+      before: 2731,
+      grown: 3106,
+      added: 375,
+    })
   })
 
   /**

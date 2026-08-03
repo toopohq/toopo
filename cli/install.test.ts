@@ -8,12 +8,11 @@ import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { imaginedSource, sourceWithTwoVersionsOfPad } from './imagined-source.js'
 import type { Installation, InstallOutcome } from './install.js'
-import { commitInstallation, prepareInstallation } from './install.js'
+import { lockfileAfter, prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
-import { withFeature } from './lockfile.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
-import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject } from './temporary-project.js'
+import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
 
 /**
  * `toopo add`, end to end, against the graph the catalogue cannot produce and against the catalogue.
@@ -50,7 +49,7 @@ const withTheGraph = <T>(use: (project: TemporaryProject, done: Installation) =>
   const project = aProject()
   try {
     const installation = mustInstall(installing(imaginedSource(), project, 'number/round'))
-    commitInstallation(project.root, project.configuration.directory, installation)
+    committing(project, installation)
 
     return use(project, installation)
   } finally {
@@ -156,6 +155,57 @@ export const clamp = (value: number, low: number, high: number): number =>
     })
   })
 
+  /**
+   * The feature the user typed is a root and the ones it pulled in are not, which is the fact
+   * `toopo update` cannot derive and would produce an unpublished combination without.
+   */
+  it('only-the-feature-that-was-asked-for-is-a-root', () => {
+    withTheGraph((_project, installation) => {
+      expect(
+        installation.features.map((feature) => [renderContract(feature.contract), feature.askedFor]),
+      ).toEqual([
+        ['string/pad@1', false],
+        ['number/clamp@1', false],
+        ['number/sign@1', false],
+        ['number/round@1', true],
+      ])
+    })
+  })
+
+  /**
+   * And it is sticky towards true. A feature that arrived as a dependency and is later installed by
+   * name becomes a root; the reverse never happens, because an upstream graph gaining an edge does not
+   * unask what the user asked for.
+   */
+  it('a-feature-pulled-in-and-then-asked-for-becomes-a-root', () => {
+    const project = aProject()
+    try {
+      const graph = mustInstall(installing(imaginedSource(), project, 'number/round'))
+      const lockfile = committing(project, graph)
+
+      expect(
+        lockfile.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor,
+      ).toBe(false)
+
+      // Not one byte moves - it is already there - and the lockfile still has to. Answering
+      // "nothing to do" and stopping is how a feature the user asked for stays a dependency, and
+      // gets removed by a later update the day nothing imports it.
+      const directly = installing(imaginedSource(), project, 'string/pad', lockfile)
+      if (!('unchanged' in directly)) throw new Error('string/pad was not already there')
+
+      const after = lockfileAfter(lockfile, directly.features)
+
+      expect(after.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor).toBe(
+        true,
+      )
+      expect(after.features.find((feature) => feature.contract.name === 'number/round')?.askedFor).toBe(
+        true,
+      )
+    } finally {
+      project.remove()
+    }
+  })
+
   /** Every one of the five installs its reference, whole, under the name of the feature. */
   it('each-of-the-five-installs-one-file-named-after-itself', () => {
     const source = localSource()
@@ -164,7 +214,7 @@ export const clamp = (value: number, low: number, high: number): number =>
       const installed = ['number/parse', 'date/add', 'string/levenshtein', 'string/slugify'].map(
         (contract) => {
           const installation = mustInstall(installing(source, project, contract))
-          commitInstallation(project.root, project.configuration.directory, installation)
+          committing(project, installation)
 
           return installation.writes.map((write) => write.path)
         },
@@ -318,8 +368,7 @@ export const clamp = (value: number, low: number, high: number): number =>
     const project = aProject()
     try {
       const first = mustInstall(installing(localSource(), project, 'string/slugify'))
-      commitInstallation(project.root, project.configuration.directory, first)
-      const lockfile = first.features.reduce(withFeature, EMPTY_LOCKFILE)
+      const lockfile = committing(project, first)
 
       const again = installing(localSource(), project, 'string/slugify', lockfile)
 

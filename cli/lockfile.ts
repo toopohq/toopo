@@ -69,6 +69,9 @@ const featureFaults = (value: unknown, at: number): readonly string[] => {
     ...(typeof value['locallyModified'] === 'boolean'
       ? []
       : [`${where} does not say whether it was edited`]),
+    ...(typeof value['askedFor'] === 'boolean'
+      ? []
+      : [`${where} does not say whether it was asked for or pulled in`]),
     ...(Array.isArray(files)
       ? files.flatMap((file, index) => fileFaults(file, `${where} file ${index}`))
       : [`${where} carries no file list`]),
@@ -125,16 +128,37 @@ export const readLockfile = (root: string): Lockfile | null => {
   return parsed as Lockfile
 }
 
-export const writeLockfile = (root: string, lockfile: Lockfile): void => {
-  writeFileSync(join(root, LOCKFILE), `${JSON.stringify(lockfile, null, 2)}\n`, 'utf8')
+/**
+ * Written with a trailing newline, because it is a file a person opens.
+ *
+ * `to` is where the bytes go, and it defaults to the lockfile's own place. It is a parameter because
+ * `write.ts` stages every file it commits under a temporary name first, and a lockfile that could only
+ * be written in place would be the one file of a commit that had no staged form - which is to say the
+ * one file whose write could still be half-done.
+ */
+export const writeLockfile = (root: string, lockfile: Lockfile, to = join(root, LOCKFILE)): void => {
+  writeFileSync(to, `${JSON.stringify(lockfile, null, 2)}\n`, 'utf8')
 }
 
-/** The lockfile with this feature in it, replacing any earlier install of the same contract. */
+/**
+ * The lockfile with this feature in it, replacing any earlier install of the same contract.
+ *
+ * **`askedFor` is the one field that survives the replacement**, and it survives towards true. A
+ * feature that was pulled in as a dependency and is later installed by name becomes a root; one that
+ * was installed by name and later arrives as somebody else's dependency stays a root, because the user
+ * asked for it and an upstream graph gaining an edge does not unask it. Everything else about the
+ * entry is what was just installed and replaces what was there.
+ */
 export const withFeature = (lockfile: Lockfile, feature: LockedFeature): Lockfile => {
   const what = renderContract(feature.contract)
-  const others = lockfile.features.filter((held) => renderContract(held.contract) !== what)
+  const held = lockfile.features.find((entry) => renderContract(entry.contract) === what)
+  const others = lockfile.features.filter((entry) => renderContract(entry.contract) !== what)
+  const kept: LockedFeature = {
+    ...feature,
+    askedFor: feature.askedFor || (held?.askedFor ?? false),
+  }
 
-  return { version: 1, features: [...others, feature].sort((a, b) =>
+  return { version: 1, features: [...others, kept].sort((a, b) =>
     renderContract(a.contract) < renderContract(b.contract) ? -1 : 1,
   ) }
 }
@@ -146,19 +170,3 @@ export const digestOnDisk = (root: string, directory: string, path: string): str
 
   return digestOfBytes(servedBytes(readFileSync(full)))
 }
-
-/**
- * The files of this feature that no longer hash to what was written, and the ones that are gone.
- *
- * The whole value of this answer is that it needs nothing from the registry: the lockfile holds the
- * digest of what was written, the file on disk hashes to something, and a difference is a local
- * modification whether or not anything is reachable and whether or not it is honest.
- */
-export const modifiedFiles = (
-  root: string,
-  directory: string,
-  feature: LockedFeature,
-): readonly string[] =>
-  feature.files
-    .filter((file) => digestOnDisk(root, directory, file.path) !== file.sha256)
-    .map((file) => file.path)

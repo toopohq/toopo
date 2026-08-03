@@ -1,0 +1,183 @@
+import { existsSync, mkdirSync, readdirSync } from 'node:fs'
+import { join } from 'node:path'
+
+import { describe, it, expect } from 'vitest'
+
+import { LOCKFILE, readLockfile } from './lockfile.js'
+import type { TemporaryProject } from './temporary-project.js'
+import { EMPTY_LOCKFILE, aProject } from './temporary-project.js'
+import { STAGED, commit } from './write.js'
+
+/**
+ * The two phases, and what each of them is allowed to leave behind.
+ *
+ * Everything here is about a failure rather than about a success, because the success was already
+ * measured by every guard of `install.test.ts` - what those cannot show is that a commit which cannot
+ * finish leaves a project nobody has to repair by hand.
+ */
+
+const A_FILE = (text: string) => ({ path: 'string/pad/pad.ts', bytes: Buffer.from(text, 'utf8') })
+const ANOTHER = (text: string) => ({ path: 'number/sign/sign.ts', bytes: Buffer.from(text, 'utf8') })
+
+/** Every file under the project, so that a guard can say "and nothing else" rather than "and this". */
+const everythingUnder = (at: string): readonly string[] =>
+  existsSync(at)
+    ? readdirSync(at, { withFileTypes: true }).flatMap((entry) =>
+        entry.isDirectory()
+          ? everythingUnder(join(at, entry.name)).map((held) => `${entry.name}/${held}`)
+          : [entry.name],
+      )
+    : []
+
+const inProject = <T>(use: (project: TemporaryProject) => T): T => {
+  const project = aProject()
+  try {
+    return use(project)
+  } finally {
+    project.remove()
+  }
+}
+
+describe('writing into somebody else project', () => {
+  it('a-commit-writes-the-files-and-the-lockfile-together', () => {
+    inProject((project) => {
+      const written = commit(project.root, project.configuration.directory, {
+        writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect(written).toEqual({ written: ['src/lib/toopo/string/pad/pad.ts', 'src/lib/toopo/number/sign/sign.ts'] })
+      expect(project.installed('string/pad/pad.ts')).toBe('export const pad = 1\n')
+      expect(readLockfile(project.root)).toEqual(EMPTY_LOCKFILE)
+    })
+  })
+
+  /**
+   * Nothing staged survives a commit. A `.toopo-part` left behind is inert - it is not a `.ts` file,
+   * so no compiler meets it - but it is litter in somebody's repository, and litter this tool made.
+   */
+  it('a-commit-leaves-no-staged-file-behind', () => {
+    inProject((project) => {
+      commit(project.root, project.configuration.directory, {
+        writes: [A_FILE('export const pad = 1\n')],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect(everythingUnder(project.root).filter((path) => path.includes(STAGED))).toEqual([])
+    })
+  })
+
+  /**
+   * The first of the two failures that used to be an unhandled error, and the reason the phases exist.
+   *
+   * What is arranged here is a file sitting where one of our folders has to go. A permission denial is
+   * the same failure through the same catch on the same line, and `breakage.ts` says in as many words
+   * that it is not what this measures - a guard cannot arrange one on every platform this runs on.
+   */
+  it('a-file-where-a-folder-must-go-is-refused-with-nothing-staged', () => {
+    inProject((project) => {
+      project.write('src/lib/toopo/string', 'this is a file, not a folder\n')
+
+      const written = commit(project.root, project.configuration.directory, {
+        writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect('faults' in written && written.faults).toHaveLength(1)
+      expect('faults' in written && written.faults[0]).toContain('src/lib/toopo/string/pad/pad.ts')
+
+      // The other file of the same commit was staged and abandoned, the lockfile was never written,
+      // and the project holds exactly what it held.
+      expect(everythingUnder(project.root)).toEqual(['src/lib/toopo/string'])
+      expect(existsSync(join(project.root, LOCKFILE))).toBe(false)
+    })
+  })
+
+  /**
+   * The second one. Measured on Windows, renaming onto a directory is EPERM and says nothing a caller
+   * can act on, so the kind of what sits at the destination is asked before anything is staged.
+   */
+  it('a-directory-where-a-file-goes-is-refused-by-name', () => {
+    inProject((project) => {
+      mkdirSync(join(project.root, project.configuration.directory, 'string/pad/pad.ts'), {
+        recursive: true,
+      })
+
+      const written = commit(project.root, project.configuration.directory, {
+        writes: [A_FILE('export const pad = 1\n')],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect('faults' in written && written.faults).toEqual([
+        'src/lib/toopo/string/pad/pad.ts is a directory in your project, and a file has to go where ' +
+          'it is. Toopo will not remove a directory: move it aside and run this again.',
+      ])
+      expect(existsSync(join(project.root, LOCKFILE))).toBe(false)
+    })
+  })
+
+  /** A refusal abandons what it staged, including the lockfile it had already written. */
+  it('a-refusal-leaves-no-staged-file-behind', () => {
+    inProject((project) => {
+      mkdirSync(join(project.root, project.configuration.directory, 'string/pad/pad.ts'), {
+        recursive: true,
+      })
+
+      commit(project.root, project.configuration.directory, {
+        writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect(everythingUnder(project.root).filter((path) => path.includes(STAGED))).toEqual([])
+    })
+  })
+
+  it('a-removal-tidies-the-folder-it-emptied', () => {
+    inProject((project) => {
+      commit(project.root, project.configuration.directory, {
+        writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      commit(project.root, project.configuration.directory, {
+        writes: [],
+        removals: ['string/pad/pad.ts'],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect(everythingUnder(join(project.root, project.configuration.directory))).toEqual([
+        'number/sign/sign.ts',
+      ])
+    })
+  })
+
+  /** And stops at the first folder that still holds something, rather than at the configured root. */
+  it('a-removal-leaves-a-folder-that-still-holds-something', () => {
+    inProject((project) => {
+      commit(project.root, project.configuration.directory, {
+        writes: [
+          A_FILE('export const pad = 1\n'),
+          { path: 'string/pad/digits.ts', bytes: Buffer.from('export const DIGITS = 1\n', 'utf8') },
+        ],
+        removals: [],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      commit(project.root, project.configuration.directory, {
+        writes: [],
+        removals: ['string/pad/pad.ts'],
+        lockfile: EMPTY_LOCKFILE,
+      })
+
+      expect(everythingUnder(join(project.root, project.configuration.directory))).toEqual([
+        'string/pad/digits.ts',
+      ])
+    })
+  })
+})

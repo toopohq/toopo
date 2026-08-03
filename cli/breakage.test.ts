@@ -6,11 +6,11 @@ import { describe, it, expect } from 'vitest'
 
 import { WHAT_BREAKS } from './breakage.js'
 import { CONFIGURATION_FILE } from './configuration.js'
-import { UnusableLockfile, readLockfile, withFeature } from './lockfile.js'
+import { UnusableLockfile, readLockfile } from './lockfile.js'
 import { imaginedSource } from './imagined-source.js'
-import { commitInstallation, prepareInstallation } from './install.js'
+import { prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
-import { EMPTY_LOCKFILE, A_PINNED_INSTANT, aProject } from './temporary-project.js'
+import { EMPTY_LOCKFILE, A_PINNED_INSTANT, aProject, committing } from './temporary-project.js'
 import type { Installation, InstallOutcome } from './install.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import type { RegistrySource } from './source.js'
@@ -53,12 +53,7 @@ const mustInstall = (outcome: InstallOutcome): Installation => {
 const alreadyInstalled = (
   project: TemporaryProject,
   contract = 'string/slugify',
-): Lockfile => {
-  const installation = mustInstall(installing(localSource(), project, contract))
-  commitInstallation(project.root, project.configuration.directory, installation)
-
-  return installation.features.reduce(withFeature, EMPTY_LOCKFILE)
-}
+): Lockfile => committing(project, mustInstall(installing(localSource(), project, contract)))
 
 describe('what breaks for somebody', () => {
   it('every-breakage-is-classified :: a clean refusal names its guard and a bad break says why', () => {
@@ -130,8 +125,7 @@ describe('what breaks for somebody', () => {
   it('a-project-with-no-package-json-installs-normally', () => {
     const project = aProject()
     try {
-      const installation = mustInstall(installing(localSource(), project, 'string/slugify'))
-      commitInstallation(project.root, project.configuration.directory, installation)
+      committing(project, mustInstall(installing(localSource(), project, 'string/slugify')))
 
       expect(existsSync(join(project.root, 'package.json'))).toBe(false)
       expect(readdirSync(join(project.root, 'src/lib/toopo/string/slugify'))).toEqual(['slugify.ts'])
@@ -144,8 +138,7 @@ describe('what breaks for somebody', () => {
   it('a-path-with-a-space-installs-normally', () => {
     const project = aProject('src/my code/toopo')
     try {
-      const installation = mustInstall(installing(imaginedSource(), project, 'number/round'))
-      commitInstallation(project.root, project.configuration.directory, installation)
+      committing(project, mustInstall(installing(imaginedSource(), project, 'number/round')))
 
       expect(project.installed('number/clamp/clamp.ts')).toContain(
         `from '../../string/pad/pad.js'`,
@@ -165,7 +158,7 @@ describe('what breaks for somebody', () => {
       project.write('tsconfig.json', '{ "this": is not even json }')
 
       const installation = mustInstall(installing(imaginedSource(), project, 'number/round'))
-      commitInstallation(project.root, project.configuration.directory, installation)
+      committing(project, installation)
 
       expect(installation.writes).toHaveLength(5)
     } finally {

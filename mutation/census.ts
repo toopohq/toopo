@@ -86,6 +86,12 @@
  * battery was first run rather than after `censusFor` refused it. That the refusal did not fire is
  * worth writing down beside the three measurements above: it is the only figure here that was not
  * produced by being caught out.
+ *
+ * A fifth on `toopo update`, and it is the largest yet: three new files under the fifth configuration
+ * and five existing counts moved, plus one in `registry/`. That is what a unit costs when it adds a
+ * command rather than a contract, and it is the number the paragraph above predicted at "a unit that
+ * only changes behaviour touches none" - this one changed behaviour *and* added guards, so it paid for
+ * both.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -126,7 +132,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'registry/determinism.test.ts': 20,
     'registry/endpoints.test.ts': 12,
     'registry/implementations.test.ts': 18,
-    'registry/response.test.ts': 44,
+    'registry/response.test.ts': 46,
     'registry/round-trip.test.ts': 19,
     'registry/served-files.test.ts': 10,
     'registry/snapshot.test.ts': 45,
@@ -145,14 +151,17 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'cli/vitest.config.ts': {
-    'cli/arguments.test.ts': 7,
+    'cli/arguments.test.ts': 9,
     'cli/breakage.test.ts': 8,
     'cli/configuration.test.ts': 7,
-    'cli/install.test.ts': 15,
+    'cli/diff.test.ts': 10,
+    'cli/install.test.ts': 17,
     'cli/plan.test.ts': 6,
-    'cli/report.test.ts': 4,
+    'cli/report.test.ts': 7,
     'cli/rewrite.test.ts': 7,
     'cli/source.test.ts': 6,
+    'cli/update.test.ts': 18,
+    'cli/write.test.ts': 7,
   },
 
   'mutation/fixture/vitest.config.ts': {
