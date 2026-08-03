@@ -263,8 +263,6 @@ const benchmarksOf = (source: ProfileSource): BenchmarksRecord => ({
   profiles: source.profiles.map((entry) =>
     profileOf(entry, source.classField, source.producedBy ?? {}),
   ),
-  // Declared and never measured, on all five, which is the state they will be published in.
-  measurements: [],
 })
 
 /**

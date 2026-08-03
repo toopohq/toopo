@@ -91,17 +91,23 @@ describe('the public/private frontier', () => {
     expect(stale, 'these fields are filled now, so their justification is stale').toEqual([])
   })
 
-  it('the-unfilled-fields-are-the-three-that-were-argued-for :: and no others', () => {
+  /**
+   * **This guard was called `the-unfilled-fields-are-the-three-that-were-argued-for` and had to be
+   * renamed**, because there are two now that the contract-side measurements are gone - and an
+   * identifier that counts its own rows can be wrong about them. That is the failure the catalogue
+   * already forbids for a case identifier, in as many words: a name, and not a rendering of the data
+   * it addresses. It was written here anyway, and it took a subtraction to expose it.
+   *
+   * Renaming was the repair rather than updating the number, because a name that has to be edited
+   * whenever the data moves is not an address.
+   */
+  it('the-unfilled-fields-are-the-ones-that-were-argued-for :: and no others', () => {
     const kept = Object.entries(FIELD_MAP)
       .filter(([, entry]) => entry.unfilledBecause !== undefined)
       .map(([path]) => path)
       .sort()
 
-    expect(kept).toEqual([
-      'benchmarks.measurements[]',
-      'caseTables[].cases[].provenance.report',
-      'lifecycle.answeredBy',
-    ])
+    expect(kept).toEqual(['caseTables[].cases[].provenance.report', 'lifecycle.answeredBy'])
   })
 
   /**

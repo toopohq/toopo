@@ -46,10 +46,6 @@
  * decorative rule its own comment warns against. Both are refusals of something the repository has
  * already decided, so the field is not in the frozen half.
  *
- * `benchmarks.measurements` is the same shape. It is empty on all five because there is no reference
- * machine, and the whole point of the field is that figures arrive later - against an implementation
- * that was published without them.
- *
  * On the implementation side: `status` moves from `listed` to `default` to `demoted` over an
  * artefact's life and the schema says demotion is deliberately not withdrawal; `minifiedBytes` is
  * null until a minifier exists; `benchmarks` is empty until a reference machine does; and `tags` are
@@ -84,13 +80,12 @@ import type { ContractAddress, ImplementationAddress } from './address.js'
 import { renderContract, renderImplementation } from './address.js'
 import { DIGEST, digestOf } from './canonical.js'
 import type {
+  BenchmarksRecord,
   CaseTableRecord,
   ContractRecord,
   IdentityRecord,
   Lifecycle,
   OwnDeclaration,
-  ProfileClassRecord,
-  ProfileRecord,
   PropertiesRecord,
   SurfaceRecord,
 } from './contract-record.js'
@@ -107,9 +102,11 @@ export const SNAPSHOT_FORMAT = 1
  * The frozen half of a contract: everything a caller receives, and nothing the registry may change
  * its mind about.
  *
- * `benchmarks` keeps its vocabulary and its profiles and loses its measurements, which is why block
- * 4.5 is the one field rebuilt here rather than passed through: it is the only object of the record
- * whose frozen and standing halves sit together.
+ * `benchmarks` is passed through whole. It used to be rebuilt here, because it was the one object of
+ * the record whose frozen and standing halves sat together - the vocabulary and the profiles frozen,
+ * the measurements not. The measurements are gone: they modelled the same fact as an implementation's
+ * `BenchmarkFigure`, from the other side, and a benchmark belongs to the implementation it was
+ * measured on.
  */
 export type FrozenContract = {
   readonly address: ContractAddress
@@ -118,10 +115,7 @@ export type FrozenContract = {
   readonly environments: readonly string[]
   readonly properties: PropertiesRecord
   readonly caseTables: readonly CaseTableRecord[]
-  readonly benchmarks: {
-    readonly vocabulary: readonly ProfileClassRecord[]
-    readonly profiles: readonly ProfileRecord[]
-  }
+  readonly benchmarks: BenchmarksRecord
   readonly ownDeclarations: readonly OwnDeclaration[]
   readonly harness: readonly HarnessFile[]
 }
@@ -152,6 +146,20 @@ export type StandingField = {
   readonly reason: string
 }
 
+/**
+ * **One entry, and it is a category rather than an exception.** This list held two until the
+ * contract-side measurements were deleted as a duplicate of the implementation's, and a list of one
+ * reads like a special case somebody carved out - so the next reader flattens it into the projection
+ * and the question stops being asked.
+ *
+ * The question is: *may the registry change its mind about this field after publication?* Every field
+ * a contract record grows has to answer it, and an answer of yes puts the field here whatever else it
+ * is. `snapshot.test.ts` requires the two halves to partition a record exactly, so a field added to
+ * neither is refused - which only works while this list is a place a field can be added to. Two
+ * candidates already exist on paper and neither is filled today: anything the registry curates about a
+ * contract, as `tags` are one level down, and anything a later measurement attaches to an artefact
+ * published without it.
+ */
 export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
   {
     field: 'lifecycle',
@@ -160,12 +168,6 @@ export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
       'permanent rule 6 forbids unpublishing it. Inside the digest, either the rule firing breaks ' +
       'immutability or the state is unreachable - and an unreachable state is the decorative rule ' +
       'its own comment warns against.',
-  },
-  {
-    field: 'benchmarks.measurements',
-    reason:
-      'empty on all five because there is no reference machine, and the point of the field is that ' +
-      'figures arrive later - against a contract that was published without them.',
   },
 ]
 
@@ -212,7 +214,7 @@ export const contractSnapshot = (record: ContractRecord): Snapshot => ({
     environments: record.environments,
     properties: record.properties,
     caseTables: record.caseTables,
-    benchmarks: { vocabulary: record.benchmarks.vocabulary, profiles: record.benchmarks.profiles },
+    benchmarks: record.benchmarks,
     ownDeclarations: record.ownDeclarations,
     harness: record.harness,
   },

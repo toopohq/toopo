@@ -53,10 +53,11 @@ const missingFrom = (whole: unknown, kept: unknown, at: string): readonly string
  * Every field of a record the digest is supposed to cover, as dotted paths, driven by the standing
  * declaration rather than by a list written here.
  *
- * It descends only where a standing field is declared below - so `benchmarks` becomes
- * `benchmarks.vocabulary` and `benchmarks.profiles` because `benchmarks.measurements` is standing,
- * while `identity` stays whole. Anything else would either miss the one object whose two halves sit
- * together, or walk every record to its leaves and take a minute doing it.
+ * It descends only where a standing field is declared below, so today every top-level field stays
+ * whole: no standing field sits under another object any more. It descended into `benchmarks` while
+ * the contract-side measurements existed, and the machinery is kept rather than simplified away
+ * because the next standing field to arrive may well sit inside something - which is exactly the case
+ * a projection walking only the top level would freeze by accident.
  */
 const frozenPathsOf = (
   record: Readonly<Record<string, unknown>>,
@@ -183,25 +184,15 @@ describe('what the digest covers', () => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const digest = digestOfSnapshot(contractSnapshot(record))
 
+      // One standing field now, where there were two: the contract-side measurements duplicated the
+      // implementation's and were deleted. The claim is unchanged and narrower - the single field the
+      // registry may still change its mind about must not be inside the digest.
       const absorbed: ContractRecord = {
         ...record,
         lifecycle: {
           state: 'absorbed-by-the-language',
           answeredBy: 'a future proposal, named here by nothing',
           measurement: 'none: this is the shape of the operation, not a claim about the language',
-        },
-        benchmarks: {
-          ...record.benchmarks,
-          measurements: [
-            {
-              profile: record.benchmarks.profiles[0]?.name ?? '',
-              environment: 'node',
-              implementation: 'reference',
-              nanosecondsPerCall: 1,
-              referenceMachine: 'a machine that does not exist',
-              measuredOn: PUBLISHED_AT,
-            },
-          ],
         },
       }
 

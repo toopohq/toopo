@@ -195,17 +195,6 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   'benchmarks.profiles[].samples.count': { visibility: 'public', verification: 'structural' },
   'benchmarks.profiles[].samples.encodedBytes': { visibility: 'public', verification: 'structural' },
   'benchmarks.profiles[].samples.sha256': { visibility: 'public', verification: 'structural' },
-  'benchmarks.measurements[]': {
-    visibility: 'public',
-    verification: 'documentary',
-    unfilledBecause:
-      'block 4.5 is declared as data and nothing in this repository executes or measures it: there ' +
-      'is no reference machine, and a number produced on a developer laptop would be dishonest. A ' +
-      'profile declared and never measured is the state all five will be published in, so the ' +
-      'schema has to be able to hold it - and holding it as an empty list rather than as a null ' +
-      'figure is what says no measurement has been taken.',
-  },
-
   'ownDeclarations[].name': { visibility: 'public', verification: 'documentary' },
   'ownDeclarations[].verification': { visibility: 'public', verification: 'documentary' },
   'ownDeclarations[].value': { visibility: 'public', verification: 'stated-per-declaration' },
@@ -229,7 +218,6 @@ const LEAF_FIELDS = new Set([
   'benchmarks.profiles[].samples.values[]',
   'ownDeclarations[].value',
   'caseTables[].cases[].provenance.mutant',
-  'benchmarks.measurements[]',
 ])
 
 export const pathsIn = (value: unknown, path: string, into: Set<string>): void => {

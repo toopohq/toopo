@@ -183,7 +183,6 @@ const theSixth: ContractRecord = {
         data: encode({}, 'sixth'),
       },
     ],
-    measurements: [],
   },
   ownDeclarations: [
     {

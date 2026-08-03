@@ -313,25 +313,6 @@ export type ProfileRecord = {
 }
 
 /**
- * A measured figure for one profile, on one environment, for one implementation.
- *
- * **Empty for all five, and that is the state they will be published in.** Block 4.5 is declared as
- * data and nothing in this repository executes or measures it: there is no reference machine, and a
- * number produced on a developer laptop would be dishonest. The type makes "declared but never
- * measured" an empty list rather than a null figure, because that is what it is - no measurement has
- * been taken, as opposed to a measurement that came back empty.
- */
-export type ProfileMeasurement = {
-  readonly profile: string
-  readonly environment: string
-  readonly implementation: string
-  readonly nanosecondsPerCall: number
-  /** When and on what. A figure with no machine behind it is the thing this project sells against. */
-  readonly referenceMachine: string
-  readonly measuredOn: string
-}
-
-/**
  * Block 4.5, and the one place where the code/data frontier has a size you can measure.
  *
  * Measured over the five, as the canonical text of a whole record in bytes - which is the form a
@@ -356,10 +337,22 @@ export type ProfileMeasurement = {
  * here rather than quietly replaced: **a published size names the serialisation it was taken under**,
  * because there are three and they differ by a factor of six.
  */
+/**
+ * **This record carried a `measurements` list and no longer does.** It held the same fact as
+ * `BenchmarkFigure` on the implementation - a profile, an environment, a figure, the machine and the
+ * date - keyed from the contract instead of from the implementation, with an implementation id beside
+ * it. Two models of one measurement, both empty on all five, and only one of them ever served: a
+ * benchmark figure belongs to the implementation it was measured on, which is where the comparison
+ * that justifies an implementation list happens.
+ *
+ * It went for a second reason as well. That id was the last place in this folder where a type named
+ * something by its identifier alone, and an identifier here is unique *within its contract* - the rule
+ * the catalogue has now learned three times, on cases, on guards, and on the read API's
+ * `/implementations/{id}@{version}`.
+ */
 export type BenchmarksRecord = {
   readonly vocabulary: readonly ProfileClassRecord[]
   readonly profiles: readonly ProfileRecord[]
-  readonly measurements: readonly ProfileMeasurement[]
 }
 
 // ---------------------------------------------------------------------------
