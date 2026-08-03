@@ -58,6 +58,12 @@ const onEach = (guard: string): readonly string[] => THE_FIVE.map((slug) => `${g
 const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts', find, replace })
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
+const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
+const implementationFile = (find: string, replace: string) => ({
+  file: 'implementation-record.ts',
+  find,
+  replace,
+})
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -86,6 +92,28 @@ const A_STRING_IS_ITSELF = `  if (typeof value === 'string') return JSON.stringi
 
 const REFUSE_A_REBINDING = `  const held = entries[0]
   if (held !== undefined) throw new AlreadyPublished(what, held.digest, offered)`
+
+const SERVE_THE_CANONICAL_TEXT = `  canonicalText: canonical(snapshot, 'snapshot'),`
+
+const A_BINDING_IS_ONLY_STANDING = `  readonly lifecycle: Lifecycle
+}`
+
+const A_BINDING_IS_BUILT_FROM_STANDING = `  lifecycle: entry.standing.lifecycle,
+})`
+
+const NORMALISE_THEN_HASH = `  const recomputed = digestOfBytes(servedBytes(response.bytes))`
+
+const INSTALLABLE_MEANS_PUBLISHED = `      installable: published.has(renderContract(identity.address)),`
+
+const WALK_BEFORE_PUSHING = `      const next = mustHold(holdings, edge)
+      walk(next, [...open, what])
+      seen.add(what)
+      resolved.push(next)`
+
+const WALKS_AFTER_PUSHING = `      const next = mustHold(holdings, edge)
+      seen.add(what)
+      resolved.push(next)
+      walk(next, [...open, what])`
 
 // ---------------------------------------------------------------------------
 // The defects
@@ -216,6 +244,74 @@ const mutants: readonly Mutant[] = [
       'rebinding-is-refused-even-to-the-same-digest',
       'an-implementation-versions-under-a-contract-that-does-not-move',
     ]),
+  ),
+
+  // -------------------------------------------------------------------------
+  // The read API. Five defects of the projection, and one of the resolution.
+  //
+  // They are in this battery rather than in one of their own because they are the same subject one
+  // step along: what a snapshot is, what may not travel beside it, and what a reader can recompute.
+  // A separate battery would inject into the same folder under the same configuration and would
+  // differ only in its name.
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'I-11',
+    'serves a snapshot as ordinary JSON rather than as the canonical text its digest was taken over, ' +
+      'so the cheapest check anybody runs - sha256 over the response body - answers the wrong thing ' +
+      'while every reader that re-canonicalises still agrees',
+    [responseFile(SERVE_THE_CANONICAL_TEXT, `  canonicalText: JSON.stringify(snapshot),`)],
+    killed(onEach('the-body-served-is-already-canonical')),
+  ),
+
+  sameOnEveryLens(
+    'I-12',
+    'puts a frozen field into the answer a name resolves to, so a reader can no longer recompute the ' +
+      'digest without being told which fields to strip - and being told is the trust this unit exists ' +
+      'to remove',
+    [
+      responseFile(
+        A_BINDING_IS_ONLY_STANDING,
+        // Written with a structural type rather than by naming `HarnessFile`, so that the defect is
+        // caught by the guard that exists for it and not by an import this file does not have. A
+        // mutant killed by the typechecker would measure the import and not the projection.
+        `  readonly lifecycle: Lifecycle
+  readonly harness: readonly { readonly path: string }[]
+}`,
+      ),
+      responseFile(
+        A_BINDING_IS_BUILT_FROM_STANDING,
+        `  lifecycle: entry.standing.lifecycle,
+  harness: [],
+})`,
+      ),
+    ],
+    killed(onEach('a-contract-binding-carries-only-the-address')),
+  ),
+
+  sameOnEveryLens(
+    'I-13',
+    'hashes a served file before normalising it, so a reader whose transport hands back CRLF is told ' +
+      'their whole platform modified the file - the defect I-01 was, arriving on the reading side',
+    [responseFile(NORMALISE_THEN_HASH, `  const recomputed = digestOfBytes(response.bytes)`)],
+    killed(['a-blob-answer-that-arrived-with-crlf-still-verifies']),
+  ),
+
+  sameOnEveryLens(
+    'I-14',
+    'offers a contract the catalogue refused for installation, which is the search index contradicting ' +
+      'the refusals page of the same site',
+    [responseFile(INSTALLABLE_MEANS_PUBLISHED, `      installable: true,`)],
+    killed(['a-refused-contract-is-findable-and-not-installable']),
+  ),
+
+  sameOnEveryLens(
+    'I-15',
+    'resolves a dependency graph in the order it walks rather than in the order it must be written, so ' +
+      'an install leaves the project between two writes with a file importing something that is not ' +
+      'there yet',
+    [implementationFile(WALK_BEFORE_PUSHING, WALKS_AFTER_PUSHING)],
+    killed(['a-shared-dependency-is-resolved-once', 'nothing-is-written-before-what-it-imports']),
   ),
 ]
 

@@ -67,14 +67,15 @@
  * was declared" and leaves them to find out; this answers "these six files collected nothing".
  *
  * It costs no more to maintain. Adding a guard moves exactly one number either way - the file's, or
- * the total - so the number of edits per change is identical. What it costs is thirty-three entries
+ * the total - so the number of edits per change is identical. What it costs is thirty-six entries
  * to hold instead of three, and one edit whenever a file is added, renamed or removed.
  *
  * **The maintenance cost, stated plainly rather than discovered.** Adding a test breaks this pin.
  * That is the same price as a pinned verdict, already paid deliberately everywhere else in this
  * folder. Measured on the unit that wrote this file - the immutable storage - it would have touched
- * five of the thirty-three entries: four new test files, and one existing file whose count changed.
- * A unit that adds a contract touches four. A unit that only changes behaviour touches none.
+ * five of the entries it declared: four new test files, and one existing file whose count changed.
+ * Measured again on the read API, the unit after it: four entries, three of them new files. A unit
+ * that adds a contract touches four. A unit that only changes behaviour touches none.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -113,11 +114,14 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'registry/attestation.test.ts': 3,
     'registry/coverage.test.ts': 20,
     'registry/determinism.test.ts': 20,
+    'registry/endpoints.test.ts': 12,
     'registry/implementations.test.ts': 18,
+    'registry/response.test.ts': 44,
     'registry/round-trip.test.ts': 19,
     'registry/served-files.test.ts': 10,
     'registry/snapshot.test.ts': 45,
-    'registry/the-sixth-contract.test.ts': 6,
+    'registry/the-sixth-contract.test.ts': 13,
+    'registry/verifiability.test.ts': 12,
     'registry/visibility.test.ts': 10,
   },
 

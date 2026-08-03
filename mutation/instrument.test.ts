@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
-import { calibrate, runBattery } from './run.ts'
+import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } from './run.ts'
 import { attributionOf, disagreementsIn } from './attribution.ts'
 import { killed, mutantsOn, reference, survived } from './mutants.ts'
 import { battery, DOUBLED, DOUBLES_A_POSITIVE, DOUBLES_ZERO } from './fixture.battery.ts'
@@ -349,6 +349,62 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
     },
     META_TIMEOUT_MS,
   )
+
+  /**
+   * An interrupted run leaves a mutant in the tree, and that is the one way a defect enters this
+   * catalogue in silence: a *surviving* mutant reddens nothing by definition, so `npm test` is green,
+   * the tree is dirty, and the whole thing is committable with nothing protesting. The next battery
+   * run would refuse the dirty tree - so the instrument protects itself, and only the suite is fooled.
+   *
+   * This is the restore half, exercised against a real edit to the fixture rather than described.
+   */
+  it(
+    'puts the tree back when a run is interrupted',
+    () => {
+      const path = join(REPO, 'mutation', 'fixture', 'reference.ts')
+      const before = readFileSync(path, 'utf8')
+
+      try {
+        writeFileSync(path, `${before}\nexport const leftBehindByAnInterruption = 1\n`)
+        expect(readFileSync(path, 'utf8')).not.toBe(before)
+
+        restoreAfterAnInterruption('mutation/fixture')
+
+        expect(readFileSync(path, 'utf8')).toBe(before)
+      } finally {
+        execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: REPO })
+      }
+    },
+    META_TIMEOUT_MS,
+  )
+
+  /**
+   * The wiring half. The four signals are listened for while the tree is mutated and are let go
+   * afterwards, so an instrument that ran twice in one process would not accumulate handlers - and one
+   * that installed none would leave the hole above open while looking exactly the same from outside.
+   *
+   * What no guard here can establish is that the operating system delivers the signal. Measured on
+   * this platform rather than assumed: on Windows a signal sent programmatically to a child goes
+   * through `TerminateProcess` and no handler runs at all, on three signals out of three. What Node
+   * does deliver there is a real console Ctrl+C. On POSIX all four arrive. The chain stops at the
+   * kernel, and it is written down rather than left for a reader to assume it closes.
+   */
+  it('listens for every catchable interruption, and stops listening afterwards', () => {
+    const counted = (): number =>
+      ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'].reduce(
+        (total, signal) => total + process.listenerCount(signal),
+        0,
+      )
+
+    const before = counted()
+    const stopListening = restoringOnSignal('mutation/fixture')
+
+    expect(counted()).toBe(before + 4)
+
+    stopListening()
+
+    expect(counted()).toBe(before)
+  })
 
   it(
     'refuses to measure a working tree that is not what git says it is',

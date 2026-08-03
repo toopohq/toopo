@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { renderContract, sameContract } from './address.js'
 import type { LockedFeature, Lockfile } from './implementation-record.js'
+import { dependencyDepthOf } from './implementation-record.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
 import { eachContract, theFive } from './the-five.js'
 
@@ -55,11 +56,21 @@ describe('the implementations under the five contracts', () => {
   /**
    * Permanent rule 2 forbids an external dependency inside a feature, so this is a fact a reader can
    * check rather than a promise. A submission that is not zero is refused by a rule and not by taste.
+   *
+   * The edges and the depth are both asserted, and the depth is the *derived* one: a record that
+   * carried its own depth could disagree with its own edges, which is the reason the field was
+   * replaced. Here the two cannot disagree, so what the second line adds is that the derivation
+   * answers zero on an empty graph rather than throwing on it.
    */
-  it('every-reference-has-no-dependencies :: permanent rule 2, as a number', () => {
-    const depths = theFive.map((source) => referenceImplementationOf(REPOSITORY_ROOT, source))
+  it('every-reference-has-no-dependencies :: permanent rule 2, as edges and as a number', () => {
+    const implementations = theFive.map((source) =>
+      referenceImplementationOf(REPOSITORY_ROOT, source),
+    )
 
-    expect(depths.map((entry) => entry.dependencyDepth)).toEqual([0, 0, 0, 0, 0])
+    expect(implementations.map((entry) => entry.dependsOn)).toEqual([[], [], [], [], []])
+    expect(implementations.map((entry) => dependencyDepthOf(entry, implementations))).toEqual([
+      0, 0, 0, 0, 0,
+    ])
   })
 
   /**

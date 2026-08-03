@@ -1,9 +1,16 @@
 import { describe, it, expect } from 'vitest'
 
-import { caseAddressFaults, contractAddressFaults } from './address.js'
+import type { ContractAddress, ImplementationAddress } from './address.js'
+import { caseAddressFaults, contractAddressFaults, renderImplementation } from './address.js'
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { ContractRecord, Lifecycle } from './contract-record.js'
 import { FIELD_MAP, pathsIn, publicContract } from './field-map.js'
+import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
+import {
+  UnresolvedDependency,
+  dependencyDepthOf,
+  resolveDependencies,
+} from './implementation-record.js'
 import { decode, encode } from './value.js'
 
 /**
@@ -273,5 +280,200 @@ describe('a sixth contract enters without a migration', () => {
 
     expect([...paths].filter((path) => FIELD_MAP[path] === undefined)).toEqual([])
     expect(paths.has('lifecycle.answeredBy')).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// The dependency graph, which the five cannot exercise at all
+// ---------------------------------------------------------------------------
+
+/**
+ * `dependsOn` is filled by none of the five, and this is where a field nobody fills gets exercised.
+ *
+ * It is the same device as the record above and for the same reason: the five were written to be a
+ * catalogue, not a test fixture, and every one of them has an empty dependency list because permanent
+ * rule 2 means the only edges that can ever exist are between registry features and the catalogue has
+ * five features that need none. A field whose walk had never been run would be a walk that fails the
+ * day the sixth contract imports the fifth - which is exactly what `toopo add` would be doing.
+ *
+ * **None of these three contracts exists either.** They are addresses and digests over real bytes,
+ * shaped like a graph a registry will one day hold, and nothing about rounding, padding or clamping
+ * is claimed here.
+ *
+ * **The shape of the graph is chosen, and the first shape was wrong.** It was written as
+ * `round -> pad, clamp, sign` with `clamp -> pad`, and measured: an implementation that pushed each
+ * dependency *before* walking into it - a pre-order walk, which writes a dependent before what it
+ * imports - produced the identical order and the guard stayed green. `pad` was a direct edge of
+ * `round` and the first one, so it came out first either way, and the ordering claim was untestable
+ * against the only mutant that can violate it.
+ *
+ * So `pad` is reached only through its two dependents. Three implementations are reachable, the depth
+ * is two, and the two walks now disagree - which is what makes the order an assertion rather than a
+ * coincidence.
+ *
+ *     round -> clamp, sign
+ *     clamp -> pad
+ *     sign  -> pad
+ */
+const addressOf = (name: string): ContractAddress => ({ language: 'typescript', name, major: 1 })
+
+const REFERENCE_AT = (id: string, contract: ContractAddress): ImplementationAddress => ({
+  contract,
+  id,
+  version: '1.0.0',
+})
+
+const fileOf = (path: string, source: string): HarnessFile => {
+  const bytes = servedBytes(Buffer.from(source, 'utf8'))
+
+  return { path, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }
+}
+
+/** One file carried by two implementations, which is the shape the CLI deduplicates on. */
+const SHARED_FILE = fileOf('digits.ts', 'export const DIGITS = /^[0-9]+$/\n')
+
+const implementationOf = (
+  contract: ContractAddress,
+  files: readonly HarnessFile[],
+  dependsOn: readonly ImplementationAddress[],
+): ImplementationRecord => ({
+  id: 'reference',
+  contract,
+  author: 'toopo',
+  version: '1.0.0',
+  status: 'default',
+  files,
+  dependsOn,
+  minifiedBytes: null,
+  benchmarks: [],
+  tags: ['reference'],
+})
+
+const PAD = addressOf('string/pad')
+const CLAMP = addressOf('number/clamp')
+const SIGN = addressOf('number/sign')
+
+const pad = implementationOf(PAD, [fileOf('reference.ts', 'export const pad = 1\n'), SHARED_FILE], [])
+const sign = implementationOf(
+  SIGN,
+  [fileOf('reference.ts', 'export const sign = 1\n')],
+  [REFERENCE_AT('reference', PAD)],
+)
+const clamp = implementationOf(
+  CLAMP,
+  [fileOf('reference.ts', 'export const clamp = 1\n'), SHARED_FILE],
+  [REFERENCE_AT('reference', PAD)],
+)
+const round = implementationOf(
+  CONTRACT,
+  [fileOf('reference.ts', REFERENCE_SOURCE)],
+  [REFERENCE_AT('reference', CLAMP), REFERENCE_AT('reference', SIGN)],
+)
+
+const HOLDINGS: readonly ImplementationRecord[] = [pad, sign, clamp, round]
+
+const rendered = (records: readonly ImplementationRecord[]): readonly string[] =>
+  records.map((record) =>
+    renderImplementation({ contract: record.contract, id: record.id, version: record.version ?? '' }),
+  )
+
+describe('what `toopo add` has to be told, and a depth could not tell it', () => {
+  /**
+   * The dedup that matters, and the one a depth cannot express: `pad` is named by two dependents and
+   * is installed once. A resolution that returned the walk rather than the set would write it twice.
+   */
+  it('a-shared-dependency-is-resolved-once :: dependencies before dependents', () => {
+    expect(rendered(resolveDependencies(round, HOLDINGS))).toEqual([
+      'string/pad@1/reference@1.0.0',
+      'number/clamp@1/reference@1.0.0',
+      'number/sign@1/reference@1.0.0',
+    ])
+  })
+
+  /**
+   * The order is the answer, not a by-product. Every implementation appears after everything it
+   * imports, so an installer writing the list in order never leaves the project between two writes
+   * with a file importing something that is not there yet.
+   */
+  it('nothing-is-written-before-what-it-imports', () => {
+    const order = rendered(resolveDependencies(round, HOLDINGS))
+    const tooLate = resolveDependencies(round, HOLDINGS).flatMap((record, at) =>
+      record.dependsOn
+        .map((edge) => renderImplementation(edge))
+        .filter((edge) => order.indexOf(edge) > at),
+    )
+
+    expect(tooLate).toEqual([])
+  })
+
+  /**
+   * The number the field used to carry, now derived from the edges it used to sit beside. Three
+   * implementations are reachable and the depth is two, so a derivation that counted the set instead
+   * of measuring the longest chain would answer three and redden here.
+   */
+  it('the-depth-is-derived-from-the-edges :: three reachable, two deep', () => {
+    expect(dependencyDepthOf(round, HOLDINGS)).toBe(2)
+    expect(dependencyDepthOf(clamp, HOLDINGS)).toBe(1)
+    expect(dependencyDepthOf(pad, HOLDINGS)).toBe(0)
+  })
+
+  /**
+   * A file two features share is recognisable from what a caller already has, by comparing digests -
+   * so the registry states nothing extra and the CLI needs no endpoint for it. What the CLI must not
+   * do is guess it from the path: `reference.ts` is carried by all four and is four different files.
+   */
+  it('a-shared-file-is-recognised-by-its-digest-and-never-by-its-path', () => {
+    const files = [pad, clamp].flatMap((record) => record.files)
+    const digests = new Set(files.map((file) => file.sha256))
+
+    expect(files).toHaveLength(4)
+    expect(digests.size).toBe(3)
+
+    const references = HOLDINGS.flatMap((record) =>
+      record.files.filter((file) => file.path === 'reference.ts'),
+    )
+
+    expect(new Set(references.map((file) => file.sha256)).size).toBe(references.length)
+  })
+
+  /**
+   * The refusal names the edge, because "a dependency is missing" leaves whoever reads it to find
+   * out which - and an install that resolved partially and stopped would already have written files.
+   */
+  it('an-edge-the-registry-does-not-hold-is-refused', () => {
+    expect(() => resolveDependencies(round, [pad, sign])).toThrow(
+      /number\/clamp@1\/reference@1\.0\.0 cannot be resolved/,
+    )
+    expect(() => resolveDependencies(round, [clamp, sign])).toThrow(
+      /string\/pad@1\/reference@1\.0\.0 cannot be resolved/,
+    )
+    expect(() => resolveDependencies(round, [pad, sign])).toThrow(UnresolvedDependency)
+  })
+
+  /**
+   * An unpublished implementation can never be an edge's target, and it is unrepresentable rather
+   * than refused: an address carries a version string and an unpublished record carries null, so the
+   * lookup cannot match. Asserted because "cannot happen" is the claim most worth a guard.
+   */
+  it('an-unpublished-implementation-cannot-be-depended-on', () => {
+    const unpublished = { ...pad, version: null }
+
+    expect(() => resolveDependencies(round, [unpublished, clamp, sign])).toThrow(UnresolvedDependency)
+  })
+
+  /**
+   * Two artefacts that import each other cannot both have been published second, so a cycle is a
+   * corrupt ledger. It is refused rather than deduplicated away, because an installer that survived
+   * one would write a project whose imports do not terminate.
+   */
+  it('a-cycle-is-refused-rather-than-deduplicated-away', () => {
+    const padThroughClamp = { ...pad, dependsOn: [REFERENCE_AT('reference', CLAMP)] }
+
+    expect(() => resolveDependencies(round, [padThroughClamp, clamp, sign])).toThrow(
+      /imports itself through/,
+    )
+    expect(() => dependencyDepthOf(round, [padThroughClamp, clamp, sign])).toThrow(
+      UnresolvedDependency,
+    )
   })
 })

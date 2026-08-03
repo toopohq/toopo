@@ -132,7 +132,11 @@ export type FrozenImplementation = {
   readonly author: string
   readonly version: string | null
   readonly files: readonly HarnessFile[]
-  readonly dependencyDepth: number
+  /**
+   * Frozen, because what a published artefact imports is part of what it is. An edge outside the
+   * digest would let the code installed under a fixed digest change what it pulls in.
+   */
+  readonly dependsOn: readonly ImplementationAddress[]
 }
 
 /**
@@ -223,7 +227,7 @@ export const implementationSnapshot = (record: ImplementationRecord): Snapshot =
     author: record.author,
     version: record.version,
     files: record.files,
-    dependencyDepth: record.dependencyDepth,
+    dependsOn: record.dependsOn,
   },
 })
 
@@ -261,12 +265,67 @@ export type PublishedImplementation = {
   readonly standing: ImplementationStanding
 }
 
+/**
+ * A contract the catalogue considered and decided against, with the measurement it decided on.
+ *
+ * **Found by the read API, and it is a hole rather than an omission.** Everything else in this ledger
+ * is a binding of a name to a digest, and a refusal binds nothing: `array/group-by@1` was decided
+ * against *before* publication, so it has no snapshot, no digest and no entry - which meant that the
+ * site's "what we refuse and why" page, and the whole of what that page is for, had no source in the
+ * registry at all. The catalogue's most-cited act of honesty was the one thing it could not serve.
+ *
+ * It sits in the ledger and not beside a snapshot because that is what it is: the registry's standing
+ * opinion, changeable, inside no digest. And it is a third list rather than a fourth `Lifecycle` state
+ * in `contracts`, because `publishContract` is the only way into that list and a refusal must not be
+ * able to enter through a function whose whole job is to bind an address for ever.
+ */
+export type RefusedContract = {
+  readonly address: ContractAddress
+  readonly decidedAgainst: string
+  readonly measurement: string
+  readonly keptAs: string
+  readonly decidedOn: string
+}
+
 export type Ledger = {
   readonly contracts: readonly PublishedContract[]
   readonly implementations: readonly PublishedImplementation[]
+  readonly refusals: readonly RefusedContract[]
 }
 
-export const EMPTY_LEDGER: Ledger = { contracts: [], implementations: [] }
+export const EMPTY_LEDGER: Ledger = { contracts: [], implementations: [], refusals: [] }
+
+export class AlreadyDecided extends Error {
+  constructor(what: string, how: string) {
+    super(
+      `${what} has already been ${how}, so the catalogue cannot decide about it a second time. A ` +
+        `contract is refused or it is published, once, and a registry that could do both would be ` +
+        `offering an installation of something its own page says it turned down.`,
+    )
+    this.name = 'AlreadyDecided'
+  }
+}
+
+/**
+ * Record a refusal. It is refused here and refusable nowhere else, and the two directions are both
+ * closed: a published contract cannot be refused afterwards, and a refused one cannot be published.
+ *
+ * The second direction is the one that matters. Permanent rule 6 freezes a published version for life,
+ * so "publish it anyway" is not a repair - it is two contradictory public statements about one
+ * address, one of which every lockfile in the world would be holding.
+ */
+export const refuseContract = (ledger: Ledger, entry: RefusedContract): Ledger => {
+  const what = renderContract(entry.address)
+
+  if (ledger.contracts.some((held) => renderContract(held.address) === what)) {
+    throw new AlreadyDecided(what, 'published')
+  }
+  if (ledger.refusals.some((held) => renderContract(held.address) === what)) {
+    throw new AlreadyDecided(what, 'refused')
+  }
+
+  return { ...ledger, refusals: [...ledger.refusals, entry] }
+}
 
 export class AlreadyPublished extends Error {
   constructor(what: string, held: string, offered: string) {

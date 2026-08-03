@@ -371,8 +371,9 @@ export const referenceImplementationOf = (
     version: null,
     status: 'default',
     files,
-    // Permanent rule 2: a feature depends only on other registry features and on the language.
-    dependencyDepth: 0,
+    // Permanent rule 2: a feature depends only on other registry features and on the language. None
+    // of the five imports another feature, so the list is empty and the derived depth is zero.
+    dependsOn: [],
     minifiedBytes: null,
     benchmarks: [],
     tags: ['reference'],

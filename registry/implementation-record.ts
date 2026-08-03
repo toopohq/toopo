@@ -11,7 +11,8 @@
  * publishing tool, which is the fourth unit, and inventing them here would be inventing the tool.
  */
 
-import type { ContractAddress } from './address.js'
+import type { ContractAddress, ImplementationAddress } from './address.js'
+import { renderImplementation, sameContract } from './address.js'
 
 /**
  * A file of an implementation or of a harness, with the hash the lockfile compares against.
@@ -77,12 +78,25 @@ export type ImplementationRecord = {
   readonly status: ImplementationStatus
   readonly files: readonly HarnessFile[]
   /**
-   * How deep the dependency tree goes. Zero for every implementation this catalogue will ever serve,
-   * because permanent rule 2 forbids an external dependency inside a feature - so the field records
-   * a fact a reader can check rather than a promise, and a submission that is not zero is refused by
-   * a rule rather than by taste.
+   * The registry features this one imports, directly, each at the version it was published against.
+   * Empty for every implementation of the five.
+   *
+   * **This field used to be a depth, and the read API is what proved a depth insufficient.** `toopo
+   * add` has to resolve dependencies recursively and deduplicate a shared file, and neither operation
+   * can be performed against a number: a depth is the *summary* of a walk over edges, so it can be
+   * derived from them and they cannot be recovered from it. Carrying the summary and not the fact is
+   * the shape of mistake `canonical.ts` refuses one level down when it returns the canonical text
+   * rather than only the digest - a consumer needs the thing that reproduces the answer.
+   *
+   * The depth is still published, by `dependencyDepthOf` below, and permanent rule 2 is still what it
+   * measures: a feature depends only on other registry features, so an edge leaving this catalogue is
+   * unrepresentable rather than refused - `ImplementationAddress` cannot name one.
+   *
+   * Frozen, and it belongs in the digest: what a published artefact imports is part of what it *is*,
+   * and an edge that could be edited afterwards would let the bytes installed under a fixed digest
+   * change meaning without the digest moving.
    */
-  readonly dependencyDepth: number
+  readonly dependsOn: readonly ImplementationAddress[]
   /**
    * The size a bundler would ship, in bytes, or `null` when nothing has measured it.
    *
@@ -95,6 +109,136 @@ export type ImplementationRecord = {
   readonly minifiedBytes: number | null
   readonly benchmarks: readonly BenchmarkFigure[]
   readonly tags: readonly string[]
+}
+
+// ---------------------------------------------------------------------------
+// Resolution - the walk `toopo add` cannot perform against a number
+// ---------------------------------------------------------------------------
+
+export class UnresolvedDependency extends Error {
+  constructor(where: string, detail: string) {
+    super(`${where} cannot be resolved, and ${detail}`)
+    this.name = 'UnresolvedDependency'
+  }
+}
+
+/**
+ * The implementation an edge names, or a refusal saying which one is missing.
+ *
+ * One lookup with one refusal, used by both walks below, because "the registry holds no such
+ * implementation" is one fact about one edge and a second copy of it is a second thing that can come
+ * to disagree.
+ *
+ * An unpublished implementation can never be returned, and that falls out rather than being checked:
+ * an address carries a `string` version and an unpublished record carries `null`, so the comparison
+ * cannot match. Every record below therefore has a version, by construction.
+ */
+const mustHold = (
+  holdings: readonly ImplementationRecord[],
+  address: ImplementationAddress,
+): ImplementationRecord => {
+  const found = holdings.find(
+    (candidate) =>
+      candidate.id === address.id &&
+      candidate.version === address.version &&
+      sameContract(candidate.contract, address.contract),
+  )
+
+  if (found === undefined) {
+    throw new UnresolvedDependency(
+      renderImplementation(address),
+      'the registry holds no such published implementation',
+    )
+  }
+
+  return found
+}
+
+/**
+ * Every implementation an install of `root` must also write, dependencies before dependents, each
+ * once. The root is not in it: what the caller asked for is not something it has to be told about.
+ *
+ * **Post-order, and the order is part of the answer.** An installer that wrote a dependent before its
+ * dependency would leave the project broken between two writes, and an order that depended on the
+ * shape of the graph would make two resolutions of one artefact two different answers - which is the
+ * same failure `canonical.ts` closes for keys and this file's own `harnessOf` closes for files.
+ *
+ * **A cycle is refused rather than survived.** Two artefacts that import each other cannot both have
+ * been published second, so a cycle is a corrupt ledger rather than an exotic graph, and an installer
+ * that merely deduplicated its way out of one would write a project whose imports do not terminate.
+ *
+ * **What this does not answer, and the CLI must.** Which file lands where, and how an import inside a
+ * copied file is rewritten to point at a shared one. A shared file is *recognisable* from what is
+ * already returned - two implementations carrying one `sha256` are carrying one blob, and dedup is
+ * that comparison - but rewriting an import means reading inside the file, and the inside of a file is
+ * the executable half this registry serves and never models. The registry cannot serve it, and an
+ * endpoint that claimed to would be publishing an opinion about code it does not parse.
+ */
+export const resolveDependencies = (
+  root: ImplementationRecord,
+  holdings: readonly ImplementationRecord[],
+): readonly ImplementationRecord[] => {
+  const resolved: ImplementationRecord[] = []
+  const seen = new Set<string>()
+
+  const walk = (record: ImplementationRecord, open: readonly string[]): void => {
+    for (const edge of record.dependsOn) {
+      const what = renderImplementation(edge)
+      if (open.includes(what)) {
+        throw new UnresolvedDependency(what, `it imports itself through ${[...open, what].join(' -> ')}`)
+      }
+      if (seen.has(what)) continue
+
+      const next = mustHold(holdings, edge)
+      walk(next, [...open, what])
+      seen.add(what)
+      resolved.push(next)
+    }
+  }
+
+  // An unpublished root has no address, so no edge can name it and it cannot be part of a cycle.
+  walk(
+    root,
+    root.version === null
+      ? []
+      : [renderImplementation({ contract: root.contract, id: root.id, version: root.version })],
+  )
+
+  return resolved
+}
+
+/**
+ * How deep the tree under an implementation goes. Zero for every implementation of the five.
+ *
+ * Derived from the edges rather than declared beside them, which is the rule this repository already
+ * applies to a profile's sample count and its encoded size: a figure read off the values is a fact and
+ * has no second statement to disagree with, and a figure transcribed next to them is a claim that can
+ * be wrong. It is published because permanent rule 2 is a promise a reader should be able to check
+ * with one number, not because anything downstream computes with it.
+ */
+export const dependencyDepthOf = (
+  root: ImplementationRecord,
+  holdings: readonly ImplementationRecord[],
+): number => {
+  // Resolved first, so that a cycle is refused before this recursion meets it. Termination below
+  // rests on that call having returned, and on nothing else.
+  resolveDependencies(root, holdings)
+
+  const depths = new Map<string, number>()
+
+  const depthBelow = (address: ImplementationAddress): number => {
+    const what = renderImplementation(address)
+    const memoised = depths.get(what)
+    if (memoised !== undefined) return memoised
+
+    const edges = mustHold(holdings, address).dependsOn
+    const depth = edges.length === 0 ? 0 : 1 + Math.max(...edges.map(depthBelow))
+    depths.set(what, depth)
+
+    return depth
+  }
+
+  return root.dependsOn.length === 0 ? 0 : 1 + Math.max(...root.dependsOn.map(depthBelow))
 }
 
 // ---------------------------------------------------------------------------

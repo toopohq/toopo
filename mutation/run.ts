@@ -287,9 +287,74 @@ const restore = (contractPath: string): void => {
 }
 
 /**
- * `core.autocrlf` is true in this repository - measured - so a file git has just checked out carries
- * CRLF while every anchor in a battery is written with LF. Normalising here rather than escaping
- * line endings in the batteries keeps the anchors readable as the source they are quoting.
+ * The signals that mean "this run is over" and can be caught. `SIGKILL` is not among them and cannot
+ * be: it is delivered to the kernel, not to the process, and so is Windows' `TerminateProcess`.
+ */
+const INTERRUPTIONS = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'] as const
+
+/**
+ * Put the tree back and drop the report. Everything it does is synchronous, because a signal handler
+ * that yielded would be racing the exit it is about to cause.
+ *
+ * Exported so that the meta-suite can run it against a deliberately mutated fixture. What the
+ * instrument does when it is interrupted is a behaviour, and a behaviour nothing exercises is the
+ * decorative guard this folder exists to refuse.
+ */
+export const restoreAfterAnInterruption = (contractPath: string): void => {
+  restore(contractPath)
+  rmSync(REPORT, { force: true })
+}
+
+/**
+ * Restore the tree if the run is interrupted, and hand the interruption on.
+ *
+ * **The hole this closes, and how narrow and how dangerous it is.** A battery materialises a mutant
+ * into the working tree and puts it back in a `finally`. A `finally` does not run when the process is
+ * signalled, so an operator who interrupts a run leaves a defect sitting in the tree. If that mutant
+ * is one the contract *survives* - and a surviving mutant is by definition one no guard reddens - then
+ * `npm test` is green, nothing in the repository protests, and the defect is committable. That is the
+ * exact path by which a defect would enter the catalogue in silence, and it is the only one this
+ * repository has that nothing else covers: the next battery run is already refused by
+ * `assertCleanTree`, so the instrument protects itself and only the suite is fooled.
+ *
+ * **The signal is re-raised rather than swallowed**, after this listener has removed itself, so the
+ * process still dies of what it was asked to die of. Exiting zero here would tell a shell script that
+ * an interrupted measurement had completed.
+ *
+ * **What this does not close, measured on this platform rather than assumed.** On Windows a signal
+ * sent programmatically to a child - `child.kill('SIGINT')`, `child.kill('SIGTERM')` - goes through
+ * `TerminateProcess`, and no handler runs: measured, three signals, zero handlers reached. What Node
+ * does deliver there is a real console Ctrl+C, which is the interruption an operator actually
+ * performs. On POSIX every signal above is delivered. Nowhere is `SIGKILL` catchable, and neither is
+ * a machine losing power - so a tree left dirty by a hard kill remains possible and remains, for a
+ * surviving mutant, silent.
+ */
+export const restoringOnSignal = (contractPath: string): (() => void) => {
+  const installed = INTERRUPTIONS.map((signal) => {
+    const handler = (): void => {
+      restoreAfterAnInterruption(contractPath)
+      process.removeListener(signal, handler)
+      process.kill(process.pid, signal)
+    }
+
+    process.on(signal, handler)
+
+    return { signal, handler }
+  })
+
+  return () => {
+    for (const { signal, handler } of installed) process.removeListener(signal, handler)
+  }
+}
+
+/**
+ * Anchors are written with LF, and what git checks out is whatever the reader's configuration asks
+ * for. `.gitattributes` pins `* text=auto eol=lf` here, so on this repository the normalisation below
+ * is a no-op today; it stays because an anchor must match the source it quotes under any git
+ * configuration, and `core.autocrlf` is still true in this checkout.
+ *
+ * An earlier version of this comment said a checked-out file carries CRLF. That was measured before
+ * `.gitattributes` existed and stopped being true when it was added.
  */
 const applyEdits = (contractPath: string, edits: readonly Edit[], label: string): void => {
   for (const edit of edits) {
@@ -576,6 +641,7 @@ export const calibrate = (battery: Battery): Calibration => {
   const testsPerCell: Record<string, number> = {}
   const guardsPerCell: Record<string, readonly GuardIdentity[]> = {}
   const census = censusFor(battery.vitestConfig)
+  const stopListening = restoringOnSignal(battery.contractPath)
 
   try {
     for (const { arm, lens } of cellsOf(battery)) {
@@ -622,8 +688,8 @@ export const calibrate = (battery: Battery): Calibration => {
       }
     }
   } finally {
-    restore(battery.contractPath)
-    rmSync(REPORT, { force: true })
+    stopListening()
+    restoreAfterAnInterruption(battery.contractPath)
   }
 
   return { testsPerCell, guardsPerCell }
@@ -642,6 +708,7 @@ export const runBattery = (
   const cells = cellsOf(battery).filter(
     ({ arm }) => onlyArms === undefined || onlyArms.includes(arm.id),
   )
+  const stopListening = restoringOnSignal(battery.contractPath)
 
   try {
     for (const { arm, lens } of cells) {
@@ -672,8 +739,8 @@ export const runBattery = (
       }
     }
   } finally {
-    restore(battery.contractPath)
-    rmSync(REPORT, { force: true })
+    stopListening()
+    restoreAfterAnInterruption(battery.contractPath)
   }
 
   return results
