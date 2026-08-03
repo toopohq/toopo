@@ -26,7 +26,9 @@ came **before** the rest of the pipeline and before the publishing tool, and the
 rule 1 below rather than left to look like impatience. Beside all of it the conformance controller,
 which does **not** make `contractAnatomy` executable: the triage below says why — three of its eleven
 entries are settled by a syntax tree, four need a module a stage has already vetted, and four are a
-reader's for ever. No server and no website exists, deliberately.
+reader's for ever. Beside them now `toopo update`, the command permanent rule 4 is about, and with it
+the two-phase write that closes three of the four situations `cli/breakage.ts` declared as breaking
+badly. No server and no website exists, deliberately.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -312,6 +314,113 @@ carries the migration when the second style arrives. `init` will detect the alia
 it; `add` will go on consulting nothing but this file. We record what the user told us, we do not
 inspect their build.
 
+## One import spelling, and it is not the user's to choose — settled
+
+**`toopo add` prints the import line, not the file path.** A path is not what anybody writes in an
+import, and the defect was measured by committing it: `./src/lib/toopo/...` typed into a project where
+`init` had chosen `lib/toopo`, by somebody with the installer's source in front of them. The line
+carries the *configured* directory and says it is written from the project root — the specifier depends
+on which file the import sits in, and this tool does not read the user's sources.
+
+**The extension is `.js`, there is exactly one, and it is a property of what Toopo writes rather than of
+the user's toolchain.** Our own installed files import each other with `.js`, so any other suggestion
+would tell the user to spell one thing one way while our files spell it another. Measured on TypeScript
+7.0.2 under `"type": "module"`, target ES2022:
+
+```
+./x.js   bundler OK      node16 OK      nodenext OK
+./x.ts   bundler TS5097  node16 TS5097  nodenext TS5097   without allowImportingTsExtensions
+./x      bundler OK      node16 TS2835  nodenext TS2835
+moduleResolution node10 → TS5108, removed from TypeScript 7
+```
+
+**And what decides it is the measurement nobody had taken: the import *inside* our own file.** Node
+v24.15.0, native type stripping, `"type": "module"`:
+
+```
+entry .ts → internal .ts   runs
+entry .js                  ERR_MODULE_NOT_FOUND
+entry .ts → internal .js   ERR_MODULE_NOT_FOUND, on the internal import
+```
+
+So `.ts` appears to work only because all five contracts are one file. **The first multi-file feature
+breaks under node's own runtime whatever the user writes**, because our internal import is `.js` and
+node does not remap it. That is a limit of node rather than of us, and it is declared in `breakage.ts`
+with its measurement, because whoever meets it wants to know it is known. `cli/toopo.ts` had already
+measured the same fact for this repository's own entry point, and shows what working around it costs:
+fifteen lines of `node:module` we can register for ourselves and cannot register inside somebody else's
+program.
+
+**Nothing is detected and nothing is recorded.** There was no toolchain question to answer, so
+`toopo.json` stays at `version: 1` with two fields and the rule above holds unchanged.
+
+**The export names come from the contract, through `ServedIndexEntry`.** An export name is not derivable
+from an address — `number/parse` exports `parseNumber` — it lives in `identity.exportName` and
+`surface.exports`, and the installer's port deliberately carries no `contract-binding`, so nothing it
+fetched held it. Reading the names off the installed source would have the installer publish an opinion
+drawn from code rather than from the contract. Measured, because that type calls itself deliberately
+small: the canonical index goes from 2 731 to 3 106 bytes over the five — 13.7 per cent of what is still
+the smallest thing the registry serves.
+
+## What an update is, and what it will not do — settled
+
+**Acceptance is a second command, never a prompt.** `toopo update` shows and writes nothing;
+`toopo update --apply` writes. What that protects had never been named and is the property this folder
+would lose first: **everything this tool decides is reachable from a guard, with no process, no working
+directory and no clock.** It is what keeps `command.ts` thin, and it is why `add` could be measured end
+to end without a sandbox. The first interactive prompt written here takes it away, and takes it away
+silently — so the sentence lives in `command.ts` and in `update.ts`, where whoever wants one will read
+it.
+
+**The whole project is planned every time, and there is no `toopo update <feature>`.** Deduplication is a
+property of a plan and not of a feature — which carrier of a shared file keeps it depends on what else is
+being installed — so a plan built for one feature in a project holding four would move files the other
+three own. Planning everything and applying part of it is the only shape that cannot do that.
+
+**Six answers about a file, decided by two questions.** *Does this have to change* — the bytes we would
+write are not the bytes the lockfile says we wrote. *Did the user change it* — the bytes on disk are not
+the bytes the lockfile says we wrote. Both asked against `sha256`, which is the half of the lockfile's
+two digests that exists for exactly this.
+
+```
+must change, untouched      updated          write it, with the diff
+unchanged, edited           kept             leave it, and say so
+must change, edited         conflict         hold the whole feature back
+unchanged, untouched        unchanged        nothing at all
+gone from disk              restored         put it back
+already the new bytes       already-written  a run was interrupted here, not an edit
+```
+
+The last one is what closes the partial-write window without a journal.
+
+**A conflict is diffed as the file is on disk against what would be written**, which states the
+consequence of accepting rather than describing the upstream change in the abstract; `git diff` already
+shows the user their own change better than this could. The other reading — reconstruct what we
+originally wrote and isolate the upstream change — **cannot be built from the lockfile**, and finding
+that out is worth recording: the lockfile records only the files that were *written*, so a shared blob's
+second carrier is deduplicated away and has no entry, and the old relocation is not recoverable from it.
+
+**A conflicted feature is held back whole**, and so is anything carrying one of its files or importing
+it. A feature half at one version and half at another is a combination nobody published.
+
+**Nothing is removed while anything is held back**, and that rule was found by reading the report rather
+than the code: the second publication of the imagined graph has `number/round` drop `number/sign`, and a
+held-back `number/round` runs the old code that imports it still — so removing it would break a build in
+order to tidy a folder. The blunt form is deliberate; the exact one costs a fetch per held-back feature
+and a fallback, to win one run of tidiness in a situation the user is already resolving.
+
+**The fourth defect a consumer has found in this schema is `LockedFeature.askedFor`.** The lockfile did
+not say which features the user had typed, and an update has two ways to guess, both wrong for different
+reasons. Treating every entry as a root climbs a dependency to whatever its own binding names today
+rather than to the one its dependent was published against — a combination nobody published. Deriving
+the roots from the edges reads precisely what an update is trying to find out has moved, and gets the
+ordinary case wrong anyway: a `string/pad` installed directly *and* pulled in by `number/round` would
+never again be updated on its own. It is **sticky towards true**, and that case found a second defect in
+`add`: asking by name for something already held as a dependency answered "nothing to do" and recorded
+nothing, after which a later update would have removed what the user had asked for. Fourth after
+`dependencyDepth`, `ProfileSamples` and the two digests — smaller than the three before it, and in the
+lockfile rather than in the served schema.
+
 ## What the repository declares and nothing keeps — closes before the launch
 
 One form, found four times in a single sweep and certain to be found again: **a thing that behaves
@@ -351,13 +460,26 @@ decorative for ever.
   that keeps it, and nothing resolves that name. It is the same class arriving on a fifth kind of
   address, and it closes with the same mechanism as the others.
 
-**What the installer left breaking badly, and why it is not in the list above.** Three situations throw
-whatever the operating system threw: a folder that cannot be written to, a process killed between the
-first file and the lockfile, and a directory sitting where a file should go. They are not declarations
-nothing keeps — they are failures nobody closed, declared in `cli/breakage.ts` with the reason each was
-left open. All three close with one change, writing through a temporary file and renaming, and that
-change belongs with `toopo update` because that is the unit where a partial write stops being a rare
-accident and becomes the normal case.
+**Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
+file beside its destination and renames, so the three situations the installer left throwing whatever
+the operating system threw are refusals with a sentence. A folder that cannot be written to fails during
+staging, where nothing has been committed — not a pre-flight writability check contradicted afterwards
+by the write, which is the shape this repository refuses, but the write itself taken in a phase whose
+whole property is that abandoning it costs nothing. A directory where a file must go is asked about by
+*kind* before staging, because renaming onto one is `EPERM` on Windows and says nothing a caller can
+act on. And a process killed between the first file and the lockfile resolves backwards, because a file
+is renamed or it is not and the lockfile is renamed last — `already-written` finishes the job on the
+next run, without a journal.
+
+**What the guard for the first one measures is a file sitting where one of our folders must go**, and
+that is said rather than glossed: a permission denial is the same catch on the same line, and is not
+something a guard can arrange on every platform this runs on. Claiming it was measured would be claiming
+more than was.
+
+**Two remain, and both are declared rather than closed.** A rename that fails after staging succeeded —
+a file held open by another process on Windows — throws, and closing it would mean every rename being
+reversible, which is a journal. And node's own TypeScript runtime meeting a feature of more than one
+file, which the section above measures and which is not ours to close.
 
 **Four more instances were found by building the address rather than by looking for them, and that is
 the argument for building mechanisms rather than lists.** Ten entries of `TYPESCRIPT_SURFACE` were
@@ -391,8 +513,11 @@ weaker one than asking whether the guard exists.
    A second argument decided it, and it is a lesson from this repository rather than a preference:
    both schema defects found so far — a `dependencyDepth` reduced to an unusable summary, and
    `ProfileSamples` carried in full — were found by deriving what a consumer needs. Approaching the
-   consumer finds defects design does not. It happened twice more in this unit, on the walk's parameter
-   and on the lockfile's digests.
+   consumer finds defects design does not. It happened twice more in the unit that wrote `toopo add`,
+   on the walk's parameter and on the lockfile's digests, and twice more again in the one that wrote
+   `toopo update`: a lockfile that could not say which features had been asked for, and an index that
+   could not name what a caller imports. **Four consumers, six defects, none of them found by looking
+   at the schema.**
 
    Only the piece currently under way exists; the others do not, because each one constrains the next.
    Everything lives in this one repository, in folders — releases are independent, the history is not.

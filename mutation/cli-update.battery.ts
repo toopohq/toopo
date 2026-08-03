@@ -124,6 +124,8 @@ const HUNKS_MERGE_WHEN_THEY_MEET = `    if (last !== undefined && from <= last.t
 
 const APPLY_IS_A_SWITCH = `    const flags = flagsIn(rest, { valued: [], switches: ['apply'] })`
 
+const A_WAY_OUT_IS_OFFERED_WHERE_THERE_IS_ONE = `    ...(feature.heldBack === null || !theirsToResolve(feature)`
+
 // Guards several mutants name, written once because a string repeated is a rename away from being
 // wrong twice.
 const THE_NOMINAL = 'an-update-writes-the-bytes-the-registry-now-serves'
@@ -476,6 +478,14 @@ const mutants: readonly Mutant[] = [
       },
     ],
     killed(['update-writes-only-when-it-is-asked-to', 'a-switch-takes-no-value-and-swallows-nothing']),
+  ),
+
+  sameOnEveryLens(
+    'U-35',
+    'offers the two ways out under every held-back feature, so somebody whose feature is held back by ' +
+      "a conflict elsewhere is told to delete a file they never touched",
+    [reportFile(A_WAY_OUT_IS_OFFERED_WHERE_THERE_IS_ONE, `    ...(feature.heldBack === null`)],
+    killed(['the-ways-out-are-offered-only-where-the-reader-put-something']),
   ),
 ]
 

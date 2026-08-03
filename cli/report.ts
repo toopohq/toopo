@@ -255,6 +255,20 @@ const movedTo = (feature: Update['features'][number]): string => {
 const versionMovedAlone = (feature: Update['features'][number]): boolean =>
   feature.was !== null && feature.now !== null && feature.was.version !== feature.now.version
 
+/**
+ * Whether this reader has anything to resolve about this feature.
+ *
+ * A feature is held back for two kinds of reason and only one of them is theirs: their own edit. Held
+ * back because something it imports is, or because something else in the project is, leaves them
+ * nothing to do about *this* one - and printing the two ways out under it would tell somebody to
+ * delete a file they never touched. Read off the verdicts rather than off the sentence, so that
+ * rewording a reason cannot change what is offered.
+ */
+const THEIRS: ReadonlySet<FileVerdict> = new Set<FileVerdict>(['conflict', 'kept-orphan'])
+
+const theirsToResolve = (feature: Update['features'][number]): boolean =>
+  feature.files.some((file) => THEIRS.has(file.verdict))
+
 const featureBlock = (
   feature: Update['features'][number],
   configuration: Configuration,
@@ -273,7 +287,7 @@ const featureBlock = (
       : []),
     '',
     ...lines,
-    ...(feature.heldBack === null
+    ...(feature.heldBack === null || !theirsToResolve(feature)
       ? []
       : [...paragraph(THE_WAYS_OUT, 72).map((line) => `${INDENT}  ${line}`), '']),
   ]

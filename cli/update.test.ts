@@ -8,6 +8,7 @@ import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { imaginedSource, updatedImaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
+import { renderUpdate } from './report.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
@@ -393,6 +394,31 @@ describe('comparing a project with what the registry serves now', () => {
       expect(again.removals).toEqual([])
       expect(again.lockfile).toEqual(first.lockfile)
       expect(existsSync(join(project.root, project.configuration.directory, 'number/sign'))).toBe(false)
+    })
+  })
+
+  /**
+   * The two ways out are offered under a feature the reader can do something about, and under no other.
+   *
+   * A feature held back because something else is has nothing for them to resolve, and the advice that
+   * fits a conflict - delete the file and run this again - is exactly wrong there: they never touched
+   * it. Found by reading the report rather than the code, on the run where `number/sign@1` leaves the
+   * project and is held back by somebody else's conflict.
+   */
+  it('the-ways-out-are-offered-only-where-the-reader-put-something', () => {
+    inProject((project, lockfile) => {
+      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+
+      const rendered = renderUpdate(updating(project, lockfile), project.configuration, false)
+      const blocks = rendered.split(/\n(?=  \S)/)
+      const blockOf = (contract: string): string =>
+        blocks.find((block) => block.startsWith(`  ${contract} `)) ?? ''
+
+      // Both held back, and only the one the reader put something into is offered a way out.
+      expect(blockOf('number/round@1')).toContain('held back')
+      expect(blockOf('number/sign@1')).toContain('held back')
+      expect(blockOf('number/round@1')).toContain('Two ways out')
+      expect(blockOf('number/sign@1')).not.toContain('Two ways out')
     })
   })
 
