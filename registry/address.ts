@@ -47,6 +47,22 @@ export type ContractAddress = {
   readonly major: number
 }
 
+/**
+ * One published version of one implementation of one contract.
+ *
+ * Three parts and not two, because an implementation competes under a contract and versions
+ * independently of it: `reference@1.0.1` of `number/parse@1` is a different artefact from
+ * `reference@1.0.0` of the same contract and neither replaces the other. It is the address the
+ * lockfile already writes, split into the parts the registry keys on.
+ */
+export type ImplementationAddress = {
+  readonly contract: ContractAddress
+  /** Unique within the contract, frozen. */
+  readonly id: string
+  /** The implementation's own version, assigned by the publishing tool when it serves it. */
+  readonly version: string
+}
+
 /** A case of block 4.4. The identifier is frozen with the major; renaming one costs `name@2`. */
 export type CaseAddress = {
   readonly contract: ContractAddress
@@ -78,6 +94,9 @@ export type MutantAddress = {
 
 export const renderContract = (address: ContractAddress): string =>
   `${address.name}@${address.major}`
+
+export const renderImplementation = (address: ImplementationAddress): string =>
+  `${renderContract(address.contract)}/${address.id}@${address.version}`
 
 export const renderCase = (address: CaseAddress): string =>
   `${renderContract(address.contract)}#${address.case}`

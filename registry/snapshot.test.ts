@@ -1,0 +1,390 @@
+import { describe, it, expect } from 'vitest'
+
+import type { ContractAddress } from './address.js'
+import { DIGEST } from './canonical.js'
+import type { ContractRecord } from './contract-record.js'
+import {
+  AlreadyPublished,
+  CONTRACT_STANDING_FIELDS,
+  EMPTY_LEDGER,
+  IMPLEMENTATION_STANDING_FIELDS,
+  NotPublished,
+  contractSnapshot,
+  digestOfSnapshot,
+  implementationSnapshot,
+  publishContract,
+  publishImplementation,
+  snapshotFaults,
+  withContractStanding,
+} from './snapshot.js'
+import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
+import { theFive } from './the-five.js'
+
+/**
+ * A snapshot is what an installation receives for ever, and its digest is the only thing anyone has
+ * to compare against.
+ *
+ * Two questions run through every guard below, and they are not the same question. Does the digest
+ * cover everything the snapshot carries - so that no field can change under a fixed digest. And does
+ * the snapshot carry everything the record has - so that no field can be dropped on the way in. A
+ * storage that answered only the first would hash a projection with a hole in it, faithfully.
+ */
+
+const isRecord = (value: unknown): value is Readonly<Record<string, unknown>> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
+
+/**
+ * The fields of `whole` that `kept` does not have, named by the path where they part company.
+ *
+ * Used in both directions from one definition, because the two failures are exactly symmetrical: a
+ * field of the record the snapshot drops, and a field of the snapshot the record never had.
+ */
+const missingFrom = (whole: unknown, kept: unknown, at: string): readonly string[] => {
+  if (!isRecord(whole) || !isRecord(kept)) return []
+
+  return Object.keys(whole).flatMap((key) => {
+    const path = at === '' ? key : `${at}.${key}`
+
+    return key in kept ? missingFrom(whole[key], kept[key], path) : [path]
+  })
+}
+
+/**
+ * Every field of a record the digest is supposed to cover, as dotted paths, driven by the standing
+ * declaration rather than by a list written here.
+ *
+ * It descends only where a standing field is declared below - so `benchmarks` becomes
+ * `benchmarks.vocabulary` and `benchmarks.profiles` because `benchmarks.measurements` is standing,
+ * while `identity` stays whole. Anything else would either miss the one object whose two halves sit
+ * together, or walk every record to its leaves and take a minute doing it.
+ */
+const frozenPathsOf = (
+  record: Readonly<Record<string, unknown>>,
+  standing: readonly { readonly field: string }[],
+): readonly string[] => {
+  const declared = standing.map((entry) => entry.field)
+
+  const pathsUnder = (value: unknown, at: string): readonly string[] => {
+    if (declared.includes(at)) return []
+    if (!declared.some((field) => field.startsWith(`${at}.`)) || !isRecord(value)) return [at]
+
+    return Object.keys(value).flatMap((key) => pathsUnder(value[key], `${at}.${key}`))
+  }
+
+  return Object.keys(record).flatMap((key) => pathsUnder(record[key], key))
+}
+
+/** The same record with one path replaced, so that the change is at the path and nowhere else. */
+const perturbedAt = (value: unknown, path: readonly string[]): unknown => {
+  const [head, ...rest] = path
+  if (head === undefined) return 'perturbed'
+
+  const record = value as Readonly<Record<string, unknown>>
+
+  return { ...record, [head]: perturbedAt(record[head], rest) }
+}
+
+const NUMBER_PARSE = theFive[0]
+if (NUMBER_PARSE === undefined) throw new Error('the five are not five')
+
+const anAddress = (name: string, major: number): ContractAddress => ({
+  language: 'typescript',
+  name,
+  major,
+})
+
+const PUBLISHED_AT = '2026-08-03T00:00:00.000Z'
+
+describe('what a snapshot freezes, and what it may not', () => {
+  /**
+   * The whole finding of this unit, as a guard. Every field a record carries is either inside the
+   * digest or declared as standing with the sentence that keeps it out - and nothing is neither.
+   */
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'the-frozen-half-and-the-standing-half-partition-a-contract :: %s',
+    (_name, source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const snapshot = contractSnapshot(record)
+
+      expect([...missingFrom(record, snapshot.frozen, '')].sort()).toEqual(
+        [...CONTRACT_STANDING_FIELDS.map((entry) => entry.field)].sort(),
+      )
+    },
+  )
+
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'a-snapshot-invents-no-field :: %s',
+    (_name, source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+
+      expect(missingFrom(contractSnapshot(record).frozen, record, '')).toEqual([])
+    },
+  )
+
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'the-frozen-half-and-the-standing-half-partition-an-implementation :: %s',
+    (_name, source) => {
+      const record = referenceImplementationOf(REPOSITORY_ROOT, source)
+      const snapshot = implementationSnapshot(record)
+
+      expect([...missingFrom(record, snapshot.frozen, '')].sort()).toEqual(
+        [...IMPLEMENTATION_STANDING_FIELDS.map((entry) => entry.field)].sort(),
+      )
+      expect(missingFrom(snapshot.frozen, record, '')).toEqual([])
+    },
+  )
+
+  it('every-standing-field-says-why-it-cannot-be-frozen', () => {
+    const unexplained = [...CONTRACT_STANDING_FIELDS, ...IMPLEMENTATION_STANDING_FIELDS].filter(
+      (entry) => entry.reason.trim() === '',
+    )
+
+    expect(unexplained.map((entry) => entry.field)).toEqual([])
+  })
+})
+
+describe('what the digest covers', () => {
+  /**
+   * Field by field, mechanically: change a field **of the record** and the snapshot digest must move.
+   *
+   * The perturbation is on the record and not on the projection, and that is the whole strength of
+   * this guard. Perturbing the projection would only establish that the digest covers what the
+   * projection already holds - which is true of any projection, including one with a hole in it.
+   * Perturbing the record asks the question that matters: is there a way to change this contract
+   * without changing its digest? Written first the weak way, and measured: the mutant that drops the
+   * harness digests from the projection passed it.
+   *
+   * A loop rather than a list, so that a field added to a record is covered the day it arrives.
+   */
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'every-frozen-field-of-a-record-moves-the-digest :: %s',
+    (_name, source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const digest = digestOfSnapshot(contractSnapshot(record))
+
+      const unnoticed = frozenPathsOf(record, CONTRACT_STANDING_FIELDS).filter(
+        (path) =>
+          digestOfSnapshot(contractSnapshot(perturbedAt(record, path.split('.')) as ContractRecord)) ===
+          digest,
+      )
+
+      expect(unnoticed).toEqual([])
+    },
+  )
+
+  /**
+   * The other direction, and the finding of this unit made executable: a field the registry may still
+   * change must be outside the digest, or `absorbed-by-the-language` could never be reached without
+   * breaking every lockfile that holds the contract.
+   */
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'a-standing-field-does-not-move-the-digest :: %s',
+    (_name, source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const digest = digestOfSnapshot(contractSnapshot(record))
+
+      const absorbed: ContractRecord = {
+        ...record,
+        lifecycle: {
+          state: 'absorbed-by-the-language',
+          answeredBy: 'a future proposal, named here by nothing',
+          measurement: 'none: this is the shape of the operation, not a claim about the language',
+        },
+        benchmarks: {
+          ...record.benchmarks,
+          measurements: [
+            {
+              profile: record.benchmarks.profiles[0]?.name ?? '',
+              environment: 'node',
+              implementation: 'reference',
+              nanosecondsPerCall: 1,
+              referenceMachine: 'a machine that does not exist',
+              measuredOn: PUBLISHED_AT,
+            },
+          ],
+        },
+      }
+
+      expect(digestOfSnapshot(contractSnapshot(absorbed))).toBe(digest)
+    },
+  )
+
+  /**
+   * One level down, because a harness digest is what makes the snapshot a Merkle tree at all: a file
+   * that changed under a fixed snapshot digest is the whole attack this storage exists to refuse.
+   *
+   * The digest is appended to rather than substituted in, because a substitution can be a no-op -
+   * written first as `replace(/^./, 'f')`, which changes nothing when the digest already begins with
+   * `f`, and measured reddening under a mutant for that reason instead of for the one it exists to
+   * catch. A guard red for the wrong reason is a wrong attribution.
+   */
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'a-changed-harness-file-moves-the-digest :: %s',
+    (_name, source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const [first, ...rest] = record.harness
+      if (first === undefined) throw new Error('a contract with no harness is not a contract')
+
+      const changed: ContractRecord = {
+        ...record,
+        harness: [{ ...first, sha256: `${first.sha256}0` }, ...rest],
+      }
+
+      expect(digestOfSnapshot(contractSnapshot(changed))).not.toBe(
+        digestOfSnapshot(contractSnapshot(record)),
+      )
+    },
+  )
+
+  it('the-format-version-is-inside-the-digest :: a digest needs the rule that made it', () => {
+    const snapshot = contractSnapshot(serialiseContract(REPOSITORY_ROOT, NUMBER_PARSE))
+    const later = { ...snapshot, formatVersion: snapshot.formatVersion + 1 }
+
+    expect(digestOfSnapshot(later)).not.toBe(digestOfSnapshot(snapshot))
+    expect(snapshotFaults(later, digestOfSnapshot(later))).toHaveLength(1)
+  })
+
+  /**
+   * The harness is in one order, and it is the sorted one. Two serialisations that listed the same
+   * files differently would be two digests for one contract, and nothing else in this suite compares
+   * two orders within a single process.
+   */
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'the-harness-is-in-one-order :: %s',
+    (_name, source) => {
+      const paths = serialiseContract(REPOSITORY_ROOT, source).harness.map((file) => file.path)
+
+      expect(paths).toEqual([...paths].sort())
+    },
+  )
+
+  it('no-two-contracts-share-a-digest :: a digest is an identity', () => {
+    const digests = theFive.map((source) =>
+      digestOfSnapshot(contractSnapshot(serialiseContract(REPOSITORY_ROOT, source))),
+    )
+
+    expect(new Set(digests).size).toBe(digests.length)
+    expect(digests.filter((digest) => !DIGEST.test(digest))).toEqual([])
+  })
+
+  it('a-snapshot-that-does-not-hash-to-its-claim-is-refused', () => {
+    const snapshot = contractSnapshot(serialiseContract(REPOSITORY_ROOT, NUMBER_PARSE))
+
+    expect(snapshotFaults(snapshot, digestOfSnapshot(snapshot))).toEqual([])
+    expect(snapshotFaults(snapshot, 'f'.repeat(64))).toHaveLength(1)
+    expect(snapshotFaults(snapshot, 'not-a-digest')).toHaveLength(2)
+  })
+})
+
+describe('the ledger, where a name is bound to a digest', () => {
+  const entryFor = (source: (typeof theFive)[number], digest: string) => ({
+    address: source.address,
+    digest,
+    publishedAt: PUBLISHED_AT,
+    standing: { lifecycle: { state: 'published' as const } },
+  })
+
+  it('an-address-is-bound-once-and-for-ever', () => {
+    const digest = digestOfSnapshot(contractSnapshot(serialiseContract(REPOSITORY_ROOT, NUMBER_PARSE)))
+    const ledger = publishContract(EMPTY_LEDGER, entryFor(NUMBER_PARSE, digest))
+
+    expect(ledger.contracts).toHaveLength(1)
+    expect(() =>
+      publishContract(ledger, { ...entryFor(NUMBER_PARSE, 'a'.repeat(64)) }),
+    ).toThrow(AlreadyPublished)
+  })
+
+  /**
+   * Republishing the *same* digest is refused too, and that is deliberate. It would leave one
+   * address with two publication records and nothing to say which one a lockfile from last year
+   * meant; the operation a registry needs is changing the standing, and that is the next guard.
+   */
+  it('rebinding-is-refused-even-to-the-same-digest', () => {
+    const digest = digestOfSnapshot(contractSnapshot(serialiseContract(REPOSITORY_ROOT, NUMBER_PARSE)))
+    const ledger = publishContract(EMPTY_LEDGER, entryFor(NUMBER_PARSE, digest))
+
+    expect(() => publishContract(ledger, entryFor(NUMBER_PARSE, digest))).toThrow(AlreadyPublished)
+  })
+
+  /**
+   * The operation the whole separation exists for: a contract the language absorbs keeps its digest
+   * and changes what the registry says about it. If this moved the digest, permanent rule 6 and the
+   * rule `array/group-by@1` established could not both hold.
+   */
+  it('a-standing-changes-and-the-digest-does-not', () => {
+    const digest = digestOfSnapshot(contractSnapshot(serialiseContract(REPOSITORY_ROOT, NUMBER_PARSE)))
+    const published = publishContract(EMPTY_LEDGER, entryFor(NUMBER_PARSE, digest))
+    const absorbed = withContractStanding(published, NUMBER_PARSE.address, {
+      lifecycle: {
+        state: 'absorbed-by-the-language',
+        answeredBy: 'a future proposal, named here by nothing',
+        measurement: 'none: this is the shape of the operation, not a claim about the language',
+      },
+    })
+
+    expect(absorbed.contracts[0]?.digest).toBe(digest)
+    expect(absorbed.contracts[0]?.standing.lifecycle.state).toBe('absorbed-by-the-language')
+  })
+
+  it('a-standing-cannot-be-set-on-something-unpublished', () => {
+    expect(() =>
+      withContractStanding(EMPTY_LEDGER, NUMBER_PARSE.address, {
+        lifecycle: { state: 'published' },
+      }),
+    ).toThrow(NotPublished)
+  })
+
+  /**
+   * `name@1` and `name@2` coexist for life, and the storage must not make that acrobatic. It does not:
+   * they are two addresses, so there is nothing to arrange.
+   */
+  it('two-majors-of-one-name-coexist', () => {
+    const first = publishContract(EMPTY_LEDGER, {
+      address: anAddress('number/parse', 1),
+      digest: 'a'.repeat(64),
+      publishedAt: PUBLISHED_AT,
+      standing: { lifecycle: { state: 'published' } },
+    })
+    const both = publishContract(first, {
+      address: anAddress('number/parse', 2),
+      digest: 'b'.repeat(64),
+      publishedAt: PUBLISHED_AT,
+      standing: { lifecycle: { state: 'published' } },
+    })
+
+    expect(both.contracts.map((entry) => entry.address.major)).toEqual([1, 2])
+  })
+
+  /**
+   * An implementation versions under a contract that does not move, which is the reason the two units
+   * are separate. Two versions of one implementation are two entries and neither replaces the other.
+   */
+  it('an-implementation-versions-under-a-contract-that-does-not-move', () => {
+    const record = referenceImplementationOf(REPOSITORY_ROOT, NUMBER_PARSE)
+    const digest = digestOfSnapshot(implementationSnapshot(record))
+    const address = { contract: NUMBER_PARSE.address, id: record.id, version: '1.0.0' }
+
+    const first = publishImplementation(EMPTY_LEDGER, {
+      address,
+      digest,
+      publishedAt: PUBLISHED_AT,
+      standing: { status: 'default' },
+    })
+    const both = publishImplementation(first, {
+      address: { ...address, version: '1.0.1' },
+      digest: 'c'.repeat(64),
+      publishedAt: PUBLISHED_AT,
+      standing: { status: 'default' },
+    })
+
+    expect(both.implementations.map((entry) => entry.address.version)).toEqual(['1.0.0', '1.0.1'])
+    expect(() =>
+      publishImplementation(both, {
+        address,
+        digest: 'd'.repeat(64),
+        publishedAt: PUBLISHED_AT,
+        standing: { status: 'demoted' },
+      }),
+    ).toThrow(AlreadyPublished)
+  })
+})
