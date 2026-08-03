@@ -127,6 +127,59 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   it(
+    'refuses a suite that shrank, which nothing else in this apparatus can see',
+    () => {
+      /**
+       * The door the other three refusals cannot see, injected through the instrument's own lens
+       * mechanism: the fixture's configuration lives inside the fixture folder, so a lens can narrow
+       * what it collects exactly as a real edit to `vitest.config.ts` would.
+       *
+       * Measured on the commit before `census.ts` existed, with this same lens: the control is
+       * **green with 2 tests**, so the stuck-red refusal is silent; 2 is not 0, so the empty-suite
+       * refusal is silent; calibration pins `testsPerCell` at 2, so `assertWholeSuiteRan` compares 2
+       * against 2 on every cell and is silent too. The battery then ran and reported `FX-1
+       * killed DISAGREES` - a third of the suite never collected, presented as a guard that stopped
+       * catching a defect. That misattribution is what this refusal replaces.
+       *
+       * The same door on the real suite, measured: narrowing the glob in `vitest.config.ts` by one
+       * character drops `string/slugify@1`, and the run reports `success: true`, 15 files, 347
+       * guards instead of 467, zero failures.
+       */
+      const lensThatNarrowsTheCollection = {
+        id: 'as-committed',
+        description: 'a lens that stops the fixture collecting one of its two test files',
+        arms: ['C'],
+        edits: [
+          {
+            file: 'vitest.config.ts',
+            find: `include: ['*.test.ts'],`,
+            replace: `include: ['guards.test.ts'],`,
+          },
+        ],
+      }
+
+      // The message has to name the file, and not merely the total: naming it is what tells the
+      // reader whether a guard was deliberately removed or a collection quietly broke.
+      expect(() => calibrate({ ...battery, lenses: [lensThatNarrowsTheCollection] })).toThrow(
+        /mutation\/fixture\/second-file\.test\.ts: declared 1, collected 0/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a suite it has never counted, rather than skipping the count',
+    () => {
+      // A configuration nobody has counted would opt its whole suite out of the census, which is the
+      // same failure one level up: an absent guard looks exactly like a guard that passed.
+      expect(() =>
+        calibrate({ ...battery, vitestConfig: 'mutation/fixture/nobody-counted-this.ts' }),
+      ).toThrow(/no census declares what "mutation\/fixture\/nobody-counted-this.ts" collects/)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
     'refuses an apparatus that is stuck red, which would call every mutant killed',
     () => {
       const lensThatReddensTheControl = {

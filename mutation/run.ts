@@ -21,18 +21,23 @@
  * produce, and a run that disagrees with its expectation is a failure of the battery, not a new
  * result to write down.
  *
- * Two failures of the apparatus are dangerous in the same way - both produce a cell that reads
+ * Three failures of the apparatus are dangerous in the same way - each produces a cell that reads
  * exactly like a result - and each has a guard.
  *
  * Every edit must match exactly once. A mutant whose text no longer matches the reference would
  * otherwise be applied as a no-op and counted as a survivor: the contract reported blind to a defect
  * that was never injected.
  *
- * Every run must collect the whole suite. A run that reports fewer tests than the unmutated arm did
- * has measured something other than this contract, and it reddens, so it would be counted as a kill.
- * That is not hypothetical: measured on vitest 4.1.10, naming the json reporter alone under
- * `--typecheck` makes six of the eight test files fail to collect, and the battery that came before
- * this guard would have called every mutant killed.
+ * Every cell must collect what its control collected. A cell that reports fewer tests than the
+ * unmutated arm did has measured something other than this contract, and it reddens, so it would be
+ * counted as a kill. That is not hypothetical: measured on vitest 4.1.10, naming the json reporter
+ * alone under `--typecheck` collects 28 assertions of the 467 this repository has, sixteen of its
+ * twenty-one files reporting nothing at all.
+ *
+ * Every control must collect what the repository says it has. The guard above compares a cell
+ * against the control of its own cell, so it cannot see a door that is open for both - and measured,
+ * such a door leaves the suite *green*, which is what makes it invisible to everything else here.
+ * `census.ts` is the anchor that check never had, and carries the measurement.
  *
  * This folder is not a contract, not an implementation and not a registry test. It is the evidence
  * produced by running them, which is the one thing besides those three that belongs here.
@@ -42,6 +47,9 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import type { SuiteCensus } from './census.ts'
+import { censusFaults, censusFor } from './census.ts'
 
 export type Edit = {
   /** Path relative to the contract folder, e.g. `reference.ts`. */
@@ -333,13 +341,18 @@ const reportedFiles = (): readonly ReportedFile[] | null => {
   }
 }
 
+/** Reported paths are absolute and platform-shaped; the census and the attribution both want neither. */
+const REPO_PREFIX = `${REPO.replaceAll('\\', '/')}/`
+
+const relative = (name: string): string => name.replaceAll('\\', '/').replace(REPO_PREFIX, '')
+
 const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
   files.flatMap((file) =>
     (file.assertionResults ?? []).map((assertion) => ({
       id: guardIdOf(assertion.title),
       title: assertion.title,
       suite: assertion.ancestorTitles?.[0] ?? '',
-      file: (file.name ?? '').replaceAll('\\', '/'),
+      file: relative(file.name ?? ''),
     })),
   )
 
@@ -425,6 +438,12 @@ const expectationFor = (mutant: Mutant, arm: Arm, lens: Lens): Expectation => {
  * apply, arriving from the other side: there, nothing was injected and the cell read as a survivor;
  * here, most of the suite never ran and the cell reads as a kill. Both have to be louder than a
  * result, because neither looks any different from one.
+ *
+ * **What it cannot see, and what does.** The expectation is the control of this same cell, so a door
+ * open for the control as well as for the mutant leaves this guard agreeing with itself.
+ * `assertTheCensusHolds` is what anchors the control to something outside the run - and that
+ * separation is `GUARD_PERTURBATION_RULE`: this one perturbs a derived object, so it needs the
+ * claim pinned somewhere else.
  */
 const assertWholeSuiteRan = (label: string, run: SuiteRun, expectedTests: number): void => {
   if (run.testsSeen === null || run.testsSeen === expectedTests) return
@@ -508,6 +527,34 @@ const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[
   )
 }
 
+/**
+ * The run collected the suite the repository says it has - and not the suite the run itself says.
+ *
+ * This is the anchor `assertWholeSuiteRan` never had. That guard compares a cell against the control
+ * of its own cell, so a door open for both leaves it agreeing with itself: measured, narrowing the
+ * collection glob by one character drops a whole contract, the suite reports `success: true` with 347
+ * guards instead of 467, and every cell then matches 347. `census.ts` carries the measurement, the
+ * two other doors, and the reason the number is redeclared rather than derived.
+ *
+ * It runs before the control is even read for redness, because a door open during calibration must be
+ * refused before a single verdict exists - and because the refusal it produces says what happened,
+ * where a red control with no failed guard says only that something did.
+ */
+const assertTheCensusHolds = (label: string, run: SuiteRun, census: SuiteCensus): void => {
+  const collected: Record<string, number> = {}
+  for (const guard of run.guards) collected[guard.file] = (collected[guard.file] ?? 0) + 1
+
+  const faults = censusFaults(collected, census)
+  if (faults.length === 0) return
+
+  throw new Error(
+    `${label}: this run did not collect the suite this repository declares.\n${faults.join('\n')}\n` +
+      `  A run that collects a fraction of the suite produces verdicts that look exactly like ` +
+      `verdicts. If a guard was deliberately added or removed, update mutation/census.ts; if not, ` +
+      `something about the collection is wrong and no measurement below it means anything.`,
+  )
+}
+
 const cellsOf = (battery: Battery): readonly { arm: Arm; lens: Lens }[] =>
   battery.arms.flatMap((arm) =>
     battery.lenses.filter((lens) => lens.arms.includes(arm.id)).map((lens) => ({ arm, lens })),
@@ -528,6 +575,7 @@ export const calibrate = (battery: Battery): Calibration => {
 
   const testsPerCell: Record<string, number> = {}
   const guardsPerCell: Record<string, readonly GuardIdentity[]> = {}
+  const census = censusFor(battery.vitestConfig)
 
   try {
     for (const { arm, lens } of cellsOf(battery)) {
@@ -540,6 +588,7 @@ export const calibrate = (battery: Battery): Calibration => {
         `calibration ${cellKey(arm, lens).padEnd(20)} control ${control.green ? 'green' : 'RED'} ` +
           `(${control.testsSeen ?? 'no'} tests)\n`,
       )
+      assertTheCensusHolds(cellKey(arm, lens), control, census)
       if (!control.green) {
         throw new Error(
           `the unmutated ${cellKey(arm, lens)} is red, so every verdict from this battery would be ` +
