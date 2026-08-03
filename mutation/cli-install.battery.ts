@@ -115,6 +115,64 @@ const A_FLAG_NEEDS_A_VALUE = `    const given = value !== undefined && !value.st
 
 const THE_INDEX_ENDPOINT = `  contractIndex: 'contract-index',`
 
+const THE_SNAPSHOT_ENDPOINT = `  snapshot: 'snapshot',`
+
+const AN_UNKNOWN_COMMAND = '  return { faults: [`\\`${command}\\` is not a command this \\`toopo\\` has`] }'
+
+const A_STRAY_WORD_IS_REFUSED = `    if (!word.startsWith('--')) {
+      faults.push(\`\\\`\${word}\\\` is not a flag, and this command takes no further argument\`)
+      continue
+    }`
+
+const A_CONTRACT_COMES_FIRST = `    if (contract === undefined) return { faults: ['\`add\` needs the name of a contract'] }
+    if (contract.startsWith('--')) {
+      return { faults: ['\`add\` needs the name of a contract before any flag'] }
+    }`
+
+const NOTHING_IS_A_COMMAND = `  if (command === undefined) return { faults: ['no command was given'] }`
+
+const A_FLAG_KEEPS_ITS_VALUE = `    values[name] = value as string`
+
+const INIT_TAKES_NO_DIRECTORY_BY_DEFAULT = `    return { command: { name: 'init', directory: flags.values['dir'] ?? null } }`
+
+const THE_VERSION_IS_ONE = `    ...(held['version'] === 1`
+
+const A_DIRECTORY_TRAVELS = `const DIRECTORY = /^[A-Za-z0-9._-]+(?:\\/[A-Za-z0-9._-]+)*$/`
+
+const NO_FILE_MEANS_NO_CONFIGURATION = `  if (!existsSync(path)) return null`
+
+const A_BROKEN_FILE_IS_REFUSED = `  } catch {
+    throw new UnusableConfiguration([\`\${CONFIGURATION_FILE} is not JSON\`])
+  }`
+
+const THE_PROPOSAL_READS_THE_PROJECT = `export const proposeDirectory = (root: string): string =>
+  existsSync(join(root, 'src')) ? 'src/lib/toopo' : 'lib/toopo'`
+
+const THE_WHOLE_CONFIGURATION_IS_WRITTEN = '    `${JSON.stringify(configuration, null, 2)}\\n`,'
+
+const THE_FEATURES_ARE_VALIDATED = `      ? features.flatMap(featureFaults)`
+
+const A_CLEAN_REFUSAL_NAMES_ITS_GUARD = `    verdict: 'refused-cleanly',
+    guard: 'a-file-we-did-not-write-is-never-overwritten',`
+
+const A_NAME_THE_INDEX_DOES_NOT_HOLD =
+  '  if (first === undefined) return { faults: [`the registry holds no contract called \\`${typed}\\``] }'
+
+const A_MISSING_EDGE_IS_NAMED = `      faults.push(\`\${what} is named by an edge and the registry holds no such published implementation\`)
+      continue`
+
+const WHAT_IS_WRITTEN_IS_WHAT_ARRIVED = `      const bytes = Buffer.from(rewritten.sources.get(file.servedAt) as string, 'utf8')`
+
+const THE_ORDER_IS_THE_RESOLUTIONS = `  for (const held of order) {`
+
+const A_SPECIFIER_THAT_NAMES_NOTHING = `            if (servedAt === null) {
+              faults.push(
+                \`\${source.servedAt} imports \\\`\${written}\\\`, and no file of this install is served at \` +
+                  \`that path - so it would land pointing at nothing.\`,
+              )
+              continue
+            }`
+
 // Guards several mutants name, written once because a string repeated is a rename away from being
 // wrong twice.
 const THE_TREE = 'the-graph-lands-as-a-tree-of-features'
@@ -349,6 +407,246 @@ void theFive`,
       'depending on an answer nobody publishes',
     [{ file: 'source.ts', find: THE_INDEX_ENDPOINT, replace: `  contractIndex: 'contracts',` }],
     killed(['every-method-of-the-port-answers-an-endpoint-that-exists']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // Twenty defects written for twenty-one silences.
+  //
+  // The first complete run killed twenty-two of twenty-two and left twenty-one guards red on nothing.
+  // Every one of them named a defect that could be written, so writing it is what the instrument asks
+  // for rather than a declaration that the region is out of reach - which is the same answer
+  // `validation-stage-1` gave to the same question, and the reason `unprobedRegions` is empty here.
+  //
+  // They are grouped by what they are about rather than by which guard they redden, because a mutant
+  // is a defect somebody could ship and not a lever for a test.
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'C-23',
+    'reads an unknown command as `add`, so a typo installs something instead of saying it is a typo',
+    [
+      {
+        file: 'arguments.ts',
+        find: AN_UNKNOWN_COMMAND,
+        replace: `  return { command: { name: 'add', contract: command, implementation: null } }`,
+      },
+    ],
+    killed(['an-unknown-command-and-an-unknown-flag-are-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-24',
+    'ignores a word that is not a flag, so `toopo add a b` installs `a` and never mentions `b`',
+    [
+      {
+        file: 'arguments.ts',
+        find: A_STRAY_WORD_IS_REFUSED,
+        replace: `    if (!word.startsWith('--')) {
+      continue
+    }`,
+      },
+    ],
+    killed(['a-repeated-flag-and-a-stray-word-are-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-25',
+    'takes the first flag as the name of a contract, so `toopo add --implementation reference` looks ' +
+      'for a contract called `--implementation`',
+    [
+      {
+        file: 'arguments.ts',
+        find: A_CONTRACT_COMES_FIRST,
+        replace: `    if (contract === undefined) return { faults: ['\`add\` needs the name of a contract'] }`,
+      },
+    ],
+    killed(['add-without-a-contract-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-26',
+    'reads a bare `toopo` as `toopo init`, so a user asking what the tool does gets a file written',
+    [
+      {
+        file: 'arguments.ts',
+        find: NOTHING_IS_A_COMMAND,
+        replace: `  if (command === undefined) return { command: { name: 'init', directory: null } }`,
+      },
+    ],
+    killed(['nothing-at-all-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-27',
+    'stores the name of a flag as its own value, so `--dir app/toopo` configures a folder called `dir`',
+    [{ file: 'arguments.ts', find: A_FLAG_KEEPS_ITS_VALUE, replace: `      values[name] = name` }],
+    killed(['a-flag-and-its-value-are-read']),
+  ),
+
+  sameOnEveryLens(
+    'C-28',
+    'answers a directory for `init` when none was given, so the detection that follows never runs and ' +
+      'a project without `src` is configured as though it had one',
+    [
+      {
+        file: 'arguments.ts',
+        find: INIT_TAKES_NO_DIRECTORY_BY_DEFAULT,
+        replace: `    return { command: { name: 'init', directory: flags.values['dir'] ?? 'src/lib/toopo' } }`,
+      },
+    ],
+    killed(['a-command-with-no-flag-is-read']),
+  ),
+
+  sameOnEveryLens(
+    'C-29',
+    'accepts any version in `toopo.json`, so a file written by a later `toopo` is read under rules it ' +
+      'was not written under',
+    [{ file: 'configuration.ts', find: THE_VERSION_IS_ONE, replace: `    ...(held['version'] !== undefined` }],
+    killed(['a-version-this-toopo-does-not-write-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-30',
+    'accepts any string as a directory, so a configuration committed from Windows names a folder no ' +
+      'other machine can resolve and an absolute path names the machine that ran `init`',
+    [{ file: 'configuration.ts', find: A_DIRECTORY_TRAVELS, replace: `const DIRECTORY = /^.+$/` }],
+    killed(['a-directory-that-does-not-travel-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-31',
+    'invents a configuration for a project that has none, so `toopo add` writes into a folder the user ' +
+      'never chose instead of saying to run `toopo init`',
+    [
+      {
+        file: 'configuration.ts',
+        find: NO_FILE_MEANS_NO_CONFIGURATION,
+        replace: `  if (!existsSync(path)) return { version: 1, directory: 'src/lib/toopo' }`,
+      },
+    ],
+    killed(['a-project-that-was-never-initialised-answers-nothing', 'add-before-init-says-what-to-run']),
+  ),
+
+  sameOnEveryLens(
+    'C-32',
+    'reads a broken `toopo.json` as an absent one, so a file the user is editing is silently replaced',
+    [{ file: 'configuration.ts', find: A_BROKEN_FILE_IS_REFUSED, replace: `  } catch {
+    return null
+  }` }],
+    killed(['a-file-that-is-not-json-is-refused-by-name']),
+  ),
+
+  sameOnEveryLens(
+    'C-33',
+    'proposes the same folder whatever the project looks like, so a project with no `src` gets one',
+    [
+      {
+        file: 'configuration.ts',
+        find: THE_PROPOSAL_READS_THE_PROJECT,
+        replace: `export const proposeDirectory = (root: string): string => {
+  void root
+
+  return 'src/lib/toopo'
+}`,
+      },
+    ],
+    killed(['the-proposed-directory-follows-the-shape-of-the-project']),
+  ),
+
+  sameOnEveryLens(
+    'C-34',
+    'writes the version and not the directory, so the file `init` produces is one `add` refuses',
+    [
+      {
+        file: 'configuration.ts',
+        find: THE_WHOLE_CONFIGURATION_IS_WRITTEN,
+        replace: `    \`\${JSON.stringify({ version: configuration.version }, null, 2)}\\n\`,`,
+      },
+    ],
+    killed(['a-configuration-round-trips-through-the-file']),
+  ),
+
+  sameOnEveryLens(
+    'C-35',
+    'stops reading the features of a lockfile, so a malformed entry is read as an absent one and a ' +
+      'file toopo did not write is decided to be safe to overwrite',
+    [{ file: 'lockfile.ts', find: THE_FEATURES_ARE_VALIDATED, replace: `      ? []` }],
+    killed(['an-unreadable-lockfile-stops-the-install']),
+  ),
+
+  sameOnEveryLens(
+    'C-36',
+    'leaves a clean refusal without the guard that keeps it, which is how a list of situations somebody ' +
+      'checked becomes a list somebody wrote',
+    [{ file: 'breakage.ts', find: A_CLEAN_REFUSAL_NAMES_ITS_GUARD, replace: `    verdict: 'refused-cleanly',` }],
+    killed(['every-breakage-is-classified']),
+  ),
+
+  sameOnEveryLens(
+    'C-37',
+    'invents an address for a name the registry does not hold, so a typo is answered by a failure ' +
+      'three steps later instead of by the sentence that says the catalogue has no such contract',
+    [
+      installFile(
+        A_NAME_THE_INDEX_DOES_NOT_HOLD,
+        `  if (first === undefined) {
+    return { found: { address: { language: 'typescript', name: wanted.name, major: 1 }, summary: '' } }
+  }`,
+      ),
+    ],
+    killed(['a-name-the-catalogue-does-not-hold-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-38',
+    'passes over an edge the registry does not hold, so the refusal that names the missing feature is ' +
+      'replaced by whatever the walk says when it meets the hole',
+    [installFile(A_MISSING_EDGE_IS_NAMED, `      continue`)],
+    killed(['an-edge-the-registry-does-not-hold-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-39',
+    'adds a newline to every file it writes - the installer tidying somebody else\'s code, which is ' +
+      'the one thing it may never do',
+    [
+      installFile(
+        WHAT_IS_WRITTEN_IS_WHAT_ARRIVED,
+        `      const bytes = Buffer.from((rewritten.sources.get(file.servedAt) as string) + '\\n', 'utf8')`,
+      ),
+    ],
+    // Four guards redden; the one named is the one written for a file that has nothing to repoint,
+    // where "what landed is what was served" is the whole claim.
+    killed(['a-feature-with-no-dependency-lands-exactly-as-it-was-served']),
+  ),
+
+  sameOnEveryLens(
+    'C-40',
+    'sorts the plan by name, so the order the resolution answered - dependencies first - is replaced ' +
+      'by one that decides which carrier of a shared blob keeps it for a different reason',
+    [
+      planFile(
+        THE_ORDER_IS_THE_RESOLUTIONS,
+        `  for (const held of [...order].sort((a, b) => (a.contract.name < b.contract.name ? -1 : 1))) {`,
+      ),
+    ],
+    killed(['the-plan-is-in-the-resolutions-order']),
+  ),
+
+  sameOnEveryLens(
+    'C-41',
+    'leaves a specifier that names nothing exactly as it was, so the file lands importing something ' +
+      'the project does not have',
+    [rewriteFile(A_SPECIFIER_THAT_NAMES_NOTHING, `            if (servedAt === null) continue`)],
+    killed(['an-import-of-a-file-this-install-does-not-carry-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'C-42',
+    'points the snapshot method at the index, so three of the needs `toopo add` has are answered by ' +
+      'no endpoint the port carries and nobody says so',
+    [{ file: 'source.ts', find: THE_SNAPSHOT_ENDPOINT, replace: `  snapshot: 'contract-index',` }],
+    killed(['the-port-answers-every-need-add-has-and-nothing-else']),
   ),
 ]
 
