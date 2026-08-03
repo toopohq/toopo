@@ -14,10 +14,15 @@ every change made here.
 
 ## Current stage
 
-Five contracts are being written **by hand**, with no shared abstraction, so that the definitive
-contract format emerges from repetition rather than being designed up front. The uncertainty of
-this project lies in the contract format, not in the API or the CLI — which is why neither exists
-yet.
+**The five hand-written prototype contracts are done, and with them the stage that produced the
+format.** They were written with no shared abstraction so that the format would emerge from
+repetition instead of being designed up front; what they turned out to repeat identically now lives
+in `catalogue/`, and the checklist a sixth contract is measured against is `contractAnatomy` in that
+same file. The uncertainty of this project was in the contract format, and it has been spent.
+
+Next comes the registry — data schema, immutable storage, read API, publishing tool — and before any
+of it, the conformance controller that makes `contractAnatomy` executable. No API, CLI or website
+exists yet, deliberately and in that order.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
