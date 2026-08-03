@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
-import { REPOSITORY_ROOT, UndeclaredHarness, harnessOf, serialiseContract } from './serialise.js'
+import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
 import { eachContract, theFive } from './the-five.js'
 
 /**
@@ -118,34 +118,6 @@ describe('the five, read against their own source', () => {
 
     expect(new Set(rendered).size).toBe(rendered.length)
   })
-
-  /**
-   * The harness is exactly the declared list, and a disagreement in either direction is refused.
-   *
-   * The guard this replaces asked only that the seven expected files were *present*, and that half is
-   * now unfalsifiable: `harnessOf` refuses a folder that does not match its list, so a test asserting
-   * the match would compare the list against itself. What is worth asserting is the refusal, and it
-   * is asserted from both sides because they are different mistakes - a file nobody declared is a
-   * file that would be shipped to every installation, and a declared file that is gone is a contract
-   * missing a piece.
-   */
-  it.each(eachContract)(
-    'an-undeclared-file-is-refused-%s',
-    (_name, source) => {
-      expect(() => harnessOf(REPOSITORY_ROOT, source.folder, source.files.slice(1))).toThrow(
-        UndeclaredHarness,
-      )
-    },
-  )
-
-  it.each(eachContract)(
-    'a-declared-file-that-is-gone-is-refused-%s',
-    (_name, source) => {
-      expect(() =>
-        harnessOf(REPOSITORY_ROOT, source.folder, [...source.files, 'nothing-is-here.ts']),
-      ).toThrow(UndeclaredHarness)
-    },
-  )
 
   /**
    * The one transcribed thing in the pointing arm of `ProfileSamples`.

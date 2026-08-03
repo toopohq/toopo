@@ -262,6 +262,9 @@ export const battery: Battery = {
       suites: [
         'the five, read against their own source',
         'a record accounts for everything its contract declares',
+        // The five schema suites plus this one. `the files a contract is made of` is deliberately
+        // absent: it is a storage suite, every one of its guards is reddened by I-02, and declaring
+        // it here is what the instrument refused when the two guards still sat in the file above.
         'the registry encoding',
         'the public/private frontier',
         'the implementations under the five contracts',
