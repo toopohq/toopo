@@ -1,11 +1,21 @@
 import { describe, it, expect } from 'vitest'
 
-import type { ContractAddress, ImplementationAddress } from './address.js'
 import { caseAddressFaults, contractAddressFaults, renderImplementation } from './address.js'
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { ContractRecord, Lifecycle } from './contract-record.js'
 import { FIELD_MAP, pathsIn, publicContract } from './field-map.js'
-import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
+import {
+  CLAMP,
+  HOLDINGS,
+  ROUND,
+  ROUND_SOURCE,
+  clamp,
+  pad,
+  referenceAt,
+  round,
+  sign,
+} from './imagined-graph.js'
+import type { ImplementationRecord } from './implementation-record.js'
 import {
   UnresolvedDependency,
   dependencyDepthOf,
@@ -37,17 +47,17 @@ import { contractAnatomy } from '../catalogue/every-contract.js'
  * type that none of the five fills. If a sixth contract needed a field, this is where it would show.
  */
 
-const CONTRACT = { language: 'typescript', name: 'number/round', major: 1 } as const
-
 const NOT_YET_PUBLISHED: Lifecycle = { state: 'not-yet-published' }
 
 /**
  * A real digest over real bytes, so that nothing here is a fabricated measurement - and taken by the
  * same two functions a real file goes through, so that the hand-written record is not hashed by a
  * path no contract uses.
+ *
+ * The text is the graph's own, so that the contract and the implementation competing under it do not
+ * describe two different files under one name.
  */
-const REFERENCE_SOURCE = 'export const round = (value: number, places: number): number | null => null\n'
-const REFERENCE_BYTES = servedBytes(Buffer.from(REFERENCE_SOURCE, 'utf8'))
+const REFERENCE_BYTES = servedBytes(Buffer.from(ROUND_SOURCE, 'utf8'))
 
 /** The values the `produced` arm below points at, so that its count and digest are read off them. */
 const TIE_SAMPLES = [
@@ -56,7 +66,7 @@ const TIE_SAMPLES = [
 ]
 
 const theSixth: ContractRecord = {
-  address: CONTRACT,
+  address: ROUND,
   lifecycle: NOT_YET_PUBLISHED,
   identity: {
     exportName: 'round',
@@ -331,64 +341,12 @@ describe('a sixth contract enters without a migration', () => {
  *     round -> clamp, sign
  *     clamp -> pad
  *     sign  -> pad
+ *
+ * **The graph itself is `imagined-graph.ts` and not this file**, because a second consumer arrived for
+ * it: `toopo add` resolves the same edges and deduplicates the same shared file, and a fixture copied
+ * into two folders is two fixtures that can come to disagree. What moved with it is the whole of the
+ * reasoning above, which belongs beside the data rather than beside one of its readers.
  */
-const addressOf = (name: string): ContractAddress => ({ language: 'typescript', name, major: 1 })
-
-const REFERENCE_AT = (id: string, contract: ContractAddress): ImplementationAddress => ({
-  contract,
-  id,
-  version: '1.0.0',
-})
-
-const fileOf = (path: string, source: string): HarnessFile => {
-  const bytes = servedBytes(Buffer.from(source, 'utf8'))
-
-  return { path, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }
-}
-
-/** One file carried by two implementations, which is the shape the CLI deduplicates on. */
-const SHARED_FILE = fileOf('digits.ts', 'export const DIGITS = /^[0-9]+$/\n')
-
-const implementationOf = (
-  contract: ContractAddress,
-  files: readonly HarnessFile[],
-  dependsOn: readonly ImplementationAddress[],
-): ImplementationRecord => ({
-  id: 'reference',
-  contract,
-  author: 'toopo',
-  version: '1.0.0',
-  status: 'default',
-  files,
-  dependsOn,
-  minifiedBytes: null,
-  benchmarks: [],
-  tags: ['reference'],
-})
-
-const PAD = addressOf('string/pad')
-const CLAMP = addressOf('number/clamp')
-const SIGN = addressOf('number/sign')
-
-const pad = implementationOf(PAD, [fileOf('reference.ts', 'export const pad = 1\n'), SHARED_FILE], [])
-const sign = implementationOf(
-  SIGN,
-  [fileOf('reference.ts', 'export const sign = 1\n')],
-  [REFERENCE_AT('reference', PAD)],
-)
-const clamp = implementationOf(
-  CLAMP,
-  [fileOf('reference.ts', 'export const clamp = 1\n'), SHARED_FILE],
-  [REFERENCE_AT('reference', PAD)],
-)
-const round = implementationOf(
-  CONTRACT,
-  [fileOf('reference.ts', REFERENCE_SOURCE)],
-  [REFERENCE_AT('reference', CLAMP), REFERENCE_AT('reference', SIGN)],
-)
-
-const HOLDINGS: readonly ImplementationRecord[] = [pad, sign, clamp, round]
-
 const rendered = (records: readonly ImplementationRecord[]): readonly string[] =>
   records.map((record) =>
     renderImplementation({ contract: record.contract, id: record.id, version: record.version ?? '' }),
@@ -484,7 +442,7 @@ describe('what `toopo add` has to be told, and a depth could not tell it', () =>
    * one would write a project whose imports do not terminate.
    */
   it('a-cycle-is-refused-rather-than-deduplicated-away', () => {
-    const padThroughClamp = { ...pad, dependsOn: [REFERENCE_AT('reference', CLAMP)] }
+    const padThroughClamp = { ...pad, dependsOn: [referenceAt(CLAMP)] }
 
     expect(() => resolveDependencies(round, [padThroughClamp, clamp, sign])).toThrow(
       /imports itself through/,
