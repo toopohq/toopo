@@ -50,7 +50,7 @@ describe('the two columns', () => {
    * second such row appearing would mean something moved offline without anyone saying so - and a row
    * losing its emptiness would mean a check that needed nobody now needs us.
    */
-  it('one-check-needs-nothing-from-the-registry', () => {
+  it('the-checks-that-need-nothing-from-the-registry', () => {
     const offline = VERIFIABLE.filter((claim) => claim.about.length === 0)
 
     expect(offline.map((claim) => claim.id)).toEqual(['an-installed-file-is-what-was-served'])
@@ -70,7 +70,7 @@ describe('the two columns', () => {
    * say it, so the reason is unrepresentable rather than refused. What this guard keeps is the
    * vocabulary itself - a fourth member added later would have to pass through this line.
    */
-  it('the-believed-column-has-three-natures-and-none-of-them-is-withholding', () => {
+  it('the-believed-natures-are-the-declared-ones-and-none-is-withholding', () => {
     const natures = [...new Set(MUST_BE_BELIEVED.map((claim) => claim.nature))].sort()
 
     expect(natures).toEqual([
@@ -99,10 +99,10 @@ describe('the two columns', () => {
   })
 
   /**
-   * Three believed claims have nothing that narrows them, and saying which three is the point. A
+   * Some believed claims have nothing that narrows them, and saying *which* is the point. A
    * mitigation invented to fill the column would be the worst line in this file.
    */
-  it('three-believed-claims-have-no-mitigation-and-are-named', () => {
+  it('the-believed-claims-with-no-mitigation-are-named', () => {
     const bare = MUST_BE_BELIEVED.filter((claim) => claim.mitigation === null)
 
     expect(bare.map((claim) => claim.id).sort()).toEqual([

@@ -220,7 +220,7 @@ describe('a sixth contract enters without a migration', () => {
     expect(unclassified).toEqual([])
   })
 
-  it('fills-two-fields-none-of-the-five-fills', () => {
+  it('fills-the-fields-none-of-the-five-fills', () => {
     const paths = new Set<string>()
     pathsIn(publicContract(theSixth), '', paths)
 

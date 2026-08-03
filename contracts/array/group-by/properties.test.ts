@@ -355,7 +355,7 @@ describe('array/group-by@1 property preconditions', () => {
     expect(unexplained.map((rule) => rule.name)).toEqual([])
   })
 
-  it('declares-one-precondition-and-its-obligations :: exactly one precondition, and the obligations that make the rest testable', () => {
+  it('declares-the-kinds-of-key-function-rule :: the precondition, and the obligations that make the rest testable', () => {
     // The shape of block 4.2 is itself a claim: that delegating purity to the caller produces one
     // requirement no test can enforce, and that everything else is either owed by the contract or
     // conditional on a well-behaved argument. If a later revision quietly turned an obligation into

@@ -77,11 +77,16 @@ describe('the needs and the endpoints answer each other', () => {
   })
 
   /**
-   * Three needs are answered on the user's own machine, and the count is pinned rather than merely
-   * allowed. A fourth appearing silently would mean something moved off the API without anyone saying
-   * so, which is how a capability quietly disappears.
+   * The needs answered on the user's own machine, named rather than counted. One more appearing
+   * silently would mean something moved off the API without anyone saying so, which is how a
+   * capability quietly disappears - so the guard pins which ones they are, and the list is the pin.
+   *
+   * **This guard was called `three-needs-are-answered-without-the-api` and had to be renamed.** A
+   * fourth had already appeared: the assertion below lists four, the identifier said three, and the
+   * two were edited apart because nothing makes a name answer for the data underneath it. The guard
+   * written to detect a silent change was blinded by its own name.
    */
-  it('three-needs-are-answered-without-the-api :: and each one says what answers it', () => {
+  it('the-needs-answered-without-the-api :: and each one says what answers it', () => {
     const elsewhere = NEEDS.filter((need) => need.answeredWithoutTheApi !== undefined)
 
     expect(elsewhere.map((need) => need.id).sort()).toEqual([
@@ -189,7 +194,7 @@ describe('the cache follows from the addressing and from nothing else', () => {
    * traffic bill: the two that carry the bulk - a record is 32 to 50 kB over the five - are the two
    * that are never revalidated.
    */
-  it('the-two-endpoints-that-carry-the-bulk-are-the-cacheable-ones', () => {
+  it('the-endpoints-that-carry-the-bulk-are-the-cacheable-ones', () => {
     const forEver = ENDPOINTS.filter(
       (endpoint) => cachePolicyFor(endpoint.addressing).immutable,
     ).map((endpoint) => endpoint.id)

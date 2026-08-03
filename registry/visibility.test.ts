@@ -132,11 +132,11 @@ describe('the public/private frontier', () => {
   })
 
   /**
-   * The deferral is not a fifth stratum in disguise. Exactly one field defers, and it defers to a
-   * value the record actually carries - so a reader following it arrives somewhere rather than at
-   * another pointer.
+   * The deferral is not a fifth stratum in disguise. Whichever fields defer, they defer to a value
+   * the record actually carries - so a reader following one arrives somewhere rather than at another
+   * pointer.
    */
-  it('only-one-field-defers-its-stratum :: and the record answers for it', () => {
+  it('the-fields-that-defer-their-stratum :: and the record answers for each of them', () => {
     const deferring = Object.entries(FIELD_MAP)
       .filter(([, entry]) => entry.verification === 'stated-per-declaration')
       .map(([path]) => path)

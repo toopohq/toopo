@@ -34,7 +34,7 @@ const lockedFeatureOf = (
 
 describe('the implementations under the five contracts', () => {
   it.each(eachContract)(
-    'the-reference-is-one-file-and-it-is-hashed-%s',
+    'the-reference-files-are-the-declared-ones-and-are-hashed-%s',
     (_name, source) => {
       const implementation = referenceImplementationOf(REPOSITORY_ROOT, source)
 

@@ -114,6 +114,21 @@ fires, the declaration had to go, and `identical` left the unprobed list. **That
 defect these identifiers make detectable.** The other 466 guards are a tidying for the registry, and
 it is recorded as one rather than dressed up.
 
+**A name, never a rendering of the data the guard asserts over** — the rule block 4.4 already carries
+for a case identifier, restated here because guard identifiers were created without it being reapplied
+to them, and nine of them had drifted. The test is mechanical: *the identifier and the assertion carry
+the same number, so the two can be edited apart.* `three-needs-are-answered-without-the-api` listed
+four, and its own comment said that a fourth appearing silently would mean something had moved off the
+API without anyone saying so. A fourth appeared, the list was updated, the name was not, and the guard
+written to detect a silent change was blinded by its own name. Renaming is the repair rather than
+correcting the number, because a name that has to be edited whenever the data moves is not an address.
+
+What this does *not* forbid is a number that names the subject of a case rather than tallying a
+collection — `two-decimal-points`, `p4-triangle-inequality`, `signature-accepts-two-strings` — nor a
+claim whose falsification retires the guard instead of editing it: `nothing-is-measured-yet` asserts
+`toEqual([])` three times and carries no number to drift from. An identifier derived from a *frozen*
+address stays an address, which is what `${id}-described` and the `eachContract` slug are.
+
 **Uniqueness is per contract.** The instrument can only break inside a contract — a battery injects
 into one folder, and attribution already filters guards to the contract under measurement — and the
 registry will address a guard by the pair `(contract identity, guard identifier)`, exactly as it

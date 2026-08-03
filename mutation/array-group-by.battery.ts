@@ -661,7 +661,7 @@ export const battery: Battery = {
         'every-shape-is-named-and-described',
         'universal-properties-answered',
         'declares-a-statement-for-every-key-function-rule',
-        'declares-one-precondition-and-its-obligations',
+        'declares-the-kinds-of-key-function-rule',
       ],
     },
     {

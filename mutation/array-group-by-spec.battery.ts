@@ -83,8 +83,7 @@ const EVERY_SHAPE_AND_DESCRIPTION =
   'every-shape-is-named-and-described'
 const INAPPLICABLE_STAY_INAPPLICABLE = 'universal-properties-answered'
 const EVERY_RULE_STATED = 'declares-a-statement-for-every-key-function-rule'
-const ONE_PRECONDITION =
-  'declares-one-precondition-and-its-obligations'
+const RULE_KINDS = 'declares-the-kinds-of-key-function-rule'
 
 const INTEGER_LIKE_ORDER = 'integer-like-keys-keep-first-occurrence-order'
 const INDEX_PROTOCOL = 'the-key-function-receives-the-element-and-its-index'
@@ -123,7 +122,7 @@ const mutants: readonly Mutant[] = [
       'makes is that exactly one of them is a precondition. Demoting the propagation obligation ' +
       'would let an implementation swallow the caller\'s exception and blame the caller for it',
     [contract(EXCEPTION_RULE_KIND, `    kind: 'precondition',\n    name: 'an exception propagates unchanged',`)],
-    killed([ONE_PRECONDITION]),
+    killed([RULE_KINDS]),
   ),
   sameOnEveryLens(
     'AG-4',

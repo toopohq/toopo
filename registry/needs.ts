@@ -13,12 +13,14 @@
  * nobody has, are both refusals. A `Need` that carried its own answer could not disagree with
  * anything, which is the mistake `publicContract` and `FIELD_MAP` are written apart to avoid.
  *
- * **A need the API does not answer says so.** Three of the seventeen are answered on the user's own
- * machine, from what they already hold, and one of them - detecting that a file was edited locally -
- * is answered offline *on purpose*: it is the need whose whole value is that it needs nothing from us.
- * Leaving them out would have made the list agree with the endpoints by omission; carrying them with
- * the reason is what makes `answeredWithoutTheApi` the second half of the guard rather than an
- * escape from it.
+ * **A need the API does not answer says so.** A few of them are answered on the user's own machine,
+ * from what they already hold, and one - detecting that a file was edited locally - is answered
+ * offline *on purpose*: it is the need whose whole value is that it needs nothing from us. Leaving
+ * them out would have made the list agree with the endpoints by omission; carrying them with the
+ * reason is what makes `answeredWithoutTheApi` the second half of the guard rather than an escape
+ * from it. Which ones they are is pinned by a guard and named there rather than counted here, for
+ * the reason that guard's own comment records: a count written beside the data it counts is a second
+ * statement nobody makes answer for the first, and this one had already drifted.
  *
  * ---------------------------------------------------------------------------
  * The fifth consumer, which the indicative list does not have
