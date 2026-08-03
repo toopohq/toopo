@@ -1,0 +1,7 @@
+# The registry serves LF, hashes what it serves, and publishes that digest for ever. Leaving this
+# repository to check out CRLF after writing that CRLF is the defect would be incoherent.
+#
+# This is not what makes the digest correct. `registry/canonical.ts` normalises the bytes it hashes,
+# because the registry has to be right under any git configuration and not only under this one; the
+# line below is so that a working tree here looks like what is published.
+* text=auto eol=lf

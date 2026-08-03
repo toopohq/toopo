@@ -71,11 +71,30 @@ const ACCEPTED_AND_REJECTED = [
   { name: 'rejected', meaning: 'every sample of the profile is refused, which is a different path' },
 ]
 
+/**
+ * The seven files with fixed names, shared because `contractAnatomy` measured them shared at five of
+ * five and requires them of a sixth contract. `array/group-by@1` carries nine; the two extras are its
+ * own and are listed with it.
+ *
+ * This is the list of what an installation receives, so it is written out rather than read off the
+ * disk - `harnessOf` refuses any disagreement between the two.
+ */
+const THE_SEVEN_FILES = [
+  'contract.ts',
+  'edge-cases.test.ts',
+  'edge-cases.ts',
+  'profiles.test.ts',
+  'properties.test.ts',
+  'reference.ts',
+  'signature.test-d.ts',
+] as const
+
 export const theFive: readonly ContractSource[] = [
   {
     address: NUMBER_PARSE,
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/number/parse',
+    files: THE_SEVEN_FILES,
     module: numberParse as unknown as Readonly<Record<string, unknown>>,
     declares: [numberParse, numberParseCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
@@ -118,6 +137,7 @@ export const theFive: readonly ContractSource[] = [
     address: DATE_ADD,
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/date/add',
+    files: THE_SEVEN_FILES,
     module: dateAdd as unknown as Readonly<Record<string, unknown>>,
     declares: [dateAdd, dateAddCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
@@ -203,6 +223,8 @@ export const theFive: readonly ContractSource[] = [
       keptAs: groupBy.catalogueAdmission.keptAs,
     },
     folder: 'contracts/array/group-by',
+    // The nine `contractAnatomy` records: the seven, plus the two this contract invented.
+    files: [...THE_SEVEN_FILES, 'language.test.ts', 'outcome.ts'],
     module: groupBy as unknown as Readonly<Record<string, unknown>>,
     declares: [groupBy, groupByCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [
@@ -273,6 +295,7 @@ export const theFive: readonly ContractSource[] = [
     address: LEVENSHTEIN,
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/string/levenshtein',
+    files: THE_SEVEN_FILES,
     module: levenshtein as unknown as Readonly<Record<string, unknown>>,
     declares: [levenshtein, levenshteinCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
@@ -319,6 +342,7 @@ export const theFive: readonly ContractSource[] = [
     address: SLUGIFY,
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/string/slugify',
+    files: THE_SEVEN_FILES,
     module: slugify as unknown as Readonly<Record<string, unknown>>,
     declares: [slugify, slugifyCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],

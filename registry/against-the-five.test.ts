@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
-import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
+import { REPOSITORY_ROOT, UndeclaredHarness, harnessOf, serialiseContract } from './serialise.js'
 import { theFive } from './the-five.js'
 
 /**
@@ -120,28 +120,30 @@ describe('the five, read against their own source', () => {
   })
 
   /**
-   * The harness is the folder, and a file that is in the folder and not in the record would be part
-   * of a contract the registry does not serve. Read twice, from two directions, because the
-   * serialiser builds the list from the same directory it would be compared against - so what this
-   * checks is that every file the contract's own source refers to by name is there.
+   * The harness is exactly the declared list, and a disagreement in either direction is refused.
+   *
+   * The guard this replaces asked only that the seven expected files were *present*, and that half is
+   * now unfalsifiable: `harnessOf` refuses a folder that does not match its list, so a test asserting
+   * the match would compare the list against itself. What is worth asserting is the refusal, and it
+   * is asserted from both sides because they are different mistakes - a file nobody declared is a
+   * file that would be shipped to every installation, and a declared file that is gone is a contract
+   * missing a piece.
    */
   it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-harness-holds-the-seven-files-a-contract-is-made-of :: %s',
+    'an-undeclared-file-is-refused :: %s',
     (_name, source) => {
-      const record = serialiseContract(REPOSITORY_ROOT, source)
-      const held = record.harness.map((file) => file.path)
+      expect(() => harnessOf(REPOSITORY_ROOT, source.folder, source.files.slice(1))).toThrow(
+        UndeclaredHarness,
+      )
+    },
+  )
 
-      expect(
-        [
-          'contract.ts',
-          'reference.ts',
-          'edge-cases.ts',
-          'edge-cases.test.ts',
-          'properties.test.ts',
-          'profiles.test.ts',
-          'signature.test-d.ts',
-        ].filter((file) => !held.includes(file)),
-      ).toEqual([])
+  it.each(theFive.map((source) => [source.address.name, source] as const))(
+    'a-declared-file-that-is-gone-is-refused :: %s',
+    (_name, source) => {
+      expect(() =>
+        harnessOf(REPOSITORY_ROOT, source.folder, [...source.files, 'nothing-is-here.ts']),
+      ).toThrow(UndeclaredHarness)
     },
   )
 

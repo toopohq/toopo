@@ -16,7 +16,6 @@
  * compare a record against the live modules rather than against a file.
  */
 
-import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -35,6 +34,7 @@ import type {
   SupportingTypeRecord,
   UniversalPropertyRecord,
 } from './contract-record.js'
+import { digestOfBytes, servedBytes } from './canonical.js'
 import type { VerificationStratum } from './field-map.js'
 import type { BatteryRecord, CaseProvenance } from './evidence.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
@@ -87,6 +87,11 @@ export type ContractSource = {
   readonly lifecycle: Lifecycle
   /** The folder, relative to the repository root, as the instrument already addresses one. */
   readonly folder: string
+  /**
+   * Every file of the folder the registry serves, named. A closed list, and a security requirement
+   * rather than a design preference - `harnessOf` says why in full.
+   */
+  readonly files: readonly string[]
   /** `contract.ts` as a namespace, so that every value below is read rather than transcribed. */
   readonly module: Readonly<Record<string, unknown>>
   /**
@@ -216,28 +221,70 @@ const benchmarksOf = (source: ProfileSource): BenchmarksRecord => ({
 })
 
 /**
- * Every file of the contract folder, hashed.
+ * A folder holds a file the registry was not told to serve, or is missing one it was.
  *
- * All of them, not a chosen few: the reference, the tables, the properties, the type assertions and
- * whatever else a contract carries. The registry serves the harness as files, so the harness is
- * whatever the folder holds, and a list curated here would be a second statement about what a
- * contract is made of that could disagree with the folder.
+ * Both halves in one refusal, because they are one question - is the contract made of exactly what it
+ * says - and a failure has to say which half gave way.
  */
-export const harnessOf = (root: string, folder: string): readonly HarnessFile[] => {
-  const directory = join(root, folder)
+export class UndeclaredHarness extends Error {
+  constructor(folder: string, undeclared: readonly string[], missing: readonly string[]) {
+    super(
+      `${folder} is not made of the files it declares.\n` +
+        (undeclared.length === 0
+          ? ''
+          : `  present and not served: ${undeclared.join(', ')}\n` +
+            `    A file in a contract folder is a file the registry would serve to every ` +
+            `installation. Anything that lands here - a build artefact, an editor backup, a ` +
+            `dropped file - would be hashed into the record and shipped, which is the attack the ` +
+            `whole distribution model exists to refuse.\n`) +
+        (missing.length === 0 ? '' : `  served and not present: ${missing.join(', ')}\n`),
+    )
+    this.name = 'UndeclaredHarness'
+  }
+}
 
-  return readdirSync(directory)
+/**
+ * Every file the registry serves for a contract, hashed - and exactly those.
+ *
+ * **The list is closed, and that is a security requirement rather than a design preference.** These
+ * files are what an installation receives, so a folder listing decides what gets shipped. Measured:
+ * a `tsc` invocation that emitted beside the sources put two `.js` files into every contract folder,
+ * both entered the harness with their digests, and the whole registry suite stayed green - 110 of
+ * 110 - because the only guard over the list checked that the seven expected files were *present*.
+ * Reproduced deliberately with a single stray file afterwards, same result. Permanent rule 3 says
+ * installations are served only from the registry's immutable snapshot; a snapshot built from
+ * whatever happens to be on the disk of the machine that built it is not that snapshot.
+ *
+ * So the source declares the files and this refuses any disagreement in either direction. Two
+ * independent statements, as `publicContract` and `FIELD_MAP` are two - a list derived from the
+ * folder could not disagree with the folder.
+ *
+ * The digest and the byte count come from one read of one buffer. Two reads would be two answers
+ * about a file that could change between them, and a record whose size and digest describe different
+ * bytes is not a record of anything.
+ */
+export const harnessOf = (
+  root: string,
+  folder: string,
+  files: readonly string[],
+): readonly HarnessFile[] => {
+  const directory = join(root, folder)
+  const present = readdirSync(directory)
     .filter((name) => statSync(join(directory, name)).isFile())
     .sort()
-    .map((name) => {
-      const bytes = readFileSync(join(directory, name))
+  const served = [...files].sort()
 
-      return {
-        path: name,
-        sha256: createHash('sha256').update(bytes).digest('hex'),
-        bytes: bytes.byteLength,
-      }
-    })
+  const undeclared = present.filter((name) => !served.includes(name))
+  const missing = served.filter((name) => !present.includes(name))
+  if (undeclared.length > 0 || missing.length > 0) {
+    throw new UndeclaredHarness(folder, undeclared, missing)
+  }
+
+  return served.map((name) => {
+    const bytes = servedBytes(readFileSync(join(directory, name)))
+
+    return { path: name, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }
+  })
 }
 
 const ownDeclarationsOf = (
@@ -266,7 +313,9 @@ export const referenceImplementationOf = (
   root: string,
   source: ContractSource,
 ): ImplementationRecord => {
-  const files = harnessOf(root, source.folder).filter((file) => file.path === 'reference.ts')
+  const files = harnessOf(root, source.folder, source.files).filter(
+    (file) => file.path === 'reference.ts',
+  )
 
   return {
     id: 'reference',
@@ -319,5 +368,5 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
   ),
   benchmarks: benchmarksOf(source.benchmarks),
   ownDeclarations: ownDeclarationsOf(source.module, source.ownDeclarations),
-  harness: harnessOf(root, source.folder),
+  harness: harnessOf(root, source.folder, source.files),
 })
