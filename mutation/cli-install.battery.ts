@@ -165,6 +165,18 @@ const WHAT_IS_WRITTEN_IS_WHAT_ARRIVED = `      const bytes = Buffer.from(rewritt
 
 const THE_ORDER_IS_THE_RESOLUTIONS = `  for (const held of order) {`
 
+const THE_CARRIERS_ARE_NAMED = `  return [...carriers].map(([path, alsoCarriedBy]) => ({ path, alsoCarriedBy }))`
+
+const A_KILOBYTE_IS_A_THOUSAND = '  bytes < 1000 ? `${bytes} B` : `${(bytes / 1000).toFixed(1)} kB`'
+
+const A_REFUSAL_ANSWERS_FIRST = `export const renderRefusal = (faults: readonly string[]): string =>
+  [
+    '',
+    \`\${INDENT}Refused, and nothing was written.\`,
+    '',
+    ...faults.flatMap((fault) => [...paragraph(fault, 72).map((line) => \`\${INDENT}  \${line}\`), '']),
+  ].join('\\n')`
+
 const A_SPECIFIER_THAT_NAMES_NOTHING = `            if (servedAt === null) {
               faults.push(
                 \`\${source.servedAt} imports \\\`\${written}\\\`, and no file of this install is served at \` +
@@ -647,6 +659,56 @@ void theFive`,
       'no endpoint the port carries and nobody says so',
     [{ file: 'source.ts', find: THE_SNAPSHOT_ENDPOINT, replace: `  snapshot: 'contract-index',` }],
     killed(['the-port-answers-every-need-add-has-and-nothing-else']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // Three defects of the surface the user reads, which the first forty-two did not reach.
+  //
+  // Everything above measures a value. These measure the sentence a person gets, and they exist
+  // because the report was the one module of this folder whose nominal path no guard ran through -
+  // only its refusal did. The first surface of a product is a poor place to find that out later.
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'C-43',
+    'says why before saying that nothing was written, so the reader is given a reason while still ' +
+      'wondering whether their project is now half-changed',
+    [
+      {
+        file: 'report.ts',
+        find: A_REFUSAL_ANSWERS_FIRST,
+        replace: `export const renderRefusal = (faults: readonly string[]): string =>
+  [
+    '',
+    ...faults.flatMap((fault) => [...paragraph(fault, 72).map((line) => \`\${INDENT}  \${line}\`), '']),
+    \`\${INDENT}Refused, and nothing was written.\`,
+    '',
+  ].join('\\n')`,
+      },
+    ],
+    killed(['a-refusal-says-nothing-was-written-before-it-says-why']),
+  ),
+
+  sameOnEveryLens(
+    'C-44',
+    'reads a kilobyte as 1024 bytes, so the size printed beside a file disagrees with the one the ' +
+      'user\'s file manager shows for the same file',
+    [
+      {
+        file: 'report.ts',
+        find: A_KILOBYTE_IS_A_THOUSAND,
+        replace: `  bytes < 1024 ? \`\${bytes} B\` : \`\${(bytes / 1024).toFixed(1)} kB\``,
+      },
+    ],
+    killed(['a-size-is-read-the-way-a-file-manager-shows-it']),
+  ),
+
+  sameOnEveryLens(
+    'C-45',
+    'deduplicates a shared file and does not say so, which is the installer doing something to ' +
+      'somebody\'s project and leaving them to find out',
+    [installFile(THE_CARRIERS_ARE_NAMED, `  return []`)],
+    killed(['a-line-says-what-was-done-to-that-file']),
   ),
 ]
 

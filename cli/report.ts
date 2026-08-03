@@ -66,13 +66,20 @@ export const renderInstallation = (
 ): string => {
   const { cost } = installation
   const notes = new Map<string, string>()
-  for (const path of installation.shared) notes.set(path, 'shared, written once')
+  for (const file of installation.shared) {
+    notes.set(file.path, `shared with ${file.alsoCarriedBy.join(', ')}`)
+  }
   for (const write of installation.writes) {
     if (write.repointed && !notes.has(write.path)) notes.set(write.path, 'import repointed')
   }
 
+  // Wide enough to align the notes, and applied only to the lines that have one - a padded line with
+  // nothing after it is trailing whitespace in the first output anybody sees.
   const width = Math.max(
-    ...installation.writes.map((write) => `${configuration.directory}/${write.path}`.length),
+    ...installation.writes
+      .filter((write) => notes.has(write.path))
+      .map((write) => `${configuration.directory}/${write.path}`.length),
+    0,
   )
 
   return [
@@ -89,7 +96,9 @@ export const renderInstallation = (
       const path = `${configuration.directory}/${write.path}`
       const note = notes.get(write.path)
 
-      return `${INDENT}  + ${path.padEnd(width)}${note === undefined ? '' : `  ${note}`}`
+      return note === undefined
+        ? `${INDENT}  + ${path}`
+        : `${INDENT}  + ${path.padEnd(width)}  ${note}`
     }),
     '',
     ...(installation.dependencies.length === 0

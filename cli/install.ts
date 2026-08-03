@@ -74,8 +74,20 @@ export type Installation = {
   readonly features: readonly LockedFeature[]
   /** Every feature this install pulls in besides the one that was asked for. */
   readonly dependencies: readonly ImplementationAddress[]
-  /** Destinations more than one feature carries, written once. What deduplication actually did. */
-  readonly shared: readonly string[]
+  /** What deduplication actually did: a destination written once, and who else carries that file. */
+  readonly shared: readonly SharedFile[]
+}
+
+/**
+ * One file two or more features carry, written in the folder of the first and named by the others.
+ *
+ * `alsoCarriedBy` rather than a count, because the line the user reads has to say *which* feature they
+ * are now sharing a file with. "shared, written once" describes what the installer did; a name tells
+ * them what their project now looks like.
+ */
+export type SharedFile = {
+  readonly path: string
+  readonly alsoCarriedBy: readonly string[]
 }
 
 export type InstallOutcome =
@@ -399,11 +411,32 @@ export const prepareInstallation = (
       dependencies: planned.plan.features
         .map((entry) => entry.implementation)
         .filter((held) => !sameContract(held.contract, chosen.found.address)),
-      shared: [
-        ...new Set(planned.plan.files.filter((file) => !file.written).map((file) => file.path)),
-      ],
+      shared: sharedFilesIn(planned.plan),
     },
   }
+}
+
+/**
+ * The files a plan writes once and more than one feature carries, each with the features that name it
+ * without owning the copy.
+ *
+ * Read off the plan's own `written` flag rather than recomputed from the digests: the plan already
+ * took that decision, and taking it twice is how two answers to one question come to disagree.
+ */
+const sharedFilesIn = (plan: InstallPlan): readonly SharedFile[] => {
+  const carriers = new Map<string, string[]>()
+
+  for (const feature of plan.features) {
+    for (const file of feature.files) {
+      if (file.written) continue
+
+      const held = carriers.get(file.path) ?? []
+      held.push(renderContract(feature.implementation.contract))
+      carriers.set(file.path, held)
+    }
+  }
+
+  return [...carriers].map(([path, alsoCarriedBy]) => ({ path, alsoCarriedBy }))
 }
 
 const fetchedSources = (
