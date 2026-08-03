@@ -291,21 +291,3 @@ export const fetchedSources = (
 
   return faults.length > 0 ? { faults } : { found: texts }
 }
-
-/** One blob by the digest a lockfile recorded, checked exactly as a fetched one is. */
-export const blobAt = (
-  source: RegistrySource,
-  sha256: string,
-  where: string,
-): Found<string> => {
-  const answer = source.blob(sha256)
-  if (answer === null) {
-    return { faults: [`the registry serves no file at ${sha256}, which ${where} was installed from`] }
-  }
-
-  const faults = servedBlobFaults(answer)
-
-  return faults.length > 0
-    ? { faults: faults.map((fault) => `${where}: ${fault}`) }
-    : { found: answer.bytes.toString('utf8') }
-}

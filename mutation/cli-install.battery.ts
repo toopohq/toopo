@@ -57,6 +57,17 @@ const rewriteFile = (find: string, replace: string) => ({ file: 'rewrite.ts', fi
 const installFile = (find: string, replace: string) => ({ file: 'install.ts', find, replace })
 const localFile = (find: string, replace: string) => ({ file: 'local-source.ts', find, replace })
 
+/**
+ * What an install asks a registry for, and how each answer is checked.
+ *
+ * It was inside `install.ts` when this battery was written and moved to `resolve.ts` when `toopo
+ * update` turned out to need every one of those steps unchanged. Four edits moved with it and not one
+ * verdict did - which is the shape a refactor should have, and which the instrument established rather
+ * than the diff: it refused the whole run on the first anchor that no longer matched, exactly as it
+ * exists to.
+ */
+const resolveFile = (find: string, replace: string) => ({ file: 'resolve.ts', find, replace })
+
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
 // ---------------------------------------------------------------------------
@@ -295,7 +306,7 @@ const mutants: readonly Mutant[] = [
     'C-11',
     'stops checking that a file is the bytes its digest names, which is the check content addressing ' +
       'exists for and the one a consumer skips when it is described rather than provided',
-    [installFile(A_BLOB_IS_CHECKED, `    const blobFaults: readonly string[] = []`)],
+    [resolveFile(A_BLOB_IS_CHECKED, `    const blobFaults: readonly string[] = []`)],
     killed(['a-blob-that-is-not-what-its-address-names-is-refused']),
   ),
 
@@ -303,7 +314,7 @@ const mutants: readonly Mutant[] = [
     'C-12',
     'stops checking that a snapshot is what its digest was taken over, so a registry may answer any ' +
       'file list it likes under an address a lockfile pinned',
-    [installFile(A_SNAPSHOT_IS_CHECKED, `  const faults: readonly string[] = []`)],
+    [resolveFile(A_SNAPSHOT_IS_CHECKED, `  const faults: readonly string[] = []`)],
     killed(['a-snapshot-that-is-not-what-its-digest-names-is-refused']),
   ),
 
@@ -599,7 +610,7 @@ void theFive`,
     'invents an address for a name the registry does not hold, so a typo is answered by a failure ' +
       'three steps later instead of by the sentence that says the catalogue has no such contract',
     [
-      installFile(
+      resolveFile(
         A_NAME_THE_INDEX_DOES_NOT_HOLD,
         `  if (first === undefined) {
     return { found: { address: { language: 'typescript', name: wanted.name, major: 1 }, summary: '' } }
@@ -613,7 +624,7 @@ void theFive`,
     'C-38',
     'passes over an edge the registry does not hold, so the refusal that names the missing feature is ' +
       'replaced by whatever the walk says when it meets the hole',
-    [installFile(A_MISSING_EDGE_IS_NAMED, `      continue`)],
+    [resolveFile(A_MISSING_EDGE_IS_NAMED, `      continue`)],
     killed(['an-edge-the-registry-does-not-hold-is-refused']),
   ),
 
