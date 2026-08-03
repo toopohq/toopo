@@ -33,6 +33,8 @@
 
 import { expect } from 'vitest'
 
+import { isFrozenIdentifier } from './identifier.js'
+
 // ---------------------------------------------------------------------------
 // The anatomy of a contract folder
 //
@@ -297,8 +299,10 @@ export const CLOCK_DEPENDENCE_RULE =
  * case a submission failed - each of them needs an address, and an address that changes breaks links.
  * So it is frozen with the major version, under the discipline a reason set already carries: the name
  * is chosen once, and renaming one costs `name@2`.
+ *
+ * The shape itself is `identifier.ts`, because the registry addresses a case, a guard and a mutant by
+ * the same one and cannot import a test framework to find out what it looks like.
  */
-const CASE_IDENTIFIER = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 /**
  * The three guards this file owns, and the reason they are named here rather than by each contract.
@@ -338,7 +342,7 @@ export const UNIVERSAL_PROPERTIES_ARE_ANSWERED = 'universal-properties-answered'
  */
 export const expectEveryCaseIsAddressed = (ids: readonly string[]): void => {
   expect({
-    malformed: ids.filter((id) => !CASE_IDENTIFIER.test(id)),
+    malformed: ids.filter((id) => !isFrozenIdentifier(id)),
     duplicated: [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))],
   }).toEqual({ malformed: [], duplicated: [] })
 }
