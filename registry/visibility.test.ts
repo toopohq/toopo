@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { FIELD_MAP, pathsIn, publicContract } from './field-map.js'
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { eachContract, theFive } from './the-five.js'
 
 /**
  * A public projection may not carry a field the map marks private, and may not carry one the map
@@ -31,8 +31,8 @@ const servedPaths = (): ReadonlySet<string> => {
 }
 
 describe('the public/private frontier', () => {
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-served-field-is-classified :: %s',
+  it.each(eachContract)(
+    'every-served-field-is-classified-%s',
     (name, source) => {
       const paths = new Set<string>()
       pathsIn(publicContract(serialiseContract(REPOSITORY_ROOT, source)), '', paths)

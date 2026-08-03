@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { eachContract } from './the-five.js'
 
 /**
  * Nothing a contract declares is silently absent from its record.
@@ -39,8 +39,8 @@ const CARRIED_BY: Readonly<Record<string, string>> = {
 }
 
 describe('a record accounts for everything its contract declares', () => {
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-export-is-carried-or-declared-uncarried :: %s',
+  it.each(eachContract)(
+    'every-export-is-carried-or-declared-uncarried-%s',
     (name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
 
@@ -62,8 +62,8 @@ describe('a record accounts for everything its contract declares', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-uncarried-export-carries-a-reason :: %s',
+  it.each(eachContract)(
+    'every-uncarried-export-carries-a-reason-%s',
     (_name, source) => {
       const unexplained = source.notCarried.filter((entry) => entry.reason.trim() === '')
 
@@ -71,8 +71,8 @@ describe('a record accounts for everything its contract declares', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-uncarried-export-exists :: %s',
+  it.each(eachContract)(
+    'every-uncarried-export-exists-%s',
     (_name, source) => {
       const declared = new Set(source.declares.flatMap((module) => Object.keys(module)))
       const stale = source.notCarried.filter((entry) => !declared.has(entry.name))
@@ -86,8 +86,8 @@ describe('a record accounts for everything its contract declares', () => {
    * The serialiser already refuses one, so this states the rule where a reader looks for it rather
    * than leaving it to a stack trace.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-own-declaration-is-an-export :: %s',
+  it.each(eachContract)(
+    'every-own-declaration-is-an-export-%s',
     (_name, source) => {
       const missing = source.ownDeclarations.filter(
         (declaration) => source.module[declaration.name] === undefined,

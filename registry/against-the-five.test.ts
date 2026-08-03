@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest'
 
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
 import { REPOSITORY_ROOT, UndeclaredHarness, harnessOf, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { eachContract, theFive } from './the-five.js'
 
 /**
  * A record cannot drift from the contract it describes.
@@ -26,8 +26,8 @@ const sourceOf = (folder: string, file: string): string =>
 const flattened = (text: string): string => text.replace(/\s+/g, ' ').trim()
 
 describe('the five, read against their own source', () => {
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-declared-type-occurs-in-the-contract :: %s',
+  it.each(eachContract)(
+    'every-declared-type-occurs-in-the-contract-%s',
     (_name, source) => {
       const contract = flattened(sourceOf(source.folder, 'contract.ts'))
       const declarations = [
@@ -43,8 +43,8 @@ describe('the five, read against their own source', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-answer-is-the-export-the-identity-names :: %s',
+  it.each(eachContract)(
+    'the-answer-is-the-export-the-identity-names-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const answer = record.surface.exports.find((entry) => entry.role === 'the-answer')
@@ -58,8 +58,8 @@ describe('the five, read against their own source', () => {
    * vocabulary does not declare is a transcription that missed a member; a class declared and used by
    * nothing is a member that was renamed in the contract and left behind here.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-profile-vocabulary-and-the-profiles-agree :: %s',
+  it.each(eachContract)(
+    'the-profile-vocabulary-and-the-profiles-agree-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const declared = record.benchmarks.vocabulary.map((entry) => entry.name)
@@ -93,8 +93,8 @@ describe('the five, read against their own source', () => {
    * what makes it an address the site can anchor on and the API can cite. Two of the five carry two
    * tables, so this is the only place the pair is checked across both of them.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-case-is-addressable-across-the-whole-contract :: %s',
+  it.each(eachContract)(
+    'every-case-is-addressable-across-the-whole-contract-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const ids = record.caseTables.flatMap((table) => table.cases.map((entry) => entry.id))
@@ -106,8 +106,8 @@ describe('the five, read against their own source', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-address-is-well-formed :: %s',
+  it.each(eachContract)(
+    'the-address-is-well-formed-%s',
     (_name, source) => {
       expect(contractAddressFaults(source.address)).toEqual([])
     },
@@ -129,8 +129,8 @@ describe('the five, read against their own source', () => {
    * file that would be shipped to every installation, and a declared file that is gone is a contract
    * missing a piece.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'an-undeclared-file-is-refused :: %s',
+  it.each(eachContract)(
+    'an-undeclared-file-is-refused-%s',
     (_name, source) => {
       expect(() => harnessOf(REPOSITORY_ROOT, source.folder, source.files.slice(1))).toThrow(
         UndeclaredHarness,
@@ -138,8 +138,8 @@ describe('the five, read against their own source', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'a-declared-file-that-is-gone-is-refused :: %s',
+  it.each(eachContract)(
+    'a-declared-file-that-is-gone-is-refused-%s',
     (_name, source) => {
       expect(() =>
         harnessOf(REPOSITORY_ROOT, source.folder, [...source.files, 'nothing-is-here.ts']),
@@ -155,8 +155,8 @@ describe('the five, read against their own source', () => {
    * redden this. What it cannot see is a text that survives for another reason, which is why the
    * field is `one-directional` and why `the-five.ts` names the one instance in the five.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-produced-expression-occurs-in-the-contract :: %s',
+  it.each(eachContract)(
+    'every-produced-expression-occurs-in-the-contract-%s',
     (_name, source) => {
       const contract = flattened(sourceOf(source.folder, 'contract.ts'))
       const missing = Object.entries(source.benchmarks.producedBy ?? {})
@@ -171,8 +171,8 @@ describe('the five, read against their own source', () => {
    * A profile the source names and the contract does not have would be a pointing arm attached to
    * nothing, and the record would silently keep carrying the samples it was meant to omit.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-produced-profile-exists :: %s',
+  it.each(eachContract)(
+    'every-produced-profile-exists-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const known = new Set(record.benchmarks.profiles.map((profile) => profile.name))
@@ -182,8 +182,8 @@ describe('the five, read against their own source', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-harness-file-is-hashed :: %s',
+  it.each(eachContract)(
+    'every-harness-file-is-hashed-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const wrong = record.harness.filter(

@@ -46,6 +46,15 @@ const UNDER: ArmUnderTest = { arm: 'R', asCommitted: 'as-committed', blinded: []
 
 const { sameOnEveryLens } = mutantsOn(UNDER)
 
+/**
+ * A guard of this folder is written once with `it.each` over the five and answers to five addresses.
+ * `the-five.ts` says why the slug is there; here it is what lets a pin name the contract a defect was
+ * caught on, which `I-06` needs - it reddens on one of the five and on no other.
+ */
+const THE_FIVE = ['number-parse', 'date-add', 'array-group-by', 'string-levenshtein', 'string-slugify']
+
+const onEach = (guard: string): readonly string[] => THE_FIVE.map((slug) => `${guard}-${slug}`)
+
 const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts', find, replace })
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
@@ -96,7 +105,9 @@ const mutants: readonly Mutant[] = [
     'lets the served file list be open, so anything sitting in a contract folder is hashed into the ' +
       'record and shipped to every installation - the other defect this repository had',
     [serialiseFile(REFUSE_A_DISAGREEMENT, '  void undeclared\n  void missing')],
-    killed(['an-undeclared-file-is-refused', 'a-declared-file-that-is-gone-is-refused']),
+    // Ten guards redden; the five named are the half about a file nobody declared, which is what
+    // this mutant is written for. The other five are the same refusal from the other side.
+    killed(onEach('an-undeclared-file-is-refused')),
   ),
 
   sameOnEveryLens(
@@ -104,10 +115,7 @@ const mutants: readonly Mutant[] = [
     'drops a frozen field from the projection the digest is taken over, so a contract can change ' +
       'its own declarations without its digest moving',
     [snapshotFile(PROJECT_THE_TAIL, '    harness: record.harness,')],
-    killed([
-      'the-frozen-half-and-the-standing-half-partition-a-contract',
-      'every-frozen-field-of-a-record-moves-the-digest',
-    ]),
+    killed(onEach('the-frozen-half-and-the-standing-half-partition-a-contract')),
   ),
 
   sameOnEveryLens(
@@ -121,12 +129,9 @@ const mutants: readonly Mutant[] = [
     harness: record.harness.map((file) => ({ path: file.path, bytes: file.bytes, sha256: '' })),`,
       ),
     ],
-    killed([
-      'every-frozen-field-of-a-record-moves-the-digest',
-      'a-changed-harness-file-moves-the-digest',
-      'the-format-version-is-inside-the-digest',
-      'a-snapshot-that-does-not-hash-to-its-claim-is-refused',
-    ]),
+    // Twelve guards redden; the five named are the ones written for this defect, and they are the
+    // ones the weaker form of that guard let through.
+    killed(onEach('a-changed-harness-file-moves-the-digest')),
   ),
 
   sameOnEveryLens(
@@ -146,7 +151,10 @@ const mutants: readonly Mutant[] = [
     'stops sorting the served file list, so the order of the harness follows whatever order the ' +
       'source happened to declare',
     [serialiseFile(SORT_THE_FILES, '  const served = [...files]')],
-    killed(['the-harness-is-in-one-order']),
+    // One of the five, and only one: `array/group-by@1` is the contract whose declared list is not
+    // already in sorted order, so it is the only one the sort was load-bearing for. The other four
+    // instances of this guard are silent under it, and are declared below rather than left implied.
+    killed(['the-harness-is-in-one-order-array-group-by']),
   ),
 
   sameOnEveryLens(
@@ -268,22 +276,47 @@ export const battery: Battery = {
         'lose reaching a digest, an array reordered, a standing field pulled into the digest, an ' +
         'attestation accepted for the wrong snapshot, two contracts colliding on one digest.',
       guards: [
+        'a-bundle-that-is-not-addressed-like-a-blob-is-refused',
         'a-byte-order-mark-is-not-content',
         'a-crlf-source-is-served-as-its-lf-form',
-        'normalising-changes-the-digest',
-        'a-value-json-would-lose-is-refused',
-        'an-array-keeps-its-order',
-        'a-snapshot-invents-no-field',
-        'every-standing-field-says-why-it-cannot-be-frozen',
-        'the-frozen-half-and-the-standing-half-partition-an-implementation',
-        'a-standing-field-does-not-move-the-digest',
-        'no-two-contracts-share-a-digest',
+        'a-snapshot-invents-no-field-array-group-by',
+        'a-snapshot-invents-no-field-date-add',
+        'a-snapshot-invents-no-field-number-parse',
+        'a-snapshot-invents-no-field-string-levenshtein',
+        'a-snapshot-invents-no-field-string-slugify',
         'a-standing-cannot-be-set-on-something-unpublished',
         'a-standing-changes-and-the-digest-does-not',
-        'two-majors-of-one-name-coexist',
+        'a-standing-field-does-not-move-the-digest-array-group-by',
+        'a-standing-field-does-not-move-the-digest-date-add',
+        'a-standing-field-does-not-move-the-digest-number-parse',
+        'a-standing-field-does-not-move-the-digest-string-levenshtein',
+        'a-standing-field-does-not-move-the-digest-string-slugify',
+        'a-value-json-would-lose-is-refused-a-bigint',
+        'a-value-json-would-lose-is-refused-a-function',
+        'a-value-json-would-lose-is-refused-a-hole',
+        'a-value-json-would-lose-is-refused-a-symbol',
+        'a-value-json-would-lose-is-refused-an-undefined-field',
+        'a-value-json-would-lose-is-refused-infinity',
+        'a-value-json-would-lose-is-refused-nan',
+        'a-value-json-would-lose-is-refused-negative-infinity',
+        'a-value-json-would-lose-is-refused-negative-zero',
+        'a-value-json-would-lose-is-refused-undefined',
+        'an-array-keeps-its-order',
         'an-attestation-about-another-snapshot-is-refused',
-        'a-bundle-that-is-not-addressed-like-a-blob-is-refused',
+        'every-standing-field-says-why-it-cannot-be-frozen',
+        'no-two-contracts-share-a-digest',
+        'normalising-changes-the-digest',
+        'the-frozen-half-and-the-standing-half-partition-an-implementation-array-group-by',
+        'the-frozen-half-and-the-standing-half-partition-an-implementation-date-add',
+        'the-frozen-half-and-the-standing-half-partition-an-implementation-number-parse',
+        'the-frozen-half-and-the-standing-half-partition-an-implementation-string-levenshtein',
+        'the-frozen-half-and-the-standing-half-partition-an-implementation-string-slugify',
+        'the-harness-is-in-one-order-date-add',
+        'the-harness-is-in-one-order-number-parse',
+        'the-harness-is-in-one-order-string-levenshtein',
+        'the-harness-is-in-one-order-string-slugify',
         'the-limit-of-a-signature-is-published',
+        'two-majors-of-one-name-coexist',
       ],
     },
   ],

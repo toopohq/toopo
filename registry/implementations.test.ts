@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 import { renderContract, sameContract } from './address.js'
 import type { LockedFeature, Lockfile } from './implementation-record.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { eachContract, theFive } from './the-five.js'
 
 /**
  * The implementation half of the schema, filled from the only implementations that exist.
@@ -32,8 +32,8 @@ const lockedFeatureOf = (
 })
 
 describe('the implementations under the five contracts', () => {
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-reference-is-one-file-and-it-is-hashed :: %s',
+  it.each(eachContract)(
+    'the-reference-is-one-file-and-it-is-hashed-%s',
     (_name, source) => {
       const implementation = referenceImplementationOf(REPOSITORY_ROOT, source)
 
@@ -43,8 +43,8 @@ describe('the implementations under the five contracts', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-implementation-belongs-to-its-contract :: %s',
+  it.each(eachContract)(
+    'the-implementation-belongs-to-its-contract-%s',
     (_name, source) => {
       const implementation = referenceImplementationOf(REPOSITORY_ROOT, source)
 
@@ -83,8 +83,8 @@ describe('the implementations under the five contracts', () => {
    * two ever came from different reads, "never update user code silently" would be a promise the CLI
    * could not keep.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-lockfile-holds-what-the-registry-served :: %s',
+  it.each(eachContract)(
+    'the-lockfile-holds-what-the-registry-served-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const implementation = referenceImplementationOf(REPOSITORY_ROOT, source)

@@ -18,7 +18,7 @@ import {
   withContractStanding,
 } from './snapshot.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { eachContract, theFive } from './the-five.js'
 
 /**
  * A snapshot is what an installation receives for ever, and its digest is the only thing anyone has
@@ -100,8 +100,8 @@ describe('what a snapshot freezes, and what it may not', () => {
    * The whole finding of this unit, as a guard. Every field a record carries is either inside the
    * digest or declared as standing with the sentence that keeps it out - and nothing is neither.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-frozen-half-and-the-standing-half-partition-a-contract :: %s',
+  it.each(eachContract)(
+    'the-frozen-half-and-the-standing-half-partition-a-contract-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const snapshot = contractSnapshot(record)
@@ -112,8 +112,8 @@ describe('what a snapshot freezes, and what it may not', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'a-snapshot-invents-no-field :: %s',
+  it.each(eachContract)(
+    'a-snapshot-invents-no-field-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
 
@@ -121,8 +121,8 @@ describe('what a snapshot freezes, and what it may not', () => {
     },
   )
 
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-frozen-half-and-the-standing-half-partition-an-implementation :: %s',
+  it.each(eachContract)(
+    'the-frozen-half-and-the-standing-half-partition-an-implementation-%s',
     (_name, source) => {
       const record = referenceImplementationOf(REPOSITORY_ROOT, source)
       const snapshot = implementationSnapshot(record)
@@ -156,8 +156,8 @@ describe('what the digest covers', () => {
    *
    * A loop rather than a list, so that a field added to a record is covered the day it arrives.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'every-frozen-field-of-a-record-moves-the-digest :: %s',
+  it.each(eachContract)(
+    'every-frozen-field-of-a-record-moves-the-digest-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const digest = digestOfSnapshot(contractSnapshot(record))
@@ -177,8 +177,8 @@ describe('what the digest covers', () => {
    * change must be outside the digest, or `absorbed-by-the-language` could never be reached without
    * breaking every lockfile that holds the contract.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'a-standing-field-does-not-move-the-digest :: %s',
+  it.each(eachContract)(
+    'a-standing-field-does-not-move-the-digest-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const digest = digestOfSnapshot(contractSnapshot(record))
@@ -218,8 +218,8 @@ describe('what the digest covers', () => {
    * `f`, and measured reddening under a mutant for that reason instead of for the one it exists to
    * catch. A guard red for the wrong reason is a wrong attribution.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'a-changed-harness-file-moves-the-digest :: %s',
+  it.each(eachContract)(
+    'a-changed-harness-file-moves-the-digest-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const [first, ...rest] = record.harness
@@ -249,8 +249,8 @@ describe('what the digest covers', () => {
    * files differently would be two digests for one contract, and nothing else in this suite compares
    * two orders within a single process.
    */
-  it.each(theFive.map((source) => [source.address.name, source] as const))(
-    'the-harness-is-in-one-order :: %s',
+  it.each(eachContract)(
+    'the-harness-is-in-one-order-%s',
     (_name, source) => {
       const paths = serialiseContract(REPOSITORY_ROOT, source).harness.map((file) => file.path)
 

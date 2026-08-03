@@ -76,17 +76,17 @@ describe('the canonical form', () => {
    * which is the failure this file is least likely to be suspected of, so each is refused by name.
    */
   it.each([
-    ['a negative zero', -0],
-    ['a NaN', Number.NaN],
-    ['an infinity', Number.POSITIVE_INFINITY],
-    ['a negative infinity', Number.NEGATIVE_INFINITY],
-    ['an undefined', undefined],
-    ['a function', () => 1],
-    ['a symbol', Symbol('probe')],
-    ['a bigint', 1n],
-    ['a hole in an array', [1, , 3]],
-    ['an undefined field', { present: 1, absent: undefined }],
-  ])('a-value-json-would-lose-is-refused :: %s', (_what, value) => {
+    ['negative-zero', 'a negative zero', -0],
+    ['nan', 'a NaN', Number.NaN],
+    ['infinity', 'an infinity', Number.POSITIVE_INFINITY],
+    ['negative-infinity', 'a negative infinity', Number.NEGATIVE_INFINITY],
+    ['undefined', 'an undefined', undefined],
+    ['a-function', 'a function', () => 1],
+    ['a-symbol', 'a symbol', Symbol('probe')],
+    ['a-bigint', 'a bigint', 1n],
+    ['a-hole', 'a hole in an array', [1, , 3]],
+    ['an-undefined-field', 'an undefined field', { present: 1, absent: undefined }],
+  ])('a-value-json-would-lose-is-refused-%s :: %s', (_slug, _what, value) => {
     expect(() => canonical(value, 'probe')).toThrow(UncanonicalValue)
   })
 

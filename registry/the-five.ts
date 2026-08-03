@@ -421,3 +421,20 @@ export const theFive: readonly ContractSource[] = [
     batteries: [batteryRecord(SLUGIFY, slugifyBattery), batteryRecord(SLUGIFY, slugifySpec)],
   },
 ]
+
+/**
+ * The five as rows for a parameterised guard, each with a kebab-case slug of its name.
+ *
+ * The slug is not decoration. `mutation/run.ts` refuses two guards of one contract answering to one
+ * identifier, because attribution addresses a guard by its identifier and would read each of them as
+ * reddening the others - and a guard written with `it.each` over the five hands all five instances
+ * the same name. Measured: the storage battery would not calibrate, with 28 identifiers of this
+ * folder addressing five guards apiece.
+ *
+ * A contract's own suite never needs this, because a contract's suite is one contract. This folder is
+ * the first place in the repository where one file guards five of them, and the slug is what makes
+ * each instance an address rather than one name shared by five.
+ */
+export const eachContract = theFive.map(
+  (source) => [source.address.name.replaceAll('/', '-'), source] as const,
+)
