@@ -20,11 +20,13 @@ repetition instead of being designed up front; what they turned out to repeat id
 in `catalogue/`, and the checklist a sixth contract is measured against is `contractAnatomy` in that
 same file. The uncertainty of this project was in the contract format, and it has been spent.
 
-Next comes the registry — data schema, immutable storage, read API, publishing tool — and beside it the
-conformance controller. That controller does **not** make `contractAnatomy` executable, and the triage
-below says why: three of its eleven entries are settled by a syntax tree, four need a module a stage
-has already vetted, and four are a reader's for ever. No API, CLI or website exists yet, deliberately
-and in that order.
+The registry's first three pieces are written — data schema, immutable storage, read API — and beside
+them the validation pipeline's first stage. Next to them now stands `toopo init` and `toopo add`, which
+came **before** the rest of the pipeline and before the publishing tool, and the reason is recorded in
+rule 1 below rather than left to look like impatience. Beside all of it the conformance controller,
+which does **not** make `contractAnatomy` executable: the triage below says why — three of its eleven
+entries are settled by a syntax tree, four need a module a stage has already vetted, and four are a
+reader's for ever. No server and no website exists, deliberately.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -254,6 +256,62 @@ over-refusal gone.
 **Types are out of scope on purpose.** A type is erased and reaches nothing, so refusing one would buy
 nothing and would cost the whole of `lib.*.d.ts` in the permitted list.
 
+## What an installation looks like on disk — settled
+
+**A feature lands in `<domain>/<name>/`, and its entry file is named after the feature.**
+`src/lib/toopo/string/slugify/slugify.ts`. The domain stays a folder, so `number/parse` and
+`string/parse` never collide and no artificial prefix is needed. The file is not called `reference.ts`:
+that name says what the file was in *our* catalogue and nothing about what it holds, and in the user's
+editor every installed feature would otherwise open a tab under one name. It is the same reasoning that
+already stripped our internal rules out of the three references — the implementation file is the only
+one that becomes somebody else's code, and it is written for them.
+
+**A folder from the first file, rather than a flat file promoted to a folder later.** The promotion has
+to be invisible to whoever wrote the import, and it is not. Measured on node v24.15.0, at the spelling a
+published source writes:
+
+```
+cjs  ./x.js -> MODULE_NOT_FOUND       cjs  ./x -> x/index.js
+esm  ./x.js -> ERR_MODULE_NOT_FOUND   esm  ./x -> ERR_UNSUPPORTED_DIR_IMPORT
+```
+
+Only the extensionless spelling collapses the two, and a published source writes the extension because
+that is the only form that resolves under both module systems and under `node16`. So an implementation
+gaining a second file would move the path every dependent had written. The folder costs one level of
+nesting on a single-file feature and the import path never moves again.
+
+**The cost, which is that every cross-feature import is rewritten.** The catalogue serves its entry file
+as `reference.ts` — `contractAnatomy` requires that name at five of five — so a published `number/clamp`
+names its dependency as `../../string/pad/reference.js`, and that specifier is wrong the moment the file
+lands as `pad.ts`. *Naming the file after the feature and needing no rewriting between features are
+incompatible*, and the first wins because it is the one argued from the user's editor. What softens it
+is that the rewriting mechanism is needed anyway for a shared file, and that both jobs are one rule:
+**a specifier is repointed when the file it names did not land where the specifier says it would.**
+
+**A shared file is recognised by its digest and never by its path**, written once in the folder of
+whichever carrier the resolution reaches first, with the other carriers repointed at it — and an entry
+file is exempt, because a feature's entry file is its identity and collapsing two would leave a folder
+with no file named after it.
+
+**The lockfile carries two digests per file, and that is a finding rather than a field somebody
+wanted.** A file whose import was repointed is not the bytes the registry served, so an entry holding
+only the served digest would report every rewritten file as locally modified from the instant it was
+written — the failure `canonical.ts` closes for line endings, arriving through a door the installer
+itself opens. `served` is what a comparison with the registry is made against; `sha256` is what the
+offline check — the one whose whole value is that it needs nothing from us — compares against.
+
+**A version minted by the local stand-in is visibly false.** `0.0.0-local`, never `1.0.0`. A number that
+looks published and is not turns the lockfile's own argument against it, since its whole value is that
+it can be checked offline against a published fact; and the day publication exists these entries are
+greppable in any lockfile in the world.
+
+**No setting exists that has one possible value.** `toopo.json` carries `version` and `directory` and
+nothing else. The alias import style is coming and is not here, so there is no `imports` field to accept
+and ignore — a setting that is written and not honoured is a promise not kept, and `version: 1` is what
+carries the migration when the second style arrives. `init` will detect the alias prefix once and record
+it; `add` will go on consulting nothing but this file. We record what the user told us, we do not
+inspect their build.
+
 ## What the repository declares and nothing keeps — closes before the launch
 
 One form, found four times in a single sweep and certain to be found again: **a thing that behaves
@@ -289,6 +347,17 @@ decorative for ever.
 - `benchmarks.profiles[].name` — frozen by the section above, enforced by nothing.
 - `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
   `one-directional` fields the schema already carried, with GS-11 as the measurement.
+- `Breakage.guard` in `cli/breakage.ts` — every situation the installer refuses cleanly names the guard
+  that keeps it, and nothing resolves that name. It is the same class arriving on a fifth kind of
+  address, and it closes with the same mechanism as the others.
+
+**What the installer left breaking badly, and why it is not in the list above.** Three situations throw
+whatever the operating system threw: a folder that cannot be written to, a process killed between the
+first file and the lockfile, and a directory sitting where a file should go. They are not declarations
+nothing keeps — they are failures nobody closed, declared in `cli/breakage.ts` with the reason each was
+left open. All three close with one change, writing through a temporary file and renaming, and that
+change belongs with `toopo update` because that is the unit where a partial write stops being a rare
+accident and becomes the normal case.
 
 **Four more instances were found by building the address rather than by looking for them, and that is
 the argument for building mechanisms rather than lists.** Ten entries of `TYPESCRIPT_SURFACE` were
@@ -310,11 +379,23 @@ weaker one than asking whether the guard exists.
 
 ## Rules for this stage
 
-1. **The registry is being designed, one piece at a time, in this order**: data schema, then
-   immutable storage, then the read API, then the publishing tool. Only the piece currently under
-   way exists; the others do not, deliberately, because each one constrains the next. The CLI and
-   the website come after all four. Everything lives in this one repository, in folders — releases
-   are independent, the history is not.
+1. **The registry is being designed one piece at a time, and the order changed once, deliberately.**
+   It was data schema, then immutable storage, then the read API, then the publishing tool, with the
+   CLI and the website after all four. The first three are written. **The CLI then moved ahead of the
+   publishing tool and of stages 2 to 7 of the validation pipeline**, and the argument is the one the
+   decision to launch at five rests on: every remaining uncertainty is on the user's side, and none of
+   them is answerable in private. Continuing the pipeline first would have been acting against the
+   reason that decision was taken — the pipeline judges submissions, in a closed phase there are none,
+   and the five contracts are already measured by their own batteries.
+
+   A second argument decided it, and it is a lesson from this repository rather than a preference:
+   both schema defects found so far — a `dependencyDepth` reduced to an unusable summary, and
+   `ProfileSamples` carried in full — were found by deriving what a consumer needs. Approaching the
+   consumer finds defects design does not. It happened twice more in this unit, on the walk's parameter
+   and on the lockfile's digests.
+
+   Only the piece currently under way exists; the others do not, because each one constrains the next.
+   Everything lives in this one repository, in folders — releases are independent, the history is not.
 
    **The catalogue ships at five contracts.** The showcase domain moves to after the launch: every
    remaining uncertainty is on the user's side — whether `toopo add` feels good, whether search
