@@ -35,6 +35,7 @@ import { TYPESCRIPT_SURFACE } from './typescript-api.js'
 import type { Node } from './typescript-api.js'
 
 const {
+  isBinaryExpression,
   isCallExpression,
   isElementAccessExpression,
   isExportDeclaration,
@@ -49,6 +50,7 @@ const {
   isNoSubstitutionTemplateLiteral,
   isPropertyAccessExpression,
   isStringLiteral,
+  skipOuterExpressions,
 } = TYPESCRIPT_SURFACE
 
 // ---------------------------------------------------------------------------
@@ -217,15 +219,28 @@ const isReadAsAValue = (node: Node): boolean => {
   return !('name' in parent && parent.name === node)
 }
 
+/**
+ * The expression under its wrappers.
+ *
+ * Parentheses, `as`, `satisfies` and `!` change nothing about what an expression *is*, and each of
+ * them was measured defeating a rule that asked for an identifier and found a wrapper:
+ * `(when as Record<string, () => number>)['getMonth']()` and `new (Function)('return 1')` both passed
+ * before this existed. Unwrapping is the compiler's own `skipOuterExpressions`, so the set of things
+ * that count as a wrapper is TypeScript's rather than a list maintained here.
+ */
+const under = (node: Node): Node => skipOuterExpressions(node)
+
 const memberReached = (node: Node): { readonly holder: string; readonly member: string } | null => {
-  if (isPropertyAccessExpression(node) && isIdentifier(node.expression)) {
-    return { holder: node.expression.text, member: node.name.text }
+  if (isPropertyAccessExpression(node)) {
+    const holder = under(node.expression)
+    if (isIdentifier(holder)) return { holder: holder.text, member: node.name.text }
   }
 
-  if (isElementAccessExpression(node) && isIdentifier(node.expression)) {
-    const argument = node.argumentExpression
-    if (isStringLiteral(argument) || isNoSubstitutionTemplateLiteral(argument)) {
-      return { holder: node.expression.text, member: argument.text }
+  if (isElementAccessExpression(node)) {
+    const holder = under(node.expression)
+    const argument = under(node.argumentExpression)
+    if (isIdentifier(holder) && (isStringLiteral(argument) || isNoSubstitutionTemplateLiteral(argument))) {
+      return { holder: holder.text, member: argument.text }
     }
   }
 
@@ -271,6 +286,22 @@ export const ambientStateReached = (source: ParsedSource): readonly Finding[] =>
 export const EVALUATION_RULE = 'builds-no-code-at-run-time'
 
 /**
+ * Whether an expression is the named evaluator, under whatever it is wrapped in.
+ *
+ * `(0, eval)(text)` and `new (Function)('...')` are the two spellings that were measured passing a
+ * reader that asked the expression to *be* an identifier. The comma form is not a wrapper - it is a
+ * sequence whose value is its last operand, and it is the documented way to obtain *indirect* eval,
+ * which runs in global scope rather than in the caller's - so it is unwrapped here deliberately and
+ * not as a side effect.
+ */
+const isEvaluator = (expression: Node, name: string): boolean => {
+  const called = under(expression)
+  if (isIdentifier(called)) return called.text === name
+
+  return isBinaryExpression(called) && isEvaluator(called.right, name)
+}
+
+/**
  * Code that is not there to be read.
  *
  * Every rule above reads what is written. These three constructs decide what runs *while* it runs, so
@@ -283,7 +314,7 @@ export const EVALUATION_RULE = 'builds-no-code-at-run-time'
  */
 export const codeBuiltAtRunTime = (source: ParsedSource): readonly Finding[] =>
   [...everyNode(source.file)].flatMap((node) => {
-    if (isCallExpression(node) && isIdentifier(node.expression) && node.expression.text === 'eval') {
+    if (isCallExpression(node) && isEvaluator(node.expression, 'eval')) {
       return [
         findingAt(
           EVALUATION_RULE,
@@ -296,8 +327,7 @@ export const codeBuiltAtRunTime = (source: ParsedSource): readonly Finding[] =>
 
     if (
       (isNewExpression(node) || isCallExpression(node)) &&
-      isIdentifier(node.expression) &&
-      node.expression.text === 'Function'
+      isEvaluator(node.expression, 'Function')
     ) {
       return [
         findingAt(
@@ -371,7 +401,7 @@ export const contractForbiddenMethods = (
   return [...everyNode(source.file)].flatMap((node) => {
     if (!isCallExpression(node)) return []
 
-    const called = memberReached(node.expression)
+    const called = memberReached(under(node.expression))
     if (called === null || !forbidden.has(called.member)) return []
 
     return [

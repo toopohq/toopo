@@ -100,6 +100,14 @@ export const TYPESCRIPT_SURFACE = {
   isBindingElement: ast.isBindingElement,
   isObjectBindingPattern: ast.isObjectBindingPattern,
   isQualifiedName: ast.isQualifiedName,
+
+  /**
+   * Parentheses, `as`, `satisfies` and `!` wrap an expression without changing what it is, and every
+   * one of them was measured defeating a rule that read the expression directly:
+   * `(when as Record<string, () => number>)['getMonth']()` and `new (Function)('...')` both passed a
+   * reader that asked for an identifier and found a wrapper.
+   */
+  skipOuterExpressions: ast.skipOuterExpressions,
 } as const
 
 /**
