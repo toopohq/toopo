@@ -745,7 +745,50 @@ export const battery: Battery = {
 
   unreachableGuards: [],
 
-  unprobedRegions: [],
+  /**
+   * `cli/` is one folder measured by two batteries, and this is the half the other one holds.
+   *
+   * Everything else `toopo update` added is silent here only in the sense that nothing was written for
+   * it: measured, the eighteen guards of `update.test.ts` all redden under defects injected into the
+   * plan, the rewrite and the install path, because an update reuses every one of those. What no
+   * defect of this battery can reach is the two things an install does not do - render a diff, and
+   * fail part-way through a write.
+   */
+  unprobedRegions: [
+    {
+      nature: 'claims detection',
+      reason:
+        'the diff and the two-phase write, which arrived with `toopo update`. An install renders no ' +
+        'diff at all, and it reaches `write.ts` only through the one call every guard here already ' +
+        'makes succeed - so a defect in either is out of reach of an edit to the plan, the rewrite, ' +
+        'the port or the install path. `cli-update` carries seventeen defects over exactly these, ' +
+        'including the one that matters most: node\'s own documentation reads its diff op codes ' +
+        'backwards, and every guard about shape passes on an inverted diff.',
+      guards: [
+        'a-commit-leaves-no-staged-file-behind',
+        'a-commit-writes-the-files-and-the-lockfile-together',
+        'a-count-is-read-off-the-lines-it-summarises',
+        'a-directory-where-a-file-goes-is-refused-by-name',
+        'a-file-where-a-folder-must-go-is-refused-with-nothing-staged',
+        'a-hunk-header-counts-the-lines-it-covers',
+        'a-line-only-the-first-text-has-is-a-minus',
+        'a-line-only-the-second-text-has-is-a-plus',
+        'a-missing-final-newline-is-said-rather-than-lost',
+        'a-refusal-leaves-no-staged-file-behind',
+        'a-refused-commit-does-not-touch-the-file-it-would-replace',
+        'a-removal-leaves-a-folder-that-still-holds-something',
+        'a-removal-tidies-the-folder-it-emptied',
+        'each-side-says-for-itself-that-it-has-no-final-newline',
+        'only-the-lines-around-a-change-are-shown',
+        'the-diff-op-codes-are-what-node-answers',
+        'two-changes-far-apart-are-two-hunks',
+        'two-identical-texts-have-nothing-to-show',
+        // The one guard here that is not about those two. `--apply` is `update`'s own acceptance, and
+        // this battery's grammar defects reach the flags `init` and `add` take; U-34 probes it.
+        'update-writes-only-when-it-is-asked-to',
+      ],
+    },
+  ],
 
   mutants,
 }
