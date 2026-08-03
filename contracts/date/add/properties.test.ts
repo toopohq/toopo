@@ -225,7 +225,7 @@ const answerUnder = (timeZone: string, date: Date, duration: Duration): number |
 // ---------------------------------------------------------------------------
 
 describe('date/add@1 specific properties', () => {
-  it('P1 - returns null or a valid Date, never an Invalid Date', () => {
+  it('p1-valid-date-or-absent :: returns null or a valid Date, never an Invalid Date', () => {
     fc.assert(
       fc.property(anyRepresentableDate, anyDurationOrNeutral, (date, duration) => {
         const result = addToDate(date, duration)
@@ -236,7 +236,7 @@ describe('date/add@1 specific properties', () => {
     )
   })
 
-  it('P2 - the empty duration is neutral: it always answers, with the same instant in a new object', () => {
+  it('p2-the-neutral-duration :: the empty duration always answers, with the same instant in a new object', () => {
     fc.assert(
       fc.property(anyDate, (date) => {
         const result = addToDate(date, {})
@@ -247,7 +247,7 @@ describe('date/add@1 specific properties', () => {
     )
   })
 
-  it('P3 - adding milliseconds shifts the instant by exactly that many', () => {
+  it('p3-milliseconds-shift-exactly :: adding milliseconds shifts the instant by exactly that many', () => {
     fc.assert(
       fc.property(anyDate, fc.integer({ min: -1_000_000_000, max: 1_000_000_000 }), (date, ms) => {
         const result = addToDate(date, { milliseconds: ms })
@@ -258,7 +258,7 @@ describe('date/add@1 specific properties', () => {
     )
   })
 
-  it('P4 - an elapsed-time duration and its negation cancel exactly', () => {
+  it('p4-elapsed-negation-cancels :: an elapsed-time duration and its negation cancel exactly', () => {
     // What this asserts beyond P3 is that the elapsed step is an odd function of the duration, and
     // that is not a distinction without a defect: D-21 of the battery normalises hours into days
     // with Math.floor and %, which disagree on negatives, so minus twenty-five hours is applied as
@@ -278,7 +278,7 @@ describe('date/add@1 specific properties', () => {
     )
   })
 
-  it('P5 - a calendar-only duration never changes the UTC time of day', () => {
+  it('p5-calendar-keeps-the-time-of-day :: a calendar-only duration never changes the UTC time of day', () => {
     // Witnessed by D-20, which zeroes the time of day in the calendar step - the mistake of an
     // implementation that assumes a date is a day. Two named cases catch it as well, and that is
     // published rather than hidden: this property is a guard with a defect of its own to answer
@@ -299,7 +299,7 @@ describe('date/add@1 specific properties', () => {
     )
   })
 
-  it('P6 - the day of the month never grows under a calendar-only duration', () => {
+  it('p6-the-day-never-grows :: the day of the month never grows under a calendar-only duration', () => {
     // The clamp only ever moves a date earlier in its month. An implementation that overflows
     // instead lands on the 1st, 2nd or 3rd of the following month, which this catches from the
     // other side than the named cases do.
@@ -322,7 +322,7 @@ describe('date/add@1 specific properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('date/add@1 coupling between the two exports', () => {
-  it('P7 - a call fails exactly when it has a description', () => {
+  it('p7-failure-coupling :: a call fails exactly when it has a description', () => {
     // The reference cannot fail this one: both exports derive from one private analysis, so the
     // module holds a single traversal of the arithmetic and the two cannot drift. That is not what
     // makes a property decorative or not. It governs every implementation, and one that writes the
@@ -350,11 +350,11 @@ const durationSnapshot = (duration: Duration): string =>
   `${Object.keys(duration).join('|')} :: ${durationFields.map((f) => String(duration[f])).join(',')}`
 
 describe('date/add@1 universal properties', () => {
-  it('keeps the inapplicable universal properties declared as such', () => {
+  it('universal-properties-answered', () => {
     expectUniversalPropertiesAnswered(universalProperties, ['no ambient output'])
   })
 
-  it('never mutates its arguments', () => {
+  it('no-mutation-of-arguments', () => {
     fc.assert(
       fc.property(anyDate, anyDuration, (date, duration) => {
         const instantBefore = date.getTime()
@@ -372,7 +372,7 @@ describe('date/add@1 universal properties', () => {
     )
   })
 
-  it('is deterministic - the same call yields the same answer every time', () => {
+  it('determinism :: the same call yields the same answer every time', () => {
     fc.assert(
       fc.property(anyDate, anyDuration, (date, duration) =>
         outputsAreEqual(addToDate(date, duration), addToDate(date, duration)),
@@ -381,7 +381,7 @@ describe('date/add@1 universal properties', () => {
     )
   })
 
-  it('has no ambient input - the answer does not depend on the process time zone', () => {
+  it('no-ambient-input-from-the-time-zone :: the answer does not depend on the process time zone', () => {
     fc.assert(
       fc.property(anyDate, anyDuration, (date, duration) => {
         const answers = ambientTimeZoneProbes.map(({ timeZone }) =>
@@ -394,7 +394,7 @@ describe('date/add@1 universal properties', () => {
     )
   })
 
-  it('has no ambient input - an answer does not depend on the calls made before it', () => {
+  it('no-ambient-input-from-history :: an answer does not depend on the calls made before it', () => {
     fc.assert(
       fc.property(
         anyDate,
@@ -419,7 +419,7 @@ describe('date/add@1 universal properties', () => {
 // ---------------------------------------------------------------------------
 
 describe('date/add@1 property preconditions', () => {
-  it('the declared time zones take effect in this runtime', () => {
+  it('support-the-zones-take-effect :: the declared time zones take effect in this runtime', () => {
     // Without this the zone property is a guard that cannot fail: if the runtime ignored TZ, all
     // four answers would be the answer of one zone and the set would trivially have size one.
     for (const { timeZone, offsetMinutes } of ambientTimeZoneProbes) {
@@ -433,7 +433,7 @@ describe('date/add@1 property preconditions', () => {
     }
   })
 
-  it('the declared time zones do not all agree with each other', () => {
+  it('support-the-zones-disagree :: the declared time zones do not all agree with each other', () => {
     // A set of zones that never disagree would make the property above vacuous whatever the
     // implementation did.
     const offsets = ambientTimeZoneProbes.map(({ offsetMinutes }) => offsetMinutes.january)
@@ -441,14 +441,14 @@ describe('date/add@1 property preconditions', () => {
     expect(new Set(offsets).size).toBeGreaterThan(1)
   })
 
-  it('has left the ambient time zone exactly as it found it', () => {
+  it('support-the-zone-was-restored :: the properties left the ambient time zone exactly as they found it', () => {
     // Compared against the value read when this module loaded, so that a zone leaked by any
     // property above is visible here. Reading it inside this test instead would compare the leak
     // against itself and pass.
     expect(hostEnvironment().TZ).toBe(ambientTimeZoneAtLoad)
   })
 
-  it('restores both a zone that was set and a zone that was absent', () => {
+  it('support-the-restore-drives-both-branches :: restores both a zone that was set and a zone that was absent', () => {
     // The check above depends on the properties having run first. This one does not depend on
     // anything having run at all: it drives both branches of the restore from inside the test.
     //
@@ -475,13 +475,13 @@ describe('date/add@1 property preconditions', () => {
     expect({ afterSet, afterAbsent }).toEqual({ afterSet: sentinel, afterAbsent: undefined })
   })
 
-  it('the declared application order covers every duration field exactly once', () => {
+  it('declares-an-application-order-over-every-field :: exactly once', () => {
     const ordered = applicationOrder.flatMap((step) => [...step.fields])
 
     expect([...ordered].sort()).toEqual([...durationFields].sort())
   })
 
-  it('publishes a reason for every static analysis requirement', () => {
+  it('declares-a-reason-for-every-static-analysis-requirement', () => {
     const unexplained = staticAnalysisRequirements.filter((rule) => rule.reason.trim() === '')
 
     expect(unexplained).toEqual([])

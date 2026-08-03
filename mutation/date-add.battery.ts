@@ -101,23 +101,23 @@ const DESCRIBE_ADD_FAILURE = `export const describeAddFailure = (date: Date, dur
 const reasonSwap = (from: string, to: string): Edit =>
   reference(`reason: '${from}' }`, `reason: '${to}' }`)
 
-const ZONE_PROPERTY = 'has no ambient input - the answer does not depend on the process time zone'
-const COUPLING_PROPERTY = 'P7 - a call fails exactly when it has a description'
-const NO_INVALID_DATE = 'P1 - returns null or a valid Date, never an Invalid Date'
-const CALL_HISTORY = 'has no ambient input - an answer does not depend on the calls made before it'
-const DETERMINISTIC = 'is deterministic - the same call yields the same answer every time'
-const CANCELS = 'P4 - an elapsed-time duration and its negation cancel exactly'
-const TIME_OF_DAY = 'P5 - a calendar-only duration never changes the UTC time of day'
+const ZONE_PROPERTY = 'no-ambient-input-from-the-time-zone'
+const COUPLING_PROPERTY = 'p7-failure-coupling'
+const NO_INVALID_DATE = 'p1-valid-date-or-absent'
+const CALL_HISTORY = 'no-ambient-input-from-history'
+const DETERMINISTIC = 'determinism'
+const CANCELS = 'p4-elapsed-negation-cancels'
+const TIME_OF_DAY = 'p5-calendar-keeps-the-time-of-day'
 
 const NEUTRAL_DURATION =
-  'P2 - the empty duration is neutral: it always answers, with the same instant in a new object'
-const MILLISECOND_SHIFT = 'P3 - adding milliseconds shifts the instant by exactly that many'
-const DAY_NEVER_GROWS = 'P6 - the day of the month never grows under a calendar-only duration'
+  'p2-the-neutral-duration'
+const MILLISECOND_SHIFT = 'p3-milliseconds-shift-exactly'
+const DAY_NEVER_GROWS = 'p6-the-day-never-grows'
 
-const TYPE_IDENTITY = 'matches the type declared by the contract'
-const ACCEPTS_A_DATE_AND_A_DURATION = 'accepts a Date and a Duration, and nothing else'
-const RETURNS_A_DATE_OR_NOTHING = 'returns a Date that may be absent, never an Invalid Date'
-const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
+const TYPE_IDENTITY = 'signature-is-the-declared-type'
+const ACCEPTS_A_DATE_AND_A_DURATION = 'signature-accepts-a-date-and-a-duration'
+const RETURNS_A_DATE_OR_NOTHING = 'signature-returns-a-date-or-null'
+const DIAGNOSTIC_TYPE = 'signature-publishes-the-diagnostic'
 
 /** The two named cases written to kill D-07 and D-08, pinned so that deleting one reddens here. */
 const YEAR_ZERO_CASE = 'year-zero'
@@ -136,14 +136,14 @@ const WEEK_ACROSS_MONTHS = 'a-week-never-clamps'
 const EPOCH_CROSSING = 'the-epoch-is-not-a-boundary'
 
 const UNKNOWN_FIELD_VALUE = 'a-singular-day-field'
-const UNKNOWN_FIELD_REASON = 'a-singular-day-field, described'
-const UNKNOWN_MONTH_REASON = 'a-singular-month-field, described'
-const UNKNOWN_BOTH_REASON = 'an-unknown-field-beside-a-declared-one, described'
-const FRACTIONAL_MONTH_REASON = 'a-fractional-month, described'
-const STRING_FIELD_REASON = 'a-declared-field-carrying-a-string, described'
-const MONTH_TOTAL_REASON = 'a-month-total-that-is-not-exact, described'
-const INVALID_DATE_REASON = 'an-input-that-is-not-a-date, described'
-const INVALID_DATE_NEUTRAL_REASON = 'an-input-that-is-not-a-date-with-the-empty-duration, described'
+const UNKNOWN_FIELD_REASON = 'a-singular-day-field-described'
+const UNKNOWN_MONTH_REASON = 'a-singular-month-field-described'
+const UNKNOWN_BOTH_REASON = 'an-unknown-field-beside-a-declared-one-described'
+const FRACTIONAL_MONTH_REASON = 'a-fractional-month-described'
+const STRING_FIELD_REASON = 'a-declared-field-carrying-a-string-described'
+const MONTH_TOTAL_REASON = 'a-month-total-that-is-not-exact-described'
+const INVALID_DATE_REASON = 'an-input-that-is-not-a-date-described'
+const INVALID_DATE_NEUTRAL_REASON = 'an-input-that-is-not-a-date-with-the-empty-duration-described'
 
 // ---------------------------------------------------------------------------
 // D-01 to D-17 - defects of behaviour
@@ -165,7 +165,7 @@ const behaviour: readonly Mutant[] = [
     'D-02',
     "mutates-the-input: shifts the caller's own Date and hands it back",
     [reference(COMPUTE, `${SHIFT}\n  date.setTime(shifted + elapsed)\n  const result = date`)],
-    killed(['never mutates its arguments']),
+    killed(['no-mutation-of-arguments']),
   ),
   sameOnEveryLens(
     'D-03',
@@ -699,16 +699,16 @@ export const battery: Battery = {
         '`Partial<Duration>`, reads both sides out of `contract.ts`, and was listed as a region ' +
         'awaiting a signature mutant until S-12 to S-15 measured that no such mutant can exist here.',
       guards: [
-        'leaves every duration field optional',
-        'addresses each case with a unique identifier',
-        'names a case for every declared reason, and declares every reason it names',
-        'settles each call exactly once across both tables',
-        'publishes a rationale for every decision',
-        'writes every expected instant in a form that survives a round trip',
-        'declares a non-empty sample set for every profile',
-        'keeps the inapplicable universal properties declared as such',
-        'the declared application order covers every duration field exactly once',
-        'publishes a reason for every static analysis requirement',
+        'signature-duration-fields-are-optional',
+        'every-case-is-addressed',
+        'names-a-case-for-every-reason',
+        'settles-each-call-once',
+        'every-case-is-justified',
+        'every-expected-instant-round-trips',
+        'every-profile-has-samples',
+        'universal-properties-answered',
+        'declares-an-application-order-over-every-field',
+        'declares-a-reason-for-every-static-analysis-requirement',
       ],
     },
     {
@@ -718,10 +718,10 @@ export const battery: Battery = {
         '`reference.ts` can change either answer, which is exactly why they are the support the zone ' +
         'property rests on rather than part of what it measures.',
       guards: [
-        'the declared time zones take effect in this runtime',
-        'the declared time zones do not all agree with each other',
-        'has left the ambient time zone exactly as it found it',
-        'restores both a zone that was set and a zone that was absent',
+        'support-the-zones-take-effect',
+        'support-the-zones-disagree',
+        'support-the-zone-was-restored',
+        'support-the-restore-drives-both-branches',
       ],
     },
     {
@@ -733,11 +733,11 @@ export const battery: Battery = {
         'visible. That is the lens working rather than a gap, and those cells are part of the ' +
         'five-defect difference this battery reports between its two columns.',
       guards: [
-        'a-month-total-that-is-not-exact, described',
-        'an-elapsed-total-that-is-not-exact, described',
-        'a-declared-field-carrying-a-string, described',
-        'an-input-that-is-not-a-date, described',
-        'an-input-that-is-not-a-date-with-the-empty-duration, described',
+        'a-month-total-that-is-not-exact-described',
+        'an-elapsed-total-that-is-not-exact-described',
+        'a-declared-field-carrying-a-string-described',
+        'an-input-that-is-not-a-date-described',
+        'an-input-that-is-not-a-date-with-the-empty-duration-described',
       ],
     },
   ],

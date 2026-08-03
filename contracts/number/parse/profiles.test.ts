@@ -33,7 +33,7 @@ const CLASS_CHECK_TIMEOUT_MS = 30_000
 describe('number/parse@1 benchmark profiles', () => {
   for (const { name, sampleClass, samples } of benchmarkProfiles) {
     it(
-      `${name} - every sample is ${sampleClass}`,
+      `profile-${name} :: every sample is ${sampleClass}`,
       () => {
         const offenders = samples.filter(
           (sample) => (parseNumber(sample) === null) === (sampleClass === 'accepted'),
@@ -47,7 +47,7 @@ describe('number/parse@1 benchmark profiles', () => {
     )
   }
 
-  it('declares a non-empty sample set for every profile', () => {
+  it('every-profile-has-samples', () => {
     const empty = benchmarkProfiles.filter((profile) => profile.samples.length === 0)
 
     expect(empty).toEqual([])

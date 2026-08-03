@@ -101,23 +101,23 @@ const HALF_A_DAY = `    duration: { days: 0.5 },`
 // Guards this battery pins by name
 // ---------------------------------------------------------------------------
 
-const REASONS_AGREE = 'names a case for every declared reason, and declares every reason it names'
-const EVERY_CALL_ONCE = 'settles each call exactly once across both tables'
-const EVERY_CASE_JUSTIFIED = 'publishes a rationale for every decision'
-const INSTANTS_ROUND_TRIP = 'writes every expected instant in a form that survives a round trip'
-const EVERY_PROFILE_POPULATED = 'declares a non-empty sample set for every profile'
-const INAPPLICABLE_STAY_INAPPLICABLE = 'keeps the inapplicable universal properties declared as such'
-const ORDER_COVERS_EVERY_FIELD = 'the declared application order covers every duration field exactly once'
-const EVERY_REQUIREMENT_EXPLAINED = 'publishes a reason for every static analysis requirement'
-const ZONES_TAKE_EFFECT = 'the declared time zones take effect in this runtime'
-const ZONES_DISAGREE = 'the declared time zones do not all agree with each other'
+const REASONS_AGREE = 'names-a-case-for-every-reason'
+const EVERY_CALL_ONCE = 'settles-each-call-once'
+const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
+const INSTANTS_ROUND_TRIP = 'every-expected-instant-round-trips'
+const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
+const INAPPLICABLE_STAY_INAPPLICABLE = 'universal-properties-answered'
+const ORDER_COVERS_EVERY_FIELD = 'declares-an-application-order-over-every-field'
+const EVERY_REQUIREMENT_EXPLAINED = 'declares-a-reason-for-every-static-analysis-requirement'
+const ZONES_TAKE_EFFECT = 'support-the-zones-take-effect'
+const ZONES_DISAGREE = 'support-the-zones-disagree'
 
-const TYPE_IDENTITY = 'matches the type declared by the contract'
-const ACCEPTS_A_DATE_AND_A_DURATION = 'accepts a Date and a Duration, and nothing else'
-const EVERY_FIELD_OPTIONAL = 'leaves every duration field optional'
-const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
+const TYPE_IDENTITY = 'signature-is-the-declared-type'
+const ACCEPTS_A_DATE_AND_A_DURATION = 'signature-accepts-a-date-and-a-duration'
+const EVERY_FIELD_OPTIONAL = 'signature-duration-fields-are-optional'
+const DIAGNOSTIC_TYPE = 'signature-publishes-the-diagnostic'
 
-const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
+const EVERY_ID_UNIQUE = 'every-case-is-addressed'
 const CLAMP_CASE_ID = 'clamp-to-the-end-of-february'
 
 const mutants: readonly Mutant[] = [
@@ -332,15 +332,15 @@ export const battery: Battery = {
         'own return type against a type written beside it, and the rest quantify over answers this ' +
         'battery does not change. The reference battery witnesses every one of them.',
       guards: [
-        'returns a Date that may be absent, never an Invalid Date',
-        'P1 - returns null or a valid Date, never an Invalid Date',
-        'P2 - the empty duration is neutral: it always answers, with the same instant in a new object',
-        'P3 - adding milliseconds shifts the instant by exactly that many',
-        'P4 - an elapsed-time duration and its negation cancel exactly',
-        'P5 - a calendar-only duration never changes the UTC time of day',
-        'P6 - the day of the month never grows under a calendar-only duration',
-        'P7 - a call fails exactly when it has a description',
-        'never mutates its arguments',
+        'signature-returns-a-date-or-null',
+        'p1-valid-date-or-absent',
+        'p2-the-neutral-duration',
+        'p3-milliseconds-shift-exactly',
+        'p4-elapsed-negation-cancels',
+        'p5-calendar-keeps-the-time-of-day',
+        'p6-the-day-never-grows',
+        'p7-failure-coupling',
+        'no-mutation-of-arguments',
       ],
     },
     {
@@ -352,8 +352,8 @@ export const battery: Battery = {
         'guards of this contract no battery in this repository can redden - which is stated here ' +
         'rather than left for a reader to notice.',
       guards: [
-        'has left the ambient time zone exactly as it found it',
-        'restores both a zone that was set and a zone that was absent',
+        'support-the-zone-was-restored',
+        'support-the-restore-drives-both-branches',
       ],
     },
     {
@@ -363,7 +363,7 @@ export const battery: Battery = {
         'implementation is zone-independent whatever list it is given; a wrong list makes it ' +
         'vacuous, not red. DA-13 is that list, and the guard that catches it is the one requiring ' +
         'the zones to disagree, which is why the two exist as a pair.',
-      guards: ['has no ambient input - the answer does not depend on the process time zone'],
+      guards: ['no-ambient-input-from-the-time-zone'],
     },
   ],
 
@@ -377,8 +377,8 @@ export const battery: Battery = {
         'contract\'s own comparison is a fifth family, not one of the four written here. The ' +
         'reference battery witnesses both: D-18 and D-22.',
       guards: [
-        'is deterministic - the same call yields the same answer every time',
-        'has no ambient input - an answer does not depend on the calls made before it',
+        'determinism',
+        'no-ambient-input-from-history',
       ],
     },
     {
@@ -387,11 +387,11 @@ export const battery: Battery = {
         'the four benchmark profiles DA-9 leaves alone. Each publishes a claim about what its ' +
         'samples do, and one mutant per profile would repeat one sentence five times.',
       guards: [
-        'calendar-only - every sample is accepted',
-        'clamping - every sample is accepted',
-        'every-field - every sample is accepted',
-        'rejected-inputs - every sample is rejected',
-        'elapsed-time-only - every sample is accepted',
+        'profile-calendar-only',
+        'profile-clamping',
+        'profile-every-field',
+        'profile-rejected-inputs',
+        'profile-elapsed-time-only',
       ],
     },
     {

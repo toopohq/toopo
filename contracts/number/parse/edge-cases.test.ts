@@ -53,24 +53,24 @@ describe('number/parse@1 named edge cases', () => {
 
 describe('number/parse@1 named edge cases, described', () => {
   for (const { id, input, reason } of edgeCases) {
-    it(`${id}, described`, () => {
+    it(`${id}-described`, () => {
       expect(describeParseFailure(input), printable(input)).toBe(reason)
     })
   }
 })
 
 describe('number/parse@1 edge case table', () => {
-  it('addresses each case with a unique identifier', () => {
+  it('every-case-is-addressed', () => {
     expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
   })
 
-  it('settles each input exactly once', () => {
+  it('settles-each-input-once', () => {
     const inputs = edgeCases.map((edgeCase) => edgeCase.input)
 
     expect(inputs).toHaveLength(new Set(inputs).size)
   })
 
-  it('names a case for every declared reason, and declares every reason it names', () => {
+  it('names-a-case-for-every-reason :: and declares every reason it names', () => {
     // The partition is frozen with the major, so a literal nobody produces any more would survive
     // as documentation of a refusal that no longer exists - and a reason the tables produce without
     // declaring it would be invisible to a caller reading the contract. Both directions, one guard.
@@ -81,7 +81,7 @@ describe('number/parse@1 edge case table', () => {
     expect([...new Set(produced)].sort()).toEqual([...failureReasons].sort())
   })
 
-  it('publishes a rationale for every decision', () => {
+  it('every-case-is-justified', () => {
     expectEveryCaseIsJustified(edgeCases, ({ id }) => id)
   })
 })

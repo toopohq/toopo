@@ -8,7 +8,7 @@ import { addToDate } from './reference.js'
  */
 describe('date/add@1 benchmark profiles', () => {
   for (const { name, sampleClass, samples } of benchmarkProfiles) {
-    it(`${name} - every sample is ${sampleClass}`, () => {
+    it(`profile-${name} :: every sample is ${sampleClass}`, () => {
       const offenders = samples
         .filter(
           ({ date, duration }) =>
@@ -20,7 +20,7 @@ describe('date/add@1 benchmark profiles', () => {
     })
   }
 
-  it('declares a non-empty sample set for every profile', () => {
+  it('every-profile-has-samples', () => {
     const empty = benchmarkProfiles.filter((profile) => profile.samples.length === 0)
 
     expect(empty).toEqual([])

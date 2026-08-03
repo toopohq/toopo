@@ -73,40 +73,40 @@ const DESCRIBE_PARSE_FAILURE = `export const describeParseFailure = (input: stri
 // its reds and when it names only the region the defect lives in.
 // ---------------------------------------------------------------------------
 
-const COUPLING_PROPERTY = 'P4 - a string fails to parse exactly when it has a description'
-const NO_STRAY_VALUE = 'P1 - returns null or a finite number, never NaN and never Infinity'
-const WHITESPACE_INSENSITIVE = 'P2 - is insensitive to surrounding whitespace'
-const ROUND_TRIPS = 'P3 - is a right inverse of String on the finite doubles, except negative zero'
-const DETERMINISTIC = 'is deterministic - the same input yields the same output on every call'
-const CALL_HISTORY = 'has no ambient input - an answer does not depend on the inputs parsed before it'
+const COUPLING_PROPERTY = 'p4-failure-coupling'
+const NO_STRAY_VALUE = 'p1-finite-or-absent'
+const WHITESPACE_INSENSITIVE = 'p2-whitespace-insensitive'
+const ROUND_TRIPS = 'p3-right-inverse-of-string'
+const DETERMINISTIC = 'determinism'
+const CALL_HISTORY = 'no-ambient-input-from-history'
 
-const TYPE_IDENTITY = 'matches the type declared by the contract'
-const ACCEPTS_A_STRING = 'accepts a string and nothing else'
-const RETURNS_A_NUMBER_OR_NOTHING = 'returns a number that may be absent, never NaN-as-number-only'
-const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
+const TYPE_IDENTITY = 'signature-is-the-declared-type'
+const ACCEPTS_A_STRING = 'signature-accepts-a-string'
+const RETURNS_A_NUMBER_OR_NOTHING = 'signature-returns-a-number-or-null'
+const DIAGNOSTIC_TYPE = 'signature-publishes-the-diagnostic'
 
 const NEGATIVE_ZERO = 'negative-zero'
 const NEGATIVE_UNDERFLOW = 'negative-underflow'
 const LOST_DIGIT = 'an-integer-past-two-to-the-fifty-third'
 const OVERFLOW_VALUE = 'overflow-past-the-largest-double'
-const OVERFLOW_REASON = 'overflow-past-the-largest-double, described'
+const OVERFLOW_REASON = 'overflow-past-the-largest-double-described'
 const BARE_FRACTION = 'bare-fraction'
-const BARE_FRACTION_PARSES = 'bare-fraction, described'
-const DECIMALS_PROFILE = 'decimals-and-exponents - every sample is accepted'
-const PADDED_PROFILE = 'whitespace-padded - every sample is accepted'
+const BARE_FRACTION_PARSES = 'bare-fraction-described'
+const DECIMALS_PROFILE = 'profile-decimals-and-exponents'
+const PADDED_PROFILE = 'profile-whitespace-padded'
 const INNER_SPACE_VALUE = 'whitespace-inside-the-number'
-const INNER_SPACE_REASON = 'whitespace-inside-the-number, described'
-const DETACHED_SIGN_REASON = 'sign-detached-from-its-digits, described'
-const ORDINARY_SPACE_REASON = 'an-ordinary-space-between-digits, described'
+const INNER_SPACE_REASON = 'whitespace-inside-the-number-described'
+const DETACHED_SIGN_REASON = 'sign-detached-from-its-digits-described'
+const ORDINARY_SPACE_REASON = 'an-ordinary-space-between-digits-described'
 const HEX_VALUE = 'hexadecimal'
-const HEX_REASON = 'hexadecimal, described'
+const HEX_REASON = 'hexadecimal-described'
 const UNDERSCORE_VALUE = 'underscore-grouping'
-const UNDERSCORE_REASON = 'underscore-grouping, described'
-const COMMA_DECIMAL_REASON = 'comma-as-a-decimal-separator, described'
-const COMMA_GROUPING_REASON = 'comma-grouping, described'
-const INHERITED_NAME_REASON = 'an-inherited-property-name, described'
-const EMPTY_REASON = 'the-empty-string, described'
-const BLANK_REASON = 'a-blank-string, described'
+const UNDERSCORE_REASON = 'underscore-grouping-described'
+const COMMA_DECIMAL_REASON = 'comma-as-a-decimal-separator-described'
+const COMMA_GROUPING_REASON = 'comma-grouping-described'
+const INHERITED_NAME_REASON = 'an-inherited-property-name-described'
+const EMPTY_REASON = 'the-empty-string-described'
+const BLANK_REASON = 'a-blank-string-described'
 
 // ---------------------------------------------------------------------------
 // The three caches - P-02, P-17 and P-19 differ only in where they are consulted
@@ -550,12 +550,12 @@ export const battery: Battery = {
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the table, the ' +
         'profile list or the universal-property declarations.',
       guards: [
-        'addresses each case with a unique identifier',
-        'settles each input exactly once',
-        'names a case for every declared reason, and declares every reason it names',
-        'publishes a rationale for every decision',
-        'declares a non-empty sample set for every profile',
-        'keeps the inapplicable universal properties declared as such',
+        'every-case-is-addressed',
+        'settles-each-input-once',
+        'names-a-case-for-every-reason',
+        'every-case-is-justified',
+        'every-profile-has-samples',
+        'universal-properties-answered',
       ],
     },
   ],

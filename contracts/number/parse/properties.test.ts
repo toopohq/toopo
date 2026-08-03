@@ -74,7 +74,7 @@ const candidateInput = fc.oneof(
 const finiteDouble = fc.double({ noNaN: true, noDefaultInfinity: true })
 
 describe('number/parse@1 specific properties', () => {
-  it('P1 - returns null or a finite number, never NaN and never Infinity', () => {
+  it('p1-finite-or-absent :: returns null or a finite number, never NaN and never Infinity', () => {
     // The support of this property was probed rather than assumed, because the same property on
     // `date/add@1` turned out to be sound and starved: its generators could not reach the region
     // where it fails, and it stayed green on a defect that returned a forbidden value there.
@@ -93,7 +93,7 @@ describe('number/parse@1 specific properties', () => {
     )
   })
 
-  it('P2 - is insensitive to surrounding whitespace', () => {
+  it('p2-whitespace-insensitive :: is insensitive to surrounding whitespace', () => {
     fc.assert(
       fc.property(candidateInput, (input) =>
         outputsAreEqual(parseNumber(input), parseNumber(input.trim())),
@@ -102,7 +102,7 @@ describe('number/parse@1 specific properties', () => {
     )
   })
 
-  it('P3 - is a right inverse of String on the finite doubles, except negative zero', () => {
+  it('p3-right-inverse-of-string :: is a right inverse of String on the finite doubles, except negative zero', () => {
     fc.assert(
       fc.property(
         finiteDouble.filter((n) => !Object.is(n, -0)),
@@ -114,7 +114,7 @@ describe('number/parse@1 specific properties', () => {
 })
 
 describe('number/parse@1 coupling between the two exports', () => {
-  it('P4 - a string fails to parse exactly when it has a description', () => {
+  it('p4-failure-coupling :: a string fails to parse exactly when it has a description', () => {
     // The reference cannot fail this one: both exports derive from one private analysis, so the
     // module holds a single grammar and the two cannot drift. That is not what makes a property
     // decorative or not. It governs every implementation, and one that writes the two independently
@@ -132,7 +132,7 @@ describe('number/parse@1 coupling between the two exports', () => {
 })
 
 describe('number/parse@1 universal properties', () => {
-  it('keeps the inapplicable universal properties declared as such', () => {
+  it('universal-properties-answered', () => {
     // The contract must never silently promote an inapplicable universal property back into a
     // passing test: a guard that cannot fail would inflate the green count with false assurance.
     // Both entries below were measured to be unfalsifiable here - one because strings are
@@ -143,7 +143,7 @@ describe('number/parse@1 universal properties', () => {
     ])
   })
 
-  it('is deterministic - the same input yields the same output on every call', () => {
+  it('determinism :: the same input yields the same output on every call', () => {
     fc.assert(
       fc.property(candidateInput, (input) =>
         outputsAreEqual(parseNumber(input), parseNumber(input)),
@@ -152,7 +152,7 @@ describe('number/parse@1 universal properties', () => {
     )
   })
 
-  it('has no ambient input - an answer does not depend on the inputs parsed before it', () => {
+  it('no-ambient-input-from-history :: an answer does not depend on the inputs parsed before it', () => {
     fc.assert(
       fc.property(candidateInput, fc.array(candidateInput, { maxLength: 20 }), (probe, history) => {
         const first = parseNumber(probe)

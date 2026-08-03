@@ -72,14 +72,14 @@ const OVERFLOW_CASE = `    input: '1e400',
 // Guards this battery pins by name
 // ---------------------------------------------------------------------------
 
-const EVERY_ID_UNIQUE = 'addresses each case with a unique identifier'
-const EVERY_INPUT_ONCE = 'settles each input exactly once'
-const REASONS_AGREE = 'names a case for every declared reason, and declares every reason it names'
-const EVERY_CASE_JUSTIFIED = 'publishes a rationale for every decision'
-const EVERY_PROFILE_POPULATED = 'declares a non-empty sample set for every profile'
-const INAPPLICABLE_STAY_INAPPLICABLE = 'keeps the inapplicable universal properties declared as such'
-const DIAGNOSTIC_TYPE = 'publishes the diagnostic surface with the type the contract declares'
-const REJECTED_PROFILE = 'rejected-inputs - every sample is rejected'
+const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_INPUT_ONCE = 'settles-each-input-once'
+const REASONS_AGREE = 'names-a-case-for-every-reason'
+const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
+const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
+const INAPPLICABLE_STAY_INAPPLICABLE = 'universal-properties-answered'
+const DIAGNOSTIC_TYPE = 'signature-publishes-the-diagnostic'
+const REJECTED_PROFILE = 'profile-rejected-inputs'
 
 const OVERFLOW_CASE_ID = 'overflow-past-the-largest-double'
 
@@ -230,10 +230,10 @@ export const battery: Battery = {
         'this battery does not change. They are the reference battery\'s to witness, and it does - ' +
         'S-9, S-10, P-03, P-04, P-07 and X-1 among them.',
       guards: [
-        'accepts a string and nothing else',
-        'returns a number that may be absent, never NaN-as-number-only',
-        'P1 - returns null or a finite number, never NaN and never Infinity',
-        'P4 - a string fails to parse exactly when it has a description',
+        'signature-accepts-a-string',
+        'signature-returns-a-number-or-null',
+        'p1-finite-or-absent',
+        'p4-failure-coupling',
       ],
     },
   ],
@@ -248,10 +248,10 @@ export const battery: Battery = {
         'contract\'s own comparison is a fifth family, not one of the four written here. The ' +
         'reference battery witnesses every one of them.',
       guards: [
-        'P2 - is insensitive to surrounding whitespace',
-        'P3 - is a right inverse of String on the finite doubles, except negative zero',
-        'is deterministic - the same input yields the same output on every call',
-        'has no ambient input - an answer does not depend on the inputs parsed before it',
+        'p2-whitespace-insensitive',
+        'p3-right-inverse-of-string',
+        'determinism',
+        'no-ambient-input-from-history',
       ],
     },
     {
@@ -261,7 +261,7 @@ export const battery: Battery = {
         '`ParseNumber` in `contract.ts` reddens it - and the mutant is not written, because S-9 and ' +
         'S-10 of the reference battery already redden this guard from the implementation side and a ' +
         'declaration mutant would be the same failure read from the mirror.',
-      guards: ['matches the type declared by the contract'],
+      guards: ['signature-is-the-declared-type'],
     },
     {
       nature: 'documents a decision',
@@ -271,10 +271,10 @@ export const battery: Battery = {
         'measures that the claim is executed and NP-9 that an empty list is caught, which is what ' +
         'block 4.5 has to answer for here.',
       guards: [
-        'small-integers - every sample is accepted',
-        'decimals-and-exponents - every sample is accepted',
-        'whitespace-padded - every sample is accepted',
-        'long-inputs - every sample is accepted',
+        'profile-small-integers',
+        'profile-decimals-and-exponents',
+        'profile-whitespace-padded',
+        'profile-long-inputs',
       ],
     },
     {

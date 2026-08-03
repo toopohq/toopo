@@ -101,7 +101,7 @@ describe('date/add@1 edge cases outside the declared type', () => {
 
 describe('date/add@1 named edge cases, described', () => {
   for (const { id, date, duration, reason } of edgeCases) {
-    it(`${id}, described`, () => {
+    it(`${id}-described`, () => {
       expectDescribedAs(date, duration, reason)
     })
   }
@@ -109,7 +109,7 @@ describe('date/add@1 named edge cases, described', () => {
 
 describe('date/add@1 edge cases outside the declared type, described', () => {
   for (const { id, date, duration, reason } of untypedEdgeCases) {
-    it(`${id}, described`, () => {
+    it(`${id}-described`, () => {
       expectDescribedAs(date, duration, reason)
     })
   }
@@ -118,11 +118,11 @@ describe('date/add@1 edge cases outside the declared type, described', () => {
 describe('date/add@1 edge case tables', () => {
   const allCases = [...edgeCases, ...untypedEdgeCases]
 
-  it('addresses each case with a unique identifier', () => {
+  it('every-case-is-addressed', () => {
     expectEveryCaseIsAddressed(allCases.map((edgeCase) => edgeCase.id))
   })
 
-  it('names a case for every declared reason, and declares every reason it names', () => {
+  it('names-a-case-for-every-reason :: and declares every reason it names', () => {
     // The partition is frozen with the major, so a literal nobody produces any more would survive
     // as documentation of a refusal that no longer exists - and a reason the tables produce without
     // declaring it would be invisible to a caller reading the contract. Both directions, one guard.
@@ -131,17 +131,17 @@ describe('date/add@1 edge case tables', () => {
     expect([...new Set(produced)].sort()).toEqual([...failureReasons].sort())
   })
 
-  it('settles each call exactly once across both tables', () => {
+  it('settles-each-call-once :: across both tables', () => {
     const calls = allCases.map(({ date, duration }) => renderCall(date, duration))
 
     expect(calls).toHaveLength(new Set(calls).size)
   })
 
-  it('publishes a rationale for every decision', () => {
+  it('every-case-is-justified', () => {
     expectEveryCaseIsJustified(allCases, ({ id }) => id)
   })
 
-  it('writes every expected instant in a form that survives a round trip', () => {
+  it('every-expected-instant-round-trips :: written in a form the test framework parses back unchanged', () => {
     // An expectation the test framework cannot parse back would silently become NaN and compare
     // equal to nothing, turning a real assertion into an unfalsifiable one.
     const unparseable = allCases

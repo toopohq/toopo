@@ -7,11 +7,11 @@ import { addToDate, describeAddFailure } from './reference.js'
  * `null` from it fails the suite before any behavioural test runs.
  */
 describe('date/add@1 signature', () => {
-  it('matches the type declared by the contract', () => {
+  it('signature-is-the-declared-type', () => {
     expectTypeOf(addToDate).toEqualTypeOf<AddToDate>()
   })
 
-  it('accepts a Date and a Duration, and nothing else', () => {
+  it('signature-accepts-a-date-and-a-duration :: a Date and a Duration, and nothing else', () => {
     expectTypeOf(addToDate).parameter(0).toEqualTypeOf<Date>()
     expectTypeOf(addToDate).parameter(1).toEqualTypeOf<Duration>()
 
@@ -24,15 +24,15 @@ describe('date/add@1 signature', () => {
     addToDate(new Date(), { day: 1 })
   })
 
-  it('returns a Date that may be absent, never an Invalid Date', () => {
+  it('signature-returns-a-date-or-null :: a Date that may be absent, never an Invalid Date', () => {
     expectTypeOf(addToDate).returns.toEqualTypeOf<Date | null>()
   })
 
-  it('leaves every duration field optional', () => {
+  it('signature-duration-fields-are-optional', () => {
     expectTypeOf<Duration>().toEqualTypeOf<Partial<Duration>>()
   })
 
-  it('publishes the diagnostic surface with the type the contract declares', () => {
+  it('signature-publishes-the-diagnostic :: the diagnostic surface has the type the contract declares', () => {
     expectTypeOf(describeAddFailure).toEqualTypeOf<DescribeAddFailure>()
   })
 })
