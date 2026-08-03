@@ -5,7 +5,8 @@
   "scripts": {
     "test": "vitest run --typecheck",
     "mutation": "node mutation/measure.ts",
-    "meta": "vitest run --config mutation/vitest.config.ts"
+    "meta": "vitest run --config mutation/vitest.config.ts",
+    "registry": "tsc -p registry/tsconfig.json && vitest run --config registry/vitest.config.ts"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

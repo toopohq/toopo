@@ -1,0 +1,115 @@
+/**
+ * How the registry addresses the things it will one day serve, cite and link to.
+ *
+ * An address is not a field among others. The site will make a case identifier a URL anchor, the API
+ * will cite one in a response, and a validation report will put one in front of a submitter to name
+ * the case their submission failed. An address that changes breaks links, so every address here is
+ * frozen with the contract's major version, under the discipline `catalogue/every-contract.ts`
+ * already states for a case and `mutation/run.ts` for a guard.
+ *
+ * Nothing below is a string. That is the whole content of this file: a `ContractAddress` is a value
+ * with three parts, and a guard is addressed by the *pair* `(contract, guard)` and by no other shape,
+ * because there is no type here that carries a guard identifier on its own. `CLAUDE.md` names that
+ * cost in advance - "the registry schema must always carry the pair, never the identifier alone" -
+ * and fifteen identifier strings are held by more than one contract today, so the cost is already
+ * due. A rule that lives in a sentence is a rule the sixth contract's author never reads; making the
+ * unpaired form unrepresentable is what turns it into something the compiler keeps.
+ */
+
+import { isFrozenIdentifier } from '../catalogue/identifier.js'
+
+/**
+ * The language a contract is written in.
+ *
+ * One value today, and every one of the five fills it. It is here rather than absent because it is a
+ * coordinate of a *frozen address*, and adding a coordinate to an address later renames every address
+ * that ever existed - which is exactly the cost the catalogue refused to pay a second time when it
+ * settled that a guard travels as a pair. A field with one value now against a rename of the whole
+ * catalogue later is the cheapest insurance in this schema.
+ *
+ * What it does not do is make the schema language-neutral, and `contract-record.ts` says where the
+ * frontier actually falls: the *shape* of a record is neutral, its *content* is TypeScript, and
+ * pretending otherwise would be an abstraction no contract fills.
+ */
+export type Language = 'typescript'
+
+/**
+ * A contract's domain and name - `number/parse`, `array/group-by`. Two kebab-case segments, because
+ * that is what the five carry and because the domain is what the site's navigation is built on.
+ */
+const CONTRACT_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+export type ContractAddress = {
+  readonly language: Language
+  /** `domain/name`, exactly as `identity.name` carries it. */
+  readonly name: string
+  /** The major version. An incompatible evolution creates `name@2` beside `name@1`, never in place. */
+  readonly major: number
+}
+
+/** A case of block 4.4. The identifier is frozen with the major; renaming one costs `name@2`. */
+export type CaseAddress = {
+  readonly contract: ContractAddress
+  readonly case: string
+}
+
+/**
+ * A guard, addressed by the pair and only by the pair.
+ *
+ * Uniqueness is per contract - a battery injects into one folder, and attribution already filters
+ * guards to the contract under measurement - so two contracts may legitimately answer to one string.
+ * `determinism` is held by five of the five.
+ */
+export type GuardAddress = {
+  readonly contract: ContractAddress
+  readonly guard: string
+}
+
+/**
+ * A cell of a mutation battery, which is what a case's `found-by-mutation:` provenance claims to
+ * name. It is a three-part address because a mutant identifier is unique within a battery and a
+ * battery belongs to a contract: `D-07` means nothing until both are supplied.
+ */
+export type MutantAddress = {
+  readonly contract: ContractAddress
+  readonly battery: string
+  readonly mutant: string
+}
+
+export const renderContract = (address: ContractAddress): string =>
+  `${address.name}@${address.major}`
+
+export const renderCase = (address: CaseAddress): string =>
+  `${renderContract(address.contract)}#${address.case}`
+
+export const renderGuard = (address: GuardAddress): string =>
+  `${renderContract(address.contract)}:${address.guard}`
+
+export const renderMutant = (address: MutantAddress): string =>
+  `${renderContract(address.contract)}:${address.battery}/${address.mutant}`
+
+export const sameContract = (a: ContractAddress, b: ContractAddress): boolean =>
+  a.language === b.language && a.name === b.name && a.major === b.major
+
+/**
+ * Why an address is malformed, one reason per part, so that a refusal names the part rather than the
+ * whole. Empty when the address is well formed.
+ */
+export const contractAddressFaults = (address: ContractAddress): readonly string[] => [
+  ...(CONTRACT_NAME.test(address.name)
+    ? []
+    : [`"${address.name}" is not a domain and a name in kebab-case`]),
+  ...(Number.isInteger(address.major) && address.major >= 1
+    ? []
+    : [`${address.major} is not a major version, which is a whole number from 1 upwards`]),
+]
+
+export const caseAddressFaults = (address: CaseAddress): readonly string[] => [
+  ...contractAddressFaults(address.contract),
+  ...(isFrozenIdentifier(address.case) ? [] : [`"${address.case}" is not a frozen identifier`]),
+]
+
+export const guardAddressFaults = (address: GuardAddress): readonly string[] => [
+  ...contractAddressFaults(address.contract),
+  ...(isFrozenIdentifier(address.guard) ? [] : [`"${address.guard}" is not a frozen identifier`]),
+]
