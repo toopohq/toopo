@@ -682,8 +682,9 @@ it reddens where the repository's own rule says name all of a set of five or few
 **The mechanism that closes the class for every address at once is a pre-flight refusal of a pin that
 names a guard no guard carries.** It is cheap — seconds against the seventeen minutes the batteries
 cost, and this sentence used to say *a battery*, which is wrong by a factor of six and was read that
-way once: measured on the replay `toopo remove` owed, the seventeen run in 24 min 17 s and the largest
-single one is `cli-install` at 244 s — and
+way once: measured twice on this machine at the close of `toopo remove`, the seventeen run in
+24 min 17 s and in 22 min 14 s, and the largest single one is `cli-install` at 244 s and 232 s. Both
+are published because one of them alone would read as a precision neither has — and
 it turns a stale case identifier, guard identifier or profile name from a silence into an error, with
 no renaming anywhere. It has been set aside twice. It opens the unit after the validation pipeline's
 first stage, and it is written down here so that there is no third time. Note what it is *not*: a
