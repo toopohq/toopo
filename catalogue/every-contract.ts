@@ -203,7 +203,9 @@ export const contractAnatomy = {
         'every case of block 4.4 carries a unique frozen kebab-case `id`, a `provenance` and a ' +
         'non-empty `rationale`, and every guard is addressed by an identifier',
       measured:
-        'five of five for the cases; 467 of 467 for the guards, none duplicated inside a contract.',
+        'five of five for the cases; every guard of every battery, none duplicated inside a ' +
+        'contract - `calibrate()` refuses both, and no figure is carried here because a count in ' +
+        'prose drifts the moment a guard is added and it is the count that then lies.',
       checkableFrom: 'the module',
       because:
         'a case table is a value, and the guard half is stronger still - a guard cannot enumerate ' +

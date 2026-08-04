@@ -221,9 +221,14 @@ export type RunResult = {
  *
  * ` :: ` cannot occur inside an identifier, because an identifier has no spaces - so the split
  * cannot be wrong. It is ASCII rather than an em dash, which reads better and would have been the
- * first non-ASCII code point in any title in the catalogue: measured, none of the 467 guards carries
- * one, and `number/parse@1` is where the cost of a stray non-ASCII character in a source file was
- * paid once already.
+ * first non-ASCII code point in any title in the repository: measured over every `it(...)` in every
+ * test file, none carries one, and `number/parse@1` is where the cost of a stray non-ASCII character
+ * in a source file was paid once already.
+ *
+ * The figure this sentence used to carry is gone rather than corrected. It read *none of the 467*,
+ * and 467 stopped being the number of guard titles some time before anybody noticed - a count in
+ * prose survives the data it counted and becomes the one part of the sentence that is false. What
+ * the claim is about is *none*, which does not drift.
  */
 const GUARD_SEPARATOR = ' :: '
 

@@ -188,9 +188,19 @@ different data: *resemblance is not duplication*, the rule the catalogue already
 
 **The separator is ` :: `, and it is ASCII on purpose.** It cannot occur inside an identifier,
 because an identifier has no spaces, so the split cannot be wrong. An em dash reads better and would
-have been the first non-ASCII code point in any title in the catalogue: measured, none of the 467
-carries one, and `number/parse@1` is where the cost of a stray non-ASCII character in a source file
-was paid once already.
+have been the first non-ASCII code point in any title in the repository: measured over every `it(...)`
+in every test file, none carries one, and `number/parse@1` is where the cost of a stray non-ASCII
+character in a source file was paid once already.
+
+**Three published counts of guards were dropped rather than corrected, and the reason generalises.**
+This sentence, `run.ts` and `every-contract.ts` all read *467*, and 467 had stopped being the number
+of guard titles some time before anybody noticed — remeasured while adding four guards, the source
+holds 501 `it(...)` call sites and the census declares 974 collected assertions, and neither is 467
+plus the four. Which of the three things 467 once counted is not recoverable, so nothing was patched:
+a count in prose survives the data it counted and becomes the one part of a true sentence that is
+false. What each claim is actually about — *none carries a non-ASCII code point*, *no identifier is
+duplicated inside a contract* — does not drift, and `calibrate()` is what holds the second. It is the
+rule about identifiers rendering a count, arriving on comments.
 
 **What this does not cover, and it is not an oversight.** `npm test` will never see a duplicate
 identifier: a guard cannot enumerate the tests vitest collected, so the refusal lives in

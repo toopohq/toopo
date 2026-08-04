@@ -113,31 +113,31 @@ export type SuiteCensus = Readonly<Record<string, number>>
 
 export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   [THE_CONTRACTS_SUITE]: {
-    'contracts/array/group-by/edge-cases.test.ts': 32,
+    'contracts/array/group-by/edge-cases.test.ts': 33,
     'contracts/array/group-by/language.test.ts': 35,
     'contracts/array/group-by/profiles.test.ts': 8,
     'contracts/array/group-by/properties.test.ts': 12,
     'contracts/array/group-by/signature.test-d.ts': 9,
-    'contracts/date/add/edge-cases.test.ts': 91,
+    'contracts/date/add/edge-cases.test.ts': 92,
     'contracts/date/add/profiles.test.ts': 6,
     'contracts/date/add/properties.test.ts': 18,
     'contracts/date/add/signature.test-d.ts': 5,
-    'contracts/number/parse/edge-cases.test.ts': 104,
+    'contracts/number/parse/edge-cases.test.ts': 105,
     'contracts/number/parse/profiles.test.ts': 6,
     'contracts/number/parse/properties.test.ts': 7,
     'contracts/number/parse/signature.test-d.ts': 4,
-    'contracts/string/levenshtein/edge-cases.test.ts': 27,
+    'contracts/string/levenshtein/edge-cases.test.ts': 28,
     'contracts/string/levenshtein/profiles.test.ts': 7,
     'contracts/string/levenshtein/properties.test.ts': 15,
     'contracts/string/levenshtein/signature.test-d.ts': 5,
-    'contracts/string/slugify/edge-cases.test.ts': 46,
+    'contracts/string/slugify/edge-cases.test.ts': 47,
     'contracts/string/slugify/profiles.test.ts': 8,
     'contracts/string/slugify/properties.test.ts': 17,
     'contracts/string/slugify/signature.test-d.ts': 5,
   },
 
   'registry/vitest.config.ts': {
-    'registry/against-the-five.test.ts': 43,
+    'registry/against-the-five.test.ts': 45,
     'registry/attestation.test.ts': 3,
     'registry/coverage.test.ts': 20,
     'registry/determinism.test.ts': 20,
@@ -182,7 +182,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'site/vitest.config.ts': {
     'site/document.test.ts': 8,
     'site/literal.test.ts': 11,
-    'site/pages.test.ts': 11,
+    'site/pages.test.ts': 13,
     'site/source.test.ts': 6,
   },
 
