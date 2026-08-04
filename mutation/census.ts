@@ -132,7 +132,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'registry/vitest.config.ts': {
-    'registry/against-the-five.test.ts': 42,
+    'registry/against-the-five.test.ts': 43,
     'registry/attestation.test.ts': 3,
     'registry/coverage.test.ts': 20,
     'registry/determinism.test.ts': 20,
@@ -141,6 +141,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'registry/response.test.ts': 46,
     'registry/round-trip.test.ts': 19,
     'registry/served-files.test.ts': 10,
+    'registry/signature.test.ts': 14,
     'registry/snapshot.test.ts': 45,
     'registry/the-sixth-contract.test.ts': 14,
     'registry/verifiability.test.ts': 12,

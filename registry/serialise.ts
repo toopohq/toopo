@@ -26,6 +26,7 @@ import type {
   CaseTableRecord,
   ContractRecord,
   ExportRecord,
+  ExportRole,
   IdentityRecord,
   Lifecycle,
   OwnDeclaration,
@@ -40,6 +41,7 @@ import type { VerificationStratum } from './field-map.js'
 import type { BatteryRecord, CaseProvenance } from './evidence.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
 import { resolveGuard, resolveProvenance } from './evidence.js'
+import { parametersOf } from './signature.js'
 import { encode } from './value.js'
 
 /** Anchored on this file rather than on the working directory, as `mutation/run.ts` anchors its own. */
@@ -50,6 +52,20 @@ const SHARED_CASE_FIELDS = ['id', 'provenance', 'rationale'] as const
 
 /** `samples` is here because five of five call it that, which is the catalogue's bar for naming. */
 const PROFILE_FIELDS_THE_SCHEMA_NAMES = ['name', 'description', 'samples'] as const
+
+/**
+ * An export as the source declares it, which is everything but the parameter names.
+ *
+ * They are absent here because they are derived from the declared text rather than written beside it -
+ * `signature.ts` argues it - and a source that could state them would be a second statement about one
+ * fact, which is what this whole folder is written to avoid.
+ */
+export type ExportSource = {
+  readonly name: string
+  readonly typeName: string
+  readonly text: string
+  readonly role: ExportRole
+}
 
 export type CaseTableSource = {
   readonly name: string
@@ -115,7 +131,7 @@ export type ContractSource = {
   readonly declares: readonly Readonly<Record<string, unknown>>[]
   /** Exports the record does not carry, each with the reason. A silence here is a coverage failure. */
   readonly notCarried: readonly UncarriedExport[]
-  readonly exports: readonly ExportRecord[]
+  readonly exports: readonly ExportSource[]
   readonly supportingTypes: readonly SupportingTypeRecord[]
   readonly caseTables: readonly CaseTableSource[]
   readonly benchmarks: ProfileSource
@@ -194,17 +210,42 @@ const provenanceOf = (
   return provenance
 }
 
+/**
+ * A case does not begin with the call its contract's signature declares.
+ *
+ * The refusal names the repair rather than the rule, because the contract's author is the person who
+ * reads it and what they have to do is reorder or rename a field.
+ */
+export class CaseIsNotACall extends Error {
+  constructor(where: string, call: readonly string[], fields: readonly string[]) {
+    super(
+      `${where} holds [${fields.join(', ')}], and the contract's answer is called with ` +
+        `(${call.join(', ')}). A case of block 4.4 is a call: its first fields are the arguments, ` +
+        `named as the signature names them and in the signature's order, and everything after them ` +
+        `is the answer. Without that a contract page can only list a case's fields side by side, ` +
+        `which is a table of a call rather than the call.`,
+    )
+    this.name = 'CaseIsNotACall'
+  }
+}
+
 const caseOf = (
   entry: Readonly<Record<string, unknown>>,
   table: string,
   contract: ContractAddress,
   batteries: readonly BatteryRecord[],
+  call: readonly string[],
 ): CaseRecord => {
   const id = entry['id'] as string
   const where = `${table}#${id}`
   const data = Object.fromEntries(
     Object.entries(entry).filter(([name]) => !SHARED_CASE_FIELDS.includes(name as 'id')),
   )
+
+  const fields = Object.keys(data)
+  if (fields.slice(0, call.length).join(',') !== call.join(',')) {
+    throw new CaseIsNotACall(where, call, fields)
+  }
 
   return {
     id,
@@ -414,46 +455,78 @@ export const referenceImplementationOf = (
   }
 }
 
-export const serialiseContract = (root: string, source: ContractSource): ContractRecord => ({
-  address: source.address,
-  lifecycle: source.lifecycle,
-  identity: identityOf(source.module),
-  surface: {
-    exports: source.exports,
-    supportingTypes: source.supportingTypes,
-    ...(source.module['failureReasons'] === undefined
-      ? {}
-      : { failureReasons: source.module['failureReasons'] as readonly string[] }),
-    ...(source.module['couplingRule'] === undefined
-      ? {}
-      : { couplingRule: source.module['couplingRule'] as string }),
-  },
-  environments: read<readonly string[]>(source.module, 'targetEnvironments'),
-  properties: {
-    runs: read<number>(source.module, 'propertyRuns'),
-    universal: read<readonly UniversalPropertyRecord[]>(source.module, 'universalProperties').map(
-      (property) => ({
-        name: property.name,
-        applicable: property.applicable,
-        reason: property.reason,
+/**
+ * The exports, each gaining the parameter names its own declared type carries.
+ *
+ * The answer's are what a case of block 4.4 is checked against, so they are read once here rather than
+ * per table: a contract has one answer, and the call every case makes is that answer's.
+ */
+const surfaceOf = (
+  exports: readonly ExportSource[],
+): { readonly exports: readonly ExportRecord[]; readonly call: readonly string[] } => {
+  const carried = exports.map((entry) => ({ ...entry, parameters: parametersOf(entry.text) }))
+  const answer = carried.find((entry) => entry.role === 'the-answer')
+
+  if (answer === undefined) {
+    throw new Error(
+      'the contract publishes no export in the role `the-answer`, so nothing says what its cases ' +
+        'are calls to',
+    )
+  }
+
+  return { exports: carried, call: answer.parameters }
+}
+
+export const serialiseContract = (root: string, source: ContractSource): ContractRecord => {
+  const surface = surfaceOf(source.exports)
+
+  return {
+    address: source.address,
+    lifecycle: source.lifecycle,
+    identity: identityOf(source.module),
+    surface: {
+      exports: surface.exports,
+      supportingTypes: source.supportingTypes,
+      ...(source.module['failureReasons'] === undefined
+        ? {}
+        : { failureReasons: source.module['failureReasons'] as readonly string[] }),
+      ...(source.module['couplingRule'] === undefined
+        ? {}
+        : { couplingRule: source.module['couplingRule'] as string }),
+    },
+    environments: read<readonly string[]>(source.module, 'targetEnvironments'),
+    properties: {
+      runs: read<number>(source.module, 'propertyRuns'),
+      universal: read<readonly UniversalPropertyRecord[]>(source.module, 'universalProperties').map(
+        (property) => ({
+          name: property.name,
+          applicable: property.applicable,
+          reason: property.reason,
+        }),
+      ),
+    },
+    caseTables: source.caseTables.map(
+      (table): CaseTableRecord => ({
+        name: table.name,
+        purpose: table.purpose,
+        cases: table.cases.map((entry) =>
+          caseOf(
+            entry,
+            `${source.address.name}/${table.name}`,
+            source.address,
+            source.batteries,
+            surface.call,
+          ),
+        ),
       }),
     ),
-  },
-  caseTables: source.caseTables.map(
-    (table): CaseTableRecord => ({
-      name: table.name,
-      purpose: table.purpose,
-      cases: table.cases.map((entry) =>
-        caseOf(entry, `${source.address.name}/${table.name}`, source.address, source.batteries),
-      ),
-    }),
-  ),
-  benchmarks: benchmarksOf(source.benchmarks),
-  ownDeclarations: ownDeclarationsOf(
-    source.module,
-    source.ownDeclarations,
-    source.address.name,
-    source.batteries,
-  ),
-  harness: harnessOf(root, source.folder, source.files),
-})
+    benchmarks: benchmarksOf(source.benchmarks),
+    ownDeclarations: ownDeclarationsOf(
+      source.module,
+      source.ownDeclarations,
+      source.address.name,
+      source.batteries,
+    ),
+    harness: harnessOf(root, source.folder, source.files),
+  }
+}

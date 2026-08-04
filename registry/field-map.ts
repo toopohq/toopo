@@ -134,6 +134,13 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   'surface.exports[].typeName': { visibility: 'public', verification: 'executable' },
   'surface.exports[].text': { visibility: 'public', verification: 'executable' },
   'surface.exports[].role': { visibility: 'public', verification: 'documentary' },
+  /**
+   * Read off the declared text rather than declared beside it, so there is one statement and nothing
+   * to make disagree - the classification `samples.count` already carries for the same reason. What
+   * the second statement would have been is supplied instead by a hundred and eighty-seven cases:
+   * `serialise.ts` refuses a contract whose cases do not begin with this call, in this order.
+   */
+  'surface.exports[].parameters[]': { visibility: 'public', verification: 'structural' },
   'surface.supportingTypes[].name': { visibility: 'public', verification: 'executable' },
   'surface.supportingTypes[].text': { visibility: 'public', verification: 'executable' },
   // `edge-cases.test.ts` requires the reasons the tables produce to be exactly this set, which is

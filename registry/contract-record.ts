@@ -142,6 +142,20 @@ export type ExportRecord = {
   readonly typeName: string
   readonly text: string
   readonly role: ExportRole
+  /**
+   * What a caller writes between the parentheses, in order.
+   *
+   * **Read off `text` rather than declared beside it**, by `registry/signature.ts`, which says why the
+   * derivation is what makes the field affordable. It is here because a case of block 4.4 is a *call*
+   * and nothing in this record could say so: `data` holds the fields of a case and the schema
+   * deliberately does not interpret them, so a contract page could list `input`, `expected` and
+   * `reason` as three fields of equal standing and could not render `parseNumber('  42  ')`.
+   *
+   * The fifth consumer found it, which is the fifth time a consumer has: measured over the five, the
+   * fields of every case of all seven tables begin with these names, in this order, and what remains
+   * is the answer. `serialise.ts` refuses a contract where that stops being true.
+   */
+  readonly parameters: readonly string[]
 }
 
 /** A type the signature refers to. One of the five needs one: `Duration` on `date/add@1`. */

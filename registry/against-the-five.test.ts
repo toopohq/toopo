@@ -3,7 +3,8 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
-import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
+import type { ContractSource } from './serialise.js'
+import { CaseIsNotACall, REPOSITORY_ROOT, serialiseContract } from './serialise.js'
 import { eachContract, theFive } from './the-five.js'
 
 /**
@@ -153,6 +154,44 @@ describe('the five, read against their own source', () => {
       expect(named.filter((name) => !known.has(name))).toEqual([])
     },
   )
+
+  /**
+   * The other half of the parameter reading, and the reason the reading needs no second transcription
+   * to be checked against.
+   *
+   * A hundred and eighty-seven cases across seven tables begin with their contract's call today, so
+   * every one of them is a statement about `parametersOf`'s answer - written years before it existed,
+   * by five contracts that were not asked. What this guard adds is the *refusal*: a contract whose
+   * cases stop being calls does not reach a record, so a page can never be asked to render arguments
+   * whose names it does not have.
+   *
+   * `number/parse@1` with one case reordered, which is the smallest thing that can go wrong and the
+   * likeliest: a sixth contract's author writing the answer before the argument.
+   */
+  it('a-case-that-is-not-a-call-is-refused', () => {
+    const [first] = theFive as readonly ContractSource[]
+    const reordered: ContractSource = {
+      ...(first as ContractSource),
+      caseTables: [
+        {
+          name: 'edge-cases',
+          purpose: 'one case, written answer first',
+          cases: [
+            {
+              id: 'the-answer-before-the-argument',
+              expected: 42,
+              input: '42',
+              reason: null,
+              provenance: 'specified',
+              rationale: 'A case whose fields do not begin with the call.',
+            },
+          ],
+        },
+      ],
+    }
+
+    expect(() => serialiseContract(REPOSITORY_ROOT, reordered)).toThrow(CaseIsNotACall)
+  })
 
   it.each(eachContract)(
     'every-harness-file-is-hashed-%s',

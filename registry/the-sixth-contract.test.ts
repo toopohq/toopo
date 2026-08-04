@@ -87,17 +87,25 @@ const theSixth: ContractRecord = {
   },
   surface: {
     exports: [
+      /**
+       * The parameter names are written here rather than read from the text by `parametersOf`, and
+       * the difference is the whole value of this file: a hand-written record is the second statement
+       * a serialiser's answer is checked against, and one that called the serialiser's own reader
+       * would be checking it against itself.
+       */
       {
         name: 'round',
         typeName: 'Round',
         text: '(value: number, places: number) => number | null',
         role: 'the-answer',
+        parameters: ['value', 'places'],
       },
       {
         name: 'describeRoundFailure',
         typeName: 'DescribeRoundFailure',
         text: '(value: number, places: number) => RoundFailureReason | null',
         role: 'the-diagnostic',
+        parameters: ['value', 'places'],
       },
     ],
     supportingTypes: [],
