@@ -161,6 +161,16 @@ const WHAT_RUNS_IN_YOUR_BROWSER_IS_SAID = `      line('p', whatRunsInYourBrowser
 const THE_GRAPH_LISTS_EVERY_MODULE = `  'site/literal.ts',
 `
 
+const A_CODE_POINT_IS_HEXADECIMAL = `  const code = Number.parseInt(digits, 16)`
+
+const A_FIELD_SET_TO_UNDEFINED_IS_STILL_A_FIELD = `    const value = readValue(scan)
+    Object.defineProperty(record, name, {`
+
+const NOTHING_MAY_FOLLOW_THE_VALUE = `  if (scan.at < text.length) fail(scan, 'there is more text after the value ends')`
+
+const A_RECORD_IS_NAMED_BEFORE_IT_IS_FILLED = `  const record: Record<string, unknown> = {}
+  if (label !== undefined) scan.shared.set(label, record)`
+
 // ---------------------------------------------------------------------------
 // The defects
 // ---------------------------------------------------------------------------
@@ -648,6 +658,66 @@ const mutants: readonly Mutant[] = [
     [browserFile(THE_GRAPH_LISTS_EVERY_MODULE, '')],
     killed(['every-import-a-browser-module-keeps-is-a-module-the-site-writes']),
   ),
+
+  /**
+   * The four the first replay asked for. Attribution reported them as guards nothing reddens, which
+   * is the instrument saying a region is unprobed rather than that a guard is weak - so the answer is
+   * mutants, and each of these is a defect somebody could plausibly write.
+   */
+  sameOnEveryLens(
+    'W-41',
+    'reads an escaped code point as decimal, so `\\u00A0` becomes U+0000 and the no-break space ' +
+      '`number/parse@1` settles a case on is read back as a different character entirely',
+    [readLiteralFile(A_CODE_POINT_IS_HEXADECIMAL, `  const code = Number.parseInt(digits, 10)`)],
+    killed([
+      'two-inputs-that-look-alike-are-read-apart',
+      'a-code-point-above-the-basic-plane-survives-the-round-trip',
+      'every-case-the-registry-serves-is-read-back-from-the-literal-its-page-publishes',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'W-42',
+    'drops a field whose value is `undefined`, so `{ days: undefined }` is read back as `{}` - the ' +
+      'distinction `date/add@1` declares equivalent on purpose and `array/group-by@1` does not',
+    [
+      readLiteralFile(
+        A_FIELD_SET_TO_UNDEFINED_IS_STILL_A_FIELD,
+        `    const value = readValue(scan)
+    if (value === undefined) return
+    Object.defineProperty(record, name, {`,
+      ),
+    ],
+    killed([
+      'a-field-set-to-undefined-is-not-a-field-that-is-absent',
+      'every-arm-of-an-encoded-value-is-read-back-or-refused-by-name',
+      'every-case-the-registry-serves-is-read-back-from-the-literal-its-page-publishes',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'W-43',
+    'stops at the first value and ignores whatever follows it, so a field holding `{ days: 1 } and ' +
+      'more` is answered as though the reader had written only the part that parsed',
+    [readLiteralFile(NOTHING_MAY_FOLLOW_THE_VALUE, '')],
+    killed(['spacing-is-forgiven-and-a-second-spelling-is-not']),
+  ),
+
+  sameOnEveryLens(
+    'W-44',
+    'names a record only after filling it, so `#1` refers to something that does not exist yet and ' +
+      'the nine cases pinning object identity cannot be read back at all',
+    [
+      readLiteralFile(
+        A_RECORD_IS_NAMED_BEFORE_IT_IS_FILLED,
+        `  const record: Record<string, unknown> = {}`,
+      ),
+    ],
+    killed([
+      'a-shared-object-is-read-back-as-one-object',
+      'every-arm-of-an-encoded-value-is-read-back-or-refused-by-name',
+    ]),
+  ),
 ]
 
 export const battery: Battery = {
@@ -673,7 +743,24 @@ export const battery: Battery = {
 
   mutants,
 
-  unreachableGuards: [],
+  /**
+   * The one guard in this folder no edit to this folder can reach, and it is a guard about the test's
+   * own apparatus rather than about the generator.
+   *
+   * `EVERY_ARM` claims to hold a value the registry encodes to each arm of `EncodedValue`, and this
+   * checks the claim. Both halves of it live outside what this battery may edit: the samples are in
+   * the test file, and `encode` is in `registry/`. An edit anywhere in `site/` leaves it green by
+   * construction, so it is unreachable here rather than unprobed - the distinction the instrument
+   * insists on, because *cannot be reached* and *nothing reaches it yet* look identical from outside.
+   */
+  unreachableGuards: [
+    {
+      guards: ['the-sample-really-produces-the-arm-it-is-filed-under'],
+      reason:
+        'it compares the samples of a test-local table against `encode`, and a battery injects only ' +
+        'into the folder under measurement - so neither side of what it checks is editable from here',
+    },
+  ],
 
   /**
    * Four guards no mutant of this battery probes, and each one is a region rather than a gap.
