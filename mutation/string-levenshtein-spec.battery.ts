@@ -74,22 +74,26 @@ const IDENTICAL_PROFILE_CLASS = `    distanceClass: 'zero',
 const IDENTITY_RATIONALE = `    rationale: 'A string is at distance zero from itself, which is the first axiom made concrete.',`
 
 const BOTH_EMPTY_CASE = `    id: 'both-empty',
+    group: 'the-two-ends-of-the-scale',
     a: '',
     b: '',
     expected: 0,
     provenance: 'specified',`
 
 const TRANSPOSITION_EXPECTED = `    id: 'a-transposition',
+    group: 'the-scope-this-contract-does-not-cover',
     a: 'ab',
     b: 'ba',
     expected: 2,`
 
 const ASTRAL_EXPECTED = `    id: 'an-astral-character-is-one-unit',
+    group: 'the-unit-an-edit-is-counted-in',
     a: GRINNING_FACE,
     b: '',
     expected: 1,`
 
 const ONE_INSERTION_CASE = `    id: 'one-insertion',
+    group: 'one-edit-of-each-kind',
     a: 'ab',
     b: 'abc',`
 

@@ -60,6 +60,7 @@ const SINGLE_ELEMENT_RATIONALE = `    rationale: 'One group of one. Listed becau
 const SINGLE_ELEMENT_ID = `    id: 'a-single-element',`
 
 const PARITY_CASE = `    id: 'numbers-by-parity',
+    group: 'baseline',
     items: [1, 2, 3, 4, 5],
     keyOf: parityKey,
     outcome: { kind: 'groups', groups: [['odd', [1, 3, 5]], ['even', [2, 4]]] },

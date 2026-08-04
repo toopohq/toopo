@@ -72,21 +72,25 @@ const NOTHING_RETAINABLE_RATIONALE = `    rationale:
       'noise. The empty slug is an answer, and a caller who cannot use it substitutes its own.',`
 
 const THE_EMPTY_STRING_CASE = `    id: 'the-empty-string',
+    group: 'the-empty-slug',
     text: '',
     expected: '',
     provenance: 'specified',`
 
 const NON_LATIN_CASE = `    id: 'a-non-latin-script-is-kept',
+    group: 'the-surprise-in-front',
     text: '日本語テキスト',
     expected: '日本語テキスト',`
 
 const A_HASH_ID = `    id: 'a-hash-is-not-a-letter',`
 
 const A_HASH_CASE = `    id: 'a-hash-is-not-a-letter',
+    group: 'the-loss-made-concrete',
     text: 'C#',
     expected: 'c',`
 
 const A_PLUS_CASE = `    id: 'a-plus-is-not-a-letter',
+    group: 'the-loss-made-concrete',
     text: 'C++',
     expected: 'c',`
 
