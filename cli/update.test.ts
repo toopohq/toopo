@@ -13,7 +13,7 @@ import {
   updatedImaginedSource,
 } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
-import { renderUpdate } from './report.js'
+import { renderUpToDate, renderUpdate } from './report.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
@@ -357,6 +357,14 @@ describe('comparing a project with what the registry serves now', () => {
     })
   })
 
+  /**
+   * A registry that has not moved changes nothing - and says what it found while saying so.
+   *
+   * The screen used to be three sentences and no name: *every feature is at the version the registry
+   * serves*, with the features left to the reader's memory. That is an answer nobody can check, from
+   * the one command that knows what the project holds, and R-14 is the mutant that empties it: the
+   * value assertions above pass on a screen that names nothing at all.
+   */
   it('a-registry-that-has-not-moved-changes-nothing', () => {
     inProject((project, lockfile) => {
       const update = updating(project, lockfile, imaginedSource())
@@ -364,6 +372,15 @@ describe('comparing a project with what the registry serves now', () => {
       expect(update.writes).toEqual([])
       expect(update.removals).toEqual([])
       expect(update.lockfile).toEqual(lockfile)
+
+      const screen = renderUpToDate(update)
+      expect(screen).toContain('Nothing to do.')
+      expect(
+        update.features.filter(
+          (feature) => !screen.includes(renderContract(feature.contract)),
+        ),
+      ).toEqual([])
+      expect(screen).toContain('reference@1.0.0')
     })
   })
 
@@ -532,6 +549,56 @@ describe('comparing a project with what the registry serves now', () => {
 
       expect(existsSync(join(project.root, 'src/lib/toopo/text/right/trim.ts'))).toBe(false)
       expect(project.installed('text/right/right.ts')).toContain("from '../left/trim.js'")
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * The other half, and R-07 is why it is written: a copy the user edited is never taken.
+   *
+   * The half above deletes a file because another folder holds the same bytes - which is safe exactly
+   * while the bytes are the same. Edit the copy and it is somebody's work sitting under a path this
+   * command had decided was redundant, and deleting it would be the one thing permanent rule 4 forbids,
+   * arriving through the one door that does not look like an overwrite.
+   */
+  it('a-deduplicated-copy-the-user-edited-is-kept-rather-than-taken', () => {
+    const source = sourceWithIndependentCarriers()
+    const project = aProject()
+
+    try {
+      let lockfile = EMPTY_LOCKFILE
+      for (const contract of ['text/left', 'text/right']) {
+        const outcome = prepareInstallation(source, {
+          root: project.root,
+          configuration: project.configuration,
+          lockfile,
+          contract,
+          implementation: null,
+          at: A_PINNED_INSTANT,
+        })
+        if (!('installation' in outcome)) throw new Error(JSON.stringify(outcome))
+        lockfile = committing(project, outcome.installation, lockfile)
+      }
+
+      project.write('src/lib/toopo/text/right/trim.ts', 'export const TRIM = /mine/\n')
+
+      const update = updating(project, lockfile, source)
+
+      expect(update.removals).toEqual([])
+      expect(
+        update.features
+          .find((feature) => feature.contract.name === 'text/right')
+          ?.files.find((file) => file.path === 'text/right/trim.ts')?.verdict,
+      ).toBe('kept-orphan')
+
+      const written = commit(project.root, project.configuration.directory, {
+        writes: update.writes,
+        removals: update.removals,
+        lockfile: update.lockfile,
+      })
+      expect('written' in written).toBe(true)
+      expect(project.installed('text/right/trim.ts')).toBe('export const TRIM = /mine/\n')
     } finally {
       project.remove()
     }

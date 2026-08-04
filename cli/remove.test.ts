@@ -270,6 +270,22 @@ describe('taking a feature out of a project', () => {
           'would take this one with it.',
       ])
     })
+
+    /**
+     * Two of them, and this half is why the sentence is built rather than joined.
+     *
+     * One dependent makes every way of writing the list identical, so the assertion above passes on a
+     * report that names the first of them, or the last, or one at random. `string/pad@1` is reached by
+     * both roots here, and a reader told about one of two removes the wrong feature and finds it still
+     * there.
+     */
+    inProject(imaginedSource(), ['number/sign', 'number/clamp'], (project, lockfile) => {
+      expect(refusalOf(imaginedSource(), project, lockfile, 'string/pad')).toEqual([
+        'string/pad@1 is in this project because number/clamp@1 and number/sign@1 import it, and you ' +
+          'never asked for it yourself - so there is nothing of yours to take back. Removing those ' +
+          'features is what would take this one with it.',
+      ])
+    })
   })
 
   /**

@@ -108,6 +108,12 @@ const REMOVE_TAKES_THE_ACCEPTANCE = `    const read = contractThenFlags('remove'
 
 const NO_WORDS_IS_THE_CATALOGUE = `    if (rest.length === 0) return { command: { name: 'catalogue' } }`
 
+const A_PROJECT_WITH_NOTHING_IS_NOT_MISSING_ANYTHING = `    claimed.length > 0 &&`
+
+const A_REFUSAL_NAMES_WHAT_THE_PROJECT_DOES_HOLD = `    const installed = lockfile.features.map((feature) => renderContract(feature.contract))`
+
+const THE_LISTING_SAYS_WHICH_WERE_ASKED_FOR = `    askedFor: feature.askedFor,`
+
 export const mutants: readonly Mutant[] = [
   // -------------------------------------------------------------------------
   // Removing more than was asked for
@@ -304,6 +310,36 @@ export const mutants: readonly Mutant[] = [
     ],
     killed(['a-command-that-takes-nothing-is-read-and-refuses-an-argument']),
   ),
+
+  sameOnEveryLens(
+    'R-18',
+    'never says the folder is not committed, so the one trap whose victim has no way to reach its ' +
+      'cause is repaired perfectly and silently, and the next person to clone meets it again',
+    [reconcileFile(A_PROJECT_WITH_NOTHING_IS_NOT_MISSING_ANYTHING, `    false &&`)],
+    killed(['every-file-missing-at-once-says-the-folder-is-not-committed']),
+  ),
+
+  sameOnEveryLens(
+    'R-19',
+    'refuses a name the project does not hold without saying what it does hold, which is the useful ' +
+      'half: somebody typing a name that is not there has misremembered it, and what they want back is ' +
+      'the one they meant',
+    [
+      removeFile(
+        A_REFUSAL_NAMES_WHAT_THE_PROJECT_DOES_HOLD,
+        `    const installed: readonly string[] = []`,
+      ),
+    ],
+    killed(['a-name-the-project-does-not-hold-is-refused-with-what-it-does']),
+  ),
+
+  sameOnEveryLens(
+    'R-20',
+    'reports every installed feature as one the user asked for, so the listing cannot tell a root from ' +
+      'a dependency - which is the one fact `toopo remove` refuses on and the whole reason to read it',
+    [listFile(THE_LISTING_SAYS_WHICH_WERE_ASKED_FOR, `    askedFor: true,`)],
+    killed(['every-installed-feature-is-named-with-whether-it-was-asked-for']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -331,5 +367,152 @@ export const battery: Battery = {
 
   unreachableGuards: [],
 
-  unprobedRegions: [],
+  /**
+   * `cli/` is now one folder measured by four batteries, and this is the three quarters the other
+   * three hold.
+   *
+   * The division follows the commands rather than the files: `cli-install` holds what happens when
+   * files arrive in a project that has none, `cli-update` what happens when they arrive on top of
+   * files already there, `cli-search` what a query matches, and this what happens when files leave.
+   * Every guard below belongs to one of the first three and is probed there.
+   *
+   * Two of them are worth naming because they look like this battery's and are not.
+   * `nothing-is-removed-while-a-feature-is-held-back` is the rule a removal found the missing half of,
+   * and its mutant is `cli-update`'s - splitting a region across two batteries is how two batteries
+   * come to disagree about who probes what. And `a-dependency-that-left-the-closure-is-removed` is the
+   * same arithmetic this battery measures from the other side: there the graph moved, here the user
+   * asked.
+   */
+  unprobedRegions: [
+    {
+      nature: 'claims detection',
+      reason:
+        'everything that is not a removal. Installing, updating, diffing, searching, the argument ' +
+        'grammar and the two-phase write - a removal reaches the write and the reconciliation and ' +
+        'nothing else of it, and the three batteries next door carry eighty-odd defects over exactly ' +
+        'these.',
+      guards: [
+        'a-blob-that-is-not-what-its-address-names-is-refused',
+        'a-command-with-no-flag-is-read',
+        'a-commit-leaves-no-staged-file-behind',
+        'a-commit-writes-the-files-and-the-lockfile-together',
+        'a-configuration-round-trips-through-the-file',
+        'a-conflicted-feature-is-held-back-whole',
+        'a-contract-the-catalogue-refused-is-not-installable',
+        'a-corpus-of-real-queries-ranks-the-right-contract-first',
+        'a-count-is-read-off-the-lines-it-summarises',
+        'a-cut-summary-says-that-it-was-cut',
+        'a-dependency-that-left-the-closure-is-removed',
+        'a-directory-that-does-not-travel-is-refused',
+        'a-directory-where-a-file-goes-is-refused-by-name',
+        'a-feature-pulled-in-and-then-asked-for-becomes-a-root',
+        'a-feature-that-imports-a-held-back-one-is-held-back-too',
+        'a-feature-with-no-dependency-lands-exactly-as-it-was-served',
+        'a-field-this-toopo-does-not-honour-is-refused',
+        'a-file-already-equal-to-what-we-would-write-is-not-a-conflict',
+        'a-file-already-holding-our-bytes-is-claimed-and-not-rewritten',
+        'a-file-changed-on-both-sides-is-a-conflict',
+        'a-file-that-is-not-json-is-refused-by-name',
+        'a-file-that-was-deleted-is-put-back',
+        'a-file-the-registry-did-not-change-keeps-your-version',
+        'a-file-toopo-did-not-write-is-never-overwritten-by-an-update',
+        'a-file-we-did-not-write-is-never-overwritten',
+        'a-file-where-a-folder-must-go-is-refused-with-nothing-staged',
+        'a-flag-and-its-value-are-read',
+        'a-flag-with-no-value-is-refused',
+        'a-held-back-feature-keeps-its-lockfile-entry-exactly',
+        'a-hunk-header-counts-the-lines-it-covers',
+        'a-kept-file-keeps-the-digest-we-wrote-and-not-the-one-on-disk',
+        'a-line-only-the-first-text-has-is-a-minus',
+        'a-line-only-the-second-text-has-is-a-plus',
+        'a-line-says-what-was-done-to-that-file',
+        'a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run',
+        'a-lockfile-with-no-root-has-nowhere-to-start',
+        'a-miss-names-the-words-no-contract-carries',
+        'a-missing-final-newline-is-said-rather-than-lost',
+        'a-name-the-catalogue-does-not-hold-is-refused',
+        'a-path-with-a-space-installs-normally',
+        'a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen',
+        'a-project-that-was-never-initialised-answers-nothing',
+        'a-project-with-no-package-json-installs-normally',
+        'a-query-the-catalogue-cannot-answer-answers-nothing',
+        'a-query-with-no-words-answers-nothing',
+        'a-refusal-leaves-no-staged-file-behind',
+        'a-refusal-leaves-the-project-exactly-as-it-was',
+        'a-refusal-says-nothing-was-written-before-it-says-why',
+        'a-refused-commit-does-not-touch-the-file-it-would-replace',
+        'a-refused-contract-is-found-with-the-reason-it-was-refused',
+        'a-refused-contract-is-in-the-index-and-is-not-installable',
+        'a-refused-contract-is-offered-no-install-line',
+        'a-removal-leaves-a-folder-that-still-holds-something',
+        'a-removal-tidies-the-folder-it-emptied',
+        'a-renamed-entry-file-is-repointed',
+        'a-repeated-flag-and-a-stray-word-are-refused',
+        'a-root-stays-one-when-something-else-pulls-it-in',
+        'a-shared-blob-is-repointed-across-features',
+        'a-shared-file-is-written-once-and-still-appears-in-the-plan',
+        'a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not',
+        'a-size-is-read-the-way-a-file-manager-shows-it',
+        'a-snapshot-that-is-not-what-its-digest-names-is-refused',
+        'a-source-carrying-more-than-the-port-declares-is-refused',
+        'a-switch-takes-no-value-and-swallows-nothing',
+        'a-version-that-moved-with-no-byte-changing-is-recorded-anyway',
+        'a-version-this-toopo-does-not-write-is-refused',
+        'a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias',
+        'add-before-init-says-what-to-run',
+        'add-without-a-contract-is-refused',
+        'an-edge-the-registry-does-not-hold-is-refused',
+        'an-edited-file-is-never-replaced',
+        'an-entry-file-is-named-after-its-feature',
+        'an-entry-file-is-never-deduplicated',
+        'an-import-line-is-printed-ready-to-copy',
+        'an-import-line-names-the-diagnostic-beside-the-answer',
+        'an-import-of-a-file-this-install-does-not-carry-is-refused',
+        'an-import-of-something-outside-the-registry-is-refused',
+        'an-installable-contract-carries-no-refusal',
+        'an-installed-file-imports-what-was-installed',
+        'an-unchanged-specifier-is-left-alone',
+        'an-unknown-command-and-an-unknown-flag-are-refused',
+        'an-unreadable-lockfile-stops-the-install',
+        'an-update-keeps-the-implementation-the-lockfile-names',
+        'an-update-writes-the-bytes-the-registry-now-serves',
+        'applying-an-update-twice-changes-nothing-the-second-time',
+        'each-of-the-five-installs-one-file-named-after-itself',
+        'each-side-says-for-itself-that-it-has-no-final-newline',
+        'every-breakage-is-classified',
+        'every-declared-alias-finds-its-own-contract-first',
+        'every-feature-the-install-writes-gets-its-own-lockfile-entry',
+        'every-method-of-the-port-answers-an-endpoint-that-exists',
+        'every-shape-of-import-is-repointed-and-not-only-the-obvious-one',
+        'nothing-at-all-is-refused',
+        'nothing-but-the-local-adapter-reaches-the-serialisation',
+        'nothing-is-removed-while-a-feature-is-held-back',
+        'only-the-feature-that-was-asked-for-is-a-root',
+        'only-the-lines-around-a-change-are-shown',
+        'reinstalling-what-is-already-there-changes-nothing',
+        'remove-without-a-contract-is-refused',
+        'the-catalogue-lists-every-contract-and-marks-the-one-it-refuses',
+        'the-cost-is-stated-before-the-files',
+        'the-cost-is-the-files-the-bytes-and-the-depth',
+        'the-diff-op-codes-are-what-node-answers',
+        'the-graph-lands-as-a-tree-of-features',
+        'the-import-line-follows-the-configured-directory',
+        'the-local-source-binds-a-visibly-unpublished-version',
+        'the-lockfile-holds-what-was-served-and-what-was-written',
+        'the-plan-is-in-the-resolutions-order',
+        'the-port-answers-every-need-behind-it-and-nothing-else',
+        'the-proposed-directory-follows-the-shape-of-the-project',
+        'the-three-spellings-of-one-file-all-resolve',
+        'the-updated-lockfile-holds-what-was-served-and-what-was-written',
+        'the-users-tsconfig-is-never-read',
+        'the-ways-out-are-offered-only-where-the-reader-put-something',
+        'two-changes-far-apart-are-two-hunks',
+        'two-different-files-on-one-destination-are-refused',
+        'two-identical-texts-have-nothing-to-show',
+        'two-versions-of-one-feature-are-refused',
+        'two-versions-of-one-feature-are-refused-before-anything-is-written',
+        'update-writes-only-when-it-is-asked-to',
+      ],
+    },
+  ],
 }
