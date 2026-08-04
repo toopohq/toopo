@@ -43,12 +43,14 @@ import type { HarnessFile, ImplementationRecord } from './implementation-record.
 import { resolveGuard, resolveProvenance } from './evidence.js'
 import { parametersOf } from './signature.js'
 import { encode } from './value.js'
+import type { CaseGroup } from '../catalogue/identifier.js'
+import { groupingFaults, takenAddresses } from '../catalogue/identifier.js'
 
 /** Anchored on this file rather than on the working directory, as `mutation/run.ts` anchors its own. */
 export const REPOSITORY_ROOT = join(import.meta.dirname, '..')
 
-/** The three fields every table of every contract shares, and the only three. */
-const SHARED_CASE_FIELDS = ['id', 'provenance', 'rationale'] as const
+/** The four fields every table of every contract shares, and the only four. */
+const SHARED_CASE_FIELDS = ['id', 'group', 'provenance', 'rationale'] as const
 
 /** `samples` is here because five of five call it that, which is the catalogue's bar for naming. */
 const PROFILE_FIELDS_THE_SCHEMA_NAMES = ['name', 'description', 'samples'] as const
@@ -70,6 +72,7 @@ export type ExportSource = {
 export type CaseTableSource = {
   readonly name: string
   readonly purpose: string
+  readonly groups: readonly CaseGroup[]
   readonly cases: readonly Readonly<Record<string, unknown>>[]
 }
 
@@ -249,10 +252,78 @@ const caseOf = (
 
   return {
     id,
+    group: entry['group'] as string,
     provenance: provenanceOf(where, entry['provenance'] as string, contract, batteries),
     rationale: entry['rationale'] as string,
     data: encode(data, where),
   }
+}
+
+/**
+ * A table's grouping is not a partition of its cases.
+ *
+ * Four ways it can fail and one error for all four, because they are one question - whether every
+ * heading the page renders has cases under it and every case has a heading over it - and a caller
+ * needs to know which way it gave way rather than which class it belongs to.
+ */
+export class GroupingIsNotAPartition extends Error {
+  constructor(where: string, fault: string) {
+    super(
+      `${where}: ${fault}. The groups of a table partition its cases: every case names a group the ` +
+        `table declares, every declared group holds at least one case, and the cases of a group are ` +
+        `contiguous because the source's order is the page's order. Without that the page renders a ` +
+        `heading nothing sits under, or two headings with one title and nothing saying why.`,
+    )
+    this.name = 'GroupingIsNotAPartition'
+  }
+}
+
+/**
+ * A group identifier collides with another address of the same contract.
+ *
+ * Separate from the partition because the fault is not the table's: a group and a case become the
+ * same `#id` on one page, so the collision is only visible from the contract, and what it produces
+ * is a shared link that silently lands on the wrong element. Measured when the grouping was first
+ * derived: two of the forty-eight collided with a case of their own table.
+ */
+export class GroupAddressIsTaken extends Error {
+  constructor(contract: string, taken: readonly string[]) {
+    super(
+      `${contract} answers to [${taken.join(', ')}] as both a group and something else. A group and ` +
+        `a case are both rendered as \`#id\` on one page, so they share one space of addresses and a ` +
+        `duplicate is a link that lands on the wrong element.`,
+    )
+    this.name = 'GroupAddressIsTaken'
+  }
+}
+
+const partitionOf = (table: CaseTableSource, where: string): readonly CaseGroup[] => {
+  const faults = groupingFaults(
+    table.groups,
+    table.cases.map((entry) => entry['group'] as string),
+  )
+
+  if (faults.length > 0) throw new GroupingIsNotAPartition(where, faults.join('; '))
+
+  return table.groups
+}
+
+/**
+ * Every address a contract page renders as `#id`, refused if two of them are the same string.
+ *
+ * Asked of the contract rather than of a table, because a page carries every table of a contract and
+ * an anchor is unique to a document. It is the same reason a case identifier is unique per contract
+ * rather than per table.
+ */
+const refuseTakenAddresses = (contract: string, tables: readonly CaseTableSource[]): void => {
+  const taken = takenAddresses(
+    tables.flatMap((table) => [
+      ...table.groups.map((group) => group.id),
+      ...table.cases.map((entry) => entry['id'] as string),
+    ]),
+  )
+
+  if (taken.length > 0) throw new GroupAddressIsTaken(contract, taken)
 }
 
 /**
@@ -480,6 +551,8 @@ const surfaceOf = (
 export const serialiseContract = (root: string, source: ContractSource): ContractRecord => {
   const surface = surfaceOf(source.exports)
 
+  refuseTakenAddresses(source.address.name, source.caseTables)
+
   return {
     address: source.address,
     lifecycle: source.lifecycle,
@@ -509,6 +582,7 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
       (table): CaseTableRecord => ({
         name: table.name,
         purpose: table.purpose,
+        groups: partitionOf(table, `${source.address.name}/${table.name}`),
         cases: table.cases.map((entry) =>
           caseOf(
             entry,

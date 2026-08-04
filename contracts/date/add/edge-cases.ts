@@ -18,12 +18,32 @@
  * mutation.
  */
 
+import type { CaseGroup } from '../../../catalogue/identifier.js'
 import type { Provenance } from '../../../catalogue/every-contract.js'
 import type { AddFailureReason, Duration } from './contract.js'
 import { EARLIEST_REPRESENTABLE, LATEST_REPRESENTABLE } from './contract.js'
 
+/**
+ * The ten questions the typed table answers, in the order it answers them. Frozen with the major -
+ * see `CaseGroup`.
+ */
+export const edgeCaseGroups: readonly CaseGroup[] = [
+  { id: 'baseline', title: 'Baseline' },
+  { id: 'end-of-month-clamping', title: 'End-of-month clamping' },
+  { id: 'leap-years', title: 'Leap years' },
+  { id: 'aggregation-within-a-step', title: 'Aggregation within a step' },
+  { id: 'order-between-the-steps', title: 'Order between the steps' },
+  { id: 'negative-and-mixed-signs', title: 'Negative and mixed signs' },
+  { id: 'the-neutral-duration', title: 'The neutral duration' },
+  { id: 'durations-that-are-not-whole-units', title: 'Durations that are not exact whole units' },
+  { id: 'inputs-that-are-not-dates', title: 'Inputs that are not dates' },
+  { id: 'the-edges-of-the-representable-range', title: 'The edges of the representable range' },
+]
+
 export type EdgeCase = {
   readonly id: string
+  /** Which of `edgeCaseGroups` this case sits under. */
+  readonly group: string
   readonly date: string
   readonly duration: Duration
   readonly expected: string | null
@@ -34,9 +54,9 @@ export type EdgeCase = {
 }
 
 export const edgeCases: readonly EdgeCase[] = [
-  // --- Baseline -----------------------------------------------------------
   {
     id: 'an-ordinary-day',
+    group: 'baseline',
     date: '2024-01-15T10:30:00.000Z',
     duration: { days: 1 },
     expected: '2024-01-16T10:30:00.000Z',
@@ -46,6 +66,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'minutes-carry-into-hours',
+    group: 'baseline',
     date: '2024-01-15T10:30:00.000Z',
     duration: { minutes: 90 },
     expected: '2024-01-15T12:00:00.000Z',
@@ -55,6 +76,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-epoch-is-not-a-boundary',
+    group: 'baseline',
     date: '1969-12-31T23:59:59.999Z',
     duration: { milliseconds: 1 },
     expected: '1970-01-01T00:00:00.000Z',
@@ -65,9 +87,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'of the timestamp get this one wrong.',
   },
 
-  // --- End-of-month clamping ----------------------------------------------
   {
     id: 'clamp-to-the-end-of-february',
+    group: 'end-of-month-clamping',
     date: '2024-01-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '2024-02-29T00:00:00.000Z',
@@ -83,6 +105,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'clamp-in-a-common-year',
+    group: 'end-of-month-clamping',
     date: '2023-01-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '2023-02-28T00:00:00.000Z',
@@ -92,6 +115,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'clamp-into-a-thirty-day-month',
+    group: 'end-of-month-clamping',
     date: '2024-05-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '2024-06-30T00:00:00.000Z',
@@ -101,6 +125,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'clamp-going-backwards',
+    group: 'end-of-month-clamping',
     date: '2024-03-31T00:00:00.000Z',
     duration: { months: -1 },
     expected: '2024-02-29T00:00:00.000Z',
@@ -110,6 +135,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-clamp-does-not-round-trip',
+    group: 'end-of-month-clamping',
     date: '2024-02-29T00:00:00.000Z',
     duration: { months: -1 },
     expected: '2024-01-29T00:00:00.000Z',
@@ -124,6 +150,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-clamp-keeps-the-time-of-day',
+    group: 'end-of-month-clamping',
     date: '2024-01-31T23:59:59.999Z',
     duration: { months: 1 },
     expected: '2024-02-29T23:59:59.999Z',
@@ -134,9 +161,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'millisecond, including at the last instant of a day.',
   },
 
-  // --- Leap years ----------------------------------------------------------
   {
     id: 'a-leap-day-plus-one-year',
+    group: 'leap-years',
     date: '2024-02-29T00:00:00.000Z',
     duration: { years: 1 },
     expected: '2025-02-28T00:00:00.000Z',
@@ -146,6 +173,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-leap-day-plus-four-years',
+    group: 'leap-years',
     date: '2024-02-29T00:00:00.000Z',
     duration: { years: 4 },
     expected: '2028-02-29T00:00:00.000Z',
@@ -155,6 +183,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-century-rule',
+    group: 'leap-years',
     date: '2096-02-29T00:00:00.000Z',
     duration: { years: 4 },
     expected: '2100-02-28T00:00:00.000Z',
@@ -166,6 +195,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-two-digit-year',
+    group: 'leap-years',
     date: '0050-01-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '0050-02-28T00:00:00.000Z',
@@ -183,6 +213,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'year-zero',
+    group: 'leap-years',
     date: '0000-01-31T00:00:00.000Z',
     duration: { months: 1 },
     expected: '0000-02-29T00:00:00.000Z',
@@ -196,9 +227,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'be mistaken for, so all of them pass under that implementation and this one does not.',
   },
 
-  // --- Aggregation within a step ------------------------------------------
   {
     id: 'two-months-aggregated',
+    group: 'aggregation-within-a-step',
     date: '2023-01-31T00:00:00.000Z',
     duration: { months: 2 },
     expected: '2023-03-31T00:00:00.000Z',
@@ -211,6 +242,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'years-and-months-are-one-total',
+    group: 'aggregation-within-a-step',
     date: '2023-01-31T00:00:00.000Z',
     duration: { years: 1, months: 1 },
     expected: '2024-02-29T00:00:00.000Z',
@@ -222,6 +254,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'weeks-and-days-are-one-total',
+    group: 'aggregation-within-a-step',
     date: '2024-02-25T00:00:00.000Z',
     duration: { weeks: 1, days: 1 },
     expected: '2024-03-04T00:00:00.000Z',
@@ -231,6 +264,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-week-never-clamps',
+    group: 'aggregation-within-a-step',
     date: '2024-01-31T00:00:00.000Z',
     duration: { weeks: 1 },
     expected: '2024-02-07T00:00:00.000Z',
@@ -239,9 +273,9 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'A week never clamps, because it is a count of days rather than a calendar unit.',
   },
 
-  // --- Order between the steps --------------------------------------------
   {
     id: 'calendar-before-elapsed-hours',
+    group: 'order-between-the-steps',
     date: '2024-01-30T23:00:00.000Z',
     duration: { months: 1, hours: 2 },
     expected: '2024-03-01T01:00:00.000Z',
@@ -255,6 +289,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'calendar-before-elapsed-days',
+    group: 'order-between-the-steps',
     date: '2024-01-30T00:00:00.000Z',
     duration: { months: 1, days: 1 },
     expected: '2024-03-01T00:00:00.000Z',
@@ -265,9 +300,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'added. Days first would give 31 January, then 29 February.',
   },
 
-  // --- Negative and mixed signs -------------------------------------------
   {
     id: 'a-negative-field-subtracts',
+    group: 'negative-and-mixed-signs',
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: -3 },
     expected: '2024-01-12T00:00:00.000Z',
@@ -277,6 +312,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'fields-of-opposite-sign',
+    group: 'negative-and-mixed-signs',
     date: '2024-01-31T00:00:00.000Z',
     duration: { months: 1, days: -1 },
     expected: '2024-02-28T00:00:00.000Z',
@@ -289,9 +325,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'date-fns accept it and agree on this answer.',
   },
 
-  // --- The neutral duration ------------------------------------------------
   {
     id: 'the-empty-duration',
+    group: 'the-neutral-duration',
     date: '2024-01-31T12:34:56.789Z',
     duration: {},
     expected: '2024-01-31T12:34:56.789Z',
@@ -305,6 +341,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-negative-zero-field',
+    group: 'the-neutral-duration',
     date: '2024-01-31T12:34:56.789Z',
     duration: { days: -0 },
     expected: '2024-01-31T12:34:56.789Z',
@@ -317,6 +354,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-field-set-to-undefined',
+    group: 'the-neutral-duration',
     date: '2024-01-31T12:34:56.789Z',
     duration: { days: undefined },
     expected: '2024-01-31T12:34:56.789Z',
@@ -327,9 +365,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'form has no value is ordinary TypeScript, and rejecting it would make the type lie.',
   },
 
-  // --- Durations that are not exact whole units ---------------------------
   {
     id: 'a-fractional-month',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { months: 1.5 },
     expected: null,
@@ -345,6 +383,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'half-a-day',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: 0.5 },
     expected: null,
@@ -356,6 +395,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-field-that-is-not-a-number',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: Number.NaN },
     expected: null,
@@ -365,6 +405,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-infinite-field',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: Number.POSITIVE_INFINITY },
     expected: null,
@@ -374,6 +415,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-field-past-the-safe-range',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: 1e21 },
     expected: null,
@@ -388,6 +430,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'two-fields-whose-total-cancels',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { years: 2 ** 53, months: -(2 ** 53) * 12 },
     expected: null,
@@ -404,6 +447,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-month-total-that-is-not-exact',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { years: Number.MAX_SAFE_INTEGER },
     expected: null,
@@ -416,6 +460,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-elapsed-total-that-is-not-exact',
+    group: 'durations-that-are-not-whole-units',
     date: '2024-01-15T00:00:00.000Z',
     duration: { milliseconds: Number.MAX_SAFE_INTEGER, seconds: Number.MAX_SAFE_INTEGER },
     expected: null,
@@ -429,9 +474,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'the duration it wrote smaller.',
   },
 
-  // --- Inputs that are not dates -------------------------------------------
   {
     id: 'an-input-that-is-not-a-date',
+    group: 'inputs-that-are-not-dates',
     date: 'not a date',
     duration: { days: 1 },
     expected: null,
@@ -444,6 +489,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-input-that-is-not-a-date-with-the-empty-duration',
+    group: 'inputs-that-are-not-dates',
     date: 'not a date',
     duration: {},
     expected: null,
@@ -454,9 +500,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'duration is looked at, so no duration can make an unanswerable call answerable.',
   },
 
-  // --- The edges of the representable range --------------------------------
   {
     id: 'the-last-representable-instant',
+    group: 'the-edges-of-the-representable-range',
     date: LATEST_REPRESENTABLE,
     duration: {},
     expected: LATEST_REPRESENTABLE,
@@ -466,6 +512,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'one-millisecond-past-the-end-of-the-range',
+    group: 'the-edges-of-the-representable-range',
     date: LATEST_REPRESENTABLE,
     duration: { milliseconds: 1 },
     expected: null,
@@ -477,6 +524,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'one-millisecond-before-the-start-of-the-range',
+    group: 'the-edges-of-the-representable-range',
     date: EARLIEST_REPRESENTABLE,
     duration: { milliseconds: -1 },
     expected: null,
@@ -486,6 +534,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-intermediate-step-outside-the-range',
+    group: 'the-edges-of-the-representable-range',
     date: LATEST_REPRESENTABLE,
     duration: { months: 1, days: -40 },
     expected: null,
@@ -509,8 +558,20 @@ export const edgeCases: readonly EdgeCase[] = [
  * variable, a JSON payload or a JavaScript caller passes straight through with whatever fields it
  * carries.
  */
+/**
+ * The two questions this table answers. Read off the `reason` its own cases carry rather than
+ * decided beside them: three reject a field the contract does not define, one rejects a declared
+ * field of the wrong type, and that partition is already in the data. Frozen with the major.
+ */
+export const untypedEdgeCaseGroups: readonly CaseGroup[] = [
+  { id: 'fields-the-contract-does-not-define', title: 'A field the contract does not define' },
+  { id: 'fields-carrying-the-wrong-type', title: 'A declared field carrying the wrong type' },
+]
+
 export type UntypedEdgeCase = {
   readonly id: string
+  /** Which of `untypedEdgeCaseGroups` this case sits under. */
+  readonly group: string
   readonly date: string
   readonly duration: Readonly<Record<string, unknown>>
   readonly expected: string | null
@@ -522,6 +583,7 @@ export type UntypedEdgeCase = {
 export const untypedEdgeCases: readonly UntypedEdgeCase[] = [
   {
     id: 'a-singular-day-field',
+    group: 'fields-the-contract-does-not-define',
     date: '2024-01-15T00:00:00.000Z',
     duration: { day: 1 },
     expected: null,
@@ -535,6 +597,7 @@ export const untypedEdgeCases: readonly UntypedEdgeCase[] = [
   },
   {
     id: 'a-singular-month-field',
+    group: 'fields-the-contract-does-not-define',
     date: '2024-01-15T00:00:00.000Z',
     duration: { month: 1 },
     expected: null,
@@ -544,6 +607,7 @@ export const untypedEdgeCases: readonly UntypedEdgeCase[] = [
   },
   {
     id: 'an-unknown-field-beside-a-declared-one',
+    group: 'fields-the-contract-does-not-define',
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: 1, day: 1 },
     expected: null,
@@ -556,6 +620,7 @@ export const untypedEdgeCases: readonly UntypedEdgeCase[] = [
   },
   {
     id: 'a-declared-field-carrying-a-string',
+    group: 'fields-carrying-the-wrong-type',
     date: '2024-01-15T00:00:00.000Z',
     duration: { days: '1' },
     expected: null,

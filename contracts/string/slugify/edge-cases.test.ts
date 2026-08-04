@@ -2,11 +2,13 @@ import { describe, it, expect } from 'vitest'
 import {
   CASE_TABLE_IS_ADDRESSED,
   CASE_TABLE_IS_JUSTIFIED,
+  CASE_TABLE_IS_PARTITIONED,
   expectEveryCaseIsAddressed,
+  expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
 import { outputsAreEqual } from './contract.js'
-import { edgeCases } from './edge-cases.js'
+import { edgeCaseGroups, edgeCases } from './edge-cases.js'
 import { slugify } from './reference.js'
 
 /**
@@ -84,13 +86,20 @@ const DIVERGING_UNDER_AN_ASCII_ALPHABET = [
 
 describe('string/slugify@1 edge case table', () => {
   it(CASE_TABLE_IS_ADDRESSED, () => {
-    expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
+    expectEveryCaseIsAddressed([
+      ...edgeCaseGroups.map(({ id }) => id),
+      ...edgeCases.map((edgeCase) => edgeCase.id),
+    ])
   })
 
   it('settles-each-text-once', () => {
     const texts = edgeCases.map(({ text }) => printable(text))
 
     expect(texts).toHaveLength(new Set(texts).size)
+  })
+
+  it(CASE_TABLE_IS_PARTITIONED, () => {
+    expectEveryCaseIsGrouped([{ name: 'edge-cases', groups: edgeCaseGroups, cases: edgeCases }])
   })
 
   it(CASE_TABLE_IS_JUSTIFIED, () => {

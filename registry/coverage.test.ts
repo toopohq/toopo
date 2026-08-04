@@ -46,7 +46,9 @@ describe('a record accounts for everything its contract declares', () => {
 
       const carriedByName = new Set(Object.keys(CARRIED_BY))
       for (const declaration of record.ownDeclarations) carriedByName.add(declaration.name)
-      for (const table of source.caseTables) carriedByName.add(tableExportOf(table.name, source))
+      for (const table of source.caseTables) {
+        for (const exported of tableExportsOf(table.name, source)) carriedByName.add(exported)
+      }
 
       const declared = source.declares.flatMap((module) => Object.keys(module))
       const excused = new Set(source.notCarried.map((entry) => entry.name))
@@ -99,12 +101,19 @@ describe('a record accounts for everything its contract declares', () => {
 })
 
 /**
- * Which export of `edge-cases.ts` a table came from. The registry names a table for the site and the
- * contract names it for TypeScript, so the join is stated once here rather than guessed twice.
+ * Which exports of `edge-cases.ts` a table came from. The registry names a table for the site and
+ * the contract names it for TypeScript, so the join is stated once here rather than guessed twice.
+ *
+ * Two exports and not one since a table gained a grouping: the cases and the groups they are
+ * partitioned into. Returning the pair rather than adding a second function keeps the branching in
+ * one place - two copies of *which table is this* would be two things to keep in step.
  */
-const tableExportOf = (table: string, source: { readonly address: { readonly name: string } }): string => {
-  if (table === 'edge-cases') return 'edgeCases'
-  if (source.address.name === 'date/add') return 'untypedEdgeCases'
+const tableExportsOf = (
+  table: string,
+  source: { readonly address: { readonly name: string } },
+): readonly string[] => {
+  if (table === 'edge-cases') return ['edgeCases', 'edgeCaseGroups']
+  if (source.address.name === 'date/add') return ['untypedEdgeCases', 'untypedEdgeCaseGroups']
 
-  return 'untypedCallerCases'
+  return ['untypedCallerCases', 'untypedCallerCaseGroups']
 }

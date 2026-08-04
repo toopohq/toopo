@@ -29,6 +29,7 @@
  * language never has to rename the first one's addresses.
  */
 
+import type { CaseGroup } from '../catalogue/identifier.js'
 import type { ContractAddress, GuardAddress } from './address.js'
 import type { EncodedValue } from './value.js'
 import type { CaseProvenance } from './evidence.js'
@@ -217,6 +218,12 @@ export type PropertiesRecord = {
  */
 export type CaseRecord = {
   readonly id: string
+  /**
+   * Which group of the table this case sits under. Required, never optional: a case with no group
+   * would be a silence about where it belongs, and `groups` is non-empty by the same refusal, so
+   * there is always a value to give.
+   */
+  readonly group: string
   readonly provenance: CaseProvenance
   readonly rationale: string
   readonly data: EncodedValue
@@ -228,10 +235,30 @@ export type CaseRecord = {
  * caller can write. Flattening them into one array would lose the distinction those two contracts
  * went out of their way to make, and a case identifier is unique across a contract rather than across
  * a table, so nothing is gained by the flattening either.
+ *
+ * **The eighth defect a consumer has found in this schema, and the second the site found.** The
+ * contracts grouped their cases in comment banners - `--- Whitespace ---`, `--- Sign ---` - and all
+ * 187 cases sat inside one, between two and nine cases each. The record was flat, so a page could
+ * only render fifty rows in a row: measured by printing both, fifty read as a dump and a reader
+ * still could not *find* anything, while twelve sections are twelve short answers to twelve
+ * questions somebody arrives with. The judgement existed in the source and its shape as data did
+ * not, which is the same defect as `parameters` arriving one unit earlier - the source said
+ * something the record threw away.
+ *
+ * The banners are gone with this field. Two statements of one grouping drift, and it is the second
+ * that lies; one of the four banners carrying prose already said *five rows* over six cases.
  */
 export type CaseTableRecord = {
   readonly name: string
   readonly purpose: string
+  /**
+   * The groups this table's cases are partitioned into, in the order the page renders them.
+   *
+   * Non-empty, and the partition is refused in both directions by `serialise.ts`: a case naming a
+   * group the table does not declare, and a declared group no case sits in. Both would put an
+   * address on the page that leads nowhere.
+   */
+  readonly groups: readonly CaseGroup[]
   readonly cases: readonly CaseRecord[]
 }
 

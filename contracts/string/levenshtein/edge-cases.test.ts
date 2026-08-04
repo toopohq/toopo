@@ -3,10 +3,12 @@ import {
   CASE_TABLE_IS_ADDRESSED,
   expectEveryCaseIsAddressed,
   CASE_TABLE_IS_JUSTIFIED,
+  CASE_TABLE_IS_PARTITIONED,
+  expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
 import { outputsAreEqual } from './contract.js'
-import { edgeCases } from './edge-cases.js'
+import { edgeCaseGroups, edgeCases } from './edge-cases.js'
 import { levenshtein } from './reference.js'
 
 /**
@@ -73,13 +75,20 @@ const inCodeUnits = (a: string, b: string): number => {
 
 describe('string/levenshtein@1 edge case table', () => {
   it(CASE_TABLE_IS_ADDRESSED, () => {
-    expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
+    expectEveryCaseIsAddressed([
+      ...edgeCaseGroups.map(({ id }) => id),
+      ...edgeCases.map((edgeCase) => edgeCase.id),
+    ])
   })
 
   it('settles-each-pair-once', () => {
     const pairs = edgeCases.map(({ a, b }) => `${printable(a)} ${printable(b)}`)
 
     expect(pairs).toHaveLength(new Set(pairs).size)
+  })
+
+  it(CASE_TABLE_IS_PARTITIONED, () => {
+    expectEveryCaseIsGrouped([{ name: 'edge-cases', groups: edgeCaseGroups, cases: edgeCases }])
   })
 
   it(CASE_TABLE_IS_JUSTIFIED, () => {

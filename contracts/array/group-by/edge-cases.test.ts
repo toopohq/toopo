@@ -3,9 +3,11 @@ import {
   CASE_TABLE_IS_ADDRESSED,
   expectEveryCaseIsAddressed,
   CASE_TABLE_IS_JUSTIFIED,
+  CASE_TABLE_IS_PARTITIONED,
+  expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
-import { edgeCases, untypedCallerCases } from './edge-cases.js'
+import { edgeCaseGroups, edgeCases, untypedCallerCaseGroups, untypedCallerCases } from './edge-cases.js'
 import { assertOutcome, callOnce, callsMatch, renderCalls, renderGroups } from './outcome.js'
 import { groupBy } from './reference.js'
 
@@ -70,7 +72,18 @@ describe('array/group-by@1 edge case table', () => {
   const allCases = [...edgeCases, ...untypedCallerCases]
 
   it(CASE_TABLE_IS_ADDRESSED, () => {
-    expectEveryCaseIsAddressed(allCases.map((edgeCase) => edgeCase.id))
+    expectEveryCaseIsAddressed([
+      ...edgeCaseGroups.map(({ id }) => id),
+      ...untypedCallerCaseGroups.map(({ id }) => id),
+      ...allCases.map((edgeCase) => edgeCase.id),
+    ])
+  })
+
+  it(CASE_TABLE_IS_PARTITIONED, () => {
+    expectEveryCaseIsGrouped([
+      { name: 'edge-cases', groups: edgeCaseGroups, cases: edgeCases },
+      { name: 'untyped-callers', groups: untypedCallerCaseGroups, cases: untypedCallerCases },
+    ])
   })
 
   it(CASE_TABLE_IS_JUSTIFIED, () => {

@@ -1,10 +1,12 @@
 /**
- * The shape of every frozen address in this catalogue.
+ * The shape of every frozen address in this catalogue, and of the one thing that is nothing but an
+ * address and its sentence.
  *
- * A case of block 4.4 is addressed by one, a guard is addressed by one, and the registry addresses a
- * case, a guard and a mutant by one. It is a name in kebab-case, unique within its contract, frozen
- * with the contract's major version - and the reasons are stated where the rule was settled:
- * `every-contract.ts` for a case, `mutation/run.ts` for a guard.
+ * A case of block 4.4 is addressed by one, a guard is addressed by one, a group of a table is
+ * addressed by one, and the registry addresses a case, a guard and a mutant by one. It is a name in
+ * kebab-case, unique within its contract, frozen with the contract's major version - and the reasons
+ * are stated where the rule was settled: `every-contract.ts` for a case, `mutation/run.ts` for a
+ * guard, `CaseGroup` below for a group.
  *
  * It lives in a module of its own for one reason, and it is the reason `every-contract.ts` gives for
  * what belongs to the catalogue at all: *what it says belongs to the registry rather than to any one
@@ -20,3 +22,91 @@
 export const FROZEN_IDENTIFIER = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export const isFrozenIdentifier = (candidate: string): boolean => FROZEN_IDENTIFIER.test(candidate)
+
+/**
+ * One group of a table of block 4.4: an address, and the sentence a reader sees above the cases.
+ *
+ * **It is the guard rule in data form.** A guard's title is an identifier, then ` :: `, then a
+ * sentence, because a guard needs an address a battery can pin and a sentence a person can read, and
+ * one string doing both means every reword breaks a pin. A group needs exactly the same two things
+ * for exactly the same reasons - the site anchors a URL on the `id`, and the `title` is what somebody
+ * reads before deciding whether this section holds their question - so it is written as two fields
+ * rather than as one string with a separator in it. A group is data and a guard title is not, which
+ * is the only reason the shapes differ.
+ *
+ * `id` is a frozen identifier, unique within the contract across **groups and cases together**: both
+ * become `#id` on one page, so a collision is a link that silently lands on the wrong element.
+ * `title` is prose and is corrected the day it reads badly, exactly as a guard's sentence is.
+ *
+ * **What is frozen and what it costs.** Splitting a group, merging two, or renaming an `id` costs
+ * `name@2`, because each of them breaks a link somebody has already shared. Adding a case to an
+ * existing group costs nothing, and that is the common gesture.
+ *
+ * It lives here rather than in `every-contract.ts` for this module's founding reason: the registry
+ * carries a group in `CaseTableRecord` and cannot import a file that imports vitest.
+ */
+export type CaseGroup = {
+  readonly id: string
+  readonly title: string
+}
+
+/**
+ * Every way a table's grouping fails to be a partition of its cases, in one list.
+ *
+ * It answers rather than throws because it has two callers that need it differently, and the whole
+ * point of writing it here is that they share one implementation: `registry/serialise.ts` refuses a
+ * contract at the boundary and cannot import vitest, and the contracts' own `edge-cases.test.ts`
+ * asserts the same thing under `npm test` - which collects `contracts/` and nothing else, so a
+ * specification mutant that moved a case between groups would otherwise be a defect nothing probes.
+ *
+ * Four faults, and the fourth is the one that is easy to leave out. A group is *contiguous* because
+ * the source's order is the page's order, so a group interrupted by another renders as two headings
+ * with one title and nothing saying why.
+ */
+export const groupingFaults = (
+  groups: readonly CaseGroup[],
+  used: readonly string[],
+): readonly string[] => {
+  const declared = groups.map((group) => group.id)
+  const distinct = (values: readonly string[]): readonly string[] => [...new Set(values)]
+
+  const faults: string[] = []
+
+  const malformed = declared.filter((id) => !isFrozenIdentifier(id))
+  if (malformed.length > 0) faults.push(`[${malformed.join(', ')}] is not an address`)
+
+  const twice = distinct(declared.filter((id, at) => declared.indexOf(id) !== at))
+  if (twice.length > 0) faults.push(`[${twice.join(', ')}] is declared more than once`)
+
+  const undeclared = distinct(used.filter((id) => !declared.includes(id)))
+  if (undeclared.length > 0) faults.push(`no group is declared for [${undeclared.join(', ')}]`)
+
+  const empty = declared.filter((id) => !used.includes(id))
+  if (empty.length > 0) faults.push(`[${empty.join(', ')}] holds no case`)
+
+  const split = distinct(
+    used.filter((id, at) => at > 0 && id !== used[at - 1] && used.slice(0, at).includes(id)),
+  )
+  if (split.length > 0) faults.push(`[${split.join(', ')}] is interrupted by another group`)
+
+  const order = distinct(used)
+  if (split.length === 0 && undeclared.length === 0 && empty.length === 0) {
+    if (order.join(',') !== declared.join(',')) {
+      faults.push(`the cases run [${order.join(', ')}] and the groups declare [${declared.join(', ')}]`)
+    }
+  }
+
+  return faults
+}
+
+/**
+ * Every address a contract page renders as `#id`, held by more than one thing.
+ *
+ * A group and a case are both anchored on one page, so they share one space of addresses and a
+ * duplicate is a link that silently lands on the wrong element. Measured when the grouping was first
+ * derived: two of the forty-eight group identifiers collided with a case of their own table, which
+ * is why this exists rather than being assumed away.
+ */
+export const takenAddresses = (addresses: readonly string[]): readonly string[] => [
+  ...new Set(addresses.filter((id, at) => addresses.indexOf(id) !== at)),
+]

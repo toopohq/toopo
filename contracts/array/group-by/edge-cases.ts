@@ -26,6 +26,7 @@
  * contract's short history rather than a virtue.
  */
 
+import type { CaseGroup } from '../../../catalogue/identifier.js'
 import type { Provenance } from '../../../catalogue/every-contract.js'
 
 /** Key and group, in the order the result must hold them. */
@@ -40,8 +41,39 @@ export type Outcome =
 
 export type ExpectedCall = readonly [item: unknown, index: number]
 
+/**
+ * The six questions the typed table answers, in the order it answers them. Frozen with the major -
+ * see `CaseGroup`.
+ */
+export const edgeCaseGroups: readonly CaseGroup[] = [
+  { id: 'baseline', title: 'Baseline' },
+  { id: 'group-order', title: 'Group order' },
+  { id: 'key-identity', title: 'Key identity' },
+  {
+    id: 'keys-that-name-something-on-object-prototype',
+    title: 'Keys that name something on Object.prototype',
+  },
+  { id: 'how-the-input-is-read', title: 'How the input is read' },
+  {
+    id: 'the-protocol-owed-to-the-key-function',
+    title: 'The protocol the contract owes the key function',
+  },
+]
+
+/**
+ * The two questions the untyped table answers. Read off the `outcome` its own cases carry rather
+ * than decided beside them: four inputs are not iterable and throw, two are iterable without being
+ * arrays and group. Frozen with the major.
+ */
+export const untypedCallerCaseGroups: readonly CaseGroup[] = [
+  { id: 'inputs-that-are-not-iterable', title: 'Inputs that are not iterable' },
+  { id: 'iterables-that-are-not-arrays', title: 'Iterables that are not arrays' },
+]
+
 export type EdgeCase = {
   readonly id: string
+  /** Which of `edgeCaseGroups` this case sits under. */
+  readonly group: string
   readonly items: readonly unknown[]
   readonly keyOf: (item: unknown, index: number) => unknown
   readonly outcome: Outcome
@@ -65,6 +97,8 @@ export type EdgeCase = {
  */
 export type UntypedCallerCase = {
   readonly id: string
+  /** Which of `untypedCallerCaseGroups` this case sits under. */
+  readonly group: string
   readonly items: unknown
   readonly keyOf: (item: unknown, index: number) => unknown
   readonly outcome: Outcome
@@ -148,9 +182,9 @@ const RED_SYMBOL = Symbol('red')
 const BLUE_SYMBOL = Symbol('blue')
 
 export const edgeCases: readonly EdgeCase[] = [
-  // --- Baseline -----------------------------------------------------------
   {
     id: 'numbers-by-parity',
+    group: 'baseline',
     items: [1, 2, 3, 4, 5],
     keyOf: parityKey,
     outcome: { kind: 'groups', groups: [['odd', [1, 3, 5]], ['even', [2, 4]]] },
@@ -161,6 +195,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'objects-by-a-field',
+    group: 'baseline',
     items: [ALICE, BOB, CARLA],
     keyOf: teamKey,
     outcome: { kind: 'groups', groups: [['red', [ALICE, CARLA]], ['blue', [BOB]]] },
@@ -172,6 +207,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-empty-array',
+    group: 'baseline',
     items: [],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [] },
@@ -183,6 +219,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-single-element',
+    group: 'baseline',
     items: [7],
     keyOf: constantKey,
     outcome: { kind: 'groups', groups: [['all', [7]]] },
@@ -190,9 +227,9 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'One group of one. Listed because it is the input a fast path is written for.',
   },
 
-  // --- Group order --------------------------------------------------------
   {
     id: 'integer-like-keys-keep-first-occurrence-order',
+    group: 'group-order',
     items: ['10', '2', '1', 'b', 'a'],
     keyOf: identityKey,
     outcome: {
@@ -208,6 +245,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'numeric-keys-keep-first-occurrence-order',
+    group: 'group-order',
     items: [10, 2, 1],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [[10, [10]], [2, [2]], [1, [1]]] },
@@ -218,6 +256,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-group-keeps-input-order',
+    group: 'group-order',
     items: [1, 2, 3, 4, 5, 6],
     keyOf: parityKey,
     outcome: { kind: 'groups', groups: [['odd', [1, 3, 5]], ['even', [2, 4, 6]]] },
@@ -227,9 +266,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'here and is otherwise indistinguishable.',
   },
 
-  // --- Key identity -------------------------------------------------------
   {
     id: 'nan-keys-form-one-group',
+    group: 'key-identity',
     items: [Number.NaN, 1, Number.NaN],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [[Number.NaN, [Number.NaN, Number.NaN]], [1, [1]]] },
@@ -241,6 +280,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-negative-zero-key-is-stored-as-a-positive-zero',
+    group: 'key-identity',
     items: [-0, 0],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [[0, [-0, 0]]] },
@@ -254,6 +294,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-number-and-its-string-are-different-keys',
+    group: 'key-identity',
     items: [1, '1'],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [[1, [1]], ['1', ['1']]] },
@@ -265,6 +306,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-boolean-and-its-string-are-different-keys',
+    group: 'key-identity',
     items: [true, 'true'],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [[true, [true]], ['true', ['true']]] },
@@ -273,6 +315,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'two-distinct-objects-are-two-keys',
+    group: 'key-identity',
     items: ['x', 'y'],
     keyOf: (item: unknown): unknown => (item === 'x' ? RED_ONE : RED_TWO),
     outcome: { kind: 'groups', groups: [[RED_ONE, ['x']], [RED_TWO, ['y']]] },
@@ -283,6 +326,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'one-object-used-twice-is-one-key',
+    group: 'key-identity',
     items: ['x', 'y'],
     keyOf: (): unknown => RED_ONE,
     outcome: { kind: 'groups', groups: [[RED_ONE, ['x', 'y']]] },
@@ -291,6 +335,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'symbols-are-keys',
+    group: 'key-identity',
     items: ['x', 'y', 'z'],
     keyOf: (item: unknown): unknown => (item === 'y' ? BLUE_SYMBOL : RED_SYMBOL),
     outcome: { kind: 'groups', groups: [[RED_SYMBOL, ['x', 'z']], [BLUE_SYMBOL, ['y']]] },
@@ -302,6 +347,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'undefined-and-null-are-two-keys',
+    group: 'key-identity',
     items: ['x', 'y', 'z'],
     keyOf: (item: unknown): unknown => (item === 'y' ? null : undefined),
     outcome: { kind: 'groups', groups: [[undefined, ['x', 'z']], [null, ['y']]] },
@@ -313,9 +359,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'wrongly.',
   },
 
-  // --- Keys that name something on Object.prototype -----------------------
   {
     id: 'the-key-proto',
+    group: 'keys-that-name-something-on-object-prototype',
     items: ['x', 'y'],
     keyOf: constantKeyProto,
     outcome: { kind: 'groups', groups: [['__proto__', ['x', 'y']]] },
@@ -328,6 +374,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-key-constructor',
+    group: 'keys-that-name-something-on-object-prototype',
     items: ['x', 'y'],
     keyOf: constantKeyConstructor,
     outcome: { kind: 'groups', groups: [['constructor', ['x', 'y']]] },
@@ -338,6 +385,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-keys-tostring-and-hasownproperty',
+    group: 'keys-that-name-something-on-object-prototype',
     items: ['x', 'y', 'z'],
     keyOf: (item: unknown): unknown => (item === 'y' ? 'hasOwnProperty' : 'toString'),
     outcome: {
@@ -350,9 +398,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'one is caught. Measured, both throw under a bare object accumulator.',
   },
 
-  // --- How the input is read ----------------------------------------------
   {
     id: 'a-hole-in-a-sparse-array',
+    group: 'how-the-input-is-read',
     items: [1, , 3],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [[1, [1]], [undefined, [undefined]], [3, [3]]] },
@@ -366,6 +414,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-explicit-undefined-element',
+    group: 'how-the-input-is-read',
     items: [1, undefined, 3],
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [[1, [1]], [undefined, [undefined]], [3, [3]]] },
@@ -376,9 +425,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'caller could rely on.',
   },
 
-  // --- The protocol the contract owes the key function --------------------
   {
     id: 'the-key-function-receives-the-element-and-its-index',
+    group: 'the-protocol-owed-to-the-key-function',
     items: ['a', 'b', 'c'],
     keyOf: indexKey,
     outcome: { kind: 'groups', groups: [[0, ['a']], [1, ['b']], [2, ['c']]] },
@@ -391,6 +440,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-key-function-is-never-asked-twice',
+    group: 'the-protocol-owed-to-the-key-function',
     items: ['x', 'y'],
     keyOf: answersDifferentlyOnASecondLook(),
     outcome: { kind: 'groups', groups: [['first-look', ['x', 'y']]] },
@@ -405,6 +455,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-key-function-that-writes-to-its-element',
+    group: 'the-protocol-owed-to-the-key-function',
     items: [DANA, DANA],
     keyOf: renamesTheTeamItRead,
     outcome: { kind: 'groups', groups: [['green', [DANA]], ['renamed', [DANA]]] },
@@ -421,6 +472,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-exception-propagates-unchanged',
+    group: 'the-protocol-owed-to-the-key-function',
     items: ['x', 'y'],
     keyOf: throwsTheKeyFunctionError,
     outcome: { kind: 'propagates' },
@@ -437,6 +489,7 @@ export const edgeCases: readonly EdgeCase[] = [
 export const untypedCallerCases: readonly UntypedCallerCase[] = [
   {
     id: 'a-null-input',
+    group: 'inputs-that-are-not-iterable',
     items: null,
     keyOf: identityKey,
     outcome: { kind: 'throws', errorName: 'TypeError' },
@@ -449,6 +502,7 @@ export const untypedCallerCases: readonly UntypedCallerCase[] = [
   },
   {
     id: 'an-undefined-input',
+    group: 'inputs-that-are-not-iterable',
     items: undefined,
     keyOf: identityKey,
     outcome: { kind: 'throws', errorName: 'TypeError' },
@@ -457,6 +511,7 @@ export const untypedCallerCases: readonly UntypedCallerCase[] = [
   },
   {
     id: 'a-plain-object',
+    group: 'inputs-that-are-not-iterable',
     items: { a: 1, b: 2 },
     keyOf: identityKey,
     outcome: { kind: 'throws', errorName: 'TypeError' },
@@ -468,6 +523,7 @@ export const untypedCallerCases: readonly UntypedCallerCase[] = [
   },
   {
     id: 'a-number',
+    group: 'inputs-that-are-not-iterable',
     items: 42,
     keyOf: identityKey,
     outcome: { kind: 'throws', errorName: 'TypeError' },
@@ -476,6 +532,7 @@ export const untypedCallerCases: readonly UntypedCallerCase[] = [
   },
   {
     id: 'a-set',
+    group: 'iterables-that-are-not-arrays',
     items: new Set([1, 2, 3]),
     keyOf: parityKey,
     outcome: { kind: 'groups', groups: [['odd', [1, 3]], ['even', [2]]] },
@@ -489,6 +546,7 @@ export const untypedCallerCases: readonly UntypedCallerCase[] = [
   },
   {
     id: 'a-string',
+    group: 'iterables-that-are-not-arrays',
     items: 'aab',
     keyOf: identityKey,
     outcome: { kind: 'groups', groups: [['a', ['a', 'a']], ['b', ['b']]] },

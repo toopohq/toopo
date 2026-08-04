@@ -2,12 +2,14 @@ import { describe, it, expect } from 'vitest'
 import {
   CASE_TABLE_IS_ADDRESSED,
   CASE_TABLE_IS_JUSTIFIED,
+  CASE_TABLE_IS_PARTITIONED,
   expectEveryCaseIsAddressed,
+  expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
 import type { AddFailureReason, Duration } from './contract.js'
 import { failureReasons, outputsAreEqual } from './contract.js'
-import { edgeCases, untypedEdgeCases } from './edge-cases.js'
+import { edgeCaseGroups, edgeCases, untypedEdgeCaseGroups, untypedEdgeCases } from './edge-cases.js'
 import { addToDate, describeAddFailure } from './reference.js'
 
 /**
@@ -121,7 +123,11 @@ describe('date/add@1 edge case tables', () => {
   const allCases = [...edgeCases, ...untypedEdgeCases]
 
   it(CASE_TABLE_IS_ADDRESSED, () => {
-    expectEveryCaseIsAddressed(allCases.map((edgeCase) => edgeCase.id))
+    expectEveryCaseIsAddressed([
+      ...edgeCaseGroups.map(({ id }) => id),
+      ...untypedEdgeCaseGroups.map(({ id }) => id),
+      ...allCases.map((edgeCase) => edgeCase.id),
+    ])
   })
 
   it('names-a-case-for-every-reason :: and declares every reason it names', () => {
@@ -137,6 +143,13 @@ describe('date/add@1 edge case tables', () => {
     const calls = allCases.map(({ date, duration }) => renderCall(date, duration))
 
     expect(calls).toHaveLength(new Set(calls).size)
+  })
+
+  it(CASE_TABLE_IS_PARTITIONED, () => {
+    expectEveryCaseIsGrouped([
+      { name: 'edge-cases', groups: edgeCaseGroups, cases: edgeCases },
+      { name: 'untyped-callers', groups: untypedEdgeCaseGroups, cases: untypedEdgeCases },
+    ])
   })
 
   it(CASE_TABLE_IS_JUSTIFIED, () => {

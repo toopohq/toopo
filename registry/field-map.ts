@@ -157,6 +157,12 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
 
   'caseTables[].name': { visibility: 'public', verification: 'documentary' },
   'caseTables[].purpose': { visibility: 'public', verification: 'documentary' },
+  // An address the site anchors a URL on, refused by `serialise.ts` unless it is well formed and
+  // unique against every other group *and case* of the contract - the two share one `#id` space.
+  'caseTables[].groups[].id': { visibility: 'public', verification: 'structural' },
+  'caseTables[].groups[].title': { visibility: 'public', verification: 'documentary' },
+  // The partition, refused in both directions: an undeclared group, and a group no case sits in.
+  'caseTables[].cases[].group': { visibility: 'public', verification: 'structural' },
   'caseTables[].cases[].id': { visibility: 'public', verification: 'structural' },
   'caseTables[].cases[].provenance.kind': { visibility: 'public', verification: 'structural' },
   'caseTables[].cases[].provenance.mutant': { visibility: 'public', verification: 'structural' },

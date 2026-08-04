@@ -80,6 +80,68 @@ describe('the site', () => {
   })
 
   /**
+   * A group is a heading with its own address, and a case sits under the heading it names.
+   *
+   * The reading is the measurement, not the markup: `toText` is what a stranger, a crawler and a
+   * screen reader get, so the guard asks that every group title appears there, in the order the
+   * record declares, and that the cases following a title are exactly that group's - which is the
+   * one thing a reader can check at a glance and a presence guard cannot.
+   *
+   * The mutant it exists for renders every case under the first heading. Every title is still on the
+   * page, every case is still on the page, every anchor still resolves, and the reading is a lie.
+   */
+  it('every-group-is-a-heading-and-its-cases-follow-it', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const rendered = html(pageOf(held.contract.address))
+      const reading = toText(page(pageOf(held.contract.address)))
+
+      for (const table of held.contract.caseTables) {
+        for (const group of table.groups) {
+          expect(rendered).toContain(`<h4 id="${group.id}">`)
+          expect(rendered).toContain(`href="#${group.id}"`)
+        }
+
+        // Where each title sits in the reading, and where each of its cases sits after it.
+        const titles = table.groups.map((group) => ({
+          group,
+          at: reading.indexOf(`\n${group.title}\n`),
+        }))
+
+        expect(titles.filter(({ at }) => at < 0).map(({ group }) => group.id)).toEqual([])
+        expect(titles.map(({ at }) => at)).toEqual([...titles.map(({ at }) => at)].sort((a, b) => a - b))
+
+        for (const entry of table.cases) {
+          const own = titles.findIndex(({ group }) => group.id === entry.group)
+          const after = titles[own + 1]?.at ?? reading.length
+          const sits = reading.indexOf(entry.rationale)
+
+          expect(
+            sits > (titles[own] as (typeof titles)[number]).at && sits < after,
+            `${entry.id} does not read under ${entry.group}`,
+          ).toBe(true)
+        }
+      }
+    }
+  })
+
+  /**
+   * No two things on one page answer to one `#id`.
+   *
+   * A group and a case are anchored in the same space, so a duplicate is a link that silently lands
+   * on the wrong element - the failure that only shows up once somebody has shared the link.
+   * `every-case-is-addressed` asks this of a contract's data; this asks it of the document, which is
+   * where the collision would actually happen and which carries every table at once.
+   */
+  it('every-anchor-on-a-page-is-held-by-one-element', () => {
+    for (const [path, document] of pages()) {
+      const ids = [...toHtml(document).matchAll(/ id="([^"]+)"/g)].map((found) => found[1] as string)
+      const twice = [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))]
+
+      expect(twice, `${path} anchors the same address twice`).toEqual([])
+    }
+  })
+
+  /**
    * A case is rendered as the call it is, which is what the parameter names were carried into the
    * record for. The arguments come from the signature, in the signature's order, and what is left is
    * the answer.

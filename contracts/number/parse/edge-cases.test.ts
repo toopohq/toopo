@@ -2,11 +2,13 @@ import { describe, it, expect } from 'vitest'
 import {
   CASE_TABLE_IS_ADDRESSED,
   CASE_TABLE_IS_JUSTIFIED,
+  CASE_TABLE_IS_PARTITIONED,
   expectEveryCaseIsAddressed,
+  expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
 } from '../../../catalogue/every-contract.js'
 import { failureReasons, outputsAreEqual } from './contract.js'
-import { edgeCases } from './edge-cases.js'
+import { edgeCaseGroups, edgeCases } from './edge-cases.js'
 import { describeParseFailure, parseNumber } from './reference.js'
 
 /**
@@ -63,7 +65,10 @@ describe('number/parse@1 named edge cases, described', () => {
 
 describe('number/parse@1 edge case table', () => {
   it(CASE_TABLE_IS_ADDRESSED, () => {
-    expectEveryCaseIsAddressed(edgeCases.map((edgeCase) => edgeCase.id))
+    expectEveryCaseIsAddressed([
+      ...edgeCaseGroups.map(({ id }) => id),
+      ...edgeCases.map((edgeCase) => edgeCase.id),
+    ])
   })
 
   it('settles-each-input-once', () => {
@@ -81,6 +86,10 @@ describe('number/parse@1 edge case table', () => {
       .filter((reason) => reason !== null)
 
     expect([...new Set(produced)].sort()).toEqual([...failureReasons].sort())
+  })
+
+  it(CASE_TABLE_IS_PARTITIONED, () => {
+    expectEveryCaseIsGrouped([{ name: 'edge-cases', groups: edgeCaseGroups, cases: edgeCases }])
   })
 
   it(CASE_TABLE_IS_JUSTIFIED, () => {

@@ -33,7 +33,8 @@
 
 import { expect } from 'vitest'
 
-import { isFrozenIdentifier } from './identifier.js'
+import type { CaseGroup } from './identifier.js'
+import { groupingFaults, isFrozenIdentifier } from './identifier.js'
 
 // ---------------------------------------------------------------------------
 // The anatomy of a contract folder
@@ -435,14 +436,19 @@ export const CLOCK_DEPENDENCE_RULE =
  */
 
 /**
- * The three guards this file owns, and the reason they are named here rather than by each contract.
+ * The four guards this file owns, and the reason they are named here rather than by each contract.
  *
  * A guard carries an identifier - a name, kebab-case, unique within its contract, frozen with its
- * major - and a contract chooses its own. These three are the exception, and the exception is
+ * major - and a contract chooses its own. These four are the exception, and the exception is
  * narrow: the helper below *is* the guard. `expectEveryCaseIsAddressed` is one function applied five
  * times, not five guards that resemble each other, so it answers to one name everywhere and a
  * contract cannot rename it locally. Renaming one costs a major on the whole catalogue, which is the
  * discipline everything in this file already carries.
+ *
+ * `every-case-is-grouped` is the fourth and arrived with the grouping. It is here on exactly the
+ * same argument: `groupingFaults` is one function applied to seven tables, and what it says - that
+ * a heading has cases under it and a case has a heading over it - belongs to the registry that
+ * anchors a URL on both, not to any one feature.
  *
  * The test that a contract has not quietly renamed one is the battery: a pin naming
  * `every-case-is-addressed` on a contract whose guard answers to something else fails to match, and
@@ -457,14 +463,22 @@ export const CLOCK_DEPENDENCE_RULE =
  */
 export const CASE_TABLE_IS_ADDRESSED = 'every-case-is-addressed'
 export const CASE_TABLE_IS_JUSTIFIED = 'every-case-is-justified'
+export const CASE_TABLE_IS_PARTITIONED = 'every-case-is-grouped'
 export const UNIVERSAL_PROPERTIES_ARE_ANSWERED = 'universal-properties-answered'
 
 /**
- * Every case of every table of one contract answers to a distinct name, shaped like an address.
+ * Every address of one contract is distinct and is shaped like one.
  *
  * Both halves in one assertion, because they are one question - whether these strings can be used as
  * addresses - and a failure has to say which half gave way. `mutation/run.ts` asks the same pair of
  * the *guards* of a contract, for the same reason and with the same shape of identifier.
+ *
+ * **The space it is asked over is the contract's cases *and* its groups**, because a page renders
+ * both as `#id` and a duplicate is a link that silently lands on the wrong element. Widening the
+ * question was the repair rather than writing a second guard: it was always *can these strings
+ * address something*, and the grouping only added strings. It found two the day it was widened -
+ * `exponent` on `number/parse@1` and `normalisation-is-not-applied` on `string/levenshtein@1`, each
+ * a group named after a case of its own table.
  *
  * This is not the guard that a contract settles each *input* exactly once. Two contracts carry that
  * one as well and it is theirs, over data this file knows nothing about; a table can legitimately
@@ -475,6 +489,38 @@ export const expectEveryCaseIsAddressed = (ids: readonly string[]): void => {
     malformed: ids.filter((id) => !isFrozenIdentifier(id)),
     duplicated: [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))],
   }).toEqual({ malformed: [], duplicated: [] })
+}
+
+/**
+ * A table's groups partition its cases, in the order the page will render them.
+ *
+ * **What this guards that `serialise.ts` cannot.** The serialiser refuses the same thing at the
+ * registry's boundary, from the same `groupingFaults`, and that refusal is reached by the registry's
+ * suite. It is not reached by `npm test`, which collects `contracts/` and nothing else - and
+ * `npm test` is what a specification battery runs once per injected defect. A mutant that moved a
+ * case from one group to another, or emptied a group, would publish a heading over the wrong cases
+ * and no column would redden. That is the defect this guard exists for; the rest is tidiness.
+ *
+ * One call per contract and not one per table, because a guard identifier is unique within a
+ * contract and the two contracts carrying two tables would otherwise hold this name twice - the
+ * shape `expectEveryCaseIsAddressed` already takes for the same reason. Each fault names its table,
+ * so nothing is lost by asking once.
+ */
+export const expectEveryCaseIsGrouped = (
+  tables: readonly {
+    readonly name: string
+    readonly groups: readonly CaseGroup[]
+    readonly cases: readonly { readonly group: string }[]
+  }[],
+): void => {
+  const faults = tables.flatMap((table) =>
+    groupingFaults(
+      table.groups,
+      table.cases.map((entry) => entry.group),
+    ).map((fault) => `${table.name}: ${fault}`),
+  )
+
+  expect(faults).toEqual([])
 }
 
 /**

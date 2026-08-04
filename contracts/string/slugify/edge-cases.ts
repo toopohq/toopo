@@ -70,10 +70,46 @@
  * the base of a run rather than against a neighbour.
  */
 
+import type { CaseGroup } from '../../../catalogue/identifier.js'
 import type { Provenance } from '../../../catalogue/every-contract.js'
+
+/**
+ * The ten questions this table answers, in the order it answers them.
+ *
+ * The order is itself an argument and it is not alphabetical: `the-surprise-in-front` is first
+ * because a reader arriving from "slugify javascript" expects ASCII, and the rows that contradict
+ * that expectation have to be the ones they meet. Frozen with the major - see `CaseGroup`.
+ */
+export const edgeCaseGroups: readonly CaseGroup[] = [
+  /**
+   * A reader arriving from "slugify javascript" expects ASCII. These six rows are where this
+   * contract contradicts that expectation, and they are first so that the contradiction is the
+   * thing they meet rather than a paragraph they skip.
+   *
+   * The banner this replaces said *five rows* over six cases: a count in prose drifts the moment
+   * the list it counts grows, which is the reason an identifier never renders one.
+   */
+  { id: 'the-surprise-in-front', title: 'The surprise, in front' },
+  { id: 'the-fold', title: "The fold, which is Unicode's and not this contract's" },
+  { id: 'the-absorb-step', title: 'The absorb step, and the two defects that wrote it' },
+  { id: 'greek', title: 'Greek, where the fold and the case rule meet' },
+  /** `letter-case` rather than `case`, on a page whose every other heading counts *cases*. */
+  { id: 'letter-case', title: 'Upper and lower case' },
+  { id: 'what-nfkc-unifies', title: 'What NFKC unifies, and what it costs' },
+  { id: 'separators-and-shape', title: 'Separators and shape' },
+  { id: 'no-symbol-becomes-a-word', title: 'No symbol becomes a word' },
+  { id: 'the-empty-slug', title: 'Nothing retainable, and the empty slug' },
+  /**
+   * One decision read twice. The two rows exist so that `lossiness` in block 4.1 has a
+   * demonstration on the contract's own page rather than a sentence a reader has to believe.
+   */
+  { id: 'the-loss-made-concrete', title: 'The loss, made concrete' },
+]
 
 export type EdgeCase = {
   readonly id: string
+  /** Which of `edgeCaseGroups` this case sits under. */
+  readonly group: string
   readonly text: string
   readonly expected: string
   readonly provenance: Provenance
@@ -106,13 +142,9 @@ const GOTHIC_AHSA = String.fromCodePoint(0x10330)
 const GOTHIC_BAIRKAN = String.fromCodePoint(0x10331)
 
 export const edgeCases: readonly EdgeCase[] = [
-  // --- The surprise, in front -----------------------------------------------
-  //
-  // A reader arriving from "slugify javascript" expects ASCII. These five rows are where this
-  // contract contradicts that expectation, and they are first so that the contradiction is the
-  // thing they meet rather than a paragraph they skip.
   {
     id: 'a-non-latin-script-is-kept',
+    group: 'the-surprise-in-front',
     text: '日本語テキスト',
     expected: '日本語テキスト',
     provenance: 'specified',
@@ -125,6 +157,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'cyrillic-is-kept',
+    group: 'the-surprise-in-front',
     text: 'Привет мир',
     expected: 'привет-мир',
     provenance: 'specified',
@@ -135,6 +168,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'arabic-is-kept',
+    group: 'the-surprise-in-front',
     text: 'مرحبا بالعالم',
     expected: 'مرحبا-بالعالم',
     provenance: 'specified',
@@ -145,6 +179,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-indic-mark-is-kept',
+    group: 'the-surprise-in-front',
     text: 'हिन्दी',
     expected: 'हिन्दी',
     provenance: 'specified',
@@ -157,6 +192,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-non-latin-digit-is-a-digit',
+    group: 'the-surprise-in-front',
     text: '٤٢',
     expected: '٤٢',
     provenance: 'specified',
@@ -168,6 +204,7 @@ export const edgeCases: readonly EdgeCase[] = [
 
   {
     id: 'an-astral-letter-is-kept',
+    group: 'the-surprise-in-front',
     text: `${GOTHIC_AHSA}${GOTHIC_BAIRKAN}`,
     expected: `${GOTHIC_AHSA}${GOTHIC_BAIRKAN}`,
     provenance: 'specified',
@@ -179,9 +216,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'the only input that can.',
   },
 
-  // --- The fold, which is Unicode's and not this contract's -------------------
   {
     id: 'a-latin-diacritic-is-removed',
+    group: 'the-fold',
     text: 'Crème Brûlée',
     expected: 'creme-brulee',
     provenance: 'specified',
@@ -192,6 +229,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-decomposed-diacritic-folds-alike',
+    group: 'the-fold',
     text: DECOMPOSED_CAFE,
     expected: 'cafe',
     provenance: 'specified',
@@ -202,6 +240,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-precomposed-diacritic-folds-alike',
+    group: 'the-fold',
     text: PRECOMPOSED_CAFE,
     expected: 'cafe',
     provenance: 'specified',
@@ -212,6 +251,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'two-stacked-marks-are-removed',
+    group: 'the-fold',
     text: 'Tiếng Việt',
     expected: 'tieng-viet',
     provenance: 'specified',
@@ -221,6 +261,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-letter-with-no-decomposition-is-kept',
+    group: 'the-fold',
     text: `Stra${SHARP_S}e`,
     expected: `stra${SHARP_S}e`,
     provenance: 'specified',
@@ -234,6 +275,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-ligature-letter-is-kept',
+    group: 'the-fold',
     text: 'Æther',
     expected: `${SMALL_AE}ther`,
     provenance: 'specified',
@@ -245,6 +287,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-stroked-letter-is-kept',
+    group: 'the-fold',
     text: 'Ødegård',
     expected: `${SMALL_STROKED_O}degard`,
     provenance: 'specified',
@@ -254,9 +297,9 @@ export const edgeCases: readonly EdgeCase[] = [
       '"the fold is Unicode\'s" actually means.',
   },
 
-  // --- The absorb step, and the two defects that wrote it ---------------------
   {
     id: 'a-mark-the-base-absorbs-is-dropped',
+    group: 'the-absorb-step',
     text: `${PRECOMPOSED_E_ACUTE}${COMBINING_ACUTE}`,
     expected: 'e',
     provenance: 'found-by-mutation:G-06',
@@ -270,6 +313,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-mark-reaching-its-base-across-another',
+    group: 'the-absorb-step',
     text: `${PRECOMPOSED_E_ACUTE}${ARABIC_FATHA}${COMBINING_ACUTE}`,
     expected: `e${ARABIC_FATHA}`,
     provenance: 'found-by-mutation:G-07',
@@ -282,6 +326,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-mark-with-no-base-to-absorb-it-is-kept',
+    group: 'the-absorb-step',
     text: `x${COMBINING_ACUTE}`,
     expected: `x${COMBINING_ACUTE}`,
     provenance: 'specified',
@@ -291,9 +336,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'mark a letter already carries, and nothing else.',
   },
 
-  // --- Greek, where the fold and the case rule meet ---------------------------
   {
     id: 'a-greek-tonos-is-removed',
+    group: 'greek',
     text: 'Ελληνικά',
     expected: 'ελληνικα',
     provenance: 'specified',
@@ -305,6 +350,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-final-sigma-is-not-unified',
+    group: 'greek',
     text: `ΟΔΟ${CAPITAL_SIGMA}`,
     expected: `οδο${SMALL_SIGMA}`,
     provenance: 'specified',
@@ -317,6 +363,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-written-final-sigma-is-kept',
+    group: 'greek',
     text: `οδο${FINAL_SIGMA}`,
     expected: `οδο${FINAL_SIGMA}`,
     provenance: 'specified',
@@ -329,9 +376,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'which JavaScript does not expose and which this contract will not hand-write.',
   },
 
-  // --- Case ------------------------------------------------------------------
   {
     id: 'the-turkish-dotted-i-loses-its-dot',
+    group: 'letter-case',
     text: 'İstanbul',
     expected: 'istanbul',
     provenance: 'specified',
@@ -343,6 +390,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-turkish-dotless-i-is-kept',
+    group: 'letter-case',
     text: `Iş${DOTLESS_I}k`,
     expected: `is${DOTLESS_I}k`,
     provenance: 'specified',
@@ -352,9 +400,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'whether it drops the letter or invents a mapping for it; this contract does neither.',
   },
 
-  // --- What NFKC unifies, and what it costs ----------------------------------
   {
     id: 'a-fullwidth-letter-is-unified',
+    group: 'what-nfkc-unifies',
     text: 'ＡＢＣ',
     expected: 'abc',
     provenance: 'specified',
@@ -365,6 +413,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-typographic-ligature-is-unified',
+    group: 'what-nfkc-unifies',
     text: 'ﬁle',
     expected: 'file',
     provenance: 'specified',
@@ -375,6 +424,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-superscript-digit-is-a-digit',
+    group: 'what-nfkc-unifies',
     text: 'x²',
     expected: 'x2',
     provenance: 'specified',
@@ -386,6 +436,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-roman-numeral-is-letters',
+    group: 'what-nfkc-unifies',
     text: 'Ⅷ',
     expected: 'viii',
     provenance: 'specified',
@@ -396,9 +447,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'do - throws away a character a reader chose deliberately.',
   },
 
-  // --- Separators and shape ---------------------------------------------------
   {
     id: 'runs-of-spaces-become-one-separator',
+    group: 'separators-and-shape',
     text: '  hello   world  ',
     expected: 'hello-world',
     provenance: 'specified',
@@ -409,6 +460,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-existing-slug-is-unchanged',
+    group: 'separators-and-shape',
     text: 'already-slugged',
     expected: 'already-slugged',
     provenance: 'specified',
@@ -418,6 +470,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-doubled-separator-collapses',
+    group: 'separators-and-shape',
     text: 'double--dash',
     expected: 'double-dash',
     provenance: 'specified',
@@ -427,6 +480,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-underscore-is-a-boundary',
+    group: 'separators-and-shape',
     text: 'under_score',
     expected: 'under-score',
     provenance: 'specified',
@@ -437,6 +491,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-full-stop-is-a-boundary',
+    group: 'separators-and-shape',
     text: 'a.b.c',
     expected: 'a-b-c',
     provenance: 'specified',
@@ -447,6 +502,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-apostrophe-is-a-boundary',
+    group: 'separators-and-shape',
     text: `l'${PRECOMPOSED_E_ACUTE}t${PRECOMPOSED_E_ACUTE}`,
     expected: 'l-ete',
     provenance: 'specified',
@@ -457,9 +513,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'table starts.',
   },
 
-  // --- No symbol becomes a word ----------------------------------------------
   {
     id: 'an-ampersand-is-not-a-word',
+    group: 'no-symbol-becomes-a-word',
     text: 'Salt & Pepper',
     expected: 'salt-pepper',
     provenance: 'specified',
@@ -470,6 +526,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-currency-sign-is-not-a-word',
+    group: 'no-symbol-becomes-a-word',
     text: '10€ and 5$',
     expected: '10-and-5',
     provenance: 'specified',
@@ -480,9 +537,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'tables are not a shared convention anyone can appeal to.',
   },
 
-  // --- Nothing retainable, and the empty slug ---------------------------------
   {
     id: 'the-empty-string',
+    group: 'the-empty-slug',
     text: '',
     expected: '',
     provenance: 'specified',
@@ -492,6 +549,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'nothing-retainable',
+    group: 'the-empty-slug',
     text: '!!!',
     expected: '',
     provenance: 'specified',
@@ -502,6 +560,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-emoji-is-removed',
+    group: 'the-empty-slug',
     text: '🎉 party 🎉',
     expected: 'party',
     provenance: 'specified',
@@ -511,6 +570,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-joined-emoji-sequence-is-removed',
+    group: 'the-empty-slug',
     text: `👩${ZERO_WIDTH_JOINER}💻 developer`,
     expected: 'developer',
     provenance: 'specified',
@@ -521,6 +581,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-lone-surrogate-is-removed',
+    group: 'the-empty-slug',
     text: LONE_HIGH_SURROGATE,
     expected: '',
     provenance: 'specified',
@@ -532,6 +593,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-lone-surrogate-inside-a-word',
+    group: 'the-empty-slug',
     text: `a${LONE_HIGH_SURROGATE}b`,
     expected: 'a-b',
     provenance: 'specified',
@@ -541,12 +603,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'letters that were not adjacent in the input.',
   },
 
-  // --- The loss, made concrete ------------------------------------------------
-  //
-  // These two rows are one decision read twice. They exist so that `lossiness` in block 4.1 has a
-  // demonstration on the contract's own page rather than a sentence a reader has to believe.
   {
     id: 'a-plus-is-not-a-letter',
+    group: 'the-loss-made-concrete',
     text: 'C++',
     expected: 'c',
     provenance: 'specified',
@@ -557,6 +616,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-hash-is-not-a-letter',
+    group: 'the-loss-made-concrete',
     text: 'C#',
     expected: 'c',
     provenance: 'specified',

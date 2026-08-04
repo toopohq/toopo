@@ -160,6 +160,7 @@ export const theFive: readonly ContractSource[] = [
       {
         name: 'edge-cases',
         purpose: 'the inputs this contract settles one at a time, because a grammar has no algebra',
+        groups: numberParseCases.edgeCaseGroups,
         cases: numberParseCases.edgeCases,
       },
     ],
@@ -225,11 +226,13 @@ export const theFive: readonly ContractSource[] = [
       {
         name: 'edge-cases',
         purpose: 'the calls this contract settles, every answer computed by two oracles beforehand',
+        groups: dateAddCases.edgeCaseGroups,
         cases: dateAddCases.edgeCases,
       },
       {
         name: 'untyped-callers',
         purpose: 'durations no TypeScript caller can write and every JavaScript caller can',
+        groups: dateAddCases.untypedEdgeCaseGroups,
         cases: dateAddCases.untypedEdgeCases,
       },
     ],
@@ -331,11 +334,13 @@ export const theFive: readonly ContractSource[] = [
       {
         name: 'edge-cases',
         purpose: 'the groupings this contract settles, every answer computed against Map.groupBy',
+        groups: groupByCases.edgeCaseGroups,
         cases: groupByCases.edgeCases,
       },
       {
         name: 'untyped-callers',
         purpose: 'inputs no TypeScript caller can write and every JavaScript caller can',
+        groups: groupByCases.untypedCallerCaseGroups,
         cases: groupByCases.untypedCallerCases,
       },
     ],
@@ -418,6 +423,7 @@ export const theFive: readonly ContractSource[] = [
       {
         name: 'edge-cases',
         purpose: 'the region no axiom reaches: the arithmetic anchors, and the unit an edit counts in',
+        groups: levenshteinCases.edgeCaseGroups,
         cases: levenshteinCases.edgeCases,
       },
     ],
@@ -469,6 +475,7 @@ export const theFive: readonly ContractSource[] = [
       {
         name: 'edge-cases',
         purpose: 'the answers this contract argues for, having no oracle of any kind to appeal to',
+        groups: slugifyCases.edgeCaseGroups,
         cases: slugifyCases.edgeCases,
       },
     ],

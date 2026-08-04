@@ -176,9 +176,11 @@ describe('the five, read against their own source', () => {
         {
           name: 'edge-cases',
           purpose: 'one case, written answer first',
+          groups: [{ id: 'baseline', title: 'Baseline' }],
           cases: [
             {
               id: 'the-answer-before-the-argument',
+              group: 'baseline',
               expected: 42,
               input: '42',
               reason: null,

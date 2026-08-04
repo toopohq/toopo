@@ -29,6 +29,7 @@
  */
 
 import { renderContract } from '../registry/address.js'
+import type { CaseGroup } from '../catalogue/identifier.js'
 import type { CaseRecord, CaseTableRecord, ExportRecord } from '../registry/contract-record.js'
 import type { Document, Node } from './document.js'
 import { el, text } from './document.js'
@@ -65,7 +66,7 @@ const renderedCase = (entry: CaseRecord, answer: ExportRecord): Node => {
   return el(
     'div',
     { id: entry.id },
-    el('a', { class: 'anchor', href: `#${entry.id}`, 'aria-hidden': 'true' }, text('#')),
+    anchorTo(entry.id),
     el('p', { class: 'call' }, line('code', `${answer.name}(${call.join(', ')}) → ${result}`)),
     line('p', entry.rationale, { class: 'why' }),
     ...(entry.provenance.kind === 'found-by-mutation'
@@ -81,9 +82,51 @@ const renderedCase = (entry: CaseRecord, answer: ExportRecord): Node => {
   )
 }
 
+/**
+ * The link back to an element's own address.
+ *
+ * `aria-hidden` is one statement and not two: a screen reader skips it and the text projection drops
+ * it, because a `#` on its own means nothing read aloud.
+ */
+const anchorTo = (id: string): Node =>
+  el('a', { class: 'anchor', href: `#${id}`, 'aria-hidden': 'true' }, text('#'))
+
+/** A heading that carries its own address, the way a case does. */
+const addressed = (tag: string, id: string, title: string): Node =>
+  el(tag, { id }, anchorTo(id), text(title))
+
+/**
+ * One group of a table: its heading, then the cases that sit under it.
+ *
+ * The cases are selected by their group rather than sliced by position. `serialise.ts` has already
+ * refused a table whose groups are not contiguous, so the two agree - and a filter says what this
+ * renders, where an index would say only where it found it.
+ */
+const renderedGroup = (
+  group: CaseGroup,
+  table: CaseTableRecord,
+  answer: ExportRecord,
+): readonly Node[] => [
+  addressed('h4', group.id, group.title),
+  el(
+    'div',
+    { class: 'cases' },
+    ...table.cases
+      .filter((entry) => entry.group === group.id)
+      .map((entry) => renderedCase(entry, answer)),
+  ),
+]
+
+/**
+ * A table, as its purpose and then its groups.
+ *
+ * Three heading levels rather than two, and the middle one earns its place on the two contracts that
+ * carry two tables: *the calls this contract settles* and *durations no TypeScript caller can write*
+ * are different questions, and a reader who lands on the second needs to know which one they are in.
+ */
 const renderedTable = (table: CaseTableRecord, answer: ExportRecord): readonly Node[] => [
   line('h3', table.purpose),
-  el('div', { class: 'cases' }, ...table.cases.map((entry) => renderedCase(entry, answer))),
+  ...table.groups.flatMap((group) => renderedGroup(group, table, answer)),
 ]
 
 export const contractPage = (held: Held): Document => {

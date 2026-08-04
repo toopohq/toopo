@@ -136,9 +136,14 @@ const theSixth: ContractRecord = {
     {
       name: 'edge-cases',
       purpose: 'the answers this contract settles, none of which is settled in fact',
+      groups: [
+        { id: 'the-decimal-a-double-cannot-hold', title: 'The decimal a double cannot hold' },
+        { id: 'places-out-of-range', title: 'A place count no double can carry' },
+      ],
       cases: [
         {
           id: 'the-half-cent-that-toFixed-loses'.toLowerCase(),
+          group: 'the-decimal-a-double-cannot-hold',
           provenance: { kind: 'specified' },
           rationale:
             'The double nearest 1.005 is below it, so `toFixed(2)` answers "1.00" where a caller ' +
@@ -147,6 +152,7 @@ const theSixth: ContractRecord = {
         },
         {
           id: 'a-negative-zero-survives',
+          group: 'the-decimal-a-double-cannot-hold',
           provenance: { kind: 'specified' },
           rationale:
             'Rounding -0.001 to two places answers -0 rather than 0, the same sign question ' +
@@ -159,6 +165,7 @@ const theSixth: ContractRecord = {
            * here to show that the schema holds it, not to claim a defect was ever reported.
            */
           id: 'a-place-count-past-the-mantissa',
+          group: 'places-out-of-range',
           provenance: { kind: 'found-in-the-wild', report: 'an imaginary report, filed by nobody' },
           rationale: 'Asking for more places than a double can carry cannot be answered exactly.',
           data: encode({ value: 1.5, places: 400, expected: null, reason: 'places-out-of-range' }, 'sixth'),

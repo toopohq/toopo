@@ -23,10 +23,31 @@
  * table's short history rather than a virtue.
  */
 
+import type { CaseGroup } from '../../../catalogue/identifier.js'
 import type { Provenance } from '../../../catalogue/every-contract.js'
+
+/**
+ * The six questions this table answers, in the order it answers them. Frozen with the major - see
+ * `CaseGroup`.
+ */
+export const edgeCaseGroups: readonly CaseGroup[] = [
+  { id: 'the-two-ends-of-the-scale', title: 'The two ends of the scale' },
+  { id: 'one-edit-of-each-kind', title: 'One edit of each kind' },
+  { id: 'the-anchors-a-reader-recognises', title: 'The anchors a reader recognises' },
+  { id: 'the-scope-this-contract-does-not-cover', title: 'The scope this contract does not cover' },
+  /**
+   * The region no axiom reaches. Every case in this group is answered differently by an
+   * implementation counting UTF-16 code units, which is what the widely used JavaScript
+   * implementations do, and every one of them satisfies all four axioms under either counting.
+   */
+  { id: 'the-unit-an-edit-is-counted-in', title: 'The unit an edit is counted in' },
+  { id: 'normalisation', title: 'Normalisation is not applied' },
+]
 
 export type EdgeCase = {
   readonly id: string
+  /** Which of `edgeCaseGroups` this case sits under. */
+  readonly group: string
   readonly a: string
   readonly b: string
   readonly expected: number
@@ -50,9 +71,9 @@ const PRECOMPOSED_E_ACUTE = String.fromCodePoint(0x00e9)
 const DECOMPOSED_E_ACUTE = `e${COMBINING_ACUTE}`
 
 export const edgeCases: readonly EdgeCase[] = [
-  // --- The two ends of the scale ------------------------------------------
   {
     id: 'both-empty',
+    group: 'the-two-ends-of-the-scale',
     a: '',
     b: '',
     expected: 0,
@@ -64,6 +85,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'identical-text',
+    group: 'the-two-ends-of-the-scale',
     a: 'levenshtein',
     b: 'levenshtein',
     expected: 0,
@@ -72,6 +94,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'one-side-empty',
+    group: 'the-two-ends-of-the-scale',
     a: 'abc',
     b: '',
     expected: 3,
@@ -82,6 +105,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'the-other-side-empty',
+    group: 'the-two-ends-of-the-scale',
     a: '',
     b: 'abc',
     expected: 3,
@@ -92,9 +116,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'to the symmetry property, because this is the pair where the price is set.',
   },
 
-  // --- One edit of each kind ----------------------------------------------
   {
     id: 'one-substitution',
+    group: 'one-edit-of-each-kind',
     a: 'abc',
     b: 'abd',
     expected: 1,
@@ -107,6 +131,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'one-insertion',
+    group: 'one-edit-of-each-kind',
     a: 'ab',
     b: 'abc',
     expected: 1,
@@ -115,6 +140,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'one-deletion',
+    group: 'one-edit-of-each-kind',
     a: 'abc',
     b: 'ab',
     expected: 1,
@@ -122,9 +148,9 @@ export const edgeCases: readonly EdgeCase[] = [
     rationale: 'Removing one code point costs one edit, at the same price as adding one.',
   },
 
-  // --- The anchors a reader recognises ------------------------------------
   {
     id: 'the-canonical-example',
+    group: 'the-anchors-a-reader-recognises',
     a: 'kitten',
     b: 'sitting',
     expected: 3,
@@ -136,6 +162,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-shared-suffix',
+    group: 'the-anchors-a-reader-recognises',
     a: 'Saturday',
     b: 'Sunday',
     expected: 3,
@@ -146,6 +173,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-shared-infix',
+    group: 'the-anchors-a-reader-recognises',
     a: 'flaw',
     b: 'lawn',
     expected: 2,
@@ -156,9 +184,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'doing the work rather than by avoiding it.',
   },
 
-  // --- The scope this contract does not cover ------------------------------
   {
     id: 'a-transposition',
+    group: 'the-scope-this-contract-does-not-cover',
     a: 'ab',
     b: 'ba',
     expected: 2,
@@ -172,6 +200,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-transposition-inside-a-word',
+    group: 'the-scope-this-contract-does-not-cover',
     a: 'form',
     b: 'from',
     expected: 2,
@@ -183,6 +212,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'case-is-a-difference',
+    group: 'the-scope-this-contract-does-not-cover',
     a: 'Alice',
     b: 'alice',
     expected: 1,
@@ -196,6 +226,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-space-is-a-code-point',
+    group: 'the-scope-this-contract-does-not-cover',
     a: 'a b',
     b: 'ab',
     expected: 1,
@@ -206,13 +237,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'alternative - a distance that skips whitespace - is not a metric on strings.',
   },
 
-  // --- The unit an edit is counted in --------------------------------------
-  //
-  // The region no axiom reaches. Every case below is answered differently by an implementation
-  // counting UTF-16 code units, which is what the widely used JavaScript implementations do, and
-  // every one of them satisfies all four axioms under either counting.
   {
     id: 'an-astral-character-is-one-unit',
+    group: 'the-unit-an-edit-is-counted-in',
     a: GRINNING_FACE,
     b: '',
     expected: 1,
@@ -225,6 +252,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'an-astral-character-inside-a-word',
+    group: 'the-unit-an-edit-is-counted-in',
     a: `a${GRINNING_FACE}b`,
     b: 'ab',
     expected: 1,
@@ -236,6 +264,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'two-astral-characters-and-one',
+    group: 'the-unit-an-edit-is-counted-in',
     a: `${GRINNING_FACE}${GRINNING_FACE}`,
     b: GRINNING_FACE,
     expected: 1,
@@ -247,6 +276,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-grapheme-is-not-the-unit',
+    group: 'the-unit-an-edit-is-counted-in',
     a: `${WOMAN}${ZERO_WIDTH_JOINER}${LAPTOP}`,
     b: WOMAN,
     expected: 2,
@@ -259,6 +289,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-lone-surrogate-is-one-unit',
+    group: 'the-unit-an-edit-is-counted-in',
     a: LONE_HIGH_SURROGATE,
     b: '',
     expected: 1,
@@ -270,6 +301,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-surrogate-pair-against-its-own-half',
+    group: 'the-unit-an-edit-is-counted-in',
     a: GRINNING_FACE,
     b: LONE_HIGH_SURROGATE,
     expected: 1,
@@ -281,9 +313,9 @@ export const edgeCases: readonly EdgeCase[] = [
       'here beside the ones that separate the two conventions rather than instead of them.',
   },
 
-  // --- Normalisation is not applied ----------------------------------------
   {
     id: 'normalisation-is-not-applied',
+    group: 'normalisation',
     a: PRECOMPOSED_E_ACUTE,
     b: DECOMPOSED_E_ACUTE,
     expected: 2,
@@ -298,6 +330,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-combining-mark-is-one-unit',
+    group: 'normalisation',
     a: 'e',
     b: DECOMPOSED_E_ACUTE,
     expected: 1,
@@ -309,6 +342,7 @@ export const edgeCases: readonly EdgeCase[] = [
   },
   {
     id: 'a-precomposed-character-is-one-unit',
+    group: 'normalisation',
     a: PRECOMPOSED_E_ACUTE,
     b: 'e',
     expected: 1,
