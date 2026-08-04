@@ -103,9 +103,9 @@ const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `      return value.description === null 
 
 const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id },`
 
-const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) => renderedGroup(group, table, answer)),`
+const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) => renderedGroup(group, table, answer, alone ? 'h3' : 'h4')),`
 
-const A_HEADING_CARRIES_ITS_OWN_ADDRESS = `  addressed('h4', group.id, group.title),`
+const A_HEADING_CARRIES_ITS_OWN_ADDRESS = `  addressed(heading, group.id, group.title),`
 
 const ONE_ANSWER_IS_WRITTEN_BARE = `    answered.length === 1`
 
@@ -463,7 +463,7 @@ const mutants: readonly Mutant[] = [
     [
       contractPageFile(
         THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER,
-        `  ...[...table.groups].reverse().flatMap((group) => renderedGroup(group, table, answer)),`,
+        `  ...[...table.groups].reverse().flatMap((group) => renderedGroup(group, table, answer, alone ? 'h3' : 'h4')),`,
       ),
     ],
     killed(['every-group-is-a-heading-and-its-cases-follow-it']),
@@ -484,7 +484,7 @@ const mutants: readonly Mutant[] = [
     [
       contractPageFile(
         A_HEADING_CARRIES_ITS_OWN_ADDRESS,
-        `  addressed('h4', (table.cases[0] as { readonly id: string }).id, group.title),`,
+        `  addressed(heading, (table.cases[0] as { readonly id: string }).id, group.title),`,
       ),
     ],
     killed([
