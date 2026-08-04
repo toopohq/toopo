@@ -100,6 +100,7 @@ const ONE_DELETION_ID = `    id: 'one-deletion',`
 // ---------------------------------------------------------------------------
 
 const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_CASE_GROUPED = 'every-case-is-grouped'
 const EVERY_PAIR_ONCE = 'settles-each-pair-once'
 const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
 const SEPARATES_FROM_THE_ECOSYSTEM =
@@ -241,6 +242,15 @@ const mutants: readonly Mutant[] = [
       'declaration that called this region unprobed had to go - because it is probed.',
     [contract(IDENTICAL_PROFILE_CLASS, IDENTICAL_PROFILE_CLASS.replace(`'zero'`, `'far'`))],
     killed([IDENTICAL_PROFILE]),
+  ),
+  sameOnEveryLens(
+    'LS-14',
+    'one case filed under a group it does not belong to, so the page publishes it under the wrong ' +
+      'heading. Every answer in the table is still right, every identifier still unique, every ' +
+      'anchor still resolves - the only thing wrong is what a reader is told the row is about, ' +
+      'which is why the grouping needed a guard of its own rather than a comment banner',
+    [edgeCases(`    id: 'one-substitution',\n    group: 'one-edit-of-each-kind',`, `    id: 'one-substitution',\n    group: 'the-two-ends-of-the-scale',`)],
+    killed([EVERY_CASE_GROUPED]),
   ),
 ]
 

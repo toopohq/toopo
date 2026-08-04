@@ -103,6 +103,7 @@ const HALF_A_DAY = `    duration: { days: 0.5 },`
 
 const REASONS_AGREE = 'names-a-case-for-every-reason'
 const EVERY_CALL_ONCE = 'settles-each-call-once'
+const EVERY_CASE_GROUPED = 'every-case-is-grouped'
 const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
 const INSTANTS_ROUND_TRIP = 'every-expected-instant-round-trips'
 const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
@@ -298,6 +299,15 @@ const mutants: readonly Mutant[] = [
       'is the only thing that sees it. A rename rather than an added case, for the reason DA-8 is one',
     [edgeCases(`    id: 'half-a-day',`, `    id: 'a-fractional-month',`)],
     killed([EVERY_ID_UNIQUE]),
+  ),
+  sameOnEveryLens(
+    'DA-16',
+    'one case filed under a group it does not belong to, so the page publishes it under the wrong ' +
+      'heading. Every answer in the table is still right, every identifier still unique, every ' +
+      'anchor still resolves - the only thing wrong is what a reader is told the row is about, ' +
+      'which is why the grouping needed a guard of its own rather than a comment banner',
+    [edgeCases(`    id: 'a-leap-day-plus-one-year',\n    group: 'leap-years',`, `    id: 'a-leap-day-plus-one-year',\n    group: 'baseline',`)],
+    killed([EVERY_CASE_GROUPED]),
   ),
 ]
 

@@ -73,6 +73,7 @@ const OVERFLOW_CASE = `    input: '1e400',
 // ---------------------------------------------------------------------------
 
 const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_CASE_GROUPED = 'every-case-is-grouped'
 const EVERY_INPUT_ONCE = 'settles-each-input-once'
 const REASONS_AGREE = 'names-a-case-for-every-reason'
 const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
@@ -195,6 +196,15 @@ const mutants: readonly Mutant[] = [
       'added case, for the reason NP-8 is one - the count check refuses a cell whose suite grew',
     [edgeCases(`    id: 'a-bigint-suffix',`, `    id: 'arbitrary-text',`)],
     killed([EVERY_ID_UNIQUE]),
+  ),
+  sameOnEveryLens(
+    'NP-11',
+    'one case filed under a group it does not belong to, so the page publishes it under the wrong ' +
+      'heading. Every answer in the table is still right, every identifier still unique, every ' +
+      'anchor still resolves - the only thing wrong is what a reader is told the row is about, ' +
+      'which is why the grouping needed a guard of its own rather than a comment banner',
+    [edgeCases(`    id: 'leading-plus-sign',\n    group: 'sign',`, `    id: 'leading-plus-sign',\n    group: 'baseline',`)],
+    killed([EVERY_CASE_GROUPED]),
   ),
 ]
 

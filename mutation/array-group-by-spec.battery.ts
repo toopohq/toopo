@@ -77,6 +77,7 @@ const INDEX_CALLS = `    expectedCalls: [['a', 0], ['b', 1], ['c', 2]],`
 // ---------------------------------------------------------------------------
 
 const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_CASE_GROUPED = 'every-case-is-grouped'
 const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
 const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
 const EVERY_SHAPE_AND_DESCRIPTION =
@@ -207,6 +208,15 @@ const mutants: readonly Mutant[] = [
       'check a declared provenance; this measures the consequence rather than restating it',
     [edgeCases(PARITY_CASE, PARITY_CASE.replace(`'specified'`, `'guessed'`))],
     killedByTypecheck,
+  ),
+  sameOnEveryLens(
+    'AG-11',
+    'one case filed under a group it does not belong to, so the page publishes it under the wrong ' +
+      'heading. Every answer in the table is still right, every identifier still unique, every ' +
+      'anchor still resolves - the only thing wrong is what a reader is told the row is about, ' +
+      'which is why the grouping needed a guard of its own rather than a comment banner',
+    [edgeCases(`    id: 'nan-keys-form-one-group',\n    group: 'key-identity',`, `    id: 'nan-keys-form-one-group',\n    group: 'baseline',`)],
+    killed([EVERY_CASE_GROUPED]),
   ),
 ]
 

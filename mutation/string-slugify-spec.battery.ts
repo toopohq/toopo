@@ -95,6 +95,7 @@ const A_PLUS_CASE = `    id: 'a-plus-is-not-a-letter',
 // ---------------------------------------------------------------------------
 
 const EVERY_ID_UNIQUE = 'every-case-is-addressed'
+const EVERY_CASE_GROUPED = 'every-case-is-grouped'
 const EVERY_TEXT_ONCE = 'settles-each-text-once'
 const EVERY_CASE_JUSTIFIED = 'every-case-is-justified'
 const ASCII_DIVERGENCE = 'the-cases-an-ascii-alphabet-answers-differently'
@@ -245,6 +246,15 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed([COLLISIONS]),
+  ),
+  sameOnEveryLens(
+    'GS-14',
+    'one case filed under a group it does not belong to, so the page publishes it under the wrong ' +
+      'heading. Every answer in the table is still right, every identifier still unique, every ' +
+      'anchor still resolves - the only thing wrong is what a reader is told the row is about, ' +
+      'which is why the grouping needed a guard of its own rather than a comment banner',
+    [edgeCases(`    id: 'a-latin-diacritic-is-removed',\n    group: 'the-fold',`, `    id: 'a-latin-diacritic-is-removed',\n    group: 'the-surprise-in-front',`)],
+    killed([EVERY_CASE_GROUPED]),
   ),
 ]
 
