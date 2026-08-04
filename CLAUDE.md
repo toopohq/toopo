@@ -34,7 +34,11 @@ validated by nothing until now. **The CLI is finished at six commands with `toop
 the way out the client did not have**: before it, the only way to uninstall was to edit `toopo.lock` by
 hand, and the tool put a deleted folder straight back. Beside it `toopo list`, the only command that
 reads no *registry*, and the pair is the shape of the whole client — one question answered without a
-project, one answered without a server. No server and no website exists, deliberately.
+project, one answered without a server. **And now `site/`, the generator, which is the half of the
+product nobody had seen**: four contract pages, the catalogue, and the page that publishes what the
+catalogue refused. No server exists and none is needed — what it writes is static HTML, and a contract
+page that needs a line of JavaScript to be read is a page a crawler and a screen reader read
+differently from a person.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -232,6 +236,92 @@ table rather than described.
 `number/parse@1` and `date/add@1` both diverge — from `Number` and from every library's fractional
 month — and neither carries such a guard. That is recorded here as a debt against this rule rather
 than as an exception to it.
+
+## What a page is, and the two projections of it — settled
+
+**A page is a value, and `toHtml` and `toText` are two projections of it.** Everything about the site
+was decided by rendering a page in document order, stripped of markup, and reading it as a stranger —
+which is at once what a search engine indexes, what a screen reader announces, and the closest thing
+there is to *what somebody understands in ten seconds*. A generator that concatenated HTML could only
+be measured by parsing its own output back, and a bug in the reader would read as a bug in the page.
+
+So the reading stops being something somebody remembers to do and becomes something a guard holds. The
+mutant it exists for is a text projection that quietly drops what the HTML shows: it produces a
+*shorter and tidier* reading, which is exactly what somebody skimming a measurement hopes to see. It
+is the only defect in that folder that could blind the instrument the unit was steered by, and two
+guards catch it.
+
+**What the reading found that no static check could.** Three defects, all invisible to a typechecker
+and to every guard about presence. The first screen said the same sentence three times — title, meta
+description and lede all carried the summary. The anchor beside a case was read aloud as a `#` that
+means nothing, which `aria-hidden` now settles: the declaration that a screen reader skips an element
+*is* the declaration that the text projection drops it, so the two answer to one statement rather than
+to a rule about class names. And every universal property of every contract came out as
+`not applicableThe signature takes a single string` — two blocks that had become one sentence, with
+every word still present, so a projection guard was green and a person could not read it.
+
+**Nothing is escaped that a reader can see, and everything else is.** Measured over the five: 36 of
+438 string values carry a character that is invisible on its own or renders on top of its neighbour.
+`number/parse@1`'s own source says why it matters — a no-break space and an ordinary one are the same
+glyphs on screen and carry opposite answers in that table — so a page printing both as they are would
+publish two cases a reader cannot tell apart, one saying the input parses and the other that it does
+not. Cyrillic, Arabic, emoji, `é` and `€` are printed as themselves, because they are visible and
+because `string/slugify@1`'s table is about them.
+
+## What a contract page publishes, and what it leaves out — settled
+
+**A refused contract has no page.** `array/group-by@1` was decided against *before* publication, so
+`refuseContract` records an argument and binds no digest: there is no frozen definition, no snapshot,
+nothing a reader could check. A contract page with no digest behind it would be missing the only half
+that makes this registry worth anything. What the catalogue publishes about it is the refusal, on the
+page written for refusals — which is where it belongs, and which is the most distinctive page this
+project can publish on day one.
+
+The cost is named rather than left to be found: that page cannot show the contract's own prose — the
+comparison of lodash, Ramda, d3 and the two ES2024 built-ins that makes its case — because the registry
+serves a refusal and not a definition of the thing refused.
+
+**No implementation section.** The project specification describes a contract page for a mature
+catalogue: implementations, benchmark figures, sizes, tags. There is one implementation per contract
+and no reference machine, so a third of that page would be a table of nothing, and an empty section
+tells a reader something is missing without telling them what. What survives is the one figure that is
+measurable today and is the most immediate comparison against an npm package — **how many bytes land in
+their project** — stated in the first screen and in exact bytes rather than rounded. `readableBytes`
+stays in `cli/report.ts`, because a terminal line is read in passing and a page has room for the number.
+
+**A page's address is the contract's address.** `/number/parse@1/`, anchored `#ordinary-integer`, which
+is exactly what `renderCase` has rendered since `registry/address.ts` was written and nothing read.
+That is the third time a field written for a consumer that did not exist yet turned out to be right,
+after `identity.searchAliases` and `FIELD_MAP.verification`, and it is the argument for going on
+writing the address before anything fills it.
+
+## A case of block 4.4 is a call — settled, catalogue-wide
+
+**The fields of a case begin with the parameter names of the answer's signature, in the signature's
+order, and what remains is the answer.** Measured over the five, on all seven of their case tables:
+seven of seven, in order, no exception — and the imagined sixth contract, written before the rule
+existed, already obeys it. `serialise.ts` refuses a contract where it stops being true.
+
+The parameter names are **read off the declared type rather than declared beside it**, for the reason
+`implementation-record.ts` refuses a declared depth and `serialise.ts` refuses a declared sample count:
+a value read off what it describes has no second statement to disagree with. What checks the reading is
+not a copy of it but a hundred and eighty-seven cases.
+
+It is the seventh defect a consumer has found in this schema and the first the site found, after
+`dependencyDepth`, `ProfileSamples`, the two digests, `askedFor` and the index's exports. An eighth
+arrived in the same unit and is smaller: **no need in `needs.ts` covered listing the catalogue.** Every
+`the-site` entry described rendering *one* contract, one refusal, one methodology, or answering a
+query; the front page — the whole of the site's navigation at five contracts — had nothing behind it,
+while the generator consumed `contract-index` anyway.
+
+**What the record still cannot say, and it is the grouping.** The contracts group their cases in
+comment banners — `--- Whitespace ---`, `--- Sign ---` — and all 187 cases sit inside one: twelve groups
+on `number/parse@1`, ten on `date/add@1` and on `string/slugify@1`, six on the other two, between two
+and ten cases each. The record is flat. Measured by printing both, fifty cases in a row read as
+documentation rather than as a dump and a reader still cannot *find* anything in them; grouped, they
+become twelve short answers to twelve questions somebody has. The judgement exists in the source and its
+shape as data does not, so it is a format decision on five frozen contracts and it is recorded here as
+open rather than taken.
 
 ## The security filter fails closed — settled
 
