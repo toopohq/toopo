@@ -114,6 +114,8 @@ const A_REFUSAL_NAMES_WHAT_THE_PROJECT_DOES_HOLD = `    const installed = lockfi
 
 const THE_LISTING_SAYS_WHICH_WERE_ASKED_FOR = `    askedFor: feature.askedFor,`
 
+const AN_EMPTY_PROJECT_HAS_ITS_OWN_SCREEN = `  if (listing.features.length === 0) {`
+
 export const mutants: readonly Mutant[] = [
   // -------------------------------------------------------------------------
   // Removing more than was asked for
@@ -340,6 +342,21 @@ export const mutants: readonly Mutant[] = [
     [listFile(THE_LISTING_SAYS_WHICH_WERE_ASKED_FOR, `    askedFor: true,`)],
     killed(['every-installed-feature-is-named-with-whether-it-was-asked-for']),
   ),
+
+  /**
+   * The last of the twenty-five guards this unit added to have never been red anywhere.
+   *
+   * It was declared unprobed by all four batteries of this folder, which the instrument accepts - and
+   * a declared silence nobody can reach is exactly what a decorative guard looks like from the inside.
+   * It is one edit away from being witnessed, so it is witnessed.
+   */
+  sameOnEveryLens(
+    'R-21',
+    'prints a project holding nothing as a project with nothing to say - `0 features · 0 files` and ' +
+      'two commands to type, which leaves the reader unsure whether anything ran',
+    [reportFile(AN_EMPTY_PROJECT_HAS_ITS_OWN_SCREEN, `  if (false) {`)],
+    killed(['a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -432,7 +449,6 @@ export const battery: Battery = {
         'a-missing-final-newline-is-said-rather-than-lost',
         'a-name-the-catalogue-does-not-hold-is-refused',
         'a-path-with-a-space-installs-normally',
-        'a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen',
         'a-project-that-was-never-initialised-answers-nothing',
         'a-project-with-no-package-json-installs-normally',
         'a-query-the-catalogue-cannot-answer-answers-nothing',
