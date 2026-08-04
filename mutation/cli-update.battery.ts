@@ -51,7 +51,16 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
 
 const diffFile = (find: string, replace: string) => ({ file: 'diff.ts', find, replace })
 const writeFile = (find: string, replace: string) => ({ file: 'write.ts', find, replace })
-const updateFile = (find: string, replace: string) => ({ file: 'update.ts', find, replace })
+/**
+ * The arithmetic this battery injects into moved out of `update.ts` when `remove` arrived.
+ *
+ * Both commands reconcile a project against what it should hold and differ in two things only - which
+ * features they call roots, and at which version those roots are bound - so what they share is one
+ * module and `update.ts` keeps its own two refusals. Every anchor below was repointed rather than
+ * rewritten, and the matrix was compared cell by cell against the run before the move: what a mutant
+ * measures is the same arithmetic under a different file name.
+ */
+const reconcileFile = (find: string, replace: string) => ({ file: 'reconcile.ts', find, replace })
 const reportFile = (find: string, replace: string) => ({ file: 'report.ts', find, replace })
 
 // ---------------------------------------------------------------------------
@@ -96,11 +105,24 @@ const AN_UNCHANGED_FILE_THE_USER_EDITED_IS_KEPT = `  return 'kept'`
 
 const HOLDING_BACK_PROPAGATES = `  for (let again = true; again; ) {`
 
-const NOTHING_IS_REMOVED_WHILE_ANYTHING_IS_HELD = `  const somethingIsHeldBack = held.size > 0`
+/**
+ * The set this is asked of gained a half, and the mutant is unchanged.
+ *
+ * It used to read `held.size > 0`, which counts the features still in the plan. A feature held back by
+ * an edit *while leaving* is in nobody's plan, so its dependencies were removed underneath the code it
+ * left on disk - found by the removal suite, on a project whose kept `round.ts` went on importing a
+ * `../clamp/clamp.js` that had just been deleted.
+ */
+const NOTHING_IS_REMOVED_WHILE_ANYTHING_IS_HELD = `  const somethingIsHeldBack = held.size > 0 || editedIn.some((edited) => edited.length > 0)`
 
 const ONLY_A_ROOT_IS_RESOLVED_FROM = `  const roots = request.lockfile.features.filter((feature) => feature.askedFor)`
 
-const THE_RECORDED_IMPLEMENTATION_IS_KEPT = `    const binding = bindingFor(source, feature.contract, feature.implementation.id)`
+/**
+ * The binding an update resolves through, which is now one branch of a choice rather than the only
+ * answer: a removal binds its remaining roots at the version the lockfile records, and this is the
+ * other half of that ternary.
+ */
+const THE_RECORDED_IMPLEMENTATION_IS_KEPT = `        ? bindingFor(source, feature.contract, feature.implementation.id)`
 
 const A_PATH_NOBODY_CLAIMS_IS_REFUSED = `  const unclaimed = planned.plan.files`
 
@@ -256,7 +278,7 @@ const mutants: readonly Mutant[] = [
     'U-12',
     'reads a file it already wrote as a file somebody edited, so a run killed part-way turns every ' +
       'file it had managed to write into a conflict the user has to resolve by hand',
-    [updateFile(WHAT_WE_WOULD_WRITE_IS_NOT_AN_EDIT, `  if (onDisk === wanted) return 'unchanged'`)],
+    [reconcileFile(WHAT_WE_WOULD_WRITE_IS_NOT_AN_EDIT, `  if (onDisk === wanted) return 'unchanged'`)],
     killed(['a-file-already-equal-to-what-we-would-write-is-not-a-conflict']),
   ),
 
@@ -291,7 +313,7 @@ const mutants: readonly Mutant[] = [
     'U-16',
     'updates exactly the files the user edited and leaves the untouched ones alone - permanent rule ' +
       '4 inverted, and every edit in the project overwritten in one run',
-    [updateFile(AN_UNTOUCHED_FILE_IS_UPDATED, `  if (mustChange && wasEdited) return 'updated'`)],
+    [reconcileFile(AN_UNTOUCHED_FILE_IS_UPDATED, `  if (mustChange && wasEdited) return 'updated'`)],
     killed([THE_CONFLICT, 'a-conflicted-feature-is-held-back-whole', THE_NOMINAL]),
   ),
 
@@ -299,7 +321,7 @@ const mutants: readonly Mutant[] = [
     'U-17',
     'overwrites a file the user edited that the registry never changed, which is somebody\'s work ' +
       'destroyed for no reason at all',
-    [updateFile(AN_UNCHANGED_FILE_THE_USER_EDITED_IS_KEPT, `  return 'updated'`)],
+    [reconcileFile(AN_UNCHANGED_FILE_THE_USER_EDITED_IS_KEPT, `  return 'updated'`)],
     killed([
       'a-file-the-registry-did-not-change-keeps-your-version',
       'a-kept-file-keeps-the-digest-we-wrote-and-not-the-one-on-disk',
@@ -310,7 +332,7 @@ const mutants: readonly Mutant[] = [
     'U-18',
     'holds back only the feature that was edited, so a dependent lands at its new version over a ' +
       'dependency that stayed at the old one - a combination nobody published',
-    [updateFile(HOLDING_BACK_PROPAGATES, `  for (let again = false; again; ) {`)],
+    [reconcileFile(HOLDING_BACK_PROPAGATES, `  for (let again = false; again; ) {`)],
     killed(['a-feature-that-imports-a-held-back-one-is-held-back-too']),
   ),
 
@@ -318,7 +340,7 @@ const mutants: readonly Mutant[] = [
     'U-19',
     'removes a dependency that left the closure while the feature that dropped it is held back, so ' +
       'the old code still on disk imports a file this run has just deleted',
-    [updateFile(NOTHING_IS_REMOVED_WHILE_ANYTHING_IS_HELD, `  const somethingIsHeldBack = false`)],
+    [reconcileFile(NOTHING_IS_REMOVED_WHILE_ANYTHING_IS_HELD, `  const somethingIsHeldBack = false`)],
     killed(['nothing-is-removed-while-a-feature-is-held-back']),
   ),
 
@@ -327,7 +349,7 @@ const mutants: readonly Mutant[] = [
     'resolves from every locked feature rather than from the ones the user asked for, so a ' +
       'dependency climbs to its own newest version independently of the dependent it was published ' +
       'against, and nothing ever leaves the project',
-    [updateFile(ONLY_A_ROOT_IS_RESOLVED_FROM, `  const roots = request.lockfile.features`)],
+    [reconcileFile(ONLY_A_ROOT_IS_RESOLVED_FROM, `  const roots = request.lockfile.features`)],
     killed([THE_LEAVING, 'a-lockfile-with-no-root-has-nowhere-to-start']),
   ),
 
@@ -335,7 +357,7 @@ const mutants: readonly Mutant[] = [
     'U-21',
     "follows the registry's current default rather than the implementation the lockfile names, so a " +
       'user who chose one is moved onto another without a word',
-    [updateFile(THE_RECORDED_IMPLEMENTATION_IS_KEPT, `    const binding = bindingFor(source, feature.contract, null)`)],
+    [reconcileFile(THE_RECORDED_IMPLEMENTATION_IS_KEPT, `        ? bindingFor(source, feature.contract, null)`)],
     killed(['an-update-keeps-the-implementation-the-lockfile-names']),
   ),
 
@@ -343,7 +365,7 @@ const mutants: readonly Mutant[] = [
     'U-22',
     'overwrites a file at a path the lockfile does not claim, which is somebody else\'s code ' +
       'replaced by a command they ran to keep ours up to date',
-    [updateFile(A_PATH_NOBODY_CLAIMS_IS_REFUSED, `  const unclaimed: readonly string[] = []
+    [reconcileFile(A_PATH_NOBODY_CLAIMS_IS_REFUSED, `  const unclaimed: readonly string[] = []
   const unused = planned.plan.files`)],
     killed(['a-file-toopo-did-not-write-is-never-overwritten-by-an-update']),
   ),
@@ -352,7 +374,7 @@ const mutants: readonly Mutant[] = [
     'U-23',
     'stamps every feature with the instant of the run, so a `toopo update` that changed nothing ' +
       'still rewrites a committed lockfile and every project has a diff nobody made',
-    [updateFile(THE_INSTANT_MOVES_ONLY_WHEN_SOMETHING_DID, `      installedAt: request.at,`)],
+    [reconcileFile(THE_INSTANT_MOVES_ONLY_WHEN_SOMETHING_DID, `      installedAt: request.at,`)],
     killed([
       'applying-an-update-twice-changes-nothing-the-second-time',
       'a-registry-that-has-not-moved-changes-nothing',
@@ -363,7 +385,7 @@ const mutants: readonly Mutant[] = [
     'U-24',
     'drops the lockfile entry of a feature it held back, so the files it did not touch become files ' +
       'nothing claims and the next `toopo add` refuses them as somebody else\'s',
-    [updateFile(A_HELD_BACK_FEATURE_KEEPS_ITS_ENTRY, `      void was`)],
+    [reconcileFile(A_HELD_BACK_FEATURE_KEEPS_ITS_ENTRY, `      void was`)],
     killed([THE_HELD_ENTRY]),
   ),
 
@@ -371,7 +393,7 @@ const mutants: readonly Mutant[] = [
     'U-25',
     'drops a feature from the lockfile and leaves its files on disk, so the project holds code no ' +
       'lockfile describes and nothing will ever update or remove it',
-    [updateFile(A_LEAVING_FEATURE_IS_REMOVED, `    void entry`)],
+    [reconcileFile(A_LEAVING_FEATURE_IS_REMOVED, `    void entry`)],
     killed([THE_LEAVING, THE_NOMINAL]),
   ),
 
