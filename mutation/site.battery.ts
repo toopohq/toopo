@@ -111,7 +111,8 @@ const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 
 const ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE = `    .entries.filter((entry) => entry.installable)`
 
-const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `              ? \`toopo add \${entry.address.name}\``
+const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `            entry.installable
+              ? \`toopo add \${entry.address.name}\``
 
 const THE_VERSION_IS_VISIBLY_FALSE = `export const THE_UNPUBLISHED_VERSION = '0.0.0-local'`
 
@@ -284,7 +285,13 @@ const mutants: readonly Mutant[] = [
     'W-14',
     'offers an install command for the contract the catalogue turned down, on the page somebody ' +
       'clicks from',
-    [cataloguePageFile(A_REFUSED_CONTRACT_IS_OFFERED_NOTHING, `              ? \`toopo add \${entry.address.name} \``)],
+    [
+      cataloguePageFile(
+        A_REFUSED_CONTRACT_IS_OFFERED_NOTHING,
+        `            true
+              ? \`toopo add \${entry.address.name}\``,
+      ),
+    ],
     killed(['nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed']),
   ),
 
@@ -298,7 +305,7 @@ const mutants: readonly Mutant[] = [
         `export const pageOf = (address: ContractAddress): string => \`\${address.name}/index.html\``,
       ),
     ],
-    killed(['every-page-is-reachable-from-the-front-page']),
+    killed(['a-page-is-addressed-by-the-contract-it-is-about']),
   ),
 
   sameOnEveryLens(

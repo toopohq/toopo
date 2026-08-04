@@ -16,10 +16,21 @@ import { theSite } from './site.js'
  */
 
 const source = localSource()
-const pages = theSite(source)
 const index = source.contractIndex()
 
-const html = (path: string): string => toHtml(pages.get(path) as NonNullable<ReturnType<typeof pages.get>>)
+/**
+ * Built inside each guard rather than once at the top of the file, and that is the apparatus talking
+ * rather than taste: a defect that makes `theSite` throw would otherwise stop the whole file from
+ * collecting, and the mutation instrument reads a file that collected nothing as a run that measured
+ * part of the suite. W-20 is the mutant that found it - it builds a page for the contract that has no
+ * binding - and one guard failing is the answer, not nine disappearing.
+ */
+const pages = (): ReturnType<typeof theSite> => theSite(source)
+
+const page = (path: string): Parameters<typeof toHtml>[0] =>
+  pages().get(path) as NonNullable<ReturnType<ReturnType<typeof theSite>['get']>>
+
+const html = (path: string): string => toHtml(page(path))
 
 describe('the site', () => {
   /**
@@ -35,10 +46,10 @@ describe('the site', () => {
     const installable = index.entries.filter((entry) => entry.installable)
     const refused = index.entries.filter((entry) => !entry.installable)
 
-    expect([...pages.keys()].sort()).toEqual(
+    expect([...pages().keys()].sort()).toEqual(
       [CATALOGUE_PAGE, REFUSALS_PAGE, ...installable.map((entry) => pageOf(entry.address))].sort(),
     )
-    expect(refused.map((entry) => pages.has(pageOf(entry.address)))).toEqual([false])
+    expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([false])
     expect(refused.length).toBe(1)
   })
 
@@ -54,15 +65,15 @@ describe('the site', () => {
    */
   it('every-case-is-anchored-by-the-identifier-its-address-is-made-of', () => {
     for (const held of heldByTheRegistry(source)) {
-      const page = html(pageOf(held.contract.address))
+      const rendered = html(pageOf(held.contract.address))
 
       for (const table of held.contract.caseTables) {
         for (const entry of table.cases) {
           const address = renderCase({ contract: held.contract.address, case: entry.id })
 
           expect(address).toBe(`${renderContract(held.contract.address)}#${entry.id}`)
-          expect(page).toContain(`<div id="${entry.id}">`)
-          expect(page).toContain(`href="#${entry.id}"`)
+          expect(rendered).toContain(`<div id="${entry.id}">`)
+          expect(rendered).toContain(`href="#${entry.id}"`)
         }
       }
     }
@@ -75,10 +86,10 @@ describe('the site', () => {
    */
   it('a-case-is-rendered-as-the-call-its-signature-declares', () => {
     const parse = toText(
-      pages.get(pageOf({ language: 'typescript', name: 'number/parse', major: 1 })) as never,
+      page(pageOf({ language: 'typescript', name: 'number/parse', major: 1 })),
     )
     const distance = toText(
-      pages.get(pageOf({ language: 'typescript', name: 'string/levenshtein', major: 1 })) as never,
+      page(pageOf({ language: 'typescript', name: 'string/levenshtein', major: 1 })),
     )
 
     // Two answer fields, so both are named; one answer field, so it is written bare.
@@ -100,12 +111,12 @@ describe('the site', () => {
    */
   it('nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed', () => {
     const refused = index.entries.find((entry) => !entry.installable)
-    const everyPage = [...pages.values()].map(toText).join('\n')
+    const everyPage = [...pages().values()].map(toText).join('\n')
 
     expect(refused).toBeDefined()
     expect(everyPage).not.toContain(`toopo add ${refused?.address.name}`)
     expect(html(CATALOGUE_PAGE)).toContain(renderContract(refused?.address as never))
-    expect(toText(pages.get(REFUSALS_PAGE) as never)).toContain(
+    expect(toText(page(REFUSALS_PAGE))).toContain(
       renderContract(refused?.address as never),
     )
   })
@@ -120,7 +131,7 @@ describe('the site', () => {
     for (const held of heldByTheRegistry(source)) {
       const installed = held.implementation.files.reduce((total, file) => total + file.bytes, 0)
       const served = held.contract.harness.reduce((total, file) => total + file.bytes, 0)
-      const reading = toText(pages.get(pageOf(held.contract.address)) as never)
+      const reading = toText(page(pageOf(held.contract.address)))
 
       expect(installed).toBeLessThan(served)
       expect(reading).toContain(`${installed.toLocaleString('en-US').replaceAll(',', ' ')} bytes`)
@@ -151,7 +162,7 @@ describe('the site', () => {
     const front = html(CATALOGUE_PAGE)
     const linked = [...front.matchAll(/href="([^"]+)"/g)].map((match) => match[1])
 
-    expect([...pages.keys()].filter((path) => path !== CATALOGUE_PAGE).map(linkTo).sort()).toEqual(
+    expect([...pages().keys()].filter((path) => path !== CATALOGUE_PAGE).map(linkTo).sort()).toEqual(
       [...new Set(linked)].sort(),
     )
   })
@@ -163,21 +174,43 @@ describe('the site', () => {
    * stops it coming back.
    */
   it('the-opening-of-a-page-says-three-different-things', () => {
-    for (const path of pages.keys()) {
-      const page = pages.get(path) as never
-      const opening = toText(page).split('\n\n').slice(0, 3)
+    for (const path of pages().keys()) {
+      const document = page(path)
+      const [title, description, first] = toText(document).split('\n\n')
 
-      expect(new Set(opening).size).toBe(opening.length)
+      // Distinct is not enough: a title of `<name> — <summary>` and a description of `<summary>` are
+      // two different strings saying one thing, which is what the first draft of the contract page
+      // did and what reading it in document order caught.
+      expect([title, description, first].every((part) => part !== undefined)).toBe(true)
+      expect(title).not.toContain(description as string)
+      expect(description).not.toContain(first as string)
+      expect(new Set([title, description, first]).size).toBe(3)
+    }
+  })
+
+  /**
+   * A page is addressed by the contract it is about, major version and all.
+   *
+   * Two independent statements: the path this generator writes, and the address the registry renders.
+   * A page path that dropped the major would still be internally consistent - every link would be
+   * built from the same wrong function, so a link check cannot see it - and `number/parse@2` would one
+   * day be published over the page of `number/parse@1`. That is the mutant W-15 is, and it is why this
+   * guard compares the path against `renderContract` rather than against another page.
+   */
+  it('a-page-is-addressed-by-the-contract-it-is-about', () => {
+    for (const entry of index.entries) {
+      expect(pageOf(entry.address)).toBe(`${renderContract(entry.address)}/index.html`)
+      expect(pageOf(entry.address)).toContain(`@${entry.address.major}/`)
     }
   })
 
   /** Nothing a reader can see is lost between the two projections, on every real page. */
   it('every-word-of-every-page-survives-both-projections', () => {
-    for (const path of pages.keys()) {
-      const page = pages.get(path) as never
-      const reading = toText(page)
+    for (const path of pages().keys()) {
+      const held = page(path)
+      const reading = toText(held)
 
-      expect(wordsOf(page).filter((word) => !reading.includes(word))).toEqual([])
+      expect(wordsOf(held).filter((word) => !reading.includes(word))).toEqual([])
     }
   })
 })
