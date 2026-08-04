@@ -367,12 +367,32 @@ written that way by accident and survived; it now moves a case to a group that i
 Closing the class would need a guard claiming to check that a case *belongs* where it is filed, which
 is a judgement about prose.
 
-**Three heading levels, and the page cost 5.9 per cent.** Measured over the six pages, 120 181 bytes
-before and 127 289 after; the 159 bytes the front page and the refusals page each gained are the two
-`h4` rules in the shared inline stylesheet, which is the whole of their share. `h4` was added to the
-text projection's separator map in the same change — without it a group title runs into the case
-beneath it, which is the exact shape of `not applicableThe signature takes a single string`, caught
-before it existed.
+**A group carries a `note`, required and `string | null`.** Having nothing to add is written rather
+than omitted — the shape `ImplementationRecord.version` already takes — and 44 of the 48 are `null`.
+The split is what the sentence is addressed to: prose for whoever reads the page goes in the field,
+prose for whoever maintains the table stays a comment. Four exist, and one of them says in as many
+words that its rows are there so a declaration has *a demonstration on the contract's own page* — a
+sentence that had been moved into a comment, which was a loss of content and not a tidying.
+
+**`note` is not frozen, and it is the only field of a group that is not.** `id` is the address and
+freezes with the major; a title and a note are prose, corrected the day they read badly, exactly as a
+`rationale` is. And a declared note is rendered: there is no state between carried and shown, which is
+the class `coverage.test.ts` already refuses on the record.
+
+**A table's purpose is a heading only when it separates two tables.** On the three contracts carrying
+one, the purpose is a sentence in the lower case a sentence is written in, and a heading that is not a
+title is a defect rather than an untidiness — it enters the document outline and a screen reader
+announces it as a section, with nothing on the other side of it. So it is a paragraph there and the
+groups take `h3`; where two tables separate typed callers from callers no type reaches, it keeps its
+heading and the groups sit at `h4`. **The tag is the outline and the class is the look**, so a group
+reads the same at either depth — `.group` and `.table`, never `h3` and `h4`.
+
+**The page cost 8.2 per cent, in two steps.** Measured over the six pages: 120 181 bytes before the
+grouping, 127 289 after it, 130 042 after the notes and the heading change. The 159 bytes the front
+page and the refusals page each gained at the first step are the stylesheet, which is the whole of
+their share. `h4` was added to the text projection's separator map in the same change — without it a
+group title runs into the case beneath it, which is the exact shape of `not applicableThe signature
+takes a single string`, caught before it existed.
 
 ## The security filter fails closed — settled
 
