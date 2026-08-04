@@ -28,7 +28,10 @@ which does **not** make `contractAnatomy` executable: the triage below says why 
 entries are settled by a syntax tree, four need a module a stage has already vetted, and four are a
 reader's for ever. Beside them now `toopo update`, the command permanent rule 4 is about, and with it
 the two-phase write that closes three of the four situations `cli/breakage.ts` declared as breaking
-badly. No server and no website exists, deliberately.
+badly. **The CLI is finished at four commands with `toopo search`**, the only one that reads no
+project at all and the one that finally makes `identity.searchAliases` executable — a field declared
+in the first session of this project and validated by nothing until now. No server and no website
+exists, deliberately.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -421,6 +424,72 @@ nothing, after which a later update would have removed what the user had asked f
 `dependencyDepth`, `ProfileSamples` and the two digests — smaller than the three before it, and in the
 lockfile rather than in the served schema.
 
+## What a search may answer, and what it must not — settled
+
+**Every word of a query must be answered by something the contract carries.** It is the only rule
+under which a search over this catalogue can answer *nothing*, and a search that always answers
+something is the one nobody believes twice. Measured over twenty utilities the catalogue does not
+hold — `debounce`, `deep clone`, `uuid`, `flatten nested array` — it answers nothing twenty times.
+`sort array` is the case that decides the rule: `array` is half of a contract's own name.
+
+**A word a contract cannot answer is set aside for that contract, and what remains must then name one
+of its own names, exports or aliases in full.** Without it, `convert a string to a number in
+javascript` answers nothing, because `in` occurs in one contract's summary and not in the one being
+asked for. A list of words to ignore was refused: it decides invisibly which words carry meaning, and
+`to`, `by` and `from` carry it here — fourteen aliases hold them.
+
+**A query may shorten a word the catalogue carries and may never extend one.** A symmetric prefix reads
+better and was measured: it answers `stringify` with all three contracts carrying `string`, and
+`datepicker` and `dateline` with `date/add@1`. The English plural is bought back explicitly and nothing
+else about English is claimed. There is no typo tolerance, and calling `string/levenshtein@1` from the
+CLI was refused twice over — it would buy the behaviour the first rule exists to refuse, and it would
+take `cli/` across the frontier `source.ts` holds.
+
+**The description is not in the index, and the aliases are its searchable surface.** Measured: the five
+index to 3 106 bytes and their descriptions alone to 6 187, so carrying them triples the one document
+every search pays for. A query only a description could have answered is a **missing alias**, and the
+repair belongs in `identity.searchAliases` where it is frozen, reviewed and served.
+
+**And the ranking has almost nothing to rank, which is a fact about the matching rather than a gap.**
+Nought of the eighty-nine aliases and corpus queries answers more than one contract, so inverting the
+comparator broke no trial at all. Of 161 distinct words in the index, 25 answer more than one contract
+and 7 carry a score that tells them apart — four of those seven are `a`, `by`, `from`, `to`. Two are
+real queries. Two constants died of it: an exactness multiplier that moved nothing at 2 or at 100, and
+a full-query bonus that could not change an order because no full query has one. **A number that
+cannot change an answer at any value is not a rule**, and speculative insurance no guard can reach is
+what `field-map.ts` calls a speculative field and deletes.
+
+## Make the omission impossible rather than forbidding it — settled, repository-wide
+
+**Before writing a rule in prose, look for the shape that makes breaking it not compile.** A sentence
+in a header is a rule the next contributor never reads; a type that cannot be written the wrong way is
+one they cannot get past. Three instances found independently, which is what turned a habit into a
+rule:
+
+- **`GuardAddress` carries no unpaired form.** Uniqueness is per contract, so a guard is addressed by
+  the pair `(contract, guard)` — and `registry/address.ts` publishes no type holding a guard identifier
+  alone. The rule "the registry schema must always carry the pair" was written in prose first, in this
+  file; making the unpaired form unrepresentable is what turned it into something the compiler keeps.
+- **`VerificationStratum` has a member for deferring and none for omitting.** `stated-per-declaration`
+  exists because the visibility guard found a path with no entry at all and a comment explaining why —
+  and a comment is not a classification. *Deferring is a decision, omitting is a silence*, and the
+  union is what makes the second one impossible to write.
+- **`toopo.lock`'s version cannot go stale.** `cli/lockfile.ts` validates through records keyed by
+  `keyof LockedFeature` and `keyof InstalledFile`, so a field added to either does not compile until a
+  check for it is written — beside the number that has to move. Both shapes had already shipped under
+  `"version": 1` before this existed, which is the measurement that motivated it.
+
+The three have one form: **a total map over a type, or a union with no way to spell the absence.** The
+question to ask of any new rule is whether that form exists for it. Where it does not, the rule is
+written in prose *and* recorded in the list below, so that a declaration nothing keeps is at least
+counted.
+
+**It is not free, and the cost is stated so it is not discovered later.** Totality forces a decision at
+the moment a type changes, which is the whole value, and it also means a field nobody has an opinion
+about must still be given one. `FIELDS_OF` carries `files: Array.isArray` and delegates the elements
+elsewhere — the totality guarantees no field goes *unconsidered*, never that every check is one
+expression. Claiming more than that would be the decorative form of the same idea.
+
 ## What the repository declares and nothing keeps — closes before the launch
 
 One form, found four times in a single sweep and certain to be found again: **a thing that behaves
@@ -459,6 +528,14 @@ decorative for ever.
 - `Breakage.guard` in `cli/breakage.ts` — every situation the installer refuses cleanly names the guard
   that keeps it, and nothing resolves that name. It is the same class arriving on a fifth kind of
   address, and it closes with the same mechanism as the others.
+- **Two aliases contradicted by their own contract's `inputDomain`.** `string similarity` and
+  `damerau levenshtein` are declared by `string/levenshtein@1`, whose input domain says *it is not a
+  similarity ratio* and that Damerau-Levenshtein *answers a different question and is a separate
+  contract*. The alias trial cannot see it — both retrieve their own contract first, which is all
+  retrieval can mean — so this is a judgement about the catalogue, not a defect in the search. It is a
+  debt rather than a fix because removing an alias is a change to a contract's identity and belongs to
+  whoever owns the catalogue; **it must close before publication**, since the field freezes with the
+  major and a lying alias frozen for life is worse than none.
 
 **Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever
@@ -492,7 +569,10 @@ it reddens where the repository's own rule says name all of a set of five or few
 `profileKeyFunctions` had no citable guard to point at.
 
 **The mechanism that closes the class for every address at once is a pre-flight refusal of a pin that
-names a guard no guard carries.** It is cheap — seconds against the ten minutes a battery costs — and
+names a guard no guard carries.** It is cheap — seconds against the seventeen minutes the batteries
+cost, and this sentence used to say *a battery*, which is wrong by a factor of six and was read that
+way once: measured, the fifteen run in 16 min 49 s and the largest single one is `cli-install` at
+186 s — and
 it turns a stale case identifier, guard identifier or profile name from a silence into an error, with
 no renaming anywhere. It has been set aside twice. It opens the unit after the validation pipeline's
 first stage, and it is written down here so that there is no third time. Note what it is *not*: a

@@ -530,6 +530,26 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
+        '`toopo search`, which is the third battery of this folder and shares nothing with either of ' +
+        'the other two: it writes no file, reads no project, and touches neither the plan nor the ' +
+        'lockfile. `cli-search` carries twenty-one defects over what a query matches, what it must ' +
+        'not, the order and the screen the reader gets.',
+      guards: [
+        'a-corpus-of-real-queries-ranks-the-right-contract-first',
+        'a-cut-summary-says-that-it-was-cut',
+        'a-miss-names-the-words-no-contract-carries',
+        'a-query-the-catalogue-cannot-answer-answers-nothing',
+        'a-refused-contract-is-found-with-the-reason-it-was-refused',
+        'a-refused-contract-is-offered-no-install-line',
+        'a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not',
+        'a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias',
+        'an-installable-contract-carries-no-refusal',
+        'every-declared-alias-finds-its-own-contract-first',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
         'the argument grammar and the configuration file. Nothing in this battery reads what the ' +
         'user typed or what `toopo.json` holds - it starts from a request already parsed - and ' +
         '`cli-install` carries twelve defects over exactly these. The two guards this unit *added* to ' +

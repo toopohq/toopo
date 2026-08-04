@@ -99,9 +99,6 @@ const AUTHORITY: Readonly<Record<MatchedField, number>> = {
   language: 1,
 }
 
-/** A word matched exactly is worth twice the same word reached by a plural or a shortening. */
-const EXACT = 2
-
 /**
  * The shortest word that may be shortened further, or made singular.
  *
@@ -169,6 +166,12 @@ const singular = (word: string): string =>
 /**
  * Whether one word answers another: exactly, as its plural, or by being a shortening of it.
  *
+ * **How it was reached does not change what it is worth**, and that is measured rather than assumed.
+ * An exactness multiplier was written first, on the reading that an exact word is a stronger signal
+ * than a shortened one; set to 2 and then to 100, it moved no result past another on any of the seven
+ * queries this catalogue can order. A multiplier that cannot change an answer at any value is not a
+ * rule, and the field a word was found in already carries the whole of what is known about it.
+ *
  * **The shortening goes one way only, and that was measured rather than assumed.** A symmetric
  * prefix - either word starting the other - reads well and answers `stringify` with all three
  * contracts whose name or summary carries `string`, `datepicker` and `dateline` with `date/add@1`,
@@ -181,12 +184,10 @@ const singular = (word: string): string =>
  * `singular` buys back explicitly: `arrays`, `numbers` and `dates` are queries people write, and
  * they are a plural rather than a different word. Nothing else about English is claimed.
  */
-const answers = (asked: string, held: string): 'exact' | 'near' | null => {
-  if (asked === held) return 'exact'
-  if (singular(asked) === singular(held)) return 'near'
-
-  return asked.length >= MINIMUM_PREFIX && held.startsWith(asked) ? 'near' : null
-}
+const answers = (asked: string, held: string): boolean =>
+  asked === held ||
+  singular(asked) === singular(held) ||
+  (asked.length >= MINIMUM_PREFIX && held.startsWith(asked))
 
 type Hit = { readonly value: number; readonly field: Field }
 
@@ -195,13 +196,10 @@ const bestHit = (word: string, fields: readonly Field[]): Hit | null => {
   let best: Hit | null = null
 
   for (const field of fields) {
-    for (const held of field.words) {
-      const how = answers(word, held)
-      if (how === null) continue
+    if (!field.words.some((held) => answers(word, held))) continue
 
-      const value = AUTHORITY[field.kind] * (how === 'exact' ? EXACT : 1)
-      if (best === null || value > best.value) best = { value, field }
-    }
+    const value = AUTHORITY[field.kind]
+    if (best === null || value > best.value) best = { value, field }
   }
 
   return best

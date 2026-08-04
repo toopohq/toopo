@@ -758,6 +758,26 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
+        '`toopo search`, which is the third battery of this folder and shares nothing with either of ' +
+        'the other two: it writes no file, reads no project, and touches neither the plan nor the ' +
+        'lockfile. `cli-search` carries twenty-one defects over what a query matches, what it must ' +
+        'not, the order and the screen the reader gets.',
+      guards: [
+        'a-corpus-of-real-queries-ranks-the-right-contract-first',
+        'a-cut-summary-says-that-it-was-cut',
+        'a-miss-names-the-words-no-contract-carries',
+        'a-query-the-catalogue-cannot-answer-answers-nothing',
+        'a-refused-contract-is-found-with-the-reason-it-was-refused',
+        'a-refused-contract-is-offered-no-install-line',
+        'a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not',
+        'a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias',
+        'an-installable-contract-carries-no-refusal',
+        'every-declared-alias-finds-its-own-contract-first',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
         'the diff and the two-phase write, which arrived with `toopo update`. An install renders no ' +
         'diff at all, and it reaches `write.ts` only through the one call every guard here already ' +
         'makes succeed - so a defect in either is out of reach of an edit to the plan, the rewrite, ' +

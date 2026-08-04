@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
 import { localSource } from './local-source.js'
+import { renderSearch } from './report.js'
 import { search } from './search.js'
 
 /**
@@ -146,6 +147,21 @@ describe('finding a contract from what somebody typed', () => {
   })
 
   /**
+   * A query with no words in it answers nothing rather than everything.
+   *
+   * **Found by the battery**: the check that a contract answering none of the query's words is not a
+   * result was written for the ordinary case and is unreachable there - a query whose words are all
+   * unanswered already fails the rule above it. The one input that reaches it is the query with no
+   * words at all, where every contract scores zero and every contract would be returned. The grammar
+   * refuses an empty `search`, so nobody meets it through the command; the function is public and
+   * answers for itself.
+   */
+  it('a-query-with-no-words-answers-nothing', () => {
+    expect(search(SOURCE, '   ').results).toEqual([])
+    expect(search(SOURCE, '- -').results).toEqual([])
+  })
+
+  /**
    * A word the catalogue has never heard is named, rather than guessed past.
    *
    * It is what turns a miss into something the reader can act on in one second, and it is the only
@@ -232,5 +248,34 @@ describe('finding a contract from what somebody typed', () => {
    */
   it('an-installable-contract-carries-no-refusal', () => {
     expect(search(SOURCE, 'slugify').results.map((result) => result.refusal)).toEqual([null])
+  })
+
+  /**
+   * The screen for a contract that cannot be installed offers no command that would refuse.
+   *
+   * **This is the defect reading the first draft of this output caught by eye**, and it is a guard
+   * rather than a memory: the draft printed `toopo add array/group-by` directly under a result it had
+   * just labelled `not installable`. A reader who copies it gets a refusal, which is the product
+   * contradicting itself on the first screen a stranger sees.
+   */
+  it('a-refused-contract-is-offered-no-install-line', () => {
+    const refused = renderSearch(search(SOURCE, 'Map.groupBy'))
+
+    expect(refused).toContain('not installable')
+    expect(refused).not.toContain('toopo add')
+
+    expect(renderSearch(search(SOURCE, 'slugify'))).toContain('toopo add string/slugify')
+  })
+
+  /**
+   * A summary too long for the screen says that it was cut.
+   *
+   * `date/add@1` is the one that reaches the limit - its summary carries the error convention as well
+   * as the answer - and a sentence that stopped mid-thought with no mark would read as the whole of
+   * what the contract claims.
+   */
+  it('a-cut-summary-says-that-it-was-cut', () => {
+    expect(renderSearch(search(SOURCE, 'add days to date'))).toContain('...')
+    expect(renderSearch(search(SOURCE, 'slugify'))).not.toContain('...')
   })
 })
