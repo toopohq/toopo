@@ -65,7 +65,14 @@ const argumentsFile = (find: string, replace: string) => ({ file: 'arguments.ts'
 // Anchors - the exact source each edit rewrites
 // ---------------------------------------------------------------------------
 
-const A_FEATURE_STILL_REACHED_STAYS = `  const stays = reconciliation.features.some(`
+/**
+ * Whether it stays is read off the list that names who keeps it, and the anchor moved with it.
+ *
+ * It used to ask the planned features and then name the keepers from `reachedBy` - two lists that
+ * agree by construction and were consulted separately, which is how an empty `stillReachedBy` reached
+ * the screen that names what imports it and had only a `something else` fallback to name.
+ */
+const A_FEATURE_STILL_REACHED_STAYS = `  if (stillReachedBy.length === 0) {`
 
 const WHAT_WAS_NEVER_ASKED_FOR_IS_REFUSED = `  if (!named.feature.askedFor) {`
 
@@ -126,7 +133,7 @@ export const mutants: readonly Mutant[] = [
     'takes out a feature another root still imports, because it reads every removal as a departure. ' +
       'The lockfile loses the entry, the folder loses the files, and the root that imports it is left ' +
       'compiling against nothing - the exact failure the demotion answer exists to refuse',
-    [removeFile(A_FEATURE_STILL_REACHED_STAYS, `  const stays = false && reconciliation.features.some(`)],
+    [removeFile(A_FEATURE_STILL_REACHED_STAYS, `  if (true) {`)],
     killed([
       'a-feature-another-root-still-imports-stays-and-stops-being-a-root',
       'a-feature-that-was-never-asked-for-is-refused-with-what-imports-it',

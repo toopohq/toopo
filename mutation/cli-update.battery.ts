@@ -140,7 +140,16 @@ const ASKED_FOR_IS_STICKY = `    askedFor: feature.askedFor || (held?.askedFor ?
 
 const ONLY_THE_ROOT_IS_ASKED_FOR = `      askedFor: sameContract(planning.implementation.contract, chosen.found.address),`
 
-const AN_UNCHANGED_INSTALL_STILL_CARRIES_ITS_FEATURES = `    return { unchanged: rootAddress, entry, features }`
+/**
+ * The `unchanged` answer gained a field, and the anchor follows it.
+ *
+ * `promoted` says whether this call turns a dependency into a root, and it exists because the screen
+ * used to read that off "did the lockfile change at all" - a different question, whose answer became
+ * *always yes* once the instant was stamped on every run. The sentence *it was there as a dependency*
+ * then printed on every re-add of something the user had installed directly.
+ */
+const AN_UNCHANGED_INSTALL_STILL_CARRIES_ITS_FEATURES = `      features,
+      promoted: held !== undefined && !held.askedFor,`
 
 const HUNKS_MERGE_WHEN_THEY_MEET = `    if (last !== undefined && from <= last.to + 1) last.to = Math.max(last.to, to)`
 
@@ -468,7 +477,8 @@ const mutants: readonly Mutant[] = [
       {
         file: 'install.ts',
         find: AN_UNCHANGED_INSTALL_STILL_CARRIES_ITS_FEATURES,
-        replace: `    return { unchanged: rootAddress, entry, features: [] }`,
+        replace: `      features: [],
+      promoted: held !== undefined && !held.askedFor,`,
       },
     ],
     killed(['a-feature-pulled-in-and-then-asked-for-becomes-a-root']),
