@@ -62,6 +62,13 @@ export type CaseGroup = {
  * Four faults, and the fourth is the one that is easy to leave out. A group is *contiguous* because
  * the source's order is the page's order, so a group interrupted by another renders as two headings
  * with one title and nothing saying why.
+ *
+ * **What it cannot see, measured rather than reasoned about.** A case moved across the boundary into
+ * the group *next to* it leaves a partition that is still well formed - contiguous, nothing empty,
+ * nothing undeclared - so nothing here can object, and the page publishes the row under its
+ * neighbour's heading. LS-14 was written that way by accident and survived; it now moves a case to a
+ * group that is not its neighbour, and the limit is declared here because the alternative would be a
+ * guard claiming to check that a case *belongs* where it is filed, which is a judgement about prose.
  */
 export const groupingFaults = (
   groups: readonly CaseGroup[],

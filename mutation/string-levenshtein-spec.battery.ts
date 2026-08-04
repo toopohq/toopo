@@ -252,8 +252,15 @@ const mutants: readonly Mutant[] = [
     'one case filed under a group it does not belong to, so the page publishes it under the wrong ' +
       'heading. Every answer in the table is still right, every identifier still unique, every ' +
       'anchor still resolves - the only thing wrong is what a reader is told the row is about, ' +
-      'which is why the grouping needed a guard of its own rather than a comment banner',
-    [edgeCases(`    id: 'one-substitution',\n    group: 'one-edit-of-each-kind',`, `    id: 'one-substitution',\n    group: 'the-two-ends-of-the-scale',`)],
+      'which is why the grouping needed a guard of its own rather than a comment banner. It moves ' +
+      'to a group that is not its neighbour, and the first version of this cell did not: see the ' +
+      'limit declared below',
+    [
+      edgeCases(
+        `    id: 'one-substitution',\n    group: 'one-edit-of-each-kind',`,
+        `    id: 'one-substitution',\n    group: 'normalisation',`,
+      ),
+    ],
     killed([EVERY_CASE_GROUPED]),
   ),
 ]
