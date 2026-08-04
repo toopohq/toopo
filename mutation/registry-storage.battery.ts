@@ -79,15 +79,8 @@ const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(directory, name
 
 // --- The reading of a declared signature, which is what makes a case a call ---
 
-const A_TRAILING_COMMA_LEAVES_NOTHING = `  return parts.map((part) => part.trim()).filter((part) => part !== '')`
-
-const THE_TYPE_PARAMETERS_ARE_SKIPPED = `  if (!text.startsWith('<')) return 0`
-
 const A_COMMA_INSIDE_A_TYPE_SEPARATES_NOTHING = `    else if (character === ',' && brackets === 0 && angles === 0) {
       parts.push(list.slice(start, at))`
-
-const A_PARAMETER_IS_NAMED_BEFORE_ITS_TYPE = `      return part
-        .slice(0, at)`
 
 const A_MARK_ABOUT_ARITY_IS_NOT_A_NAME = `        .replace(/^\\.{3}/, '')
         .replace(/\\?$/, '')
@@ -371,44 +364,22 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
-   * Six defects in the reading of a declared signature, which is where a case of block 4.4 becomes a
+   * Three defects in the reading of a declared signature, which is where a case of block 4.4 becomes a
    * *call* rather than a row of fields.
    *
-   * They are written rather than declared unprobed, and the difference matters here: the reading is
-   * checked against the case fields of a hundred and eighty-seven cases, so a misreading is loud - but
-   * *which* misreading a contract survives is exactly what a reader of this battery needs to know
-   * before the sixth contract is written. Every one of them is a bracket the reader miscounts, and
-   * `array/group-by@1` writes all three kinds in one signature.
+   * **Three of six, and the three that are missing were written, run and removed.** A signature reader
+   * that misreads a shape one of the five actually writes stops that contract serialising, and a
+   * contract that does not serialise reddens everything: measured, taking the type where the name is
+   * turned eighty guards of this folder red at once, across every suite here. That is a true verdict
+   * and a useless attribution - what caught the defect is not a guard anybody wrote about signatures,
+   * it is the whole of `registry/` failing to start - and this repository already counts a kill of
+   * that kind apart, under `killedByTypecheck`, for the same reason.
+   *
+   * So what stays is the three whose shape none of the five writes: a comma inside a generic type, a
+   * mark about arity, and a signature this reader cannot follow at all. Each reddens the guard written
+   * for it and nothing else. The eleven that are left are declared below, with the measurement rather
+   * than with a shrug.
    */
-  sameOnEveryLens(
-    'I-18',
-    'keeps the empty part a trailing comma leaves, so a signature closed the way `array/group-by@1` ' +
-      'closes its own gains a parameter with no name',
-    [
-      signatureFile(
-        A_TRAILING_COMMA_LEAVES_NOTHING,
-        `  return parts.map((part) => part.trim())`,
-      ),
-    ],
-    killed([
-      'a-signature-that-takes-nothing-has-no-parameters',
-      'a-trailing-comma-leaves-no-parameter-behind-it',
-      'the-call-of-array-group-by-is-read-from-its-own-signature',
-    ]),
-  ),
-
-  sameOnEveryLens(
-    'I-19',
-    'looks for the parameter list at the start of the text, so a generic signature reads its type ' +
-      'parameters as the call its cases are made of',
-    [signatureFile(THE_TYPE_PARAMETERS_ARE_SKIPPED, `  return 0`)],
-    killed([
-      'the-type-parameters-are-not-the-parameters',
-      'an-arrow-inside-a-type-parameter-does-not-close-it',
-      'the-call-of-array-group-by-is-read-from-its-own-signature',
-    ]),
-  ),
-
   sameOnEveryLens(
     'I-20',
     'splits the parameter list on every comma no bracket encloses, so `Map<K, V>` as a parameter type ' +
@@ -416,28 +387,6 @@ const mutants: readonly Mutant[] = [
     [signatureFile(A_COMMA_INSIDE_A_TYPE_SEPARATES_NOTHING, `    else if (character === ',' && brackets === 0) {
       parts.push(list.slice(start, at))`)],
     killed(['a-comma-inside-a-generic-type-separates-no-parameter']),
-  ),
-
-  sameOnEveryLens(
-    'I-21',
-    'takes the type where the name is, so every case of every contract is checked against a call ' +
-      'whose arguments are called `string` and `Date`',
-    [signatureFile(A_PARAMETER_IS_NAMED_BEFORE_ITS_TYPE, `      return part
-        .slice(at + 1)`)],
-    killed([
-      'a-plain-signature-names-its-parameters',
-      'the-type-parameters-are-not-the-parameters',
-      'a-comma-inside-a-generic-type-separates-no-parameter',
-      'the-parameters-of-a-parameter-are-not-parameters',
-      'a-trailing-comma-leaves-no-parameter-behind-it',
-      'an-optional-or-rest-parameter-is-named-without-its-mark',
-      'an-arrow-inside-a-type-parameter-does-not-close-it',
-      'the-call-of-number-parse-is-read-from-its-own-signature',
-      'the-call-of-date-add-is-read-from-its-own-signature',
-      'the-call-of-array-group-by-is-read-from-its-own-signature',
-      'the-call-of-string-levenshtein-is-read-from-its-own-signature',
-      'the-call-of-string-slugify-is-read-from-its-own-signature',
-    ]),
   ),
 
   sameOnEveryLens(
@@ -498,6 +447,40 @@ export const battery: Battery = {
    * twenty-two had no perturbation written at all.
    */
   unprobedRegions: [
+    /**
+     * The reading of a declared signature, on the shapes the five actually write.
+     *
+     * Every one of these was seen red while `signature.ts` was being written - dropping the
+     * trailing-comma filter reddens three of them and thirty-two guards across nine files of this
+     * folder - and none of the mutants is promoted here, because each one stops a real contract
+     * serialising and therefore reddens most of `registry/` at once. A cell that reddens eighty guards
+     * establishes that serialisation is load-bearing, which nobody doubted, and says nothing about the
+     * reader.
+     *
+     * What would close it is a sixth contract whose signature carries one of these shapes, or a
+     * fixture record for the reader alone. Both are real and neither is this unit's.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the reading of a declared signature on a shape one of the five writes. Every mutant here ' +
+        'stops a real contract serialising, so it reddens most of this folder and attributes the ' +
+        'kill to the failure rather than to the guard; the three that are narrow enough to name one ' +
+        'guard are I-20, I-22 and I-23 above.',
+      guards: [
+        'a-plain-signature-names-its-parameters',
+        'a-signature-that-takes-nothing-has-no-parameters',
+        'the-type-parameters-are-not-the-parameters',
+        'the-parameters-of-a-parameter-are-not-parameters',
+        'a-trailing-comma-leaves-no-parameter-behind-it',
+        'an-arrow-inside-a-type-parameter-does-not-close-it',
+        'the-call-of-number-parse-is-read-from-its-own-signature',
+        'the-call-of-date-add-is-read-from-its-own-signature',
+        'the-call-of-array-group-by-is-read-from-its-own-signature',
+        'the-call-of-string-levenshtein-is-read-from-its-own-signature',
+        'the-call-of-string-slugify-is-read-from-its-own-signature',
+      ],
+    },
     {
       nature: 'claims detection',
       reason:
