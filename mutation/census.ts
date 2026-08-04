@@ -161,7 +161,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/breakage.test.ts': 10,
     'cli/configuration.test.ts': 7,
     'cli/diff.test.ts': 10,
-    'cli/install.test.ts': 18,
+    'cli/install.test.ts': 19,
     'cli/list.test.ts': 4,
     'cli/plan.test.ts': 6,
     'cli/remove.test.ts': 12,
@@ -169,7 +169,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/rewrite.test.ts': 7,
     'cli/search.test.ts': 12,
     'cli/source.test.ts': 6,
-    'cli/update.test.ts': 23,
+    'cli/update.test.ts': 26,
     'cli/write.test.ts': 8,
   },
 

@@ -14,6 +14,16 @@
  * **A refusal says what was refused and that nothing was written.** The second half matters more than
  * it looks: the reader's next question is always whether their project is now half-changed.
  *
+ * **A conditional sentence is printed under its own condition, and the outcome comes before what
+ * explains it.** Both halves were paid for by walking a real project rather than by reading this file.
+ * A screen told somebody their feature *was there as a dependency* on a run where it had not been -
+ * an assertion about their project contradicted by the lockfile this tool had just read - because the
+ * flag it was printed under answered a different question that happened to coincide. Two more of the
+ * same shape were found by re-reading every conditional here and asking what makes it true: a cause
+ * claimed where only an effect was known, and *Nothing to do* said on a run that dropped a lockfile
+ * entry. And a feature held back read `leaves the project · ... · held back`, four segments where the
+ * fourth reverses the second - the thing the reader will act on cannot be last.
+ *
  * No colour, and it is not an omission. Colour needs either a dependency or an escape-code table of
  * our own, it is wrong in a pipe, wrong in a log and wrong for whoever cannot see it - and none of the
  * three lines above needs it to work.
@@ -199,16 +209,25 @@ export const renderInstallation = (
  * Running `toopo add` on something already installed is most often somebody who has forgotten how to
  * import it, so answering "nothing to do" and stopping would be answering the question they did not ask.
  */
+/**
+ * What `add` says about something the project already holds, and `promoted` is the only thing that
+ * lets it say the second sentence.
+ *
+ * **That sentence used to be printed from "did the lockfile change at all", and it was a lie on every
+ * re-add.** *It was there as a dependency* is a claim about the reader's own project, and it was
+ * contradicted by `toopo.lock`, by `toopo list`, and by the `add` that had put it there. A conditional
+ * printed under something other than its own condition is the shape; this is where it was found.
+ */
 export const renderUnchanged = (
   what: string,
   entry: InstalledEntry,
   configuration: Configuration,
-  recorded: boolean,
+  promoted: boolean,
 ): string =>
   [
     '',
     `${INDENT}${what} is already installed, and every file is as it was written.`,
-    ...(recorded
+    ...(promoted
       ? [
           '',
           `${INDENT}It was there as a dependency. toopo.lock now records that you asked for it, so`,
@@ -359,13 +378,36 @@ const featureBlock = (
   if (lines.length === 0 && feature.heldBack === null && !versionMovedAlone(feature)) return []
 
   return [
-    `${INDENT}${renderContract(feature.contract)} · ${movedTo(feature, whyItLeaves)}` +
-      `${feature.heldBack === null ? '' : ' · held back'}`,
+    /**
+     * The thing that happened is the second word, and what was going to happen comes after it.
+     *
+     * It used to read `string/slugify@1 · leaves the project · you asked for it to go · held back` -
+     * four segments of equal weight where the fourth reverses the second. A reader scanning builds an
+     * expectation from *leaves the project* and has it overturned at the end of the line, if they get
+     * to the end of the line. **The outcome cannot be the last of four equal segments**: it is the
+     * only part they will act on.
+     *
+     * So a held-back feature says so and stops. What it would have done is not lost - the reason
+     * underneath names it, and the reason is the thing that explains the outcome rather than competing
+     * with it.
+     */
+    `${INDENT}${renderContract(feature.contract)} · ` +
+      `${feature.heldBack === null ? movedTo(feature, whyItLeaves) : 'held back, nothing changed'}`,
     ...(feature.heldBack === null
       ? []
       : paragraph(feature.heldBack, 72).map((line) => `${INDENT}  ${line}`)),
-    ...(lines.length === 0 && feature.heldBack === null
-      ? [`${INDENT}  the same bytes, republished against a dependency that moved`]
+    /**
+     * What is known, and not what is likely.
+     *
+     * It read *republished against a dependency that moved* - a cause, printed under a condition that
+     * establishes only an effect: the version moved and no byte of this feature did. A publisher may
+     * republish identical bytes for any reason, so the sentence was true of the case that produces it
+     * here and not entailed by it. And it was triggered by `no file lines and nothing held back`,
+     * which implies the version moved alone only through a branch three lines above - so a change to
+     * that branch would have printed a cause for a feature whose version had not moved at all.
+     */
+    ...(versionMovedAlone(feature) && lines.length === 0 && feature.heldBack === null
+      ? [`${INDENT}  the same bytes, at a version the registry moved`]
       : []),
     '',
     ...lines,

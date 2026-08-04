@@ -10,6 +10,7 @@ import { imaginedSource, sourceWithTwoVersionsOfPad } from './imagined-source.js
 import type { Installation, InstallOutcome } from './install.js'
 import { lockfileAfter, prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
+import { renderUnchanged } from './report.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
@@ -229,6 +230,59 @@ export const clamp = (value: number, low: number, high: number): number =>
       expect(after.features.find((feature) => feature.contract.name === 'number/round')?.askedFor).toBe(
         true,
       )
+
+      // The screen says it, and it is the only run on which it may.
+      expect(directly.promoted).toBe(true)
+      expect(
+        renderUnchanged('string/pad@1', directly.entry, project.configuration, directly.promoted),
+      ).toContain('It was there as a dependency')
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * Re-adding something the user asked for changes nothing and claims nothing.
+   *
+   * **This is the defect a walk through a real project caught and no guard did.** `toopo add` on a
+   * feature installed directly answered *It was there as a dependency*, which is an assertion about
+   * the reader's own project contradicted by `toopo.lock`, by `toopo list`, and by the `add` that had
+   * put it there. It came from one boolean answering two questions: the screen was reading *did the
+   * lockfile change at all* to decide whether a promotion had happened.
+   *
+   * And the lockfile *did* change, on every run, which is the second half. The entry was stamped with
+   * the run's own clock, so a file describing exactly the same install came out one line different -
+   * a diff in a committed file for nothing. `reconcile.ts` states the rule this path did not honour:
+   * the instant moves only when something did.
+   *
+   * **The second call is at a later instant on purpose.** Both halves are invisible under one pinned
+   * moment, which is what the helper pins - so this guard passes its own, and a version of it that did
+   * not would go green on the defect it exists for.
+   */
+  it('re-adding-what-you-asked-for-changes-nothing-and-claims-nothing', () => {
+    const project = aProject()
+    try {
+      const first = mustInstall(installing(imaginedSource(), project, 'string/pad'))
+      const lockfile = committing(project, first)
+
+      const again = prepareInstallation(imaginedSource(), {
+        root: project.root,
+        configuration: project.configuration,
+        lockfile,
+        contract: 'string/pad',
+        implementation: null,
+        at: '2027-01-01T00:00:00.000Z',
+      })
+
+      if (!('unchanged' in again)) throw new Error('string/pad was not already there')
+
+      expect(again.promoted).toBe(false)
+      expect(
+        renderUnchanged('string/pad@1', again.entry, project.configuration, again.promoted),
+      ).not.toContain('It was there as a dependency')
+
+      // Byte for byte the file that was already there, the instant included.
+      expect(lockfileAfter(lockfile, again.features)).toEqual(lockfile)
     } finally {
       project.remove()
     }

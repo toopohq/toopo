@@ -39,6 +39,7 @@ import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
 import { listProject } from './list.js'
 import { localSource } from './local-source.js'
 import { UnusableLockfile, readLockfile } from './lockfile.js'
+import { nothingMoved } from './reconcile.js'
 import { prepareRemoval } from './remove.js'
 import {
   renderCatalogue,
@@ -152,7 +153,7 @@ try {
           renderContract(outcome.unchanged.contract),
           outcome.entry,
           configuration,
-          recorded,
+          outcome.promoted,
         ),
       )
     } else {
@@ -206,19 +207,21 @@ try {
     out(renderCatalogue(source.contractIndex().entries.map((entry) => displayed(entry, refusals))))
   } else {
     const configuration = theConfiguration()
+    // Bound rather than passed inline, because "nothing to do" is a claim about the difference
+    // between this file and the one the reconciliation leaves behind.
+    const lockfile = theLockfile('update')
     const outcome = prepareUpdate(localSource(), {
       root,
       configuration,
-      lockfile: theLockfile('update'),
+      lockfile,
       at: new Date().toISOString(),
     })
 
     if ('faults' in outcome) refuse(outcome.faults)
 
     const { reconciliation } = outcome
-    const touched = reconciliation.writes.length + reconciliation.removals.length
 
-    if (touched === 0 && reconciliation.features.every((feature) => feature.heldBack === null)) {
+    if (nothingMoved(lockfile, reconciliation)) {
       out(renderUpToDate(reconciliation))
     } else if (!parsed.command.apply) {
       out(renderUpdate(reconciliation, configuration, false))

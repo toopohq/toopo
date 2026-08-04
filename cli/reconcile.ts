@@ -523,6 +523,25 @@ const whatIsHeldBack = (
 // The whole of it
 // ---------------------------------------------------------------------------
 
+/**
+ * Nothing moved at all: no byte, no entry, and nothing held back.
+ *
+ * **The condition under which a command may say "nothing to do", and it used to be two thirds of
+ * it.** No file written and nothing held back was read as nothing to do - and the lockfile is the
+ * third thing a run changes. Measured: a project whose lockfile claims a feature no root reaches and
+ * whose files are already gone writes no byte, holds nothing back, and drops the entry. The screen
+ * said *every file is as it was written*, listed the feature as leaving, and closed with *Nothing to
+ * do.* - three sentences, two of them contradicting the third, about the reader's own project.
+ *
+ * The comparison is over the serialised form because that is what lands on disk, and because a
+ * lockfile equal to the one that was read is exactly the run that would rewrite nothing.
+ */
+export const nothingMoved = (before: Lockfile, after: Reconciliation): boolean =>
+  after.writes.length === 0 &&
+  after.removals.length === 0 &&
+  after.features.every((feature) => feature.heldBack === null) &&
+  JSON.stringify(after.lockfile) === JSON.stringify(before)
+
 export const reconcileProject = (
   source: RegistrySource,
   request: ReconcileRequest,

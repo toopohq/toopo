@@ -18,6 +18,7 @@ import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
 import type { FileOutcome, Reconciliation } from './reconcile.js'
+import { nothingMoved } from './reconcile.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
 
@@ -133,6 +134,17 @@ describe('comparing a project with what the registry serves now', () => {
         update.lockfile.features.find((feature) => feature.contract.name === 'number/clamp')
           ?.implementation.version,
       ).toBe('1.0.1')
+
+      /**
+       * And the line under it says what is known rather than why.
+       *
+       * It read *republished against a dependency that moved*, which is a cause this run cannot
+       * establish: a publisher may republish identical bytes for any reason at all. What the run does
+       * know is that the version moved and no byte of this feature did, and that is what it says.
+       */
+      const block = renderUpdate(update, project.configuration, false)
+      expect(block).toContain('the same bytes, at a version the registry moved')
+      expect(block).not.toContain('republished against a dependency')
     })
   })
 
@@ -444,6 +456,33 @@ describe('comparing a project with what the registry serves now', () => {
     })
   })
 
+  /**
+   * A held-back feature says what happened to it before it says anything else.
+   *
+   * The header read `number/sign@1 · leaves the project · nothing imports it any more · held back` -
+   * four segments of equal weight where the fourth reverses the second. What the reader acts on is
+   * that nothing happened, and it cannot be the last thing on a line they are scanning: they build an
+   * expectation from *leaves the project* and have it overturned at the end, if they reach the end.
+   */
+  it('a-held-back-feature-says-so-before-it-says-anything-else', () => {
+    inProject((project, lockfile) => {
+      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+
+      // A feature's header and not the tally, which also sits at this indent and also carries
+      // `held back` - the count of them.
+      const headers = renderUpdate(updating(project, lockfile), project.configuration, false)
+        .split('\n')
+        .filter((line) => /^ {2}\S+@\d+ · /.test(line))
+
+      const held = headers.filter((line) => line.includes('held back'))
+      expect(held.length).toBeGreaterThan(0)
+      expect(held.every((line) => line.endsWith(' · held back, nothing changed'))).toBe(true)
+      expect(held.some((line) => line.includes('leaves the project') || line.includes(' -> '))).toBe(
+        false,
+      )
+    })
+  })
+
   /** A held-back feature's entry is the one that was there, byte for byte. */
   it('a-held-back-feature-keeps-its-lockfile-entry-exactly', () => {
     inProject((project, lockfile) => {
@@ -624,6 +663,64 @@ describe('comparing a project with what the registry serves now', () => {
         'the installed folder is not committed',
       )
     })
+  })
+
+  /**
+   * `Nothing to do.` is said only when the lockfile does not move either.
+   *
+   * **Found by re-reading every conditional sentence the renderer prints and asking what makes it
+   * true.** The command decided it had nothing to do from two of the three things a run changes - no
+   * byte written, nothing held back - and the third is the lockfile. A project claiming a feature no
+   * root reaches, whose files are already gone, writes nothing, holds nothing back, and drops the
+   * entry: the screen said *every file is as it was written*, listed the feature as leaving, and
+   * closed with *Nothing to do.*
+   *
+   * The state is what a hand-edited lockfile leaves, and it is not exotic enough to be left printing
+   * a contradiction about somebody's project on three consecutive lines.
+   */
+  it('nothing-to-do-is-said-only-when-the-lockfile-does-not-move', () => {
+    const project = aProject()
+    try {
+      const outcome = prepareInstallation(imaginedSource(), {
+        root: project.root,
+        configuration: project.configuration,
+        lockfile: EMPTY_LOCKFILE,
+        contract: 'string/pad',
+        implementation: null,
+        at: A_PINNED_INSTANT,
+      })
+      if (!('installation' in outcome)) throw new Error(JSON.stringify(outcome))
+      const lockfile = committing(project, outcome.installation)
+
+      expect(nothingMoved(lockfile, updating(project, lockfile, imaginedSource()))).toBe(true)
+
+      // A feature no root reaches, whose files are already gone. `string/pad` depends on nothing, so
+      // this entry is outside the closure and the plan simply stops holding it.
+      const orphaned: Lockfile = {
+        version: LOCKFILE_VERSION,
+        features: [
+          ...lockfile.features,
+          {
+            contract: { language: 'typescript', name: 'number/sign', major: 1 },
+            implementation: { id: 'reference', version: '1.0.0' },
+            files: [],
+            installedAt: A_PINNED_INSTANT,
+            locallyModified: false,
+            askedFor: false,
+          },
+        ],
+      }
+
+      const update = updating(project, orphaned, imaginedSource())
+
+      expect(update.writes).toEqual([])
+      expect(update.removals).toEqual([])
+      expect(update.features.every((feature) => feature.heldBack === null)).toBe(true)
+      expect(update.lockfile.features).toHaveLength(1)
+      expect(nothingMoved(orphaned, update)).toBe(false)
+    } finally {
+      project.remove()
+    }
   })
 
   /** One file gone is somebody deleting a file, and it is put back without a word about git. */

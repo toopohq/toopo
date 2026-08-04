@@ -112,6 +112,20 @@ export type InstallOutcome =
       readonly unchanged: ImplementationAddress
       readonly entry: InstalledEntry
       readonly features: readonly LockedFeature[]
+      /**
+       * True when the lockfile held this contract as a dependency and this call makes it a root.
+       *
+       * **A field of its own, and the reason is a sentence that lied.** The screen used to decide
+       * whether to say *it was there as a dependency* from "did the lockfile change at all", which is
+       * a different question with a different answer - and once the instant moved on every run, the
+       * two came apart and the sentence printed on every re-add of a feature the user had installed
+       * directly. An assertion about somebody's project, contradicted by the file the tool had just
+       * read, on a product whose thesis is that it does not do that.
+       *
+       * The two questions stay two values even now that only one thing can differ here, because the
+       * defect was not a wrong boolean - it was one boolean answering for two claims.
+       */
+      readonly promoted: boolean
     }
   | { readonly faults: readonly string[] }
 
@@ -276,7 +290,7 @@ export const prepareInstallation = (
       files.push({ path: file.path, served: file.served, sha256, bytes: bytes.byteLength })
     }
 
-    features.push({
+    const candidate: LockedFeature = {
       contract: planning.implementation.contract,
       implementation: {
         id: planning.implementation.id,
@@ -286,7 +300,25 @@ export const prepareInstallation = (
       installedAt: request.at,
       locallyModified: false,
       askedFor: sameContract(planning.implementation.contract, chosen.found.address),
-    })
+    }
+
+    /**
+     * The instant moves only when something did, which is the rule `reconcile.ts` already states and
+     * this path did not honour.
+     *
+     * Re-adding a feature that is already there stamped every entry with the run's own clock, so a
+     * lockfile that describes exactly the same install came out one line different - a diff in a
+     * committed file for nothing. Worse, it made *the lockfile changed* true on a run where nothing
+     * had, which is the boolean the screen was reading to decide whether to tell the user their
+     * feature had been promoted from a dependency.
+     */
+    const held = heldEntry(request, planning.implementation.contract)
+
+    features.push(
+      held !== undefined && isAlreadyInstalled(request, candidate)
+        ? { ...candidate, installedAt: held.installedAt }
+        : candidate,
+    )
   }
 
   const entry = entryOf(planned.plan, chosen.found.address, chosen.found.exports)
@@ -300,7 +332,14 @@ export const prepareInstallation = (
   }
 
   if (features.every((feature) => isAlreadyInstalled(request, feature))) {
-    return { unchanged: rootAddress, entry, features }
+    const held = heldEntry(request, chosen.found.address)
+
+    return {
+      unchanged: rootAddress,
+      entry,
+      features,
+      promoted: held !== undefined && !held.askedFor,
+    }
   }
 
   return {
@@ -374,8 +413,15 @@ const sharedFilesIn = (plan: InstallPlan): readonly SharedFile[] => {
  * coincidence. It is asked of every feature the install would write, so a project whose dependency was
  * deleted is repaired rather than reported as already done.
  */
+/** What `toopo.lock` already records about this contract, if anything. */
+const heldEntry = (
+  request: InstallRequest,
+  contract: ContractAddress,
+): LockedFeature | undefined =>
+  request.lockfile.features.find((entry) => sameContract(entry.contract, contract))
+
 const isAlreadyInstalled = (request: InstallRequest, feature: LockedFeature): boolean => {
-  const held = request.lockfile.features.find((entry) => sameContract(entry.contract, feature.contract))
+  const held = heldEntry(request, feature.contract)
 
   return (
     held !== undefined &&

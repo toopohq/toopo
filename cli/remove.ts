@@ -98,14 +98,20 @@ const demoting = (lockfile: Lockfile, named: ContractAddress): Lockfile => ({
   ),
 })
 
-/** Contracts as a sentence names them, so that a refusal reads and does not enumerate. */
+/**
+ * Contracts as a sentence names them, so that a refusal reads and does not enumerate.
+ *
+ * There is no name for an empty list here, and there used to be: `something else`, which would have
+ * been this tool inventing a subject for a claim about somebody's project. Nothing calls it with an
+ * empty list - both call sites derive theirs from `reachedBy` and act only when it holds something -
+ * so the fallback existed for a state that cannot occur and could only have printed a falsehood.
+ */
 export const listed = (contracts: readonly ContractAddress[]): string => {
   const names = contracts.map(renderContract)
-  const last = names.at(-1)
 
   return names.length <= 1
-    ? (last ?? 'something else')
-    : `${names.slice(0, -1).join(', ')} and ${last as string}`
+    ? names.join('')
+    : `${names.slice(0, -1).join(', ')} and ${names.at(-1) as string}`
 }
 
 /**
@@ -175,17 +181,23 @@ export const prepareRemoval = (source: RegistrySource, request: RemoveRequest): 
 
   const { reconciliation } = outcome
   const what = renderContract(address)
-  const stays = reconciliation.features.some(
-    (feature) => renderContract(feature.contract) === what && feature.now !== null,
-  )
 
-  if (!stays) {
+  /**
+   * Whether it stays is read off the very list that says who keeps it, and not off a second one.
+   *
+   * The two agree by construction - `reachedBy` holds every implementation of every root's closure,
+   * which is exactly what the plan holds - and asking them separately is how they come to disagree.
+   * It also removes a sentence that could only ever be false: with `stays` derived from the planned
+   * features, an empty `stillReachedBy` reached the screen that names what imports it, and the only
+   * thing to name was a fallback reading *something else imports it*.
+   */
+  const stillReachedBy = reconciliation.reachedBy.get(what) ?? []
+
+  if (stillReachedBy.length === 0) {
     return {
       removal: { named: address, departure: 'leaves', stillReachedBy: [], reconciliation },
     }
   }
-
-  const stillReachedBy = reconciliation.reachedBy.get(what) ?? []
 
   /**
    * Refused rather than demoted, because it was never a root and there is nothing to clear.
