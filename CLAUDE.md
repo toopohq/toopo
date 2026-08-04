@@ -28,10 +28,13 @@ which does **not** make `contractAnatomy` executable: the triage below says why 
 entries are settled by a syntax tree, four need a module a stage has already vetted, and four are a
 reader's for ever. Beside them now `toopo update`, the command permanent rule 4 is about, and with it
 the two-phase write that closes three of the four situations `cli/breakage.ts` declared as breaking
-badly. **The CLI is finished at four commands with `toopo search`**, the only one that reads no
-project at all and the one that finally makes `identity.searchAliases` executable — a field declared
-in the first session of this project and validated by nothing until now. No server and no website
-exists, deliberately.
+badly. Then `toopo search`, the only command that reads no project at all and the one that finally
+makes `identity.searchAliases` executable — a field declared in the first session of this project and
+validated by nothing until now. **The CLI is finished at six commands with `toopo remove`, and with it
+the way out the client did not have**: before it, the only way to uninstall was to edit `toopo.lock` by
+hand, and the tool put a deleted folder straight back. Beside it `toopo list`, the only command that
+reads no *registry*, and the pair is the shape of the whole client — one question answered without a
+project, one answered without a server. No server and no website exists, deliberately.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -362,7 +365,7 @@ from an address — `number/parse` exports `parseNumber` — it lives in `identi
 `surface.exports`, and the installer's port deliberately carries no `contract-binding`, so nothing it
 fetched held it. Reading the names off the installed source would have the installer publish an opinion
 drawn from code rather than from the contract. Measured, because that type calls itself deliberately
-small: the canonical index goes from 2 731 to 3 106 bytes over the five — 13.7 per cent of what is still
+small: the canonical index goes from 2 594 to 2 969 bytes over the five — 14.5 per cent of what is still
 the smallest thing the registry serves.
 
 ## What an update is, and what it will not do — settled
@@ -436,7 +439,11 @@ hold — `debounce`, `deep clone`, `uuid`, `flatten nested array` — it answers
 of its own names, exports or aliases in full.** Without it, `convert a string to a number in
 javascript` answers nothing, because `in` occurs in one contract's summary and not in the one being
 asked for. A list of words to ignore was refused: it decides invisibly which words carry meaning, and
-`to`, `by` and `from` carry it here — fourteen aliases hold them.
+`to`, `by` and `from` carry it here — twenty-seven of the sixty-two aliases hold one of them. That
+figure used to read *fourteen*, and it was wrong: it was also the figure `cli/arguments.ts` published
+for a different claim, the aliases carrying a space, where the true number was fifty-six of seventy.
+Both are measured now rather than restated, which is the only thing that stops a number from migrating
+onto a claim it was never about.
 
 **A query may shorten a word the catalogue carries and may never extend one.** A symmetric prefix reads
 better and was measured: it answers `stringify` with all three contracts carrying `string`, and
@@ -446,7 +453,8 @@ CLI was refused twice over — it would buy the behaviour the first rule exists 
 take `cli/` across the frontier `source.ts` holds.
 
 **The description is not in the index, and the aliases are its searchable surface.** Measured: the five
-index to 3 106 bytes and their descriptions alone to 6 187, so carrying them triples the one document
+index to 2 969 bytes and their descriptions alone to 6 187, so carrying them would more than triple the
+one document
 every search pays for. A query only a description could have answered is a **missing alias**, and the
 repair belongs in `identity.searchAliases` where it is frozen, reviewed and served.
 
@@ -458,6 +466,112 @@ real queries. Two constants died of it: an exactness multiplier that moved nothi
 a full-query bonus that could not change an order because no full query has one. **A number that
 cannot change an answer at any value is not a rule**, and speculative insurance no guard can reach is
 what `field-map.ts` calls a speculative field and deletes.
+
+## What an alias is, and the trap that hides a wrong one — settled, catalogue-wide
+
+**An alias is a query whose best answer is this contract — never a phrase that relates to it.** The
+second reading admits everything, because a phrase relates to a contract whenever anybody can explain
+the connection and an explanation is always available.
+
+**The property that every alias retrieves its own contract first is satisfied by a lying alias**, and
+that is the whole reason this is written down. The alias is in the index, so it matches the contract
+that declares it by construction — which is what retrieval *means*. The trial establishes that the
+ranking works and says nothing about whether the phrase should have been declared, and it looks exactly
+like the opposite. It was green before and after eight aliases were removed.
+
+Two filters, and they are not the same filter. **Mechanical:** read the contract's own exclusions —
+every *it is not X* of the input domain, every *that is a different function* of the description — and
+refuse any alias that names one. It found five. **A judgement, one alias at a time:** an alias nobody
+would type costs weight, an alias promising what we do not do costs trust, and those are different
+categories. It found three. The criterion that decides the next case without a second opinion is
+**could a better answer exist in this catalogue** — for `string similarity` yes, and it is a different
+function with a different output shape, so the alias is a lie whether or not that contract is ever
+written; for `how similar are two strings` no, and vagueness is not the fault. *Naming something we are
+not* is.
+
+**Naming the built-in a contract is positioned against is deliberate, and the line is that the contract
+names it too.** `parseFloat`, `parseInt`, `Object.groupBy`, `Map.groupBy` and `lodash groupBy` are all
+argued against by name in their own contract's published prose, which is what lets `toopo search
+Map.groupBy` answer *the language ships this now*. `atoi` went out under the same line, because no
+contract names it.
+
+**An alias is not frozen with the major**, and it is the only field of `identity` that is not. A case
+identifier, a guard identifier, a reason literal and a benchmark profile name are addresses — an API
+response cites one, a URL anchors on one — and an address that changes breaks a link. Nobody links to
+an alias, no answer cites one, and correcting one breaks nobody's code. It is curation, so it is
+repaired the day it is found and does not cost `name@2`.
+
+## Which commands ask twice — settled
+
+**A command that can destroy or overwrite shows first and writes on a second word. A command that can
+only refuse writes at once.** `update` and `remove` may replace or delete somebody's file; `add` never
+touches a file it did not put there, so asking twice would buy nothing and cost a word.
+
+It is written down — `THE_WRITE_DISCIPLINE` in `cli/arguments.ts` — because the CLI was applying it
+without saying it, and an unsaid convention is one the next person breaks by trying to help. A
+`toopo add --dry-run` reads as symmetry and would put the opposite default on the opposite half of one
+tool, so that half the commands write unless told not to and half refuse unless told to. Nobody would
+choose that deliberately, which is exactly why it has to be refusable by pointing at a sentence.
+
+## What the lockfile does not describe — settled
+
+Two claims about `toopo.lock` sound alike and only one is true.
+
+**True: it lets anybody check, with nothing from us, that the bytes on disk are the bytes that were
+served.** That is the supply-chain argument of the whole project and it holds entirely.
+
+**False: that it describes the installed graph.** It records what was *written*, never what was
+planned. A shared file is written once and the other carrier is repointed at it, so the second
+carrier's entry does not name the file it imports — measured on the fixture graph, `number/clamp@1`
+records one file and `number/clamp/clamp.ts` imports `../../string/pad/digits.js`. A removal decided
+from the lockfile alone would delete `string/pad/digits.ts` while three files that stay import it: not
+an incomplete answer, a wrong and silent one.
+
+**And no field would fix it.** Recording the edges closes that instance and not the class:
+deduplication is a property of the *plan*, a blob is recognised by its digest and never by a path, and
+two roots that depend on nothing can still share a file. The only sufficient record is the plan itself,
+which is a cache of something the registry recomputes — a second source of truth that can contradict
+the first. So the plan is rebuilt every time, and **that is why a removal needs a registry**.
+
+**The limit, bounded.** Measured over every non-empty root set on the catalogue and on the fixture
+graph, 8 of 64 removals reach the registry not at all, and they are exactly the ones that leave no root
+behind. A published version is served for life, so *the contract went away* is not a case that exists;
+only a registry that cannot answer right now. The refusal explains rather than reports — *this needs to
+know what the features that stay import, and only the registry knows* — and it degrades without
+destroying: the files stay, nothing breaks, and the same command works when the registry answers.
+
+## What a removal is — settled
+
+**Asking for a feature to go is asking for it to stop being a root**, and everything else follows from
+re-planning what remains. So a removal is a reconciliation with one feature demoted, sharing the whole
+of its arithmetic with `update`; the measurement that says this is real rather than tidy is that
+nineteen of the twenty-five guards that unit added redden on `cli-update`'s battery.
+
+**Two differences, and both are load-bearing.** The roots that stay are bound at the version the
+lockfile records, never at what the registry serves today — not merely so that a removal does not
+update four other features, but because *which files leave* is decided from that plan, and a root
+republished without a dependency would have it planned away while the version on disk still imports it.
+And zero roots is an answer rather than an error, which is why the two refusals about a lockfile with
+nothing in it stay in `update.ts`.
+
+**Four answers, and the one that matters most is not a refusal.**
+
+```
+not in the lockfile         refused, with what the project does hold
+held, never asked for       refused, naming the feature that imports it
+asked for, still reached    it stays, it stops being a root, and the screen says both
+asked for, reached by none  it goes, and so does what only it pulled in
+```
+
+The third is where trust is lost, because from outside it looks exactly like nothing happened. *I asked
+to take it out and it is still there* is never left to be read off a report with nothing in it.
+
+**Two holes in `update` were found by building it**, and both are closed. A copy deduplicated away was
+left on disk claimed by nothing — `add` plans one root at a time, so two features carrying one file are
+written twice and the first update afterwards drops one from its entry — and the next command refused
+to write there, about a file this tool had written itself. And *nothing is removed while a feature is
+held back* was asked of the features still in the plan, so an edited file that kept a **leaving**
+feature let its dependencies be deleted underneath the code it left behind.
 
 ## Make the omission impossible rather than forbidding it — settled, repository-wide
 
@@ -528,14 +642,11 @@ decorative for ever.
 - `Breakage.guard` in `cli/breakage.ts` — every situation the installer refuses cleanly names the guard
   that keeps it, and nothing resolves that name. It is the same class arriving on a fifth kind of
   address, and it closes with the same mechanism as the others.
-- **Two aliases contradicted by their own contract's `inputDomain`.** `string similarity` and
-  `damerau levenshtein` are declared by `string/levenshtein@1`, whose input domain says *it is not a
-  similarity ratio* and that Damerau-Levenshtein *answers a different question and is a separate
-  contract*. The alias trial cannot see it — both retrieve their own contract first, which is all
-  retrieval can mean — so this is a judgement about the catalogue, not a defect in the search. It is a
-  debt rather than a fix because removing an alias is a change to a contract's identity and belongs to
-  whoever owns the catalogue; **it must close before publication**, since the field freezes with the
-  major and a lying alias frozen for life is worse than none.
+- **The rule that an alias must not name what its contract refuses to be.** The eight liars are gone
+  and the criterion is in `catalogue/every-contract.ts`, but nothing keeps it: the executable form
+  needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
+  to buy a check that would still be matching words against prose. Looked for, priced, and declared
+  rather than dressed as a mechanism — which is the treatment this list exists to give.
 
 **Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever
@@ -571,8 +682,8 @@ it reddens where the repository's own rule says name all of a set of five or few
 **The mechanism that closes the class for every address at once is a pre-flight refusal of a pin that
 names a guard no guard carries.** It is cheap — seconds against the seventeen minutes the batteries
 cost, and this sentence used to say *a battery*, which is wrong by a factor of six and was read that
-way once: measured, the fifteen run in 16 min 49 s and the largest single one is `cli-install` at
-186 s — and
+way once: measured on the replay `toopo remove` owed, the seventeen run in 24 min 17 s and the largest
+single one is `cli-install` at 244 s — and
 it turns a stale case identifier, guard identifier or profile name from a silence into an error, with
 no renaming anywhere. It has been set aside twice. It opens the unit after the validation pipeline's
 first stage, and it is written down here so that there is no third time. Note what it is *not*: a
