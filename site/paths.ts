@@ -22,6 +22,22 @@ export const REFUSALS_PAGE = 'refused/index.html'
 export const CATALOGUE_PAGE = 'index.html'
 
 /**
+ * The module every page loads, and the implementation each one loads beside itself.
+ *
+ * They are paths, so they live here with the others rather than beside the code that strips them:
+ * `contract-page.ts` needs the two strings and nothing else, and importing the stripper for them would
+ * tie a rendering module to `node:module` to read two constants.
+ *
+ * `site/start.js` keeps the repository's own folder in the URL on purpose. The graph a browser loads
+ * is this repository's modules with their types removed, resolved by the very `.js` specifiers the
+ * source already writes - so the site's layout *is* the source's layout, and a reader who opens it
+ * sees the file it came from rather than a bundle that corresponds to nothing.
+ */
+export const THE_ENTRY_POINT = 'site/start.js'
+
+export const THE_REFERENCE_MODULE = 'reference.js'
+
+/**
  * How to climb back to the root from a page.
  *
  * Derived from the path rather than written as `../../`, because the depth is a consequence of an

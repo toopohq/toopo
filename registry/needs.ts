@@ -248,6 +248,25 @@ export const NEEDS: readonly Need[] = [
       'has thirty such cases, and that is a consequence of the code/data frontier rather than of the ' +
       'site.',
   },
+  /**
+   * **The tenth defect a consumer has found in this schema**, after `dependencyDepth`, `ProfileSamples`,
+   * the two digests, `askedFor`, the index's exports, the parameter names, the case groups and the page
+   * that lists the pages. Same family as the eighth: the list above was derived from what a page
+   * *shows*, and a playground does not show, it *runs*.
+   *
+   * `pre-fill-the-playground` beside it asks for the values of the cases, which a snapshot carries. It
+   * does not ask for the one thing a snapshot cannot give, and the difference is not a nuance: a
+   * snapshot lists a file and hashes it, and a list of hashes does not execute.
+   */
+  {
+    id: 'run-the-implementation-on-what-a-reader-types',
+    consumer: 'the-site',
+    what: 'answer, on a contract page, what the function does to an input somebody typed',
+    requires:
+      'the bytes of the implementation whose cost that page states - the source itself, not its ' +
+      'digest and not its size. It is the only thing on a contract page that is computed rather than ' +
+      'rendered, and the only one whose answer nobody wrote down in advance',
+  },
   {
     id: 'show-the-install-command',
     consumer: 'the-site',

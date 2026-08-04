@@ -63,6 +63,9 @@ const catalogueFile = (find: string, replace: string) => ({ file: 'catalogue.ts'
 const localFile = (find: string, replace: string) => ({ file: 'local-source.ts', find, replace })
 const sourceFile = (find: string, replace: string) => ({ file: 'source.ts', find, replace })
 const pathsFile = (find: string, replace: string) => ({ file: 'paths.ts', find, replace })
+const readLiteralFile = (find: string, replace: string) => ({ file: 'read-literal.ts', find, replace })
+const playgroundFile = (find: string, replace: string) => ({ file: 'playground.ts', find, replace })
+const browserFile = (find: string, replace: string) => ({ file: 'browser.ts', find, replace })
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -129,6 +132,29 @@ const THE_INDEX_ENDPOINT = `  contractIndex: 'contract-index',`
 const A_DEFERRED_NEED_IS_NAMED = `  'render-the-methodology-page':`
 
 const A_PAGE_IS_ADDRESSED_BY_ITS_CONTRACT = `export const pageOf = (address: ContractAddress): string => \`\${renderContract(address)}/index.html\``
+
+const A_NUMBER_IS_READ_AS_ITSELF = `  if (number !== null) return Number(number)`
+
+const A_WORD_WITH_NO_SPELLING_IS_REFUSED = `  for (const word of Object.values(WITHOUT_A_SPELLING)) {`
+
+const A_CODE_POINT_ABOVE_THE_PLANE_IS_BRACED = `  return code > 0xffff`
+
+const A_DATE_IS_CONSTRUCTED = `    build: (declared) => new Date(declared as string),`
+
+const AN_ANSWER_IS_WRITTEN_AS_A_LITERAL = `export const answerWritten = (answer: unknown): string =>
+  literal(encode(asADeclaredValue(answer), 'the answer'))`
+
+const AN_UNKNOWN_TYPE_STOPS_THE_BUILD = `const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string | null => {
+  const known = AS_AN_ARGUMENT[parameter.type]
+  if (known === undefined) {`
+
+const A_FIELD_SPELLS_ITS_DECLARED_TYPE = `  string: {
+    spelledBy: (declared) => typeof declared === 'string',`
+
+const WHAT_RUNS_IN_YOUR_BROWSER_IS_SAID = `      line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),`
+
+const THE_GRAPH_LISTS_EVERY_MODULE = `  'site/literal.ts',
+`
 
 // ---------------------------------------------------------------------------
 // The defects
@@ -491,6 +517,131 @@ const mutants: readonly Mutant[] = [
       'every-group-is-a-heading-and-its-cases-follow-it',
       'every-anchor-on-a-page-is-held-by-one-element',
     ]),
+  ),
+
+  // -------------------------------------------------------------------------
+  // The playground: reading a literal back, and running what a browser runs
+  // -------------------------------------------------------------------------
+
+  /**
+   * The two defects that decide whether reading a literal back is worth anything, and they are killed
+   * by different guards on purpose. The negative zero is caught by real cases of the catalogue; the
+   * hole is caught only by the arm table, because every case printing a word with no spelling belongs
+   * to the one contract that has no page. That asymmetry is the argument for the table existing.
+   */
+  sameOnEveryLens(
+    'W-32',
+    'reads a negative zero back as a zero, so a field pre-filled from `number/parse@1`\'s own case ' +
+      'holds a value the contract settles as a different one',
+    [readLiteralFile(A_NUMBER_IS_READ_AS_ITSELF, `  if (number !== null) return Number(number) + 0`)],
+    killed([
+      'every-arm-of-an-encoded-value-is-read-back-or-refused-by-name',
+      'every-case-the-registry-serves-is-read-back-from-the-literal-its-page-publishes',
+      'the-numbers-json-cannot-carry-are-read-as-themselves',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'W-33',
+    'builds `undefined` where a page printed a word with no JavaScript spelling, so a hole becomes an ' +
+      'element and a function the registry serves as a file becomes a missing argument',
+    [
+      readLiteralFile(
+        A_WORD_WITH_NO_SPELLING_IS_REFUSED,
+        `  for (const word of Object.values(WITHOUT_A_SPELLING)) {
+    if (scan.text.startsWith(word, scan.at)) { scan.at += word.length; return undefined }`,
+      ),
+    ],
+    killed(['every-arm-of-an-encoded-value-is-read-back-or-refused-by-name']),
+  ),
+
+  /**
+   * A code point above the basic plane written with four digits runs into whatever follows it, so the
+   * literal spells a different string - and it is a real class rather than a theoretical one, because
+   * the tag characters of a regional flag are format characters.
+   */
+  sameOnEveryLens(
+    'W-34',
+    'escapes every invisible code point with four digits, so one above the basic plane runs into the ' +
+      'character after it and the literal spells something else',
+    [literalFile(A_CODE_POINT_ABOVE_THE_PLANE_IS_BRACED, `  return code > 0x10ffff`)],
+    killed(['a-code-point-above-the-basic-plane-survives-the-round-trip']),
+  ),
+
+  sameOnEveryLens(
+    'W-35',
+    'hands the declared value straight to a parameter declared `Date`, so every call of `date/add@1` ' +
+      'is made with a string where the contract requires an instant',
+    [playgroundFile(A_DATE_IS_CONSTRUCTED, `    build: (declared) => declared,`)],
+    killed([
+      'every-case-replays-through-the-stripped-artefact-a-browser-runs',
+      'a-date-is-the-one-argument-this-site-constructs',
+    ]),
+  ),
+
+  /**
+   * The answer printed with `String`, which is the defect the whole rendering path exists to prevent:
+   * `parseNumber('-0')` answers a negative zero and `String` prints it `0`, on the page where that
+   * contract settles a case on the two being different.
+   */
+  sameOnEveryLens(
+    'W-36',
+    'prints the answer with `String`, so a negative zero reads as a zero and every escaped character ' +
+      'of a slug is printed as itself',
+    [
+      playgroundFile(
+        AN_ANSWER_IS_WRITTEN_AS_A_LITERAL,
+        `export const answerWritten = (answer: unknown): string => String(asADeclaredValue(answer))`,
+      ),
+    ],
+    killed([
+      'every-case-replays-through-the-stripped-artefact-a-browser-runs',
+      'an-answer-is-written-the-way-the-case-table-writes-one',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'W-37',
+    'falls back to a string field for a parameter type it does not know, so a contract whose ' +
+      'playground cannot be built gets a page carrying one that lies about what it sends',
+    [
+      playgroundFile(
+        AN_UNKNOWN_TYPE_STOPS_THE_BUILD,
+        `const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string | null => {
+  const known = AS_AN_ARGUMENT[parameter.type] ?? AS_AN_ARGUMENT['string']
+  if (known === undefined) {`,
+      ),
+    ],
+    killed(['a-parameter-type-the-form-cannot-build-stops-the-site-and-names-itself']),
+  ),
+
+  /**
+   * The defect a real browser found and no static check could: without it, typing `42` into a field
+   * declared `string` answers `input.trim is not a function` - the contract's own source reporting a
+   * failure in its own words to somebody who has never seen it.
+   */
+  sameOnEveryLens(
+    'W-38',
+    'accepts whatever a field spells for a parameter declared `string`, so a number reaches the ' +
+      'implementation and it is the contract that reports the mistake, in its own words',
+    [playgroundFile(A_FIELD_SPELLS_ITS_DECLARED_TYPE, `  string: {\n    spelledBy: () => true,`)],
+    killed(['a-field-refuses-a-value-of-the-wrong-type-before-the-contract-is-called']),
+  ),
+
+  sameOnEveryLens(
+    'W-39',
+    'stops saying that what runs in a browser is the stripped source, so a page publishes an answer ' +
+      'produced by a transformation it never mentions',
+    [contractPageFile(WHAT_RUNS_IN_YOUR_BROWSER_IS_SAID, '')],
+    killed(['what-runs-in-your-browser-is-said-once-and-beside-the-playground']),
+  ),
+
+  sameOnEveryLens(
+    'W-40',
+    'drops a module from the graph a browser loads, so every page fetches an import the site never ' +
+      'writes and the playground never starts',
+    [browserFile(THE_GRAPH_LISTS_EVERY_MODULE, '')],
+    killed(['every-import-a-browser-module-keeps-is-a-module-the-site-writes']),
   ),
 ]
 

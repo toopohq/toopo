@@ -16,8 +16,14 @@
  *
  * They are not the same object. The installer's mints a version that lands in somebody's `toopo.lock`
  * and serves the bytes of every harness file, because an installation writes files and records what it
- * wrote. This one mints nothing a reader keeps and serves no byte at all: a page is a rendering, and
- * the only thing it has to be able to do is name what it renders. Two of `cli-install`'s mutants -
+ * wrote. This one mints nothing a reader keeps, and serves the bytes of one file per contract rather
+ * than of every file: the implementation a playground runs, which is the one thing on a page that is
+ * computed instead of rendered.
+ *
+ * **That sentence used to read "serves no byte at all", and the playground is what falsified it.** It
+ * is kept in view rather than quietly rewritten, because it is the same correction `source.ts` records
+ * one file along and it was true of both for the same length of time: a page that only renders needs
+ * to name what it renders, and a page that runs something needs the thing. Two of `cli-install`'s mutants -
  * C-17 and C-18 - inject into precisely the two lines a merge would move, and a battery injects only
  * into its own folder, so merging would delete two measured defects about the installer's stand-in in
  * order to save twenty lines. Resemblance is not duplication, which is the rule the catalogue already
@@ -38,11 +44,15 @@
  * thing this site must not publish.
  */
 
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
 import type { ContractAddress } from '../registry/address.js'
 import { renderContract, sameContract } from '../registry/address.js'
 import type { ImplementationRecord } from '../registry/implementation-record.js'
-import type { ServedSnapshot } from '../registry/response.js'
+import type { ServedBlob, ServedSnapshot } from '../registry/response.js'
 import {
+  servedBlob,
   servedContractBinding,
   servedExportsOf,
   servedImplementationBinding,
@@ -89,12 +99,23 @@ type Holding = {
   readonly implementation: ImplementationRecord
 }
 
+/**
+ * The blobs are the implementation's files and not the contract's harness, which is where this
+ * stand-in and the installer's genuinely part company rather than merely resembling each other.
+ *
+ * The installer serves the harness because an auditor fetching a suite asks for all of it. A page runs
+ * one thing - the implementation whose cost it states, in a browser - so serving the harness here
+ * would be serving bytes the generator fetches and does not use, which is the sentence `source.ts`
+ * used to make about `blob` itself.
+ */
 const gather = (): {
   readonly ledger: Ledger
   readonly holdings: readonly Holding[]
   readonly snapshots: ReadonlyMap<string, ServedSnapshot>
+  readonly blobs: ReadonlyMap<string, ServedBlob>
 } => {
   const snapshots = new Map<string, ServedSnapshot>()
+  const blobs = new Map<string, ServedBlob>()
   const holdings: Holding[] = []
   let ledger = EMPTY_LEDGER
 
@@ -112,6 +133,11 @@ const gather = (): {
 
     snapshots.set(contractDigest, servedSnapshot(contractShot))
     snapshots.set(implementationDigest, servedSnapshot(implementationShot))
+
+    for (const file of implementation.files) {
+      const served = servedBlob(readFileSync(join(REPOSITORY_ROOT, source.folder, file.path)))
+      blobs.set(served.addressedBy, served)
+    }
 
     if (record.lifecycle.state === 'never-published') {
       ledger = refuseContract(ledger, {
@@ -151,7 +177,7 @@ const gather = (): {
     })
   }
 
-  return { ledger, holdings, snapshots }
+  return { ledger, holdings, snapshots, blobs }
 }
 
 /**
@@ -196,5 +222,7 @@ export const localSource = (): RegistrySource => {
     refusals: () => servedRefusals(held.ledger),
 
     snapshot: (digest) => held.snapshots.get(digest) ?? null,
+
+    blob: (sha256) => held.blobs.get(sha256) ?? null,
   }
 }

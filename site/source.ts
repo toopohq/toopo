@@ -16,8 +16,15 @@
  * The two ports differ in exactly the place their consumers differ, which is the whole reason a port
  * is derived from a consumer rather than from the API.
  *
- * They differ the other way too. `blob` is not here: the site publishes no byte of anybody's source,
- * so an endpoint that serves file contents would be one the generator fetched and did not use.
+ * They differ the other way too, and one of the two differences did not survive the playground. `blob`
+ * used to be refused here on the argument that *the site publishes no byte of anybody's source*, which
+ * was true of a page that only renders. A playground does not render an answer, it computes one, so
+ * the implementation has to arrive as bytes and run - and a snapshot cannot stand in for that, because
+ * a snapshot lists a file and hashes it and a list of hashes does not execute. The sentence was right
+ * about what a page did and wrong about what a page is for; `run-the-implementation-on-what-a-reader-types`
+ * in `needs.ts` is the need that had never been written down, and this is the endpoint that answers it.
+ *
+ * What the two ports still differ on is `contract-binding`, and that difference is untouched.
  *
  * ---------------------------------------------------------------------------
  * Why `implementationBindings` is here for a page that renders no implementation list
@@ -34,6 +41,7 @@
 
 import type { ContractAddress } from '../registry/address.js'
 import type {
+  ServedBlob,
   ServedContractBinding,
   ServedImplementationBinding,
   ServedIndex,
@@ -61,6 +69,8 @@ export type RegistrySource = {
   readonly refusals: () => ServedRefusals
   /** A frozen artefact, as the exact text its digest was taken over. */
   readonly snapshot: (digest: string) => ServedSnapshot | null
+  /** The served bytes of one file, which is what a playground runs. */
+  readonly blob: (sha256: string) => ServedBlob | null
 }
 
 /**
@@ -75,30 +85,31 @@ export const THE_ENDPOINT_BEHIND: Readonly<Record<keyof RegistrySource, string>>
   implementationBindings: 'implementation-bindings',
   refusals: 'refusals',
   snapshot: 'snapshot',
+  blob: 'blob',
 }
 
 /**
  * The needs of `the-site` this unit deliberately builds no page for, each with what it is waiting for.
  *
- * **It is a list of pages, not of answers, and the guard over it is what made that distinction.** Two
- * of the three are answered by endpoints this port already carries: the playground would be pre-filled
- * from the same snapshot a contract page renders, and a search would run over the same index the
- * catalogue page lists. So the generator could build both today from what it already fetches, and does
- * not - which is a scope decision and is written down as one rather than showing up as a port that
- * happens to be narrow.
+ * **It is a list of pages, not of answers, and the guard over it is what made that distinction.** One
+ * of the two is answered by an endpoint this port already carries: a search would run over the same
+ * index the catalogue page lists, so the generator could build it today from what it already fetches
+ * and does not - a scope decision, written down as one rather than showing up as a port that happens
+ * to be narrow. The other is different in kind: nothing here can answer `render-the-methodology-page`,
+ * because the `methodology` endpoint is not in this port at all.
  *
- * The third is different in kind: nothing here can answer `render-the-methodology-page`, because the
- * `methodology` endpoint is not in this port at all.
+ * **`pre-fill-the-playground` has left this list, which is the whole of what the playground unit was.**
+ * What it said while it was here has been paid rather than repeated: a case whose input is a function
+ * cannot be pre-filled, and `array/group-by@1` has thirty of them. That contract has no page, so no
+ * playground meets one - and `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling` is
+ * the guard that turns that from a fact about today into something that reddens the day it stops
+ * being true.
  *
  * Declared rather than left as a gap, for the reason `field-map.ts` carries `unfilledBecause` and
  * `needs.ts` carries `answeredWithoutTheApi`: a unit that quietly built four pages out of six would be
  * indistinguishable from one that had forgotten two.
  */
 export const NOT_THIS_UNIT: Readonly<Record<string, string>> = {
-  'pre-fill-the-playground':
-    'the playground is a unit of its own. It is also the one page the code/data frontier bites on: ' +
-    'a case whose input is a function cannot be pre-filled into a browser form, and ' +
-    '`array/group-by@1` has thirty of them',
   'render-the-methodology-page':
     'it waits until there are figures to explain. Saying what "you can check this yourself" means is ' +
     'worth a page when the benchmark figures, the validation reports and the attestations it would ' +

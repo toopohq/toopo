@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { renderCase, renderContract } from '../registry/address.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
+import { whatRunsInYourBrowser } from './contract-page.js'
 import { toHtml, toText, wordsOf } from './document.js'
 import { localSource } from './local-source.js'
 import { CATALOGUE_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
@@ -275,6 +276,61 @@ describe('the site', () => {
     }
 
     expect(() => heldByTheRegistry(tampered)).toThrow(ThePageCannotBeBuilt)
+  })
+
+  /**
+   * The sentence about what a browser actually runs is on the playground, once, and nowhere else.
+   *
+   * `browser.ts` strips the types off a contract's `reference.ts`, so the JavaScript that answers a
+   * reader is neither the file the registry serves nor the file the digest covers. That is worth
+   * exactly one sentence, in the one place somebody is looking at an answer it produced - saying it
+   * again under *What you can check yourself* would blur the section that is about the frozen
+   * definition, where nothing has changed at all.
+   */
+  it('what-runs-in-your-browser-is-said-once-and-beside-the-playground', () => {
+    for (const path of pages().keys()) {
+      const reading = toText(page(path))
+      const entry = index.entries.find((one) => pageOf(one.address) === path)
+
+      if (entry === undefined) {
+        expect(reading).not.toContain('types stripped')
+        continue
+      }
+
+      const said = whatRunsInYourBrowser(entry.address.name)
+
+      expect(reading.split(said)).toHaveLength(2)
+      expect(reading.indexOf(said)).toBeGreaterThan(reading.indexOf('Try it on your own input'))
+      expect(reading.indexOf(said)).toBeLessThan(reading.indexOf('\nProperties\n'))
+    }
+  })
+
+  /**
+   * With no JavaScript a page is prose, never a control that does nothing.
+   *
+   * The form is built by `start.ts` rather than served inert, so what a reader without JavaScript
+   * meets is two paragraphs saying what the playground would do. A served `<input>` nobody can use is
+   * the same defect as an empty section - it tells a reader something is there and it is not - and it
+   * is the one this arrangement exists to avoid.
+   *
+   * The `script` node carries attributes and no children, which is what keeps `document.ts`'s rule
+   * that no node holds raw markup true with a script on the page.
+   */
+  it('a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const rendered = html(pageOf(held.contract.address))
+      const reading = toText(page(pageOf(held.contract.address)))
+
+      expect(rendered).not.toContain('<input')
+      expect(rendered).not.toContain('<form')
+      expect(rendered).toMatch(/<div id="playground" data-playground="[^"]+"><\/div>/)
+      expect(rendered).toMatch(/<script type="module" src="[^"]+"><\/script>/)
+
+      // What a reader without JavaScript meets where the form would be: a sentence, not a gap.
+      expect(
+        reading.slice(reading.indexOf('Try it on your own input')).split('\n\n')[1],
+      ).toContain('Each field holds a literal')
+    }
   })
 
   /** Every page the site holds is reachable from the front page, in one click or two. */

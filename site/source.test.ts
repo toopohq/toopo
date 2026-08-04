@@ -32,16 +32,19 @@ describe('where the generator gets what it publishes', () => {
   })
 
   /**
-   * A source reaching past the read API is the failure a port exists to prevent. `blob` is the right
-   * thing for this one to be caught offering: it is the endpoint the installer's port carries and this
-   * one refuses, because a page publishes no byte of anybody's source.
+   * A source reaching past the read API is the failure a port exists to prevent.
+   *
+   * The example used to be `blob`, and the playground took it: a page that runs an implementation
+   * fetches its bytes, so `blob` is now declared here and would no longer be caught. `attestations` is
+   * the replacement and is a better one - it is an endpoint that exists, that no page has ever had a
+   * need for, and that nothing in this folder is one refactor away from wanting.
    */
   it('a-source-carrying-more-than-the-port-declares-is-refused', () => {
-    const wider = { ...localSource(), blob: () => null }
+    const wider = { ...localSource(), attestations: () => null }
 
     expect(portFaults(THE_ENDPOINT_BEHIND, wider)).toEqual([
-      'the source carries `blob`, which the port does not declare - a client reaching for it would ' +
-        'be reaching past the read API',
+      'the source carries `attestations`, which the port does not declare - a client reaching for it ' +
+        'would be reaching past the read API',
     ])
   })
 

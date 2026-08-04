@@ -35,9 +35,27 @@ import type { Document, Node } from './document.js'
 import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
 import { literal } from './literal.js'
-import { pageOf, rootFrom } from './paths.js'
+import { THE_ENTRY_POINT, THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
+import { playgroundOf, theCallOf } from './playground.js'
 
 const NOTHING = {} as const
+
+/**
+ * The one sentence this site makes about the gap between what is hashed and what runs.
+ *
+ * It belongs beside the playground and nowhere else - not under *What you can check yourself*, which
+ * is about the frozen definition and stays exactly as true as it was. This is the only place on the
+ * site where a reader is looking at an answer that transformation produced, so this is the only place
+ * the transformation is worth a reader's attention.
+ *
+ * Exported because `pages.test.ts` asserts both halves of that - present here, absent everywhere else -
+ * and a guard matching a sentence it had transcribed would be a second copy going stale on the first
+ * reword.
+ */
+export const whatRunsInYourBrowser = (name: string): string =>
+  `The JavaScript this runs is ${name}'s own reference.ts with its types stripped. That is neither ` +
+  `the file the registry serves nor the file its digest covers: both are TypeScript, and no browser ` +
+  `runs TypeScript. It is also the only part of this page that needs JavaScript at all.`
 
 const line = (tag: string, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
@@ -54,9 +72,7 @@ const grouped = (value: number): string => value.toLocaleString('en-US').replace
  * bare, because there is nothing to tell it apart from; two or more are named.
  */
 const renderedCase = (entry: CaseRecord, answer: ExportRecord): Node => {
-  const fields = entry.data.kind === 'record' ? entry.data.fields : []
-  const call = fields.slice(0, answer.parameters.length).map((field) => literal(field.value))
-  const answered = fields.slice(answer.parameters.length)
+  const { written: call, answered } = theCallOf(entry, answer)
 
   const result =
     answered.length === 1
@@ -160,6 +176,7 @@ export const contractPage = (held: Held): Document => {
   const answer = contract.surface.exports.find((entry) => entry.role === 'the-answer') as ExportRecord
   const cases = contract.caseTables.reduce((count, table) => count + table.cases.length, 0)
   const bytes = implementation.files.reduce((total, file) => total + file.bytes, 0)
+  const playground = playgroundOf(contract, name)
 
   return {
     title: `${name} — ${contract.identity.summary}`,
@@ -227,6 +244,24 @@ export const contractPage = (held: Held): Document => {
         renderedTable(table, answer, contract.caseTables.length === 1),
       ),
 
+      line('h2', 'Try it on your own input'),
+      line(
+        'p',
+        `This calls ${playground.calls} on whatever you type. Each field holds a literal, written ` +
+          `exactly the way the cases above are written, and the form opens on ${playground.opensOnCase} ` +
+          `so there is a call that works to edit. What comes back is what the function answered — the ` +
+          `settled answer is on the case's own line above, and is deliberately not repeated here.`,
+      ),
+      line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),
+      el('div', {
+        id: 'playground',
+        'data-playground': JSON.stringify({
+          calls: playground.calls,
+          module: THE_REFERENCE_MODULE,
+          fields: playground.fields,
+        }),
+      }),
+
       line('h2', 'Properties'),
       line(
         'p',
@@ -279,6 +314,16 @@ export const contractPage = (held: Held): Document => {
           `word for any of it.`,
       ),
       line('p', `Written for ${contract.environments.join(', ')}.`, { class: 'meta' }),
+
+      /**
+       * Last, and carrying no content of its own: a `script` node holds attributes and no children,
+       * so the rule that no node of this document carries raw markup survives the playground intact.
+       * Both projections see an element with nothing in it, which is exactly what it is.
+       */
+      el('script', {
+        type: 'module',
+        src: `${rootFrom(pageOf(contract.address))}${THE_ENTRY_POINT}`,
+      }),
     ],
   }
 }

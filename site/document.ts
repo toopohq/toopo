@@ -138,9 +138,16 @@ const textOfNode = (node: Node): string => {
  *
  * Inline rather than a file, and that is a measurement about the launch rather than a preference:
  * seven pages served once each, where a second request costs a round trip and a cache entry buys
- * nothing until somebody reads a second page. No web font, no image, no script - a contract page that
- * needs JavaScript to be read is a page a crawler and a screen reader read differently from a person,
- * and this project cannot publish the byte cost of every feature and then serve a heavy page.
+ * nothing until somebody reads a second page. No web font and no image, and this project cannot
+ * publish the byte cost of every feature and then serve a heavy page.
+ *
+ * **This paragraph used to end "and no script", and the playground took that clause and not the one
+ * after it.** What it was actually protecting survives untouched: *a contract page that needs
+ * JavaScript to be read is a page a crawler and a screen reader read differently from a person.* A
+ * page is still read without a line of it - the signature, the settled cases, the properties, the
+ * profiles and the digest are all in the served HTML. What the script adds is the one thing static
+ * HTML cannot do, which is answer an input nobody wrote down in advance, and `start.ts` builds its
+ * own form so that a reader without JavaScript meets prose rather than a control that does nothing.
  *
  * `system-ui` first, so the page is set in whatever the reader's own system uses and downloads
  * nothing. The measure is capped in `ch` rather than pixels because what has to stay readable is a
@@ -182,6 +189,14 @@ pre {
 .anchor:hover { color: var(--link); text-decoration: underline }
 ul.plain { list-style: none; padding: 0; margin: 0 0 1rem }
 ul.plain > li { padding: .5rem 0; border-top: 1px solid var(--rule) }
+#playground label { display: block; color: var(--dim); font-size: .875rem; margin-bottom: .2rem }
+#playground .why { display: block; font-size: .8rem; margin-top: .2rem }
+#playground input {
+  width: 100%; padding: .5rem .6rem; color: var(--ink); background: Canvas;
+  border: 1px solid var(--rule); border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .875em;
+}
+#playground input:focus { outline: 2px solid var(--link); outline-offset: 1px }
 `.trim()
 
 export const toHtml = (document: Document): string =>

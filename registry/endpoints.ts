@@ -90,6 +90,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
       'write-the-files-into-the-project',
       'show-a-readable-diff-per-feature',
       'fetch-and-run-the-executable-harness',
+      'run-the-implementation-on-what-a-reader-types',
     ],
     whatAReaderCanCheck:
       'that these are the bytes the address names, by hashing them. Not what they do - reading that ' +
