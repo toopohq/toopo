@@ -344,13 +344,23 @@ const mutants: readonly Mutant[] = [
     killed(['nothing-is-removed-while-a-feature-is-held-back']),
   ),
 
+  /**
+   * The pin lost a guard when the reconciliation moved, and that is the mechanism working rather than
+   * a coverage loss.
+   *
+   * `a-lockfile-with-no-root-has-nowhere-to-start` used to redden here because the refusal and the
+   * root selection were one statement in one file. They are two now: the selection is the
+   * reconciliation's, shared with `remove`, and the refusal is `update.ts`'s own - because taking out a
+   * project's last root leaves no root legitimately. So this edit no longer reaches that guard, the
+   * pin said so on the first run after the split, and it is corrected rather than widened.
+   */
   sameOnEveryLens(
     'U-20',
     'resolves from every locked feature rather than from the ones the user asked for, so a ' +
       'dependency climbs to its own newest version independently of the dependent it was published ' +
       'against, and nothing ever leaves the project',
     [reconcileFile(ONLY_A_ROOT_IS_RESOLVED_FROM, `  const roots = request.lockfile.features`)],
-    killed([THE_LEAVING, 'a-lockfile-with-no-root-has-nowhere-to-start']),
+    killed([THE_LEAVING]),
   ),
 
   sameOnEveryLens(
@@ -568,6 +578,36 @@ export const battery: Battery = {
         'a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias',
         'an-installable-contract-carries-no-refusal',
         'every-declared-alias-finds-its-own-contract-first',
+        'the-catalogue-lists-every-contract-and-marks-the-one-it-refuses',
+      ],
+    },
+    /**
+     * `toopo remove`, the fourth battery of this folder, and the division is worth reading rather than
+     * skimming: it is **five guards here and one in the search region above**, not the twenty-five that
+     * unit added.
+     *
+     * The other nineteen redden on this battery, because a removal is a reconciliation with one feature
+     * demoted and this is the battery over the reconciliation. That is the measurement saying the two
+     * commands share their arithmetic rather than resembling each other - if they did not, every guard
+     * of `remove.test.ts` would be sitting in a list here.
+     *
+     * What is left is what a removal has that an update does not: its own two lines of grammar, the
+     * screen `init` prints, and a project holding nothing - none of which an update can reach whatever
+     * is injected into it.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        '`toopo remove` and `toopo list`, which `cli-remove` carries with twenty defects. Only the ' +
+        'five below are out of reach here: the rest of that unit reddens on this battery, because a ' +
+        'removal is a reconciliation with one feature demoted and this is the battery over the ' +
+        'reconciliation.',
+      guards: [
+        'a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen',
+        'a-command-that-takes-nothing-is-read-and-refuses-an-argument',
+        'an-init-says-what-has-to-be-committed',
+        'remove-without-a-contract-is-refused',
+        'remove-writes-only-when-it-is-asked-to',
       ],
     },
     {
