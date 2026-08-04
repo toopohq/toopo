@@ -177,14 +177,15 @@ what the pair already carries and making a contract rename a rename of every gua
 stated so it is not discovered later: **the registry schema must always carry the pair, never the
 identifier alone.** Fifteen identifier strings are held by more than one contract today.
 
-**Three identifiers belong to the catalogue rather than to a contract**, and only three:
-`every-case-is-addressed`, `every-case-is-justified` and `universal-properties-answered`. Those are
-not five guards that resemble each other — the helper *is* the guard, one function applied five times
-— so each is a constant exported from `catalogue/every-contract.ts` and a contract cannot rename it
-locally. Renaming one costs a major on the whole catalogue, the discipline everything in that file
-already carries. The other twelve shared strings are five contracts asking the same question about
-different data: *resemblance is not duplication*, the rule the catalogue already applies to
-`outputsAreEqual`, so each contract owns its own and two may coincide.
+**Four identifiers belong to the catalogue rather than to a contract**, and only four:
+`every-case-is-addressed`, `every-case-is-justified`, `every-case-is-grouped` and
+`universal-properties-answered`. Those are not five guards that resemble each other — the helper *is*
+the guard, one function applied five times — so each is a constant exported from
+`catalogue/every-contract.ts` and a contract cannot rename it locally. Renaming one costs a major on
+the whole catalogue, the discipline everything in that file already carries. The other twelve shared
+strings are five contracts asking the same question about different data: *resemblance is not
+duplication*, the rule the catalogue already applies to `outputsAreEqual`, so each contract owns its
+own and two may coincide.
 
 **The separator is ` :: `, and it is ASCII on purpose.** It cannot occur inside an identifier,
 because an identifier has no spaces, so the split cannot be wrong. An em dash reads better and would
@@ -324,14 +325,54 @@ arrived in the same unit and is smaller: **no need in `needs.ts` covered listing
 query; the front page — the whole of the site's navigation at five contracts — had nothing behind it,
 while the generator consumed `contract-index` anyway.
 
-**What the record still cannot say, and it is the grouping.** The contracts group their cases in
-comment banners — `--- Whitespace ---`, `--- Sign ---` — and all 187 cases sit inside one: twelve groups
-on `number/parse@1`, ten on `date/add@1` and on `string/slugify@1`, six on the other two, between two
-and ten cases each. The record is flat. Measured by printing both, fifty cases in a row read as
-documentation rather than as a dump and a reader still cannot *find* anything in them; grouped, they
-become twelve short answers to twelve questions somebody has. The judgement exists in the source and its
-shape as data does not, so it is a format decision on five frozen contracts and it is recorded here as
-open rather than taken.
+## A case of block 4.4 belongs to a group — settled, catalogue-wide
+
+**A table declares its groups, every case names one, and the comment banners are gone.** Forty-eight
+groups over seven tables and 187 cases: twelve on `number/parse@1`, twelve on `date/add@1`, ten on
+`string/slugify@1`, eight on `array/group-by@1`, six on `string/levenshtein@1`. It was the eighth defect
+a consumer found in this schema and the second the site found — the judgement existed in the source and
+its shape as data did not, which is the same failure as the parameter names one unit earlier.
+
+**The partition was derived from the banners while they were still there, and read back before they
+went.** Two of the seven tables carried no banner, and their groups were read off what their cases
+already hold rather than invented: `reason` on `date/add@1`'s untyped table, `outcome.kind` on
+`array/group-by@1`'s. The second corrected a guess — the distinction is *not iterable* against
+*iterable but not an array*, not anything about the key function.
+
+**The banners are gone with the field, and that is not tidying.** Two statements of one grouping drift,
+and it is always the second that lies: one of the four banners carrying prose already read *these five
+rows* over six cases. That prose now sits on the group declaration it describes.
+
+**`id` is frozen, `title` is prose and corrigible** — the separation a guard's identifier and sentence
+already carry, for the same reason, which is why `CaseGroup` lives in `catalogue/identifier.ts` beside
+the shape of an address. Splitting a group, merging two or renaming an `id` costs `name@2`; adding a
+case to an existing group costs nothing, and that is the common gesture.
+
+**A group and a case share one space of addresses**, because a page renders both as `#id` and a
+duplicate is a link that silently lands on the wrong element. `expectEveryCaseIsAddressed` widened to
+cover both rather than gaining a sibling — it always asked whether these strings can address something,
+and the grouping only added strings. It found two collisions the day it was widened: `exponent` on
+`number/parse@1` and `normalisation-is-not-applied` on `string/levenshtein@1`, each a group named after
+a case of its own table. The group is what moved, because the case identifier is the older statement.
+
+**`every-case-is-grouped` is the fourth guard the catalogue owns.** `groupingFaults` has one
+implementation and two callers, and the reason is not symmetry: `npm test` collects `contracts/` and
+nothing else, so the serialiser's refusal is never reached by what a specification battery runs, and a
+mutant moving a case between groups would have been a defect nothing probes. Five cells now probe it.
+
+**What the partition check cannot see, and it is declared rather than closed.** A case moved into the
+group *next to* it leaves a partition that is still well formed — contiguous, nothing empty, nothing
+undeclared — so nothing objects and the page publishes the row under its neighbour's heading. LS-14 was
+written that way by accident and survived; it now moves a case to a group that is not its neighbour.
+Closing the class would need a guard claiming to check that a case *belongs* where it is filed, which
+is a judgement about prose.
+
+**Three heading levels, and the page cost 5.9 per cent.** Measured over the six pages, 120 181 bytes
+before and 127 289 after; the 159 bytes the front page and the refusals page each gained are the two
+`h4` rules in the shared inline stylesheet, which is the whole of their share. `h4` was added to the
+text projection's separator map in the same change — without it a group title runs into the case
+beneath it, which is the exact shape of `not applicableThe signature takes a single string`, caught
+before it existed.
 
 ## The security filter fails closed — settled
 
