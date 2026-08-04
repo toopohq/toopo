@@ -83,7 +83,6 @@ export const identity = {
     'edit distance',
     'string distance',
     'how similar are two strings',
-    'string similarity',
     'fuzzy match',
     'fuzzy string matching',
     'typo distance',
@@ -91,7 +90,6 @@ export const identity = {
     'closest match',
     'compare two strings',
     'difference between two strings',
-    'damerau levenshtein',
   ],
 } as const
 

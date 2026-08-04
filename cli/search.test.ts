@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
 import { localSource } from './local-source.js'
-import { renderSearch } from './report.js'
-import { search } from './search.js'
+import { renderCatalogue, renderSearch } from './report.js'
+import { displayed, search } from './search.js'
 
 /**
  * How a ranking is put to the test when it has five things to rank.
@@ -41,9 +41,24 @@ describe('finding a contract from what somebody typed', () => {
   /**
    * Every alias, verbatim, ranks its own contract first.
    *
-   * Seventy assertions in one guard, because a failure has to name the alias and the contract in one
-   * message: what a failure means is either that the alias is wrong or that the ranking is, and the
-   * reader cannot tell which from a count.
+   * One assertion per alias in one guard, because a failure has to name the alias and the contract in
+   * one message: what a failure means is either that the alias is wrong or that the ranking is, and
+   * the reader cannot tell which from a count.
+   *
+   * **This guard reviews the search and never the aliases, and it looks exactly like the opposite.**
+   * An alias is in the index, so it retrieves the contract that declares it by construction - which is
+   * all retrieval can mean - and a phrase promising something the contract refuses to do passes here
+   * as comfortably as a true one. `catalogue/every-contract.ts` carries the rule that does catch one
+   * and the eight it caught; nothing below can, and a reader who took this for an alias review would
+   * be trusting the one measurement that cannot make it.
+   *
+   * **What makes it non-vacuous is a state rather than a count.** It used to assert that the
+   * catalogue declares more than sixty aliases, which is a total across five contracts: it stays true
+   * while one contract drops to none, it is a number that drifts every time a phrase is added or
+   * removed, and the alias review took it from seventy-one to sixty-three at a stroke. What the guard
+   * needs is that no contract put nothing into the trial - the day one does, every alias of it is
+   * checked vacuously - and that is a claim which disappears with what it asserts instead of
+   * needing a new figure.
    */
   it('every-declared-alias-finds-its-own-contract-first', () => {
     const missed = INDEX.flatMap((entry) =>
@@ -53,7 +68,11 @@ describe('finding a contract from what somebody typed', () => {
     )
 
     expect(missed).toEqual([])
-    expect(INDEX.flatMap((entry) => entry.searchAliases).length).toBeGreaterThan(60)
+    expect(
+      INDEX.filter((entry) => entry.searchAliases.length === 0).map((entry) =>
+        renderContract(entry.address),
+      ),
+    ).toEqual([])
   })
 
   /**
@@ -88,7 +107,6 @@ describe('finding a contract from what somebody typed', () => {
       ['leven', 'string/levenshtein@1'],
       ['slugify', 'string/slugify@1'],
       ['title to url', 'string/slugify@1'],
-      ['remove accents from string', 'string/slugify@1'],
       ['seo friendly url', 'string/slugify@1'],
       ['convert a string to a number in javascript', 'number/parse@1'],
       ['how do I convert a string to a number', 'number/parse@1'],
@@ -113,11 +131,20 @@ describe('finding a contract from what somebody typed', () => {
    *
    * `sort array` and `flatten nested array` are the ones to watch: `array` is half of a contract's
    * own name, so they are what the rule *every word must be answered* is bought for.
+   *
+   * **`remove accents from string` is here because the alias review moved it here**, and it is the
+   * only entry in this file whose place changed rather than was chosen. `string/slugify@1` used to
+   * declare it and used to be ranked first for it, in the corpus above; its own description sends that
+   * reader to a different function - `Straße` stays `straße`, and Cyrillic stays Cyrillic - so the
+   * alias was a promise the result did not keep. Removing it moves the query from a wrong answer to no
+   * answer, which is the outcome the whole file is built to prefer, and it is what an alias review is
+   * worth when the catalogue holds no accent-stripper.
    */
   it('a-query-the-catalogue-cannot-answer-answers-nothing', () => {
     const nothing = [
       'debounce',
       'throttle',
+      'remove accents from string',
       'deep clone',
       'deep merge',
       'sort array',
@@ -144,6 +171,30 @@ describe('finding a contract from what somebody typed', () => {
         .filter(([, results]) => results.length > 0)
         .map(([query, results]) => `"${query}" -> ${results.length} results`),
     ).toEqual([])
+  })
+
+  /**
+   * The catalogue, which is what `toopo search` with no words answers now.
+   *
+   * It used to be refused - *`search` needs something to look for* - which answers "you must already
+   * know what you want" to the first question anybody asks. **Listing is not searching**, and the two
+   * are kept apart in the grammar rather than here: the guard below still requires a query with no
+   * words in it to answer nothing, and it would be the first casualty of making an empty query mean
+   * everything.
+   *
+   * The refused contract is listed and marked. A catalogue that showed only what it sells would be
+   * publishing its own decisions nowhere, and *the language ships this now* is the most useful thing
+   * this screen has to say to somebody about to write their own grouper.
+   */
+  it('the-catalogue-lists-every-contract-and-marks-the-one-it-refuses', () => {
+    const screen = renderCatalogue(
+      INDEX.map((entry) => displayed(entry, SOURCE.refusals().refusals)),
+    )
+
+    expect(screen).toContain(`The catalogue holds ${INDEX.length} contracts.`)
+    expect(INDEX.filter((entry) => !screen.includes(renderContract(entry.address)))).toEqual([])
+    expect(screen).toContain('array/group-by@1   not installable')
+    expect(screen).toContain('toopo add <domain>/<name>')
   })
 
   /**

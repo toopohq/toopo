@@ -89,8 +89,6 @@ export const identity = {
     'permalink from title',
     'url safe string',
     'make a string url safe',
-    'remove accents from string',
-    'strip diacritics',
     'kebab case a sentence',
     'anchor id from heading',
   ],

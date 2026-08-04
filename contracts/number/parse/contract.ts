@@ -65,7 +65,6 @@ export const identity = {
     'cast to number',
     'string to int',
     'string to float',
-    'atoi',
     'number from string',
     'safe parse number',
   ],

@@ -325,6 +325,11 @@ describe('the index, the refusals, and what update compares', () => {
    * The claim this type makes about itself, held to a number. `exports` was added by a consumer that
    * could not name what it had installed, and a row nobody measured is how "deliberately small"
    * becomes a sentence rather than a constraint.
+   *
+   * The figures moved from 2 731 and 3 106 when the alias review took eight phrases out of the five
+   * contracts, which is 137 bytes off the one document every search pays for. `added` did not move,
+   * and that is the number this guard is actually about: what carrying the export names costs is a
+   * property of the names and not of how much else the entry happens to hold.
    */
   it('the-index-stays-the-smallest-thing-the-registry-serves', () => {
     const index = theServedIndex()
@@ -337,8 +342,8 @@ describe('the index, the refusals, and what update compares', () => {
     const before = canonical(withoutExports, 'index').length
 
     expect({ before, grown, added: grown - before }).toEqual({
-      before: 2731,
-      grown: 3106,
+      before: 2594,
+      grown: 2969,
       added: 375,
     })
   })

@@ -72,7 +72,6 @@ export const identity = {
     'date arithmetic',
     'date plus duration',
     'shift date',
-    'offset date',
     'date add duration',
     'increment date',
   ],

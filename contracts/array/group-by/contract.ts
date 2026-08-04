@@ -91,12 +91,10 @@ export const identity = {
     'group items by field',
     'bucket by key',
     'partition array by key',
-    'index by',
     'collect by key',
     'lodash groupBy',
     'Object.groupBy',
     'Map.groupBy',
-    'array to map',
   ],
 } as const
 
