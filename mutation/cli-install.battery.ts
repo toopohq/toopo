@@ -791,6 +791,29 @@ export const battery: Battery = {
    * fail part-way through a write.
    */
   unprobedRegions: [
+    /**
+     * `toopo remove` and `toopo list`, and it is four guards out of the twenty-five that unit added.
+     *
+     * Everything else it added reddens here, which is the same measurement `cli-update` makes from its
+     * own side: a removal parses its name through the function `add` parses its name through, and
+     * plans through the arithmetic an install plans through. What is left is a command that writes
+     * nothing this battery can reach - `--apply`, an empty project, the catalogue with no query, and
+     * the sentence `init` prints about committing the folder.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        '`toopo remove` and `toopo list`, which `cli-remove` carries with twenty defects. This ' +
+        'battery installs into a project that has nothing and never takes anything out of one, so ' +
+        'the acceptance a removal asks for, an empty project, a query with no words and the line ' +
+        '`init` prints are out of its reach - and the rest of that unit reddens on it.',
+      guards: [
+        'a-command-that-takes-nothing-is-read-and-refuses-an-argument',
+        'a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen',
+        'an-init-says-what-has-to-be-committed',
+        'remove-writes-only-when-it-is-asked-to',
+      ],
+    },
     {
       nature: 'claims detection',
       reason:
