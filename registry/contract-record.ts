@@ -156,7 +156,26 @@ export type ExportRecord = {
    * fields of every case of all seven tables begin with these names, in this order, and what remains
    * is the answer. `serialise.ts` refuses a contract where that stops being true.
    */
-  readonly parameters: readonly string[]
+  readonly parameters: readonly ParameterRecord[]
+}
+
+/**
+ * One parameter of a declared signature: what a caller names it, and what it is declared to be.
+ *
+ * **The type is here because the ninth defect a consumer found needed it**, and it arrived free: the
+ * colon that ends a name begins a type, so `signature.ts` reads both on one walk and neither is
+ * declared beside the other. A `parameters` of bare names sent the site back to parsing
+ * `export.text` for itself - which is the state this field was created to end.
+ *
+ * **What the type is for, and the refusal that keeps it honest.** The site builds an argument out of
+ * what a reader types, and what it builds depends on this: `string` is the text itself, `Date` is
+ * constructed from it. A type the builder does not know stops the build and names itself, the shape
+ * `registry/value.ts` already takes for a value it does not model - no fallback, no empty field, no
+ * page rendered with a playground quietly missing.
+ */
+export type ParameterRecord = {
+  readonly name: string
+  readonly type: string
 }
 
 /** A type the signature refers to. One of the five needs one: `Duration` on `date/add@1`. */

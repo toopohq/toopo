@@ -1,5 +1,6 @@
 /**
- * The parameter names of a declared signature, read off the signature itself.
+ * The parameters of a declared signature - what each one is called and what it is declared to be -
+ * read off the signature itself.
  *
  * ---------------------------------------------------------------------------
  * What was missing, and how a consumer found it
@@ -47,6 +48,8 @@
  * `<T extends (x: number) => void>(a: T)` - which none of the five writes; `=>` is skipped while angle
  * brackets are counted, so a function type inside a type parameter is not what breaks it.
  */
+
+import type { ParameterRecord } from './contract-record.js'
 
 export class UnreadableSignature extends Error {
   constructor(text: string, detail: string) {
@@ -138,7 +141,21 @@ const splitParameters = (list: string): readonly string[] => {
   return parts.map((part) => part.trim()).filter((part) => part !== '')
 }
 
-const nameOf = (text: string, part: string): string => {
+/**
+ * One parameter, split at the colon its own declaration carries.
+ *
+ * **The type comes back with the name because a consumer needed it, and it cost no new statement.**
+ * The site's playground has to build an argument out of text, and what it builds depends on what the
+ * parameter is declared to be - a `string` is the text, a `Date` is constructed from it. Reading it
+ * here is the same walk that already finds the name: the colon that ends the name begins the type.
+ *
+ * The alternative was a client re-reading `export.text` for itself, which is precisely the state this
+ * field was created to end. Two readings of one source drift; one reading, served, cannot.
+ *
+ * Whitespace is normalised inside the type, because `array/group-by@1` declares its signature over
+ * four lines and a type carrying a newline is the same type as one that does not.
+ */
+const parameterOf = (text: string, part: string): { name: string; type: string } => {
   let brackets = 0
   let angles = 0
 
@@ -149,12 +166,15 @@ const nameOf = (text: string, part: string): string => {
     else if (character === '<') angles += 1
     else if (character === '>' && part[at - 1] !== '=') angles -= 1
     else if (character === ':' && brackets === 0 && angles === 0) {
-      return part
-        .slice(0, at)
-        .trim()
-        .replace(/^\.{3}/, '')
-        .replace(/\?$/, '')
-        .trim()
+      return {
+        name: part
+          .slice(0, at)
+          .trim()
+          .replace(/^\.{3}/, '')
+          .replace(/\?$/, '')
+          .trim(),
+        type: part.slice(at + 1).replace(/\s+/g, ' ').trim(),
+      }
     }
   }
 
@@ -162,14 +182,15 @@ const nameOf = (text: string, part: string): string => {
 }
 
 /**
- * What a caller writes between the parentheses, in order. Empty for a function that takes nothing.
+ * What a caller writes between the parentheses, in order, each with the type it is declared as.
+ * Empty for a function that takes nothing.
  *
  * The whitespace of the declared text is irrelevant here and is not normalised away first: the readers
  * above skip it wherever it can occur, and `array/group-by@1` declares its signature over four lines.
  */
-export const parametersOf = (text: string): readonly string[] => {
+export const parametersOf = (text: string): readonly ParameterRecord[] => {
   const trimmed = text.trim()
   const list = parameterList(trimmed, afterTypeParameters(trimmed))
 
-  return splitParameters(list).map((part) => nameOf(trimmed, part))
+  return splitParameters(list).map((part) => parameterOf(trimmed, part))
 }

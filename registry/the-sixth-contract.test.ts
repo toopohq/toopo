@@ -98,14 +98,20 @@ const theSixth: ContractRecord = {
         typeName: 'Round',
         text: '(value: number, places: number) => number | null',
         role: 'the-answer',
-        parameters: ['value', 'places'],
+        parameters: [
+          { name: 'value', type: 'number' },
+          { name: 'places', type: 'number' },
+        ],
       },
       {
         name: 'describeRoundFailure',
         typeName: 'DescribeRoundFailure',
         text: '(value: number, places: number) => RoundFailureReason | null',
         role: 'the-diagnostic',
-        parameters: ['value', 'places'],
+        parameters: [
+          { name: 'value', type: 'number' },
+          { name: 'places', type: 'number' },
+        ],
       },
     ],
     supportingTypes: [],

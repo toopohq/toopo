@@ -140,7 +140,9 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
    * the second statement would have been is supplied instead by a hundred and eighty-seven cases:
    * `serialise.ts` refuses a contract whose cases do not begin with this call, in this order.
    */
-  'surface.exports[].parameters[]': { visibility: 'public', verification: 'structural' },
+  'surface.exports[].parameters[].name': { visibility: 'public', verification: 'structural' },
+  // What the playground builds an argument out of. A type it does not know stops the build by name.
+  'surface.exports[].parameters[].type': { visibility: 'public', verification: 'structural' },
   'surface.supportingTypes[].name': { visibility: 'public', verification: 'executable' },
   'surface.supportingTypes[].text': { visibility: 'public', verification: 'executable' },
   // `edge-cases.test.ts` requires the reasons the tables produce to be exactly this set, which is

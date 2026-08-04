@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
+import type { ParameterRecord } from './contract-record.js'
 import { UnreadableSignature, parametersOf } from './signature.js'
 import { serialiseContract, REPOSITORY_ROOT } from './serialise.js'
 import { eachContract } from './the-five.js'
@@ -16,8 +17,8 @@ import { eachContract } from './the-five.js'
 
 describe('the call a declared signature declares', () => {
   it('a-plain-signature-names-its-parameters', () => {
-    expect(parametersOf('(input: string) => number | null')).toEqual(['input'])
-    expect(parametersOf('(a: string, b: string) => number')).toEqual(['a', 'b'])
+    expect(parametersOf('(input: string) => number | null')).toEqual([{ name: 'input', type: 'string' }])
+    expect(parametersOf('(a: string, b: string) => number')).toEqual([{ name: 'a', type: 'string' }, { name: 'b', type: 'string' }])
   })
 
   it('a-signature-that-takes-nothing-has-no-parameters', () => {
@@ -30,8 +31,8 @@ describe('the call a declared signature declares', () => {
    */
   it('the-type-parameters-are-not-the-parameters', () => {
     expect(parametersOf('<T, K>(items: readonly T[], keyOf: (item: T) => K) => Map<K, T[]>')).toEqual([
-      'items',
-      'keyOf',
+      { name: 'items', type: 'readonly T[]' },
+      { name: 'keyOf', type: '(item: T) => K' },
     ])
   })
 
@@ -40,7 +41,7 @@ describe('the call a declared signature declares', () => {
    * on it would name half a type as a parameter.
    */
   it('a-comma-inside-a-generic-type-separates-no-parameter', () => {
-    expect(parametersOf('(held: Map<string, number>, at: number) => void')).toEqual(['held', 'at'])
+    expect(parametersOf('(held: Map<string, number>, at: number) => void')).toEqual([{ name: 'held', type: 'Map<string, number>' }, { name: 'at', type: 'number' }])
   })
 
   /**
@@ -48,7 +49,7 @@ describe('the call a declared signature declares', () => {
    * one instance of it in the catalogue.
    */
   it('the-parameters-of-a-parameter-are-not-parameters', () => {
-    expect(parametersOf('(keyOf: (item: string, index: number) => string) => void')).toEqual(['keyOf'])
+    expect(parametersOf('(keyOf: (item: string, index: number) => string) => void')).toEqual([{ name: 'keyOf', type: '(item: string, index: number) => string' }])
   })
 
   /** `array/group-by@1` writes its signature over four lines and closes it with a trailing comma. */
@@ -58,7 +59,10 @@ describe('the call a declared signature declares', () => {
   items: readonly T[],
   keyOf: (item: T, index: number) => K,
 ) => Map<K, T[]>`),
-    ).toEqual(['items', 'keyOf'])
+    ).toEqual([
+      { name: 'items', type: 'readonly T[]' },
+      { name: 'keyOf', type: '(item: T, index: number) => K' },
+    ])
   })
 
   /**
@@ -67,9 +71,9 @@ describe('the call a declared signature declares', () => {
    */
   it('an-optional-or-rest-parameter-is-named-without-its-mark', () => {
     expect(parametersOf('(first: string, second?: number, ...rest: string[]) => void')).toEqual([
-      'first',
-      'second',
-      'rest',
+      { name: 'first', type: 'string' },
+      { name: 'second', type: 'number' },
+      { name: 'rest', type: 'string[]' },
     ])
   })
 
@@ -78,7 +82,7 @@ describe('the call a declared signature declares', () => {
    * early, because `=>` ends in the character that closes it.
    */
   it('an-arrow-inside-a-type-parameter-does-not-close-it', () => {
-    expect(parametersOf('<T extends () => void>(run: T) => void')).toEqual(['run'])
+    expect(parametersOf('<T extends () => void>(run: T) => void')).toEqual([{ name: 'run', type: 'T' }])
   })
 
   /**
@@ -97,12 +101,15 @@ describe('the call a declared signature declares', () => {
    * is what makes this a comparison instead of a tautology.
    */
   it.each(eachContract)('the-call-of-%s-is-read-from-its-own-signature', (name, source) => {
-    const expected: Readonly<Record<string, readonly string[]>> = {
-      'number-parse': ['input'],
-      'date-add': ['date', 'duration'],
-      'array-group-by': ['items', 'keyOf'],
-      'string-levenshtein': ['a', 'b'],
-      'string-slugify': ['text'],
+    const expected: Readonly<Record<string, readonly ParameterRecord[]>> = {
+      'number-parse': [{ name: 'input', type: 'string' }],
+      'date-add': [{ name: 'date', type: 'Date' }, { name: 'duration', type: 'Duration' }],
+      'array-group-by': [
+        { name: 'items', type: 'readonly T[]' },
+        { name: 'keyOf', type: '(item: T, index: number) => K' },
+      ],
+      'string-levenshtein': [{ name: 'a', type: 'string' }, { name: 'b', type: 'string' }],
+      'string-slugify': [{ name: 'text', type: 'string' }],
     }
 
     const record = serialiseContract(REPOSITORY_ROOT, source)

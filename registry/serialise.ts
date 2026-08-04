@@ -545,7 +545,7 @@ const surfaceOf = (
     )
   }
 
-  return { exports: carried, call: answer.parameters }
+  return { exports: carried, call: answer.parameters.map((entry) => entry.name) }
 }
 
 export const serialiseContract = (root: string, source: ContractSource): ContractRecord => {
