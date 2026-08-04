@@ -77,7 +77,16 @@ const THE_REMAINING_ROOTS_ARE_BOUND_AS_RECORDED = `    boundAs: 'as-the-lockfile
 
 const A_DEDUPLICATED_COPY_IS_FOUND = `      if (written.has(file.path)) continue`
 
-const AN_EDITED_COPY_IS_NOT_TAKEN = `        verdict: onDisk === file.sha256 ? 'removed' : 'kept-orphan',`
+/**
+ * Three lines rather than one, because an anchor is matched as a substring and the same expression
+ * lives in `leavingFeatures` under four more spaces of indentation - so the one-line form matched twice
+ * and the instrument refused it. Two features of one contract answering one question about different
+ * data is the catalogue's own rule for keeping them apart; here it is why an anchor needs its opening
+ * brace.
+ */
+const AN_EDITED_COPY_IS_NOT_TAKEN = `      held.push({
+        path: file.path,
+        verdict: onDisk === file.sha256 ? 'removed' : 'kept-orphan',`
 
 const A_ROOT_IS_WHAT_REACHES = `        holders.push(root.contract)`
 
@@ -183,7 +192,12 @@ export const mutants: readonly Mutant[] = [
     'R-07',
     'deletes a deduplicated copy whatever is in it, so a file the user edited is taken because another ' +
       'folder happens to hold the bytes we once wrote there',
-    [reconcileFile(AN_EDITED_COPY_IS_NOT_TAKEN, `        verdict: 'removed',`)],
+    [
+      reconcileFile(
+        AN_EDITED_COPY_IS_NOT_TAKEN,
+        `      held.push({\n        path: file.path,\n        verdict: 'removed',`,
+      ),
+    ],
     killed(['a-copy-deduplicated-away-is-taken-with-the-entry-that-stops-claiming-it']),
   ),
 
