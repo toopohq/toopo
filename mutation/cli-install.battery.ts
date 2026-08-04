@@ -98,11 +98,13 @@ const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 
 const WHAT_WAS_WRITTEN_IS_HASHED = `      files.push({ path: file.path, served: file.served, sha256, bytes: bytes.byteLength })`
 
-const A_FILE_WE_DID_NOT_WRITE = `      if (held === undefined) {
-        return [\`\${where} is already there and toopo.lock does not claim it, so it is not ours to overwrite\`]
-      }`
+const A_FILE_WE_DID_NOT_WRITE = `      if (onDisk === wouldWrite.get(file.path)) alreadyOnDisk.add(file.path)`
 
-const AN_EDITED_FILE = `      if (held.sha256 !== onDisk) {`
+const AN_OLD_LOCKFILE_NAMES_WHAT_TO_TYPE = `      (names.length === 0 ? '' : \`\\n\${names.map((name) => \`  toopo add \${name}\`).join('\\n')}\`),`
+
+const A_FILE_HOLDING_OUR_BYTES_IS_CLAIMED = `    if (held === undefined) {`
+
+const AN_EDITED_FILE = `    if (held.sha256 !== onDisk) {`
 
 const A_FEATURE_CLAIMS_ITS_FILES = `      files,
       installedAt: request.at,`
@@ -161,7 +163,7 @@ const THE_PROPOSAL_READS_THE_PROJECT = `export const proposeDirectory = (root: s
 
 const THE_WHOLE_CONFIGURATION_IS_WRITTEN = '    `${JSON.stringify(configuration, null, 2)}\\n`,'
 
-const THE_FEATURES_ARE_VALIDATED = `      ? features.flatMap(featureFaults)`
+const THE_FEATURES_ARE_VALIDATED = `    ? features.flatMap(featureFaults)`
 
 const A_CLEAN_REFUSAL_NAMES_ITS_GUARD = `    verdict: 'refused-cleanly',
     guard: 'a-file-we-did-not-write-is-never-overwritten',`
@@ -172,7 +174,7 @@ const A_NAME_THE_INDEX_DOES_NOT_HOLD =
 const A_MISSING_EDGE_IS_NAMED = `      faults.push(\`\${what} is named by an edge and the registry holds no such published implementation\`)
       continue`
 
-const WHAT_IS_WRITTEN_IS_WHAT_ARRIVED = `      const bytes = Buffer.from(rewritten.sources.get(file.servedAt) as string, 'utf8')`
+const WHAT_IS_WRITTEN_IS_WHAT_ARRIVED = `        Buffer.from(rewritten.sources.get(file.servedAt) as string, 'utf8'),`
 
 const THE_ORDER_IS_THE_RESOLUTIONS = `  for (const held of order) {`
 
@@ -180,13 +182,17 @@ const THE_CARRIERS_ARE_NAMED = `  return [...carriers].map(([path, alsoCarriedBy
 
 const A_KILOBYTE_IS_A_THOUSAND = '  bytes < 1000 ? `${bytes} B` : `${(bytes / 1000).toFixed(1)} kB`'
 
-const A_REFUSAL_ANSWERS_FIRST = `export const renderRefusal = (faults: readonly string[]): string =>
-  [
+/**
+ * The two lines whose *order* is the claim, rather than the whole function.
+ *
+ * It used to anchor on all of `renderRefusal`, and `toopo search` moved that body: a fault carrying
+ * its own newlines is laid out rather than reflowed, so the refusal that names a command to type
+ * hands the reader a line they can copy. Anchoring on the sentence and the flatMap that follows it
+ * survives that, and it is what C-43 is actually about.
+ */
+const A_REFUSAL_ANSWERS_FIRST = `    \`\${INDENT}Refused, and nothing was written.\`,
     '',
-    \`\${INDENT}Refused, and nothing was written.\`,
-    '',
-    ...faults.flatMap((fault) => [...paragraph(fault, 72).map((line) => \`\${INDENT}  \${line}\`), '']),
-  ].join('\\n')`
+    ...faults.flatMap((fault) => [`
 
 const A_SPECIFIER_THAT_NAMES_NOTHING = `            if (servedAt === null) {
               faults.push(
@@ -333,11 +339,36 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'C-14',
-    'overwrites a file toopo did not write, which is somebody else\'s code replaced without a word',
-    [installFile(A_FILE_WE_DID_NOT_WRITE, `      if (held === undefined) {
-        return []
-      }`)],
+    'claims every file nothing claims, whatever is in it - so somebody else\'s code is overwritten ' +
+      'without a word, on the reading that the absence of a claim is what decides rather than the bytes',
+    [installFile(A_FILE_WE_DID_NOT_WRITE, `      if (true) alreadyOnDisk.add(file.path)`)],
     killed(['a-file-we-did-not-write-is-never-overwritten', 'a-refusal-leaves-the-project-exactly-as-it-was']),
+  ),
+
+  sameOnEveryLens(
+    // C-46 and C-47 are numbered last and written here, beside the mutants they belong with: the
+    // identifiers are addresses and are appended, the reading order is the argument.
+    'C-46',
+    'refuses a file already holding exactly the bytes this install would write, which is the other ' +
+      'half of the rule above: a project whose lockfile was deleted meets an installer refusing its ' +
+      'own files, and the only way out is deleting files that were perfectly good',
+    [installFile(A_FILE_HOLDING_OUR_BYTES_IS_CLAIMED, `    if (held === undefined && false) {`)],
+    killed(['a-file-already-holding-our-bytes-is-claimed-and-not-rewritten']),
+  ),
+
+  sameOnEveryLens(
+    'C-47',
+    'refuses a lockfile written before `askedFor` existed without naming a single feature it holds, ' +
+      'so the remedy is a sentence the reader has to work out for themselves from a file the tool ' +
+      'has just refused to read',
+    [
+      {
+        file: 'lockfile.ts',
+        find: AN_OLD_LOCKFILE_NAMES_WHAT_TO_TYPE,
+        replace: `      '',`,
+      },
+    ],
+    killed(['a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run']),
   ),
 
   sameOnEveryLens(
@@ -593,7 +624,7 @@ void theFive`,
     'C-35',
     'stops reading the features of a lockfile, so a malformed entry is read as an absent one and a ' +
       'file toopo did not write is decided to be safe to overwrite',
-    [{ file: 'lockfile.ts', find: THE_FEATURES_ARE_VALIDATED, replace: `      ? []` }],
+    [{ file: 'lockfile.ts', find: THE_FEATURES_ARE_VALIDATED, replace: `    ? []` }],
     killed(['an-unreadable-lockfile-stops-the-install']),
   ),
 
@@ -635,7 +666,7 @@ void theFive`,
     [
       installFile(
         WHAT_IS_WRITTEN_IS_WHAT_ARRIVED,
-        `      const bytes = Buffer.from((rewritten.sources.get(file.servedAt) as string) + '\\n', 'utf8')`,
+        `        Buffer.from((rewritten.sources.get(file.servedAt) as string) + '\\n', 'utf8'),`,
       ),
     ],
     // Four guards redden; the one named is the one written for a file that has nothing to repoint,
@@ -682,19 +713,16 @@ void theFive`,
 
   sameOnEveryLens(
     'C-43',
-    'says why before saying that nothing was written, so the reader is given a reason while still ' +
-      'wondering whether their project is now half-changed',
+    'never says that nothing was written, so the reader is handed a reason while still wondering ' +
+      'whether their project is now half-changed - which is the reader\'s first question and the ' +
+      'half of a refusal that matters more than the why. It reordered the two before `toopo search` ' +
+      'moved that body; removing the sentence is the same claim, on an anchor a layout change cannot ' +
+      'invalidate',
     [
       {
         file: 'report.ts',
         find: A_REFUSAL_ANSWERS_FIRST,
-        replace: `export const renderRefusal = (faults: readonly string[]): string =>
-  [
-    '',
-    ...faults.flatMap((fault) => [...paragraph(fault, 72).map((line) => \`\${INDENT}  \${line}\`), '']),
-    \`\${INDENT}Refused, and nothing was written.\`,
-    '',
-  ].join('\\n')`,
+        replace: `    ...faults.flatMap((fault) => [`,
       },
     ],
     killed(['a-refusal-says-nothing-was-written-before-it-says-why']),
@@ -767,8 +795,7 @@ export const battery: Battery = {
         'a-cut-summary-says-that-it-was-cut',
         'a-miss-names-the-words-no-contract-carries',
         'a-query-the-catalogue-cannot-answer-answers-nothing',
-        'a-refused-contract-is-found-with-the-reason-it-was-refused',
-        'a-refused-contract-is-offered-no-install-line',
+        'a-query-with-no-words-answers-nothing',
         'a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not',
         'a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias',
         'an-installable-contract-carries-no-refusal',

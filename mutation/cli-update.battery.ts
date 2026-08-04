@@ -539,6 +539,7 @@ export const battery: Battery = {
         'a-cut-summary-says-that-it-was-cut',
         'a-miss-names-the-words-no-contract-carries',
         'a-query-the-catalogue-cannot-answer-answers-nothing',
+        'a-query-with-no-words-answers-nothing',
         'a-refused-contract-is-found-with-the-reason-it-was-refused',
         'a-refused-contract-is-offered-no-install-line',
         'a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not',

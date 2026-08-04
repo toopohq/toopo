@@ -13,6 +13,7 @@ import { localSource } from './local-source.js'
 import { EMPTY_LOCKFILE, A_PINNED_INSTANT, aProject, committing } from './temporary-project.js'
 import type { Installation, InstallOutcome } from './install.js'
 import type { Lockfile } from '../registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 
@@ -164,10 +165,20 @@ describe('what breaks for somebody', () => {
     }
   })
 
+  /**
+   * **The version has to be the one this `toopo` reads**, and that is a repair the battery found: while
+   * it said `1`, the file was refused for being an old *format* and the malformed entry inside it was
+   * never looked at. The guard went on passing and stopped measuring what it names - which is exactly
+   * the failure this repository calls a decorative guard, arriving through a change made three files
+   * away.
+   */
   it('an-unreadable-lockfile-stops-the-install', () => {
     const project = aProject()
     try {
-      project.write('toopo.lock', '{ "version": 1, "features": [ { "contract": {} } ] }')
+      project.write(
+        'toopo.lock',
+        `{ "version": ${LOCKFILE_VERSION}, "features": [ { "contract": {} } ] }`,
+      )
 
       expect(() => readLockfile(project.root)).toThrow(UnusableLockfile)
 
