@@ -137,10 +137,18 @@ const A_STRAY_WORD_IS_REFUSED = `    if (!word.startsWith('--')) {
       continue
     }`
 
-const A_CONTRACT_COMES_FIRST = `    if (contract === undefined) return { faults: ['\`add\` needs the name of a contract'] }
-    if (contract.startsWith('--')) {
-      return { faults: ['\`add\` needs the name of a contract before any flag'] }
-    }`
+/**
+ * The two refusals moved into `contractThenFlags` when `remove` arrived, and they are now written
+ * once for both commands with the verb interpolated.
+ *
+ * A defect here is therefore twice the defect it was - it reaches `toopo add` and `toopo remove`
+ * alike - and C-25 reddens both guards for it. Repointed rather than rewritten: the sentence is the
+ * same sentence and the mistake it refuses is the same mistake.
+ */
+const A_CONTRACT_COMES_FIRST = `  if (contract === undefined) return { faults: [\`\\\`\${verb}\\\` needs the name of a contract\`] }
+  if (contract.startsWith('--')) {
+    return { faults: [\`\\\`\${verb}\\\` needs the name of a contract before any flag\`] }
+  }`
 
 const NOTHING_IS_A_COMMAND = `  if (command === undefined) return { faults: ['no command was given'] }`
 
@@ -511,7 +519,7 @@ void theFive`,
       {
         file: 'arguments.ts',
         find: A_CONTRACT_COMES_FIRST,
-        replace: `    if (contract === undefined) return { faults: ['\`add\` needs the name of a contract'] }`,
+        replace: `  if (contract === undefined) return { faults: [\`\\\`\${verb}\\\` needs the name of a contract\`] }`,
       },
     ],
     killed(['add-without-a-contract-is-refused']),
