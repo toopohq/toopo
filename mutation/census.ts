@@ -92,6 +92,12 @@
  * command rather than a contract, and it is the number the paragraph above predicted at "a unit that
  * only changes behaviour touches none" - this one changed behaviour *and* added guards, so it paid for
  * both.
+ *
+ * **A sixth on `toopo remove`, and it is the first time the refusal fired on a real unit rather than
+ * on the apparatus.** Two new files and four counts moved, all under the fifth configuration - and the
+ * battery refused to calibrate until they were written, naming all six disagreements at once. Every
+ * earlier measurement here was taken by somebody who had already updated the file; this one is the
+ * message being read by the person it was written for, and it cost one edit.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -151,17 +157,19 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'cli/vitest.config.ts': {
-    'cli/arguments.test.ts': 9,
+    'cli/arguments.test.ts': 12,
     'cli/breakage.test.ts': 10,
     'cli/configuration.test.ts': 7,
     'cli/diff.test.ts': 10,
     'cli/install.test.ts': 18,
+    'cli/list.test.ts': 4,
     'cli/plan.test.ts': 6,
-    'cli/report.test.ts': 7,
+    'cli/remove.test.ts': 12,
+    'cli/report.test.ts': 8,
     'cli/rewrite.test.ts': 7,
-    'cli/search.test.ts': 11,
+    'cli/search.test.ts': 12,
     'cli/source.test.ts': 6,
-    'cli/update.test.ts': 19,
+    'cli/update.test.ts': 22,
     'cli/write.test.ts': 8,
   },
 
