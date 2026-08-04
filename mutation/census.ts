@@ -169,7 +169,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/rewrite.test.ts': 7,
     'cli/search.test.ts': 12,
     'cli/source.test.ts': 6,
-    'cli/update.test.ts': 26,
+    'cli/update.test.ts': 25,
     'cli/write.test.ts': 8,
   },
 
