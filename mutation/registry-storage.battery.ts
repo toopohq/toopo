@@ -527,7 +527,6 @@ export const battery: Battery = {
         'form, the served bytes, the frozen projection and the ledger, and none of them reaches a ' +
         'statement about what a record contains.',
       suites: [
-        'the five, read against their own source',
         'a record accounts for everything its contract declares',
         // The five schema suites plus this one. `the files a contract is made of` is deliberately
         // absent: it is a storage suite, every one of its guards is reddened by I-02, and declaring
@@ -536,6 +535,65 @@ export const battery: Battery = {
         'the public/private frontier',
         'the implementations under the five contracts',
         'a sixth contract enters without a migration',
+      ],
+      /**
+       * `the five, read against their own source` is named guard by guard rather than as a suite,
+       * because it is no longer wholly silent: I-24 and I-25 redden two of its refusals.
+       *
+       * **A suite-wide declaration absorbs a guard added to that suite, silently, and that is what
+       * it did.** The two grouping refusals were written, the mutants that redden them were written,
+       * and the region went on claiming they had never spoken - which the instrument caught on the
+       * next run rather than a reader catching it never. Listing the guards costs forty-three lines
+       * and buys the opposite behaviour: the next guard added here is *unaccounted for* and says so.
+       *
+       * The other five suites stay named as suites, and that is a bet rather than an oversight: none
+       * of them is probed at all, so a guard added to one is as unprobed as its neighbours and the
+       * declaration stays true. This one stopped being that the moment a mutant reached inside it.
+       */
+      guards: [
+        'every-declared-type-occurs-in-the-contract-number-parse',
+        'every-declared-type-occurs-in-the-contract-date-add',
+        'every-declared-type-occurs-in-the-contract-array-group-by',
+        'every-declared-type-occurs-in-the-contract-string-levenshtein',
+        'every-declared-type-occurs-in-the-contract-string-slugify',
+        'the-answer-is-the-export-the-identity-names-number-parse',
+        'the-answer-is-the-export-the-identity-names-date-add',
+        'the-answer-is-the-export-the-identity-names-array-group-by',
+        'the-answer-is-the-export-the-identity-names-string-levenshtein',
+        'the-answer-is-the-export-the-identity-names-string-slugify',
+        'the-profile-vocabulary-and-the-profiles-agree-number-parse',
+        'the-profile-vocabulary-and-the-profiles-agree-date-add',
+        'the-profile-vocabulary-and-the-profiles-agree-array-group-by',
+        'the-profile-vocabulary-and-the-profiles-agree-string-levenshtein',
+        'the-profile-vocabulary-and-the-profiles-agree-string-slugify',
+        'every-mutation-provenance-resolves',
+        'every-case-is-addressable-across-the-whole-contract-number-parse',
+        'every-case-is-addressable-across-the-whole-contract-date-add',
+        'every-case-is-addressable-across-the-whole-contract-array-group-by',
+        'every-case-is-addressable-across-the-whole-contract-string-levenshtein',
+        'every-case-is-addressable-across-the-whole-contract-string-slugify',
+        'the-address-is-well-formed-number-parse',
+        'the-address-is-well-formed-date-add',
+        'the-address-is-well-formed-array-group-by',
+        'the-address-is-well-formed-string-levenshtein',
+        'the-address-is-well-formed-string-slugify',
+        'no-two-contracts-share-an-address',
+        'every-produced-expression-occurs-in-the-contract-number-parse',
+        'every-produced-expression-occurs-in-the-contract-date-add',
+        'every-produced-expression-occurs-in-the-contract-array-group-by',
+        'every-produced-expression-occurs-in-the-contract-string-levenshtein',
+        'every-produced-expression-occurs-in-the-contract-string-slugify',
+        'every-produced-profile-exists-number-parse',
+        'every-produced-profile-exists-date-add',
+        'every-produced-profile-exists-array-group-by',
+        'every-produced-profile-exists-string-levenshtein',
+        'every-produced-profile-exists-string-slugify',
+        'a-case-that-is-not-a-call-is-refused',
+        'every-harness-file-is-hashed-number-parse',
+        'every-harness-file-is-hashed-date-add',
+        'every-harness-file-is-hashed-array-group-by',
+        'every-harness-file-is-hashed-string-levenshtein',
+        'every-harness-file-is-hashed-string-slugify',
       ],
     },
     {
