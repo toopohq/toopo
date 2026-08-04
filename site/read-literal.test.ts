@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
+import type { CaseRecord } from '../registry/contract-record.js'
 import type { EncodedValue } from '../registry/value.js'
 import { decode, encode } from '../registry/value.js'
 import { heldByTheRegistry } from './catalogue.js'
@@ -41,13 +42,20 @@ import { UnreadableLiteral, read } from './read-literal.js'
  */
 
 const source = localSource()
-const held = heldByTheRegistry(source)
 
-const servedCases = held.flatMap((one) =>
-  one.contract.caseTables.flatMap((table) =>
-    table.cases.map((entry) => ({ contract: renderContract(one.contract.address), entry })),
-  ),
-)
+/**
+ * Gathered inside each guard rather than once at the top of the file, and that is the apparatus
+ * talking rather than taste - the reason `pages.test.ts` already states. A defect that makes
+ * `heldByTheRegistry` throw would otherwise stop this whole file from collecting, and the instrument
+ * reads a file that collected nothing as a run that measured part of the suite. W-20 is that mutant,
+ * and it caught this file the first time it ran against it.
+ */
+const servedCases = (): readonly { contract: string; entry: CaseRecord }[] =>
+  heldByTheRegistry(source).flatMap((one) =>
+    one.contract.caseTables.flatMap((table) =>
+      table.cases.map((entry) => ({ contract: renderContract(one.contract.address), entry })),
+    ),
+  )
 
 const withoutASpelling = new Set(Object.keys(WITHOUT_A_SPELLING))
 
@@ -221,13 +229,15 @@ describe('the text somebody typed, as the value it spells', () => {
    */
   it('every-case-the-registry-serves-is-read-back-from-the-literal-its-page-publishes', () => {
     const installable = source.contractIndex().entries.filter((entry) => entry.installable)
+    const served = servedCases()
+    const held = heldByTheRegistry(source)
 
-    expect(new Set(servedCases.map((one) => one.contract)).size).toBe(installable.length)
+    expect(new Set(served.map((one) => one.contract)).size).toBe(installable.length)
     expect(
       held.map((one) => one.contract.caseTables.every((table) => table.cases.length > 0)),
     ).toEqual(held.map(() => true))
 
-    const faults = servedCases.flatMap(({ contract, entry }) =>
+    const faults = served.flatMap(({ contract, entry }) =>
       faultsOf(entry.data).map((fault) => `${contract}#${entry.id}: ${fault}`),
     )
 
@@ -245,7 +255,7 @@ describe('the text somebody typed, as the value it spells', () => {
    */
   it('no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling', () => {
     const words = Object.values(WITHOUT_A_SPELLING)
-    const unreadable = servedCases.filter(({ entry }) =>
+    const unreadable = servedCases().filter(({ entry }) =>
       words.some((word) => literal(entry.data).includes(word)),
     )
 

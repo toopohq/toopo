@@ -58,7 +58,14 @@ import {
 const ROOT = join(import.meta.dirname, '..')
 
 const source = localSource()
-const held = heldByTheRegistry(source)
+
+/**
+ * Gathered inside each guard rather than once at the top of the file, for the reason `pages.test.ts`
+ * states and W-20 measures: a defect that makes `heldByTheRegistry` throw would stop this file from
+ * collecting at all, and the instrument reads a file that collected nothing as a run that measured
+ * part of the suite. One guard failing is the answer; seven disappearing is not.
+ */
+const theHeld = (): readonly Held[] => heldByTheRegistry(source)
 
 const answerOf = (contract: FrozenContract): ExportRecord =>
   contract.surface.exports.find((entry) => entry.role === 'the-answer') as ExportRecord
@@ -74,6 +81,7 @@ const shipped = async (one: Held): Promise<Record<string, (...args: readonly unk
 describe('the playground, against the catalogue it opens on', () => {
   it('every-case-replays-through-the-stripped-artefact-a-browser-runs', async () => {
     const faults: string[] = []
+    const held = theHeld()
 
     for (const one of held) {
       const module = await shipped(one)
@@ -117,7 +125,7 @@ describe('the playground, against the catalogue it opens on', () => {
    * ninety-six other decisions behind the same red.
    */
   it('a-parameter-type-the-form-cannot-build-stops-the-site-and-names-itself', () => {
-    const one = held[0] as Held
+    const one = theHeld()[0] as Held
     const answer = answerOf(one.contract)
     const sixth: FrozenContract = {
       ...one.contract,
@@ -143,7 +151,7 @@ describe('the playground, against the catalogue it opens on', () => {
    * anything happen has been given a text box, not a playground.
    */
   it('every-playground-opens-on-a-case-of-its-own-contract', () => {
-    for (const one of held) {
+    for (const one of theHeld()) {
       const playground = playgroundOf(one.contract, renderContract(one.contract.address))
       const ids = one.contract.caseTables.flatMap((table) => table.cases.map((entry) => entry.id))
 
