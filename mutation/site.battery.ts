@@ -77,6 +77,8 @@ const CHROME_IS_NOT_READ_ALOUD = `  if (isChrome(node)) return ''`
 
 const A_BLOCK_SEPARATES = `  h1: '\\n\\n',`
 
+const A_PARAGRAPH_SEPARATES = `  p: '\\n\\n',`
+
 const THE_PAGE_DECLARES_ITS_LANGUAGE = `    '<html lang="en">',`
 
 const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${STYLE}</style>\`,`
@@ -184,6 +186,19 @@ const mutants: readonly Mutant[] = [
       'structure a screen reader announces is gone',
     [documentFile(A_BLOCK_SEPARATES, `  h1: '',`)],
     killed(['the-text-projection-keeps-the-words-and-drops-the-markup']),
+  ),
+
+  /**
+   * The defect reading a page in document order caught and no guard about presence could: two blocks
+   * that become one sentence. Every word is still there, so a projection guard stays green, and a
+   * person reads `not applicableThe signature takes a single string`.
+   */
+  sameOnEveryLens(
+    'W-29',
+    'runs a label into the sentence under it, so every property and every profile of every contract ' +
+      'is published as one run-on line with every word still present',
+    [documentFile(A_PARAGRAPH_SEPARATES, `  p: '',`)],
+    killed(['a-label-and-the-sentence-under-it-are-two-lines']),
   ),
 
   sameOnEveryLens(

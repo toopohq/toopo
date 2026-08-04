@@ -170,7 +170,11 @@ export const contractPage = (held: Held): Document => {
           el(
             'li',
             NOTHING,
-            line('code', `${property.name} — ${property.applicable ? 'checked' : 'not applicable'}`),
+            el(
+              'p',
+              { class: 'call' },
+              line('code', `${property.name} — ${property.applicable ? 'checked' : 'not applicable'}`),
+            ),
             line('p', property.reason, { class: 'why' }),
           ),
         ),
@@ -190,7 +194,7 @@ export const contractPage = (held: Held): Document => {
           el(
             'li',
             NOTHING,
-            line('code', `${profile.name} — ${profile.class}`),
+            el('p', { class: 'call' }, line('code', `${profile.name} — ${profile.class}`)),
             line('p', profile.description, { class: 'why' }),
           ),
         ),

@@ -219,4 +219,28 @@ describe('the site', () => {
       expect(wordsOf(held).filter((word) => !reading.includes(word))).toEqual([])
     }
   })
+
+  /**
+   * A label and the sentence under it are two lines, not one.
+   *
+   * Found by reading a page in document order and by nothing else: every property of every contract
+   * came out as `never mutates its arguments — not applicableThe signature takes a single string…`,
+   * because a `code` is inline and the paragraph after it had nothing to separate them. Every word was
+   * present, so the projection guard was green; what was wrong was that two blocks had become one
+   * sentence, which a person reads and a guard about presence cannot.
+   */
+  it('a-label-and-the-sentence-under-it-are-two-lines', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const reading = toText(page(pageOf(held.contract.address)))
+
+      for (const property of held.contract.properties.universal) {
+        expect(reading).toContain(
+          `${property.name} — ${property.applicable ? 'checked' : 'not applicable'}\n`,
+        )
+      }
+      for (const profile of held.contract.benchmarks.profiles) {
+        expect(reading).toContain(`${profile.name} — ${profile.class}\n`)
+      }
+    }
+  })
 })
