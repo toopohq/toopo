@@ -4,3 +4,7 @@ mutation/.vitest-report.json
 # The output of one run. What a cell must produce is pinned in its battery, which is the durable
 # record; keeping the measurement as well would put the same claim in two places that can drift.
 mutation/results/
+
+# The generated site. Only contracts, implementations, tests, the evidence a run produced and the
+# instrument that produces it belong here - and a rendering of the catalogue is none of the five.
+site/out/

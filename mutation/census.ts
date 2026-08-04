@@ -98,6 +98,11 @@
  * battery refused to calibrate until they were written, naming all six disagreements at once. Every
  * earlier measurement here was taken by somebody who had already updated the file; this one is the
  * message being read by the person it was written for, and it cost one edit.
+ *
+ * A seventh on the site: a **sixth configuration** with four new files, plus two entries moved under
+ * the registry's - a new file and one existing count. That is what a unit costs when it adds a client
+ * *and* repairs the schema underneath it, and the configuration was counted before the battery was
+ * first run rather than after the refusal fired, which is the second time that has been true.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -172,6 +177,13 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/source.test.ts': 6,
     'cli/update.test.ts': 25,
     'cli/write.test.ts': 8,
+  },
+
+  'site/vitest.config.ts': {
+    'site/document.test.ts': 8,
+    'site/literal.test.ts': 11,
+    'site/pages.test.ts': 9,
+    'site/source.test.ts': 6,
   },
 
   'mutation/fixture/vitest.config.ts': {

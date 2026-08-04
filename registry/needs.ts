@@ -194,6 +194,33 @@ export const NEEDS: readonly Need[] = [
   // -------------------------------------------------------------------------
   // The site
   // -------------------------------------------------------------------------
+  /**
+   * **The seventh defect a consumer has found in this schema, and the first found by the site.**
+   *
+   * The list above was derived page by page and missed the page that lists the pages: every `the-site`
+   * entry describes rendering *one* contract, one refusal, one methodology, or answering a query - and
+   * the catalogue's own front page, which is the whole of its navigation at five contracts, had no
+   * need behind it at all. The generator consumed `contract-index` anyway, which is exactly how an
+   * endpoint comes to answer something nobody wrote down.
+   *
+   * It is a distinct need from searching and not a restatement of it. A search starts from a word the
+   * reader supplies; this one starts from nothing, and a reader who has not typed anything still has
+   * to be able to see what there is. Measured on this catalogue: a search box over five entries asks
+   * somebody to guess a word for a list they could have read.
+   */
+  {
+    id: 'list-the-whole-catalogue',
+    consumer: 'the-site',
+    what: 'show every contract the registry knows, on one page, before anybody has typed anything',
+    requires:
+      'the name, the domain, the summary and the installability of every contract at once, in one ' +
+      'answer - including the ones the catalogue refused, which must be listed and must never be ' +
+      'offered',
+  },
+
+  // -------------------------------------------------------------------------
+  // The site
+  // -------------------------------------------------------------------------
   {
     id: 'render-a-contract-page',
     consumer: 'the-site',

@@ -100,7 +100,11 @@ export const ENDPOINTS: readonly Endpoint[] = [
     path: 'GET /contracts',
     addressing: 'named',
     serves: "the registry's current opinion",
-    answers: ['search-on-names-and-aliases', 'search-with-an-alias-thesaurus'],
+    answers: [
+      'search-on-names-and-aliases',
+      'search-with-an-alias-thesaurus',
+      'list-the-whole-catalogue',
+    ],
     whatAReaderCanCheck:
       'nothing. It is the registry saying what it holds, and an index that omitted a contract would ' +
       'be indistinguishable from a catalogue that never had it.',
@@ -281,6 +285,45 @@ export const RESOLUTION_IS_THE_CLIENTS =
 
 /** Every need identifier an endpoint claims to answer. */
 export const ANSWERED_NEEDS = new Set(ENDPOINTS.flatMap((endpoint) => endpoint.answers))
+
+/**
+ * Why a client's port is not a port of this read API. Empty when it is, exactly and no more.
+ *
+ * A port belongs to its consumer - the installer's carries no `contract-binding` and the site's does,
+ * and `cli/source.ts` argues at length that this is a design and not an accident. What does *not*
+ * belong to a consumer is the question of whether a port answers endpoints that exist, so it is asked
+ * here rather than once per client. Two clients asking it identically is the catalogue's own bar for
+ * sharing something; two clients holding different methods is why the ports themselves stay apart.
+ *
+ * `behind` is a client's statement of which endpoint each of its methods answers, total over the port
+ * by construction: a method added without deciding what answers it does not compile. What that cannot
+ * decide by itself is whether the identifier names an endpoint at all, and whether the object handed
+ * round at run time is the port its type claims - which is the whole of what this adds.
+ */
+export const portFaults = (
+  behind: Readonly<Record<string, string>>,
+  source: Readonly<Record<string, unknown>>,
+): readonly string[] => {
+  const declared = Object.keys(behind).sort()
+  const carried = Object.keys(source).sort()
+  const known = new Set(ENDPOINTS.map((endpoint) => endpoint.id))
+
+  return [
+    ...declared
+      .filter((method) => !carried.includes(method))
+      .map((method) => `the source carries no \`${method}\`, which the port declares`),
+    ...carried
+      .filter((method) => !declared.includes(method))
+      .map(
+        (method) =>
+          `the source carries \`${method}\`, which the port does not declare - a client reaching ` +
+          `for it would be reaching past the read API`,
+      ),
+    ...Object.entries(behind)
+      .filter(([, endpoint]) => !known.has(endpoint))
+      .map(([method, endpoint]) => `\`${method}\` claims to answer "${endpoint}", which is no endpoint`),
+  ]
+}
 
 /** Every need that says the API does not answer it, with its reason. */
 export const NEEDS_ANSWERED_ELSEWHERE = NEEDS.filter(

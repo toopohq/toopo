@@ -3,11 +3,11 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { ENDPOINTS } from '../registry/endpoints.js'
+import { ENDPOINTS, portFaults } from '../registry/endpoints.js'
 import { NEEDS } from '../registry/needs.js'
 import { imaginedSource } from './imagined-source.js'
 import { THE_UNPUBLISHED_VERSION, localSource } from './local-source.js'
-import { THE_ENDPOINT_BEHIND, sourceFaults } from './source.js'
+import { THE_ENDPOINT_BEHIND } from './source.js'
 
 /**
  * The port, and the frontier between an installer and the working tree it happens to be sitting in.
@@ -28,7 +28,7 @@ describe('where an installer gets what it installs', () => {
     const known = new Set(ENDPOINTS.map((endpoint) => endpoint.id))
 
     expect(Object.values(THE_ENDPOINT_BEHIND).filter((endpoint) => !known.has(endpoint))).toEqual([])
-    expect(sourceFaults(imaginedSource())).toEqual([])
+    expect(portFaults(THE_ENDPOINT_BEHIND,imaginedSource())).toEqual([])
   })
 
   /**
@@ -42,8 +42,8 @@ describe('where an installer gets what it installs', () => {
     // caught offering.
     const wider = { ...imaginedSource(), contractBinding: () => null }
 
-    expect(sourceFaults(wider as never)).toEqual([
-      'the source carries `contractBinding`, which the port does not declare - an installer reaching ' +
+    expect(portFaults(THE_ENDPOINT_BEHIND,wider as never)).toEqual([
+      'the source carries `contractBinding`, which the port does not declare - a client reaching ' +
         'for it would be reaching past the read API',
     ])
   })

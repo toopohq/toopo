@@ -51,7 +51,6 @@
  */
 
 import type { ContractAddress } from '../registry/address.js'
-import { ENDPOINTS } from '../registry/endpoints.js'
 import type {
   ServedBlob,
   ServedImplementationBinding,
@@ -101,8 +100,9 @@ export type RegistrySource = {
  *
  * Total over the port by construction: adding a method without deciding which endpoint answers it does
  * not compile. What it cannot decide by itself is whether the identifier names an endpoint that
- * exists, which is what the guard is for - the two halves of the same discipline `FIELD_MAP` and
- * `publicContract` already run on.
+ * exists, which is what `portFaults` is for - the two halves of the same discipline `FIELD_MAP` and
+ * `publicContract` already run on. That check lives in `registry/endpoints.ts` because it is a
+ * question about the read API rather than about an installer, and the site's port asks it too.
  */
 export const THE_ENDPOINT_BEHIND: Readonly<Record<keyof RegistrySource, string>> = {
   contractIndex: 'contract-index',
@@ -110,29 +110,6 @@ export const THE_ENDPOINT_BEHIND: Readonly<Record<keyof RegistrySource, string>>
   refusals: 'refusals',
   snapshot: 'snapshot',
   blob: 'blob',
-}
-
-/** Why a source does not implement the port. Empty when it does, exactly and no more. */
-export const sourceFaults = (source: RegistrySource): readonly string[] => {
-  const declared = Object.keys(THE_ENDPOINT_BEHIND).sort()
-  const carried = Object.keys(source).sort()
-  const known = new Set(ENDPOINTS.map((endpoint) => endpoint.id))
-
-  return [
-    ...declared
-      .filter((method) => !carried.includes(method))
-      .map((method) => `the source carries no \`${method}\`, which the port declares`),
-    ...carried
-      .filter((method) => !declared.includes(method))
-      .map(
-        (method) =>
-          `the source carries \`${method}\`, which the port does not declare - an installer reaching ` +
-          `for it would be reaching past the read API`,
-      ),
-    ...Object.entries(THE_ENDPOINT_BEHIND)
-      .filter(([, endpoint]) => !known.has(endpoint))
-      .map(([method, endpoint]) => `\`${method}\` claims to answer "${endpoint}", which is no endpoint`),
-  ]
 }
 
 /**
