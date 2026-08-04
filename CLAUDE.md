@@ -38,7 +38,9 @@ project, one answered without a server. **And now `site/`, the generator, which 
 product nobody had seen**: four contract pages, the catalogue, and the page that publishes what the
 catalogue refused. No server exists and none is needed — what it writes is static HTML, and a contract
 page that needs a line of JavaScript to be read is a page a crawler and a screen reader read
-differently from a person.
+differently from a person. **And beside it the playground, which is the one thing on a contract page
+that is computed rather than rendered**: four pages have one, the field holds a literal, and what a
+browser runs is this repository's own modules with their types removed.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -305,6 +307,91 @@ is exactly what `renderCase` has rendered since `registry/address.ts` was writte
 That is the third time a field written for a consumer that did not exist yet turned out to be right,
 after `identity.searchAliases` and `FIELD_MAP.verification`, and it is the argument for going on
 writing the address before anything fills it.
+
+## What a playground demonstrates, and what it refuses to show — settled
+
+**It is not "expected against actual".** Both halves of that comparison would be ours, and the expected
+half is already two centimetres higher, on the case's own line. What a static page cannot do is answer
+**the input the reader typed**, so that is the whole of what a playground computes, and the settled
+answer is deliberately not repeated beside it.
+
+**The field holds a literal, and raw text was refused on a measurement rather than on taste.**
+`contracts/number/parse/edge-cases.ts` says it in its own source: `'1 000'` with a no-break space and
+`'1 000'` with an ordinary one are the same eight glyphs on screen and carry opposite answers in that
+table — which is why that file names the character instead of pasting it. A raw text field
+reintroduces, inside the playground, exactly the ambiguity the contract refuses to have in its own
+bytes: somebody checking the no-break case types an ordinary space, gets the other reason, and has no
+way to see why. The playground would contradict the page it lives on. It is also the only field that
+covers the contract — `date/add@1` publishes four cases whose caller is untyped, `{ day: 1 }` among
+them, and a form derived from the declared type cannot express one of them. Measured in a browser:
+`'\uD83D'` is a lone surrogate a reader can type, and a raw field could not have expressed it at all.
+
+**One table of types, whose only non-identity entry is `Date`.** Reading a literal gives the *declared*
+value, which is what the registry models; turning that into an argument is a second step and exactly
+one type of this catalogue needs it, because `registry/value.ts` refuses to model a Date and
+`date/add@1` writes its instants as ISO strings. So `new Date(...)` in `site/playground.ts` is the only
+place on the whole site where a Date comes into existence, and it is written on the line beside the
+field. It falls *inside* the contract: a text that does not parse gives `invalid-date`, which is a
+published case, so the added layer is not a hidden one.
+
+**A parameter type the table does not know stops the build and names itself** — no fallback, no empty
+field, no page rendered with a playground quietly missing. The shape `registry/value.ts` already takes
+one floor down for a value it does not model.
+
+**A field says what it is declared as before anything is called, and that was found in a real browser.**
+Typing `42` into a field declared `string` used to answer `input.trim is not a function` — the
+contract's own source reporting a failure in its own words to somebody who has never seen it. Every
+type was satisfied and every guard was green; only opening the page and typing found it. It is the
+measurement behind a rule this repository already states and had never paid for: **a static check
+passing does not mean the interface works.**
+
+**The answer is written by `literal(encode(…))`, never by `String`.** `parseNumber('-0')` answers a
+negative zero and `String` prints it `0`, on the page where that contract settles a case on the two
+being different. Measured: printing with `String` reddens 69 of the 157 served cases.
+
+## What runs in a reader's browser — settled
+
+**The `.js` specifiers this repository already writes are what make the playground free.** Every
+relative import is written `./literal.js` for `literal.ts`, because `verbatimModuleSyntax` asks for it.
+A browser resolves exactly that spelling natively, so a module graph written for a typechecker turns
+out to be one a browser can load: no bundler, no rewriting, and the whole of the work is stripping the
+types. The site's layout *is* the source's layout, and a reader who opens `/site/read-literal.js` sees
+the file it came from rather than a bundle corresponding to nothing.
+
+**Node's own stripper rather than a compiler**, and it is the only one available: `typescript@7.0.2`
+ships a native compiler and no JavaScript API — `node_modules/typescript/lib/` holds `tsc.js` and a
+version string — so a compiler here would mean a subprocess, and a subprocess would put a page's
+content behind something no guard can reach. `stripTypeScriptTypes` refuses what it cannot erase rather
+than guessing, which is the direction of failure this repository asks for.
+
+**The replay guard imports the stripped artefact, not the TypeScript module it came from.** Importing
+the module would measure something adjacent to what is shipped: it would establish that the arguments
+are built correctly and leave unmeasured the one thing stripping can break — that the JavaScript
+answers what the TypeScript did. So the reference is fetched by digest through the port, stripped by
+the site's own function, and imported from a `data:` URL, which needs no disk because a reference
+imports nothing. **That is what turns `stripTypeScriptTypes` being experimental from a declared risk
+into a thing measured on every run**, which is the treatment `node:util.diff` already received.
+
+**The one sentence about the gap lives beside the playground and nowhere else.** The JavaScript that
+answers a reader is neither the file the registry serves nor the file the digest covers — both are
+TypeScript. It is said where somebody is looking at an answer that transformation produced, and saying
+it again under *What you can check yourself* would blur the section that is about the frozen
+definition, where nothing has changed.
+
+**A page is complete with no JavaScript, and the form is built by the script rather than served inert.**
+A form in the HTML that does nothing without JavaScript is a control that lies about being one, and an
+empty section tells a reader something is missing without telling them what. Without the script the
+section is two paragraphs saying what a playground would do, which is prose rather than a hole. The
+`script` node carries attributes and no children, so `document.ts`'s rule that no node holds raw markup
+survives a script on the page.
+
+**What the port had to gain, and the sentence that had to go.** `blob` was refused from the site's port
+on the argument that *the site publishes no byte of anybody's source* — true of a page that only
+renders, false of one that runs something, and a snapshot cannot stand in because it lists a file and
+hashes it and a list of hashes does not execute. `needs.ts` had no need for it either. Three more
+sentences fell in the same unit and were repaired in place rather than left to be found: *serves no
+byte at all* in `site/local-source.ts`, *no script* in `document.ts`, and
+`NOT_THIS_UNIT['pre-fill-the-playground']`, the debt this closes.
 
 ## A case of block 4.4 is a call — settled, catalogue-wide
 
@@ -765,6 +852,35 @@ about must still be given one. `FIELDS_OF` carries `files: Array.isArray` and de
 elsewhere — the totality guarantees no field goes *unconsidered*, never that every check is one
 expression. Claiming more than that would be the decorative form of the same idea.
 
+## Totality by the compiler beats a pass over the data — settled, repository-wide
+
+**A pass over real data is accidental coverage; a total map over a union cannot fail to be complete.**
+The instance that established it: `read` inverts `literal`, and the obvious guard was the round trip
+over every case of block 4.4. Measured, that guard cannot exist in `site/` — `site/source.test.ts`
+refuses every module of the folder but one, tests included and its own comment says *every other module
+of this folder*, the right to reach `the-five` or `serialise`, so a guard there sees exactly what the
+port serves. **157 of the 187 cases sit on contracts that have a page, and all 30 that print a word
+with no JavaScript spelling sit on `array/group-by@1`, which has none.** One half of that partition
+would have been empty by construction, which is the shape of a guard that quietly stops asking
+anything.
+
+What replaced it is stronger where it matters: `EVERY_ARM` is a record keyed by `EncodedValue['kind']`,
+so an arm added to that union does not compile until a sample is written. Seen red by adding one — the
+record *and* `literal`'s own switch both stop compiling, and a `killed-by-typecheck` is a death in
+full. Real cases reach the arms they reach, nobody has ever checked which, and nothing reddens when one
+is never touched.
+
+The pass over the served cases stays, for what the table cannot say: that the literals this catalogue
+actually publishes are among the ones that read back. And it carries the invariant a playground rests
+on — *no case the registry serves is printed as a word with no spelling* — which reddens the day a
+higher-order contract gains a page, which is the day somebody has to decide what its playground does
+with a case whose input is a function. **A guard that fires at the right future moment is worth more
+than one that covers the past.**
+
+Both reds were seen, and which guard caught which is the argument for keeping the pair: a reader
+answering `0` for `-0` reddens the arm table *and three real cases*, and a reader answering `undefined`
+for `<hole>` reddens the arm table alone.
+
 ## What the repository declares and nothing keeps — closes before the launch
 
 One form, found four times in a single sweep and certain to be found again: **a thing that behaves
@@ -841,11 +957,13 @@ it reddens where the repository's own rule says name all of a set of five or few
 `profileKeyFunctions` had no citable guard to point at.
 
 **The mechanism that closes the class for every address at once is a pre-flight refusal of a pin that
-names a guard no guard carries.** It is cheap — seconds against the seventeen minutes the batteries
+names a guard no guard carries.** It is cheap — seconds against the twenty-odd minutes the batteries
 cost, and this sentence used to say *a battery*, which is wrong by a factor of six and was read that
-way once: measured twice on this machine at the close of `toopo remove`, the seventeen run in
-24 min 17 s and in 22 min 14 s, and the largest single one is `cli-install` at 244 s and 232 s. Both
-are published because one of them alone would read as a precision neither has — and
+way once. **The figure it used to carry described seventeen batteries and there are eighteen**, so it
+is remeasured rather than patched: on this machine at the close of the playground, the eighteen run in
+23 min 16 s over 556 cells, 522 killed and 34 surviving, and the largest single one is `cli-install` at
+225 s. That is *one* measurement and is written as one, where the pair it replaces was published as a
+pair precisely so that neither figure would read as a precision it does not have — and
 it turns a stale case identifier, guard identifier or profile name from a silence into an error, with
 no renaming anywhere. It has been set aside twice. It opens the unit after the validation pipeline's
 first stage, and it is written down here so that there is no third time. Note what it is *not*: a
