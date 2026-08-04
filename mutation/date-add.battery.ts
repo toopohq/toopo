@@ -701,6 +701,7 @@ export const battery: Battery = {
       guards: [
         'signature-duration-fields-are-optional',
         'every-case-is-addressed',
+        'every-case-is-grouped',
         'names-a-case-for-every-reason',
         'settles-each-call-once',
         'every-case-is-justified',

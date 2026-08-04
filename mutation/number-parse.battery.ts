@@ -551,6 +551,7 @@ export const battery: Battery = {
         'profile list or the universal-property declarations.',
       guards: [
         'every-case-is-addressed',
+        'every-case-is-grouped',
         'settles-each-input-once',
         'names-a-case-for-every-reason',
         'every-case-is-justified',

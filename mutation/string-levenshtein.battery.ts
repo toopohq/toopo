@@ -471,6 +471,7 @@ export const battery: Battery = {
         'profile list, the axiom list, the universal-property declarations or the arbitraries.',
       guards: [
         'every-case-is-addressed',
+        'every-case-is-grouped',
         'settles-each-pair-once',
         'every-case-is-justified',
         'every-profile-has-samples',

@@ -664,6 +664,7 @@ export const battery: Battery = {
         'the profile list, the key-function rules or the universal-property declarations.',
       guards: [
         'every-case-is-addressed',
+        'every-case-is-grouped',
         'every-case-is-justified',
         'every-profile-has-samples',
         'every-shape-is-named-and-described',
