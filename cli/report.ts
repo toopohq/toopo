@@ -247,10 +247,25 @@ const VERDICTS: Readonly<Record<Exclude<FileVerdict, 'unchanged'>, readonly [str
   'kept-orphan': ['!', 'your version is kept'],
 }
 
-const THE_WAYS_OUT =
-  'Two ways out. Keep your version: do nothing, this feature stays where it is and everything ' +
-  'else still updates. Or take ours: delete the file, run this again, and put your change back ' +
-  'on top of the new one.'
+/**
+ * The two ways out of a file the reader put something into, and the second half is not the same
+ * sentence for both commands.
+ *
+ * Under an update, taking ours means the file the registry now serves and a change to re-apply on top
+ * of it. Under a removal there is no new file: taking ours means letting it go. **The removal wording
+ * was measured by running it** - the screen offered *put your change back on top of the new one* to
+ * somebody who had asked for the feature to be deleted, which is advice about a file that is not going
+ * to exist.
+ */
+const THE_WAYS_OUT: Readonly<Record<'update' | 'removal', string>> = {
+  update:
+    'Two ways out. Keep your version: do nothing, this feature stays where it is and everything ' +
+    'else still updates. Or take ours: delete the file, run this again, and put your change back ' +
+    'on top of the new one.',
+  removal:
+    'Two ways out. Keep your version: do nothing, this feature stays where it is and nothing else ' +
+    'is affected. Or let it go: delete the file and run this again, and the removal goes through.',
+}
 
 /**
  * A diff line as it is read rather than as it would be applied.
@@ -262,14 +277,21 @@ const THE_WAYS_OUT =
  */
 const diffLine = (text: string): string => `${INDENT}      ${text}`.trimEnd()
 
+/**
+ * One file's line, and the blank that follows it only when something followed the line.
+ *
+ * A bare mark - a `-` with no sentence and no diff - is one line, and separating two of them with a
+ * blank puts air between two facts that belong together. It used to be unconditional, because every
+ * verdict carried a sentence; the day `removed` stopped carrying one, a removal taking two files out
+ * of a folder printed them a line apart. Found by reading the screen rather than the code.
+ */
 const fileLine = (outcome: FileOutcome, configuration: Configuration): readonly string[] => {
   if (outcome.verdict === 'unchanged') return []
 
   const [mark, sentence] = VERDICTS[outcome.verdict]
   const count = outcome.change === null ? '' : renderCount(outcome.change)
   const where = `${configuration.directory}/${outcome.path}`
-
-  return [
+  const body = [
     `${INDENT}  ${mark} ${where}${count === '' ? '' : `  ${count}`}`,
     ...(sentence === '' ? [] : [`${INDENT}      ${sentence}`]),
     ...(outcome.change === null
@@ -281,8 +303,9 @@ const fileLine = (outcome: FileOutcome, configuration: Configuration): readonly 
             ...hunk.lines.map(diffLine),
           ]),
         ]),
-    '',
   ]
+
+  return body.length === 1 ? body : [...body, '']
 }
 
 const movedTo = (feature: FeatureOutcome, whyItLeaves: string): string => {
@@ -330,6 +353,7 @@ const featureBlock = (
   feature: FeatureOutcome,
   configuration: Configuration,
   whyItLeaves: string,
+  waysOut: string,
 ): readonly string[] => {
   const lines = feature.files.flatMap((file) => fileLine(file, configuration))
   if (lines.length === 0 && feature.heldBack === null && !versionMovedAlone(feature)) return []
@@ -345,9 +369,11 @@ const featureBlock = (
       : []),
     '',
     ...lines,
+    // Exactly one blank closes the block, whether the last file printed its own or not.
+    ...(lines.length === 0 || lines.at(-1) === '' ? [] : ['']),
     ...(feature.heldBack === null || !theirsToResolve(feature)
       ? []
-      : [...paragraph(THE_WAYS_OUT, 72).map((line) => `${INDENT}  ${line}`), '']),
+      : [...paragraph(waysOut, 72).map((line) => `${INDENT}  ${line}`), '']),
   ]
 }
 
@@ -414,7 +440,7 @@ export const renderUpdate = (
   [
     '',
     ...update.features.flatMap((feature) =>
-      featureBlock(feature, configuration, 'nothing imports it any more'),
+      featureBlock(feature, configuration, 'nothing imports it any more', THE_WAYS_OUT.update),
     ),
     theTally(update),
     '',
@@ -476,6 +502,7 @@ export const renderRemoval = (
         sameContract(feature.contract, removal.named)
           ? 'you asked for it to go'
           : `only ${what} pulled it in`,
+        THE_WAYS_OUT.removal,
       ),
     ),
     theTally(removal.reconciliation),

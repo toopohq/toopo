@@ -396,6 +396,15 @@ describe('taking a feature out of a project', () => {
       expect(round?.heldBack).toBe('you edited a file of it, so it stays where it is')
       expect(round?.files.map((file) => file.verdict)).toEqual(['kept-orphan'])
 
+      /**
+       * The way out is the removal's and not the update's, which the walk through a real project is
+       * what caught: the screen offered *put your change back on top of the new one* to somebody who
+       * had asked for the feature to be deleted, about a file that is not going to exist.
+       */
+      const screen = renderRemoval(removal, project.configuration, false)
+      expect(screen).toContain('Or let it go: delete the file')
+      expect(screen).not.toContain('everything else still updates')
+
       applying(project, removal)
       expect(onDisk(project, 'number/round/round.ts')).toBe(true)
       expect(project.installed('number/round/round.ts')).toBe('export const round = 1\n')
