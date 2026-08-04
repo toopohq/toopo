@@ -101,7 +101,15 @@ const THE_ALIASES_ARE_A_FIELD = `    ...entry.searchAliases.map((alias) => ({`
 
 const CAMEL_CASE_IS_SPLIT = `    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')`
 
-const THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT = `          refusal: refusals.find((refusal) => sameContract(refusal.address, entry.address)) ?? null,`
+/**
+ * The refusal moved into `displayed`, which is where the catalogue listing reads it too.
+ *
+ * Two screens show a contract now - a search result and the whole catalogue - and attaching a
+ * refusal to the wrong one is a defect with no symptom, because every result would carry a
+ * plausible-looking reason. One of the two would otherwise have to be trusted to have got it right
+ * on its own, so the line lives once and this anchor follows it.
+ */
+const THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT = `  refusal: refusals.find((refusal) => sameContract(refusal.address, entry.address)) ?? null,`
 
 const AN_UNKNOWN_WORD_IS_ONE_NO_ENTRY_ANSWERS = `    entries.every((entry) => bestHit(word, fieldsOf(entry)) === null),`
 
@@ -306,7 +314,7 @@ export const mutants: readonly Mutant[] = [
     'S-16',
     'attaches whatever refusal the registry holds to every result, so four installable contracts ' +
       'come back carrying an argument against a fifth',
-    [searchFile(THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT, `          refusal: refusals[0] ?? null,`)],
+    [searchFile(THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT, `  refusal: refusals[0] ?? null,`)],
     killed(['an-installable-contract-carries-no-refusal']),
   ),
 
@@ -315,7 +323,7 @@ export const mutants: readonly Mutant[] = [
     'drops the refusal from every result, so `Map.groupBy` answers a contract marked not ' +
       'installable and says nothing about why - which tells the reader the catalogue has no opinion, ' +
       'where publishing the opinion is the point',
-    [searchFile(THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT, `          refusal: null,`)],
+    [searchFile(THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT, `  refusal: null,`)],
     killed(['a-refused-contract-is-found-with-the-reason-it-was-refused']),
   ),
 
