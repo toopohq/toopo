@@ -92,10 +92,15 @@ const THE_ORDINARY_SPACE_IS_KEPT = `const INVISIBLE = /[\\p{Cc}\\p{Cf}\\p{Cs}\\p
 
 const NEGATIVE_ZERO_KEEPS_ITS_SIGN = `  'negative-zero': '-0',`
 
+/**
+ * The two words with no JavaScript spelling, now read from `WITHOUT_A_SPELLING` rather than written
+ * into the switch - because `read-literal.ts` has to refuse exactly these, and what one file prints
+ * and the other turns down is one statement. The anchors moved with them; the defects are unchanged.
+ */
 const A_HOLE_IS_NAMED = `    case 'hole':
-      return '<hole>'`
+      return WITHOUT_A_SPELLING.hole`
 
-const A_FUNCTION_IS_NAMED = `      return '<a function, served as a file>'`
+const A_FUNCTION_IS_NAMED = `      return WITHOUT_A_SPELLING['not-data']`
 
 const THE_SAME_OBJECT_IS_LABELLED = `const shared = (label: number | undefined, rendered: string): string =>
   label === undefined ? rendered : \`#\${label} = \${rendered}\``
