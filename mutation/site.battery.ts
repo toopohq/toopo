@@ -216,10 +216,25 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed([
+      'two-inputs-that-look-alike-are-written-apart',
+      'an-invisible-character-is-written-as-its-code-point',
       'a-combining-mark-is-written-apart-from-its-base',
-      'a-visible-character-is-printed-as-itself',
       'a-case-is-rendered-as-the-call-its-signature-declares',
     ]),
+  ),
+
+  /**
+   * The other direction of the same rule, and it needs its own mutant because over-escaping is not a
+   * weaker version of under-escaping: it is what a cautious reading of the same requirement produces.
+   * `string/slugify@1`'s whole table is Cyrillic, Arabic, Greek and emoji, and a page that printed
+   * them as code points would publish the contract about scripts as a contract about numbers.
+   */
+  sameOnEveryLens(
+    'W-28',
+    'escapes everything outside ASCII, so the contract whose table is about Cyrillic, Arabic and ' +
+      'emoji publishes them as code points',
+    [literalFile(THE_ORDINARY_SPACE_IS_KEPT, `const INVISIBLE = /[^\\x20-\\x7E]/gu`)],
+    killed(['a-visible-character-is-printed-as-itself']),
   ),
 
   sameOnEveryLens(
@@ -449,11 +464,6 @@ export const battery: Battery = {
    * else to say - and this folder has no such file, because `paths.ts` and `document.ts` both hold
    * anchors of their own.
    *
-   * `a-source-carrying-more-than-the-port-declares-is-refused` builds the widened source inside the
-   * guard, so nothing in the folder can widen it: the mutant would have to add a method, which is
-   * again a line rather than a rewrite. `portFaults` is `registry/`'s and `registry-storage` measures
-   * it there.
-   *
    * `a-quote-and-a-backslash-are-escaped-before-anything-else` is reachable and is left alone
    * deliberately: reordering the two `replaceAll` calls is a mutant whose effect is a doubled
    * backslash in one string, and it is already the thing W-06 removes wholesale. It is declared here
@@ -472,7 +482,6 @@ export const battery: Battery = {
         'widely elsewhere',
       guards: [
         'a-quote-and-a-backslash-are-escaped-before-anything-else',
-        'a-source-carrying-more-than-the-port-declares-is-refused',
         'nesting-does-not-widen-the-gap-between-two-blocks',
         'nothing-but-the-local-adapter-reaches-the-serialisation',
       ],

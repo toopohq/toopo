@@ -178,13 +178,19 @@ describe('the site', () => {
       const document = page(path)
       const [title, description, first] = toText(document).split('\n\n')
 
-      // Distinct is not enough: a title of `<name> — <summary>` and a description of `<summary>` are
-      // two different strings saying one thing, which is what the first draft of the contract page
-      // did and what reading it in document order caught.
+      // Distinct is not enough, and neither is containment: a title of `<name> — <summary>` and a
+      // description that merely *begins* with the summary are two strings saying one thing twice,
+      // which is what the first draft did and what reading the page in document order caught. So the
+      // summary itself is what must not appear a second time.
       expect([title, description, first].every((part) => part !== undefined)).toBe(true)
-      expect(title).not.toContain(description as string)
-      expect(description).not.toContain(first as string)
       expect(new Set([title, description, first]).size).toBe(3)
+
+      for (const entry of index.entries) {
+        if (path !== pageOf(entry.address)) continue
+
+        expect(title).toContain(entry.summary)
+        expect(description).not.toContain(entry.summary)
+      }
     }
   })
 
