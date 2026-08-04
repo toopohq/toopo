@@ -55,13 +55,27 @@ const SHORT: Readonly<Record<string, string>> = {
   '\r': '\\r',
 }
 
+/**
+ * The braced form above the basic plane, and it is a repair rather than a flourish.
+ *
+ * `\uXXXX` carries four hexadecimal digits and no more, so a code point above `FFFF` written that way
+ * runs into whatever follows it: `ᴖ5` is `ᴖ` and then a `5`, which is a *different string*
+ * and one JavaScript reads without complaining. The class is reachable rather than theoretical - every
+ * tag character of a regional flag is `Cf` and sits at `E0020`-`E007F`, and `\p{M}` holds the combining
+ * marks of the musical notation block - so a slug contract publishing a flag would have printed a
+ * literal that spells something else.
+ *
+ * A lone surrogate is unaffected and stays four digits: `codePointAt` on one answers the surrogate
+ * itself, which is below the plane by construction.
+ */
 const escaped = (character: string): string => {
   const short = SHORT[character]
   if (short !== undefined) return short
 
   const code = character.codePointAt(0) as number
+  const hexadecimal = code.toString(16).toUpperCase()
 
-  return `\\u${code.toString(16).toUpperCase().padStart(4, '0')}`
+  return code > 0xffff ? `\\u{${hexadecimal}}` : `\\u${hexadecimal.padStart(4, '0')}`
 }
 
 /** A string as a caller would write it, with everything unreadable made readable. */
@@ -98,6 +112,19 @@ const LITERALS: Readonly<Record<string, string>> = {
 const shared = (label: number | undefined, rendered: string): string =>
   label === undefined ? rendered : `#${label} = ${rendered}`
 
+/**
+ * The two arms of an encoded value that have no JavaScript spelling, and the words printed instead.
+ *
+ * **One statement rather than two, because `read-literal.ts` has to refuse exactly these.** What this
+ * file prints and what the reader turns down are the same fact, and a second copy of either word would
+ * drift the day one of them is reworded - after which the reader would quietly build a value where the
+ * page shows a word, which is the one outcome both sides exist to prevent.
+ */
+export const WITHOUT_A_SPELLING: Readonly<Record<'hole' | 'not-data', string>> = {
+  hole: '<hole>',
+  'not-data': '<a function, served as a file>',
+}
+
 export const literal = (value: EncodedValue): string => {
   switch (value.kind) {
     case 'primitive':
@@ -111,9 +138,9 @@ export const literal = (value: EncodedValue): string => {
     case 'pattern':
       return `/${value.source}/${value.flags}`
     case 'not-data':
-      return '<a function, served as a file>'
+      return WITHOUT_A_SPELLING['not-data']
     case 'hole':
-      return '<hole>'
+      return WITHOUT_A_SPELLING.hole
     case 'again':
       return `#${value.shared}`
     case 'list':
