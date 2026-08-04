@@ -159,9 +159,11 @@ body {
 }
 h1 { font-size: 1.6rem; margin: 0 0 .25rem; letter-spacing: -.01em }
 h2 { font-size: 1.15rem; margin: 2.75rem 0 .75rem; padding-top: .75rem; border-top: 1px solid var(--rule) }
-h3 { font-size: 1rem; margin: 1.75rem 0 .5rem; color: var(--dim); font-weight: 600 }
-h4 { font-size: 1rem; margin: 2rem 0 .25rem; font-weight: 600 }
-h4:target { background: var(--wash); box-shadow: 0 0 0 .5rem var(--wash); border-radius: 3px }
+h3, h4 { font-size: 1rem; margin: 2rem 0 .25rem; font-weight: 600 }
+/* The tag is the outline and the class is the look: a group sits at h3 or at h4 depending on
+   whether its contract has one table or two, and it must read the same either way. */
+.table { color: var(--dim); font-weight: 600; margin: 1.75rem 0 .5rem }
+.group:target { background: var(--wash); box-shadow: 0 0 0 .5rem var(--wash); border-radius: 3px }
 p { margin: 0 0 1rem }
 a { color: var(--link) }
 code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .875em }

@@ -20,11 +20,14 @@
  *
  * Three doors into this failure have been found, all three by accident, none of them by a guard:
  * naming the json reporter alone under `--typecheck`, a type error inside the root `tsconfig.json`'s
- * include, and passing a file filter alongside `--config`. Measured now, on this repository:
+ * include, and passing a file filter alongside `--config`. Measured on this repository when this
+ * file was written - dated rather than left in the present tense, because the entries below are a
+ * record of three runs and not a claim about today:
  *
- * - the json reporter alone: 21 files reported, **28 assertions instead of 467**, sixteen runtime
- *   files collecting nothing. `success: false`, and **zero failed assertions** - so calibration
- *   refuses it as a red control, naming no guard.
+ * - the json reporter alone: 21 files reported, **28 assertions**, sixteen runtime files collecting
+ *   nothing. `success: false`, and **zero failed assertions** - so calibration refuses it as a red
+ *   control, naming no guard. The denominator this line carried was the guard count of the day and
+ *   has been dropped; what the door does is collect twenty-eight of them, whatever the total is.
  * - a file filter: seven files fail to collect, no test runs at all, and calibration refuses it as a
  *   run that reported no test.
  *
@@ -182,7 +185,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'site/vitest.config.ts': {
     'site/document.test.ts': 8,
     'site/literal.test.ts': 11,
-    'site/pages.test.ts': 13,
+    'site/pages.test.ts': 15,
     'site/source.test.ts': 6,
   },
 

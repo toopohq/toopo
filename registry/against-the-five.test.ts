@@ -182,7 +182,7 @@ describe('the five, read against their own source', () => {
         {
           name: 'edge-cases',
           purpose: 'one case, written answer first',
-          groups: [{ id: 'baseline', title: 'Baseline' }],
+          groups: [{ id: 'baseline', title: 'Baseline', note: null }],
           cases: [
             {
               id: 'the-answer-before-the-argument',
@@ -230,8 +230,8 @@ describe('the five, read against their own source', () => {
       rationale: 'One case, so that the grouping is the only thing under test.',
     })
 
-    const baseline = { id: 'baseline', title: 'Baseline' }
-    const sign = { id: 'sign', title: 'Sign' }
+    const baseline = { id: 'baseline', title: 'Baseline', note: null }
+    const sign = { id: 'sign', title: 'Sign', note: null }
     const purpose = 'one table, grouped wrongly'
 
     // Distinct addresses throughout, so that the grouping is what each table fails on: the address

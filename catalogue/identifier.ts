@@ -48,6 +48,27 @@ export const isFrozenIdentifier = (candidate: string): boolean => FROZEN_IDENTIF
 export type CaseGroup = {
   readonly id: string
   readonly title: string
+  /**
+   * What a reader of the page needs before the cases, or `null` when the title says it all.
+   *
+   * **Required and never optional**, so that having nothing to add is written rather than left out -
+   * the shape `ImplementationRecord.version` already takes for the same reason. Forty-four of the
+   * forty-eight are `null`.
+   *
+   * **The split is what it is addressed to, and the four that exist are the test.** A sentence for
+   * whoever reads the contract page goes here; a sentence for whoever maintains the table stays in a
+   * comment. `the-loss-made-concrete` says in as many words that its two rows exist so that a
+   * declaration has *a demonstration on the contract's own page* - a sentence that asks to be on the
+   * page, and putting it in a comment was a loss of content rather than a tidying.
+   *
+   * **Not frozen.** `id` is the address and freezes with the major; `title` and this are prose and
+   * are corrected the day they read badly, exactly as a `rationale` is. Nobody links to a sentence.
+   *
+   * **A declared note is rendered.** There is no state where one is written and not shown, which is
+   * the class `coverage.test.ts` already refuses on the record: a field carried and never served is
+   * a field nobody can check.
+   */
+  readonly note: string | null
 }
 
 /**

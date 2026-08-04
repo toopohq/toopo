@@ -161,6 +161,9 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   // unique against every other group *and case* of the contract - the two share one `#id` space.
   'caseTables[].groups[].id': { visibility: 'public', verification: 'structural' },
   'caseTables[].groups[].title': { visibility: 'public', verification: 'documentary' },
+  // Prose, and required so that having nothing to add is written rather than omitted. Not frozen:
+  // `id` is the address, a title and a note are corrected the day they read badly.
+  'caseTables[].groups[].note': { visibility: 'public', verification: 'documentary' },
   // The partition, refused in both directions: an undeclared group, and a group no case sits in.
   'caseTables[].cases[].group': { visibility: 'public', verification: 'structural' },
   'caseTables[].cases[].id': { visibility: 'public', verification: 'structural' },

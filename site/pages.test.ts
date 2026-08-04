@@ -97,7 +97,7 @@ describe('the site', () => {
 
       for (const table of held.contract.caseTables) {
         for (const group of table.groups) {
-          expect(rendered).toContain(`<h4 id="${group.id}">`)
+          expect(rendered).toContain(` id="${group.id}" class="group">`)
           expect(rendered).toContain(`href="#${group.id}"`)
         }
 
@@ -119,6 +119,64 @@ describe('the site', () => {
             sits > (titles[own] as (typeof titles)[number]).at && sits < after,
             `${entry.id} does not read under ${entry.group}`,
           ).toBe(true)
+        }
+      }
+    }
+  })
+
+  /**
+   * A group's note reaches the reading, between its heading and its first case.
+   *
+   * The field exists because putting that prose in a comment took it off the page it asked to be on,
+   * so a guard that only checked the field was carried would be checking the thing that was already
+   * true. What has to hold is that a reader sees it, and where.
+   *
+   * Four of the forty-eight carry one, and the count is not asserted: it is a number that grows
+   * whenever somebody has something to say, which is exactly the shape a guard must not pin.
+   */
+  it('a-group-note-is-read-between-the-heading-and-the-first-case', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const reading = toText(page(pageOf(held.contract.address)))
+
+      for (const table of held.contract.caseTables) {
+        for (const group of table.groups) {
+          if (group.note === null) continue
+
+          const first = table.cases.find((entry) => entry.group === group.id)
+          const title = reading.indexOf(`\n${group.title}\n`)
+          const note = reading.indexOf(group.note)
+
+          expect(note, `${group.id}: the note is not in the reading`).toBeGreaterThan(-1)
+          expect(note, `${group.id}: the note reads before its heading`).toBeGreaterThan(title)
+          expect(
+            note,
+            `${group.id}: the note reads after its first case`,
+          ).toBeLessThan(reading.indexOf((first as NonNullable<typeof first>).rationale))
+        }
+      }
+    }
+  })
+
+  /**
+   * A heading is a title, and a table's purpose is only a title when it separates two tables.
+   *
+   * On the three contracts carrying one table the purpose is a sentence in the lower case a sentence
+   * is written in, and a heading that is not a title enters the document outline and is announced as
+   * a section by a screen reader - with nothing on the other side of it, because there is no second
+   * table. So it is a paragraph there, and the groups take `h3`; where two tables genuinely separate
+   * something, the purpose keeps its heading and the groups sit at `h4`.
+   */
+  it('a-table-purpose-is-a-heading-only-when-it-separates-two-tables', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const rendered = html(pageOf(held.contract.address))
+      const alone = held.contract.caseTables.length === 1
+      const level = alone ? 'h3' : 'h4'
+
+      for (const table of held.contract.caseTables) {
+        expect(rendered.includes(`<h3 class="table">${table.purpose}</h3>`)).toBe(!alone)
+
+        for (const group of table.groups) {
+          expect(rendered).toContain(`<${level} id="${group.id}" class="group">`)
         }
       }
     }

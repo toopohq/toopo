@@ -31,8 +31,13 @@
  * Every cell must collect what its control collected. A cell that reports fewer tests than the
  * unmutated arm did has measured something other than this contract, and it reddens, so it would be
  * counted as a kill. That is not hypothetical: measured on vitest 4.1.10, naming the json reporter
- * alone under `--typecheck` collects 28 assertions of the 467 this repository has, sixteen of its
- * twenty-one files reporting nothing at all.
+ * alone under `--typecheck` collects 28 assertions, sixteen of its twenty-one files reporting
+ * nothing at all.
+ *
+ * The denominator this sentence used to carry is gone rather than corrected, for the reason the
+ * separator's paragraph below gives: it read *of the 467 this repository has*, in the present tense,
+ * and 467 had stopped being that some time before anybody noticed. What the measurement is about is
+ * *28, and sixteen files silent*, and neither of those drifts.
  *
  * Every control must collect what the repository says it has. The guard above compares a cell
  * against the control of its own cell, so it cannot see a door that is open for both - and measured,

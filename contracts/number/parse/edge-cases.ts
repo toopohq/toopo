@@ -26,28 +26,31 @@ import type { ParseFailureReason } from './contract.js'
  * frozen with its major - see `CaseGroup`.
  */
 export const edgeCaseGroups: readonly CaseGroup[] = [
-  { id: 'baseline', title: 'Baseline' },
-  { id: 'whitespace', title: 'Whitespace' },
-  { id: 'sign', title: 'Sign' },
-  { id: 'digit-shapes', title: 'Digit shapes' },
-  { id: 'exponent-notation', title: 'Exponent' },
-  { id: 'empty-and-blank', title: 'Empty and blank' },
-  { id: 'non-finite-words', title: 'Non-finite words' },
-  { id: 'alternative-radixes', title: 'Alternative radixes' },
-  /**
-   * Every character in this group was measured rather than chosen: `Intl.NumberFormat` was asked to
-   * format 1234567.5 in 108 locales, and these are the grouping characters it emitted. The value is
-   * still refused - this contract is not locale-aware and will not guess which separator was
-   * decimal - but the reason names what the writer did instead of calling their number "not a
-   * number".
-   */
-  { id: 'separators-the-family-covers', title: 'Separators: the characters the family covers' },
+  { id: 'baseline', title: 'Baseline', note: null },
+  { id: 'whitespace', title: 'Whitespace', note: null },
+  { id: 'sign', title: 'Sign', note: null },
+  { id: 'digit-shapes', title: 'Digit shapes', note: null },
+  { id: 'exponent-notation', title: 'Exponent', note: null },
+  { id: 'empty-and-blank', title: 'Empty and blank', note: null },
+  { id: 'non-finite-words', title: 'Non-finite words', note: null },
+  { id: 'alternative-radixes', title: 'Alternative radixes', note: null },
+  {
+    id: 'separators-the-family-covers',
+    title: 'Separators: the characters the family covers',
+    note:
+      'Every character below was measured rather than chosen: Intl.NumberFormat was asked to ' +
+      'format 1234567.5 in 108 locales, and these are the grouping characters it emitted. The ' +
+      'value is still refused - this contract is not locale-aware and will not guess which ' +
+      'separator was decimal - but the reason names what the writer did, instead of calling their ' +
+      'number "not a number".',
+  },
   {
     id: 'separators-the-family-does-not-cover',
     title: 'Separators: the characters the family does not cover',
+    note: null,
   },
-  { id: 'not-numbers-at-all', title: 'Not numbers at all' },
-  { id: 'ieee-754-limits', title: 'IEEE-754 limits' },
+  { id: 'not-numbers-at-all', title: 'Not numbers at all', note: null },
+  { id: 'ieee-754-limits', title: 'IEEE-754 limits', note: null },
 ]
 
 export type EdgeCase = {

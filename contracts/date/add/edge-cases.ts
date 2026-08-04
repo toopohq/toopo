@@ -28,16 +28,16 @@ import { EARLIEST_REPRESENTABLE, LATEST_REPRESENTABLE } from './contract.js'
  * see `CaseGroup`.
  */
 export const edgeCaseGroups: readonly CaseGroup[] = [
-  { id: 'baseline', title: 'Baseline' },
-  { id: 'end-of-month-clamping', title: 'End-of-month clamping' },
-  { id: 'leap-years', title: 'Leap years' },
-  { id: 'aggregation-within-a-step', title: 'Aggregation within a step' },
-  { id: 'order-between-the-steps', title: 'Order between the steps' },
-  { id: 'negative-and-mixed-signs', title: 'Negative and mixed signs' },
-  { id: 'the-neutral-duration', title: 'The neutral duration' },
-  { id: 'durations-that-are-not-whole-units', title: 'Durations that are not exact whole units' },
-  { id: 'inputs-that-are-not-dates', title: 'Inputs that are not dates' },
-  { id: 'the-edges-of-the-representable-range', title: 'The edges of the representable range' },
+  { id: 'baseline', title: 'Baseline', note: null },
+  { id: 'end-of-month-clamping', title: 'End-of-month clamping', note: null },
+  { id: 'leap-years', title: 'Leap years', note: null },
+  { id: 'aggregation-within-a-step', title: 'Aggregation within a step', note: null },
+  { id: 'order-between-the-steps', title: 'Order between the steps', note: null },
+  { id: 'negative-and-mixed-signs', title: 'Negative and mixed signs', note: null },
+  { id: 'the-neutral-duration', title: 'The neutral duration', note: null },
+  { id: 'durations-that-are-not-whole-units', title: 'Durations that are not exact whole units', note: null },
+  { id: 'inputs-that-are-not-dates', title: 'Inputs that are not dates', note: null },
+  { id: 'the-edges-of-the-representable-range', title: 'The edges of the representable range', note: null },
 ]
 
 export type EdgeCase = {
@@ -564,8 +564,8 @@ export const edgeCases: readonly EdgeCase[] = [
  * field of the wrong type, and that partition is already in the data. Frozen with the major.
  */
 export const untypedEdgeCaseGroups: readonly CaseGroup[] = [
-  { id: 'fields-the-contract-does-not-define', title: 'A field the contract does not define' },
-  { id: 'fields-carrying-the-wrong-type', title: 'A declared field carrying the wrong type' },
+  { id: 'fields-the-contract-does-not-define', title: 'A field the contract does not define', note: null },
+  { id: 'fields-carrying-the-wrong-type', title: 'A declared field carrying the wrong type', note: null },
 ]
 
 export type UntypedEdgeCase = {

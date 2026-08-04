@@ -82,28 +82,36 @@ import type { Provenance } from '../../../catalogue/every-contract.js'
  */
 export const edgeCaseGroups: readonly CaseGroup[] = [
   /**
-   * A reader arriving from "slugify javascript" expects ASCII. These six rows are where this
-   * contract contradicts that expectation, and they are first so that the contradiction is the
-   * thing they meet rather than a paragraph they skip.
+   * The half of the old banner that is not page content stays here: this group is *first* so that
+   * the contradiction is what a reader meets rather than a paragraph they skip, which is an
+   * instruction to whoever edits the table and says nothing to whoever reads it.
    *
-   * The banner this replaces said *five rows* over six cases: a count in prose drifts the moment
-   * the list it counts grows, which is the reason an identifier never renders one.
+   * The banner also said *five rows* over six cases, which is why no count reaches the note: a
+   * figure in prose drifts the moment the list it counts grows.
    */
-  { id: 'the-surprise-in-front', title: 'The surprise, in front' },
-  { id: 'the-fold', title: "The fold, which is Unicode's and not this contract's" },
-  { id: 'the-absorb-step', title: 'The absorb step, and the two defects that wrote it' },
-  { id: 'greek', title: 'Greek, where the fold and the case rule meet' },
+  {
+    id: 'the-surprise-in-front',
+    title: 'The surprise, in front',
+    note:
+      'A reader arriving from "slugify javascript" expects ASCII. These are the rows where this ' +
+      'contract contradicts that expectation, and they come first for that reason.',
+  },
+  { id: 'the-fold', title: "The fold, which is Unicode's and not this contract's", note: null },
+  { id: 'the-absorb-step', title: 'The absorb step, and the two defects that wrote it', note: null },
+  { id: 'greek', title: 'Greek, where the fold and the case rule meet', note: null },
   /** `letter-case` rather than `case`, on a page whose every other heading counts *cases*. */
-  { id: 'letter-case', title: 'Upper and lower case' },
-  { id: 'what-nfkc-unifies', title: 'What NFKC unifies, and what it costs' },
-  { id: 'separators-and-shape', title: 'Separators and shape' },
-  { id: 'no-symbol-becomes-a-word', title: 'No symbol becomes a word' },
-  { id: 'the-empty-slug', title: 'Nothing retainable, and the empty slug' },
-  /**
-   * One decision read twice. The two rows exist so that `lossiness` in block 4.1 has a
-   * demonstration on the contract's own page rather than a sentence a reader has to believe.
-   */
-  { id: 'the-loss-made-concrete', title: 'The loss, made concrete' },
+  { id: 'letter-case', title: 'Upper and lower case', note: null },
+  { id: 'what-nfkc-unifies', title: 'What NFKC unifies, and what it costs', note: null },
+  { id: 'separators-and-shape', title: 'Separators and shape', note: null },
+  { id: 'no-symbol-becomes-a-word', title: 'No symbol becomes a word', note: null },
+  { id: 'the-empty-slug', title: 'Nothing retainable, and the empty slug', note: null },
+  {
+    id: 'the-loss-made-concrete',
+    title: 'The loss, made concrete',
+    note:
+      'One decision read twice. These rows exist so that what this contract says about lossiness ' +
+      'has a demonstration on its own page, rather than a sentence a reader has to believe.',
+  },
 ]
 
 export type EdgeCase = {

@@ -91,9 +91,15 @@ const renderedCase = (entry: CaseRecord, answer: ExportRecord): Node => {
 const anchorTo = (id: string): Node =>
   el('a', { class: 'anchor', href: `#${id}`, 'aria-hidden': 'true' }, text('#'))
 
-/** A heading that carries its own address, the way a case does. */
+/**
+ * A heading that carries its own address, the way a case does.
+ *
+ * The tag is the outline and the class is the appearance, and they are separated on purpose: how
+ * deeply a group is nested depends on whether its contract has one table or two, and how a group
+ * *looks* must not.
+ */
 const addressed = (tag: string, id: string, title: string): Node =>
-  el(tag, { id }, anchorTo(id), text(title))
+  el(tag, { id, class: 'group' }, anchorTo(id), text(title))
 
 /**
  * One group of a table: its heading, then the cases that sit under it.
@@ -101,13 +107,19 @@ const addressed = (tag: string, id: string, title: string): Node =>
  * The cases are selected by their group rather than sliced by position. `serialise.ts` has already
  * refused a table whose groups are not contiguous, so the two agree - and a filter says what this
  * renders, where an index would say only where it found it.
+ *
+ * A `note` is rendered whenever the group carries one. There is no state where a note is declared
+ * and not shown: the field is what reaches the page, and a sentence stored and never served would
+ * be the class `coverage.test.ts` refuses on the record.
  */
 const renderedGroup = (
   group: CaseGroup,
   table: CaseTableRecord,
   answer: ExportRecord,
+  heading: string,
 ): readonly Node[] => [
-  addressed('h4', group.id, group.title),
+  addressed(heading, group.id, group.title),
+  ...(group.note === null ? [] : [line('p', group.note, { class: 'why' })]),
   el(
     'div',
     { class: 'cases' },
@@ -118,15 +130,28 @@ const renderedGroup = (
 ]
 
 /**
- * A table, as its purpose and then its groups.
+ * A table, as its purpose and then its groups - and the purpose is a heading only when there is
+ * something for it to separate.
  *
- * Three heading levels rather than two, and the middle one earns its place on the two contracts that
- * carry two tables: *the calls this contract settles* and *durations no TypeScript caller can write*
- * are different questions, and a reader who lands on the second needs to know which one they are in.
+ * **A contract with one table gets two levels, not three.** Its `purpose` is a sentence in the lower
+ * case a sentence is written in, and a heading that is not a title is a real defect rather than an
+ * untidy one: it enters the document outline, a screen reader announces it as a section, and there
+ * is nothing on the other side of it because there is no second table. So it is a paragraph, and the
+ * groups move up to `h3`.
+ *
+ * `date/add@1` and `array/group-by@1` carry two tables, and there the purpose separates something a
+ * reader has to know they have crossed - typed callers against callers no type reaches - so it stays
+ * a heading and the groups sit under it at `h4`.
  */
-const renderedTable = (table: CaseTableRecord, answer: ExportRecord): readonly Node[] => [
-  line('h3', table.purpose),
-  ...table.groups.flatMap((group) => renderedGroup(group, table, answer)),
+const renderedTable = (
+  table: CaseTableRecord,
+  answer: ExportRecord,
+  alone: boolean,
+): readonly Node[] => [
+  alone
+    ? line('p', `${table.purpose}.`, { class: 'meta' })
+    : line('h3', table.purpose, { class: 'table' }),
+  ...table.groups.flatMap((group) => renderedGroup(group, table, answer, alone ? 'h3' : 'h4')),
 ]
 
 export const contractPage = (held: Held): Document => {
@@ -198,7 +223,9 @@ export const contractPage = (held: Held): Document => {
         `Every one of them is named, frozen with the major version, and linkable. This is what the ` +
           `contract decides, one input at a time.`,
       ),
-      ...contract.caseTables.flatMap((table) => renderedTable(table, answer)),
+      ...contract.caseTables.flatMap((table) =>
+        renderedTable(table, answer, contract.caseTables.length === 1),
+      ),
 
       line('h2', 'Properties'),
       line(

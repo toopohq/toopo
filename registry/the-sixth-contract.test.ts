@@ -137,8 +137,8 @@ const theSixth: ContractRecord = {
       name: 'edge-cases',
       purpose: 'the answers this contract settles, none of which is settled in fact',
       groups: [
-        { id: 'the-decimal-a-double-cannot-hold', title: 'The decimal a double cannot hold' },
-        { id: 'places-out-of-range', title: 'A place count no double can carry' },
+        { id: 'the-decimal-a-double-cannot-hold', title: 'The decimal a double cannot hold', note: null },
+        { id: 'places-out-of-range', title: 'A place count no double can carry', note: null },
       ],
       cases: [
         {

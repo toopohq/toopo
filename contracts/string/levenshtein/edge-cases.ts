@@ -31,17 +31,20 @@ import type { Provenance } from '../../../catalogue/every-contract.js'
  * `CaseGroup`.
  */
 export const edgeCaseGroups: readonly CaseGroup[] = [
-  { id: 'the-two-ends-of-the-scale', title: 'The two ends of the scale' },
-  { id: 'one-edit-of-each-kind', title: 'One edit of each kind' },
-  { id: 'the-anchors-a-reader-recognises', title: 'The anchors a reader recognises' },
-  { id: 'the-scope-this-contract-does-not-cover', title: 'The scope this contract does not cover' },
-  /**
-   * The region no axiom reaches. Every case in this group is answered differently by an
-   * implementation counting UTF-16 code units, which is what the widely used JavaScript
-   * implementations do, and every one of them satisfies all four axioms under either counting.
-   */
-  { id: 'the-unit-an-edit-is-counted-in', title: 'The unit an edit is counted in' },
-  { id: 'normalisation', title: 'Normalisation is not applied' },
+  { id: 'the-two-ends-of-the-scale', title: 'The two ends of the scale', note: null },
+  { id: 'one-edit-of-each-kind', title: 'One edit of each kind', note: null },
+  { id: 'the-anchors-a-reader-recognises', title: 'The anchors a reader recognises', note: null },
+  { id: 'the-scope-this-contract-does-not-cover', title: 'The scope this contract does not cover', note: null },
+  {
+    id: 'the-unit-an-edit-is-counted-in',
+    title: 'The unit an edit is counted in',
+    note:
+      'The region no axiom reaches. Every case below is answered differently by an implementation ' +
+      'counting UTF-16 code units, which is what the widely used JavaScript implementations do - ' +
+      'and every one of them satisfies all four axioms under either counting, so nothing but these ' +
+      'rows decides it.',
+  },
+  { id: 'normalisation', title: 'Normalisation is not applied', note: null },
 ]
 
 export type EdgeCase = {

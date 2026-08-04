@@ -46,17 +46,19 @@ export type ExpectedCall = readonly [item: unknown, index: number]
  * see `CaseGroup`.
  */
 export const edgeCaseGroups: readonly CaseGroup[] = [
-  { id: 'baseline', title: 'Baseline' },
-  { id: 'group-order', title: 'Group order' },
-  { id: 'key-identity', title: 'Key identity' },
+  { id: 'baseline', title: 'Baseline', note: null },
+  { id: 'group-order', title: 'Group order', note: null },
+  { id: 'key-identity', title: 'Key identity', note: null },
   {
     id: 'keys-that-name-something-on-object-prototype',
     title: 'Keys that name something on Object.prototype',
+    note: null,
   },
-  { id: 'how-the-input-is-read', title: 'How the input is read' },
+  { id: 'how-the-input-is-read', title: 'How the input is read', note: null },
   {
     id: 'the-protocol-owed-to-the-key-function',
     title: 'The protocol the contract owes the key function',
+    note: null,
   },
 ]
 
@@ -66,8 +68,8 @@ export const edgeCaseGroups: readonly CaseGroup[] = [
  * arrays and group. Frozen with the major.
  */
 export const untypedCallerCaseGroups: readonly CaseGroup[] = [
-  { id: 'inputs-that-are-not-iterable', title: 'Inputs that are not iterable' },
-  { id: 'iterables-that-are-not-arrays', title: 'Iterables that are not arrays' },
+  { id: 'inputs-that-are-not-iterable', title: 'Inputs that are not iterable', note: null },
+  { id: 'iterables-that-are-not-arrays', title: 'Iterables that are not arrays', note: null },
 ]
 
 export type EdgeCase = {
