@@ -56,6 +56,7 @@ const THE_FIVE = ['number-parse', 'date-add', 'array-group-by', 'string-levensht
 const onEach = (guard: string): readonly string[] => THE_FIVE.map((slug) => `${guard}-${slug}`)
 
 const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts', find, replace })
+const signatureFile = (find: string, replace: string) => ({ file: 'signature.ts', find, replace })
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
@@ -75,6 +76,24 @@ const implementationFile = (find: string, replace: string) => ({
 // ---------------------------------------------------------------------------
 
 const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(directory, name)))'
+
+// --- The reading of a declared signature, which is what makes a case a call ---
+
+const A_TRAILING_COMMA_LEAVES_NOTHING = `  return parts.map((part) => part.trim()).filter((part) => part !== '')`
+
+const THE_TYPE_PARAMETERS_ARE_SKIPPED = `  if (!text.startsWith('<')) return 0`
+
+const A_COMMA_INSIDE_A_TYPE_SEPARATES_NOTHING = `    else if (character === ',' && brackets === 0 && angles === 0) {
+      parts.push(list.slice(start, at))`
+
+const A_PARAMETER_IS_NAMED_BEFORE_ITS_TYPE = `      return part
+        .slice(0, at)`
+
+const A_MARK_ABOUT_ARITY_IS_NOT_A_NAME = `        .replace(/^\\.{3}/, '')
+        .replace(/\\?$/, '')
+        .trim()`
+
+const A_SIGNATURE_THAT_CANNOT_BE_READ_IS_REFUSED = `  throw new UnreadableSignature(text, 'its parameter list is never closed')`
 
 const REFUSE_A_DISAGREEMENT = `  if (undeclared.length > 0 || missing.length > 0) {
     throw new UndeclaredHarness(folder, undeclared, missing)
@@ -349,6 +368,92 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['the-index-stays-the-smallest-thing-the-registry-serves']),
+  ),
+
+  /**
+   * Six defects in the reading of a declared signature, which is where a case of block 4.4 becomes a
+   * *call* rather than a row of fields.
+   *
+   * They are written rather than declared unprobed, and the difference matters here: the reading is
+   * checked against the case fields of a hundred and eighty-seven cases, so a misreading is loud - but
+   * *which* misreading a contract survives is exactly what a reader of this battery needs to know
+   * before the sixth contract is written. Every one of them is a bracket the reader miscounts, and
+   * `array/group-by@1` writes all three kinds in one signature.
+   */
+  sameOnEveryLens(
+    'I-18',
+    'keeps the empty part a trailing comma leaves, so a signature closed the way `array/group-by@1` ' +
+      'closes its own gains a parameter with no name',
+    [
+      signatureFile(
+        A_TRAILING_COMMA_LEAVES_NOTHING,
+        `  return parts.map((part) => part.trim())`,
+      ),
+    ],
+    killed([
+      'a-signature-that-takes-nothing-has-no-parameters',
+      'a-trailing-comma-leaves-no-parameter-behind-it',
+      'the-call-of-array-group-by-is-read-from-its-own-signature',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-19',
+    'looks for the parameter list at the start of the text, so a generic signature reads its type ' +
+      'parameters as the call its cases are made of',
+    [signatureFile(THE_TYPE_PARAMETERS_ARE_SKIPPED, `  return 0`)],
+    killed([
+      'the-type-parameters-are-not-the-parameters',
+      'an-arrow-inside-a-type-parameter-does-not-close-it',
+      'the-call-of-array-group-by-is-read-from-its-own-signature',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-20',
+    'splits the parameter list on every comma no bracket encloses, so `Map<K, V>` as a parameter type ' +
+      'is read as two parameters and half a type becomes a name',
+    [signatureFile(A_COMMA_INSIDE_A_TYPE_SEPARATES_NOTHING, `    else if (character === ',' && brackets === 0) {
+      parts.push(list.slice(start, at))`)],
+    killed(['a-comma-inside-a-generic-type-separates-no-parameter']),
+  ),
+
+  sameOnEveryLens(
+    'I-21',
+    'takes the type where the name is, so every case of every contract is checked against a call ' +
+      'whose arguments are called `string` and `Date`',
+    [signatureFile(A_PARAMETER_IS_NAMED_BEFORE_ITS_TYPE, `      return part
+        .slice(at + 1)`)],
+    killed([
+      'a-plain-signature-names-its-parameters',
+      'the-type-parameters-are-not-the-parameters',
+      'a-comma-inside-a-generic-type-separates-no-parameter',
+      'the-parameters-of-a-parameter-are-not-parameters',
+      'a-trailing-comma-leaves-no-parameter-behind-it',
+      'an-optional-or-rest-parameter-is-named-without-its-mark',
+      'an-arrow-inside-a-type-parameter-does-not-close-it',
+      'the-call-of-number-parse-is-read-from-its-own-signature',
+      'the-call-of-date-add-is-read-from-its-own-signature',
+      'the-call-of-array-group-by-is-read-from-its-own-signature',
+      'the-call-of-string-levenshtein-is-read-from-its-own-signature',
+      'the-call-of-string-slugify-is-read-from-its-own-signature',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-22',
+    'keeps the marks that say how often a parameter may be passed, so a page would render `...rest` ' +
+      'and `second?` as the names a caller writes',
+    [signatureFile(A_MARK_ABOUT_ARITY_IS_NOT_A_NAME, `        .trim()`)],
+    killed(['an-optional-or-rest-parameter-is-named-without-its-mark']),
+  ),
+
+  sameOnEveryLens(
+    'I-23',
+    'answers a call with no parameters where it cannot read one, so a declaration this reader does ' +
+      'not understand reaches a record as a function that takes nothing',
+    [signatureFile(A_SIGNATURE_THAT_CANNOT_BE_READ_IS_REFUSED, `  return ''`)],
+    killed(['a-declaration-this-reader-cannot-follow-is-refused']),
   ),
 ]
 
