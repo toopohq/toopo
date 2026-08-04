@@ -152,6 +152,81 @@ export const WHAT_BREAKS: readonly Breakage[] = [
       'not a prediction about permissions.',
   },
   {
+    situation: 'a feature the user never asked for is asked to be removed',
+    verdict: 'refused-cleanly',
+    guard: 'a-feature-that-was-never-asked-for-is-refused-with-what-imports-it',
+    detail:
+      'the refusal names the feature that imports it, which is the difference between an answer ' +
+      'somebody can act on and one they argue with. "It is a dependency" is a sentence nobody can do ' +
+      'anything about; `number/round@1 imports it` is one they can. It comes out of the same ' +
+      'resolution the removal was already making rather than from a second walk.',
+  },
+  {
+    situation: 'a feature another root still imports is asked to be removed',
+    verdict: 'refused-cleanly',
+    guard: 'a-feature-another-root-still-imports-stays-and-stops-being-a-root',
+    detail:
+      'not a refusal at all, and the entry a reader most needs. It **stays**, and it stops being ' +
+      'something the user asked for - so it leaves on its own the day nothing imports it. From ' +
+      'outside that looks exactly like nothing happened, which is the moment somebody stops trusting ' +
+      'a tool, so the screen names the feature, names what keeps it here, and says what did change. ' +
+      'The lockfile moves and no file does.',
+  },
+  {
+    situation: 'a file the user edited belongs to the feature being removed',
+    verdict: 'refused-cleanly',
+    guard: 'a-file-the-user-edited-is-not-deleted-by-a-removal',
+    detail:
+      'permanent rule 4 on the one command that deletes: the file stays, its feature is held back ' +
+      'whole, and so is everything that feature imports - because the code left on disk is the old ' +
+      'code and the old code still imports it. That second half was missing and was found by this ' +
+      'suite: the rule was asked of the features still in the plan, and a feature held back while ' +
+      'leaving is in nobody\'s plan.',
+  },
+  {
+    situation: 'the registry cannot answer for a version toopo.lock records, during a removal',
+    verdict: 'refused-cleanly',
+    guard: 'a-removal-that-cannot-reach-the-registry-refuses-and-explains',
+    detail:
+      'a removal decides which files leave by re-planning what stays, and what the remaining features ' +
+      'import is not in the lockfile - **it never was, and no field would put it there**. A shared ' +
+      'file is written once and the other carrier is repointed at it, so that carrier\'s entry does ' +
+      'not name the file it imports; deciding from the lockfile alone would delete it. Measured on ' +
+      'the fixture graph: `number/clamp@1` records one file and imports `../../string/pad/digits.js`, ' +
+      'and three files that stay would have imported something that was gone. So the refusal explains ' +
+      'rather than reports a failure - *this needs to know what the features that stay import, and ' +
+      'only the registry knows* - and it degrades without destroying: the files stay, nothing breaks, ' +
+      'and the removal works when the registry answers. **Measured, 8 of 64 removals over both graphs ' +
+      'need no registry at all, and they are exactly the ones that take out a project\'s last root.** ' +
+      'A published version is served for life, so a withdrawn artefact is not a case that exists; ' +
+      'only a registry that cannot answer right now.',
+  },
+  {
+    situation: 'a file is deduplicated away by a plan that sees two features carrying it',
+    verdict: 'refused-cleanly',
+    guard: 'a-copy-deduplicated-away-is-taken-with-the-entry-that-stops-claiming-it',
+    detail:
+      '`add` plans one root at a time, so two features carrying one file are written twice and each ' +
+      'copy is claimed. The first update afterwards is the first plan that sees both: it repoints one ' +
+      'at the other and drops the file from that entry. It used to leave the copy on disk claimed by ' +
+      'nothing, and the next command that wanted to write there refused with *it is already there and ' +
+      'toopo.lock does not claim it* - about a file toopo had written itself two commands earlier. ' +
+      'The copy now goes with the claim, unless the user edited it.',
+  },
+  {
+    situation: 'the installed folder is not committed, and somebody else checks the project out',
+    verdict: 'refused-cleanly',
+    guard: 'every-file-missing-at-once-says-the-folder-is-not-committed',
+    detail:
+      'the trap is silent and its victim has no way to reach the cause: the build fails on an import ' +
+      'long before anybody thinks to run `toopo update`, and the update then repairs it perfectly and ' +
+      'says nothing - so the next person to clone meets the same thing. What is detectable without ' +
+      'reading anybody\'s `.gitignore` is the symptom: **every** file the lockfile claims missing at ' +
+      'once, which is what a checkout that never received the folder looks like and what deleting a ' +
+      'file does not. `toopo init` says what to commit at the moment the folder is being chosen, and ' +
+      'this says it to whoever arrives after it was not.',
+  },
+  {
     situation: 'the process is killed between the first file and the lockfile',
     verdict: 'refused-cleanly',
     guard: 'a-file-already-equal-to-what-we-would-write-is-not-a-conflict',

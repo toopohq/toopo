@@ -27,6 +27,7 @@ import {
   IMAGINED_BLOBS,
   IMAGINED_NEXT_VERSION,
   IMAGINED_VERSION,
+  INDEPENDENT_CARRIERS,
   NEXT_HOLDINGS,
 } from '../registry/imagined-graph.js'
 import type { ImplementationRecord } from '../registry/implementation-record.js'
@@ -48,6 +49,8 @@ const SUMMARIES: Readonly<Record<string, string>> = {
   'number/clamp': 'Hold a number between a low and a high bound.',
   'number/sign': 'Answer -1 or 1 for the sign of a number.',
   'number/round': 'Round a number to a given number of decimal places.',
+  'text/left': 'Trim the start of a text that holds whitespace.',
+  'text/right': 'Trim the end of a text that holds whitespace.',
 }
 
 const indexEntryOf = (record: ImplementationRecord) => {
@@ -88,11 +91,22 @@ const bindingOf = (record: ImplementationRecord): ServedImplementationBinding =>
  * they hold - which is the whole of what each of them is for - and three copies of the four methods
  * would be three places to keep one port implemented.
  */
-const sourceOver = (held: readonly ImplementationRecord[]): RegistrySource => {
+const sourceOver = (
+  held: readonly ImplementationRecord[],
+  /**
+   * What the index says this registry holds, which is not the same list as what it serves.
+   *
+   * `imaginedSource(refuse)` drops an implementation from `held` to make an *edge* resolve to nothing,
+   * and the contract has to stay in the index for that to be the failure under measurement rather than
+   * an unknown name. So the default is the whole graph, and only a source over a different graph
+   * entirely passes its own.
+   */
+  indexed: readonly ImplementationRecord[] = HOLDINGS,
+): RegistrySource => {
   const snapshots = new Map(
     held.map((record) => [digestOfSnapshot(snapshotOf(record)), servedSnapshot(snapshotOf(record))]),
   )
-  const index: ServedIndex = { addressing: 'named', entries: HOLDINGS.map(indexEntryOf) }
+  const index: ServedIndex = { addressing: 'named', entries: indexed.map(indexEntryOf) }
 
   return {
     contractIndex: () => index,
@@ -144,6 +158,21 @@ export const imaginedSource = (refuse: readonly string[] = []): RegistrySource =
 export const updatedImaginedSource = (): RegistrySource => sourceOver(NEXT_HOLDINGS)
 
 /**
+ * A registry that has published twice and, as permanent rule 6 requires, still serves the first.
+ *
+ * `updatedImaginedSource` deliberately does not: an update is measured against a registry whose *name
+ * resolution* has moved, and dropping the old artefacts is the shortest way to say so. A removal asks
+ * the opposite question - it resolves what stays at the version the lockfile records - and it can only
+ * be measured against a registry where both answers exist and the command has to pick one.
+ *
+ * The second publication is listed first, because that is what a binding by name means: the artefact a
+ * contract resolves to *today*. A removal that followed it would plan the project against a graph the
+ * files on disk are not, which is the defect this ordering makes visible.
+ */
+export const sourceServingBothPublications = (): RegistrySource =>
+  sourceOver([...NEXT_HOLDINGS, ...HOLDINGS])
+
+/**
  * A source whose `string/pad@1` is held at two versions at once, which is the collision no fixture of
  * the schema produced and every real catalogue eventually will.
  *
@@ -153,6 +182,18 @@ export const updatedImaginedSource = (): RegistrySource => sourceOver(NEXT_HOLDI
  * second write would overwrite the first and the dependent that asked for it would silently get the
  * other one's code.
  */
+/**
+ * Two roots that share one file and depend on nothing, which is the shape a removal has to survive and
+ * the one the main graph cannot produce.
+ *
+ * There, the carrier of a shared blob is always a dependency of its borrower, so it can never leave
+ * while the borrower stays. Here it can: removing `text/left@1` has to move `trim.ts` into
+ * `text/right/` and repoint the import inside `right.ts` at it, or the project is left holding a file
+ * that imports one that is gone.
+ */
+export const sourceWithIndependentCarriers = (): RegistrySource =>
+  sourceOver(INDEPENDENT_CARRIERS, INDEPENDENT_CARRIERS)
+
 export const TWO_VERSIONS_OF_ONE_FEATURE = IMAGINED_NEXT_VERSION
 
 export const sourceWithTwoVersionsOfPad = (): RegistrySource => {

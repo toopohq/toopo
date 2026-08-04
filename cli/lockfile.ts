@@ -13,6 +13,21 @@
  *
  * It is plain JSON with no tagged encoding, deliberately. A person opens this file to decide whether to
  * accept a diff, and a lockfile that needed decoding to be read would be a lockfile nobody reads.
+ *
+ * ---------------------------------------------------------------------------
+ * It records what was written, and never what was planned
+ * ---------------------------------------------------------------------------
+ *
+ * Two claims about this file sound alike and only one of them is true. **It lets anybody check, with
+ * nothing from us, that the bytes on disk are the bytes that were served** - the supply-chain argument
+ * of the whole project, and it holds entirely. **It does not describe the installed graph**, and no
+ * reasoning about what imports what may be built on it.
+ *
+ * That is its nature rather than a gap, and it is written here because the mistake is one anybody makes
+ * on the way past: a shared file is written once and the other carrier is repointed at it, so the
+ * second carrier's entry does not name the file it imports. `reconcile.ts` carries the measurement and
+ * the consequence - it is why a removal has to re-plan the project rather than read this file, and why
+ * recording the edges would not be enough either.
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'

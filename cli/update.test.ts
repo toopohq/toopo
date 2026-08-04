@@ -7,13 +7,17 @@ import { renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
-import { imaginedSource, updatedImaginedSource } from './imagined-source.js'
+import {
+  imaginedSource,
+  sourceWithIndependentCarriers,
+  updatedImaginedSource,
+} from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import { renderUpdate } from './report.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
-import type { FileOutcome, Update } from './update.js'
+import type { FileOutcome, Reconciliation } from './reconcile.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
 
@@ -49,7 +53,7 @@ const updating = (
   project: TemporaryProject,
   lockfile: Lockfile,
   source: RegistrySource = updatedImaginedSource(),
-): Update => {
+): Reconciliation => {
   const outcome = prepareUpdate(source, {
     root: project.root,
     configuration: project.configuration,
@@ -57,9 +61,9 @@ const updating = (
     at: AT,
   })
 
-  if (!('update' in outcome)) throw new Error(outcome.faults.join('\n'))
+  if (!('reconciliation' in outcome)) throw new Error(outcome.faults.join('\n'))
 
-  return outcome.update
+  return outcome.reconciliation
 }
 
 const inProject = <T>(
@@ -74,7 +78,7 @@ const inProject = <T>(
 }
 
 /** Every file the update has an opinion about, as `path -> verdict`. */
-const verdicts = (update: Update): Readonly<Record<string, string>> =>
+const verdicts = (update: Reconciliation): Readonly<Record<string, string>> =>
   Object.fromEntries(
     update.features.flatMap((feature) =>
       feature.files
@@ -83,7 +87,7 @@ const verdicts = (update: Update): Readonly<Record<string, string>> =>
     ),
   )
 
-const heldBack = (update: Update): readonly string[] =>
+const heldBack = (update: Reconciliation): readonly string[] =>
   update.features
     .filter((feature) => feature.heldBack !== null)
     .map((feature) => renderContract(feature.contract))
@@ -388,8 +392,8 @@ describe('comparing a project with what the registry serves now', () => {
         lockfile: first.lockfile,
         at: '2027-01-01T00:00:00.000Z',
       })
-      if (!('update' in later)) throw new Error(later.faults.join('\n'))
-      const again = later.update
+      if (!('reconciliation' in later)) throw new Error(later.faults.join('\n'))
+      const again = later.reconciliation
 
       expect(again.writes).toEqual([])
       expect(again.removals).toEqual([])
@@ -469,6 +473,105 @@ describe('comparing a project with what the registry serves now', () => {
       expect('faults' in outcome && outcome.faults).toContain(
         'src/lib/toopo/string/pad/pad.ts is already there and toopo.lock does not claim it, so it ' +
           'is not ours to overwrite',
+      )
+    })
+  })
+
+  /**
+   * A copy deduplicated away is taken with the entry that stops claiming it.
+   *
+   * **Measured rather than reasoned, and it was a hole.** `add` plans one root at a time, so two
+   * features that carry the same file are written twice, each claimed by its own entry; the first
+   * update afterwards is the first plan that sees both, and it repoints one at the other and drops the
+   * file from that entry. It used to leave the copy on disk claimed by nothing - which is the state the
+   * next command refuses to write into, with a sentence about a file this tool had written itself.
+   *
+   * The bytes are not at risk: deduplication is by digest, so what goes is a copy of what the carrier
+   * holds and the import has already been repointed. An edited copy is a different matter and stays,
+   * which is the same answer a leaving feature's edited file gets.
+   */
+  it('a-copy-deduplicated-away-is-taken-with-the-entry-that-stops-claiming-it', () => {
+    const source = sourceWithIndependentCarriers()
+    const project = aProject()
+
+    try {
+      let lockfile = EMPTY_LOCKFILE
+      for (const contract of ['text/left', 'text/right']) {
+        const outcome = prepareInstallation(source, {
+          root: project.root,
+          configuration: project.configuration,
+          lockfile,
+          contract,
+          implementation: null,
+          at: A_PINNED_INSTANT,
+        })
+        if (!('installation' in outcome)) throw new Error(JSON.stringify(outcome))
+        lockfile = committing(project, outcome.installation, lockfile)
+      }
+
+      expect(existsSync(join(project.root, 'src/lib/toopo/text/right/trim.ts'))).toBe(true)
+
+      const update = updating(project, lockfile, source)
+
+      expect(update.removals).toEqual(['text/right/trim.ts'])
+      expect(
+        update.features
+          .find((feature) => feature.contract.name === 'text/right')
+          ?.files.map((file) => [file.path, file.verdict]),
+      ).toEqual([
+        ['text/right/right.ts', 'updated'],
+        ['text/right/trim.ts', 'removed'],
+      ])
+
+      const written = commit(project.root, project.configuration.directory, {
+        writes: update.writes,
+        removals: update.removals,
+        lockfile: update.lockfile,
+      })
+      expect('written' in written).toBe(true)
+
+      expect(existsSync(join(project.root, 'src/lib/toopo/text/right/trim.ts'))).toBe(false)
+      expect(project.installed('text/right/right.ts')).toContain("from '../left/trim.js'")
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * Every file gone at once is a checkout that never received the folder, and it is said rather than
+   * silently repaired.
+   *
+   * The repair is right - the files come back - and it is exactly what hides the cause: the build goes
+   * green, nobody learns that the installed folder is not committed, and the next person to clone meets
+   * the same thing. One file missing is somebody deleting a file, so the sentence is asked of *all* of
+   * them, which is the only shape a fresh checkout produces.
+   */
+  it('every-file-missing-at-once-says-the-folder-is-not-committed', () => {
+    inProject((project, lockfile) => {
+      rmSync(join(project.root, project.configuration.directory), { recursive: true, force: true })
+
+      const update = updating(project, lockfile)
+
+      expect(update.everyClaimedFileIsMissing).toBe(true)
+      expect(renderUpdate(update, project.configuration, true)).toContain(
+        'the installed folder is not committed',
+      )
+    })
+  })
+
+  /** One file gone is somebody deleting a file, and it is put back without a word about git. */
+  it('one-file-missing-is-not-a-folder-nobody-committed', () => {
+    inProject((project, lockfile) => {
+      rmSync(join(project.root, 'src/lib/toopo/string/pad/digits.ts'))
+
+      const update = updating(project, lockfile)
+
+      expect(update.features.flatMap((feature) => feature.files).map((file) => file.verdict)).toContain(
+        'restored',
+      )
+      expect(update.everyClaimedFileIsMissing).toBe(false)
+      expect(renderUpdate(update, project.configuration, true)).not.toContain(
+        'the installed folder is not committed',
       )
     })
   })

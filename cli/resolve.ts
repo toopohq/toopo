@@ -54,7 +54,24 @@ export type ChosenBinding = {
 // Which contract
 // ---------------------------------------------------------------------------
 
-const askedFor = (typed: string): { readonly name: string; readonly major: number | null } => {
+/**
+ * What the user typed, split into a name and the major they asked for, if any.
+ *
+ * `NaN` for a major that is not a whole number, so that `array/group-by@x` is refused by name rather
+ * than answered as `array/group-by@x` - a contract nothing holds - which is a worse sentence for the
+ * same mistake.
+ *
+ * Exported because `remove` resolves the same spelling against the *lockfile* rather than against the
+ * index: what a removal names is something the project holds, and asking the catalogue about it would
+ * make a feature unremovable the day the catalogue changed its mind about it.
+ *
+ * It used to be called `askedFor`, which is also the name of the lockfile field saying whether the
+ * user typed a feature - two different things one word away from each other, in the two modules that
+ * both handle a name the user typed.
+ */
+export const contractTyped = (
+  typed: string,
+): { readonly name: string; readonly major: number | null } => {
   const at = typed.lastIndexOf('@')
   if (at === -1) return { name: typed, major: null }
 
@@ -81,7 +98,7 @@ const installable = (entry: ServedIndexEntry): Found<Chosen> =>
       }
 
 export const chooseContract = (source: RegistrySource, typed: string): Found<Chosen> => {
-  const wanted = askedFor(typed)
+  const wanted = contractTyped(typed)
   if (Number.isNaN(wanted.major)) {
     return { faults: [`\`${typed}\` does not name a major version, which is a whole number from 1 upwards`] }
   }
@@ -176,6 +193,49 @@ export const bindingFor = (
               `${renderContract(address)} has no implementation called \`${implementation}\` ` +
                 `(${bindings.map((binding) => binding.address.id).join(', ')})`,
             ],
+    }
+  }
+
+  return { found: { id: wanted.address.id, version: wanted.address.version, digest: wanted.digest } }
+}
+
+/**
+ * The binding for the exact implementation a lockfile records, version included.
+ *
+ * It is what a **removal** resolves its remaining roots through, and the version is the whole point.
+ * `bindingFor` answers what the registry serves today, which is what an update goes to find out; a
+ * removal decides which files leave by re-planning what stays, so re-planning a root at a *newer*
+ * publication would let a dependency it has since dropped, or a file it has since stopped sharing, be
+ * planned away and deleted underneath the code that is actually on disk. The bytes in the project were
+ * installed against the recorded versions, so those are the versions whose closure describes them.
+ *
+ * There is no empty-list branch here, and its absence is the more accurate answer rather than an
+ * economy: a contract with no binding at all and a contract whose recorded version is not among them
+ * are the same fact from this function's side - the exact artefact is not being served - and one
+ * sentence says it without guessing which.
+ */
+export const bindingAt = (
+  source: RegistrySource,
+  address: ContractAddress,
+  implementation: { readonly id: string; readonly version: string },
+): Found<ChosenBinding> => {
+  const wanted = source
+    .implementationBindings(address)
+    .find(
+      (binding) =>
+        binding.address.id === implementation.id &&
+        binding.address.version === implementation.version,
+    )
+
+  if (wanted === undefined) {
+    const what = renderImplementation({ contract: address, ...implementation })
+
+    return {
+      faults: [
+        `the registry is not serving ${what}, which toopo.lock records as installed. A published ` +
+          `version is served for life, so this is a registry that cannot answer right now rather ` +
+          `than an artefact that went away. Nothing was changed.`,
+      ],
     }
   }
 

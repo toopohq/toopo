@@ -4,17 +4,19 @@
  *   node cli/toopo.ts init
  *   node cli/toopo.ts add string/slugify
  *   node cli/toopo.ts add number/parse --implementation reference
- *   node cli/toopo.ts update
+ *   node cli/toopo.ts remove string/slugify --apply
  *   node cli/toopo.ts update --apply
+ *   node cli/toopo.ts list
  *   node cli/toopo.ts search convert string to number
  *
  * It is thin on purpose, and the thinness is a property worth naming because it is the one this folder
  * would lose first. **Everything this tool decides is reachable from a guard, with no process, no
  * working directory and no clock.** Reading the arguments, reading the project, handing the two to
  * something that decides, and printing the answer is the whole of what happens here - which is why
- * `add` could be measured end to end without a sandbox, and why `update` asks for its acceptance as a
- * second command rather than as a prompt. An interactive prompt written here would take that away, and
- * would take it away silently.
+ * `add` could be measured end to end without a sandbox, and why `update` and `remove` ask for their
+ * acceptance as a second command rather than as a prompt. An interactive prompt written here would take
+ * that away, and would take it away silently. `THE_WRITE_DISCIPLINE` in `arguments.ts` says which
+ * commands ask twice and why `add` does not.
  *
  * The project root is the working directory, and `toopo.json` is the marker of a project rather than a
  * `package.json`. Nothing this tool does needs a package manager to have been used: it copies source
@@ -34,18 +36,23 @@ import {
   writeConfiguration,
 } from './configuration.js'
 import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
+import { listProject } from './list.js'
 import { localSource } from './local-source.js'
 import { UnusableLockfile, readLockfile } from './lockfile.js'
+import { prepareRemoval } from './remove.js'
 import {
+  renderCatalogue,
   renderInit,
   renderInstallation,
+  renderList,
   renderRefusal,
+  renderRemoval,
   renderSearch,
   renderUnchanged,
   renderUpToDate,
   renderUpdate,
 } from './report.js'
-import { search } from './search.js'
+import { displayed, search } from './search.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
 import { renderContract } from '../registry/address.js'
@@ -80,6 +87,19 @@ const theConfiguration = (): Configuration => {
     refuse([
       `this folder has no ${CONFIGURATION_FILE}, so nothing knows where a feature should go. Run ` +
         `\`toopo init\` first - it takes no answer and writes one file.`,
+    ])
+  }
+
+  return held
+}
+
+/** The lockfile, or the refusal that says nothing is installed, in the words of what was asked. */
+const theLockfile = (verb: string): Lockfile => {
+  const held = readLockfile(root)
+  if (held === null) {
+    refuse([
+      `this folder has no toopo.lock, so nothing is installed and there is nothing to ${verb}. ` +
+        `Install something with \`toopo add string/slugify\`.`,
     ])
   }
 
@@ -145,52 +165,72 @@ try {
       if ('faults' in written) refuse(written.faults)
       out(renderInstallation(outcome.installation, configuration))
     }
-  } else if (parsed.command.name === 'search') {
-    // The only command that reads no project at all - no `toopo.json`, no lockfile, not even the
-    // working directory. It is a property rather than an accident: looking for a feature comes
-    // before having somewhere to put it, and `search` is the first command that says so.
-    out(renderSearch(search(localSource(), parsed.command.query)))
-  } else {
+  } else if (parsed.command.name === 'remove') {
     const configuration = theConfiguration()
-    const lockfile = readLockfile(root)
-    if (lockfile === null) {
-      refuse([
-        `this folder has no toopo.lock, so nothing is installed and there is nothing to update. ` +
-          `Install something with \`toopo add string/slugify\`.`,
-      ])
-    }
-
-    const outcome = prepareUpdate(localSource(), {
+    const outcome = prepareRemoval(localSource(), {
       root,
       configuration,
-      lockfile,
+      lockfile: theLockfile('remove'),
+      contract: parsed.command.contract,
       at: new Date().toISOString(),
     })
 
     if ('faults' in outcome) refuse(outcome.faults)
 
-    const { update } = outcome
-    const touched = update.writes.length + update.removals.length
+    const { removal } = outcome
 
-    if (touched === 0 && update.features.every((feature) => feature.heldBack === null)) {
-      out(
-        renderUpToDate(
-          update.features
-            .filter((feature) => feature.files.some((file) => file.verdict === 'kept'))
-            .map((feature) => renderContract(feature.contract)),
-        ),
-      )
-    } else if (!parsed.command.apply) {
-      out(renderUpdate(update, configuration, false))
-    } else {
+    if (parsed.command.apply) {
       const written = commit(root, configuration.directory, {
-        writes: update.writes,
-        removals: update.removals,
-        lockfile: update.lockfile,
+        writes: removal.reconciliation.writes,
+        removals: removal.reconciliation.removals,
+        lockfile: removal.reconciliation.lockfile,
       })
 
       if ('faults' in written) refuse(written.faults)
-      out(renderUpdate(update, configuration, true))
+    }
+
+    out(renderRemoval(removal, configuration, parsed.command.apply))
+  } else if (parsed.command.name === 'list') {
+    const configuration = theConfiguration()
+
+    out(renderList(listProject(root, configuration, theLockfile('list')), configuration))
+  } else if (parsed.command.name === 'search') {
+    // The only two commands that read no project at all - no `toopo.json`, no lockfile, not even the
+    // working directory. It is a property rather than an accident: looking for a feature comes
+    // before having somewhere to put it, and `search` is the first command that says so.
+    out(renderSearch(search(localSource(), parsed.command.query)))
+  } else if (parsed.command.name === 'catalogue') {
+    const source = localSource()
+    const refusals = source.refusals().refusals
+
+    out(renderCatalogue(source.contractIndex().entries.map((entry) => displayed(entry, refusals))))
+  } else {
+    const configuration = theConfiguration()
+    const outcome = prepareUpdate(localSource(), {
+      root,
+      configuration,
+      lockfile: theLockfile('update'),
+      at: new Date().toISOString(),
+    })
+
+    if ('faults' in outcome) refuse(outcome.faults)
+
+    const { reconciliation } = outcome
+    const touched = reconciliation.writes.length + reconciliation.removals.length
+
+    if (touched === 0 && reconciliation.features.every((feature) => feature.heldBack === null)) {
+      out(renderUpToDate(reconciliation))
+    } else if (!parsed.command.apply) {
+      out(renderUpdate(reconciliation, configuration, false))
+    } else {
+      const written = commit(root, configuration.directory, {
+        writes: reconciliation.writes,
+        removals: reconciliation.removals,
+        lockfile: reconciliation.lockfile,
+      })
+
+      if ('faults' in written) refuse(written.faults)
+      out(renderUpdate(reconciliation, configuration, true))
     }
   }
 } catch (error) {

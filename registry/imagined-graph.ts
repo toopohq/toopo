@@ -58,6 +58,27 @@ export const SIGN = addressOf('number/sign')
 export const ROUND = addressOf('number/round')
 
 /**
+ * Two contracts that share a file and depend on nothing, which the graph above cannot express.
+ *
+ * The graph above deduplicates `digits.ts` between `string/pad` and `number/clamp`, and that pair has a
+ * property nobody chose: the carrier is a *dependency* of the borrower. Resolution is
+ * dependencies-first, so the carrier is always placed first and can never leave the project while the
+ * borrower stays - which makes the one thing deduplication has to survive unreachable, and it was
+ * unreachable in silence until a removal went looking for it.
+ *
+ * Deduplication is by digest across the whole plan and never by an edge, so two features that know
+ * nothing about each other share a file exactly as readily. Removing the carrier then has to write the
+ * blob into the folder of whoever still holds it and repoint that folder's import at it - and a defect
+ * that skipped either half would leave the project looking installed and failing at build, on an import
+ * inside a file nobody edited.
+ *
+ * These are kept out of `HOLDINGS` on purpose: adding them there would change the graph two batteries
+ * and three suites are already measured against, to reach one shape that wants its own source.
+ */
+export const LEFT = addressOf('text/left')
+export const RIGHT = addressOf('text/right')
+
+/**
  * The version every implementation of this graph is published at.
  *
  * A published version, unlike the five: the walk refuses an unpublished edge by construction, so a
@@ -72,6 +93,9 @@ export const referenceAt = (
 ): ImplementationAddress => ({ contract, id: 'reference', version })
 
 const DIGITS_SOURCE = 'export const DIGITS = /^[0-9]+$/\n'
+
+/** Carried by `text/left` and by `text/right`, byte for byte, with no edge between them. */
+const TRIM_SOURCE = 'export const TRIM = /\\s/\n'
 
 /**
  * The source of `number/round@1`'s reference, which the imagined contract record hashes as its own
@@ -116,6 +140,19 @@ export const sign = (value: number): number =>
 `,
 
   'number/round/reference.ts': ROUND_SOURCE,
+
+  // Neither names the other. What they share is `trim.ts`, and only its digest says so.
+  'text/left/trim.ts': TRIM_SOURCE,
+  'text/left/reference.ts': `import { TRIM } from './trim.js'
+
+export const left = (text: string): string => (TRIM.test(text) ? text.trimStart() : text)
+`,
+
+  'text/right/trim.ts': TRIM_SOURCE,
+  'text/right/reference.ts': `import { TRIM } from './trim.js'
+
+export const right = (text: string): string => (TRIM.test(text) ? text.trimEnd() : text)
+`,
 }
 
 /**
@@ -215,6 +252,18 @@ export const clamp = first(CLAMP, CLAMP_FILES, [PAD])
 export const round = first(ROUND, ROUND_FILES, [CLAMP, SIGN])
 
 export const HOLDINGS: readonly ImplementationRecord[] = [pad, sign, clamp, round]
+
+/**
+ * The two independent carriers, apart from `HOLDINGS` and never mixed into it.
+ *
+ * `text/left@1` sorts before `text/right@1`, so a plan over both places `trim.ts` in the left folder
+ * and repoints the right one at it. That is what makes removing `text/left@1` the case that matters:
+ * the file has to move into `text/right/`, and the import inside `right.ts` has to move with it.
+ */
+export const INDEPENDENT_CARRIERS: readonly ImplementationRecord[] = [
+  first(LEFT, ['text/left/reference.ts', 'text/left/trim.ts'], []),
+  first(RIGHT, ['text/right/reference.ts', 'text/right/trim.ts'], []),
+]
 
 const next = publicationAt(IMAGINED_NEXT_VERSION, IMAGINED_NEXT_SOURCES)
 

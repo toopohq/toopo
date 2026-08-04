@@ -218,15 +218,45 @@ const namedInFull = (fields: readonly Field[], words: readonly string[]): boolea
     (field) => DELIBERATE.has(field.kind) && field.words.every((word) => words.includes(word)),
   )
 
-export type Result = {
+/**
+ * What a screen shows about one contract: everything except why it was ranked.
+ *
+ * It is a type of its own because two screens show it. A search result is one of these with a score;
+ * the catalogue listing - `toopo search` with no words - is one of these and nothing else, because
+ * there is no query and therefore nothing to rank. Without the split, listing the catalogue would mean
+ * inventing a score for every entry, which is a number that means nothing sitting in a field whose
+ * whole purpose is to mean something.
+ */
+export type Displayed = {
   readonly address: ContractAddress
   readonly summary: string
   readonly exports: readonly string[]
   readonly installable: boolean
   /** Why the catalogue decided against it, for a contract that carries a refusal. */
   readonly refusal: ServedRefusal | null
+}
+
+export type Result = Displayed & {
   readonly score: number
 }
+
+/**
+ * One index entry as a screen shows it, with the catalogue's own refusal attached where there is one.
+ *
+ * Here rather than at the two call sites because attaching a refusal to the *wrong* contract is a
+ * defect with no symptom - every result carries a plausible-looking reason - and one of the two
+ * screens would have to be trusted to have got it right on its own.
+ */
+export const displayed = (
+  entry: ServedIndexEntry,
+  refusals: readonly ServedRefusal[],
+): Displayed => ({
+  address: entry.address,
+  summary: entry.summary,
+  exports: entry.exports.map((held) => held.name),
+  installable: entry.installable,
+  refusal: refusals.find((refusal) => sameContract(refusal.address, entry.address)) ?? null,
+})
 
 export type Search = {
   readonly query: string
@@ -274,16 +304,7 @@ export const search = (source: RegistrySource, query: string): Search => {
       const score = scoreOf(entry, words)
       if (score === null) return []
 
-      return [
-        {
-          address: entry.address,
-          summary: entry.summary,
-          exports: entry.exports.map((held) => held.name),
-          installable: entry.installable,
-          refusal: refusals.find((refusal) => sameContract(refusal.address, entry.address)) ?? null,
-          score,
-        },
-      ]
+      return [{ ...displayed(entry, refusals), score }]
     })
     .sort((first, second) =>
       first.score === second.score

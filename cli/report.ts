@@ -19,12 +19,17 @@
  * three lines above needs it to work.
  */
 
-import { renderContract } from '../registry/address.js'
+import { renderContract, sameContract } from '../registry/address.js'
+import type { Lockfile } from '../registry/implementation-record.js'
+import type { ServedIndexEntry, ServedRefusals } from '../registry/response.js'
 import type { Configuration } from './configuration.js'
 import { renderCount } from './diff.js'
 import type { InstalledEntry, Installation } from './install.js'
-import type { Result, Search } from './search.js'
-import type { FileOutcome, FileVerdict, Update } from './update.js'
+import type { Listing } from './list.js'
+import type { FeatureOutcome, FileOutcome, FileVerdict, Reconciliation } from './reconcile.js'
+import type { Removal } from './remove.js'
+import { listed } from './remove.js'
+import type { Displayed, Result, Search } from './search.js'
 
 /**
  * Bytes as a person reads them. Decimal thousands, because that is what a file manager shows and this
@@ -81,11 +86,30 @@ export const renderImportLine = (
   ).map((line) => `${INDENT}${line}`),
 ]
 
+/**
+ * What `init` says, and the one sentence that is here to stop a silent trap rather than to explain a
+ * setting.
+ *
+ * **The installed folder is committed, and so is the lockfile.** Nothing about toopo enforces it and
+ * nothing can: what a project ignores is the project's business, and reading `.gitignore` would mean
+ * spawning git inside somebody else's repository to answer a question we can ask better by saying it
+ * once. What happens when the folder is not committed is that the next person to clone gets a lockfile
+ * describing files that are not there, their build fails on an import long before they think to run
+ * `toopo update`, and nothing anywhere tells them why. This is the moment they are choosing the folder,
+ * which is the moment the sentence is worth reading; `renderUpdate` catches the symptom for whoever
+ * arrives after it was not.
+ */
+const whatToCommit = (configuration: Configuration): string =>
+  `Commit toopo.json, toopo.lock and ${configuration.directory}/ - what toopo installs is source ` +
+  `code in your project, not a dependency your package manager restores.`
+
 export const renderInit = (configuration: Configuration, existed: boolean): string =>
   [
     '',
     `${INDENT}toopo.json  ${existed ? 'updated' : 'written'}`,
     `${INDENT}features    ${configuration.directory}`,
+    '',
+    ...paragraph(whatToCommit(configuration)).map((line) => `${INDENT}${line}`),
     '',
     `${INDENT}Change the folder with  toopo init --dir <path>`,
     `${INDENT}Install something with  toopo add string/slugify`,
@@ -211,13 +235,16 @@ const VERDICTS: Readonly<Record<Exclude<FileVerdict, 'unchanged'>, readonly [str
   updated: ['~', ''],
   restored: ['+', 'it was gone, and this puts it back'],
   'already-written': ['+', 'an interrupted run had already written it'],
-  removed: ['-', 'nothing imports it any more'],
-  // Three verdicts share the `!` mark and each needs its own sentence to be told apart, but none of
-  // them restates the feature's own reason above it: a `conflict` line says which file changed on both
+  // No sentence, because *why* a file goes is a fact about its feature and not about the file: under
+  // `update` its feature stopped being imported, under `remove` its feature may be the one that was
+  // named. The feature line says which, once, and it used to say it twice with one of the two wrong.
+  removed: ['-', ''],
+  // Two verdicts share the `!` mark and each needs its own sentence to be told apart, but neither
+  // restates the feature's own reason above it: a `conflict` line says which file changed on both
   // sides, and the line above says what that means for the feature.
   kept: ['!', 'your version is kept - the registry did not change this file'],
   conflict: ['!', 'changed on both sides'],
-  'kept-orphan': ['!', 'your version is kept - nothing imports it any more'],
+  'kept-orphan': ['!', 'your version is kept'],
 }
 
 const THE_WAYS_OUT =
@@ -258,8 +285,8 @@ const fileLine = (outcome: FileOutcome, configuration: Configuration): readonly 
   ]
 }
 
-const movedTo = (feature: Update['features'][number]): string => {
-  if (feature.now === null) return 'leaves the project'
+const movedTo = (feature: FeatureOutcome, whyItLeaves: string): string => {
+  if (feature.now === null) return `leaves the project · ${whyItLeaves}`
   if (feature.was === null) return `new · ${feature.now.id}@${feature.now.version}`
   if (feature.was.version === feature.now.version) return `${feature.now.id}@${feature.now.version}`
 
@@ -275,7 +302,7 @@ const movedTo = (feature: Update['features'][number]): string => {
  * recording a version the user was never told about - a silent update of a record, which is the same
  * rule as a silent update of a file.
  */
-const versionMovedAlone = (feature: Update['features'][number]): boolean =>
+const versionMovedAlone = (feature: FeatureOutcome): boolean =>
   feature.was !== null && feature.now !== null && feature.was.version !== feature.now.version
 
 /**
@@ -289,18 +316,26 @@ const versionMovedAlone = (feature: Update['features'][number]): boolean =>
  */
 const THEIRS: ReadonlySet<FileVerdict> = new Set<FileVerdict>(['conflict', 'kept-orphan'])
 
-const theirsToResolve = (feature: Update['features'][number]): boolean =>
+const theirsToResolve = (feature: FeatureOutcome): boolean =>
   feature.files.some((file) => THEIRS.has(file.verdict))
 
+/**
+ * One feature's block, and `whyItLeaves` is the one sentence the two commands do not share.
+ *
+ * It is a parameter rather than a branch on which command is rendering, because the answer is not a
+ * property of the command: a removal takes out the feature that was named *and* whatever only it
+ * pulled in, and those two leave for different reasons on the same screen.
+ */
 const featureBlock = (
-  feature: Update['features'][number],
+  feature: FeatureOutcome,
   configuration: Configuration,
+  whyItLeaves: string,
 ): readonly string[] => {
   const lines = feature.files.flatMap((file) => fileLine(file, configuration))
   if (lines.length === 0 && feature.heldBack === null && !versionMovedAlone(feature)) return []
 
   return [
-    `${INDENT}${renderContract(feature.contract)} · ${movedTo(feature)}` +
+    `${INDENT}${renderContract(feature.contract)} · ${movedTo(feature, whyItLeaves)}` +
       `${feature.heldBack === null ? '' : ' · held back'}`,
     ...(feature.heldBack === null
       ? []
@@ -320,6 +355,51 @@ const countOf = (things: number, one: string, many: string): string =>
   `${things} ${things === 1 ? one : many}`
 
 /**
+ * How much moved, read off the same verdicts the lines above are rendered from.
+ *
+ * Shared by the two commands that write, because a tally that disagreed with the lines it summarises
+ * would be the one number the reader checks against everything else on the screen.
+ */
+const theTally = (reconciliation: Reconciliation): string => {
+  const held = reconciliation.features.filter((feature) => feature.heldBack !== null)
+  const touched = reconciliation.writes.length + reconciliation.removals.length
+  const moved = reconciliation.features.filter(
+    (feature) =>
+      feature.heldBack === null && feature.files.some((file) => file.verdict !== 'unchanged'),
+  )
+
+  return (
+    `${INDENT}${countOf(touched, 'file', 'files')} in ${countOf(moved.length, 'feature', 'features')}` +
+    `${held.length === 0 ? '' : ` · ${countOf(held.length, 'feature', 'features')} held back`}`
+  )
+}
+
+/**
+ * The two ways a report that may or may not have been applied ends.
+ *
+ * The command to type is a parameter because it is the only part that differs, and a second copy of
+ * these three lines would be a second place for the discipline they enforce to be softened.
+ */
+const theClosing = (applied: boolean, applyWith: string): readonly string[] =>
+  applied
+    ? [`${INDENT}Written, and recorded in toopo.lock`]
+    : [`${INDENT}Nothing has been written.`, '', `${INDENT}Apply it with  ${applyWith}`]
+
+/**
+ * The symptom of a folder nobody committed, said where it can still be acted on.
+ *
+ * Not one file missing - **every** file the lockfile claims. A project somebody deleted a folder from
+ * has some of its files; a checkout that never received the folder has none of them, and the repair
+ * this command performs is what hides the cause: it works, the build goes green, and the next person
+ * to clone meets exactly the same thing.
+ */
+const THE_FOLDER_IS_NOT_COMMITTED =
+  'Every file toopo.lock claims was missing from disk. If this is a fresh checkout, the installed ' +
+  'folder is not committed - what toopo writes is source code in your project rather than a ' +
+  'dependency your package manager restores, so it belongs in version control with the rest of it. ' +
+  'Otherwise something removed it, and this run puts it back.'
+
+/**
  * What was found, and what was or was not done about it.
  *
  * `applied` is the whole of the difference between the two commands. It is a parameter rather than two
@@ -327,42 +407,203 @@ const countOf = (things: number, one: string, many: string): string =>
  * would be two places for that body to drift.
  */
 export const renderUpdate = (
-  update: Update,
+  update: Reconciliation,
+  configuration: Configuration,
+  applied: boolean,
+): string =>
+  [
+    '',
+    ...update.features.flatMap((feature) =>
+      featureBlock(feature, configuration, 'nothing imports it any more'),
+    ),
+    theTally(update),
+    '',
+    ...(update.everyClaimedFileIsMissing
+      ? [...paragraph(THE_FOLDER_IS_NOT_COMMITTED, 72).map((line) => `${INDENT}${line}`), '']
+      : []),
+    ...theClosing(applied, 'toopo update --apply'),
+    '',
+  ].join('\n')
+
+// ---------------------------------------------------------------------------
+// `toopo remove`
+// ---------------------------------------------------------------------------
+
+/**
+ * What a removal does, and the case it is most careful about is the one where nothing goes.
+ *
+ * A feature another root still imports **stays**, and stops being something the user asked for. That
+ * is the right answer and it is also the moment somebody decides this tool cannot be trusted, because
+ * *I asked to take it out and it is still there* is what it looks like from outside. So it is never
+ * left to be read off a report with nothing in it: the feature is named, what still imports it is
+ * named, and what did change is said in the same breath - it is no longer a root, so it leaves on its
+ * own the day nothing reaches it.
+ */
+export const renderRemoval = (
+  removal: Removal,
   configuration: Configuration,
   applied: boolean,
 ): string => {
-  const held = update.features.filter((feature) => feature.heldBack !== null)
-  const touched = update.writes.length + update.removals.length
+  const what = renderContract(removal.named)
+  const applyWith = `toopo remove ${removal.named.name} --apply`
+
+  if (removal.departure === 'stays-as-a-dependency') {
+    return [
+      '',
+      ...paragraph(
+        `${what} stays where it is: ${listed(removal.stillReachedBy)} ` +
+          `${removal.stillReachedBy.length === 1 ? 'imports' : 'import'} it.`,
+      ).map((line) => `${INDENT}${line}`),
+      '',
+      ...paragraph(
+        'What changes is that it is no longer something you asked for, so it goes on its own the ' +
+          'day nothing imports it. No file moves.',
+      ).map((line) => `${INDENT}${line}`),
+      '',
+      ...(applied
+        ? [`${INDENT}Recorded in toopo.lock`]
+        : [`${INDENT}Nothing has been written.`, '', `${INDENT}Apply it with  ${applyWith}`]),
+      '',
+    ].join('\n')
+  }
 
   return [
     '',
-    ...update.features.flatMap((feature) => featureBlock(feature, configuration)),
-    `${INDENT}${countOf(touched, 'file', 'files')} in ` +
-      `${countOf(update.features.filter((feature) => feature.heldBack === null && feature.files.some((file) => file.verdict !== 'unchanged')).length, 'feature', 'features')}` +
-      `${held.length === 0 ? '' : ` · ${countOf(held.length, 'feature', 'features')} held back`}`,
+    ...removal.reconciliation.features.flatMap((feature) =>
+      featureBlock(
+        feature,
+        configuration,
+        sameContract(feature.contract, removal.named)
+          ? 'you asked for it to go'
+          : `only ${what} pulled it in`,
+      ),
+    ),
+    theTally(removal.reconciliation),
     '',
-    ...(applied
-      ? [`${INDENT}Written, and recorded in toopo.lock`]
-      : [
-          `${INDENT}Nothing has been written.`,
-          '',
-          `${INDENT}Apply it with  toopo update --apply`,
-        ]),
+    ...theClosing(applied, applyWith),
     '',
   ].join('\n')
 }
 
-export const renderUpToDate = (held: readonly string[]): string =>
+/**
+ * Rows aligned on their widest column, with a note only where there is one.
+ *
+ * A padded line with nothing after it is trailing whitespace, which is the report's own rule, so the
+ * padding is trimmed off the end rather than applied conditionally in four places.
+ */
+const aligned = (rows: readonly (readonly [string, string, string])[]): readonly string[] => {
+  const first = Math.max(...rows.map(([what]) => what.length), 0)
+  const second = Math.max(...rows.map(([, standing]) => standing.length), 0)
+
+  return rows.map(([what, standing, note]) =>
+    `${INDENT}  ${what.padEnd(first)}  ${standing.padEnd(second)}  ${note}`.trimEnd(),
+  )
+}
+
+const standingOf = (feature: FeatureOutcome): string =>
+  feature.now === null ? 'leaves the project' : `${feature.now.id}@${feature.now.version}`
+
+/**
+ * Nothing to do, and every feature named while saying so.
+ *
+ * It used to be three sentences and no name: *every feature is at the version the registry serves*,
+ * with the features left to the reader's memory. That is the shape of an answer nobody can check - the
+ * command that knows what the project holds is the one refusing to say it - and it was the measured
+ * gap that `toopo list` closes for good. This says it too, because somebody who has just run an update
+ * should not have to run a second command to see what it was talking about.
+ */
+export const renderUpToDate = (update: Reconciliation): string =>
   [
     '',
     `${INDENT}Every feature is at the version the registry serves, and every file is as it was written.`,
-    ...(held.length === 0
-      ? []
-      : ['', `${INDENT}Your own changes are kept in: ${held.join(', ')}`]),
+    '',
+    ...aligned(
+      update.features.map(
+        (feature) =>
+          [
+            renderContract(feature.contract),
+            standingOf(feature),
+            feature.files.some((file) => file.verdict === 'kept') ? 'your own changes are kept' : '',
+          ] as const,
+      ),
+    ),
     '',
     `${INDENT}Nothing to do.`,
     '',
   ].join('\n')
+
+// ---------------------------------------------------------------------------
+// `toopo list`
+// ---------------------------------------------------------------------------
+
+/** What a file's standing is called on the screen. `as-written` says nothing, because it is the norm. */
+const STANDINGS: Readonly<Record<Listing['features'][number]['files'][number]['standing'], string>> = {
+  'as-written': '',
+  edited: 'edited',
+  missing: 'missing',
+}
+
+/**
+ * What this project holds, and no import line anywhere on the screen.
+ *
+ * The export names live in the contract and reach the installer through the served index, so printing
+ * an import line here would mean asking a registry - which would make the one command that answers
+ * from the project alone fail when the registry is unreachable. `toopo add <name>` on something already
+ * installed prints the line and writes nothing, which is where somebody who has forgotten it should be
+ * sent, and the closing line sends them.
+ */
+export const renderList = (listing: Listing, configuration: Configuration): string => {
+  if (listing.features.length === 0) {
+    return [
+      '',
+      `${INDENT}toopo.lock records nothing installed.`,
+      '',
+      `${INDENT}Find something with   toopo search`,
+      `${INDENT}Install it with       toopo add string/slugify`,
+      '',
+    ].join('\n')
+  }
+
+  const missing = listing.features.flatMap((feature) =>
+    feature.files.filter((file) => file.standing === 'missing'),
+  )
+
+  return [
+    '',
+    `${INDENT}${countOf(listing.features.length, 'feature', 'features')} · ` +
+      `${countOf(listing.files, 'file', 'files')} · ${readableBytes(listing.bytes)}`,
+    '',
+    ...listing.features.flatMap((feature) => [
+      `${INDENT}${renderContract(feature.contract)} · ` +
+        `${feature.implementation.id}@${feature.implementation.version} · ` +
+        `${feature.askedFor ? 'you asked for it' : 'pulled in as a dependency'}`,
+      ...aligned(
+        feature.files.map(
+          (file) =>
+            [
+              `${configuration.directory}/${file.path}`,
+              readableBytes(file.bytes),
+              STANDINGS[file.standing],
+            ] as const,
+        ),
+      ),
+      '',
+    ]),
+    ...(missing.length === 0
+      ? []
+      : [
+          ...paragraph(
+            `${countOf(missing.length, 'file is', 'files are')} missing. ` +
+              `\`toopo update --apply\` puts ${missing.length === 1 ? 'it' : 'them'} back.`,
+            72,
+          ).map((line) => `${INDENT}${line}`),
+          '',
+        ]),
+    `${INDENT}Take one out with     toopo remove <domain>/<name>`,
+    `${INDENT}See its import line   toopo add <domain>/<name>`,
+    '',
+  ].join('\n')
+}
 
 /**
  * A refusal, with the sentences that say what was wrong and that nothing was written.
@@ -399,7 +640,7 @@ const SUMMARY_LINES = 3
  * `parseNumber` that answered a contract without ever printing `parseNumber` would leave the reader
  * checking whether they got the right thing.
  */
-const resultBlock = (result: Result, alone: boolean): readonly string[] => [
+const resultBlock = (result: Displayed, alone: boolean): readonly string[] => [
   `${INDENT}${renderContract(result.address)}${result.installable ? '' : '   not installable'}`,
   ...shortened(result.summary, SUMMARY_WIDTH, SUMMARY_LINES).map((line) => `${INDENT}    ${line}`),
   `${INDENT}    exports  ${result.exports.join(', ')}`,
@@ -461,6 +702,30 @@ export const renderSearch = (found: Search): string => {
         ]),
   ].join('\n')
 }
+
+/**
+ * The whole catalogue, which is what `toopo search` with no words answers.
+ *
+ * **It used to be a refusal** - *`search` needs something to look for* - which is the tool answering
+ * "you must already know what you want" to somebody who has just arrived, and *what have you got* is
+ * the first question anybody asks. At five contracts it costs one screen.
+ *
+ * The refused contract is shown with the others and marked, rather than hidden: a catalogue that
+ * listed only what it sells would be publishing its decisions nowhere, and the reason `array/group-by@1`
+ * is not installable is the most useful thing this whole listing has to say to somebody about to write
+ * their own grouper. `alone` is false here, so the measurement itself is one search away rather than
+ * on a screen that would then be five paragraphs of argument.
+ */
+export const renderCatalogue = (entries: readonly Displayed[]): string =>
+  [
+    '',
+    `${INDENT}The catalogue holds ${countOf(entries.length, 'contract', 'contracts')}.`,
+    '',
+    ...entries.flatMap((entry) => resultBlock(entry, false)),
+    `${INDENT}Install one with  toopo add <domain>/<name>`,
+    `${INDENT}Or search         toopo search convert string to number`,
+    '',
+  ].join('\n')
 
 export const renderRefusal = (faults: readonly string[]): string =>
   [

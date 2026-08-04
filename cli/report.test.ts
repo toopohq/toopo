@@ -4,7 +4,13 @@ import { imaginedSource } from './imagined-source.js'
 import type { Installation } from './install.js'
 import { prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
-import { readableBytes, renderImportLine, renderInstallation, renderRefusal } from './report.js'
+import {
+  readableBytes,
+  renderImportLine,
+  renderInit,
+  renderInstallation,
+  renderRefusal,
+} from './report.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject } from './temporary-project.js'
 
 /**
@@ -77,6 +83,26 @@ describe('what the user reads', () => {
    * The reader's next question after a refusal is always whether their project is now half-changed, so
    * the answer comes before the reason rather than after it.
    */
+  /**
+   * `init` says what has to be committed, at the moment the folder is being chosen.
+   *
+   * It is the only prevention this tool can offer for a trap it cannot detect: a project whose installed
+   * folder is ignored by git hands the next person a lockfile describing files that are not there, and
+   * their build fails on an import long before anybody thinks to run `toopo update`. Reading their
+   * `.gitignore` would mean spawning git inside somebody else's repository to answer a question that
+   * one sentence answers better - and `update` catches the symptom for whoever arrives after this was
+   * not read.
+   */
+  it('an-init-says-what-has-to-be-committed', () => {
+    const screen = renderInit(CONFIGURATION, false)
+
+    expect(screen).toContain('Commit toopo.json, toopo.lock and src/lib/toopo/')
+    expect(screen).toContain('source code in your project')
+    expect(renderInit({ version: 1, directory: 'app/vendor' }, true)).toContain(
+      'toopo.lock and app/vendor/',
+    )
+  })
+
   it('a-refusal-says-nothing-was-written-before-it-says-why', () => {
     const lines = renderRefusal(['the reason it was refused']).split('\n').filter((line) => line !== '')
 

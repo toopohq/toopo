@@ -41,9 +41,15 @@ describe('what the user typed', () => {
     })
   })
 
+  /**
+   * The unknown command used to be `remove`, which this `toopo` now has - and the guard reddened when
+   * it arrived, which is the right way round. What replaces it is a word no plausible version of this
+   * tool will ever take: `uninstall` is the spelling somebody who has used a package manager reaches
+   * for, so the sentence it produces is one a real user will read.
+   */
   it('an-unknown-command-and-an-unknown-flag-are-refused', () => {
-    expect(parseArguments(['remove', 'string/slugify'])).toEqual({
-      faults: ['`remove` is not a command this `toopo` has'],
+    expect(parseArguments(['uninstall', 'string/slugify'])).toEqual({
+      faults: ['`uninstall` is not a command this `toopo` has'],
     })
     expect(parseArguments(['add', 'string/slugify', '--force'])).toEqual({
       faults: ['`--force` is not a flag this command takes (--implementation)'],
@@ -55,6 +61,52 @@ describe('what the user typed', () => {
     expect(parseArguments(['add'])).toEqual({ faults: ['`add` needs the name of a contract'] })
     expect(parseArguments(['add', '--implementation', 'reference'])).toEqual({
       faults: ['`add` needs the name of a contract before any flag'],
+    })
+  })
+
+  /**
+   * The same two refusals, asked of the other command that names a contract.
+   *
+   * A guard of its own rather than two more assertions in the one above, because the identifier is an
+   * address three batteries pin and `add-without-a-contract-is-refused` would have become a name that
+   * no longer says what it checks. What the two guards share is one function - `contractThenFlags` -
+   * so the sentence cannot be improved for one command and left alone for the other; what they do not
+   * share is a name, which is exactly the split the catalogue's own rule about identifiers asks for.
+   */
+  it('remove-without-a-contract-is-refused', () => {
+    expect(parseArguments(['remove'])).toEqual({ faults: ['`remove` needs the name of a contract'] })
+    expect(parseArguments(['remove', '--apply'])).toEqual({
+      faults: ['`remove` needs the name of a contract before any flag'],
+    })
+  })
+
+  /**
+   * The way out carries the same acceptance `update` does, and for the reason `THE_WRITE_DISCIPLINE`
+   * states: it can delete somebody's file, so the default is the safe one.
+   */
+  it('remove-writes-only-when-it-is-asked-to', () => {
+    expect(parseArguments(['remove', 'string/slugify'])).toEqual({
+      command: { name: 'remove', contract: 'string/slugify', apply: false },
+    })
+    expect(parseArguments(['remove', 'string/slugify', '--apply'])).toEqual({
+      command: { name: 'remove', contract: 'string/slugify', apply: true },
+    })
+  })
+
+  /**
+   * Two commands that take nothing, and the second is the one worth a guard: `search` with no words
+   * used to be refused, which answered "you must already know what you are looking for" to the first
+   * question anybody asks. It is a command of its own rather than an empty query, because `search.ts`
+   * answers nothing to a query with no words in it and that rule stays exactly as it was.
+   */
+  it('a-command-that-takes-nothing-is-read-and-refuses-an-argument', () => {
+    expect(parseArguments(['list'])).toEqual({ command: { name: 'list' } })
+    expect(parseArguments(['list', 'string/slugify'])).toEqual({
+      faults: ['`list` takes no argument'],
+    })
+    expect(parseArguments(['search'])).toEqual({ command: { name: 'catalogue' } })
+    expect(parseArguments(['search', 'edit', 'distance'])).toEqual({
+      command: { name: 'search', query: 'edit distance' },
     })
   })
 
