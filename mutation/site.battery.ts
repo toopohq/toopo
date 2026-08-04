@@ -103,6 +103,10 @@ const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `      return value.description === null 
 
 const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id },`
 
+const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) => renderedGroup(group, table, answer)),`
+
+const A_HEADING_CARRIES_ITS_OWN_ADDRESS = `  addressed('h4', group.id, group.title),`
+
 const ONE_ANSWER_IS_WRITTEN_BARE = `    answered.length === 1`
 
 const THE_COST_IS_WHAT_LANDS = `  const bytes = implementation.files.reduce((total, file) => total + file.bytes, 0)`
@@ -441,6 +445,52 @@ const mutants: readonly Mutant[] = [
       'the same anonymous symbol',
     [literalFile(A_SYMBOL_KEEPS_ITS_DESCRIPTION, `      return 'Symbol()'`)],
     killed(['a-symbol-a-pattern-and-a-set-are-written-as-a-caller-writes-them']),
+  ),
+
+  /**
+   * The grouping arrived to make fifty cases findable, and this is the defect that takes that back
+   * while leaving every check about presence green.
+   *
+   * Every heading is on the page, every case is on the page, every anchor resolves, and the order
+   * the contract argued for is gone - `string/slugify@1` puts `the-surprise-in-front` first on a
+   * written argument about what a reader arriving from "slugify javascript" meets, and this reverses
+   * it. Only a guard that reads the page in document order can see it, which is why one exists.
+   */
+  sameOnEveryLens(
+    'W-30',
+    'renders a table\'s groups in reverse, so the order a contract argued for is inverted and every ' +
+      'case reads under the wrong heading',
+    [
+      contractPageFile(
+        THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER,
+        `  ...[...table.groups].reverse().flatMap((group) => renderedGroup(group, table, answer)),`,
+      ),
+    ],
+    killed(['every-group-is-a-heading-and-its-cases-follow-it']),
+  ),
+
+  /**
+   * A heading anchored on a case rather than on itself.
+   *
+   * The page still shows the right title, and `#ordinary-integer` now lands on the *IEEE-754 limits*
+   * heading instead of on the case it names. It is W-11's defect one level up - an address that is
+   * not the thing's own - and it is the reason the serialiser refuses the collision in the data as
+   * well: the two failures meet on one page and only one of them is visible from the record.
+   */
+  sameOnEveryLens(
+    'W-31',
+    'anchors a group heading on the first case of its table, so two elements answer to one address ' +
+      'and a shared link lands on the wrong one',
+    [
+      contractPageFile(
+        A_HEADING_CARRIES_ITS_OWN_ADDRESS,
+        `  addressed('h4', (table.cases[0] as { readonly id: string }).id, group.title),`,
+      ),
+    ],
+    killed([
+      'every-group-is-a-heading-and-its-cases-follow-it',
+      'every-anchor-on-a-page-is-held-by-one-element',
+    ]),
   ),
 ]
 

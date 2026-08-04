@@ -88,6 +88,17 @@ const A_MARK_ABOUT_ARITY_IS_NOT_A_NAME = `        .replace(/^\\.{3}/, '')
 
 const A_SIGNATURE_THAT_CANNOT_BE_READ_IS_REFUSED = `  throw new UnreadableSignature(text, 'its parameter list is never closed')`
 
+const A_GROUPING_IS_A_PARTITION = `  if (faults.length > 0) throw new GroupingIsNotAPartition(where, faults.join('; '))
+
+  return table.groups`
+
+const AN_ADDRESS_IS_HELD_ONCE = `  const taken = takenAddresses(
+    tables.flatMap((table) => [
+      ...table.groups.map((group) => group.id),
+      ...table.cases.map((entry) => entry['id'] as string),
+    ]),
+  )`
+
 const REFUSE_A_DISAGREEMENT = `  if (undeclared.length > 0 || missing.length > 0) {
     throw new UndeclaredHarness(folder, undeclared, missing)
   }`
@@ -403,6 +414,33 @@ const mutants: readonly Mutant[] = [
       'not understand reaches a record as a function that takes nothing',
     [signatureFile(A_SIGNATURE_THAT_CANNOT_BE_READ_IS_REFUSED, `  return ''`)],
     killed(['a-declaration-this-reader-cannot-follow-is-refused']),
+  ),
+
+  /**
+   * The grouping refusal, removed wholesale.
+   *
+   * What survives it is a table whose headings and cases have come apart, and the page renders it
+   * without complaint: a heading over nothing, a case under nothing, a group split in two under one
+   * title. Every anchor still resolves and every word is still there, which is why the refusal is
+   * where it is rather than left to a reader.
+   */
+  sameOnEveryLens(
+    'I-24',
+    'accepts any grouping at all, so a table reaches a record with a heading nothing sits under and ' +
+      'a case belonging to a group the table never declared',
+    [serialiseFile(A_GROUPING_IS_A_PARTITION, `  return table.groups`)],
+    killed(['a-grouping-that-is-not-a-partition-is-refused']),
+  ),
+
+  /**
+   * The address refusal, removed. A group and a case become one `#id` on one page and the link lands
+   * on whichever the browser meets first - the defect that only appears once somebody has shared it.
+   */
+  sameOnEveryLens(
+    'I-25',
+    'lets a group take the address of a case, so two elements of one page answer to one anchor',
+    [serialiseFile(AN_ADDRESS_IS_HELD_ONCE, `  const taken: readonly string[] = []`)],
+    killed(['a-group-that-takes-a-case-address-is-refused']),
   ),
 ]
 

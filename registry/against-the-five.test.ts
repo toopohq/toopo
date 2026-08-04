@@ -3,8 +3,14 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
-import type { ContractSource } from './serialise.js'
-import { CaseIsNotACall, REPOSITORY_ROOT, serialiseContract } from './serialise.js'
+import type { CaseTableSource, ContractSource } from './serialise.js'
+import {
+  CaseIsNotACall,
+  GroupAddressIsTaken,
+  GroupingIsNotAPartition,
+  REPOSITORY_ROOT,
+  serialiseContract,
+} from './serialise.js'
 import { eachContract, theFive } from './the-five.js'
 
 /**
@@ -193,6 +199,89 @@ describe('the five, read against their own source', () => {
     }
 
     expect(() => serialiseContract(REPOSITORY_ROOT, reordered)).toThrow(CaseIsNotACall)
+  })
+
+  /**
+   * A grouping that is not a partition does not reach a record.
+   *
+   * The contracts' own suite asserts the same thing through `every-case-is-grouped`, over the same
+   * `groupingFaults`, and this is the *refusal* rather than the assertion: a page renders a heading
+   * for every group and puts every case under one, so a table the serialiser let through with a
+   * group nothing sits in would publish a heading over nothing at all.
+   *
+   * Four faults and one guard, because they are one question and the error names which way it gave
+   * way. Written as four tables of one contract rather than four contracts, so that what differs
+   * between the cases is only the fault.
+   */
+  it('a-grouping-that-is-not-a-partition-is-refused', () => {
+    const [first] = theFive as readonly ContractSource[]
+    const withTable = (table: CaseTableSource): ContractSource => ({
+      ...(first as ContractSource),
+      caseTables: [table],
+    })
+
+    const only = (group: string): Readonly<Record<string, unknown>> => ({
+      id: 'ordinary-integer',
+      group,
+      input: '42',
+      expected: 42,
+      reason: null,
+      provenance: 'specified',
+      rationale: 'One case, so that the grouping is the only thing under test.',
+    })
+
+    const baseline = { id: 'baseline', title: 'Baseline' }
+    const sign = { id: 'sign', title: 'Sign' }
+    const purpose = 'one table, grouped wrongly'
+
+    // Distinct addresses throughout, so that the grouping is what each table fails on: the address
+    // check runs first, and a reused identifier would refuse for the other reason.
+    const interrupted = [
+      only('baseline'),
+      { ...only('sign'), id: 'leading-plus-sign', input: '+42' },
+      { ...only('baseline'), id: 'negative-zero', input: '-0', expected: -0 },
+    ]
+
+    const faults: readonly CaseTableSource[] = [
+      { name: 'edge-cases', purpose, groups: [baseline], cases: [only('whitspace')] },
+      { name: 'edge-cases', purpose, groups: [baseline, sign], cases: [only('baseline')] },
+      { name: 'edge-cases', purpose, groups: [baseline, sign], cases: interrupted },
+      { name: 'edge-cases', purpose, groups: [{ ...baseline, id: 'Baseline' }], cases: [only('Baseline')] },
+    ]
+
+    for (const table of faults) {
+      expect(() => serialiseContract(REPOSITORY_ROOT, withTable(table))).toThrow(
+        GroupingIsNotAPartition,
+      )
+    }
+  })
+
+  /**
+   * A group and a case never answer to one address.
+   *
+   * Both are rendered as `#id` on one page, so the duplicate is a link that lands on the wrong
+   * element - and it is only visible from the contract, because the two may sit in different tables.
+   * Two of the forty-eight collided the day the grouping was derived, which is why the refusal exists
+   * rather than the possibility being assumed away.
+   */
+  it('a-group-that-takes-a-case-address-is-refused', () => {
+    const [first] = theFive as readonly ContractSource[]
+    const contract = first as ContractSource
+    const [table] = contract.caseTables as readonly CaseTableSource[]
+    const taken = (table as CaseTableSource).cases[0]?.['id'] as string
+
+    const collided: ContractSource = {
+      ...contract,
+      caseTables: contract.caseTables.map((entry) => ({
+        ...entry,
+        groups: entry.groups.map((group, at) => (at === 0 ? { ...group, id: taken } : group)),
+        cases: entry.cases.map((one) =>
+          one['group'] === (table as CaseTableSource).groups[0]?.id ? { ...one, group: taken } : one,
+        ),
+      })),
+    }
+
+    expect(() => serialiseContract(REPOSITORY_ROOT, collided)).toThrow(GroupAddressIsTaken)
   })
 
   it.each(eachContract)(
