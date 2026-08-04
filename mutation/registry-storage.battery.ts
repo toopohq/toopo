@@ -82,9 +82,9 @@ const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(directory, name
 const A_COMMA_INSIDE_A_TYPE_SEPARATES_NOTHING = `    else if (character === ',' && brackets === 0 && angles === 0) {
       parts.push(list.slice(start, at))`
 
-const A_MARK_ABOUT_ARITY_IS_NOT_A_NAME = `        .replace(/^\\.{3}/, '')
-        .replace(/\\?$/, '')
-        .trim()`
+const A_MARK_ABOUT_ARITY_IS_NOT_A_NAME = `          .replace(/^\\.{3}/, '')
+          .replace(/\\?$/, '')
+          .trim(),`
 
 const A_SIGNATURE_THAT_CANNOT_BE_READ_IS_REFUSED = `  throw new UnreadableSignature(text, 'its parameter list is never closed')`
 
@@ -404,7 +404,7 @@ const mutants: readonly Mutant[] = [
     'I-22',
     'keeps the marks that say how often a parameter may be passed, so a page would render `...rest` ' +
       'and `second?` as the names a caller writes',
-    [signatureFile(A_MARK_ABOUT_ARITY_IS_NOT_A_NAME, `        .trim()`)],
+    [signatureFile(A_MARK_ABOUT_ARITY_IS_NOT_A_NAME, `          .trim(),`)],
     killed(['an-optional-or-rest-parameter-is-named-without-its-mark']),
   ),
 
