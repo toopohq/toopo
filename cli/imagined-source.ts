@@ -100,6 +100,11 @@ const sourceOver = (held: readonly ImplementationRecord[]): RegistrySource => {
     implementationBindings: (address: ContractAddress) =>
       held.filter((record) => sameContract(record.contract, address)).map(bindingOf),
 
+    // The imagined graph is four features nobody decided against, so this is empty rather than
+    // fabricated: a fixture that invented a refusal would let a guard pass on a shape the catalogue
+    // does not produce.
+    refusals: () => ({ addressing: 'named', refusals: [], absorbed: [] }),
+
     snapshot: (digest) => snapshots.get(digest) ?? null,
 
     blob: (sha256) => {

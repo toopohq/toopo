@@ -25,12 +25,19 @@ export type Command =
    * than an answer to a prompt: `update.ts` records why that matters more than the convenience.
    */
   | { readonly name: 'update'; readonly apply: boolean }
+  /**
+   * The words are joined back into one query, because a query is a phrase and nobody quotes in a
+   * shell. Fourteen of the seventy aliases the catalogue declares carry a space; requiring quotes
+   * would make the most natural way to search the one that does not work.
+   */
+  | { readonly name: 'search'; readonly query: string }
 
 export const USAGE = `usage:
   toopo init [--dir <path>]                  configure where features go
   toopo add <domain>/<name> [--implementation <id>]
                                              install a feature and what it imports
-  toopo update [--apply]                     show what would change, then write it`
+  toopo update [--apply]                     show what would change, then write it
+  toopo search <words...>                    find a contract, before or without a project`
 
 export type ParsedArguments =
   | { readonly command: Command }
@@ -135,6 +142,16 @@ export const parseArguments = (argv: readonly string[]): ParsedArguments => {
         implementation: flags.values['implementation'] ?? null,
       },
     }
+  }
+
+  if (command === 'search') {
+    const flag = rest.find((word) => word.startsWith('--'))
+    if (flag !== undefined) {
+      return { faults: [`\`${flag}\` is not a flag this command takes - \`search\` takes words`] }
+    }
+    if (rest.length === 0) return { faults: ['`search` needs something to look for'] }
+
+    return { command: { name: 'search', query: rest.join(' ') } }
   }
 
   if (command === 'update') {

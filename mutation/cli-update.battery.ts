@@ -590,7 +590,7 @@ export const battery: Battery = {
         'the-cost-is-stated-before-the-files',
         'the-local-source-binds-a-visibly-unpublished-version',
         'the-plan-is-in-the-resolutions-order',
-        'the-port-answers-every-need-add-has-and-nothing-else',
+        'the-port-answers-every-need-behind-it-and-nothing-else',
         'the-three-spellings-of-one-file-all-resolve',
         'two-different-files-on-one-destination-are-refused',
         'two-versions-of-one-feature-are-refused',

@@ -23,6 +23,7 @@ import { renderContract } from '../registry/address.js'
 import type { Configuration } from './configuration.js'
 import { renderCount } from './diff.js'
 import type { InstalledEntry, Installation } from './install.js'
+import type { Result, Search } from './search.js'
 import type { FileOutcome, FileVerdict, Update } from './update.js'
 
 /**
@@ -371,6 +372,96 @@ export const renderUpToDate = (held: readonly string[]): string =>
  * together into a paragraph would hand the reader a line they cannot copy. Each line keeps whatever
  * indentation it was written with, so a fault can indent a command under its own explanation.
  */
+// ---------------------------------------------------------------------------
+// `toopo search`
+// ---------------------------------------------------------------------------
+
+/** The summary, wrapped and cut to at most `most` lines, with the cut marked. */
+const shortened = (text: string, width: number, most: number): readonly string[] => {
+  const lines = paragraph(text, width)
+  if (lines.length <= most) return lines
+
+  return [...lines.slice(0, most - 1), `${lines[most - 1] as string}...`]
+}
+
+const SUMMARY_WIDTH = 70
+const SUMMARY_LINES = 3
+
+/**
+ * One result: what it is called, what it does, and what you would import.
+ *
+ * The name sits alone on its line and the rest is indented under it, so the eye runs down the left
+ * edge and reads only the names until it wants one. A two-column layout was tried and read worse: at
+ * the width `string/levenshtein@1` forces, the summary is cut before it has said what the contract
+ * distinguishes itself by.
+ *
+ * The exports are here because they are how somebody found this in the first place - a search for
+ * `parseNumber` that answered a contract without ever printing `parseNumber` would leave the reader
+ * checking whether they got the right thing.
+ */
+const resultBlock = (result: Result, alone: boolean): readonly string[] => [
+  `${INDENT}${renderContract(result.address)}${result.installable ? '' : '   not installable'}`,
+  ...shortened(result.summary, SUMMARY_WIDTH, SUMMARY_LINES).map((line) => `${INDENT}    ${line}`),
+  `${INDENT}    exports  ${result.exports.join(', ')}`,
+  ...(result.refusal === null || !alone
+    ? []
+    : [
+        '',
+        ...paragraph(
+          `Decided against, and the catalogue publishes why: ${result.refusal.measurement}`,
+          SUMMARY_WIDTH,
+        ).map((line) => `${INDENT}    ${line}`),
+      ]),
+  '',
+]
+
+/**
+ * What was found, or what was not.
+ *
+ * **A refused contract is never offered an install line**, and that is the defect reading the first
+ * draft of this output caught: it printed `toopo add array/group-by` directly under a result it had
+ * just labelled `not installable`, which is a command that refuses when you run it. What goes there
+ * instead is the measurement the catalogue decided on - for `Map.groupBy`, that the language ships
+ * this now, which is the most useful thing the whole catalogue can tell that reader.
+ *
+ * A miss names the words no contract carries. It is short, it is true, and it teaches the rule this
+ * search works by in one line - which is worth more to the next query than a guess would have been.
+ */
+export const renderSearch = (found: Search): string => {
+  if (found.results.length === 0) {
+    return [
+      '',
+      ...paragraph(`Nothing in the catalogue answers "${found.query}".`, 72).map(
+        (line) => `${INDENT}${line}`,
+      ),
+      '',
+      ...(found.unknownWords.length === 0
+        ? [`${INDENT}Every word is known, and no one contract carries them all.`]
+        : paragraph(`No contract mentions: ${found.unknownWords.join(', ')}`, 72).map(
+            (line) => `${INDENT}${line}`,
+          )),
+      '',
+    ].join('\n')
+  }
+
+  const alone = found.results.length === 1
+  const first = found.results[0] as Result
+
+  return [
+    '',
+    ...found.results.flatMap((result) => resultBlock(result, alone)),
+    ...(alone
+      ? first.installable
+        ? [`${INDENT}toopo add ${first.address.name}`, '']
+        : []
+      : [
+          `${INDENT}${countOf(found.results.length, 'result', 'results')} - install one with  ` +
+            `toopo add <name>`,
+          '',
+        ]),
+  ].join('\n')
+}
+
 export const renderRefusal = (faults: readonly string[]): string =>
   [
     '',

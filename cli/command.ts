@@ -6,6 +6,7 @@
  *   node cli/toopo.ts add number/parse --implementation reference
  *   node cli/toopo.ts update
  *   node cli/toopo.ts update --apply
+ *   node cli/toopo.ts search convert string to number
  *
  * It is thin on purpose, and the thinness is a property worth naming because it is the one this folder
  * would lose first. **Everything this tool decides is reachable from a guard, with no process, no
@@ -39,10 +40,12 @@ import {
   renderInit,
   renderInstallation,
   renderRefusal,
+  renderSearch,
   renderUnchanged,
   renderUpToDate,
   renderUpdate,
 } from './report.js'
+import { search } from './search.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
 import { renderContract } from '../registry/address.js'
@@ -142,6 +145,11 @@ try {
       if ('faults' in written) refuse(written.faults)
       out(renderInstallation(outcome.installation, configuration))
     }
+  } else if (parsed.command.name === 'search') {
+    // The only command that reads no project at all - no `toopo.json`, no lockfile, not even the
+    // working directory. It is a property rather than an accident: looking for a feature comes
+    // before having somewhere to put it, and `search` is the first command that says so.
+    out(renderSearch(search(localSource(), parsed.command.query)))
   } else {
     const configuration = theConfiguration()
     const lockfile = readLockfile(root)

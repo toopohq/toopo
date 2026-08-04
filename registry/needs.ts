@@ -173,6 +173,16 @@ export const NEEDS: readonly Need[] = [
       'enough to be worth fetching before a query is answered',
   },
   {
+    id: 'say-why-a-found-contract-cannot-be-installed',
+    consumer: 'cli-search',
+    what: 'answer a search with a contract the catalogue turned down, and the reason it did',
+    requires:
+      'the refusal beside the index. `installable` already says *no*, and a result saying no and ' +
+      'nothing else tells somebody the catalogue has no opinion - when publishing the opinion is the ' +
+      'point. Somebody typing `Map.groupBy` is best answered by *the language ships this now*, which ' +
+      'is a sentence only this answer carries.',
+  },
+  {
     id: 'search-with-an-alias-thesaurus',
     consumer: 'the-site',
     what: 'find a contract from a phrase somebody would type into a search box',

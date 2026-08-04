@@ -148,7 +148,10 @@ export const ENDPOINTS: readonly Endpoint[] = [
     path: 'GET /refusals',
     addressing: 'named',
     serves: "the registry's current opinion",
-    answers: ['render-what-the-catalogue-refuses-and-why'],
+    answers: [
+      'render-what-the-catalogue-refuses-and-why',
+      'say-why-a-found-contract-cannot-be-installed',
+    ],
     whatAReaderCanCheck:
       'nothing, and it is the page where that matters least: a refusal is an argument, published so ' +
       'that it can be disagreed with rather than so that it can be verified.',

@@ -37,27 +37,36 @@ describe('where an installer gets what it installs', () => {
    * ours.
    */
   it('a-source-carrying-more-than-the-port-declares-is-refused', () => {
-    const wider = { ...imaginedSource(), refusals: () => [] }
+    // `contract-binding` is the endpoint the port most looks like it should carry and deliberately
+    // does not - `source.ts` argues it at length - so it is the right thing for a source to be
+    // caught offering.
+    const wider = { ...imaginedSource(), contractBinding: () => null }
 
     expect(sourceFaults(wider as never)).toEqual([
-      'the source carries `refusals`, which the port does not declare - an installer reaching for it ' +
-        'would be reaching past the read API',
+      'the source carries `contractBinding`, which the port does not declare - an installer reaching ' +
+        'for it would be reaching past the read API',
     ])
   })
 
   /**
-   * Every need `add` has is answered by an endpoint the port carries, and the port carries nothing
-   * else. Two statements about one design, and the disagreement between them is what would say that
-   * the installer had grown a dependency nobody wrote down.
+   * Every need any command of this folder has is answered by an endpoint the port carries, and the
+   * port carries nothing else. Two statements about one design, and the disagreement between them is
+   * what would say that a command had grown a dependency nobody wrote down.
+   *
+   * **Over every `cli-` consumer rather than over `cli-add`, which is a repair.** The identifier used
+   * to name one command, and a name that has to be edited whenever the data moves is not an address -
+   * the rule the catalogue already carries for a case and a guard. It had already gone stale without
+   * anybody noticing: `cli-update` arrived with two needs an endpoint answers, and this guard was
+   * checking neither. `cli-search` would have been the third and fourth.
    *
    * The needs answered without the API are excluded, and that is the half worth naming: pointing an
    * import at a shared copy is `cli/rewrite.ts`, and detecting a local modification is the lockfile.
    * Neither is an endpoint, both are needs, and a port that carried one would be a registry publishing
    * an opinion about code it does not parse.
    */
-  it('the-port-answers-every-need-add-has-and-nothing-else', () => {
+  it('the-port-answers-every-need-behind-it-and-nothing-else', () => {
     const mine = NEEDS.filter(
-      (need) => need.consumer === 'cli-add' && need.answeredWithoutTheApi === undefined,
+      (need) => need.consumer.startsWith('cli-') && need.answeredWithoutTheApi === undefined,
     )
     const answered = new Set(
       ENDPOINTS.filter((endpoint) => Object.values(THE_ENDPOINT_BEHIND).includes(endpoint.id)).flatMap(

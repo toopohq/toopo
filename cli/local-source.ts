@@ -51,6 +51,7 @@ import {
   servedExportsOf,
   servedImplementationBinding,
   servedIndex,
+  servedRefusals,
   servedSnapshot,
 } from '../registry/response.js'
 import type { Ledger } from '../registry/snapshot.js'
@@ -228,6 +229,8 @@ export const localSource = (): RegistrySource => {
             tags: holding.implementation.tags,
           })
         }),
+
+    refusals: () => servedRefusals(held.ledger),
 
     snapshot: (digest) => held.snapshots.get(digest) ?? null,
 

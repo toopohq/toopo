@@ -669,7 +669,7 @@ void theFive`,
     'points the snapshot method at the index, so three of the needs `toopo add` has are answered by ' +
       'no endpoint the port carries and nobody says so',
     [{ file: 'source.ts', find: THE_SNAPSHOT_ENDPOINT, replace: `  snapshot: 'contract-index',` }],
-    killed(['the-port-answers-every-need-add-has-and-nothing-else']),
+    killed(['the-port-answers-every-need-behind-it-and-nothing-else']),
   ),
 
   // -------------------------------------------------------------------------

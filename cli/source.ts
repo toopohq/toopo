@@ -31,6 +31,10 @@
  * declare is caught by a guard; and a source object carrying a method the port does not declare is
  * caught by the same guard, which compares the keys rather than the types.
  *
+ * `refusals` arrived with the fourth consumer rather than with the first three, which is the same
+ * lesson as the paragraph below read from the other end: a port derived from what a consumer needs
+ * grows exactly when a consumer needs something, and never before.
+ *
  * **`contract-binding` is not here, and finding that out is what deriving a port from a consumer is
  * for.** It looks like the first thing an installer would ask - resolve the name, then fetch the thing
  * - and `needs.ts` already says otherwise: the two needs it answers are the site's contract page and
@@ -52,6 +56,7 @@ import type {
   ServedBlob,
   ServedImplementationBinding,
   ServedIndex,
+  ServedRefusals,
   ServedSnapshot,
 } from '../registry/response.js'
 
@@ -71,6 +76,20 @@ export type RegistrySource = {
   readonly implementationBindings: (
     address: ContractAddress,
   ) => readonly ServedImplementationBinding[]
+  /**
+   * What the catalogue decided against, with the measurement it decided on.
+   *
+   * **Here because a fourth consumer asked for it, and it is `toopo search`.** `installable` is a
+   * boolean on an index entry, so a search could already say *no* - and a search result saying
+   * `not installable` and nothing else tells somebody the catalogue has no opinion, when publishing
+   * the opinion is the whole point. Somebody typing `Map.groupBy` is best answered by *the language
+   * already does this*, which the catalogue knows and only this endpoint carries.
+   *
+   * It is legitimately here rather than a widening of the port, because the port is *everything
+   * `toopo` may ask of a registry* and not everything the installer asks: `resolve.ts` reaches for
+   * four of these methods and never for this one.
+   */
+  readonly refusals: () => ServedRefusals
   /** A frozen artefact, as the exact text its digest was taken over. */
   readonly snapshot: (digest: string) => ServedSnapshot | null
   /** The served bytes of one file. */
@@ -88,6 +107,7 @@ export type RegistrySource = {
 export const THE_ENDPOINT_BEHIND: Readonly<Record<keyof RegistrySource, string>> = {
   contractIndex: 'contract-index',
   implementationBindings: 'implementation-bindings',
+  refusals: 'refusals',
   snapshot: 'snapshot',
   blob: 'blob',
 }
