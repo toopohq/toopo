@@ -204,7 +204,7 @@ export const mutants: readonly Mutant[] = [
         `      held.push({\n        path: file.path,\n        verdict: 'removed',`,
       ),
     ],
-    killed(['a-copy-deduplicated-away-is-taken-with-the-entry-that-stops-claiming-it']),
+    killed(['a-deduplicated-copy-the-user-edited-is-kept-rather-than-taken']),
   ),
 
   // -------------------------------------------------------------------------
