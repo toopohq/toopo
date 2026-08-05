@@ -73,7 +73,29 @@ const COMBINING_ACUTE = String.fromCodePoint(0x0301)
 const PRECOMPOSED_E_ACUTE = String.fromCodePoint(0x00e9)
 const DECOMPOSED_E_ACUTE = `e${COMBINING_ACUTE}`
 
+/**
+ * The axiom before its degenerate instance, which is a reading order and not an address.
+ *
+ * `both-empty` used to open the table and therefore opened the page's playground, where it renders as
+ * two empty fields answering `0`: a reader arriving on it has nothing to edit and has watched nothing
+ * happen. `identical-text` is the same claim with something in it - change one character of either
+ * side and the answer moves to 1, which is the whole idea in one keystroke.
+ *
+ * Nothing here is frozen and nothing was renamed. An `id` is an address and a group membership is a
+ * partition; the order of two cases inside one group is neither, and the only order this table
+ * declares frozen is the order of its groups. `one-side-empty` and `the-other-side-empty` stay
+ * adjacent and in that order, because their own rationales are about being a pair.
+ */
 export const edgeCases: readonly EdgeCase[] = [
+  {
+    id: 'identical-text',
+    group: 'the-two-ends-of-the-scale',
+    a: 'levenshtein',
+    b: 'levenshtein',
+    expected: 0,
+    provenance: 'specified',
+    rationale: 'A string is at distance zero from itself, which is the first axiom made concrete.',
+  },
   {
     id: 'both-empty',
     group: 'the-two-ends-of-the-scale',
@@ -85,15 +107,6 @@ export const edgeCases: readonly EdgeCase[] = [
       'Two empty strings are the same string, so the distance is zero. It is the input an ' +
       'implementation indexing a matrix is most likely to fall off, since the matrix has one cell ' +
       'and no loop body ever runs.',
-  },
-  {
-    id: 'identical-text',
-    group: 'the-two-ends-of-the-scale',
-    a: 'levenshtein',
-    b: 'levenshtein',
-    expected: 0,
-    provenance: 'specified',
-    rationale: 'A string is at distance zero from itself, which is the first axiom made concrete.',
   },
   {
     id: 'one-side-empty',
