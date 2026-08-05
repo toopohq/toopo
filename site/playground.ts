@@ -211,16 +211,29 @@ export const playgroundOf = (contract: FrozenContract, what: string): Playground
     )
   }
 
+  /**
+   * The fields are built before the diagnostic is looked up, and the order is written down rather
+   * than left to the evaluation order of an object literal.
+   *
+   * Both steps refuse, and a contract tripping both should be told about the parameter it declared
+   * first: that is the more basic fact, and the diagnostic's signature is only interesting once the
+   * form can be built at all. Leaving it implicit cost a real regression - W-37 of the site battery,
+   * which neuters `refuseAnUnknownType`, went from killed to survived the moment the diagnostic was
+   * looked up first, because the second refusal fired in the first one's place and the guard could no
+   * longer tell them apart.
+   */
+  const fields = answer.parameters.map((parameter, index) => ({
+    name: parameter.name,
+    type: parameter.type,
+    opensOn: written[index] as string,
+    constructedBy: refuseAnUnknownType(parameter, what),
+  }))
+
   return {
     calls: answer.name,
     describes: theDiagnosticOf(contract, answer, what),
     opensOnCase: opening.id,
-    fields: answer.parameters.map((parameter, index) => ({
-      name: parameter.name,
-      type: parameter.type,
-      opensOn: written[index] as string,
-      constructedBy: refuseAnUnknownType(parameter, what),
-    })),
+    fields,
   }
 }
 

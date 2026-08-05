@@ -193,19 +193,22 @@ describe('the playground, against the catalogue it opens on', () => {
    * The sixth contract is derived from a real one rather than written out, because exactly one
    * decision is under test - what a parameter is declared as - and a hand-written record would put
    * ninety-six other decisions behind the same red.
+   *
+   * **Every export is retyped, not only the answer**, and that is what keeps the one decision alone:
+   * retyping the answer and leaving the diagnostic behind makes the two signatures disagree, which is
+   * a *different* refusal, and it fires first. Measured - it did, and it took W-37 from killed to
+   * survived while this guard stayed green.
    */
   it('a-parameter-type-the-form-cannot-build-stops-the-site-and-names-itself', () => {
     const one = theHeld()[0] as Held
-    const answer = answerOf(one.contract)
     const sixth: FrozenContract = {
       ...one.contract,
       surface: {
         ...one.contract.surface,
-        exports: one.contract.surface.exports.map((entry) =>
-          entry === answer
-            ? { ...entry, parameters: entry.parameters.map((p) => ({ ...p, type: 'Comparator' })) }
-            : entry,
-        ),
+        exports: one.contract.surface.exports.map((entry) => ({
+          ...entry,
+          parameters: entry.parameters.map((p) => ({ ...p, type: 'Comparator' })),
+        })),
       },
     }
 
