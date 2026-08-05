@@ -384,27 +384,48 @@ export type ProfileRecord = {
 /**
  * Block 4.5, and the one place where the code/data frontier has a size you can measure.
  *
- * Measured over the five, as the canonical text of a whole record in bytes - which is the form a
- * digest is taken over, and therefore the only size worth publishing. `array/group-by@1` writes
- * `range(50_000)` three times, and its record was **5.22 MB, of which 99.2 per cent was this
- * block**, before `ProfileSamples` gained its second arm. With the six large profiles pointed at
- * rather than carried, the five records are 32.1, 49.6, 44.6, 32.1 and 41.7 kB and block 4.5 is
- * between 7.5 and 35.8 per cent of each. The one that used to be a hundred times the size of the
- * others is now the third largest.
+ * **A published size here names three coordinates, and each one was bought by a figure that went
+ * wrong without it.** The serialisation, because there are three of them and they differ by a factor
+ * of six. The divisor, because a kibibyte and a kilobyte are the same word in any comment that does
+ * not say which. The commit, because a record grows, and without it a reader who re-measures and gets
+ * something else cannot tell *this figure was wrong* from *the tree has moved*. So what follows is
+ * **the canonical text of a whole record in bytes, divided by 1000, measured at `da0c3ca`** - the
+ * canonical text because that is the form a digest is taken over, and 1000 because `cli/report.ts`
+ * prints a kilobyte that way and one repository holds one kilobyte.
  *
- * What the six omit, measured: 1730.6, 1730.6, 1730.3, 100.4, 13.7 and 6.9 kB. Two of those digests
- * are equal - `one-group-per-element` and `single-group` really do draw the same three ranges - which
- * is the same fact from underneath as the transcription gap `the-five.ts` names beside them.
+ * The five records are 35.7, 53.7, 47.5, 34.6 and 45.0 kB, in the order `theFive` holds them, and
+ * block 4.5 is between 6.9 and 34.0 per cent of each. `array/group-by@1` writes `range(50_000)` three
+ * times, and carrying its six profiles rather than pointing at them takes its record to 5479.9 kB, of
+ * which 99.2 per cent is this block. The one that would otherwise be a hundred times the size of the
+ * others is the second largest of the five.
  *
- * **An earlier version of this comment published 71-152 kB, 24.2 MB and 99.4 per cent, and none of
- * the three reproduces.** Measured again three ways on the records those figures described: flat
- * gives 32.2-49.7 kB, 5.22 MB and 99.2 per cent; two-space indent gives 52.5-113.6 kB, 19.92 MB and
- * 93.4 per cent; four-space indent gives 70.8-172.1 kB, 33.72 MB and 92.4 per cent. No serialisation
- * produces that triple, and the share and the sizes cannot have come from one measurement - 99.4 per
- * cent belongs to the flat family and 71-152 kB does not. Which figure was intended is not
- * recoverable and is not worth guessing; what is recoverable is the rule it breaks, so it is written
- * here rather than quietly replaced: **a published size names the serialisation it was taken under**,
- * because there are three and they differ by a factor of six.
+ * What the six omit: 7.1, 1772.2, 1772.2, 1771.8, 102.9 and 14.1 kB. Two of those digests are equal -
+ * `one-group-per-element` and `single-group` really do draw the same three ranges - which is the same
+ * fact from underneath as the transcription gap `the-five.ts` names beside them.
+ *
+ * **This paragraph has been wrong twice, and the two failures are why the coordinates are listed
+ * rather than left to be assumed.**
+ *
+ * Its first version published 71-152 kB, 24.2 MB and 99.4 per cent, and none of the three reproduces.
+ * Measured three ways on the records those figures described: flat gave 32.2-49.7 kB, 5.22 MB and 99.2
+ * per cent; two-space indent 52.5-113.6 kB, 19.92 MB and 93.4 per cent; four-space indent 70.8-172.1
+ * kB, 33.72 MB and 92.4 per cent. No serialisation produces that triple, and the share and the sizes
+ * cannot have come from one measurement. Those numbers are left in the unit that measurement used
+ * rather than restated here: the divisor it used is the subject of the next paragraph, and re-deriving
+ * them would need the tree they described. That failure is where *a published size names the
+ * serialisation it was taken under* came from.
+ *
+ * Its second version named the serialisation and not the divisor, **and every figure it published was
+ * a kibibyte called a kilobyte**. Re-measured at `c6592a2`, the commit that published them: the
+ * records come to 32.9, 50.8, 45.7, 32.9 and 42.7 kB against a published 32.1, 49.6, 44.6, 32.1 and
+ * 41.7, and the omissions to 1772.2 kB against a published 1730.6. The ratio is 1.024 throughout,
+ * and the *share* reproduced exactly - a ratio cancels the divisor, which is how the error survived
+ * beside a figure that checked out. `cli/report.ts` divides by 1000 and C-44 of `cli-install` exists
+ * to kill an implementation that does not, so the repository already executed the decimal kilobyte
+ * one folder from a comment publishing the binary one.
+ *
+ * It also called that record the third largest when it was the second, at `c6592a2` as at `da0c3ca`.
+ * That one needed no divisor to be wrong.
  */
 /**
  * **This record carried a `measurements` list and no longer does.** It held the same fact as
