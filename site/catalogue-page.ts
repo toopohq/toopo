@@ -14,7 +14,7 @@ import { renderContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node } from './document.js'
 import { el, text } from './document.js'
-import { REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
+import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 
 const NOTHING = {} as const
 
@@ -80,5 +80,14 @@ export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Doc
           ),
           el('p', NOTHING, el('a', { href: linkTo(REFUSALS_PAGE) }, text('What we refuse, and why'))),
         ]),
+
+    line('h2', 'How we verify'),
+    line(
+      'p',
+      'A test suite that has never failed proves nothing. Every contract here is measured by ' +
+        'breaking the implementation on purpose and requiring the suite to notice — and what those ' +
+        'measurements did not catch is published beside what they did.',
+    ),
+    el('p', NOTHING, el('a', { href: linkTo(METHOD_PAGE) }, text('How we verify, and what it does not prove'))),
   ],
 })

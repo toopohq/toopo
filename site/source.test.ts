@@ -91,6 +91,50 @@ describe('where the generator gets what it publishes', () => {
    * working tree, not a security filter, and the one thing it has to catch is a second module
    * importing the serialisation because it was convenient.
    */
+  /**
+   * A deferral says what would close it, and the field is what makes that unforgettable.
+   *
+   * The reason ages into a description of the past; the trigger stays checkable. `NOT_THIS_UNIT` had
+   * only the first, and the entry that has just left it is the demonstration: it said the methodology
+   * page was waiting for benchmark figures and validation reports, and what it was actually waiting
+   * for was somebody noticing that eighteen batteries were already sitting in another folder. A
+   * deferral aimed at the wrong event is one nobody revisits.
+   *
+   * The type requires both, so this guard cannot catch an omission - it catches the other half, which
+   * a type cannot: a field present and empty, or filled with something that is not an event.
+   */
+  it('every-deferred-need-names-what-would-close-it', () => {
+    expect(
+      Object.entries(NOT_THIS_UNIT)
+        .filter(([, deferred]) => deferred.because.trim() === '' || deferred.until.trim() === '')
+        .map(([id]) => id),
+    ).toEqual([])
+  })
+
+  /**
+   * The instrument reaches this folder through one named module and no other.
+   *
+   * The method page has an upstream the registry cannot serve - `registry/verifiability.ts` says the
+   * instrument measures the catalogue and is not part of it - so `mutation/published.ts` is a second
+   * door beside the port. A door is a decision; a folder reaching into another folder wherever it
+   * finds something useful is not, and the difference between the two is exactly one guard.
+   *
+   * The same text search as the frontier below, and the same deliberate limit: what it has to catch is
+   * a second module importing a battery, or `run.ts`, because it was convenient.
+   */
+  it('nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation', () => {
+    const reaching = readdirSync(HERE)
+      .filter((name) => name.endsWith('.ts'))
+      .flatMap((name) =>
+        [...readFileSync(join(HERE, name), 'utf8').matchAll(/from '\.\.\/mutation\/([\w.-]+)\.js'/g)]
+          .map((match) => match[1])
+          .filter((module) => module !== 'published')
+          .map((module) => `${name} reaches ../mutation/${module}`),
+      )
+
+    expect(reaching).toEqual([])
+  })
+
   it('nothing-but-the-local-adapter-reaches-the-serialisation', () => {
     const reaching = readdirSync(HERE)
       .filter((name) => name.endsWith('.ts'))

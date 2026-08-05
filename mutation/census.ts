@@ -106,6 +106,12 @@
  * the registry's - a new file and one existing count. That is what a unit costs when it adds a client
  * *and* repairs the schema underneath it, and the configuration was counted before the battery was
  * first run rather than after the refusal fired, which is the second time that has been true.
+ *
+ * An eighth on the method page: no new file and two counts moved, both under the site's. It is the
+ * cheapest measurement here and it is the one that matches the prediction two paragraphs up - a unit
+ * that adds guards to files that already exist touches only their entries. The page itself has no
+ * test file of its own on purpose: what it publishes is checked where the pages are checked and where
+ * the port is checked, because that is what those guards are about.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -185,10 +191,10 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'site/vitest.config.ts': {
     'site/document.test.ts': 8,
     'site/literal.test.ts': 11,
-    'site/pages.test.ts': 17,
+    'site/pages.test.ts': 23,
     'site/playground.test.ts': 10,
     'site/read-literal.test.ts': 10,
-    'site/source.test.ts': 6,
+    'site/source.test.ts': 8,
   },
 
   'mutation/fixture/vitest.config.ts': {

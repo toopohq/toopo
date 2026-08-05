@@ -8,13 +8,30 @@
  * The refusals page is here only when something is refused. An empty one would be a heading telling a
  * reader something is missing without telling them what - the rule the contract page already follows
  * about benchmark figures, applied to the page that exists to publish a judgement.
+ *
+ * ---------------------------------------------------------------------------
+ * The method page has two upstreams, and the second one is not the registry
+ * ---------------------------------------------------------------------------
+ *
+ * Every other page here is a rendering of what the port answers. The method page is half that - what a
+ * reader can check and what they must believe is `servedMethodology()`, straight through the port -
+ * and half something the registry cannot serve at all: `registry/verifiability.ts` says in as many
+ * words that *the instrument measures the catalogue and is not part of it*, so no endpoint can carry
+ * how this catalogue's own tests are measured.
+ *
+ * So it comes through `mutation/published.ts`, which is a declared door rather than a reach into
+ * another folder: one module, named, deriving what may be published from the batteries themselves.
+ * `source.test.ts` holds it to exactly that - no module of this folder may import anything else out of
+ * `mutation/` - for the reason the serialisation frontier one paragraph along exists.
  */
 
+import { theMeasurement } from '../mutation/published.js'
 import type { Document } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
 import { contractPage } from './contract-page.js'
 import { heldByTheRegistry } from './catalogue.js'
-import { CATALOGUE_PAGE, REFUSALS_PAGE, pageOf } from './paths.js'
+import { methodologyPage } from './methodology-page.js'
+import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, pageOf } from './paths.js'
 import { refusalsPage } from './refusals-page.js'
 import type { RegistrySource } from './source.js'
 
@@ -24,6 +41,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
 
   return new Map<string, Document>([
     [CATALOGUE_PAGE, cataloguePage(index, refusals)],
+    [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement())],
     ...(refusals.refusals.length === 0
       ? []
       : ([[REFUSALS_PAGE, refusalsPage(index, refusals)]] as const)),

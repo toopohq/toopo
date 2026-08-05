@@ -66,6 +66,11 @@ const pathsFile = (find: string, replace: string) => ({ file: 'paths.ts', find, 
 const readLiteralFile = (find: string, replace: string) => ({ file: 'read-literal.ts', find, replace })
 const playgroundFile = (find: string, replace: string) => ({ file: 'playground.ts', find, replace })
 const browserFile = (find: string, replace: string) => ({ file: 'browser.ts', find, replace })
+const methodFile = (find: string, replace: string) => ({
+  file: 'methodology-page.ts',
+  find,
+  replace,
+})
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -134,7 +139,30 @@ const A_REFUSED_CONTRACT_IS_REFUSED = `    if (record.lifecycle.state === 'never
 
 const THE_INDEX_ENDPOINT = `  contractIndex: 'contract-index',`
 
-const A_DEFERRED_NEED_IS_NAMED = `  'render-the-methodology-page':`
+const A_DEFERRED_NEED_IS_NAMED = `  'search-with-an-alias-thesaurus': {`
+
+const A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT = `      'the catalogue stops fitting on one screen - measured as the front page listing more contracts ' +`
+
+const A_FIGURE_IS_DERIVED = `      \`\${population.cells} \${what} cells, \${population.killed} caught. The other \` +`
+
+const THE_BREAKDOWN_IS_SHOWN_BESIDE_THE_TOTAL = `        kinds.map((why) => \`\${byKind[why]} \${why.replaceAll('-', ' ')}\`).join(', ') +`
+
+const EVERY_SURVIVOR_IS_SHOWN = `    el('div', { class: 'cases' }, ...defects.map(renderSurvivor)),`
+
+const THE_LIMIT_IS_READ_FIRST = `    line('h2', 'What this does not prove'),
+    line(
+      'p',
+      'A high score does not say the code is correct. It says the tests notice the defects that ' +
+        'were tried.',
+      { class: 'lede' },
+    ),
+`
+
+const A_PIN_IS_NOT_AN_OBSERVATION = `    line('p', THE_PINS_ARE_AN_ASSERTION),`
+
+const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
+
+const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`
 
 const A_PAGE_IS_ADDRESSED_BY_ITS_CONTRACT = `export const pageOf = (address: ContractAddress): string => \`\${renderContract(address)}/index.html\``
 
@@ -442,9 +470,9 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'W-22',
-    'stops declaring which of the site\'s needs this unit builds no page for, so a scope decision ' +
+    'stops declaring which of the site\'s needs this site builds no page for, so a scope decision ' +
       'becomes indistinguishable from a page somebody forgot',
-    [sourceFile(A_DEFERRED_NEED_IS_NAMED, `  'render-the-methodology-page-not': `)],
+    [sourceFile(A_DEFERRED_NEED_IS_NAMED, `  'search-with-an-alias-thesaurus-not': {`)],
     killed(['the-needs-of-the-site-are-answered-or-deferred-with-a-reason']),
   ),
 
@@ -750,6 +778,102 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['a-diagnostic-the-form-cannot-call-stops-the-site-and-names-itself']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-47 to W-53 - the method page, where a project like this one overstates
+  // -------------------------------------------------------------------------
+  //
+  // Every defect here leaves a page that is well formed, complete, and reads better than the real
+  // one. That is what makes this section different from the rest of the battery: a wrong contract
+  // page publishes something a reader can check against the contract, and a wrong method page
+  // publishes a claim about the checking itself, which nothing on the site contradicts.
+
+  sameOnEveryLens(
+    'W-47',
+    'writes a figure into the sentence instead of deriving it. It is right on the day it is typed ' +
+      'and goes false in silence the first time a battery gains a mutant - which is the failure this ' +
+      'repository has caught in its own prose four times and never once in code, on the page whose ' +
+      'whole argument is that a published number carries its derivation',
+    [methodFile(A_FIGURE_IS_DERIVED, '      `557 ${what} cells, ${population.killed} caught. The other ` +')],
+    killed(['every-figure-on-the-method-page-comes-from-what-it-was-built-from']),
+  ),
+
+  sameOnEveryLens(
+    'W-48',
+    'prints the number of surviving cells and drops the split, so thirty-four defects nothing ' +
+      'caught reads as thirty-four known holes when exactly one of them is a debt. The tidier ' +
+      'sentence is the more frightening claim, which is why nobody would notice it was made',
+    [methodFile(THE_BREAKDOWN_IS_SHOWN_BESIDE_THE_TOTAL, `        'various kinds' +`)],
+    killed(['a-count-of-survivors-is-never-shown-without-its-breakdown']),
+  ),
+
+  sameOnEveryLens(
+    'W-49',
+    'shows the first two defects of each kind and stops, which is indistinguishable from a ' +
+      'catalogue that has only two - the page goes on stating the true total above a list that ' +
+      'quietly does not reach it',
+    [
+      methodFile(
+        EVERY_SURVIVOR_IS_SHOWN,
+        `    el('div', { class: 'cases' }, ...defects.slice(0, 2).map(renderSurvivor)),`,
+      ),
+    ],
+    killed(['every-surviving-cell-is-published-with-its-own-battery-sentence']),
+  ),
+
+  sameOnEveryLens(
+    'W-50',
+    'moves the sentence about what a score does not prove to the end of the page, where a page like ' +
+      'this one puts it: after the impressive number, as a footnote. Nothing is removed and the ' +
+      'reading is changed completely, because a reader who meets the figure first has already read ' +
+      'it as a claim about correctness',
+    [
+      methodFile(THE_LIMIT_IS_READ_FIRST, `    line('h2', 'What this does not prove'),\n`),
+      methodFile(
+        THE_SIGNATURE_SECTION,
+        `    line(\n      'p',\n` +
+          `      'A high score does not say the code is correct. It says the tests notice the defects that ' +\n` +
+          `        'were tried.',\n      { class: 'lede' },\n    ),\n\n` +
+          `    line('h2', 'What a signature does not prove'),`,
+      ),
+    ],
+    killed(['what-the-score-does-not-prove-is-read-before-the-score']),
+  ),
+
+  sameOnEveryLens(
+    'W-51',
+    'tells the reader the figures were measured rather than that they are what this repository ' +
+      'pins. The two coincide, so nothing on the page becomes false - what is lost is the one ' +
+      'sentence that distinguishes a reader holding an assertion from a reader who has watched ' +
+      'something happen, on the page that exists to make that distinction',
+    [methodFile(A_PIN_IS_NOT_AN_OBSERVATION, `    line('p', 'Every figure here has been measured.'),`)],
+    killed(['the-page-separates-what-is-asserted-from-what-a-run-would-observe']),
+  ),
+
+  sameOnEveryLens(
+    'W-52',
+    'empties the trigger on the one need this site builds no page for, leaving a reason with no ' +
+      'event behind it - which ages into a description of the past and is how a scope decision ' +
+      'becomes something nobody revisits',
+    [sourceFile(A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT, `      '' +`)],
+    killed(['every-deferred-need-names-what-would-close-it']),
+  ),
+
+  sameOnEveryLens(
+    'W-53',
+    'reaches into the instrument from a second module of this folder. `published.ts` is a door ' +
+      'because exactly one module goes through it; a folder that imports whatever it finds useful ' +
+      'in another folder has no frontier at all, which is the sentence `source.ts` already carries ' +
+      'about the serialisation arriving on the second upstream',
+    [
+      cataloguePageFile(
+        NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED,
+        `import type { Battery } from '../mutation/run.js'\n` +
+          `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`,
+      ),
+    ],
+    killed(['nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation']),
   ),
 ]
 

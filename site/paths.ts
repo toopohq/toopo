@@ -22,6 +22,15 @@ export const REFUSALS_PAGE = 'refused/index.html'
 export const CATALOGUE_PAGE = 'index.html'
 
 /**
+ * `/method/`, and the word is chosen against two better-looking ones.
+ *
+ * `/methodology/` is what the endpoint and the need are called, and it is the register of a document
+ * nobody reads. `/verification/` names half the page - the half about this project's own tests - and
+ * would make the other half, what a reader can check about the registry, look like an appendix.
+ */
+export const METHOD_PAGE = 'method/index.html'
+
+/**
  * The module every page loads, and the implementation each one loads beside itself.
  *
  * They are paths, so they live here with the others rather than beside the code that strips them:

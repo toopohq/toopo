@@ -1,11 +1,18 @@
 import { describe, it, expect } from 'vitest'
 
+import {
+  THE_PINS_ARE_AN_ASSERTION,
+  THE_REPLAY,
+  WHAT_A_SURVIVOR_MEANS_TO_A_READER,
+  survivorsByKind,
+  theMeasurement,
+} from '../mutation/published.js'
 import { renderCase, renderContract } from '../registry/address.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { toHtml, toText, wordsOf } from './document.js'
 import { localSource } from './local-source.js'
-import { CATALOGUE_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
+import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 import { theSite } from './site.js'
 
 /**
@@ -42,13 +49,21 @@ describe('the site', () => {
    * reader could check. What the catalogue publishes about it is the refusal, and the refusals page is
    * where that goes. A contract page with no digest behind it would be a contract page missing the
    * only half that makes this registry worth anything.
+   *
+   * The three pages that are not about one contract are named here, so that a page appearing or
+   * disappearing is this guard's business rather than nobody's.
    */
   it('every-installable-contract-has-a-page-and-a-refused-one-does-not', () => {
     const installable = index.entries.filter((entry) => entry.installable)
     const refused = index.entries.filter((entry) => !entry.installable)
 
     expect([...pages().keys()].sort()).toEqual(
-      [CATALOGUE_PAGE, REFUSALS_PAGE, ...installable.map((entry) => pageOf(entry.address))].sort(),
+      [
+        CATALOGUE_PAGE,
+        METHOD_PAGE,
+        REFUSALS_PAGE,
+        ...installable.map((entry) => pageOf(entry.address)),
+      ].sort(),
     )
     expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([false])
     expect(refused.length).toBe(1)
@@ -418,5 +433,157 @@ describe('the site', () => {
         expect(reading).toContain(`${profile.name} — ${profile.class}\n`)
       }
     }
+  })
+})
+
+/**
+ * The method page, which is the one page here that can destroy the thing it argues for.
+ *
+ * Its subject is rigour and nobody can check it at a glance, so it is where a project overstates. Each
+ * guard below is a way of overstating that this repository has either already committed somewhere else
+ * or would not be able to see.
+ */
+describe('the page that says how we verify', () => {
+  const reading = (): string => toText(page(METHOD_PAGE))
+
+  /**
+   * **No figure on this page is typed into a sentence.**
+   *
+   * The defect is not a wrong number, it is a *right* number that goes wrong later: somebody writes
+   * "34 survive", a battery gains a mutant, and the page keeps saying 34 while the catalogue says 35.
+   * That is the failure this repository has caught in its own prose four times and never in code.
+   *
+   * So every run of digits a reader can see must occur in what the page was built from - the two
+   * answers and the constants beside them - or be a count derived from them. A literal that happens to
+   * match today is still refused tomorrow, which is the whole point: the day the data moves, the
+   * literal stops being in the set and this goes red.
+   */
+  it('every-figure-on-the-method-page-comes-from-what-it-was-built-from', () => {
+    const measured = theMeasurement()
+    const methodology = source.methodology()
+    const counts = [
+      measured.batteries,
+      measured.lenses,
+      measured.outOfReach.length,
+      measured.unprobed.length,
+      Object.keys(methodology.fields).length,
+      ...[measured.defects, measured.probes].flatMap((population) => [
+        population.cells,
+        population.killed,
+        population.surviving.length,
+        ...Object.values(survivorsByKind(population)),
+        ...[...new Set(population.surviving.map((one) => `${one.battery} ${one.mutant}`))].map(
+          (_, at) => at + 1,
+        ),
+      ]),
+      ...Object.values(methodology.strata).map(
+        (_, at) =>
+          Object.values(methodology.fields).filter(
+            (stratum) => stratum === Object.keys(methodology.strata)[at],
+          ).length,
+      ),
+    ].map(String)
+
+    const fromTheData = new Set([
+      ...counts,
+      ...(JSON.stringify([methodology, measured, THE_REPLAY, THE_PINS_ARE_AN_ASSERTION]).match(
+        /\d+/g,
+      ) ?? []),
+    ])
+
+    expect((reading().match(/\d+/g) ?? []).filter((figure) => !fromTheData.has(figure))).toEqual([])
+  })
+
+  /**
+   * The aggregate never appears without the split.
+   *
+   * Thirty-four surviving cells published as one number is read as thirty-four known holes, and
+   * exactly one of them is a debt. A page that prints the total and drops the breakdown is not
+   * shorter, it is a different and worse claim - and it is the shape a page takes when somebody tidies
+   * it.
+   */
+  it('a-count-of-survivors-is-never-shown-without-its-breakdown', () => {
+    const measured = theMeasurement()
+
+    for (const population of [measured.defects, measured.probes]) {
+      const byKind = survivorsByKind(population)
+      const sentence = reading()
+        .split('\n\n')
+        .find((block) => block.includes(`${population.cells}`) && block.includes('cells,'))
+
+      expect(sentence).toBeDefined()
+      expect(sentence).toContain(`${population.surviving.length}`)
+
+      for (const [why, many] of Object.entries(byKind)) {
+        if (many === 0) continue
+        expect(sentence).toContain(`${many} ${why.replaceAll('-', ' ')}`)
+      }
+    }
+  })
+
+  /** Every survivor is on the page. A list that silently stops short reads exactly like a short list. */
+  it('every-surviving-cell-is-published-with-its-own-battery-sentence', () => {
+    const measured = theMeasurement()
+    const shown = reading()
+
+    for (const population of [measured.defects, measured.probes]) {
+      for (const survivor of population.surviving) {
+        expect(shown).toContain(`${survivor.battery} · ${survivor.mutant}`)
+        expect(shown).toContain(survivor.cell)
+        expect(shown).toContain(survivor.description.replaceAll('**', '').replaceAll('`', ''))
+      }
+    }
+  })
+
+  /**
+   * Every kind the vocabulary declares and this page uses is explained on it, in the words
+   * `mutation/published.ts` holds - never in words invented here, which would be a second statement of
+   * one judgement, in the file most likely to drift from the data.
+   */
+  it('every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words', () => {
+    const measured = theMeasurement()
+    const shown = reading()
+    const used = new Set(
+      [measured.defects, measured.probes].flatMap((population) =>
+        population.surviving.map((one) => one.why),
+      ),
+    )
+
+    for (const why of used) expect(shown).toContain(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why])
+  })
+
+  /**
+   * A reader is told which of an assertion and an observation they are holding, and what the second
+   * one costs.
+   *
+   * The two coincide, so nothing here is false without it - and a page that publishes pins as though
+   * somebody had watched them happen is doing the exact thing it spends the rest of its length arguing
+   * against.
+   */
+  it('the-page-separates-what-is-asserted-from-what-a-run-would-observe', () => {
+    const shown = reading()
+
+    expect(shown).toContain(THE_PINS_ARE_AN_ASSERTION)
+    expect(shown).toContain(THE_REPLAY.command)
+    expect(shown).toContain(THE_REPLAY.duration)
+    expect(shown).toContain(THE_REPLAY.measuredAt)
+  })
+
+  /**
+   * The limit of the method is read before the figure it limits, and this is a guard about *order*
+   * rather than presence.
+   *
+   * A mutation score reads as a correctness claim to somebody meeting it cold, and the sentence that
+   * says it is not one is worth nothing after the number - which is exactly where a page like this
+   * puts it, as a footnote, having said the impressive part first.
+   */
+  it('what-the-score-does-not-prove-is-read-before-the-score', () => {
+    const shown = reading()
+    const limit = shown.indexOf('It says the tests notice the defects that were tried')
+    const figure = shown.indexOf(`${theMeasurement().defects.cells} defect cells`)
+
+    expect(limit).toBeGreaterThan(-1)
+    expect(figure).toBeGreaterThan(-1)
+    expect(limit).toBeLessThan(figure)
   })
 })
