@@ -195,7 +195,8 @@ export const NEEDS: readonly Need[] = [
   // The site
   // -------------------------------------------------------------------------
   /**
-   * **The seventh defect a consumer has found in this schema, and the first found by the site.**
+   * **A defect this list itself had, found by the site building against it** - one of the ones
+   * `CLAUDE.md` names under rule 1.
    *
    * The list above was derived page by page and missed the page that lists the pages: every `the-site`
    * entry describes rendering *one* contract, one refusal, one methodology, or answering a query - and
@@ -249,10 +250,9 @@ export const NEEDS: readonly Need[] = [
       'site.',
   },
   /**
-   * **The tenth defect a consumer has found in this schema**, after `dependencyDepth`, `ProfileSamples`,
-   * the two digests, `askedFor`, the index's exports, the parameter names, the case groups and the page
-   * that lists the pages. Same family as the eighth: the list above was derived from what a page
-   * *shows*, and a playground does not show, it *runs*.
+   * **The last of the defects `CLAUDE.md` lists under rule 1**, and the same family as the page that
+   * lists the pages: the list above was derived from what a page *shows*, and a playground does not
+   * show, it *runs*.
    *
    * `pre-fill-the-playground` beside it asks for the values of the cases, which a snapshot carries. It
    * does not ask for the one thing a snapshot cannot give, and the difference is not a nuance: a

@@ -152,9 +152,10 @@ export type ExportRecord = {
    * deliberately does not interpret them, so a contract page could list `input`, `expected` and
    * `reason` as three fields of equal standing and could not render `parseNumber('  42  ')`.
    *
-   * The fifth consumer found it, which is the fifth time a consumer has: measured over the five, the
-   * fields of every case of all seven tables begin with these names, in this order, and what remains
-   * is the answer. `serialise.ts` refuses a contract where that stops being true.
+   * The site found it, by trying to render a call and having nothing to render one from: measured over
+   * the five, the fields of every case of all seven tables begin with these names, in this order, and
+   * what remains is the answer. `serialise.ts` refuses a contract where that stops being true. It is
+   * one of the defects `CLAUDE.md` lists under rule 1, none of which was found by reading the schema.
    */
   readonly parameters: readonly ParameterRecord[]
 }
@@ -162,7 +163,7 @@ export type ExportRecord = {
 /**
  * One parameter of a declared signature: what a caller names it, and what it is declared to be.
  *
- * **The type is here because the ninth defect a consumer found needed it**, and it arrived free: the
+ * **The type is here because the site's playground needed it**, and it arrived free: the
  * colon that ends a name begins a type, so `signature.ts` reads both on one walk and neither is
  * declared beside the other. A `parameters` of bare names sent the site back to parsing
  * `export.text` for itself - which is the state this field was created to end.
@@ -255,7 +256,7 @@ export type CaseRecord = {
  * went out of their way to make, and a case identifier is unique across a contract rather than across
  * a table, so nothing is gained by the flattening either.
  *
- * **The eighth defect a consumer has found in this schema, and the second the site found.** The
+ * **Another of the defects a consumer found in this schema, and the second the site found.** The
  * contracts grouped their cases in comment banners - `--- Whitespace ---`, `--- Sign ---` - and all
  * 187 cases sat inside one, between two and nine cases each. The record was flat, so a page could
  * only render fifty rows in a row: measured by printing both, fifty read as a dump and a reader

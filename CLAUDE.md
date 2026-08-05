@@ -405,20 +405,19 @@ The parameter names are **read off the declared type rather than declared beside
 a value read off what it describes has no second statement to disagree with. What checks the reading is
 not a copy of it but a hundred and eighty-seven cases.
 
-It is the seventh defect a consumer has found in this schema and the first the site found, after
-`dependencyDepth`, `ProfileSamples`, the two digests, `askedFor` and the index's exports. An eighth
-arrived in the same unit and is smaller: **no need in `needs.ts` covered listing the catalogue.** Every
-`the-site` entry described rendering *one* contract, one refusal, one methodology, or answering a
-query; the front page — the whole of the site's navigation at five contracts — had nothing behind it,
-while the generator consumed `contract-index` anyway.
+It is the first defect the site found in this schema, and the list of all of them is under rule 1
+below. A second arrived in the same unit and is smaller: **no need in `needs.ts` covered listing the
+catalogue.** Every `the-site` entry described rendering *one* contract, one refusal, one methodology,
+or answering a query; the front page — the whole of the site's navigation at five contracts — had
+nothing behind it, while the generator consumed `contract-index` anyway.
 
 ## A case of block 4.4 belongs to a group — settled, catalogue-wide
 
 **A table declares its groups, every case names one, and the comment banners are gone.** Forty-eight
 groups over seven tables and 187 cases: twelve on `number/parse@1`, twelve on `date/add@1`, ten on
-`string/slugify@1`, eight on `array/group-by@1`, six on `string/levenshtein@1`. It was the eighth defect
-a consumer found in this schema and the second the site found — the judgement existed in the source and
-its shape as data did not, which is the same failure as the parameter names one unit earlier.
+`string/slugify@1`, eight on `array/group-by@1`, six on `string/levenshtein@1`. It is another of the
+defects a consumer found in this schema — the judgement existed in the source and its shape as data did
+not, which is the same failure as the parameter names one unit earlier.
 
 **The partition was derived from the banners while they were still there, and read back before they
 went.** Two of the seven tables carried no banner, and their groups were read off what their cases
@@ -663,7 +662,7 @@ held-back `number/round` runs the old code that imports it still — so removing
 order to tidy a folder. The blunt form is deliberate; the exact one costs a fetch per held-back feature
 and a fallback, to win one run of tidiness in a situation the user is already resolving.
 
-**The fourth defect a consumer has found in this schema is `LockedFeature.askedFor`.** The lockfile did
+**`LockedFeature.askedFor` is one of the defects a consumer found in this schema.** The lockfile did
 not say which features the user had typed, and an update has two ways to guess, both wrong for different
 reasons. Treating every entry as a root climbs a dependency to whatever its own binding names today
 rather than to the one its dependent was published against — a combination nobody published. Deriving
@@ -671,9 +670,8 @@ the roots from the edges reads precisely what an update is trying to find out ha
 ordinary case wrong anyway: a `string/pad` installed directly *and* pulled in by `number/round` would
 never again be updated on its own. It is **sticky towards true**, and that case found a second defect in
 `add`: asking by name for something already held as a dependency answered "nothing to do" and recorded
-nothing, after which a later update would have removed what the user had asked for. Fourth after
-`dependencyDepth`, `ProfileSamples` and the two digests — smaller than the three before it, and in the
-lockfile rather than in the served schema.
+nothing, after which a later update would have removed what the user had asked for. It is smaller than
+the ones the read API and `toopo add` found, and it is in the lockfile rather than in the served schema.
 
 ## What a search may answer, and what it must not — settled
 
@@ -982,13 +980,33 @@ weaker one than asking whether the guard exists.
    and the five contracts are already measured by their own batteries.
 
    A second argument decided it, and it is a lesson from this repository rather than a preference:
-   both schema defects found so far — a `dependencyDepth` reduced to an unusable summary, and
-   `ProfileSamples` carried in full — were found by deriving what a consumer needs. Approaching the
-   consumer finds defects design does not. It happened twice more in the unit that wrote `toopo add`,
-   on the walk's parameter and on the lockfile's digests, and twice more again in the one that wrote
-   `toopo update`: a lockfile that could not say which features had been asked for, and an index that
-   could not name what a caller imports. **Four consumers, six defects, none of them found by looking
-   at the schema.**
+   **a defect in this schema has never once been found by looking at the schema.** Every one was found
+   by a consumer trying to use it. The list is here, named, and it is the whole of it — see below for
+   why it is a list and not a number:
+
+   - `dependencyDepth`, reduced to a summary no caller could walk — the read API
+   - `ProfileSamples`, summarised where a caller needs them whole — the read API
+   - `DependencyNode`, because the walk demanded a record no client holds — `toopo add`
+   - the two digests of an installed file, `served` and `sha256` — `toopo add`
+   - `LockedFeature.askedFor`, so an update could know what had been asked for — `toopo update`
+   - the export names in the served index, so a client could say what it installed — `toopo update`
+   - `ExportRecord.parameters`, because a case of block 4.4 is a call — the site
+   - `CaseTableRecord.groups`, because a case belongs to a group — the site
+   - `ParameterRecord.type`, because a form field has to know what it is — the site
+   - `list-the-whole-catalogue`, a page with no need behind it — the site
+   - `run-the-implementation-on-what-a-reader-types` — the playground
+
+   **This was a numbered series, and the numbers had stopped being true.** Two things were called *the
+   seventh*, two *the eighth*, two *the ninth*, and one field was published as both the fifth and the
+   seventh in two files. The cause is recoverable and worth recording, because it is the argument: two
+   places re-derived the rank from a list they wrote out from memory, both dropped `DependencyNode`,
+   and both compensated by counting the lockfile's two digests as two findings instead of one. Each
+   list was internally consistent and neither matched the other.
+
+   So the ordinals are gone rather than corrected, by the rule 467 established. **A list is checked
+   line by line; a rank is checked only by rebuilding the whole list, which is what nobody did.** What
+   the series is about — a schema defect is never found by reading the schema — does not drift, and it
+   is the sentence that survives.
 
    Only the piece currently under way exists; the others do not, because each one constrains the next.
    Everything lives in this one repository, in folders — releases are independent, the history is not.
