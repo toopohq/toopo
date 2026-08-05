@@ -355,13 +355,13 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '25 min 21 s',
-  measuredAt: '7042c3c',
+  duration: '28 min 59 s',
+  measuredAt: 'a381860',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'the run before it, one defect cell smaller, took 25 min 10 s, and four replays of the 18 ' +
-    'batteries before them took 22 min 14 s, 23 min 4 s, 23 min 10 s and 26 min 32 s, so that is ' +
-    'one run rather than how long it takes',
+    'the two runs before it, three defect cells smaller, took 25 min 21 s and 25 min 10 s, and four ' +
+    'replays of the 18 batteries before them took 22 min 14 s, 23 min 4 s, 23 min 10 s and ' +
+    '26 min 32 s, so that is one run rather than how long it takes',
   reprintedBy: 'npm run tally',
   /**
    * What the second command is for, now that the first one prints the total itself.

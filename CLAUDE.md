@@ -57,7 +57,11 @@ frozen artefact, proved by packing it, installing it into an empty project, and 
 out of somebody else's `node_modules`. **And now the nineteenth battery, which is the first to measure
 guards over something that is not in the working tree**: `packaging/` had fifteen of them and nothing
 replayable pinning their verdicts, and closing that found two sentences this repository had published
-about its own build that are wider than what anything measures.
+about its own build that are wider than what anything measures. **And now the first contact, which is
+the first unit here aimed at somebody who has read nothing**: `toopo add` stops needing `toopo init`,
+the project that friction was covering by accident is refused on purpose, and git is asked whether the
+folder about to receive somebody's code will ever be committed — a question this repository had recorded
+a decision against, reversed on a measurement that falsified its premise.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -503,7 +507,7 @@ the corollary almost nobody else can offer — the defects that were tried are c
 the exact edit it makes and the verdict it must produce.
 
 **A survivor declares its kind, and the aggregate is never available without the split.** A count of
-surviving cells published alone reads as a count of holes. Measured at `7042c3c` over the nineteen
+surviving cells published alone reads as a count of holes. Measured at `a381860` over the nineteen
 batteries: **36 surviving defect cells — 12 equivalent, 7 outside what the contract specifies, 4
 unreachable on this catalogue, 1 a declared open class, and 12 that live only where a lens blinded the
 suite.** Exactly one is a debt. `survived` is a function requiring a `SurvivalNature`, so a survivor
@@ -698,6 +702,113 @@ vitest reports the seven guards under it as *skipped* rather than failed. The in
 correctly — a red run with no failed guard is `killed-by-typecheck` — and the count check still holds,
 because a skipped assertion is still an assertion in the report. It is worth writing down because the
 verdict's name says compiler and the mechanism is a harness that could not start.
+
+## What the first contact is, and the one project it refuses — settled
+
+**`toopo add` no longer needs `toopo init`, and what that friction was covering by accident is now
+covered on purpose.** `add` read `toopo.json` and stopped when there was none, so the first line
+anybody types — the line every contract page ends in — answered *run `toopo init` first*. It stopped
+somebody for nothing: the only thing an install needs to know is a folder, `proposeDirectory` already
+deduces one, and nothing was at stake in asking. A project with nothing in it is now configured,
+installed, and told about it.
+
+**The report says a file appeared, and that is not politeness.** `toopo.json` is committed by the user,
+so a run that writes one puts a file in front of their whole team. Unannounced it is a bad surprise;
+announced it is a convenience, and the line names the folder so that changing it is one edit and one
+re-run. `init` keeps every reason it had for whoever wants to choose in advance — what it loses is the
+right to stand in front of the first command anybody types.
+
+**Removing the friction revealed what it had been covering, which is the argument for removing
+frictions rather than against.** `toopo.lock` records each file's path relative to the configured
+directory and **never the directory itself** — `list.ts` and `write.ts` both join the two — so a project
+holding installed features with no `toopo.json` is one where the folder is recoverable from nothing on
+disk. Proposing one would install *beside* those files rather than over them, leaving two copies and a
+lockfile describing one. That is the one project `add` still refuses, and the refusal names
+`toopo init --dir` and says why only the user can answer it: **a refusal that explains is a door, one
+that reports is a wall.**
+
+**The configuration goes through the two-phase write rather than beside it**, renamed before the
+lockfile — a lockfile with no configuration beside it is precisely the state the refusal above exists
+for, so it must never be what a killed run leaves behind. `Commit` carries the field **required** rather
+than optional, because a caller that could forget it is a caller that will, which is the sentence that
+field's neighbour already carries. The cost is fourteen call sites stating `configuration: null`, which
+is totality being paid for exactly as `FIELDS_OF` already pays for it.
+
+**A guard was written for this and deleted, and the deletion is the finding.** It asserted that a
+refused commit leaves no `toopo.json`, and measured, it could not fail: every fault `commit` raises is
+raised while staging the *files*, and the block that writes the root files sits behind
+`faults.length === 0`, so a refused commit never reaches that field at all. The property is structural
+rather than kept, and `write.ts` records where the claim is really held —
+`add-with-a-lockfile-and-no-configuration-writes-nothing`, where a refusal can arrive after something
+was decided.
+
+**The state a stranger arrives in was the one state `packaging/` could not reach.** Every guard there
+shares one installed project and the first of them runs `toopo init --dir`, so *a project that was
+never configured* was unreachable once any other had run. `intoAFreshProject` installs the same tarball
+into a second empty project — the bytes are reused, so what is measured a second time is an install
+into an empty folder rather than npm's determinism.
+
+**And the three guards this left unprobed were probed rather than declared out of reach.**
+`cli-install`'s first run after the unit reported them *unaccounted for*, and the two answers the
+instrument offers — out of reach, or a debt — both fitted badly: what those guards keep is which
+configuration an **install** runs under, and that is the battery about installing. Declaring a region
+would have been the data arranged to suit the tool. C-48, C-49 and C-50 exist because the instrument
+asked for them, and two of the three produce a load-bearing guard.
+
+## What git is asked, and what asking may not change — settled
+
+**A decision recorded in this repository was reversed, in the change that deviated, on the measurement
+that falsified it.** `report.ts` said that reading a `.gitignore` would mean spawning git inside
+somebody else's repository to answer a question one sentence answers better, and it printed that
+sentence: *Commit toopo.json, toopo.lock and `<directory>`/*. Its description of the trap was exactly
+right and is kept. Its remedy was measured, on git 2.49.0, in a project whose `.gitignore` holds `lib/`:
+
+```
+toopo add string/slugify         ->  + lib/toopo/string/slugify/slugify.ts
+git check-ignore -v <that file>  ->  .gitignore:2:lib/  lib/toopo/.../slugify.ts
+git add -A ; git ls-tree -r HEAD ->  .gitignore package.json toopo.json toopo.lock
+```
+
+The lockfile is committed and the source is not, so the next clone gets a lockfile naming files that
+are not there — the trap happening while the sentence telling them to commit that folder is on screen.
+**An instruction the project makes impossible to follow is worse than silence.** And `lib/` with no
+leading slash matches a directory of that name at any depth, so `src/lib/toopo` is ignored by it too:
+both branches of `proposeDirectory` are exposed, not only the one that looked exposed.
+
+**Reading `.gitignore` ourselves was refused rather than attempted.** Negations, `**`, anchoring, nested
+files, `.git/info/exclude` and global excludes are a semantics this repository does not own, and a
+second statement of what git means by *ignored* drifts from the first. A false *your folder is ignored*
+teaches its reader to ignore what this tool says, which costs more than never having spoken.
+
+**Three outcomes and no fourth.** git absent, or a folder in no repository, is **silence** — never a
+claim, because this is the one thing on the screen a reader cannot check for themselves.
+
+**Two conventions of an external tool are pinned rather than assumed**, the treatment `node:util.diff`'s
+operation codes already have. The exit codes — `0` ignored, `1` not ignored, anything else an error. And
+the flag whose name reads right and is wrong: `check-ignore` consults the index, so a folder holding a
+tracked file is **not** reported ignored however well a pattern matches it, and `--no-index` would turn
+a project that force-added its folder into a false warning. Measured over a file committed with
+`git add -f`: `-q` alone answers `1`, `-q --no-index` answers `0`.
+
+**Two things were found by measuring rather than by reading the manual page, and the first is this
+module's own failure mode arriving through its front door.** `-q` refuses more than one pathname —
+`fatal: --quiet is only valid with a single pathname`, exit **128** — so asking about every written file
+in one call would have answered *git cannot say* and printed nothing. And git answers for a *directory*
+out of the index too, so one path is enough and it is the configured folder: measured in one repository
+holding `lib/`, `check-ignore -q lib/a` answers `1` after a file under it was force-added, while
+`lib/c` answers `0`.
+
+**`command.ts` says everything this tool *decides* is reachable from a guard with no process, and that
+reading is now a measurement.** Asking git is not a decision, and
+`an-installation-is-the-same-with-git-and-without` runs the same install in two identical projects — one
+where git answers, one where `git` cannot be found at all — comparing every installed byte, the lockfile
+and `toopo.json`. Only the advice differs. Seen red by letting the answer reach one lockfile field.
+`installedAt` is named and dropped from the comparison, because it is a clock and not a git effect.
+
+**The sentence replaces the other rather than sitting beside it.** *Commit this folder* and *git will
+not let you* on one screen is a tool arguing with itself, and the reader believes neither. It is printed
+where something was written — `add`, `init`, `update --apply` — and never on the showing half of an
+update, where the past tense would describe files that do not exist yet.
 
 ## A case of block 4.4 is a call — settled, catalogue-wide
 
@@ -1446,13 +1557,13 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `7042c3c`, one run of the nineteen took
-**25 min 21 s** and gave **589 defect cells, 553 killed, 36 surviving, beside 26 probe cells of which 4
-survive**; the largest single battery was `cli-install` at 230 s. **A duration is published beside its
+Measured at `a381860`, one run of the nineteen took
+**28 min 59 s** and gave **592 defect cells, 556 killed, 36 surviving, beside 26 probe cells of which 4
+survive**; the largest single battery was `cli-install` at 317 s. **A duration is published beside its
 spread**, because a stamp stops a figure being stale and does not stop it being read as a period: the
-run before this one took 25 min 10 s, and four replays of the eighteen batteries before them took
-22 min 14 s, 23 min 4 s, 23 min 10 s and 26 min 32 s — so a single number to ten seconds is a precision
-the measurement has not got. `THE_REPLAY` carries both and the page renders both. The two populations
+two runs before this one, three defect cells smaller, took 25 min 21 s and 25 min 10 s, and four
+replays of the eighteen batteries before them took 22 min 14 s, 23 min 4 s, 23 min 10 s and
+26 min 32 s — so a single number to ten seconds is a precision the measurement has not got. `THE_REPLAY` carries both and the page renders both. The two populations
 are printed together because they
 collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
 38*, and both were true — 556 is the defects, 582 is every cell including the probes. Each figure was
