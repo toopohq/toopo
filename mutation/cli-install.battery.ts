@@ -174,6 +174,13 @@ const THE_PROPOSAL_READS_THE_PROJECT = `export const proposeDirectory = (root: s
 const THE_WHOLE_CONFIGURATION_IS_WRITTEN =
   "  writeFileSync(to, `${JSON.stringify(configuration, null, 2)}\\n`, 'utf8')"
 
+const THE_ORPHAN_LOCKFILE_IS_REFUSED = `  if (anythingInstalled) {`
+
+const A_CONFIGURATION_THAT_EXISTS_IS_KEPT =
+  `  if (held !== null) return { configuration: held, write: false }`
+
+const NOT_IGNORED_IS_AN_ANSWER = `  if (done.status === CHECK_IGNORE.NOT_IGNORED) return false`
+
 const THE_FEATURES_ARE_VALIDATED = `    ? features.flatMap(featureFaults)`
 
 const A_CLEAN_REFUSAL_NAMES_ITS_GUARD = `    verdict: 'refused-cleanly',
@@ -763,6 +770,65 @@ void theFive`,
       'somebody\'s project and leaving them to find out',
     [installFile(THE_CARRIERS_ARE_NAMED, `  return []`)],
     killed(['a-line-says-what-was-done-to-that-file']),
+  ),
+
+  /**
+   * The three defects of the unit that let `toopo add` run without `toopo init`.
+   *
+   * They were written because the battery said so. Its first run after that unit reported three guards
+   * *unaccounted for*, and the two answers on offer - declare them out of reach, or probe them - are
+   * not equal here: the decision they keep is which configuration an **install** runs under, and this
+   * is the battery about installing. A region declaring them unreachable would have been the tool
+   * being arranged to suit the measurement.
+   */
+  sameOnEveryLens(
+    'C-48',
+    'proposes a folder for a project whose lockfile records features and whose `toopo.json` is gone, ' +
+      'so an install lands beside the files that are already there instead of over them - and the ' +
+      'folder they are in is recoverable from nothing on disk',
+    [
+      {
+        file: 'configuration.ts',
+        find: THE_ORPHAN_LOCKFILE_IS_REFUSED,
+        replace: `  if (false as boolean) {`,
+      },
+    ],
+    killed([
+      'a-lockfile-with-no-configuration-is-refused-with-the-folder-to-name',
+      'add-with-a-lockfile-and-no-configuration-writes-nothing',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'C-49',
+    'writes a configuration over one the project already has, so a folder the user chose with ' +
+      '`toopo init --dir` is replaced by the proposed one on the next `toopo add`',
+    [
+      {
+        file: 'configuration.ts',
+        find: A_CONFIGURATION_THAT_EXISTS_IS_KEPT,
+        replace: `  if (held !== null) return { configuration: held, write: true }`,
+      },
+    ],
+    killed(['a-project-with-nothing-in-it-is-configured-rather-than-refused']),
+  ),
+
+  /**
+   * The defect `CHECK_IGNORE` is pinned against, and `ignored.ts` names it in as many words: confusing
+   * *not ignored* with *git could not say* produces exactly the silence that module exists to end.
+   */
+  sameOnEveryLens(
+    'C-50',
+    'reads git answering `not ignored` as git failing to answer, so a folder that will be committed ' +
+      'and a folder nobody could ask about are the same answer',
+    [
+      {
+        file: 'ignored.ts',
+        find: NOT_IGNORED_IS_AN_ANSWER,
+        replace: `  if (false as boolean) return false`,
+      },
+    ],
+    killed(['git-answers-whether-the-folder-is-ignored-and-says-nothing-when-it-cannot']),
   ),
 ]
 
