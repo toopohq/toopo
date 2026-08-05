@@ -1010,7 +1010,7 @@ const mutants: readonly Mutant[] = [
           `    ),`,
       ),
     ],
-    killed(['every-url-a-crawler-is-given-is-absolute-and-on-the-published-origin']),
+    killed(['every-page-is-in-the-sitemap-and-nothing-else-is']),
   ),
 
   sameOnEveryLens(

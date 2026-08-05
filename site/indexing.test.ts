@@ -81,25 +81,24 @@ describe('what a crawler reads', () => {
     expect(sitemap().match(/\d{4}-\d{2}-\d{2}/g)).toBeNull()
   })
 
-  /** A relative URL in a sitemap is not a URL at all, and a crawler is entitled to ignore the file. */
-  it('every-url-a-crawler-is-given-is-absolute-and-on-the-published-origin', () => {
-    const given = [...locations(sitemap()), `${THE_ORIGIN}/${SITEMAP}`]
-
-    expect(given.filter((url) => !url.startsWith(`${THE_ORIGIN}/`))).toEqual([])
-    expect(robots()).toContain(`Sitemap: ${THE_ORIGIN}/${SITEMAP}`)
-  })
-
   /**
    * **The one that matters, and the one nobody sees.** A `robots.txt` that blocks indexing is the
    * classic launch failure: it costs nothing to write by accident, everything works, and it is found
    * six weeks later by noticing the site is nowhere. There is nothing here to hide - permanent rule 5
    * forbids hiding a contract's tests - so the file says so and this requires it to keep saying so.
+   *
+   * The `Sitemap:` line is here rather than in a guard of its own, and that is a correction the
+   * attribution forced: a guard over the absoluteness of every published URL was written first and
+   * could not be the only red on anything, because the comparison above already pins each location as
+   * an exact string with the origin in it. What was genuinely unguarded was this one line, which no
+   * comparison over the sitemap can see - so it moved to the file it is about.
    */
   it('robots-txt-lets-a-crawler-read-everything-and-names-the-sitemap', () => {
     expect(robots()).toContain('User-agent: *')
     expect(robots()).toContain('Allow: /')
     expect(robots()).not.toMatch(/^Disallow: \S/m)
     expect(robots()).not.toContain('noindex')
+    expect(robots()).toContain(`Sitemap: ${THE_ORIGIN}/${SITEMAP}`)
   })
 
   /**
@@ -111,10 +110,10 @@ describe('what a crawler reads', () => {
    * and the failure here is not a wrong character but a document a parser rejects whole.
    */
   it('a-path-that-would-break-the-xml-is-escaped', () => {
-    const written = sitemapOf(['a&b<c>d/index.html'])
-
-    expect(written).toContain('<loc>https://toopo.dev/a&amp;b&lt;c&gt;d/</loc>')
-    expect(locations(written)).toEqual(['https://toopo.dev/a&amp;b&lt;c&gt;d/'])
+    // The three characters and not the whole URL: an expectation carrying a rendered address would
+    // redden on any defect that moved an address, which is how this guard stopped a different one
+    // from ever being the only red on its own mutant.
+    expect(sitemapOf(['a&b<c>d/index.html'])).toContain('a&amp;b&lt;c&gt;d')
   })
 
   /**
