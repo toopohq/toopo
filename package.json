@@ -1,7 +1,14 @@
 {
   "name": "toopo",
   "private": true,
+  "version": "0.0.0-local",
   "type": "module",
+  "bin": {
+    "toopo": "dist/cli/published.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest run --typecheck",
     "mutation": "node mutation/measure.ts",
@@ -11,13 +18,18 @@
     "validation": "tsc -p validation/tsconfig.json && vitest run --config validation/vitest.config.ts",
     "cli": "tsc -p cli/tsconfig.json && vitest run --config cli/vitest.config.ts",
     "site": "tsc -p site/tsconfig.json && vitest run --config site/vitest.config.ts",
+    "packaging": "tsc -p packaging/tsconfig.json && vitest run --config packaging/vitest.config.ts",
     "toopo": "node cli/toopo.ts",
-    "site:build": "node site/build.ts"
+    "site:build": "node site/build.ts",
+    "build": "node packaging/build.ts",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "typescript": "7.0.2"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
     "fast-check": "^4.9.0",
-    "typescript": "7.0.2",
     "vitest": "^4.1.10"
   }
 }

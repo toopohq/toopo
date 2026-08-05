@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "allowImportingTsExtensions": false,
+    "rootDir": "..",
+    "outDir": "../dist",
+    "types": ["node"]
+  },
+  "include": [],
+  "files": ["../cli/published.ts"]
+}

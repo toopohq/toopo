@@ -1,5 +1,5 @@
 /**
- * The entry point.
+ * What every entry point runs, once it has said which registry it is talking to.
  *
  *   node cli/toopo.ts init
  *   node cli/toopo.ts add string/slugify
@@ -17,6 +17,17 @@
  * acceptance as a second command rather than as a prompt. An interactive prompt written here would take
  * that away, and would take it away silently. `THE_WRITE_DISCIPLINE` in `arguments.ts` says which
  * commands ask twice and why `add` does not.
+ *
+ * **The registry is a parameter, and that is what makes one build of this file installable.** It used
+ * to call `localSource()`, which serialises this working tree - and a published `toopo` has no working
+ * tree, cannot reach the modules that serialisation imports, and must be served from a frozen artefact
+ * instead. `artefact.ts` carries the three measurements. What matters here is the shape: two entry
+ * points, `toopo.ts` and `published.ts`, each naming one registry, and *which registry an installation
+ * came from is a static fact about which file was run* rather than something this file probes for. A
+ * probe would be the second source of truth `source.ts` exists to prevent.
+ *
+ * It is a thunk rather than a source, because building one serialises five contracts and reads
+ * thirty-seven files, and that is not worth paying to print a usage line.
  *
  * The project root is the working directory, and `toopo.json` is the marker of a project rather than a
  * `package.json`. Nothing this tool does needs a package manager to have been used: it copies source
@@ -37,7 +48,7 @@ import {
 } from './configuration.js'
 import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
 import { listProject } from './list.js'
-import { localSource } from './local-source.js'
+import { UnusableArtefact } from './artefact.js'
 import { UnusableLockfile, readLockfile } from './lockfile.js'
 import { nothingMoved } from './reconcile.js'
 import { prepareRemoval } from './remove.js'
@@ -54,6 +65,7 @@ import {
   renderUpdate,
 } from './report.js'
 import { displayed, search } from './search.js'
+import type { RegistrySource } from './source.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
 import { renderContract } from '../registry/address.js'
@@ -62,184 +74,190 @@ const out = (text: string): void => {
   process.stdout.write(`${text}\n`)
 }
 
-/**
- * Annotated on the constant rather than on the arrow, which is not a style choice: TypeScript only
- * treats a call as never-returning - and therefore only narrows what follows it - when the callee is
- * an identifier declared with an explicit type.
- */
-const refuse: (faults: readonly string[]) => never = (faults) => {
-  process.stdout.write(renderRefusal(faults))
-  process.exit(1)
-}
-
-const root = process.cwd()
-const parsed = parseArguments(process.argv.slice(2))
-
-if ('faults' in parsed) {
-  process.stdout.write(renderRefusal(parsed.faults))
-  out(USAGE)
-  process.exit(1)
-}
-
-/** The configuration, or the refusal that names the one command which writes it. */
-const theConfiguration = (): Configuration => {
-  const held = readConfiguration(root)
-  if (held === null) {
-    refuse([
-      `this folder has no ${CONFIGURATION_FILE}, so nothing knows where a feature should go. Run ` +
-        `\`toopo init\` first - it takes no answer and writes one file.`,
-    ])
-  }
-
-  return held
-}
-
-/** The lockfile, or the refusal that says nothing is installed, in the words of what was asked. */
-const theLockfile = (verb: string): Lockfile => {
-  const held = readLockfile(root)
-  if (held === null) {
-    refuse([
-      `this folder has no toopo.lock, so nothing is installed and there is nothing to ${verb}. ` +
-        `Install something with \`toopo add string/slugify\`.`,
-    ])
-  }
-
-  return held
-}
-
 const EMPTY: Lockfile = { version: LOCKFILE_VERSION, features: [] }
 
-try {
-  if (parsed.command.name === 'init') {
+export const run = (theRegistry: () => RegistrySource): void => {
+  /**
+   * Annotated on the constant rather than on the arrow, which is not a style choice: TypeScript only
+   * treats a call as never-returning - and therefore only narrows what follows it - when the callee is
+   * an identifier declared with an explicit type.
+   */
+  const refuse: (faults: readonly string[]) => never = (faults) => {
+    process.stdout.write(renderRefusal(faults))
+    process.exit(1)
+  }
+
+  const root = process.cwd()
+  const parsed = parseArguments(process.argv.slice(2))
+
+  if ('faults' in parsed) {
+    process.stdout.write(renderRefusal(parsed.faults))
+    out(USAGE)
+    process.exit(1)
+  }
+
+  /** The configuration, or the refusal that names the one command which writes it. */
+  const theConfiguration = (): Configuration => {
     const held = readConfiguration(root)
-    const configuration: Configuration = {
-      version: 1,
-      directory: parsed.command.directory ?? held?.directory ?? proposeDirectory(root),
+    if (held === null) {
+      refuse([
+        `this folder has no ${CONFIGURATION_FILE}, so nothing knows where a feature should go. Run ` +
+          `\`toopo init\` first - it takes no answer and writes one file.`,
+      ])
     }
 
-    writeConfiguration(root, configuration)
-    out(renderInit(configuration, held !== null))
-  } else if (parsed.command.name === 'add') {
-    const configuration = theConfiguration()
-    const lockfile = readLockfile(root) ?? EMPTY
-    const outcome = prepareInstallation(localSource(), {
-      root,
-      configuration,
-      lockfile,
-      contract: parsed.command.contract,
-      implementation: parsed.command.implementation,
-      at: new Date().toISOString(),
-    })
+    return held
+  }
 
-    if ('faults' in outcome) refuse(outcome.faults)
-    else if ('unchanged' in outcome) {
-      // No file moves, and the lockfile may still: asking by name for something the project holds as
-      // a dependency is the user making it a root, and that is recorded rather than answered away.
-      const after = lockfileAfter(lockfile, outcome.features)
-      const recorded = JSON.stringify(after) !== JSON.stringify(lockfile)
+  /** The lockfile, or the refusal that says nothing is installed, in the words of what was asked. */
+  const theLockfile = (verb: string): Lockfile => {
+    const held = readLockfile(root)
+    if (held === null) {
+      refuse([
+        `this folder has no toopo.lock, so nothing is installed and there is nothing to ${verb}. ` +
+          `Install something with \`toopo add string/slugify\`.`,
+      ])
+    }
 
-      if (recorded) {
+    return held
+  }
+
+  try {
+    if (parsed.command.name === 'init') {
+      const held = readConfiguration(root)
+      const configuration: Configuration = {
+        version: 1,
+        directory: parsed.command.directory ?? held?.directory ?? proposeDirectory(root),
+      }
+
+      writeConfiguration(root, configuration)
+      out(renderInit(configuration, held !== null))
+    } else if (parsed.command.name === 'add') {
+      const configuration = theConfiguration()
+      const lockfile = readLockfile(root) ?? EMPTY
+      const outcome = prepareInstallation(theRegistry(), {
+        root,
+        configuration,
+        lockfile,
+        contract: parsed.command.contract,
+        implementation: parsed.command.implementation,
+        at: new Date().toISOString(),
+      })
+
+      if ('faults' in outcome) refuse(outcome.faults)
+      else if ('unchanged' in outcome) {
+        // No file moves, and the lockfile may still: asking by name for something the project holds as
+        // a dependency is the user making it a root, and that is recorded rather than answered away.
+        const after = lockfileAfter(lockfile, outcome.features)
+        const recorded = JSON.stringify(after) !== JSON.stringify(lockfile)
+
+        if (recorded) {
+          const written = commit(root, configuration.directory, {
+            writes: [],
+            removals: [],
+            lockfile: after,
+          })
+
+          if ('faults' in written) refuse(written.faults)
+        }
+
+        out(
+          renderUnchanged(
+            renderContract(outcome.unchanged.contract),
+            outcome.entry,
+            configuration,
+            outcome.promoted,
+          ),
+        )
+      } else {
         const written = commit(root, configuration.directory, {
-          writes: [],
+          writes: filesToWrite(outcome.installation),
           removals: [],
-          lockfile: after,
+          lockfile: lockfileAfter(lockfile, outcome.installation.features),
+        })
+
+        if ('faults' in written) refuse(written.faults)
+        out(renderInstallation(outcome.installation, configuration))
+      }
+    } else if (parsed.command.name === 'remove') {
+      const configuration = theConfiguration()
+      const outcome = prepareRemoval(theRegistry(), {
+        root,
+        configuration,
+        lockfile: theLockfile('remove'),
+        contract: parsed.command.contract,
+        at: new Date().toISOString(),
+      })
+
+      if ('faults' in outcome) refuse(outcome.faults)
+
+      const { removal } = outcome
+
+      if (parsed.command.apply) {
+        const written = commit(root, configuration.directory, {
+          writes: removal.reconciliation.writes,
+          removals: removal.reconciliation.removals,
+          lockfile: removal.reconciliation.lockfile,
         })
 
         if ('faults' in written) refuse(written.faults)
       }
 
-      out(
-        renderUnchanged(
-          renderContract(outcome.unchanged.contract),
-          outcome.entry,
-          configuration,
-          outcome.promoted,
-        ),
-      )
+      out(renderRemoval(removal, configuration, parsed.command.apply))
+    } else if (parsed.command.name === 'list') {
+      const configuration = theConfiguration()
+
+      out(renderList(listProject(root, configuration, theLockfile('list')), configuration))
+    } else if (parsed.command.name === 'search') {
+      // The only two commands that read no project at all - no `toopo.json`, no lockfile, not even the
+      // working directory. It is a property rather than an accident: looking for a feature comes
+      // before having somewhere to put it, and `search` is the first command that says so.
+      out(renderSearch(search(theRegistry(), parsed.command.query)))
+    } else if (parsed.command.name === 'catalogue') {
+      const source = theRegistry()
+      const refusals = source.refusals().refusals
+
+      out(renderCatalogue(source.contractIndex().entries.map((entry) => displayed(entry, refusals))))
     } else {
-      const written = commit(root, configuration.directory, {
-        writes: filesToWrite(outcome.installation),
-        removals: [],
-        lockfile: lockfileAfter(lockfile, outcome.installation.features),
+      const configuration = theConfiguration()
+      // Bound rather than passed inline, because "nothing to do" is a claim about the difference
+      // between this file and the one the reconciliation leaves behind.
+      const lockfile = theLockfile('update')
+      const outcome = prepareUpdate(theRegistry(), {
+        root,
+        configuration,
+        lockfile,
+        at: new Date().toISOString(),
       })
 
-      if ('faults' in written) refuse(written.faults)
-      out(renderInstallation(outcome.installation, configuration))
+      if ('faults' in outcome) refuse(outcome.faults)
+
+      const { reconciliation } = outcome
+
+      if (nothingMoved(lockfile, reconciliation)) {
+        out(renderUpToDate(reconciliation))
+      } else if (!parsed.command.apply) {
+        out(renderUpdate(reconciliation, configuration, false))
+      } else {
+        const written = commit(root, configuration.directory, {
+          writes: reconciliation.writes,
+          removals: reconciliation.removals,
+          lockfile: reconciliation.lockfile,
+        })
+
+        if ('faults' in written) refuse(written.faults)
+        out(renderUpdate(reconciliation, configuration, true))
+      }
     }
-  } else if (parsed.command.name === 'remove') {
-    const configuration = theConfiguration()
-    const outcome = prepareRemoval(localSource(), {
-      root,
-      configuration,
-      lockfile: theLockfile('remove'),
-      contract: parsed.command.contract,
-      at: new Date().toISOString(),
-    })
-
-    if ('faults' in outcome) refuse(outcome.faults)
-
-    const { removal } = outcome
-
-    if (parsed.command.apply) {
-      const written = commit(root, configuration.directory, {
-        writes: removal.reconciliation.writes,
-        removals: removal.reconciliation.removals,
-        lockfile: removal.reconciliation.lockfile,
-      })
-
-      if ('faults' in written) refuse(written.faults)
+  } catch (error) {
+    if (
+      error instanceof UnusableConfiguration ||
+      error instanceof UnusableLockfile ||
+      error instanceof UnusableArtefact
+    ) {
+      refuse(error.message.split('\n'))
     }
 
-    out(renderRemoval(removal, configuration, parsed.command.apply))
-  } else if (parsed.command.name === 'list') {
-    const configuration = theConfiguration()
-
-    out(renderList(listProject(root, configuration, theLockfile('list')), configuration))
-  } else if (parsed.command.name === 'search') {
-    // The only two commands that read no project at all - no `toopo.json`, no lockfile, not even the
-    // working directory. It is a property rather than an accident: looking for a feature comes
-    // before having somewhere to put it, and `search` is the first command that says so.
-    out(renderSearch(search(localSource(), parsed.command.query)))
-  } else if (parsed.command.name === 'catalogue') {
-    const source = localSource()
-    const refusals = source.refusals().refusals
-
-    out(renderCatalogue(source.contractIndex().entries.map((entry) => displayed(entry, refusals))))
-  } else {
-    const configuration = theConfiguration()
-    // Bound rather than passed inline, because "nothing to do" is a claim about the difference
-    // between this file and the one the reconciliation leaves behind.
-    const lockfile = theLockfile('update')
-    const outcome = prepareUpdate(localSource(), {
-      root,
-      configuration,
-      lockfile,
-      at: new Date().toISOString(),
-    })
-
-    if ('faults' in outcome) refuse(outcome.faults)
-
-    const { reconciliation } = outcome
-
-    if (nothingMoved(lockfile, reconciliation)) {
-      out(renderUpToDate(reconciliation))
-    } else if (!parsed.command.apply) {
-      out(renderUpdate(reconciliation, configuration, false))
-    } else {
-      const written = commit(root, configuration.directory, {
-        writes: reconciliation.writes,
-        removals: reconciliation.removals,
-        lockfile: reconciliation.lockfile,
-      })
-
-      if ('faults' in written) refuse(written.faults)
-      out(renderUpdate(reconciliation, configuration, true))
-    }
+    throw error
   }
-} catch (error) {
-  if (error instanceof UnusableConfiguration || error instanceof UnusableLockfile) {
-    refuse(error.message.split('\n'))
-  }
-
-  throw error
 }

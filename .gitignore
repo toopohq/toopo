@@ -8,3 +8,9 @@ mutation/results/
 # The generated site. Only contracts, implementations, tests, the evidence a run produced and the
 # instrument that produces it belong here - and a rendering of the catalogue is none of the five.
 site/out/
+
+# The archive: compiled JavaScript, and the catalogue frozen into one file beside it. Both are
+# derived from what is committed, and a built artefact in the history would be a second copy of the
+# catalogue ageing beside the first.
+dist/
+toopo-*.tgz
