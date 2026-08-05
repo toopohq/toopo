@@ -47,6 +47,7 @@ import {
   readConfiguration,
   writeConfiguration,
 } from './configuration.js'
+import { gitIgnores } from './ignored.js'
 import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
 import { listProject } from './list.js'
 import { UnusableArtefact } from './artefact.js'
@@ -132,7 +133,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
       }
 
       writeConfiguration(root, configuration)
-      out(renderInit(configuration, held !== null))
+      out(renderInit(configuration, held !== null, gitIgnores(root, configuration.directory)))
     } else if (parsed.command.name === 'add') {
       const lockfile = readLockfile(root) ?? EMPTY
       // The one command that does not need a project to have been configured: `configuration.ts`
@@ -191,7 +192,16 @@ export const run = (theRegistry: () => RegistrySource): void => {
         })
 
         if ('faults' in written) refuse(written.faults)
-        out(renderInstallation(outcome.installation, configuration, chosen.write))
+        // Asked after the write, because the question is about what has just landed rather than about
+        // what might. `ignored.ts` carries why this is the one subprocess an install spawns.
+        out(
+          renderInstallation(
+            outcome.installation,
+            configuration,
+            chosen.write,
+            gitIgnores(root, configuration.directory),
+          ),
+        )
       }
     } else if (parsed.command.name === 'remove') {
       const configuration = theConfiguration()
@@ -252,7 +262,10 @@ export const run = (theRegistry: () => RegistrySource): void => {
       if (nothingMoved(lockfile, reconciliation)) {
         out(renderUpToDate(reconciliation))
       } else if (!parsed.command.apply) {
-        out(renderUpdate(reconciliation, configuration, false))
+        // Never asked on the showing half: the sentence is about what has just been written, and this
+        // run wrote nothing. Saying it in the past tense about files that do not exist yet would be
+        // the report describing something other than what happened.
+        out(renderUpdate(reconciliation, configuration, false, null))
       } else {
         const written = commit(root, configuration.directory, {
           writes: reconciliation.writes,
@@ -262,7 +275,14 @@ export const run = (theRegistry: () => RegistrySource): void => {
         })
 
         if ('faults' in written) refuse(written.faults)
-        out(renderUpdate(reconciliation, configuration, true))
+        out(
+          renderUpdate(
+            reconciliation,
+            configuration,
+            true,
+            gitIgnores(root, configuration.directory),
+          ),
+        )
       }
     }
   } catch (error) {

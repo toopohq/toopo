@@ -11,7 +11,13 @@ import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
 import { imaginedSource } from './imagined-source.js'
 import { filesToWrite, prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
-import { EMPTY_LOCKFILE, A_PINNED_INSTANT, aProject, committing } from './temporary-project.js'
+import {
+  EMPTY_LOCKFILE,
+  A_PINNED_INSTANT,
+  THE_ENTRY_POINT,
+  aProject,
+  committing,
+} from './temporary-project.js'
 import type { Installation, InstallOutcome } from './install.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
@@ -33,7 +39,6 @@ import type { TemporaryProject } from './temporary-project.js'
  */
 
 const HERE = import.meta.dirname
-const ENTRY = join(HERE, 'toopo.ts')
 
 const installing = (
   source: RegistrySource,
@@ -348,7 +353,7 @@ describe('what breaks for somebody', () => {
   it('add-with-no-configuration-writes-one-and-says-so', () => {
     const project = aProject()
     try {
-      const screen = execFileSync(process.execPath, [ENTRY, 'add', 'string/slugify'], {
+      const screen = execFileSync(process.execPath, [THE_ENTRY_POINT, 'add', 'string/slugify'], {
         cwd: project.root,
         encoding: 'utf8',
       })
@@ -375,7 +380,7 @@ describe('what breaks for somebody', () => {
   it('add-with-a-lockfile-and-no-configuration-writes-nothing', () => {
     const project = aProject()
     try {
-      execFileSync(process.execPath, [ENTRY, 'add', 'string/slugify'], {
+      execFileSync(process.execPath, [THE_ENTRY_POINT, 'add', 'string/slugify'], {
         cwd: project.root,
         encoding: 'utf8',
       })
@@ -384,7 +389,7 @@ describe('what breaks for somebody', () => {
       const before = readFileSync(join(project.root, 'toopo.lock'), 'utf8')
 
       expect(() =>
-        execFileSync(process.execPath, [ENTRY, 'add', 'string/levenshtein'], {
+        execFileSync(process.execPath, [THE_ENTRY_POINT, 'add', 'string/levenshtein'], {
           cwd: project.root,
           encoding: 'utf8',
           stdio: 'pipe',

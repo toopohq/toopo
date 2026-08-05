@@ -50,7 +50,7 @@ describe('what the user reads', () => {
    * after the list is a promise the reader has already stopped looking for.
    */
   it('the-cost-is-stated-before-the-files', () => {
-    const lines = renderInstallation(anInstallation(), CONFIGURATION, false).split('\n')
+    const lines = renderInstallation(anInstallation(), CONFIGURATION, false, null).split('\n')
     const cost = lines.findIndex((line) => line.includes('depth'))
     const firstFile = lines.findIndex((line) => line.includes('+ src/lib/toopo/'))
 
@@ -65,7 +65,7 @@ describe('what the user reads', () => {
    * them what the installer did.
    */
   it('a-line-says-what-was-done-to-that-file', () => {
-    const rendered = renderInstallation(anInstallation(), CONFIGURATION, false)
+    const rendered = renderInstallation(anInstallation(), CONFIGURATION, false, null)
     const lines = rendered.split('\n').filter((line) => line.includes('+ src/lib/toopo/'))
 
     expect(lines.map((line) => line.trim())).toEqual([
@@ -84,23 +84,29 @@ describe('what the user reads', () => {
    * the answer comes before the reason rather than after it.
    */
   /**
-   * `init` says what has to be committed, at the moment the folder is being chosen.
+   * `init` says what has to be committed, at the moment the folder is being chosen - or says that the
+   * project will not accept it, which is the same sentence's job on a project where it is false.
    *
-   * It is the only prevention this tool can offer for a trap it cannot detect: a project whose installed
-   * folder is ignored by git hands the next person a lockfile describing files that are not there, and
-   * their build fails on an import long before anybody thinks to run `toopo update`. Reading their
-   * `.gitignore` would mean spawning git inside somebody else's repository to answer a question that
-   * one sentence answers better - and `update` catches the symptom for whoever arrives after this was
-   * not read.
+   * The trap is that a project whose installed folder is ignored by git hands the next person a
+   * lockfile describing files that are not there, and their build fails on an import long before
+   * anybody thinks to run `toopo update`. **This used to be the only prevention on offer, on the
+   * argument that the trap could not be detected**; `ignored.ts` carries the measurement that reversed
+   * it, and the third answer - git cannot say - is the one printed here, which is why `null` gives the
+   * sentence that was always given.
    */
   it('an-init-says-what-has-to-be-committed', () => {
-    const screen = renderInit(CONFIGURATION, false)
+    const screen = renderInit(CONFIGURATION, false, null)
 
     expect(screen).toContain('Commit toopo.json, toopo.lock and src/lib/toopo/')
     expect(screen).toContain('source code in your project')
-    expect(renderInit({ version: 1, directory: 'app/vendor' }, true)).toContain(
+    expect(renderInit({ version: 1, directory: 'app/vendor' }, true, false)).toContain(
       'toopo.lock and app/vendor/',
     )
+
+    const ignored = renderInit(CONFIGURATION, false, true)
+
+    expect(ignored).toContain('git ignores src/lib/toopo/')
+    expect(ignored).not.toContain('Commit toopo.json, toopo.lock and')
   })
 
   it('a-refusal-says-nothing-was-written-before-it-says-why', () => {
@@ -124,7 +130,7 @@ describe('what the user reads', () => {
    * an address - `number/parse` exports `parseNumber`.
    */
   it('an-import-line-is-printed-ready-to-copy', () => {
-    const line = renderInstallation(anInstallation(), CONFIGURATION, false)
+    const line = renderInstallation(anInstallation(), CONFIGURATION, false, null)
       .split('\n')
       .find((held) => held.includes('import {'))
 

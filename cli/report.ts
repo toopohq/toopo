@@ -14,6 +14,11 @@
  * **A refusal says what was refused and that nothing was written.** The second half matters more than
  * it looks: the reader's next question is always whether their project is now half-changed.
  *
+ * **Nothing here claims anything about a project this tool could not read.** One paragraph depends on
+ * an answer from the user's git, and its third outcome - *cannot say* - prints the advice that was
+ * always printed rather than a hedged version of the other one. A reader cannot check that particular
+ * claim themselves, which is what makes a wrong one cost more than none.
+ *
  * **A conditional sentence is printed under its own condition, and the outcome comes before what
  * explains it.** Both halves were paid for by walking a real project rather than by reading this file.
  * A screen told somebody their feature *was there as a dependency* on a run where it had not been -
@@ -98,29 +103,61 @@ export const renderImportLine = (
 ]
 
 /**
- * What `init` says, and the one sentence that is here to stop a silent trap rather than to explain a
- * setting.
+ * What has to be committed, or - when the project will not accept it - that it will not.
  *
- * **The installed folder is committed, and so is the lockfile.** Nothing about toopo enforces it and
- * nothing can: what a project ignores is the project's business, and reading `.gitignore` would mean
- * spawning git inside somebody else's repository to answer a question we can ask better by saying it
- * once. What happens when the folder is not committed is that the next person to clone gets a lockfile
- * describing files that are not there, their build fails on an import long before they think to run
- * `toopo update`, and nothing anywhere tells them why. This is the moment they are choosing the folder,
- * which is the moment the sentence is worth reading; `renderUpdate` catches the symptom for whoever
- * arrives after it was not.
+ * **The installed folder is committed, and so is the lockfile.** What happens when it is not is that
+ * the next person to clone gets a lockfile describing files that are not there, their build fails on
+ * an import long before they think to run `toopo update`, and nothing anywhere tells them why. That
+ * description was written before anything could detect the case and it was exactly right.
+ *
+ * **What was wrong was the remedy, and it was measured wrong.** *Say it once* produces, in a project
+ * whose `.gitignore` holds `lib/`, an instruction the project makes impossible to follow - printed on
+ * the very screen that just wrote into that folder. `git add -A` then commits `toopo.json` and
+ * `toopo.lock` and leaves the source behind, which is the trap happening while its own warning is on
+ * screen. So `ignored.ts` asks git, and this says which of the two sentences applies.
+ *
+ * `ignores` is `null` when git cannot say - it is not installed, or this is not a repository - and
+ * then the advice is the one that was always printed. **Never a claim about a project this tool could
+ * not read**, because the reader cannot check this one themselves.
  */
-const whatToCommit = (configuration: Configuration): string =>
-  `Commit toopo.json, toopo.lock and ${configuration.directory}/ - what toopo installs is source ` +
-  `code in your project, not a dependency your package manager restores.`
+const whatToCommit = (configuration: Configuration, ignores: boolean | null): string =>
+  ignores === true
+    ? `git ignores ${configuration.directory}/, so what was just written will not be committed - ` +
+      `and toopo.lock will be. Whoever clones this next gets a lockfile naming files that are not ` +
+      `there. What toopo installs is source code in your project, not a dependency your package ` +
+      `manager restores: un-ignore ${configuration.directory}/, or pick a folder that is committed ` +
+      `with toopo init --dir <path> and add it again.`
+    : `Commit toopo.json, toopo.lock and ${configuration.directory}/ - what toopo installs is ` +
+      `source code in your project, not a dependency your package manager restores.`
 
-export const renderInit = (configuration: Configuration, existed: boolean): string =>
+/**
+ * The advice, printed under its own condition, which is not the same condition for its two halves.
+ *
+ * *Commit this* is worth saying at the moment the folder is chosen and pointless on every run
+ * afterwards, so it follows `wroteConfiguration`. *git ignores this* is worth saying **every** time
+ * something lands in a folder that will not be committed - the project configured last week is the one
+ * most likely to have grown the pattern since - so it follows the answer itself.
+ */
+const commitAdvice = (
+  configuration: Configuration,
+  ignores: boolean | null,
+  wroteConfiguration: boolean,
+): readonly string[] =>
+  ignores === true || wroteConfiguration
+    ? [...paragraph(whatToCommit(configuration, ignores)).map((line) => `${INDENT}${line}`), '']
+    : []
+
+export const renderInit = (
+  configuration: Configuration,
+  existed: boolean,
+  ignores: boolean | null,
+): string =>
   [
     '',
     `${INDENT}${CONFIGURATION_FILE}  ${existed ? 'updated' : 'written'}`,
     `${INDENT}features    ${configuration.directory}`,
     '',
-    ...paragraph(whatToCommit(configuration)).map((line) => `${INDENT}${line}`),
+    ...paragraph(whatToCommit(configuration, ignores)).map((line) => `${INDENT}${line}`),
     '',
     `${INDENT}Change the folder with  toopo init --dir <path>`,
     `${INDENT}Install something with  toopo add string/slugify`,
@@ -153,6 +190,7 @@ export const renderInstallation = (
   installation: Installation,
   configuration: Configuration,
   wroteConfiguration: boolean,
+  ignores: boolean | null,
 ): string => {
   const { cost } = installation
   const found = installation.writes.filter((write) => write.alreadyOnDisk).length
@@ -219,9 +257,7 @@ export const renderInstallation = (
         ]),
     ...renderImportLine(installation.entry, configuration),
     '',
-    ...(wroteConfiguration
-      ? [...paragraph(whatToCommit(configuration)).map((line) => `${INDENT}${line}`), '']
-      : []),
+    ...commitAdvice(configuration, ignores, wroteConfiguration),
     `${INDENT}Recorded in toopo.lock`,
     '',
   ].join('\n')
@@ -502,6 +538,7 @@ export const renderUpdate = (
   update: Reconciliation,
   configuration: Configuration,
   applied: boolean,
+  ignores: boolean | null,
 ): string =>
   [
     '',
@@ -513,6 +550,9 @@ export const renderUpdate = (
     ...(update.everyClaimedFileIsMissing
       ? [...paragraph(THE_FOLDER_IS_NOT_COMMITTED, 72).map((line) => `${INDENT}${line}`), '']
       : []),
+    // The symptom above and the cause here are two different findings and both are printed when both
+    // hold: every claimed file missing *and* a folder git will not accept is the whole diagnosis.
+    ...commitAdvice(configuration, ignores, false),
     ...theClosing(applied, 'toopo update --apply'),
     '',
   ].join('\n')

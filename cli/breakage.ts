@@ -236,11 +236,12 @@ export const WHAT_BREAKS: readonly Breakage[] = [
     detail:
       'the trap is silent and its victim has no way to reach the cause: the build fails on an import ' +
       'long before anybody thinks to run `toopo update`, and the update then repairs it perfectly and ' +
-      'says nothing - so the next person to clone meets the same thing. What is detectable without ' +
-      'reading anybody\'s `.gitignore` is the symptom: **every** file the lockfile claims missing at ' +
-      'once, which is what a checkout that never received the folder looks like and what deleting a ' +
-      'file does not. `toopo init` says what to commit at the moment the folder is being chosen, and ' +
-      'this says it to whoever arrives after it was not.',
+      'says nothing - so the next person to clone meets the same thing. What this catches is the ' +
+      '**symptom**: every file the lockfile claims missing at once, which is what a checkout that ' +
+      'never received the folder looks like and what deleting a file does not. The *cause* is caught ' +
+      'one step earlier now - `ignored.ts` asks git whether the folder will be committed, on the run ' +
+      'that writes into it - and the two are kept apart on purpose, because a project can meet either ' +
+      'without the other.',
   },
   {
     situation: 'the process is killed between the first file and the lockfile',

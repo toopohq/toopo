@@ -30,6 +30,15 @@ export type TemporaryProject = {
 
 export const EMPTY_LOCKFILE: Lockfile = { version: LOCKFILE_VERSION, features: [] }
 
+/**
+ * The file a guard runs when it wants the command rather than the function.
+ *
+ * Here rather than in whichever suite needed it first, because two of them do: everything else in this
+ * folder measures a value, and the two guards that measure a *screen* both have to spawn the real
+ * entry point.
+ */
+export const THE_ENTRY_POINT = join(import.meta.dirname, 'toopo.ts')
+
 /** The instant every guard records, so that two runs of one guard produce one lockfile. */
 export const A_PINNED_INSTANT = '2026-08-03T00:00:00.000Z'
 
