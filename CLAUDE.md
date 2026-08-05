@@ -977,6 +977,21 @@ decorative for ever.
   needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
   to buy a check that would still be matching words against prose. Looked for, priced, and declared
   rather than dressed as a mechanism — which is the treatment this list exists to give.
+- **The rule that a pin names what is red on every run**, stated on L-05 in `mutants.ts` and kept by
+  nothing: a battery sees one draw, so every pin is checked against the run that wrote it. The one
+  instance is `G-14` of `string-slugify`, whose `as-committed` cell pins `p1-two-spellings-one-slug` —
+  a guard that needs a draw where a rich spelling meets a stacked mark. `G-07`, two mutants above,
+  leaves that same guard out of both its cells and says why in a comment, so the repair is one line and
+  the rule was already known when the pin was written. **What makes it serious is the direction it
+  fails in**: a draw that does not redden it makes the cell disagree under `expected killed, measured
+  killed`, the false red the pre-flight was built to stop manufacturing — and a pin that reddens four
+  times out of five trains its reader to ignore the red, which is the only known way to destroy this
+  instrument. It is not repaired in pencil: a pin edited on a guess is the same defect facing the other
+  way, and `mutants.ts` prices the honest repair at four targeted reruns, which `--only` takes in
+  seconds. Closing the *class* is the same four runs of every cell, so the 23-minute replay taken four
+  times. Recorded rather than corrected, and the entry carries what is re-derivable and what is not:
+  the replay at `277a637` has it red on both cells of `G-14`, which is exactly what makes an
+  intermittent pin invisible; the run on which it stayed green is not one this repository can name.
 
 **Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever
