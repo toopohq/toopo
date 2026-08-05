@@ -586,7 +586,7 @@ void theFive`,
         replace: `  if (!existsSync(path)) return { version: 1, directory: 'src/lib/toopo' }`,
       },
     ],
-    killed(['a-project-that-was-never-initialised-answers-nothing', 'add-before-init-says-what-to-run']),
+    killed(['a-project-that-was-never-initialised-answers-nothing', 'add-with-no-configuration-writes-one-and-says-so']),
   ),
 
   sameOnEveryLens(

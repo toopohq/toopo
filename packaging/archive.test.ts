@@ -119,6 +119,40 @@ describe('the archive somebody installs', () => {
   })
 
   /**
+   * The first contact, from the archive, in a project that was never configured.
+   *
+   * **Everything else in this file runs `toopo init --dir` first, so the state a stranger actually
+   * arrives in was the one state no guard here could reach.** Every contract page ends in
+   * `toopo add <name>`; this is that line, typed once, by somebody who has read nothing else - and the
+   * whole repository can be green while it fails, which is the argument this folder exists for.
+   *
+   * The folder is `lib/toopo` and nothing asked for it: the project has no `src`, so `proposeDirectory`
+   * is what decides, out of somebody else's `node_modules`.
+   */
+  it('an-archive-installs-into-a-project-that-was-never-configured', () => {
+    const fresh = archive.intoAFreshProject()
+    try {
+      const added = fresh.toopo('add', 'string/slugify')
+
+      expect(added.stderr).toBe('')
+      expect(added.status).toBe(0)
+      expect(added.stdout).toContain('toopo.json  written')
+      expect(added.stdout).toContain('features    lib/toopo')
+
+      expect(
+        JSON.parse(readFileSync(join(fresh.project.root, 'toopo.json'), 'utf8')),
+      ).toEqual({ version: 1, directory: 'lib/toopo' })
+
+      const written = readFileSync(join(fresh.project.root, 'lib/toopo/string/slugify/slugify.ts'))
+      const catalogue = readFileSync(join(REPOSITORY, 'contracts/string/slugify/reference.ts'))
+
+      expect(digestOfBytes(servedBytes(written))).toBe(digestOfBytes(servedBytes(catalogue)))
+    } finally {
+      fresh.remove()
+    }
+  })
+
+  /**
    * The lockfile is the supply-chain claim of the whole project, so an installation that produced one
    * nobody could check would be the product's own argument failing where it is made.
    */

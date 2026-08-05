@@ -88,6 +88,15 @@ export type InstalledArchive = {
   readonly toopo: (...args: readonly string[]) => Ran
   /** Run it again under a loader, and answer which files of the archive node really loaded. */
   readonly loadedBy: (...args: readonly string[]) => readonly string[]
+  /**
+   * The same tarball installed into a second, untouched project.
+   *
+   * It exists because the guards above share one project and the first of them runs `toopo init`, so
+   * *a project that was never configured* is a state no guard could reach once any other had run. The
+   * **tarball** is reused rather than packed again: what is being measured a second time is an install
+   * into an empty folder, not npm's determinism.
+   */
+  readonly intoAFreshProject: () => InstalledArchive
   readonly remove: () => void
 }
 
@@ -122,31 +131,15 @@ class TheArchiveCouldNotBeBuilt extends Error {
 }
 
 /**
- * Build the archive, install it into an empty project, and answer what a guard needs to run it.
+ * Install a tarball that already exists into a new, empty project.
  *
  * The project carries a `package.json` because `npm install` needs one, and nothing else: `toopo.json`
- * is written by `toopo init`, which is one of the things being measured. `aProject` is where the
- * folder comes from, so this suite disposes of a temporary project exactly as every other suite in
- * this repository does.
+ * is written by `toopo init` or by `toopo add`, both of which are things being measured. `aProject` is
+ * where the folder comes from, so this suite disposes of a temporary project exactly as every other
+ * suite in this repository does.
  */
-export const anInstalledArchive = (): InstalledArchive => {
+const installedFrom = (tarball: string, carries: readonly string[]): InstalledArchive => {
   const project = aProject()
-
-  // The tarball is written beside the project rather than into this repository, for the reason
-  // `temporary-project.ts` gives about writing anywhere the instrument checks out - and so that one
-  // removal disposes of everything this made.
-  const packed = npm(['pack', '--json', '--pack-destination', project.root], REPOSITORY)
-  if (packed.status !== 0) throw new TheArchiveCouldNotBeBuilt('npm pack', packed)
-
-  const report = JSON.parse(packed.stdout) as readonly {
-    readonly filename: string
-    readonly files: readonly { readonly path: string }[]
-  }[]
-
-  const first = report[0]
-  if (first === undefined) throw new TheArchiveCouldNotBeBuilt('npm pack', packed)
-
-  const tarball = join(project.root, first.filename)
 
   project.write(
     'package.json',
@@ -169,9 +162,10 @@ export const anInstalledArchive = (): InstalledArchive => {
 
   return {
     project,
-    carries: first.files.map((file) => file.path),
+    carries,
     installedAt,
     entryPoint,
+    intoAFreshProject: () => installedFrom(tarball, carries),
     toopo: (...args) => ran(process.execPath, [entryPoint, ...args], project.root),
 
     loadedBy: (...args) => {
@@ -197,5 +191,40 @@ export const anInstalledArchive = (): InstalledArchive => {
     },
 
     remove: project.remove,
+  }
+}
+
+/**
+ * Build the archive and install it, which is what every guard in this folder starts from.
+ *
+ * The tarball gets a folder of its own rather than living inside the project it is installed into, so
+ * that a second project can be installed from the same bytes - and so that neither project has
+ * anything in it that a user's would not. It is written outside this repository for the reason
+ * `temporary-project.ts` gives about writing anywhere the instrument checks out.
+ */
+export const anInstalledArchive = (): InstalledArchive => {
+  const held = aProject()
+  const packed = npm(['pack', '--json', '--pack-destination', held.root], REPOSITORY)
+  if (packed.status !== 0) throw new TheArchiveCouldNotBeBuilt('npm pack', packed)
+
+  const report = JSON.parse(packed.stdout) as readonly {
+    readonly filename: string
+    readonly files: readonly { readonly path: string }[]
+  }[]
+
+  const first = report[0]
+  if (first === undefined) throw new TheArchiveCouldNotBeBuilt('npm pack', packed)
+
+  const archive = installedFrom(
+    join(held.root, first.filename),
+    first.files.map((file) => file.path),
+  )
+
+  return {
+    ...archive,
+    remove: () => {
+      archive.remove()
+      held.remove()
+    },
   }
 }
