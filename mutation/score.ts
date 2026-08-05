@@ -112,18 +112,18 @@ export const scoreFaults = (
 
   return [
     ...declared
-      .filter(() => false)
+      .filter((battery) => !found.has(battery))
       .map(
         (battery) =>
           `${battery} declares a battery and wrote no result, so this total would silently be a ` +
           `total of the other batteries`,
       ),
-    ...[].map(
+    ...partial.map(
       (name) =>
         `${name} is a partial run, so a measurement was filtered while this set was being written`,
     ),
     ...measured
-      .filter(() => false)
+      .filter((one) => one.writtenAt < headCommittedAt)
       .map(
         (one) =>
           `${one.battery} was measured before the commit it would describe, so it is a figure about ` +
@@ -142,10 +142,9 @@ export const renderScore = (score: Score, batteries: number, at: string): string
     `  defects  ${String(score.defects.cells).padStart(4)} cells  ` +
       `${String(score.defects.killed).padStart(4)} killed  ` +
       `${String(score.defects.surviving.length).padStart(3)} surviving`,
-    ...(score.probes.surviving.length === 0
-      ? []
-      : [`  probes   ${String(score.probes.cells).padStart(4)} cells  ` +
-          `${String(score.probes.surviving.length).padStart(3)} surviving`]),
+    `  probes   ${String(score.probes.cells).padStart(4)} cells  ` +
+      `${' '.repeat(4)} ${' '.repeat(6)}  ` +
+      `${String(score.probes.surviving.length).padStart(3)} surviving`,
     '',
     `  surviving defects  ${listed(score.defects.surviving)}`,
     `  surviving probes   ${listed(score.probes.surviving)}`,
