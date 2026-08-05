@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url'
 import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
 import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } from './run.ts'
 import { attributionOf, disagreementsIn } from './attribution.ts'
+import type { MeasuredBattery } from './score.ts'
+import { renderScore, scoreFaults, theScore } from './score.ts'
 import { killed, mutantsOn, reference, survived } from './mutants.ts'
 import { battery, DOUBLED, DOUBLES_A_POSITIVE, DOUBLES_ZERO } from './fixture.battery.ts'
 
@@ -423,6 +425,66 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
     },
     META_TIMEOUT_MS,
   )
+
+  /**
+   * The tally is a tool rather than a battery, and that files it somewhere else in this folder rather
+   * than exempting it. It declares three refusals, and three refusals nothing has been seen to fire are
+   * three declarations nothing keeps - the family `CLAUDE.md` keeps a list of.
+   *
+   * They are measured on described artefacts and not on a disk, so they cost no replay and cannot
+   * quietly pass because `mutation/results/` happens to hold something today.
+   */
+  const measuredAt = (writtenAt: number): MeasuredBattery => ({
+    battery: 'fixture',
+    writtenAt,
+    cells: [{ mutant: 'FX-1', verdict: 'killed', kind: 'defect' }],
+  })
+
+  it('refuses a total taken over a set of artefacts that is not one replay of this commit', () => {
+    const complete = [measuredAt(2_000)]
+
+    expect(scoreFaults(['fixture'], complete, [], 1_000)).toEqual([])
+
+    expect(scoreFaults(['fixture', 'site'], complete, [], 1_000).join('\n')).toMatch(
+      /site declares a battery and wrote no result/,
+    )
+    expect(scoreFaults(['fixture'], complete, ['site.partial.json'], 1_000).join('\n')).toMatch(
+      /site\.partial\.json is a partial run/,
+    )
+    expect(scoreFaults(['fixture'], [measuredAt(500)], [], 1_000).join('\n')).toMatch(
+      /fixture was measured before the commit it would describe/,
+    )
+  })
+
+  /**
+   * Both populations are printed together or the rendering is wrong, and that is the whole reason this
+   * file exists: 556 and 582 collided because each was held by somebody who did not know the other
+   * population was there. A rendering able to print one alone lets it happen again by the same route.
+   */
+  it('renders the probes beside the defects even when no probe survives', () => {
+    const noProbeSurvives = theScore([
+      {
+        battery: 'fixture',
+        writtenAt: 1,
+        cells: [
+          { mutant: 'FX-1', verdict: 'killed', kind: 'defect' },
+          { mutant: 'FX-2', verdict: 'survived', kind: 'defect' },
+          { mutant: 'FX-3', verdict: 'killed', kind: 'probe' },
+        ],
+      },
+    ])
+
+    expect(noProbeSurvives).toEqual({
+      defects: { cells: 2, killed: 1, surviving: ['fixture/FX-2'] },
+      probes: { cells: 1, killed: 1, surviving: [] },
+    })
+
+    const rendered = renderScore(noProbeSurvives, 1, 'abc1234')
+
+    expect(rendered).toMatch(/defects\s+2 cells\s+1 killed\s+1 surviving/)
+    expect(rendered).toMatch(/probes\s+1 cells/)
+    expect(rendered).toContain('fixture/FX-2')
+  })
 
   /**
    * An interrupted run leaves a mutant in the tree, and that is the one way a defect enters this
