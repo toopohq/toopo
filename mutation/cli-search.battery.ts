@@ -524,6 +524,7 @@ export const battery: Battery = {
         'each-of-the-five-installs-one-file-named-after-itself',
         'each-side-says-for-itself-that-it-has-no-final-newline',
         'every-breakage-is-classified',
+        'every-clean-refusal-resolves-to-the-guard-it-names',
         'every-feature-the-install-writes-gets-its-own-lockfile-entry',
         'every-file-missing-at-once-says-the-folder-is-not-committed',
         'every-installed-feature-is-named-with-whether-it-was-asked-for',

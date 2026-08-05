@@ -677,6 +677,7 @@ export const battery: Battery = {
         'an-unchanged-specifier-is-left-alone',
         'an-unreadable-lockfile-stops-the-install',
         'every-breakage-is-classified',
+        'every-clean-refusal-resolves-to-the-guard-it-names',
         'every-method-of-the-port-answers-an-endpoint-that-exists',
         'every-shape-of-import-is-repointed-and-not-only-the-obvious-one',
         'nothing-but-the-local-adapter-reaches-the-serialisation',

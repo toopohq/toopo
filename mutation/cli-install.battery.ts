@@ -641,7 +641,10 @@ void theFive`,
     'leaves a clean refusal without the guard that keeps it, which is how a list of situations somebody ' +
       'checked becomes a list somebody wrote',
     [{ file: 'breakage.ts', find: A_CLEAN_REFUSAL_NAMES_ITS_GUARD, replace: `    verdict: 'refused-cleanly',` }],
-    killed(['every-breakage-is-classified']),
+    killed([
+      'every-breakage-is-classified',
+      'every-clean-refusal-resolves-to-the-guard-it-names',
+    ]),
   ),
 
   sameOnEveryLens(
