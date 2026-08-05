@@ -47,7 +47,9 @@ pre-flight refusal that had been set aside three times, which turns an address t
 resolving from a silence into an error, and found one the day it existed. **And now the method page,
 the only page that argues the thesis rather than demonstrating it** — the page where a project like this
 one destroys itself, which publishes what the measurements did not catch beside what they did, and
-whose figures are derived from the batteries rather than from a run nobody can replay from a clone.
+whose figures are derived from the batteries rather than from a run nobody can replay from a clone. **And
+beside it the sitemap and `robots.txt`**, which are small, are read by nobody, and are the difference
+between a site that exists and a site that is found.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -529,6 +531,43 @@ an identity every mis-classification preserves — counting only `killed` as a k
 survivors with the guard green. It is now a second walk over the batteries. And W-52 emptied one line of
 a three-line trigger and survived, correctly, because two lines of trigger were left; the battery
 reported it, which is what a pinned verdict is for.
+
+## What a crawler is told — settled
+
+**The origin is an address, not a setting.** `THE_ORIGIN` is `https://toopo.dev`, declared once in
+`paths.ts` beside the other addresses, and everything derives from it. Its cost is the cost every
+frozen identifier here carries, one order of magnitude up: a case identifier moving breaks the links
+into one page, and this moving breaks every URL the site has ever published. A guard refuses a second
+spelling anywhere in the folder — including inside a comment, and including the second domain that
+redirects, which is a fact about DNS that no module here has any business knowing.
+
+**No `lastmod`, and it is omitted rather than filled.** The protocol makes it optional and it is the
+field that invites a fabricated date: a file's mtime is a fact about a checkout and a clock is a fact
+about the machine the build ran on, and **a published file carrying a machine-dependent value is the
+immutability defect this repository has already found twice**. A `lastmod` that lies is worse than
+none — a crawler told a page changed a year ago may not come back. The day a published snapshot carries
+the instant it was published, that is a real and re-derivable date and the decision is worth taking
+again.
+
+**The URL a crawler is given and the URL a reader follows are one function.** `urlOf` is `linkTo` with
+the origin in front, because a sitemap URL that differs from the served URL by one character gets a
+redirect indexed instead of the page. Two guards over it, and the second exists because the first
+cannot be independent: the set comparison rebuilds what it expects with the very function the sitemap
+is built from, so a URL is also read **back** and required to name a page in the map. W-57 is what
+separates them — `linkTo` stops stripping the file name, every reconstruction moves with the defect and
+stays green, and only the decoding finds that every published URL now names nothing.
+
+**Verified over HTTP rather than assumed**, which is the third unit running where a browser found what
+no static check could: the XML parses with no parser error, root `urlset` in the sitemaps namespace,
+seven `loc`, zero `lastmod`, and all seven URLs answer 200 with no redirect — the `@` addresses
+included.
+
+**And a guard that could not be the only red on anything was deleted rather than kept.**
+`every-url-a-crawler-is-given-is-absolute-and-on-the-published-origin` fired only where the set
+comparison already fires, because that one pins each location as an exact string with the origin in
+it. The attribution reported it alone on nothing, which is this repository's own criterion; its one
+genuinely unguarded half — the `Sitemap:` line, which no comparison over the sitemap can see — moved
+into the guard over the file it is about.
 
 ## A case of block 4.4 is a call — settled, catalogue-wide
 
