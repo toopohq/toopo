@@ -141,7 +141,17 @@ const THE_INDEX_ENDPOINT = `  contractIndex: 'contract-index',`
 
 const A_DEFERRED_NEED_IS_NAMED = `  'search-with-an-alias-thesaurus': {`
 
-const A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT = `      'the catalogue stops fitting on one screen - measured as the front page listing more contracts ' +`
+/**
+ * The whole value, not its first line.
+ *
+ * W-52 emptied one line of three and survived, correctly: two lines of trigger were left and the
+ * guard is about a trigger being absent. The battery caught a mutant that was not the defect it
+ * claimed to be, which is the reading the pinned verdicts exist to produce.
+ */
+const A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT = `    until:
+      'the catalogue stops fitting on one screen - measured as the front page listing more contracts ' +
+      'than a reader can take in without scrolling, which is where reading a list stops beating ' +
+      'typing a word',`
 
 const A_FIGURE_IS_DERIVED = `      \`\${population.cells} \${what} cells, \${population.killed} caught. The other \` +`
 
@@ -856,7 +866,7 @@ const mutants: readonly Mutant[] = [
     'empties the trigger on the one need this site builds no page for, leaving a reason with no ' +
       'event behind it - which ages into a description of the past and is how a scope decision ' +
       'becomes something nobody revisits',
-    [sourceFile(A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT, `      '' +`)],
+    [sourceFile(A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT, `    until: '',`)],
     killed(['every-deferred-need-names-what-would-close-it']),
   ),
 
