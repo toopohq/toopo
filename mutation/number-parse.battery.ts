@@ -160,9 +160,13 @@ const behaviour: readonly Mutant[] = [
   ),
   sameOnEveryLens(
     'P-02',
-    'memoises into a bare object, consulted after the grammar guard',
+    'memoises into a bare object, consulted after the grammar guard. **It survives because the guard ' +
+      'is in front of it**: only a string the decimal grammar has already accepted reaches the cache, ' +
+      'so the inherited keys that make P-17 a defect - `constructor`, `toString` - are not keys it can ' +
+      'hold. Measured differentially against the reference over a corpus of 300 067 inputs, each seen ' +
+      'once cold and once with a foreign call in between: nothing tells the two apart',
     bareCache('trimmed'),
-    survived,
+    survived('equivalent'),
   ),
   sameOnEveryLens(
     'P-03',
@@ -185,9 +189,13 @@ const behaviour: readonly Mutant[] = [
   sameOnEveryLens('P-05', 'omits the trim', [reference(TRIM, `  const trimmed = input`)], killed([WHITESPACE_INSENSITIVE, PADDED_PROFILE])),
   sameOnEveryLens(
     'P-06',
-    'uses parseFloat instead of Number',
+    'uses parseFloat instead of Number. **It survives because the grammar has already run**: the two ' +
+      'differ on exactly the language the grammar exists to reject - `parseFloat` reads a prefix and ' +
+      '`Number` refuses the whole string - and nothing that reaches this line is outside the decimal ' +
+      'grammar. Measured differentially against the reference over a corpus of 300 067 inputs: ' +
+      'nothing tells the two apart',
     [reference(CONVERT, `  const value = parseFloat(trimmed)`)],
-    survived,
+    survived('equivalent'),
   ),
   sameOnEveryLens(
     'P-07',
@@ -233,9 +241,13 @@ const behaviour: readonly Mutant[] = [
   ),
   sameOnEveryLens(
     'P-14',
-    'uses the global isFinite instead of Number.isFinite',
+    'uses the global isFinite instead of Number.isFinite. **It survives because the coercion the two ' +
+      'differ by cannot happen here**: `value` is what `Number(...)` just returned, so it is already a ' +
+      'number and the global has nothing left to convert. The edit is a real defect in a module where ' +
+      'that line takes an argument, and this is not one. Measured differentially against the ' +
+      'reference over a corpus of 300 067 inputs: nothing tells the two apart',
     [reference(`Number.isFinite(value)`, `isFinite(value)`)],
-    survived,
+    survived('equivalent'),
   ),
   sameOnEveryLens(
     'P-15',
@@ -245,7 +257,13 @@ const behaviour: readonly Mutant[] = [
   ),
   sameOnEveryLens(
     'P-16',
-    'writes a call counter onto globalThis',
+    'writes a call counter onto globalThis. **It is the one survivor of this battery that is ' +
+      'observable from outside the function**, and that is why it is not filed as an equivalence: ' +
+      'every answer is the reference\'s, and the counter is there to be read afterwards - measured, ' +
+      '900 201 after a differential run. What the contract constrains is what this function *reads* ' +
+      '- the freedom-from-ambient-input property is about exactly that - and it says nothing about ' +
+      'what it writes. So nothing here is contradicted, and what the cell records is the edge of the ' +
+      'contract rather than a defect the guards missed',
     [
       reference(
         TRIM,
@@ -253,7 +271,7 @@ const behaviour: readonly Mutant[] = [
           `  counters.__parseNumberCalls = (counters.__parseNumberCalls ?? 0) + 1\n\n${TRIM}`,
       ),
     ],
-    survived,
+    survived('outside-what-the-contract-specifies'),
   ),
   onlySeenUnblinded(
     'P-17',
@@ -278,15 +296,26 @@ const behaviour: readonly Mutant[] = [
   ),
   sameOnEveryLens(
     'P-19',
-    'memoises into a Map, consulted first - the same cache without the inherited keys',
+    'memoises into a Map, consulted first - the same cache without the inherited keys. **It survives ' +
+      'because a Map has no prototype to serve from and the key is the exact string the analysis is a ' +
+      'function of**, so a hit and a miss cannot answer differently. It is the control for P-17: same ' +
+      'position, same advance, and the only difference is the container - which is what makes P-17 a ' +
+      'defect about `Object.prototype` and nothing else. Measured differentially against the ' +
+      'reference over a corpus of 300 067 inputs, each seen once cold and once with a foreign call in ' +
+      'between: nothing tells the two apart',
     mapCache(),
-    survived,
+    survived('equivalent'),
   ),
   sameOnEveryLens(
     'P-20',
-    'writes the trim by hand as /^\\s+|\\s+$/g',
+    'writes the trim by hand as /^\\s+|\\s+$/g. **It survives because `\\s` and what `trim` removes ' +
+      'are the same set** - WhiteSpace and LineTerminator, which is where the no-break space and the ' +
+      'byte-order mark this contract has cases for both sit - and because the literal stays inside ' +
+      'the call, so no lastIndex outlives one. It is the near miss of P-08, which adds the global ' +
+      'flag to a literal at module scope and is killed by two guards. Measured differentially against ' +
+      'the reference over a corpus of 300 067 inputs: nothing tells the two apart',
     [reference(TRIM, `  const trimmed = input.replace(/^\\s+|\\s+$/g, '')`)],
-    survived,
+    survived('equivalent'),
   ),
   sameOnEveryLens(
     'P-21',

@@ -68,14 +68,35 @@ export type Edit = {
 export type Verdict = 'killed' | 'killed-by-typecheck' | 'survived' | 'not-applicable'
 
 /**
+ * Why a cell is expected to survive. `mutants.ts` owns the vocabulary and the argument for it; the
+ * type is here because `Expectation` is here.
+ *
+ * Absent on a killed cell, and absent on the one survivor the structure explains for itself - a cell
+ * blinded by its lens, whose own mutant dies on the column that reads the contract as committed.
+ */
+export type SurvivalNature =
+  /** No observation distinguishes it: the answer is the same on every input, so nothing could catch it. */
+  | 'equivalent'
+  /** Observable, and the contract deliberately makes no claim about it. */
+  | 'outside-what-the-contract-specifies'
+  /** The rule is real and no input this catalogue holds tells the two apart. */
+  | 'unreachable-on-this-catalogue'
+  /** A limit this repository has declared, with its price, in the list of what nothing keeps. */
+  | 'a-declared-open-class'
+
+/**
  * What a cell must produce. `by` names guard identifiers that must be among the reddened, which is
  * what makes a guard replayable rather than merely counted: a defect killed by a different guard
  * than the one that used to catch it is a silent loss of coverage, and naming the guard turns it
  * into a red battery.
+ *
+ * `nature` is read by nothing this file does - a verdict is a verdict - and exists because a
+ * surviving cell is published. `mutation/published.ts` says what a bare count of survivors costs.
  */
 export type Expectation = {
   readonly verdict: Verdict
   readonly by?: readonly string[]
+  readonly nature?: SurvivalNature
 }
 
 /**

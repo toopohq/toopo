@@ -40,7 +40,7 @@ const mutants: readonly Mutant[] = [
       'the meta-tests need: an apparatus pointed at it for calibration has been shown able to see ' +
       'nothing at all, and must be refused',
     [reference(DOUBLED, `export const doubled = (value: number): number => value + value`)],
-    survived,
+    survived('equivalent'),
   ),
 ]
 

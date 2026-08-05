@@ -572,7 +572,7 @@ const probes: readonly Mutant[] = [
         `    if (!KEPT.test(base)) {\n      boundary = true\n      continue\n    }`,
       ),
     ],
-    survived,
+    survived('outside-what-the-contract-specifies'),
   ),
   probe(
     UNDER,
@@ -584,7 +584,7 @@ const probes: readonly Mutant[] = [
       'change an answer. It is a probe rather than a defect because an equivalent mutant that ' +
       'counted against the score would measure the question instead of the contract',
     [reference(LOOP, `  for (const point of text.trim().normalize('NFKC')) {`)],
-    survived,
+    survived('equivalent'),
   ),
   probe(
     UNDER,

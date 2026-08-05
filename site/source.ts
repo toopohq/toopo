@@ -26,6 +26,12 @@
  *
  * What the two ports still differ on is `contract-binding`, and that difference is untouched.
  *
+ * `methodology` is the second endpoint this port carries and the installer's does not, and it is the
+ * same shape of difference rather than a new one: what it serves is addressed to somebody deciding
+ * whether to believe the registry, and an installer has already decided. It arrived late, and
+ * `NOT_THIS_UNIT` below records what its deferral had been waiting for and why that was the wrong
+ * thing to wait for.
+ *
  * ---------------------------------------------------------------------------
  * Why `implementationBindings` is here for a page that renders no implementation list
  * ---------------------------------------------------------------------------
@@ -48,6 +54,7 @@ import type {
   ServedRefusals,
   ServedSnapshot,
 } from '../registry/response.js'
+import type { ServedMethodology } from '../registry/verifiability.js'
 
 /**
  * Everything the generator may ask of a registry.
@@ -71,6 +78,8 @@ export type RegistrySource = {
   readonly snapshot: (digest: string) => ServedSnapshot | null
   /** The served bytes of one file, which is what a playground runs. */
   readonly blob: (sha256: string) => ServedBlob | null
+  /** What a reader can establish alone, what they must take from us, and the stratum of every field. */
+  readonly methodology: () => ServedMethodology
 }
 
 /**
@@ -86,37 +95,65 @@ export const THE_ENDPOINT_BEHIND: Readonly<Record<keyof RegistrySource, string>>
   refusals: 'refusals',
   snapshot: 'snapshot',
   blob: 'blob',
+  methodology: 'methodology',
 }
 
 /**
- * The needs of `the-site` this unit deliberately builds no page for, each with what it is waiting for.
+ * A need of `the-site` this site deliberately builds no page for: why not, and what would change that.
  *
- * **It is a list of pages, not of answers, and the guard over it is what made that distinction.** One
- * of the two is answered by an endpoint this port already carries: a search would run over the same
+ * **The trigger is a field rather than a habit, and that is the whole of this type.** A thing left
+ * unbuilt with its reason and its threshold is a decision; with the reason alone it is indistinguishable
+ * from something nobody got to, because a reason ages into a description of the past while a threshold
+ * goes on being checkable. Writing the rule in prose would have left the next entry free to omit it -
+ * so the omission is made unwritable instead, which is the shape `BelievedClaim.nature` and
+ * `GuardAddress` already take one folder along.
+ */
+export type DeferredNeed = {
+  /** Why no page answers it today. */
+  readonly because: string
+  /** The observable event that makes this worth building. Never a date, and never "when we have time". */
+  readonly until: string
+}
+
+/**
+ * The needs of `the-site` this site builds no page for, each with what it is waiting for.
+ *
+ * **It is a list of pages, not of answers, and the guard over it is what made that distinction.** The
+ * one entry left is answered by an endpoint this port already carries: a search would run over the same
  * index the catalogue page lists, so the generator could build it today from what it already fetches
  * and does not - a scope decision, written down as one rather than showing up as a port that happens
- * to be narrow. The other is different in kind: nothing here can answer `render-the-methodology-page`,
- * because the `methodology` endpoint is not in this port at all.
+ * to be narrow.
  *
- * **`pre-fill-the-playground` has left this list, which is the whole of what the playground unit was.**
- * What it said while it was here has been paid rather than repeated: a case whose input is a function
- * cannot be pre-filled, and `array/group-by@1` has thirty of them. That contract has no page, so no
- * playground meets one - and `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling` is
- * the guard that turns that from a fact about today into something that reddens the day it stops
- * being true.
+ * **`render-the-methodology-page` has left this list, and what it was waiting for is worth recording
+ * because it did not arrive.** The entry read *it waits until there are figures to explain*, and named
+ * the benchmark figures, the validation reports and the attestations - none of which exists yet. What
+ * it had missed is that the figures were already there and in another folder: eighteen batteries, each
+ * pinning the verdict of every cell, which is a measurement of this catalogue's own verification and
+ * not of a machine nobody has run. A deferral names what would close it, and this one named the wrong
+ * thing - which is the argument for the `until` field above rather than against it.
+ *
+ * **`pre-fill-the-playground` left it one unit earlier**, and what it said while it was here has been
+ * paid rather than repeated: a case whose input is a function cannot be pre-filled, and
+ * `array/group-by@1` has thirty of them. That contract has no page, so no playground meets one - and
+ * `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling` is the guard that turns that from
+ * a fact about today into something that reddens the day it stops being true.
  *
  * Declared rather than left as a gap, for the reason `field-map.ts` carries `unfilledBecause` and
- * `needs.ts` carries `answeredWithoutTheApi`: a unit that quietly built four pages out of six would be
- * indistinguishable from one that had forgotten two.
+ * `needs.ts` carries `answeredWithoutTheApi`: a site that quietly built five pages out of six would be
+ * indistinguishable from one that had forgotten one.
  */
-export const NOT_THIS_UNIT: Readonly<Record<string, string>> = {
-  'render-the-methodology-page':
-    'it waits until there are figures to explain. Saying what "you can check this yourself" means is ' +
-    'worth a page when the benchmark figures, the validation reports and the attestations it would ' +
-    'describe exist; today it would describe a machine nobody has run',
-  'search-with-an-alias-thesaurus':
-    'search is a unit of its own, and at five contracts the catalogue page answers the same question ' +
-    'better: a box asks somebody to guess a word for a list they could have read',
+export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {
+  'search-with-an-alias-thesaurus': {
+    because:
+      'search is a unit of its own, and at five contracts the catalogue page answers the same ' +
+      'question better: a box asks somebody to guess a word for a list they could have read. A ' +
+      'ranking here would also be a second implementation of the one `cli/search.ts` holds, for five ' +
+      'lines that fit on a screen',
+    until:
+      'the catalogue stops fitting on one screen - measured as the front page listing more contracts ' +
+      'than a reader can take in without scrolling, which is where reading a list stops beating ' +
+      'typing a word',
+  },
 }
 
 /**

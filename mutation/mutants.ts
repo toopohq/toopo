@@ -12,7 +12,7 @@
  * anchoring on whole statements, and neither has a second exemplar to generalise from.
  */
 
-import type { Edit, Expectation, Mutant } from './run.ts'
+import type { Edit, Expectation, Mutant, SurvivalNature } from './run.ts'
 
 /** Almost every edit rewrites the reference implementation; the lenses are what edit a test file. */
 export const reference = (find: string, replace: string): Edit => ({
@@ -117,7 +117,41 @@ export const edgeCases = (find: string, replace: string): Edit => ({
 export const killed = (by?: readonly string[]): Expectation =>
   by === undefined ? { verdict: 'killed' } : { verdict: 'killed', by }
 
-export const survived: Expectation = { verdict: 'survived' }
+/**
+ * A survivor, and the kind of thing it is.
+ *
+ * **The nature is an argument rather than a field somebody wanted, and the argument is about how a
+ * survivor reads from outside.** A count of surviving cells published on its own is read as a count
+ * of holes, and that is not what these are: a mutant nothing could ever catch, a behaviour the
+ * contract deliberately declines to specify, a rule no input in this catalogue exercises, and a limit
+ * this repository has already declared with its price are four different things, and only the fourth
+ * is a debt. Aggregating them publishes a number more frightening than the truth, which is as much a
+ * misreport as one that flatters.
+ *
+ * It is a required argument rather than an optional field for the reason `DeferredNeed.until` is
+ * required one folder along: a rule in prose is one the next declaration omits, and a survivor whose
+ * nature nobody stated is exactly the survivor that gets counted as a hole. Making it unwritable
+ * costs one word at each of the sites that already argue the point in their own description.
+ *
+ * **The description goes on carrying the argument and this carries only the kind.** Two statements of
+ * one thing drift, and the description is where every one of these sites already says why - so this
+ * adds what a count can be taken over and nothing else.
+ */
+export const survived = (nature: SurvivalNature): Expectation => ({ verdict: 'survived', nature })
+
+/**
+ * The survivor the apparatus explains, which is the only one that declares no nature.
+ *
+ * A lens removes part of the suite's sight; a defect that dies on the column reading the contract as
+ * committed and lives on a blinded one is *the measurement the lens exists for* - what a contract
+ * without that half of its surface would have caught, which is nothing. Declaring a nature here would
+ * be inventing a fact about the contract out of a setting of the instrument.
+ *
+ * It carries no nature rather than a fifth member saying "the apparatus", because that member would
+ * be writable on a cell where it is false. What makes it legitimate is structural and is checked:
+ * `survivorFaults` refuses a bare survivor whose own mutant does not die on the committed column.
+ */
+export const survivesOnlyBlinded: Expectation = { verdict: 'survived' }
 
 /**
  * Killed by the compiler and by nothing else: the run reddened and no guard reported a failure,
@@ -215,7 +249,7 @@ export const mutantsOn = (under: ArmUnderTest): MutantForms => ({
     description,
     arms: { [under.arm]: edits },
     expected: expectedPerCell(under, (lens) =>
-      lens === under.asCommitted ? killed(by) : survived,
+      lens === under.asCommitted ? killed(by) : survivesOnlyBlinded,
     ),
   }),
 

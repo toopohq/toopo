@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { execFileSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
@@ -8,8 +8,9 @@ import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } 
 import { attributionOf, disagreementsIn } from './attribution.ts'
 import type { MeasuredBattery } from './score.ts'
 import { renderScore, scoreFaults, theScore } from './score.ts'
-import { killed, mutantsOn, reference, survived } from './mutants.ts'
+import { killed, mutantsOn, reference, survived, survivesOnlyBlinded } from './mutants.ts'
 import { battery, DOUBLED, DOUBLES_A_POSITIVE, DOUBLES_ZERO } from './fixture.battery.ts'
+import { THE_BATTERIES, survivorFaults, theMeasurement } from './published.ts'
 
 /**
  * The instrument, measured.
@@ -92,7 +93,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
         'FX-M1',
         'anchored on a line the reference does not contain',
         [reference(`export const doubled = (value: number): number => value * 3`, DOUBLED)],
-        survived,
+        survived('equivalent'),
       )
 
       expect(() => runOne(anchoredOnTextThatIsGone)).toThrow(/must match exactly once/)
@@ -610,4 +611,73 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
     },
     META_TIMEOUT_MS,
   )
+})
+
+/**
+ * What the site publishes about this instrument, and the two ways it could publish it wrongly.
+ *
+ * `published.ts` is imported by a generator that must not touch a disk, so it lists the batteries
+ * instead of reading the directory - a second statement of what `mutation/*.battery.ts` already says.
+ * These guards are the first statement's answer to it, and they are here rather than in `site/`
+ * because what they keep is a property of this folder.
+ */
+describe('what this repository publishes about its own defect detection', () => {
+  /**
+   * A battery written and not listed makes every published figure smaller, with nothing anywhere
+   * saying so - `scoreFaults`'s *silently be a total of the other batteries*, arriving through the
+   * one door that check cannot see, because that one reads the directory and this list does not.
+   */
+  it('every-battery-of-this-folder-is-published', () => {
+    const onDisk = readdirSync(HERE)
+      .filter((file) => file.endsWith('.battery.ts'))
+      .map((file) => file.replace(/\.battery\.ts$/, ''))
+      .sort()
+
+    expect([...THE_BATTERIES].map((one) => one.name).sort()).toEqual(onDisk)
+  })
+
+  /**
+   * A survivor with no nature and no lens to explain it is the cell that gets published as a hole
+   * nobody argued about, which is the one reading of these figures that is both wrong and worse than
+   * the truth.
+   */
+  it('every-survivor-is-accounted-for-by-a-nature-or-by-a-lens', () => {
+    expect(survivorFaults(THE_BATTERIES)).toEqual([])
+  })
+
+  it('a-survivor-with-no-nature-and-no-blinded-lens-is-refused', () => {
+    const { sameOnEveryLens } = mutantsOn({ arm: 'C', asCommitted: 'as-committed', blinded: [] })
+    const unaccounted: Battery = {
+      ...battery,
+      mutants: [
+        sameOnEveryLens(
+          'FX-M9',
+          'survives on the column that reads the contract as committed, and says nothing about why',
+          [reference(DOUBLED, `export const doubled = (value: number): number => value + value`)],
+          survivesOnlyBlinded,
+        ),
+      ],
+    }
+
+    expect(survivorFaults([unaccounted])).toEqual([
+      'fixture: FX-M9 on C/as-committed survives, declares no nature, and is not explained by a ' +
+        'lens - so it would be published as a hole nobody argued about',
+    ])
+  })
+
+  /**
+   * The aggregate and the breakdown are one value on purpose, and this is what that buys: every
+   * surviving cell falls into exactly one kind, so a page cannot show a total its own list does not
+   * account for.
+   */
+  it('the-survivors-of-each-population-are-partitioned-by-kind', () => {
+    const measured = theMeasurement()
+
+    for (const population of [measured.defects, measured.probes]) {
+      expect(population.surviving.map((one) => one.why).filter((why) => why === undefined)).toEqual(
+        [],
+      )
+      expect(population.killed + population.surviving.length).toBe(population.cells)
+    }
+  })
 })

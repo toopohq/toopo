@@ -249,7 +249,7 @@ export const mutants: readonly Mutant[] = [
         `    { kind: 'name', text: rendered, words: wordsOf(entry.address.name) },`,
       ),
     ],
-    survived,
+    survived('unreachable-on-this-catalogue'),
   ),
 
   sameOnEveryLens(
@@ -261,7 +261,7 @@ export const mutants: readonly Mutant[] = [
       'group-by@1` declares `group by` *and* `groupBy`, so neither spelling depends on the split. A ' +
       'contract declaring only one of them would, and no mutant here can arrange that.',
     [searchFile(CAMEL_CASE_IS_SPLIT, `    .replace(/([a-z0-9])([A-Z])/g, '$1$2')`)],
-    survived,
+    survived('unreachable-on-this-catalogue'),
   ),
 
   sameOnEveryLens(
@@ -278,7 +278,7 @@ export const mutants: readonly Mutant[] = [
           `  'name',\n  'export',\n  'alias',\n  'summary',\n])`,
       ),
     ],
-    survived,
+    survived('unreachable-on-this-catalogue'),
   ),
 
   sameOnEveryLens(
@@ -295,7 +295,7 @@ export const mutants: readonly Mutant[] = [
         `  word.endsWith('s') ? word.slice(0, -1) : word`,
       ),
     ],
-    survived,
+    survived('unreachable-on-this-catalogue'),
   ),
 
   sameOnEveryLens(

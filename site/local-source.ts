@@ -72,6 +72,7 @@ import {
 } from '../registry/snapshot.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
 import { theFive } from '../registry/the-five.js'
+import { servedMethodology } from '../registry/verifiability.js'
 import type { RegistrySource } from './source.js'
 
 /**
@@ -222,6 +223,16 @@ export const localSource = (): RegistrySource => {
     refusals: () => servedRefusals(held.ledger),
 
     snapshot: (digest) => held.snapshots.get(digest) ?? null,
+
+    /**
+     * The one answer of this port that is not about the five contracts at all.
+     *
+     * It is served straight from `registry/verifiability.ts` because there is nothing here to stand
+     * in for: the two columns, the strata and the seeding policy are the registry's own opinion about
+     * its own guarantees, and a stand-in mints nothing about them. A published server answers the
+     * same value.
+     */
+    methodology: () => servedMethodology(),
 
     blob: (sha256) => held.blobs.get(sha256) ?? null,
   }

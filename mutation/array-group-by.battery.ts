@@ -398,7 +398,7 @@ const behaviour: readonly Mutant[] = [
           `    else groups.set(key, [...existing, item])`,
       ),
     ],
-    survived,
+    survived('outside-what-the-contract-specifies'),
   ),
   sameOnEveryLens(
     'M-19',
@@ -429,7 +429,7 @@ const behaviour: readonly Mutant[] = [
         `  const groups = GROUPS as unknown as Map<K, T[]>\n  groups.clear()\n  let index = 0`,
       ),
     ],
-    survived,
+    survived('outside-what-the-contract-specifies'),
   ),
   sameOnEveryLens(
     'M-21',

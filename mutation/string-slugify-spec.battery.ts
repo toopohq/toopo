@@ -226,7 +226,7 @@ const mutants: readonly Mutant[] = [
         `  pattern: /^[\\p{L}\\p{M}\\p{Nd}_]+(?:-[\\p{L}\\p{M}\\p{Nd}_]+)*$/u,`,
       ),
     ],
-    survived,
+    survived('a-declared-open-class'),
   ),
   sameOnEveryLens(
     'GS-12',
