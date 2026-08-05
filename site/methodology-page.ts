@@ -294,9 +294,9 @@ export const methodologyPage = (
     line(
       'p',
       `${THE_REPLAY.command} is what turns it into something you have watched happen: it ` +
-        `${THE_REPLAY.what} Then ${THE_REPLAY.thenTotalledBy} adds it up. One run of it over the ` +
-        `${measured.batteries} batteries took ${THE_REPLAY.duration}, measured at ` +
-        `${THE_REPLAY.measuredAt}; ${THE_REPLAY.spread}.`,
+        `${THE_REPLAY.what} One run of it over the ${measured.batteries} batteries took ` +
+        `${THE_REPLAY.duration}, measured at ${THE_REPLAY.measuredAt}; ${THE_REPLAY.spread}. ` +
+        `${THE_REPLAY.reprintedBy} ${THE_REPLAY.reprintedWhy}.`,
     ),
     ...renderPopulation(measured.defects, 'defect'),
 

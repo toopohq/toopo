@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "test": "vitest run --typecheck",
-    "mutation": "node mutation/measure.ts",
+    "mutation": "node mutation/replay.ts",
+    "battery": "node mutation/measure.ts",
     "tally": "node mutation/tally.ts",
     "meta": "vitest run --config mutation/vitest.config.ts",
     "registry": "tsc -p registry/tsconfig.json && vitest run --config registry/vitest.config.ts",

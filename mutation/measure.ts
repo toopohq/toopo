@@ -1,9 +1,17 @@
 /**
- * The entry point of the mutation instrument.
+ * One battery, measured.
  *
- *   node mutation/measure.ts date-add
- *   node mutation/measure.ts number-parse --only=P-17,P-03
- *   node mutation/measure.ts date-add --arm=A
+ *   npm run battery -- date-add
+ *   npm run battery -- number-parse --only=P-17,P-03
+ *   npm run battery -- date-add --arm=A
+ *
+ * **`npm run mutation` is `replay.ts` and not this, and the split is about which name is published.**
+ * The method page hands `npm run mutation` to a stranger as the thing that turns an assertion into
+ * something they have watched happen, and what a stranger is owed under that name is every battery
+ * this repository has. This answers the narrower question - *what does this one battery catch* - which
+ * is the question somebody already inside the work asks, and it takes an argument that only they know
+ * how to supply. `replay.ts` spawns this file once per battery, so there is one definition of what
+ * measuring a battery is and both names reach it.
  *
  * Calibration is not a flag. It runs before every battery, on every cell: the unmutated arm must be
  * green and an obvious defect must be red. Making it optional would make it a step that gets
@@ -22,7 +30,10 @@ import { attributionOf, disagreementsIn, renderAttribution } from './attribution
 const [name, ...flags] = process.argv.slice(2)
 
 if (name === undefined) {
-  throw new Error('usage: measure.ts <battery> [--only=ID,ID] [--arm=ID,ID]')
+  throw new Error(
+    'usage: npm run battery -- <battery> [--only=ID,ID] [--arm=ID,ID]\n' +
+      '  For every battery at once, which is what the method page publishes: npm run mutation',
+  )
 }
 
 const valueOf = (flag: string): readonly string[] | undefined =>

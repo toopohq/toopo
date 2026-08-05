@@ -660,10 +660,21 @@ publication decision, not a change to this repository.
 
 **The debt is closed: `packaging.battery.ts` is the nineteenth, and it is the first battery whose
 guards measure something that does not exist in the working tree.** Fifteen guards had been seen red
-one at a time, by hand, and a hand-run does not survive the session. Thirteen mutants now pin what each
+one at a time, by hand, and a hand-run does not survive the session. Fourteen mutants now pin what each
 one must produce: **eleven of the fifteen are witnessed, five are declared out of reach, one region is
-declared unprobed.** It cost 72 s of cells against the *roughly three minutes* the debt was filed at,
-which is the one estimate in this file that turned out pessimistic.
+declared unprobed.** It cost about a minute and a half of cells against the *roughly three minutes* the
+debt was filed at, which is the one estimate in this file that turned out pessimistic.
+
+**And the fourteenth exists because a guard was half blind, which the battery is what makes visible.**
+`no-part-of-the-instrument-or-of-the-suite-is-in-the-archive` reads six conditions, and two of them
+named a folder anchored at the start of the path. `files` is `["dist"]`, so npm reports everything in
+the tarball as `dist/…`, and `startsWith('site/')` could only see the generator shipping as *source* —
+while the route the build can take is the compiled one. Measured on the tarball: shipping two modules
+of `site/` that way reddened only the loading guard and left this one green; anchored at a path segment
+instead, it reddens. **A-08 is not a substitute**, because it reaches the same guard through a
+`.test.js`, so anchoring the two conditions back at the start would leave every battery green — A-14 is
+the only cell that reddens on the folder condition alone, and therefore the only thing between the
+repair and a silent revert.
 
 **A third of the suite is out of reach, and the reason is the folder rather than the guards.** A
 battery edits one folder, and `packaging/` is four modules; what its guards are written to catch lives
@@ -1416,9 +1427,26 @@ statements of one fact, and it is always the sentence that ends up lying. The el
 refusal about the lockfile is tested where the lockfile is written, and gathering them to make a sentence
 true would be the same error in the other direction.
 
-**The repository-wide figure has a derivation, and that closes the second half of this.** `npm run
-tally` reads what a replay wrote, refuses a set that is not one replay of the commit it would describe,
-and prints both populations together — measured at `1e68d99`, one run of the nineteen took
+**A published name belongs to a committed thing, and `npm run mutation` was not one.** The method page
+hands that command to a stranger as *the* thing that turns an assertion into something they have
+watched happen — and it ran `measure.ts` with no argument and exited on `usage: measure.ts <battery>`.
+Replaying everything was a loop each of us wrote by hand and nobody committed, which is the defect
+underneath the broken command: **two definitions of *a replay*, either free to drift, and nothing that
+would have said so.** That is also why it stayed invisible — everybody had their own. `mutation/replay.ts`
+is now the command, and it composes the two entry points a reader could type rather than implementing a
+third: `measure.ts` once per battery, then `tally.ts`. The by-name usage moved to `npm run battery`,
+because that is the narrower question and it is asked by somebody already inside the work. **The two
+lists of the batteries check each other**: the replay runs `THE_BATTERIES`, the total requires
+`mutation/*.battery.ts`, so a battery written and left off the list writes no result and the total
+refuses.
+
+**The repository-wide figure has a derivation, and that closes the second half of this.** The replay
+ends by running the total itself, because the artefacts it has just written are newer than the commit
+they describe and a reader is owed one command and one answer. `npm run tally` keeps the half that is
+not a measurement — printing that total again without re-running anything, and refusing a set that is
+not one replay of the commit it would describe. **That refusal is only reachable from the second
+command**, by construction, since a replay's results are always fresh by the time it counts them.
+Measured at `1e68d99`, one run of the nineteen took
 **25 min 10 s** and gave **588 defect cells, 552 killed, 36 surviving, beside 26 probe cells of which 4
 survive**; the largest single battery was `cli-install` at 230 s. **A duration is published beside its
 spread**, because a stamp stops a figure being stale and does not stop it being read as a period: four

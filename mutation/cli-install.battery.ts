@@ -788,8 +788,8 @@ export const battery: Battery = {
    * `cli/` is one folder measured by two batteries, and this is the half the other one holds.
    *
    * Everything else `toopo update` added is silent here only in the sense that nothing was written for
-   * it: measured, the eighteen guards of `update.test.ts` all redden under defects injected into the
-   * plan, the rewrite and the install path, because an update reuses every one of those. What no
+   * it: measured, every guard of `update.test.ts` reddens under defects injected into the plan, the
+   * rewrite and the install path, because an update reuses every one of those. What no
    * defect of this battery can reach is the two things an install does not do - render a diff, and
    * fail part-way through a write.
    */

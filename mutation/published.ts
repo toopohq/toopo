@@ -350,7 +350,10 @@ export const THE_PINS_ARE_AN_ASSERTION =
  */
 export const THE_REPLAY = {
   command: 'npm run mutation',
-  thenTotalledBy: 'npm run tally',
+  what:
+    'injects every defect below into a working tree, runs the suite once per cell, compares what ' +
+    'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
+    'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
   duration: '25 min 10 s',
   measuredAt: '1e68d99',
@@ -358,9 +361,16 @@ export const THE_REPLAY = {
   spread:
     'four replays of the 18 batteries before it, on the same machine, took 22 min 14 s, ' +
     '23 min 4 s, 23 min 10 s and 26 min 32 s, so that is one run rather than how long it takes',
-  what:
-    'injects every defect below into a working tree, runs the suite once per cell, and compares what ' +
-    'happened against what the battery pinned. A single cell that disagrees fails the run. The total ' +
-    'refuses a set of results that is not one complete replay of the commit it would describe, so a ' +
-    'figure taken over a stale or partial run cannot be produced by accident.',
+  reprintedBy: 'npm run tally',
+  /**
+   * What the second command is for, now that the first one prints the total itself.
+   *
+   * The refusal is the whole of it, and it is only reachable from there: a replay writes its results
+   * and totals them in the same breath, so they are always fresh by the time it counts. Asking again
+   * later is when a set can have gone stale.
+   */
+  reprintedWhy:
+    'prints that total again from the results a replay left, measuring nothing - and refuses a set ' +
+    'that is not one complete replay of the commit it would describe, so a figure taken over a stale ' +
+    'or partial run cannot be produced by accident',
 } as const

@@ -18,10 +18,10 @@
  * not the source the registry serves. It is the calibration mutant because it is the defect this whole
  * folder exists to make impossible.
  *
- * **The graph the archive carries.** A-05 to A-08 are four ways of getting the wrong set of files into
- * a tarball, and they fail in opposite directions on purpose: two ship modules nothing loads, two drop
- * modules the tool needs. `reachable.ts` says in as many words that the walk and the guard are two
- * mechanisms rather than one statement twice, and these are the cells that say so.
+ * **The graph the archive carries.** A-05 to A-08 and A-14 are ways of getting the wrong set of files
+ * into a tarball, and they fail in opposite directions on purpose: some ship modules nothing loads,
+ * some drop modules the tool needs. `reachable.ts` says in as many words that the walk and the guard
+ * are two mechanisms rather than one statement twice, and these are the cells that say so.
  *
  * **The catalogue a published `toopo` serves from.** A-02, A-03, A-09 and A-11 each leave the archive
  * carrying an artefact that answers something the registry does not - a snapshot missing, an index
@@ -103,12 +103,12 @@ const A_SPECIFIER_THAT_LEAVES_THE_FOLDER_IS_SEEN = `  ...[...text.matchAll(/(?:^
 const ONLY_THE_ENTRY_POINT_IS_COMPILED = `  "include": [],`
 
 /**
- * The prune disabled, which A-08 needs beside a widened program and no other mutant needs at all.
+ * The prune disabled, which the two mutants that widen the compiler's program need beside it.
  *
  * It is here rather than a cell of its own because A-05 already reddens the guard it would redden, by
  * the more likely route: a walk that does not descend is a slip, and removing the decision to prune is
- * not. What A-08 is about is the pair - a build that compiles more than the entry point *and* ships
- * whatever the compiler emitted - so the edit belongs to that mutant.
+ * not. What A-08 and A-14 are about is the pair - a build that compiles more than the entry point
+ * *and* ships whatever the compiler emitted - so the edit belongs to those mutants.
  */
 const NOTHING_IS_DROPPED = buildFile(
   WHAT_THE_ENTRY_POINT_CANNOT_REACH_IS_DROPPED,
@@ -308,6 +308,41 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['the-packaged-source-answers-what-the-local-source-answers']),
+  ),
+
+  /**
+   * The generator inside the archive, and the cell that makes a repair to `archive.test.ts`
+   * replayable rather than remembered.
+   *
+   * That guard reads six conditions, and until this unit two of them were anchored at the start of the
+   * path. `files` is `["dist"]`, so npm reports everything as `dist/...`, and `startsWith('site/')`
+   * could only see the generator shipping as *source* - while the route the build can take is the
+   * compiled one. Measured before the repair: these same two edits reddened
+   * `every-file-in-the-archive-is-loaded-by-a-command` and left the guard named for the instrument and
+   * the suite green.
+   *
+   * **A-08 is not a substitute for it, and that is the whole reason this cell exists.** A-08 reaches
+   * the same guard through a `.test.js` in the tarball, so anchoring those two conditions back at the
+   * start of the path would leave A-08 red and every battery green. This is the only cell that reddens
+   * on the folder condition alone, which makes it the only thing standing between the repair and a
+   * silent revert.
+   */
+  sameOnEveryLens(
+    'A-14',
+    'compiles the generator into the archive and ships what the compiler emitted, so `site/` travels ' +
+      "into somebody's `node_modules` as `dist/site/document.js` - a folder that guard names, in the " +
+      'spelling it could not read until it was anchored at a path segment rather than at the start',
+    [
+      distConfig(
+        ONLY_THE_ENTRY_POINT_IS_COMPILED,
+        `  "include": ["../site/document.ts", "../site/paths.ts"],`,
+      ),
+      NOTHING_IS_DROPPED,
+    ],
+    killed([
+      'every-file-in-the-archive-is-loaded-by-a-command',
+      'no-part-of-the-instrument-or-of-the-suite-is-in-the-archive',
+    ]),
   ),
 
   // -------------------------------------------------------------------------

@@ -562,17 +562,19 @@ describe('the page that says how we verify', () => {
    *
    * The spread is read alongside the duration rather than instead of it, because a stamped figure is
    * still read as a period: a duration on its own says the replay *takes* that long, and what it says
-   * is that one run of it did. `published.ts` carries both, and a field carried and not shown is the
-   * state `coverage.test.ts` already refuses on a record.
+   * is that one run of it did.
+   *
+   * **Every value of `THE_REPLAY` is required on the page, rather than the four somebody remembered.**
+   * A field carried and not shown is the state `coverage.test.ts` already refuses on a record, and a
+   * list of the fields to check is a second statement of what the type holds - so the walk is over the
+   * object. A field added there and left out of the sentence does not pass, which is the reason this
+   * is a loop and not five lines.
    */
   it('the-page-separates-what-is-asserted-from-what-a-run-would-observe', () => {
     const shown = reading()
 
     expect(shown).toContain(THE_PINS_ARE_AN_ASSERTION)
-    expect(shown).toContain(THE_REPLAY.command)
-    expect(shown).toContain(THE_REPLAY.duration)
-    expect(shown).toContain(THE_REPLAY.measuredAt)
-    expect(shown).toContain(THE_REPLAY.spread)
+    for (const value of Object.values(THE_REPLAY)) expect(shown).toContain(value)
   })
 
   /**

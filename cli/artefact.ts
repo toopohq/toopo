@@ -44,7 +44,7 @@
  * That is not permanent rule 5 being weakened. The contracts stay public in full - in this
  * repository, and on every contract page the site publishes. What would change this is a command that
  * serves somebody the harness of what they installed; on the day it exists, the walk in
- * `packaging/artefact-build.ts` widens and this paragraph goes.
+ * `packaging/freeze.ts` widens and this paragraph goes.
  *
  * ---------------------------------------------------------------------------
  * Its integrity is not checked here, and that is not an omission

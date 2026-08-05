@@ -75,6 +75,23 @@ afterAll(() => {
  */
 const THE_DIRECTORY = 'src/lib/toopo'
 
+/**
+ * A path that is inside a folder, wherever in the tarball that folder sits.
+ *
+ * **It is anchored at a path segment rather than at the start, and that is a repair rather than a
+ * tidying.** `files` is `["dist"]`, so npm reports every path in the archive as `dist/...`, and a
+ * condition written `startsWith('mutation/')` sees the instrument only when it ships as *source*. The
+ * route the build can actually take is the other one: compile more than the entry point, ship what the
+ * compiler emitted, and the generator arrives as `dist/site/document.js`.
+ *
+ * Measured, on the tarball rather than on the argument: shipping two modules of `site/` that way
+ * reddens `every-file-in-the-archive-is-loaded-by-a-command` and left the guard below **green** as it
+ * was written. The condition it is named for was live in one spelling and blind in the other, and the
+ * blind one is the reachable one.
+ */
+const inside = (path: string, folder: string): boolean =>
+  path.startsWith(`${folder}/`) || path.includes(`/${folder}/`)
+
 describe('the archive somebody installs', () => {
   /**
    * The guard this unit is about.
@@ -160,8 +177,8 @@ describe('the archive somebody installs', () => {
   it('no-part-of-the-instrument-or-of-the-suite-is-in-the-archive', () => {
     const forbidden = archive.carries.filter(
       (path) =>
-        path.startsWith('mutation/') ||
-        path.startsWith('site/') ||
+        inside(path, 'mutation') ||
+        inside(path, 'site') ||
         path.includes('.battery.') ||
         path.endsWith('.test.js') ||
         path.endsWith('.test-d.js') ||
