@@ -215,6 +215,54 @@ describe('the playground, against the catalogue it opens on', () => {
   })
 
   /**
+   * A playground names the diagnostic of a contract that publishes one, and nothing of a contract
+   * that does not.
+   *
+   * Both halves are asserted because both are ways of getting it wrong, and they fail on opposite
+   * pages: a playground that never names a diagnostic prints `null` for every refused input on the two
+   * contracts where the reason is the whole answer, and one that invents a name for the other two
+   * calls an export that is not there.
+   */
+  it('a-playground-names-the-diagnostic-of-a-contract-that-publishes-one', () => {
+    const held = theHeld()
+    const named = held.map((one) => ({
+      contract: renderContract(one.contract.address),
+      describes: playgroundOf(one.contract, renderContract(one.contract.address)).describes,
+      publishes: diagnosticOf(one.contract)?.name ?? null,
+    }))
+
+    expect(named.map((one) => one.describes)).toEqual(named.map((one) => one.publishes))
+
+    // The bound: this says nothing at all unless the catalogue actually holds one of each.
+    expect(named.some((one) => one.describes !== null)).toBe(true)
+    expect(named.some((one) => one.describes === null)).toBe(true)
+  })
+
+  /**
+   * A diagnostic the form cannot call stops the site, for the reason a parameter type it cannot build
+   * does: the form has one field per parameter of the *answer*, and nothing in the schema requires the
+   * diagnostic to declare the same ones. They agree on two of two today, which is a measurement rather
+   * than a rule, so it is checked instead of assumed.
+   */
+  it('a-diagnostic-the-form-cannot-call-stops-the-site-and-names-itself', () => {
+    const one = theHeld().find((candidate) => diagnosticOf(candidate.contract) !== undefined) as Held
+    const diagnostic = diagnosticOf(one.contract) as ExportRecord
+    const sixth: FrozenContract = {
+      ...one.contract,
+      surface: {
+        ...one.contract.surface,
+        exports: one.contract.surface.exports.map((entry) =>
+          entry === diagnostic ? { ...entry, parameters: [{ name: 'other', type: 'string' }] } : entry,
+        ),
+      },
+    }
+
+    expect(() => playgroundOf(sixth, 'the sixth')).toThrow(ThePlaygroundCannotBeBuilt)
+    expect(() => playgroundOf(sixth, 'the sixth')).toThrow(diagnostic.name)
+    expect(() => playgroundOf(one.contract, 'a real one')).not.toThrow()
+  })
+
+  /**
    * Every page opens on a call, and the call it opens on is one of that contract's own cases.
    *
    * An empty field is what this exists to prevent: a reader who has to invent an input before seeing

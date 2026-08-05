@@ -171,6 +171,11 @@ const NOTHING_MAY_FOLLOW_THE_VALUE = `  if (scan.at < text.length) fail(scan, 't
 const A_RECORD_IS_NAMED_BEFORE_IT_IS_FILLED = `  const record: Record<string, unknown> = {}
   if (label !== undefined) scan.shared.set(label, record)`
 
+const THE_DIAGNOSTIC_IS_NAMED = `  return diagnostic.name
+}`
+
+const THE_DIAGNOSTIC_TAKES_THE_ANSWERS_ARGUMENTS = `  if (spelledCall(diagnostic.parameters) !== spelledCall(answer.parameters)) {`
+
 // ---------------------------------------------------------------------------
 // The defects
 // ---------------------------------------------------------------------------
@@ -717,6 +722,34 @@ const mutants: readonly Mutant[] = [
       'a-shared-object-is-read-back-as-one-object',
       'every-arm-of-an-encoded-value-is-read-back-or-refused-by-name',
     ]),
+  ),
+
+  /**
+   * The two the diagnostic brought with it. A playground that answers only `calls` prints `null` for
+   * every refused input on the two contracts where the reason *is* the answer, and it does so while
+   * satisfying every other guard on the page - which is why the first of these exists.
+   */
+  sameOnEveryLens(
+    'W-45',
+    'builds a playground that names no diagnostic, so `number/parse@1` and `date/add@1` publish a ' +
+      'form answering `null` to every input they turn down and nothing that tells one refusal from ' +
+      'another',
+    [playgroundFile(THE_DIAGNOSTIC_IS_NAMED, `  return null\n}`)],
+    killed(['a-playground-names-the-diagnostic-of-a-contract-that-publishes-one']),
+  ),
+
+  sameOnEveryLens(
+    'W-46',
+    'compares the diagnostic against the answer by parameter count rather than by signature, so a ' +
+      'diagnostic taking the same number of differently declared arguments is called with the ' +
+      "answer's",
+    [
+      playgroundFile(
+        THE_DIAGNOSTIC_TAKES_THE_ANSWERS_ARGUMENTS,
+        `  if (diagnostic.parameters.length !== answer.parameters.length) {`,
+      ),
+    ],
+    killed(['a-diagnostic-the-form-cannot-call-stops-the-site-and-names-itself']),
   ),
 ]
 
