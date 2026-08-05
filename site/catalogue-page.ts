@@ -23,10 +23,16 @@ const line = (tag: string, value: string, attributes = NOTHING): Node =>
 
 export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Document => ({
   title: 'Toopo — utility functions with a public, executable contract',
+  /**
+   * Counted over the installable entries rather than over the index, because a refused contract has
+   * no published contract behind it: `refuseContract` records an argument and binds no digest, so
+   * `array/group-by@1` has no signature, no invariants and no frozen definition to have. Saying *each*
+   * of five would have been the front page's first sentence contradicting its own refusals page.
+   */
   description:
-    `${index.entries.length} utility functions, each with a published contract: a signature, ` +
-    `property-based invariants, and every edge case named and settled. The source is copied into ` +
-    `your project.`,
+    `${index.entries.filter((entry) => entry.installable).length} utility functions with a ` +
+    `published contract: a signature, property-based invariants, and every edge case named and ` +
+    `settled. The source is copied into your project.`,
   body: [
     line('h1', 'Toopo'),
     line(
@@ -37,10 +43,20 @@ export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Doc
     ),
     line(
       'p',
+      /**
+       * It used to read *implementations compete underneath it and are interchangeable*, which
+       * describes a catalogue this one is not: every contract here has exactly one implementation,
+       * ours. A conditional is what survives - anything satisfying the contract can replace anything
+       * else that does - because it is true of a catalogue with one implementation and of a catalogue
+       * with twenty, and it is the claim the contract actually makes. No count is written, for the
+       * reason this repository keeps rediscovering in its own prose: a number in a sentence outlives
+       * the data it counted.
+       */
       'A contract is the whole behavioural specification of one function — its signature, the ' +
         'invariants that must hold for every input, and every edge case named, settled and argued ' +
-        'for. Implementations compete underneath it and are interchangeable. The contract is what ' +
-        'this project publishes; the code is what it hands you.',
+        'for. Anything that satisfies it can replace anything else that does, which is what makes ' +
+        'an implementation a detail. The contract is what this project publishes; the code is what ' +
+        'it hands you.',
     ),
 
     line('h2', `${index.entries.length} contracts`),
@@ -74,9 +90,10 @@ export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Doc
           line('h2', 'What we refuse'),
           line(
             'p',
-            `${refusals.refusals.length} of these ${index.entries.length} were written in full and ` +
-              `then turned down. What they were turned down for, and the measurement each decision ` +
-              `rests on, is published beside them.`,
+            `${refusals.refusals.length} of these ${index.entries.length} ` +
+              `${refusals.refusals.length === 1 ? 'was' : 'were'} written in full and then turned ` +
+              `down. What they were turned down for, and the measurement each decision rests on, ` +
+              `is published beside them.`,
           ),
           el('p', NOTHING, el('a', { href: linkTo(REFUSALS_PAGE) }, text('What we refuse, and why'))),
         ]),

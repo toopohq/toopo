@@ -314,10 +314,17 @@ export const contractPage = (held: Held): Document => {
       line('h2', 'What you can check yourself'),
       line(
         'p',
+        /**
+         * It used to end *so you can fetch them*, and there is nowhere to fetch them from: no server
+         * is published, and the archive `toopo` ships in deliberately carries only what a command
+         * reads. What content addressing really buys is the sentence below - a copy obtained from
+         * anywhere can be checked against this definition before it is trusted - and that is true
+         * today, of any copy, from any source, which is the whole point of a digest.
+         */
         `This definition is frozen. Its canonical text hashes to ${held.binding.digest}, and the ` +
           `${contract.harness.length} files of its test harness are listed inside it with their own ` +
-          `hashes — so you can fetch them, run them against any implementation, and never take our ` +
-          `word for any of it.`,
+          `hashes — so a copy of the harness can be checked against this definition before it is ` +
+          `trusted, then run against any implementation, without taking our word for any of it.`,
       ),
       line('p', `Written for ${contract.environments.join(', ')}.`, { class: 'meta' }),
 

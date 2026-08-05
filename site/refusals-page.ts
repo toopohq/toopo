@@ -53,8 +53,9 @@ export const refusalsPage = (index: ServedIndex, refusals: ServedRefusals): Docu
   return {
     title: 'What Toopo refuses, and why',
     description:
-      `${refusals.refusals.length} contracts were written in full and then turned down. Each ` +
-      `refusal is published with the measurement it was decided on.`,
+      `${refusals.refusals.length} contract${refusals.refusals.length === 1 ? ' was' : 's were'} ` +
+      `written in full and then turned down. Each refusal is published with the measurement it was ` +
+      `decided on.`,
     body: [
       el('nav', NOTHING, el('a', { href: rootFrom(REFUSALS_PAGE) }, text('Toopo'))),
 
