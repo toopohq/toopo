@@ -836,9 +836,9 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'W-48',
-    'prints the number of surviving cells and drops the split, so thirty-four defects nothing ' +
-      'caught reads as thirty-four known holes when exactly one of them is a debt. The tidier ' +
-      'sentence is the more frightening claim, which is why nobody would notice it was made',
+    'prints the number of surviving cells and drops the split, so every defect nothing caught reads ' +
+      'as a known hole when exactly one of them is a debt. The tidier sentence is the more ' +
+      'frightening claim, which is why nobody would notice it was made',
     [methodFile(THE_BREAKDOWN_IS_SHOWN_BESIDE_THE_TOTAL, `        'various kinds' +`)],
     killed(['a-count-of-survivors-is-never-shown-without-its-breakdown']),
   ),

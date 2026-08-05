@@ -33,8 +33,8 @@
  * gives the command and its cost. That is `THE_PINS_ARE_AN_ASSERTION` and `THE_REPLAY`, rendered from
  * `mutation/published.ts` rather than restated here.
  *
- * **The survivors, split by kind and never aggregated.** Thirty-four surviving cells published as one
- * number reads as thirty-four known holes, and that is a worse misreport than a flattering one because
+ * **The survivors, split by kind and never aggregated.** A count of surviving cells published as one
+ * number reads as that many known holes, and that is a worse misreport than a flattering one because
  * it is believed. Exactly one of them is a debt. The others are mutants nothing could catch, behaviour
  * the contract declines to specify, rules no input in this catalogue exercises, and cells that live
  * only where a lens took the suite's sight away.
@@ -294,9 +294,9 @@ export const methodologyPage = (
     line(
       'p',
       `${THE_REPLAY.command} is what turns it into something you have watched happen: it ` +
-        `${THE_REPLAY.what} Then ${THE_REPLAY.thenTotalledBy} adds it up. It takes ` +
-        `${THE_REPLAY.duration} over the ${measured.batteries} batteries, measured at ` +
-        `${THE_REPLAY.measuredAt}.`,
+        `${THE_REPLAY.what} Then ${THE_REPLAY.thenTotalledBy} adds it up. One run of it over the ` +
+        `${measured.batteries} batteries took ${THE_REPLAY.duration}, measured at ` +
+        `${THE_REPLAY.measuredAt}; ${THE_REPLAY.spread}.`,
     ),
     ...renderPopulation(measured.defects, 'defect'),
 

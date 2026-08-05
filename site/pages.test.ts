@@ -497,7 +497,7 @@ describe('the page that says how we verify', () => {
   /**
    * The aggregate never appears without the split.
    *
-   * Thirty-four surviving cells published as one number is read as thirty-four known holes, and
+   * A count of surviving cells published as one number is read as that many known holes, and
    * exactly one of them is a debt. A page that prints the total and drops the breakdown is not
    * shorter, it is a different and worse claim - and it is the shape a page takes when somebody tidies
    * it.
@@ -559,6 +559,11 @@ describe('the page that says how we verify', () => {
    * The two coincide, so nothing here is false without it - and a page that publishes pins as though
    * somebody had watched them happen is doing the exact thing it spends the rest of its length arguing
    * against.
+   *
+   * The spread is read alongside the duration rather than instead of it, because a stamped figure is
+   * still read as a period: a duration on its own says the replay *takes* that long, and what it says
+   * is that one run of it did. `published.ts` carries both, and a field carried and not shown is the
+   * state `coverage.test.ts` already refuses on a record.
    */
   it('the-page-separates-what-is-asserted-from-what-a-run-would-observe', () => {
     const shown = reading()
@@ -567,6 +572,7 @@ describe('the page that says how we verify', () => {
     expect(shown).toContain(THE_REPLAY.command)
     expect(shown).toContain(THE_REPLAY.duration)
     expect(shown).toContain(THE_REPLAY.measuredAt)
+    expect(shown).toContain(THE_REPLAY.spread)
   })
 
   /**

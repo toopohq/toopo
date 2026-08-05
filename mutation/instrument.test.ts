@@ -671,8 +671,8 @@ describe('what this repository publishes about its own defect detection', () => 
    * **The obvious guard here was written first and could not fail, which is why this one is a second
    * walk rather than an arithmetic identity.** `killed + surviving === cells` is preserved by any
    * defect that moves a cell from one column to the other: measured, counting only `killed` as a kill
-   * files the five `killed-by-typecheck` cells as survivors, and the sum stays right - so the page
-   * would publish thirty-nine survivors and the identity would agree. What cannot be preserved is the
+   * files every `killed-by-typecheck` cell as a survivor, and the sum stays right - so the page would
+   * publish a longer list of survivors and the identity would agree. What cannot be preserved is the
    * verdict each listed cell actually carries, and reading it off the batteries again is the only
    * thing that checks it.
    *

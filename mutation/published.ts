@@ -339,13 +339,25 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * because `mutation/results/` is the output of a run and is deliberately not in the repository - so it
  * carries the commit it was taken at, which is the treatment this repository gives every published
  * figure it cannot re-derive.
+ *
+ * **And it carries a second figure, because a stamp alone does not stop the first one being misread.**
+ * A duration published on its own reads as a period - as though the replay took that long, the way a
+ * kettle takes three minutes. It is a wall clock on one machine on one afternoon, and the spread
+ * between runs of the same batteries on the same machine is wider than the precision the figure is
+ * written to. So `spread` goes beside `duration` and the page renders both: one run, and what a second
+ * one cost. Publishing the first without the second would be a precision this measurement has not got,
+ * which is the same defect as a count with no coordinates one folder up.
  */
 export const THE_REPLAY = {
   command: 'npm run mutation',
   thenTotalledBy: 'npm run tally',
-  /** Measured at `14e1989`, over the eighteen batteries, on one machine. */
-  duration: '23 min 4 s',
-  measuredAt: '14e1989',
+  /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
+  duration: '25 min 10 s',
+  measuredAt: '1e68d99',
+  /** Four replays of the eighteen batteries that preceded this one, on the same machine. */
+  spread:
+    'four replays of the 18 batteries before it, on the same machine, took 22 min 14 s, ' +
+    '23 min 4 s, 23 min 10 s and 26 min 32 s, so that is one run rather than how long it takes',
   what:
     'injects every defect below into a working tree, runs the suite once per cell, and compares what ' +
     'happened against what the battery pinned. A single cell that disagrees fails the run. The total ' +

@@ -54,7 +54,10 @@ measures the product rather than the working tree**: every contract page told a 
 `toopo add`, and three independent things stopped them — no archive at all, a published `.ts` node
 refuses to run, and a CLI whose runtime graph reached vitest. What ships is compiled JavaScript and one
 frozen artefact, proved by packing it, installing it into an empty project, and running the six commands
-out of somebody else's `node_modules`.
+out of somebody else's `node_modules`. **And now the nineteenth battery, which is the first to measure
+guards over something that is not in the working tree**: `packaging/` had fifteen of them and nothing
+replayable pinning their verdicts, and closing that found two sentences this repository had published
+about its own build that are wider than what anything measures.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -500,8 +503,8 @@ the corollary almost nobody else can offer — the defects that were tried are c
 the exact edit it makes and the verdict it must produce.
 
 **A survivor declares its kind, and the aggregate is never available without the split.** A count of
-surviving cells published alone reads as a count of holes. Measured at `87d082b` over the eighteen
-batteries: **34 surviving defect cells — 11 equivalent, 6 outside what the contract specifies, 4
+surviving cells published alone reads as a count of holes. Measured at `1e68d99` over the nineteen
+batteries: **36 surviving defect cells — 12 equivalent, 7 outside what the contract specifies, 4
 unreachable on this catalogue, 1 a declared open class, and 12 that live only where a lens blinded the
 suite.** Exactly one is a debt. `survived` is a function requiring a `SurvivalNature`, so a survivor
 whose kind nobody stated does not compile; the twelfth kind is not declarable, because a cell blinded
@@ -639,7 +642,13 @@ day it existed: `cli/source.js`, `registry/field-map.js` and four more, emitted 
 
 **And `build.ts` removes `dist/` before writing it**, because `tsc` does not clean and a source deleted
 today leaves its JavaScript in the output. A stale module in an archive is the whitelist failing in the
-one direction a whitelist cannot catch.
+one direction a whitelist cannot catch — **and the battery measured that the prune already catches it,
+so the two are not independent.** A-13 removes the clean; a file no source produces is gone with it and
+gone without it, because a stale module is one nothing imports and the prune drops whatever the entry
+point cannot reach. The clean stays: it is one line, it makes the compiler write into an empty tree,
+and the day the prune is the thing that is wrong it is what is left. What is not true is the sentence
+that it catches something the prune does not, and the cell that says so is published as a survivor
+rather than left in this paragraph.
 
 **What is still not true, and no code here can make it true.** The archive works and nobody can obtain
 it: nothing is published, `private: true` says so deliberately, and a reader who meets
@@ -647,12 +656,37 @@ it: nothing is published, `private: true` says so deliberately, and a reader who
 otherwise — it is silent — and silence in front of a command is the remaining gap. Closing it is a
 publication decision, not a change to this repository.
 
-**The debt this unit leaves, priced rather than dressed as a mechanism.** `packaging/` has fifteen
-guards and no battery, so nothing replayable pins their verdicts. Each was seen red on its real
-condition once, by hand, and a hand-run does not survive the session. A nineteenth battery would cost
-roughly three minutes of cells — and it moves the method page's figures, invalidates the stamped
-*23 min 4 s over the 18 batteries, measured at `14e1989`*, and requires a full replay to restate the
-tally. That is a unit, not a paragraph.
+## What a battery over the archive can reach — settled
+
+**The debt is closed: `packaging.battery.ts` is the nineteenth, and it is the first battery whose
+guards measure something that does not exist in the working tree.** Fifteen guards had been seen red
+one at a time, by hand, and a hand-run does not survive the session. Thirteen mutants now pin what each
+one must produce: **eleven of the fifteen are witnessed, five are declared out of reach, one region is
+declared unprobed.** It cost 72 s of cells against the *roughly three minutes* the debt was filed at,
+which is the one estimate in this file that turned out pessimistic.
+
+**A third of the suite is out of reach, and the reason is the folder rather than the guards.** A
+battery edits one folder, and `packaging/` is four modules; what its guards are written to catch lives
+upstream of all four — `files` in the repository's own `package.json`, the reader in `cli/artefact.ts`,
+and the compiled closure of `cli/published.ts`. That is a larger declared share than any other battery
+carries, and it is filed guard by guard with the file its failure condition sits in, never because a
+mutant was hard to write. **One of the five was measured rather than argued**: nothing an edit here can
+do puts a networked module in the archive, because the only `fetch(` in this repository is in
+`validation/fixtures/refused.ts`, which no program compiles.
+
+**The two survivors are what the unit found, and both narrow a sentence `packaging/` already
+published.** A-12 removes the sort from the artefact's three lists: the archive is 29 606 bytes either
+way and the two byte strings differ, so what the sort changes is which order that one string is in —
+and the guard comparing two freezes stays green, because both take the same walk. A-13 is the clean,
+recorded two sections up. Neither is a hole and neither is decorative; what they establish is that a
+mechanism can be worth keeping while the claim written beside it is wider than what anything measures.
+
+**And a defect in the archive is killed by no guard at all**, which is the shape this battery has and
+no other does: a mutant that stops `npm pack` producing anything fails the suite's `beforeAll`, and
+vitest reports the seven guards under it as *skipped* rather than failed. The instrument reads that
+correctly — a red run with no failed guard is `killed-by-typecheck` — and the count check still holds,
+because a skipped assertion is still an assertion in the report. It is worth writing down because the
+verdict's name says compiler and the mechanism is a harness that could not start.
 
 ## A case of block 4.4 is a call — settled, catalogue-wide
 
@@ -1384,9 +1418,14 @@ true would be the same error in the other direction.
 
 **The repository-wide figure has a derivation, and that closes the second half of this.** `npm run
 tally` reads what a replay wrote, refuses a set that is not one replay of the commit it would describe,
-and prints both populations together — measured at `14e1989`, the eighteen run in **23 min 4 s** and
-give **558 defect cells, 524 killed, 34 surviving, beside 26 probe cells of which 4 survive**; the
-largest single battery is `cli-install` at 221 s. The two populations are printed together because they
+and prints both populations together — measured at `1e68d99`, one run of the nineteen took
+**25 min 10 s** and gave **588 defect cells, 552 killed, 36 surviving, beside 26 probe cells of which 4
+survive**; the largest single battery was `cli-install` at 230 s. **A duration is published beside its
+spread**, because a stamp stops a figure being stale and does not stop it being read as a period: four
+replays of the eighteen batteries before this one, on the same machine, took 22 min 14 s, 23 min 4 s,
+23 min 10 s and 26 min 32 s, so a single number to ten seconds is a precision the measurement has not
+got. `THE_REPLAY` carries both and the page renders both. The two populations are printed together
+because they
 collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
 38*, and both were true — 556 is the defects, 582 is every cell including the probes. Each figure was
 held by somebody who did not know the other population was there, and **no committed code produced
