@@ -153,7 +153,14 @@ const A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT = `    until:
       'than a reader can take in without scrolling, which is where reading a list stops beating ' +
       'typing a word',`
 
-const A_FIGURE_IS_DERIVED = `      \`\${population.cells} \${what} cells, \${population.killed} caught. The other \` +`
+/**
+ * The lenses sentence, and not the score sentence, because W-47 has to be alone on its guard.
+ *
+ * Its first target was the count of defect cells, which two other guards read - so the mutant
+ * reddened three at once and the guard about derived figures was never alone on anything. The
+ * sentence about lenses is read by nothing else, so a literal there probes exactly one claim.
+ */
+const A_FIGURE_IS_DERIVED = `        \`\${measured.lenses} such readings over the \${measured.batteries} batteries.\`,`
 
 const THE_BREAKDOWN_IS_SHOWN_BESIDE_THE_TOTAL = `        kinds.map((why) => \`\${byKind[why]} \${why.replaceAll('-', ' ')}\`).join(', ') +`
 
@@ -173,6 +180,8 @@ const A_PIN_IS_NOT_AN_OBSERVATION = `    line('p', THE_PINS_ARE_AN_ASSERTION),`
 const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
 
 const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`
+
+const THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS = `    paragraph(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]),`
 
 const A_PAGE_IS_ADDRESSED_BY_ITS_CONTRACT = `export const pageOf = (address: ContractAddress): string => \`\${renderContract(address)}/index.html\``
 
@@ -805,7 +814,7 @@ const mutants: readonly Mutant[] = [
       'and goes false in silence the first time a battery gains a mutant - which is the failure this ' +
       'repository has caught in its own prose four times and never once in code, on the page whose ' +
       'whole argument is that a published number carries its derivation',
-    [methodFile(A_FIGURE_IS_DERIVED, '      `557 ${what} cells, ${population.killed} caught. The other ` +')],
+    [methodFile(A_FIGURE_IS_DERIVED, '        `41 such readings over the ${measured.batteries} batteries.`,')],
     killed(['every-figure-on-the-method-page-comes-from-what-it-was-built-from']),
   ),
 
@@ -884,6 +893,16 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation']),
+  ),
+
+  sameOnEveryLens(
+    'W-54',
+    'explains each kind of survivor in a sentence of the page\'s own rather than the one the ' +
+      'instrument holds. It reads better, it is shorter, and it is a second statement of one ' +
+      'judgement sitting in the file most likely to drift from the data it describes - which is what ' +
+      'the whole page is written against',
+    [methodFile(THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS, `    paragraph('Some of these are not holes.'),`)],
+    killed(['every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words']),
   ),
 ]
 
