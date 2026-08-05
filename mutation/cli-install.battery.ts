@@ -169,7 +169,10 @@ const A_BROKEN_FILE_IS_REFUSED = `  } catch {
 const THE_PROPOSAL_READS_THE_PROJECT = `export const proposeDirectory = (root: string): string =>
   existsSync(join(root, 'src')) ? 'src/lib/toopo' : 'lib/toopo'`
 
-const THE_WHOLE_CONFIGURATION_IS_WRITTEN = '    `${JSON.stringify(configuration, null, 2)}\\n`,'
+// The anchor moved when `writeConfiguration` gained the staging destination `write.ts` needs, and it
+// follows the line rather than the argument list, which is what a `find` of one statement is for.
+const THE_WHOLE_CONFIGURATION_IS_WRITTEN =
+  "  writeFileSync(to, `${JSON.stringify(configuration, null, 2)}\\n`, 'utf8')"
 
 const THE_FEATURES_ARE_VALIDATED = `    ? features.flatMap(featureFaults)`
 
@@ -622,7 +625,8 @@ void theFive`,
       {
         file: 'configuration.ts',
         find: THE_WHOLE_CONFIGURATION_IS_WRITTEN,
-        replace: `    \`\${JSON.stringify({ version: configuration.version }, null, 2)}\\n\`,`,
+        replace:
+          "  writeFileSync(to, `${JSON.stringify({ version: configuration.version }, null, 2)}\\n`, 'utf8')",
       },
     ],
     killed(['a-configuration-round-trips-through-the-file']),
