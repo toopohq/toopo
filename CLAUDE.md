@@ -40,7 +40,11 @@ catalogue refused. No server exists and none is needed — what it writes is sta
 page that needs a line of JavaScript to be read is a page a crawler and a screen reader read
 differently from a person. **And beside it the playground, which is the one thing on a contract page
 that is computed rather than rendered**: four pages have one, the field holds a literal, and what a
-browser runs is this repository's own modules with their types removed.
+browser runs is this repository's own modules with their types removed. **And now the playground calls
+both halves of the surface** — the answer and the diagnostic beside it — which is what makes the two
+spellings of `1 000` tell themselves apart on the page whose contract settles them; and beside it the
+pre-flight refusal that had been set aside three times, which turns an address that has stopped
+resolving from a silence into an error, and found one the day it existed.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -315,6 +319,38 @@ half is already two centimetres higher, on the case's own line. What a static pa
 **the input the reader typed**, so that is the whole of what a playground computes, and the settled
 answer is deliberately not repeated beside it.
 
+**It calls both exports, and the reason appears exactly when the answer is `null`.** A playground
+calling only the answer shows half of any contract written to this repository's error convention — and
+worse, it takes back the measurement the field's whole design rests on. `'1 000'` with a no-break space
+and `'1 000'` with an ordinary one are the two rows that settled the literal, and against the answer
+alone **both print `null`** and the distinction a reader came to see is invisible. Measured in a
+browser, which is the only place it could be:
+
+```
+'1 000'   parseNumber(…) → null    describeParseFailure(…) → 'not-decimal'
+'1 000'   parseNumber(…) → null    describeParseFailure(…) → 'separator'
+```
+
+Only when the answer is `null`, because the coupling property of both fallible contracts is that a call
+fails exactly when it has a description — a `→ null` printed under every answered call would be a line
+that is always the same.
+
+**The diagnostic is called with the answer's own arguments, and the build refuses a contract where that
+is not possible.** The form has one field per parameter of the answer, and nothing in the schema
+requires the diagnostic to declare the same ones. Measured: they agree on two of two. A measurement is
+not a rule, so it is checked.
+
+**And the replay guard grew with it, which closed a real blindness rather than a supposed one.**
+Measured by making the reference answer `'not-decimal'` where it answers `'separator'`: the guard as it
+stood sees **0 of the 9 rows** that breaks, because every one of them still answers `null`, and the
+reason comparison sees all nine.
+
+**The order of the two refusals is written down, because leaving it implicit cost a regression.** W-37
+of the site battery neuters the parameter-type refusal, and it went from killed to survived the moment
+the diagnostic's signature was compared first: the second refusal fired in the first one's place, the
+guard was green either way, and the battery is what caught it. A contract tripping both is told about
+the parameter it declared, which is the more basic fact.
+
 **The field holds a literal, and raw text was refused on a measurement rather than on taste.**
 `contracts/number/parse/edge-cases.ts` says it in its own source: `'1 000'` with a no-break space and
 `'1 000'` with an ordinary one are the same eight glyphs on screen and carry opposite answers in that
@@ -459,6 +495,16 @@ The split is what the sentence is addressed to: prose for whoever reads the page
 prose for whoever maintains the table stays a comment. Four exist, and one of them says in as many
 words that its rows are there so a declaration has *a demonstration on the contract's own page* — a
 sentence that had been moved into a comment, which was a loss of content and not a tidying.
+
+**The order of two cases inside one group is not an address either, and it is the cheapest thing on a
+contract page to get right.** The order of the *groups* is frozen and declared; an `id` is an address
+and a group membership is a partition; what is left — which of a group's rows comes first — is neither,
+and moving one costs nothing. It matters because the playground opens on the first case of the first
+table: `string/levenshtein@1` opened on two empty fields answering `0`, where a reader has nothing to
+edit and has watched nothing happen. `identical-text` is the same claim with something in it, one
+keystroke from moving the answer, and it is now first. Checked before moving rather than after: nothing
+in this repository pins which case comes first, and the two cases whose own rationales are about being
+a pair stayed adjacent.
 
 **`note` is not frozen, and it is the only field of a group that is not.** `id` is the address and
 freezes with the major; a title and a note are prose, corrected the day they read badly, exactly as a
@@ -954,19 +1000,60 @@ guard runs an implementation against it. And M-08 of `array/group-by@1` pinned o
 it reddens where the repository's own rule says name all of a set of five or fewer, which is how
 `profileKeyFunctions` had no citable guard to point at.
 
-**The mechanism that closes the class for every address at once is a pre-flight refusal of a pin that
-names a guard no guard carries.** It is cheap — seconds against the twenty-odd minutes the batteries
-cost, and this sentence used to say *a battery*, which is wrong by a factor of six and was read that
-way once. **The figure it used to carry described seventeen batteries and there are eighteen**, so it
-is remeasured rather than patched: on this machine at the close of the playground, the eighteen run in
-23 min 16 s over 556 cells, 522 killed and 34 surviving, and the largest single one is `cli-install` at
-225 s. That is *one* measurement and is written as one, where the pair it replaces was published as a
-pair precisely so that neither figure would read as a precision it does not have — and
-it turns a stale case identifier, guard identifier or profile name from a silence into an error, with
-no renaming anywhere. It has been set aside twice. It opens the unit after the validation pipeline's
-first stage, and it is written down here so that there is no third time. Note what it is *not*: a
-guard address today resolves against the guards a battery **names**, which is a real refusal and a
-weaker one than asking whether the guard exists.
+**The class is closed. An address a battery names is resolved in `calibrate()`, against the guards the
+run really collected, before a single verdict exists.** It costs the seconds a control run costs rather
+than the twenty-odd minutes a battery does.
+
+**Both halves were measured before the mechanism was written**, at `82d09a7`, by putting back the two
+mistakes this repository had already made and corrected before measuring — and neither outcome is the
+one the debt was filed expecting. A **pin** naming a guard no guard carries does redden, and the red
+says the wrong thing:
+
+```
+1 cell(s) disagree with the battery:
+  W-41 on W/as-committed: expected killed, measured killed
+    no longer caught by: an-invisible-character-is-read-back-as-the-character-it-names
+```
+
+`expected killed, measured killed` is two verdicts agreeing on a line announcing that they do not, and
+`no longer caught by` sends its reader into `read-literal.test.ts` after a guard that stopped catching
+a defect it never caught. **A red that manufactures a regression costs more than a silence, because
+somebody goes and looks for it.** A **guard declared silent** under a name nothing carries was not
+reported at all: the name occurred zero times in that run's output, and the run finished on *every
+guard of this contract is either witnessed or accounted for*.
+
+**It found one the moment it existed.** `cli-search` declared
+`a-feature-already-installed-is-not-installed-again` unprobed — a string occurring nowhere else in this
+repository, sitting in the same list as `reinstalling-what-is-already-there-changes-nothing`, which is
+the guard it was once the name of. Nothing had ever said so. Checked against the guards all six
+configurations really collect: no other battery names an address that resolves to nothing.
+
+**Each half resolves against the universe its own mechanism reads, which is why neither can refuse
+wrongly.** `agreesWith` looks a pin up among every guard that reddened anywhere in the run;
+`attributeColumn` only ever sees the guards of the contract under measurement. There are three guards
+in `instrument.test.ts` and not one, because a declared *suite* is a third universe — a describe title
+is prose and gets reworded, where a guard identifier is frozen, which makes it the half most likely to
+break. All three were seen red together on one meta-mutant, each under its own claim.
+
+**What it does not close:** `Breakage.guard` names a guard in `cli/breakage.ts` that no battery names,
+so nothing here resolves it. The mechanism exists now; that entry is unchanged and stays on the list
+above.
+
+**The repository-wide figure has a derivation, and that closes the second half of this.** `npm run
+tally` reads what a replay wrote, refuses a set that is not one replay of the commit it would describe,
+and prints both populations together — measured at `14e1989`, the eighteen run in **23 min 4 s** and
+give **558 defect cells, 524 killed, 34 surviving, beside 26 probe cells of which 4 survive**; the
+largest single battery is `cli-install` at 221 s. The two populations are printed together because they
+collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
+38*, and both were true — 556 is the defects, 582 is every cell including the probes. Each figure was
+held by somebody who did not know the other population was there, and **no committed code produced
+either**.
+
+**The cost of the refusal is stated rather than discovered: committing anything after a replay makes
+the tally refuse**, because the boundary is `HEAD`'s own timestamp and a docs commit moves it. The way
+back is to replay. It is the conservative direction on purpose — the alternative is a definition of
+which commits could have changed what a battery measures, which is a second statement that can be
+wrong.
 
 ## Rules for this stage
 
