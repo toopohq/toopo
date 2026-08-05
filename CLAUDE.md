@@ -44,7 +44,10 @@ browser runs is this repository's own modules with their types removed. **And no
 both halves of the surface** — the answer and the diagnostic beside it — which is what makes the two
 spellings of `1 000` tell themselves apart on the page whose contract settles them; and beside it the
 pre-flight refusal that had been set aside three times, which turns an address that has stopped
-resolving from a silence into an error, and found one the day it existed.
+resolving from a silence into an error, and found one the day it existed. **And now the method page,
+the only page that argues the thesis rather than demonstrating it** — the page where a project like this
+one destroys itself, which publishes what the measurements did not catch beside what they did, and
+whose figures are derived from the batteries rather than from a run nobody can replay from a clone.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -465,6 +468,67 @@ hashes it and a list of hashes does not execute. `needs.ts` had no need for it e
 sentences fell in the same unit and were repaired in place rather than left to be found: *serves no
 byte at all* in `site/local-source.ts`, *no script* in `document.ts`, and
 `NOT_THIS_UNIT['pre-fill-the-playground']`, the debt this closes.
+
+## What the method page may say — settled
+
+**No figure on that page is written into a sentence.** Every one is computed at build time from the
+two answers the page is built from, and a guard collects every run of digits a reader can see and
+requires each to occur in that data. What it catches is not a wrong number but a *right* number that
+goes wrong later — the failure this file has caught in its own prose four times and never once in
+executable code. Its limit is declared rather than discovered: **a literal equal to today's value
+passes today**, and goes red the day the data moves, which is the day it would otherwise start lying.
+
+**An assertion and an observation are not one object, and the page says which it is showing.** Every
+figure is read off pins in committed code; `measure.ts` exits non-zero on any cell that disagrees, so a
+replay agrees with them or fails. The two therefore coincide — and a reader who has run nothing holds
+what this repository *asserts*, while a reader who runs `npm run mutation` holds what happened on their
+machine. The page publishes the command and what it costs beside the figures, because a page that
+presents pins as observations is doing the thing it spends its length arguing against.
+
+**The limit of the method is the second section, never a footnote.** *A high score does not say the
+code is correct; it says the tests notice the defects that were tried.* A guard holds the **order** and
+not the presence, because that sentence is worth nothing after the number: a reader who meets the
+figure first has already read it as a claim about correctness. What makes the admission affordable is
+the corollary almost nobody else can offer — the defects that were tried are committed files, each with
+the exact edit it makes and the verdict it must produce.
+
+**A survivor declares its kind, and the aggregate is never available without the split.** A count of
+surviving cells published alone reads as a count of holes. Measured at `87d082b` over the eighteen
+batteries: **34 surviving defect cells — 11 equivalent, 6 outside what the contract specifies, 4
+unreachable on this catalogue, 1 a declared open class, and 12 that live only where a lens blinded the
+suite.** Exactly one is a debt. `survived` is a function requiring a `SurvivalNature`, so a survivor
+whose kind nobody stated does not compile; the twelfth kind is not declarable, because a cell blinded
+by its lens is a fact about the apparatus and `survivorFaults` establishes it structurally. Neither
+`published.ts` nor the page exports or renders the total alone.
+
+**Six survivors of `number/parse@1` carried no argument at all**, which is exactly what made them the
+ones a hostile reader counts as holes. Each is now argued and measured differentially over a corpus of
+300 067 inputs, seen once cold and once with a foreign call between, against a control that disagrees
+on `1e400`. **P-16 is the one that is not an equivalence**: every answer is the reference's and it
+leaves a counter on `globalThis`, so what the contract constrains — what the function *reads* — is
+untouched and what it writes was never specified. That is the edge of the contract rather than a defect
+the guards missed, and the two natures exist to keep them apart.
+
+**The page's second upstream is a declared door, not a reach.** `registry/verifiability.ts` says the
+instrument measures the catalogue and is not part of it, so no endpoint can carry how this catalogue's
+own tests are measured. `mutation/published.ts` is the one module `site/` may import out of `mutation/`,
+and a guard holds the folder to it — the shape the serialisation frontier already has, on a second
+upstream.
+
+**A deferral carries what would close it, in a field.** `DeferredNeed.until` is required, so an entry
+without a trigger does not compile. The argument for it is the entry that has just left the list:
+`render-the-methodology-page` said it was waiting for benchmark figures, validation reports and
+attestations, and what it was actually waiting for was somebody noticing that eighteen batteries were
+already sitting in another folder. **A deferral aimed at the wrong event is one nobody revisits**, and a
+reason ages into a description of the past where a trigger stays checkable.
+
+**Two guards of this unit could not fail as first written, and both were caught by measurement rather
+than by review.** The partition guard over published survivors asserted `killed + surviving === cells`,
+an identity every mis-classification preserves — counting only `killed` as a kill files the five
+`killed-by-typecheck` cells as survivors, the sum stays right, and the page publishes thirty-nine
+survivors with the guard green. It is now a second walk over the batteries. And W-52 emptied one line of
+a three-line trigger and survived, correctly, because two lines of trigger were left; the battery
+reported it, which is what a pinned verdict is for.
 
 ## A case of block 4.4 is a call — settled, catalogue-wide
 
