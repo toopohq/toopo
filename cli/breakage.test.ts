@@ -1,12 +1,12 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
 import { guardIdOf } from '../catalogue/identifier.js'
 import { WHAT_BREAKS } from './breakage.js'
-import { CONFIGURATION_FILE } from './configuration.js'
+import { CONFIGURATION_FILE, readConfiguration } from './configuration.js'
 import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
 import { imaginedSource } from './imagined-source.js'
 import { filesToWrite, prepareInstallation } from './install.js'
@@ -153,7 +153,8 @@ describe('what breaks for somebody', () => {
       'a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run': 'breakage.test.ts',
       'an-edited-file-is-never-replaced': 'breakage.test.ts',
       'reinstalling-what-is-already-there-changes-nothing': 'install.test.ts',
-      'add-before-init-says-what-to-run': 'breakage.test.ts',
+      'add-with-no-configuration-writes-one-and-says-so': 'breakage.test.ts',
+      'a-lockfile-with-no-configuration-is-refused-with-the-folder-to-name': 'configuration.test.ts',
       'an-unreadable-lockfile-stops-the-install': 'breakage.test.ts',
       'a-field-this-toopo-does-not-honour-is-refused': 'configuration.test.ts',
       'a-project-with-no-package-json-installs-normally': 'breakage.test.ts',
@@ -336,24 +337,63 @@ describe('what breaks for somebody', () => {
   /**
    * The one guard that runs the command as a person runs it, because everything above tests a function
    * and a person types a line. It is also the only place the text a user reads is checked at all.
+   *
+   * **This is the first command anybody types, and it used to be a refusal.** What it asserts is the
+   * whole of the first contact: nothing was configured, one line was typed, the feature is on disk, and
+   * the file that appeared without being asked for is named on the screen that made it appear.
+   *
+   * The folder is `lib/toopo` rather than `src/lib/toopo` because a temporary project has no `src`,
+   * which is `proposeDirectory` being exercised rather than a constant being restated.
    */
-  it('add-before-init-says-what-to-run', () => {
+  it('add-with-no-configuration-writes-one-and-says-so', () => {
     const project = aProject()
     try {
-      const refusal = execFileSync(process.execPath, [ENTRY, 'add', 'string/slugify'], {
+      const screen = execFileSync(process.execPath, [ENTRY, 'add', 'string/slugify'], {
         cwd: project.root,
         encoding: 'utf8',
       })
 
-      expect(refusal).toContain('Refused, and nothing was written.')
-      expect(refusal).toContain(`this folder has no ${CONFIGURATION_FILE}`)
-      expect(refusal).toContain('Run `toopo init` first')
-      expect(readdirSync(project.root)).toEqual([])
-    } catch (error) {
-      // `toopo` exits non-zero on a refusal, which `execFileSync` throws for.
-      const thrown = error as { readonly stdout?: string }
-      expect(thrown.stdout ?? '').toContain(`this folder has no ${CONFIGURATION_FILE}`)
-      expect(readdirSync(project.root)).toEqual([])
+      expect(screen).toContain(`${CONFIGURATION_FILE}  written`)
+      expect(screen).toContain('features    lib/toopo')
+      expect(screen).toContain(`Commit ${CONFIGURATION_FILE}, toopo.lock and lib/toopo/`)
+      expect(screen).toContain('string/slugify@1')
+
+      expect(readConfiguration(project.root)).toEqual({ version: 1, directory: 'lib/toopo' })
+      expect(
+        existsSync(join(project.root, 'lib/toopo/string/slugify/slugify.ts')),
+      ).toBe(true)
+      expect(readLockfile(project.root)?.features).toHaveLength(1)
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * And the project it still refuses, run the same way, because the refusal is the half of this change
+   * that a guard over values cannot show writes nothing.
+   */
+  it('add-with-a-lockfile-and-no-configuration-writes-nothing', () => {
+    const project = aProject()
+    try {
+      execFileSync(process.execPath, [ENTRY, 'add', 'string/slugify'], {
+        cwd: project.root,
+        encoding: 'utf8',
+      })
+      rmSync(join(project.root, CONFIGURATION_FILE))
+
+      const before = readFileSync(join(project.root, 'toopo.lock'), 'utf8')
+
+      expect(() =>
+        execFileSync(process.execPath, [ENTRY, 'add', 'string/levenshtein'], {
+          cwd: project.root,
+          encoding: 'utf8',
+          stdio: 'pipe',
+        }),
+      ).toThrow()
+
+      expect(existsSync(join(project.root, CONFIGURATION_FILE))).toBe(false)
+      expect(readFileSync(join(project.root, 'toopo.lock'), 'utf8')).toBe(before)
+      expect(existsSync(join(project.root, 'lib/toopo/string/levenshtein'))).toBe(false)
     } finally {
       project.remove()
     }

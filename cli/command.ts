@@ -42,6 +42,7 @@ import type { Configuration } from './configuration.js'
 import {
   CONFIGURATION_FILE,
   UnusableConfiguration,
+  configurationToInstallUnder,
   proposeDirectory,
   readConfiguration,
   writeConfiguration,
@@ -133,8 +134,19 @@ export const run = (theRegistry: () => RegistrySource): void => {
       writeConfiguration(root, configuration)
       out(renderInit(configuration, held !== null))
     } else if (parsed.command.name === 'add') {
-      const configuration = theConfiguration()
       const lockfile = readLockfile(root) ?? EMPTY
+      // The one command that does not need a project to have been configured: `configuration.ts`
+      // carries why, and the one project it still refuses.
+      const chosen = configurationToInstallUnder(
+        readConfiguration(root),
+        lockfile.features.length > 0,
+        proposeDirectory(root),
+      )
+
+      if ('faults' in chosen) refuse(chosen.faults)
+
+      const { configuration } = chosen
+      const configurationToWrite = chosen.write ? configuration : null
       const outcome = prepareInstallation(theRegistry(), {
         root,
         configuration,
@@ -156,6 +168,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
             writes: [],
             removals: [],
             lockfile: after,
+            configuration: configurationToWrite,
           })
 
           if ('faults' in written) refuse(written.faults)
@@ -174,10 +187,11 @@ export const run = (theRegistry: () => RegistrySource): void => {
           writes: filesToWrite(outcome.installation),
           removals: [],
           lockfile: lockfileAfter(lockfile, outcome.installation.features),
+          configuration: configurationToWrite,
         })
 
         if ('faults' in written) refuse(written.faults)
-        out(renderInstallation(outcome.installation, configuration))
+        out(renderInstallation(outcome.installation, configuration, chosen.write))
       }
     } else if (parsed.command.name === 'remove') {
       const configuration = theConfiguration()
@@ -198,6 +212,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
           writes: removal.reconciliation.writes,
           removals: removal.reconciliation.removals,
           lockfile: removal.reconciliation.lockfile,
+          configuration: null,
         })
 
         if ('faults' in written) refuse(written.faults)
@@ -243,6 +258,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
           writes: reconciliation.writes,
           removals: reconciliation.removals,
           lockfile: reconciliation.lockfile,
+          configuration: null,
         })
 
         if ('faults' in written) refuse(written.faults)

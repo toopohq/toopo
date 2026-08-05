@@ -48,6 +48,8 @@ import { existsSync, mkdirSync, renameSync, rmSync, rmdirSync, statSync, writeFi
 import { dirname, join } from 'node:path'
 
 import type { Lockfile } from '../registry/implementation-record.js'
+import type { Configuration } from './configuration.js'
+import { CONFIGURATION_FILE, writeConfiguration } from './configuration.js'
 import { LOCKFILE, writeLockfile } from './lockfile.js'
 
 /**
@@ -73,6 +75,22 @@ export type Commit = {
   /** Paths under the configured directory this command removes. */
   readonly removals: readonly string[]
   readonly lockfile: Lockfile
+  /**
+   * The configuration to write beside the lockfile, or `null` when the project already has one.
+   *
+   * It is in the commit rather than written by `add` beforehand because it is one of the files this
+   * command puts into somebody's project, and a project half-configured by a run that then refused
+   * would contradict the sentence every refusal ends with.
+   *
+   * **That second half is guarded end to end and not here, and the reason is worth writing down.** A
+   * guard was written in `write.test.ts` asserting that a refused commit leaves no `toopo.json`, and
+   * measured, it could not fail: every fault this function can raise is raised while staging the
+   * *files*, and the block that writes the root files is behind `faults.length === 0`, so a refused
+   * commit never reaches this field at all. The property is structural rather than kept, so the guard
+   * was deleted instead of left green - and `add-with-a-lockfile-and-no-configuration-writes-nothing`
+   * asserts it where a refusal really can arrive after something was decided.
+   */
+  readonly configuration: Configuration | null
 }
 
 const reasonOf = (error: unknown): string =>
@@ -93,6 +111,44 @@ const destinationFaults = (full: string, path: string): readonly string[] => {
   }
 
   return []
+}
+
+/** A file a commit writes at the project root rather than under the configured directory. */
+type RootFile = {
+  readonly name: string
+  readonly at: string
+  readonly write: (to: string) => void
+}
+
+/**
+ * The root files of a commit, in the order they are renamed into place.
+ *
+ * **The lockfile is last, and `toopo.json` is immediately before it.** The lockfile is last so that the
+ * window an interruption leaves always resolves backwards - the record of an install arrives after the
+ * thing it records. `toopo.json` is before it for the second half of the same argument: a lockfile with
+ * no configuration beside it is the one state `configurationToInstallUnder` refuses, because the folder
+ * its paths are relative to is not recoverable, so it must never be the state a killed run leaves
+ * behind. Either order writes both or neither in the ordinary case; only the kill tells them apart.
+ */
+const rootFilesOf = (root: string, what: Commit): readonly RootFile[] => {
+  const { configuration } = what
+
+  return [
+    ...(configuration === null
+      ? []
+      : [
+          {
+            name: CONFIGURATION_FILE,
+            at: join(root, CONFIGURATION_FILE),
+            write: (to: string) => writeConfiguration(root, configuration, to),
+          },
+        ]),
+    {
+      name: LOCKFILE,
+      at: join(root, LOCKFILE),
+      write: (to: string) => writeLockfile(root, what.lockfile, to),
+    },
+  ]
 }
 
 /** Every folder that this removal emptied, innermost first, up to but never including the root. */
@@ -141,19 +197,21 @@ export const commit = (
     }
   }
 
-  const lockfileAt = join(root, LOCKFILE)
-  const lockfileTemporary = `${lockfileAt}${STAGED}`
+  const rootFiles = rootFilesOf(root, what)
+
   if (faults.length === 0) {
-    try {
-      writeLockfile(root, what.lockfile, lockfileTemporary)
-    } catch (error) {
-      faults.push(`${LOCKFILE} could not be written: ${reasonOf(error)}`)
+    for (const file of rootFiles) {
+      try {
+        file.write(`${file.at}${STAGED}`)
+      } catch (error) {
+        faults.push(`${file.name} could not be written: ${reasonOf(error)}`)
+      }
     }
   }
 
   if (faults.length > 0) {
     for (const entry of staged) rmSync(entry.temporary, { force: true })
-    rmSync(lockfileTemporary, { force: true })
+    for (const file of rootFiles) rmSync(`${file.at}${STAGED}`, { force: true })
 
     return { faults }
   }
@@ -176,7 +234,7 @@ export const commit = (
     }
   }
 
-  renameSync(lockfileTemporary, lockfileAt)
+  for (const file of rootFiles) renameSync(`${file.at}${STAGED}`, file.at)
 
   return { written: staged.map((entry) => entry.path) }
 }

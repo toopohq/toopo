@@ -1,5 +1,5 @@
 /**
- * `toopo.json` - what the user told us once, and the only thing `add` consults about their project.
+ * `toopo.json` - what the user told us once, and the only setting `add` consults about their project.
  *
  * ---------------------------------------------------------------------------
  * One settable field, and the version that carries the next one
@@ -19,6 +19,8 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
+
+import { LOCKFILE } from './lockfile.js'
 
 export const CONFIGURATION_FILE = 'toopo.json'
 
@@ -93,13 +95,20 @@ export const readConfiguration = (root: string): Configuration | null => {
   return parsed as Configuration
 }
 
-/** Written with a trailing newline, because it is a file a person opens in an editor. */
-export const writeConfiguration = (root: string, configuration: Configuration): void => {
-  writeFileSync(
-    join(root, CONFIGURATION_FILE),
-    `${JSON.stringify(configuration, null, 2)}\n`,
-    'utf8',
-  )
+/**
+ * Written with a trailing newline, because it is a file a person opens in an editor.
+ *
+ * `to` is where the bytes go, and it defaults to the configuration's own place, for the reason
+ * `writeLockfile` already takes the same parameter: `write.ts` stages every file it commits under a
+ * temporary name first, and a configuration that could only be written in place would be one file of a
+ * commit with no staged form.
+ */
+export const writeConfiguration = (
+  root: string,
+  configuration: Configuration,
+  to = join(root, CONFIGURATION_FILE),
+): void => {
+  writeFileSync(to, `${JSON.stringify(configuration, null, 2)}\n`, 'utf8')
 }
 
 /**
@@ -112,3 +121,60 @@ export const writeConfiguration = (root: string, configuration: Configuration): 
  */
 export const proposeDirectory = (root: string): string =>
   existsSync(join(root, 'src')) ? 'src/lib/toopo' : 'lib/toopo'
+
+/** The configuration an install runs under, and whether it is one this command has to write. */
+export type ConfigurationToUse =
+  | { readonly configuration: Configuration; readonly write: boolean }
+  | { readonly faults: readonly string[] }
+
+/**
+ * Which configuration `toopo add` installs under, decided from values alone.
+ *
+ * ---------------------------------------------------------------------------
+ * `init` stops being a toll
+ * ---------------------------------------------------------------------------
+ *
+ * `add` used to refuse a project with no `toopo.json` and name `toopo init`. That stopped somebody for
+ * nothing: the only thing an install needs to know is a folder, `proposeDirectory` already deduces one,
+ * and nothing was at stake in asking. So a project with nothing in it gets the proposed folder written
+ * and is told so - **the report says a file appeared**, because a committed file arriving unannounced is
+ * a surprise the user's team meets and the same file announced is a convenience. Whoever wanted another
+ * folder edits one line and runs it again.
+ *
+ * `init` keeps every reason it had, for whoever wants to choose in advance. What it loses is the right
+ * to stand in front of the first command anybody types.
+ *
+ * ---------------------------------------------------------------------------
+ * The one project that is refused, and why removing a friction revealed it
+ * ---------------------------------------------------------------------------
+ *
+ * A lockfile with no configuration beside it is the case the old refusal was covering by accident.
+ * **`toopo.lock` records each file's path relative to the configured directory and never the directory
+ * itself** - `list.ts` and `write.ts` both join the two - so a project holding installed features and no
+ * `toopo.json` is one where the folder is not recoverable from anything on disk. Proposing one would
+ * install beside files that already exist rather than over them, leaving two copies and a lockfile
+ * describing one of them.
+ *
+ * It is a door rather than a wall: the refusal says which command names the folder, and why only the
+ * user can name it.
+ */
+export const configurationToInstallUnder = (
+  held: Configuration | null,
+  anythingInstalled: boolean,
+  proposed: string,
+): ConfigurationToUse => {
+  if (held !== null) return { configuration: held, write: false }
+
+  if (anythingInstalled) {
+    return {
+      faults: [
+        `${LOCKFILE} records installed features and there is no ${CONFIGURATION_FILE}, so nothing ` +
+          `knows which folder they are in - a lockfile records each file's path relative to the ` +
+          `configured directory and never the directory itself. Name it once and run this again:`,
+        `  toopo init --dir <the folder they are in>`,
+      ],
+    }
+  }
+
+  return { configuration: { version: 1, directory: proposed }, write: true }
+}

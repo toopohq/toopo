@@ -50,7 +50,7 @@ describe('what the user reads', () => {
    * after the list is a promise the reader has already stopped looking for.
    */
   it('the-cost-is-stated-before-the-files', () => {
-    const lines = renderInstallation(anInstallation(), CONFIGURATION).split('\n')
+    const lines = renderInstallation(anInstallation(), CONFIGURATION, false).split('\n')
     const cost = lines.findIndex((line) => line.includes('depth'))
     const firstFile = lines.findIndex((line) => line.includes('+ src/lib/toopo/'))
 
@@ -65,7 +65,7 @@ describe('what the user reads', () => {
    * them what the installer did.
    */
   it('a-line-says-what-was-done-to-that-file', () => {
-    const rendered = renderInstallation(anInstallation(), CONFIGURATION)
+    const rendered = renderInstallation(anInstallation(), CONFIGURATION, false)
     const lines = rendered.split('\n').filter((line) => line.includes('+ src/lib/toopo/'))
 
     expect(lines.map((line) => line.trim())).toEqual([
@@ -124,7 +124,7 @@ describe('what the user reads', () => {
    * an address - `number/parse` exports `parseNumber`.
    */
   it('an-import-line-is-printed-ready-to-copy', () => {
-    const line = renderInstallation(anInstallation(), CONFIGURATION)
+    const line = renderInstallation(anInstallation(), CONFIGURATION, false)
       .split('\n')
       .find((held) => held.includes('import {'))
 

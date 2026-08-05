@@ -85,10 +85,26 @@ export const WHAT_BREAKS: readonly Breakage[] = [
     detail: 'answered as "already installed, nothing to do" rather than rewritten',
   },
   {
-    situation: '`toopo add` is run before `toopo init`',
+    situation: '`toopo add` is run in a project that was never initialised',
     verdict: 'refused-cleanly',
-    guard: 'add-before-init-says-what-to-run',
-    detail: 'the refusal names `toopo init` and says it takes no answer and writes one file',
+    guard: 'add-with-no-configuration-writes-one-and-says-so',
+    detail:
+      'not a refusal at all, and the entry a reader most needs changed. It used to stop and name ' +
+      '`toopo init`, which stopped somebody for nothing: the only thing an install needs to know is ' +
+      'a folder and `proposeDirectory` deduces one. So the proposed configuration is written, the ' +
+      'feature is installed, and **the screen says a file appeared** - `toopo.json` is committed by ' +
+      'the user, so a run that writes one puts a file in front of their whole team.',
+  },
+  {
+    situation: 'toopo.lock records features and toopo.json is gone',
+    verdict: 'refused-cleanly',
+    guard: 'a-lockfile-with-no-configuration-is-refused-with-the-folder-to-name',
+    detail:
+      'the case the refusal above was covering by accident, and it survived removing it. A lockfile ' +
+      "records each file's path relative to the configured directory and never the directory itself, " +
+      'so nothing on disk says where the installed features are: proposing a folder would install ' +
+      'beside them rather than over them, leaving two copies and a lockfile describing one. The ' +
+      'refusal names `toopo init --dir` and says why only the user can answer it.',
   },
   {
     situation: 'toopo.lock is not JSON, or was written by a later toopo',

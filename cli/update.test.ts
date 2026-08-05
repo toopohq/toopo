@@ -412,6 +412,7 @@ describe('comparing a project with what the registry serves now', () => {
         writes: first.writes,
         removals: first.removals,
         lockfile: first.lockfile,
+        configuration: null,
       })
       expect('written' in written).toBe(true)
 
@@ -583,6 +584,7 @@ describe('comparing a project with what the registry serves now', () => {
         writes: update.writes,
         removals: update.removals,
         lockfile: update.lockfile,
+        configuration: null,
       })
       expect('written' in written).toBe(true)
 
@@ -635,6 +637,7 @@ describe('comparing a project with what the registry serves now', () => {
         writes: update.writes,
         removals: update.removals,
         lockfile: update.lockfile,
+        configuration: null,
       })
       expect('written' in written).toBe(true)
       expect(project.installed('text/right/trim.ts')).toBe('export const TRIM = /mine/\n')

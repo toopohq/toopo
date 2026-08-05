@@ -4,6 +4,7 @@ import {
   CONFIGURATION_FILE,
   UnusableConfiguration,
   configurationFaults,
+  configurationToInstallUnder,
   proposeDirectory,
   readConfiguration,
   writeConfiguration,
@@ -92,5 +93,49 @@ describe('the configuration of a project', () => {
       withSource.remove()
       without.remove()
     }
+  })
+
+  /**
+   * The three answers `toopo add` can get about a project's configuration, decided from values alone.
+   *
+   * They are asserted together rather than as three guards because they are one partition and the thing
+   * worth catching is a decision moving between arms - which is invisible when each arm is checked by
+   * itself.
+   */
+  it('a-project-with-nothing-in-it-is-configured-rather-than-refused', () => {
+    const held = { version: 1, directory: 'app/toopo' } as const
+
+    expect(configurationToInstallUnder(held, false, 'lib/toopo')).toEqual({
+      configuration: held,
+      write: false,
+    })
+    expect(configurationToInstallUnder(held, true, 'lib/toopo')).toEqual({
+      configuration: held,
+      write: false,
+    })
+    expect(configurationToInstallUnder(null, false, 'lib/toopo')).toEqual({
+      configuration: { version: 1, directory: 'lib/toopo' },
+      write: true,
+    })
+  })
+
+  /**
+   * The one project `add` still refuses, and it is the case the old refusal was covering by accident.
+   *
+   * `toopo.lock` holds each file's path relative to the configured directory and never the directory,
+   * so a project with features installed and no `toopo.json` is one where the folder is not recoverable.
+   * Proposing one would install beside the files that are already there rather than over them.
+   *
+   * The refusal is checked for the command it names, because a refusal nobody can act on is the shape
+   * this repository refuses everywhere: a wall rather than a door.
+   */
+  it('a-lockfile-with-no-configuration-is-refused-with-the-folder-to-name', () => {
+    const refused = configurationToInstallUnder(null, true, 'lib/toopo')
+
+    if (!('faults' in refused)) throw new Error('a lockfile with no configuration was not refused')
+
+    expect(refused.faults.join('\n')).toContain('toopo init --dir')
+    expect(refused.faults.join('\n')).toContain('relative to the configured directory')
+    expect(refused.faults.join('\n')).toContain(CONFIGURATION_FILE)
   })
 })

@@ -86,6 +86,7 @@ const recording = (
     writes: [],
     removals: [],
     lockfile: after,
+    configuration: null,
   })
 
   if ('faults' in written) throw new Error(written.faults.join('\n'))
@@ -136,6 +137,7 @@ const applying = (project: TemporaryProject, removal: Removal): void => {
     writes: removal.reconciliation.writes,
     removals: removal.reconciliation.removals,
     lockfile: removal.reconciliation.lockfile,
+    configuration: null,
   })
 
   if ('faults' in written) throw new Error(written.faults.join('\n'))
@@ -319,6 +321,7 @@ describe('taking a feature out of a project', () => {
         writes: deduplicated.reconciliation.writes,
         removals: deduplicated.reconciliation.removals,
         lockfile: deduplicated.reconciliation.lockfile,
+        configuration: null,
       })
       if ('faults' in written) throw new Error(written.faults.join('\n'))
 

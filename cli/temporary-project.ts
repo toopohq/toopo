@@ -50,6 +50,7 @@ export const committing = (
     writes: filesToWrite(installation),
     removals: [],
     lockfile: after,
+    configuration: null,
   })
 
   if ('faults' in written) throw new Error(written.faults.join('\n'))

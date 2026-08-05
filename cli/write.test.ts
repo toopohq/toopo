@@ -3,6 +3,7 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
+import { readConfiguration } from './configuration.js'
 import { LOCKFILE, readLockfile } from './lockfile.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { EMPTY_LOCKFILE, aProject } from './temporary-project.js'
@@ -45,6 +46,7 @@ describe('writing into somebody else project', () => {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       expect(written).toEqual({ written: ['src/lib/toopo/string/pad/pad.ts', 'src/lib/toopo/number/sign/sign.ts'] })
@@ -63,6 +65,7 @@ describe('writing into somebody else project', () => {
         writes: [A_FILE('export const pad = 1\n')],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       expect(everythingUnder(project.root).filter((path) => path.includes(STAGED))).toEqual([])
@@ -84,6 +87,7 @@ describe('writing into somebody else project', () => {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       expect('faults' in written && written.faults).toHaveLength(1)
@@ -116,6 +120,7 @@ describe('writing into somebody else project', () => {
         writes: [A_FILE('export const pad = 2\n'), ANOTHER('export const sign = 2\n')],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       expect('faults' in written).toBe(true)
@@ -137,6 +142,7 @@ describe('writing into somebody else project', () => {
         writes: [A_FILE('export const pad = 1\n')],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       expect('faults' in written && written.faults).toEqual([
@@ -158,6 +164,7 @@ describe('writing into somebody else project', () => {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       expect(everythingUnder(project.root).filter((path) => path.includes(STAGED))).toEqual([])
@@ -170,12 +177,14 @@ describe('writing into somebody else project', () => {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       commit(project.root, project.configuration.directory, {
         writes: [],
         removals: ['string/pad/pad.ts'],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       // The folder and not only the files: an emptied directory holds nothing, so a walk that lists
@@ -199,12 +208,14 @@ describe('writing into somebody else project', () => {
         ],
         removals: [],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       commit(project.root, project.configuration.directory, {
         writes: [],
         removals: ['string/pad/pad.ts'],
         lockfile: EMPTY_LOCKFILE,
+        configuration: null,
       })
 
       expect(everythingUnder(join(project.root, project.configuration.directory))).toEqual([

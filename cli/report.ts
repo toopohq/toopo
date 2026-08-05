@@ -33,6 +33,7 @@ import { renderContract, sameContract } from '../registry/address.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import type { ServedIndexEntry, ServedRefusals } from '../registry/response.js'
 import type { Configuration } from './configuration.js'
+import { CONFIGURATION_FILE } from './configuration.js'
 import { renderCount } from './diff.js'
 import type { InstalledEntry, Installation } from './install.js'
 import type { Listing } from './list.js'
@@ -116,7 +117,7 @@ const whatToCommit = (configuration: Configuration): string =>
 export const renderInit = (configuration: Configuration, existed: boolean): string =>
   [
     '',
-    `${INDENT}toopo.json  ${existed ? 'updated' : 'written'}`,
+    `${INDENT}${CONFIGURATION_FILE}  ${existed ? 'updated' : 'written'}`,
     `${INDENT}features    ${configuration.directory}`,
     '',
     ...paragraph(whatToCommit(configuration)).map((line) => `${INDENT}${line}`),
@@ -136,9 +137,22 @@ export const renderInit = (configuration: Configuration, existed: boolean): stri
  */
 const markOf = (write: Installation['writes'][number]): string => (write.alreadyOnDisk ? '=' : '+')
 
+/**
+ * What was installed, and - when this run was also the one that configured the project - that a file
+ * appeared.
+ *
+ * **`wroteConfiguration` is announced rather than left to be found.** `toopo.json` is committed by the
+ * user, so a run that writes one puts a file in front of their whole team. A file that appears without
+ * being asked for and without being mentioned is a bad surprise; the same file announced is a
+ * convenience, and the line says which folder was chosen so that changing it is one edit away.
+ *
+ * It is the installation's own lines that move to make room, not a second report: the two lines are the
+ * ones `renderInit` prints, and `whatToCommit` is the same sentence rather than a second copy of it.
+ */
 export const renderInstallation = (
   installation: Installation,
   configuration: Configuration,
+  wroteConfiguration: boolean,
 ): string => {
   const { cost } = installation
   const found = installation.writes.filter((write) => write.alreadyOnDisk).length
@@ -162,6 +176,13 @@ export const renderInstallation = (
 
   return [
     '',
+    ...(wroteConfiguration
+      ? [
+          `${INDENT}${CONFIGURATION_FILE}  written`,
+          `${INDENT}features    ${configuration.directory}`,
+          '',
+        ]
+      : []),
     `${INDENT}${renderContract(installation.contract)} · ` +
       `${installation.implementation.id}@${installation.implementation.version}`,
     '',
@@ -198,6 +219,9 @@ export const renderInstallation = (
         ]),
     ...renderImportLine(installation.entry, configuration),
     '',
+    ...(wroteConfiguration
+      ? [...paragraph(whatToCommit(configuration)).map((line) => `${INDENT}${line}`), '']
+      : []),
     `${INDENT}Recorded in toopo.lock`,
     '',
   ].join('\n')
