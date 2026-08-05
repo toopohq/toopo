@@ -1,9 +1,10 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
+import { guardIdOf } from '../catalogue/identifier.js'
 import { WHAT_BREAKS } from './breakage.js'
 import { CONFIGURATION_FILE } from './configuration.js'
 import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
@@ -20,8 +21,14 @@ import type { TemporaryProject } from './temporary-project.js'
 /**
  * What happens to a real project, rather than what happens in a fixture.
  *
- * Every situation `breakage.ts` classifies as a clean refusal is here, under the identifier that entry
- * names. The ones classified as breaking badly are not: they are declared, deliberately, with the
+ * Every situation `breakage.ts` classifies as a clean refusal is guarded under the identifier that
+ * entry names - and *where* each of those guards lives is published by
+ * `every-clean-refusal-resolves-to-the-guard-it-names` rather than claimed here. A sentence saying
+ * they are all in this file and a guard saying where each one is are two statements of one fact, and
+ * it is always the sentence that ends up lying: this header carried that sentence, and eleven of the
+ * twenty were somewhere else by the time anybody looked.
+ *
+ * The ones classified as breaking badly are not guarded: they are declared, deliberately, with the
  * reason each was left open - and the one guard over the list is that nothing sits in between.
  */
 
@@ -66,6 +73,34 @@ const alreadyInstalled = (
   contract = 'string/slugify',
 ): Lockfile => committing(project, mustInstall(installing(localSource(), project, contract)))
 
+/**
+ * Every guard this folder's suite carries, as its address against the file - or files - that hold it.
+ *
+ * A title is read the way `catalogue/identifier.ts` says one is read - the identifier, then the
+ * separator, then the sentence - rather than by a rule restated here. Measured over this folder: every
+ * guard title is a plain string literal, no `it.each` and no template, so what the source says and
+ * what vitest collects are the same list of names.
+ *
+ * **Every file an address occurs in, joined, rather than one of them.** Written first as a plain
+ * record it kept whichever file sorted last, so an identifier carried by two files read exactly like
+ * one carried by the file that happened to win - measured by planting a second copy of
+ * `a-directory-where-a-file-goes-is-refused-by-name` in `list.test.ts`, where `write.test.ts` sorted
+ * after it and the guard stayed green. A resolution that silently picks one of two answers is the
+ * failure this whole guard exists to refuse, arriving inside the guard itself.
+ */
+const guardsOfThisFolder = (): Readonly<Record<string, string>> => {
+  const carried = new Map<string, string[]>()
+
+  for (const name of readdirSync(HERE).filter((entry) => entry.endsWith('.test.ts'))) {
+    for (const title of readFileSync(join(HERE, name), 'utf8').matchAll(/\bit\(\s*'([^']+)'/g)) {
+      const id = guardIdOf(title[1] as string)
+      carried.set(id, [...(carried.get(id) ?? []), name])
+    }
+  }
+
+  return Object.fromEntries([...carried].map(([id, files]) => [id, files.join(', ')]))
+}
+
 describe('what breaks for somebody', () => {
   it('every-breakage-is-classified :: a clean refusal names its guard and a bad break says why', () => {
     expect(
@@ -75,6 +110,65 @@ describe('what breaks for somebody', () => {
           entry.detail.trim() === '',
       ).map((entry) => entry.situation),
     ).toEqual([])
+  })
+
+  /**
+   * Every guard a clean refusal names is a guard this folder carries, and the map says which file.
+   *
+   * **The address was declared and nothing resolved it**, which is the class `CLAUDE.md` carries
+   * against five kinds of address and had closed for four. A guard identifier is frozen with its
+   * major, so a rename is a decision; what this refuses is the rename nobody noticed, which leaves
+   * `breakage.ts` pointing at a guard that no longer exists and reads exactly like one that does.
+   *
+   * **It lives here rather than in the instrument's pre-flight, and the line between the two is the
+   * rule.** The pre-flight resolves what a *battery* names, against the guards a run really collected.
+   * `WHAT_BREAKS` is named by no battery, and making one name it - arbitrarily one of the four that
+   * collect this suite, or all four - would have a battery declare something it does not declare, to
+   * fit a mechanism. So: **the pre-flight resolves what a battery names, a suite guard resolves what a
+   * module declares.** Two universes, two mechanisms, each beside the declaration it keeps.
+   *
+   * What this reads is the source rather than what vitest collected, so a guard inside a skipped block
+   * would still resolve. That hole is already closed at another cadence: `mutation/census.ts` declares
+   * how many guards each file of this suite collects, and a file that stops collecting falls under its
+   * declared count and is refused by name. This one catches the frequent fault in seconds - an address
+   * renamed by somebody refactoring - and the census catches the rare one. Neither repeats the other,
+   * which is what makes both affordable.
+   *
+   * The map is pinned rather than merely checked for emptiness, because it is what replaced a sentence
+   * in this file's header claiming all of them were here. A derived fact that is checked beats a claim
+   * that is not, and moving a guard to another file is an event worth confirming.
+   */
+  it('every-clean-refusal-resolves-to-the-guard-it-names :: and this is the file each one is in', () => {
+    const carried = guardsOfThisFolder()
+
+    expect(
+      Object.fromEntries(
+        WHAT_BREAKS.flatMap((entry) =>
+          entry.guard === undefined ? [] : [[entry.guard, carried[entry.guard] ?? null] as const],
+        ),
+      ),
+    ).toEqual({
+      'a-file-we-did-not-write-is-never-overwritten': 'breakage.test.ts',
+      'a-file-already-holding-our-bytes-is-claimed-and-not-rewritten': 'breakage.test.ts',
+      'a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run': 'breakage.test.ts',
+      'an-edited-file-is-never-replaced': 'breakage.test.ts',
+      'reinstalling-what-is-already-there-changes-nothing': 'install.test.ts',
+      'add-before-init-says-what-to-run': 'breakage.test.ts',
+      'an-unreadable-lockfile-stops-the-install': 'breakage.test.ts',
+      'a-field-this-toopo-does-not-honour-is-refused': 'configuration.test.ts',
+      'a-project-with-no-package-json-installs-normally': 'breakage.test.ts',
+      'a-path-with-a-space-installs-normally': 'breakage.test.ts',
+      'the-users-tsconfig-is-never-read': 'breakage.test.ts',
+      'a-file-where-a-folder-must-go-is-refused-with-nothing-staged': 'write.test.ts',
+      'a-directory-where-a-file-goes-is-refused-by-name': 'write.test.ts',
+      'a-feature-that-was-never-asked-for-is-refused-with-what-imports-it': 'remove.test.ts',
+      'a-feature-another-root-still-imports-stays-and-stops-being-a-root': 'remove.test.ts',
+      'a-file-the-user-edited-is-not-deleted-by-a-removal': 'remove.test.ts',
+      'a-removal-that-cannot-reach-the-registry-refuses-and-explains': 'remove.test.ts',
+      'a-copy-deduplicated-away-is-taken-with-the-entry-that-stops-claiming-it': 'update.test.ts',
+      'every-file-missing-at-once-says-the-folder-is-not-committed': 'update.test.ts',
+      'a-file-already-equal-to-what-we-would-write-is-not-a-conflict': 'update.test.ts',
+    })
   })
 
   it('a-file-we-did-not-write-is-never-overwritten', () => {

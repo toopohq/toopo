@@ -201,13 +201,25 @@ character in a source file was paid once already.
 
 **Three published counts of guards were dropped rather than corrected, and the reason generalises.**
 This sentence, `run.ts` and `every-contract.ts` all read *467*, and 467 had stopped being the number
-of guard titles some time before anybody noticed — remeasured while adding four guards, the source
-holds 501 `it(...)` call sites and the census declares 974 collected assertions, and neither is 467
-plus the four. Which of the three things 467 once counted is not recoverable, so nothing was patched:
-a count in prose survives the data it counted and becomes the one part of a true sentence that is
-false. What each claim is actually about — *none carries a non-ASCII code point*, *no identifier is
-duplicated inside a contract* — does not drift, and `calibrate()` is what holds the second. It is the
-rule about identifiers rendering a count, arriving on comments.
+of guard titles some time before anybody noticed. Which of the three things 467 once counted is not
+recoverable, so nothing was patched: a count in prose survives the data it counted and becomes the one
+part of a true sentence that is false. What each claim is actually about — *none carries a non-ASCII
+code point*, *no identifier is duplicated inside a contract* — does not drift, and `calibrate()` is
+what holds the second. It is the rule about identifiers rendering a count, arriving on comments.
+
+**And the remeasurement that replaced 467 did not survive its own paragraph, which is the third
+instance and the one that settles the treatment.** This sentence went on to publish *501 `it(...)` call
+sites* and *974 collected assertions*, and neither reproduces under any counting I can construct.
+Measured at `2b90f96`, over every tracked `.test.ts` and `.test-d.ts`: **514 call sites — 479 written
+`it(` and 35 arriving through `it.each` — and the census declares 998**, which is 472 + 288 + 27 + 146
++ 62 + 3 across the six configurations and is exactly what the six suites report when they run.
+Restricting to `.test.ts` gives 486, and to `contracts/` gives 94; nothing gives 501, and nothing gives
+974. A bare count replacing a bare count buys one cycle of being right.
+
+So the pair is not dropped this time, it is **given its coordinates** — the commit and the population
+counted — by the rule `registry/contract-record.ts` carries for a published size. A count with a commit
+beside it is re-derivable and stops being a claim about today; a count without one is the part of a
+true sentence that goes false while nobody is looking, three times now in this file alone.
 
 **What this does not cover, and it is not an oversight.** `npm test` will never see a duplicate
 identifier: a guard cannot enumerate the tests vitest collected, so the refusal lives in
@@ -960,9 +972,6 @@ decorative for ever.
 - `benchmarks.profiles[].name` — frozen by the section above, enforced by nothing.
 - `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
   `one-directional` fields the schema already carried, with GS-11 as the measurement.
-- `Breakage.guard` in `cli/breakage.ts` — every situation the installer refuses cleanly names the guard
-  that keeps it, and nothing resolves that name. It is the same class arriving on a fifth kind of
-  address, and it closes with the same mechanism as the others.
 - **The rule that an alias must not name what its contract refuses to be.** The eight liars are gone
   and the criterion is in `catalogue/every-contract.ts`, but nothing keeps it: the executable form
   needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
@@ -1035,9 +1044,40 @@ in `instrument.test.ts` and not one, because a declared *suite* is a third unive
 is prose and gets reworded, where a guard identifier is frozen, which makes it the half most likely to
 break. All three were seen red together on one meta-mutant, each under its own claim.
 
-**What it does not close:** `Breakage.guard` names a guard in `cli/breakage.ts` that no battery names,
-so nothing here resolves it. The mechanism exists now; that entry is unchanged and stays on the list
-above.
+**What it did not close was `Breakage.guard`, and the reason turned out to be the rule rather than the
+gap.** This section used to say that entry closed "with the same mechanism as the others". That sentence
+was written before anybody looked at what names `WHAT_BREAKS`, and the answer is *no battery*: the
+pre-flight resolves the addresses a **battery** declares, against the guards a run really collected, and
+the four batteries that collect the `cli` suite declare none of these twenty. Closing it here would have
+meant picking one of the four arbitrarily to name them, or repeating the list in all four — a battery
+declaring something it does not declare, in order to fit a mechanism. That is arranging the data to suit
+the tool, which is the shape this repository refuses everywhere else.
+
+**So the line is drawn instead, and it is a rule about where a resolution lives: the pre-flight resolves
+what a battery names; a suite guard resolves what a module declares.** Two universes, two mechanisms,
+each beside the declaration it keeps. `every-clean-refusal-resolves-to-the-guard-it-names` in
+`cli/breakage.test.ts` is the second one's first instance — it reads this folder's test sources, resolves
+all twenty addresses, and **publishes the file each one is in** rather than asserting anything about
+where they are.
+
+What it reads is the source rather than what vitest collected, so a guard inside a skipped block would
+still resolve — and that hole is already closed at another cadence, by `mutation/census.ts` declaring how
+many guards each file of this suite collects. The division is deliberate: the suite guard catches the
+frequent fault in seconds, an address renamed by somebody refactoring; the census catches the rare one, a
+file that stops running. Neither repeats the other, which is what makes both affordable.
+
+Both reds were seen. An address left behind by a rename resolves to `null` under its own name; and an
+identifier carried by two files reads as `"list.test.ts, write.test.ts"`, which is a defect the first
+draft of that guard could not see — written as a plain record it kept whichever file sorted last, so a
+duplicate looked exactly like a resolution. A mechanism that silently picks one of two answers, inside
+the guard written to refuse exactly that.
+
+**And the sentence it replaced is gone rather than corrected.** `breakage.test.ts` opened by saying every
+clean refusal was guarded *in that file*; eleven of the twenty were in five other files by the time
+anybody checked. A sentence claiming they are all here and a guard publishing where each one is are two
+statements of one fact, and it is always the sentence that ends up lying. The eleven did not move: a
+refusal about the lockfile is tested where the lockfile is written, and gathering them to make a sentence
+true would be the same error in the other direction.
 
 **The repository-wide figure has a derivation, and that closes the second half of this.** `npm run
 tally` reads what a replay wrote, refuses a set that is not one replay of the commit it would describe,

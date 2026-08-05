@@ -14,10 +14,11 @@
  *       imported from ...\cli\toopo.ts
  *
  * So a program that imports the registry cannot be started by node without something making that one
- * translation. `mutation/` avoids the question by writing `.ts` specifiers throughout, which works
- * because nothing it imports leaves that folder; the installer and the generator both import the
- * registry, the registry imports the catalogue, and rewriting four folders to suit two entry points
- * would be the tail wagging the dog.
+ * translation. `mutation/` avoids the question by writing `.ts` specifiers throughout - including the
+ * one import that leaves it, `catalogue/identifier.ts`, which it reaches by that same spelling and
+ * which imports nothing itself. The installer and the generator both import the registry, the registry
+ * imports the catalogue, and rewriting four folders to suit two entry points would be the tail wagging
+ * the dog.
  *
  * The hook takes no dependency and translates exactly one thing: a *relative* specifier ending in
  * `.js` whose `.ts` sibling exists. Anything else is passed straight through, so a real `.js` file

@@ -53,6 +53,8 @@ import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { GUARD_SEPARATOR, guardIdOf, isFrozenIdentifier } from '../catalogue/identifier.ts'
+
 import type { SuiteCensus } from './census.ts'
 import { censusFaults, censusFor } from './census.ts'
 
@@ -234,17 +236,13 @@ export type RunResult = {
  * and 467 stopped being the number of guard titles some time before anybody noticed - a count in
  * prose survives the data it counted and becomes the one part of the sentence that is false. What
  * the claim is about is *none*, which does not drift.
+ *
+ * **The shape and the separator are imported rather than restated**, which closes the debt
+ * `catalogue/identifier.ts` recorded against this file. What forced it is that a second folder began
+ * reading a guard title: `cli/breakage.test.ts` resolves the guard each declared refusal names, and a
+ * third copy of one rule is how the three come to disagree.
  */
-const GUARD_SEPARATOR = ' :: '
-
-/** Kebab-case, exactly as a case of block 4.4 - the same shape for the same reason. */
-const GUARD_IDENTIFIER = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-
-export const guardIdOf = (title: string): string => {
-  const at = title.indexOf(GUARD_SEPARATOR)
-
-  return at === -1 ? title : title.slice(0, at)
-}
+/* The identifier shape and the separator are `catalogue/identifier.ts`'s, imported above. */
 
 /** A guard as the report identifies it: its address, its title, the block it sits in, and its file. */
 export type GuardIdentity = {
@@ -575,7 +573,7 @@ const measureCell = (
  */
 const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[]): void => {
   const ids = guards.map((guard) => guard.id)
-  const malformed = guards.filter((guard) => !GUARD_IDENTIFIER.test(guard.id))
+  const malformed = guards.filter((guard) => !isFrozenIdentifier(guard.id))
   const duplicated = [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))]
 
   if (malformed.length === 0 && duplicated.length === 0) return

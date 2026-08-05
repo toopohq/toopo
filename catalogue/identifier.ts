@@ -14,14 +14,38 @@
  * guard; an address is not a guard, and the registry must be able to state what an address looks like
  * without importing a test framework to do it.
  *
- * `mutation/run.ts` carries a third copy, under the name `GUARD_IDENTIFIER` and with a comment saying
- * it is the same shape for the same reason. It is not folded in here, and that is a debt rather than
- * a decision: the instrument was out of scope for the change that created this file.
+ * `mutation/run.ts` carried a third copy of the shape and its own copy of the separator, recorded here
+ * as a debt rather than a decision because the instrument was out of scope for the change that created
+ * this file. It imports both from here now: a second folder began reading a guard title, and a rule
+ * stated in three places is one that comes to disagree with itself.
  */
 
 export const FROZEN_IDENTIFIER = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export const isFrozenIdentifier = (candidate: string): boolean => FROZEN_IDENTIFIER.test(candidate)
+
+/**
+ * What separates a guard's address from its sentence, and the reading of a title that uses it.
+ *
+ * ASCII on purpose, and it cannot occur inside an identifier because an identifier has no spaces - so
+ * the split cannot be wrong. An em dash reads better and would have been the first non-ASCII code
+ * point in any title in the repository.
+ *
+ * **It lives here because two folders now read a guard title and neither owns the rule.** The
+ * instrument reads one to address a cell; `cli/breakage.test.ts` reads one to resolve the guard a
+ * declared refusal names. A rule stated in two places is a rule that comes to disagree with itself,
+ * and the header of this module already describes this exact shape in prose for `CaseGroup` - so
+ * holding it as code is the smaller change, not the larger one. The debt this module recorded against
+ * `mutation/run.ts` carrying its own copy is closed by that file importing this one.
+ */
+export const GUARD_SEPARATOR = ' :: '
+
+/** The address half of a guard's title, which is the whole title when it carries no sentence. */
+export const guardIdOf = (title: string): string => {
+  const at = title.indexOf(GUARD_SEPARATOR)
+
+  return at === -1 ? title : title.slice(0, at)
+}
 
 /**
  * One group of a table of block 4.4: an address, and the sentence a reader sees above the cases.
