@@ -670,7 +670,7 @@ const mutants: readonly Mutant[] = [
       '`number/parse@1` settles a case on is read back as a different character entirely',
     [readLiteralFile(A_CODE_POINT_IS_HEXADECIMAL, `  const code = Number.parseInt(digits, 10)`)],
     killed([
-      'two-inputs-that-look-alike-are-read-apart',
+      'an-invisible-character-is-read-back-as-the-character-it-names',
       'a-code-point-above-the-basic-plane-survives-the-round-trip',
       'every-case-the-registry-serves-is-read-back-from-the-literal-its-page-publishes',
     ]),
@@ -792,6 +792,7 @@ export const battery: Battery = {
         'a-quote-and-a-backslash-are-escaped-before-anything-else',
         'nesting-does-not-widen-the-gap-between-two-blocks',
         'nothing-but-the-local-adapter-reaches-the-serialisation',
+        'the-gap-between-two-blocks-does-not-widen-with-nesting',
       ],
     },
   ],
