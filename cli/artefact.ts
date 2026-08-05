@@ -198,6 +198,15 @@ export const artefactFaults = (value: unknown): readonly string[] => {
   ]
 }
 
+/**
+ * Refused cleanly, and deliberately not an entry in `WHAT_BREAKS`.
+ *
+ * That list is *what happens to a real project*, and every situation in it is a state the user's own
+ * project is in: a file already there, a file they edited, a lockfile from an older `toopo`, a path
+ * with a space. An artefact that is missing or unreadable is none of those - it is a defect in the
+ * archive, which is why the sentence below says so in as many words. Filing it beside the others
+ * would blur a list whose whole value is that it is about the person using the tool.
+ */
 export class UnusableArtefact extends Error {
   constructor(faults: readonly string[]) {
     super(
