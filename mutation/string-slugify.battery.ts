@@ -334,15 +334,22 @@ const behaviour: readonly Mutant[] = [
       'deletes the marks silently, this one splits the word at each of them - and the pair is here ' +
       'because a contract that caught one and not the other would be catching a symptom',
     [reference(KEPT, `const KEPT = /[\\p{L}\\p{Nd}]/u`)],
+    /**
+     * **P1 is not pinned here, and the reason is structural rather than statistical.** It polices
+     * `unify` and `fold` - `POLICED` in `properties.test.ts` says so - and this mutant breaks
+     * `keep`, which is P4 and P6. Its table of equivalent spellings is blind to this defect at 0 of
+     * 200 000 draws, and cannot stop being: `unify` is NFKC, so a bare mark is composed onto its
+     * base before `keep` runs, and a mark that survives composition is one the rule *keeps* rather
+     * than a second spelling of anything.
+     *
+     * What red it did produce came from the general-purpose `anySymbol` branch happening to drop a
+     * non-composing mark beside a letter - measured at 0.470% of draws, so 59 runs in 60 under a
+     * thousand draws, and a green every 110 runs. Pinning it bought a cell that disagrees under
+     * *expected killed, measured killed* about once a fortnight. G-07 dropped the same guard two
+     * mutants above for the symptom; this drops it for the cause.
+     */
     {
-      'as-committed': killed([
-        AN_INDIC_MARK,
-        A_MARK_ACROSS,
-        A_MARK_KEPT,
-        PROFILE_OTHER_WRITING,
-        SPELLINGS,
-      ]),
-      // Same as G-07: P1 is red on most runs and not all, so the profile carries this cell.
+      'as-committed': killed([AN_INDIC_MARK, A_MARK_ACROSS, A_MARK_KEPT, PROFILE_OTHER_WRITING]),
       'table-blind': killed([PROFILE_OTHER_WRITING]),
     },
   ),

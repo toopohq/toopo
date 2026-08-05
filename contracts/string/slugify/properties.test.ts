@@ -66,10 +66,28 @@ const DISCARDED = [' ', '-', '_', '!', '.', '/', '&', '€', '🎉', LONE_HIGH_S
 /**
  * Pairs of spellings the rule is required to unify: a rich form and the plain form it folds to.
  *
- * This is how P1 tests the `unify` and `fold` steps without holding a copy of the fold. Each pair
- * is two ways of writing one thing - a compatibility form beside its ordinary spelling, a
- * precomposed letter beside its base - and the property is that a text built from the left column
- * and the same text built from the right column answer one slug.
+ * This is how P1 tests the `unify` and `fold` steps without holding a copy of the fold. Three kinds,
+ * and the support guard at the end of this file partitions the table rather than counting it: a
+ * compatibility form beside its ordinary spelling, a precomposed letter beside its base, and an
+ * upper-case letter beside its lower one. The property is that a text built from the left column and
+ * the same text built from the right column answer one slug.
+ *
+ * **A decomposed entry was proposed, measured, and refused**, and it is recorded here so that the
+ * next reader does not repeat the detour. It was proposed to make this table catch `G-14` of
+ * `string-slugify`, the mutant that stops keeping marks - against which these pairs are blind at
+ * 0 of 200 000 draws. It cannot: `unify` is NFKC, which *composes*, so `e` followed by a combining
+ * acute is already `é` before the `keep` step this mutant breaks ever runs. A mark only survives to
+ * `keep` when it does not compose onto its base, and a mark that survives is a mark the rule *keeps*
+ * rather than two spellings of one thing - so a table of equivalent spellings cannot reach that
+ * mutant at all. `POLICED` below says the same thing in one line: P1 polices `unify` and `fold`, and
+ * `keep` is P4 and P6.
+ *
+ * Measured with the entry added: 0 of 100 000 against `G-14`, unchanged, and *fewer* catches on the
+ * mutants P1 does police - 35 487 against 38 142 for `unify -> NFKD`, 80 700 against 83 995 for
+ * `unify -> NFC` - because a tenth entry dilutes the nine. The canonical-composition half of NFKC is
+ * already exercised by the precomposed column, from the other direction, which is what those two
+ * figures are. And the decomposed input itself is settled where it belongs, by the named case
+ * `a-decomposed-diacritic-folds-alike` of block 4.4.
  */
 const EQUIVALENT_SPELLINGS = [
   ['é', 'e'],
@@ -523,6 +541,27 @@ describe('string/slugify@1 property preconditions', () => {
       (symbol) => /\p{L}/u.test(symbol) && symbol.length === 2 && [...symbol].length === 1,
     )
 
+    // The spelling table is partitioned rather than sized. `equivalentSpellings` was the one entry
+    // here that was a total where every other is a region, and four regions counted can be the four
+    // wrong ones where a partition cannot: a size stays 9 while every kind in the table changes. No
+    // battery mutant produces that change - a battery injects into `reference.ts` and cannot reach a
+    // generator's coverage - and a person editing this table produces it in one line. An unforeseen
+    // kind lands under `unclassified`, which no expectation names, so the assertion fails naming it.
+    const spellingKind = (rich: string, plain: string): string => {
+      if (/\p{M}/u.test(rich)) return 'decomposed'
+      if (rich.normalize('NFKC') !== rich.normalize('NFC')) return 'compatibility'
+      if ([...rich.normalize('NFD')].length > 1) return 'precomposed'
+      if (rich.toLowerCase() === plain) return 'caseOnly'
+
+      return 'unclassified'
+    }
+
+    const spellings: Record<string, number> = {}
+    for (const [rich, plain] of EQUIVALENT_SPELLINGS) {
+      const kind = spellingKind(rich, plain)
+      spellings[kind] = (spellings[kind] ?? 0) + 1
+    }
+
     expect({
       marksThatCompose: marksThatCompose.length,
       marksThatDoNot: marksThatDoNot.length,
@@ -530,7 +569,7 @@ describe('string/slugify@1 property preconditions', () => {
       lettersThatDoNot: lettersThatDoNot.length,
       astralLetters: astralLetters.length,
       discarded: DISCARDED.length,
-      equivalentSpellings: EQUIVALENT_SPELLINGS.length,
+      spellings,
     }).toEqual({
       marksThatCompose: 1,
       marksThatDoNot: 3,
@@ -538,7 +577,7 @@ describe('string/slugify@1 property preconditions', () => {
       lettersThatDoNot: 11,
       astralLetters: 1,
       discarded: 11,
-      equivalentSpellings: 9,
+      spellings: { precomposed: 4, compatibility: 4, caseOnly: 1 },
     })
   })
 })

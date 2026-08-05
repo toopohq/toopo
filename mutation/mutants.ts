@@ -75,12 +75,31 @@ export const edgeCases = (find: string, replace: string): Edit => ({
  * that it moves in both directions is the evidence that five is a convention rather than a
  * consequence.
  *
- * **A pin names what is red on every run, not what is red on this one.** Naming all of a set of five
- * is the rule; naming a guard whose red depends on the seed is a battery that fails on the seed.
- * Measured on `string/levenshtein@1`: L-05 reddens three guards and two are pinned, because the third
- * needs a pair the arbitraries draw on 0.221% of runs and is therefore red on 175 runs out of 200.
- * The intersection over four runs is what a pin should carry, and it is cheap to take - the
- * instrument's `--only` flag runs one mutant in seconds.
+ * **A pin names what is red on every run, not what is red on this one** - and for a guard built on a
+ * re-drawn property that sentence is unreachable as written, which is worth saying rather than
+ * pretending it is met. Such a guard has no determinism to offer: it has a *miss rate*. So the
+ * usable rule is that **a pin on a property-based guard carries its measured miss rate, and is
+ * legitimate only when that rate is unobservable over the lifetime of the project.** A rate of one
+ * green in 110 runs is met every fortnight, and a pin met by a green every fortnight teaches its
+ * reader to ignore the red - which is the one way this instrument is destroyed. Naming the figure
+ * beats asserting a determinism that does not exist.
+ *
+ * **Before measuring a rate, check that the guard polices the step the mutant breaks.** Skipping
+ * this is how the rule above gets misapplied: `G-14` of `string-slugify` pinned P1, whose table of
+ * equivalent spellings is blind to it at 0 of 200 000 draws and cannot stop being - P1 polices
+ * `unify` and `fold`, and that mutant breaks `keep`. Its 0.470% of catching draws was the
+ * general-purpose alphabet having an accident. Without this step first, a rate gets optimised for an
+ * accident; with it, there is no rate to measure, only a pin to drop.
+ *
+ * The method, three minutes for any pair of mutant and pin, and it is the validation that makes it
+ * worth anything rather than the code: inject the mutant, reproduce the generator beside it, check
+ * the reproduction against a series of real runs before believing it, then read the rate. Measured
+ * on `G-14`: a reproduction predicting 0.89% against 1 green in 60 real runs - agreeing, which is
+ * what earned the 200 000-draw figure the right to be quoted.
+ *
+ * The older measurement stands and is the same shape. On `string/levenshtein@1`, L-05 reddens three
+ * guards and two are pinned, because the third needs a pair the arbitraries draw on 0.221% of runs
+ * and is therefore red on 175 runs out of 200.
  *
  * **A pin names an identifier, never a title.** `run.ts` states the rule; the consequence here is
  * that rewording the sentence a guard shows in the runner's output leaves every pin standing, and

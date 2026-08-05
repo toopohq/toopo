@@ -830,6 +830,48 @@ response cites one, a URL anchors on one — and an address that changes breaks 
 an alias, no answer cites one, and correcting one breaks nobody's code. It is curation, so it is
 repaired the day it is found and does not cost `name@2`.
 
+## What a pin on a re-drawn property may claim — settled
+
+**A property that re-draws its generations has no determinism to offer, only a miss rate.** So the
+rule `mutants.ts` states — *a pin names what is red on every run* — is unreachable as written for such
+a guard, and pretending it is met is what produced `G-14`. The usable form: **a pin on a
+property-based guard carries its measured miss rate, and is legitimate only when that rate is
+unobservable over the lifetime of the project.** One green in 110 runs is met every fortnight, and a
+pin met by a green every fortnight teaches its reader to ignore the red — the one known way to destroy
+this instrument. A named figure beats an asserted determinism that does not exist.
+
+**And the first step is not the rate. It is whether the guard polices the step the mutant breaks.**
+`G-14` stops `keep` keeping marks, and it pinned P1, which `POLICED` declares for `unify` and `fold`.
+P1's table of equivalent spellings is blind to it at **0 of 200 000 draws** and cannot stop being:
+`unify` is NFKC, so a bare mark is composed onto its base before `keep` runs, and a mark that survives
+composition is one the rule *keeps* rather than a second spelling of anything. Its 0.470% of catching
+draws was the general-purpose alphabet having an accident. **Without this step, a rate is optimised for
+an accident; with it, there is no rate to measure and only a pin to drop.** The pin is dropped on that
+argument rather than on its 59-in-60.
+
+**The detour is recorded because it was expensive and it looked right.** Widening the spelling table
+with a decomposed entry was proposed, built, and measured: 0 of 100 000 against `G-14`, unchanged, and
+*fewer* catches on the two mutants P1 does police — 35 487 against 38 142, 80 700 against 83 995 —
+because a tenth entry dilutes the nine. A symbol added to a frozen alphabet with no red in front of it
+is decorative in this repository's exact sense. It was reverted, and the refusal now lives in the
+table's own comment so the next reader does not repeat it.
+
+**What separates a guard worth keeping from a symbol worth reverting, and it is measurable rather than
+doctrinal: a guard whose failure has been observed on its real condition is kept, even when no battery
+mutant can produce that condition; a guard with no red at all is not.** The partition of
+`support-the-texts-reach-every-region` is the first case — it replaced a `.length` with the three kinds
+the table holds, and it was seen red twice, on an entry silently changing kind and on a kind nobody
+foresaw. No mutant produces either, and none can: a battery injects into `reference.ts` and cannot
+reach a generator's coverage. A person editing that table produces both in one line. It is the census's
+own argument, arriving on an arbitrary.
+
+**The method survives and the script does not**, because the validation is what made it worth
+anything. Inject the mutant, reproduce the generator beside it, **check the reproduction against a
+series of real runs before believing it**, then read the rate. On `G-14` the reproduction predicted
+0.89% and 60 real runs gave 1 green — agreeing, which is what earned the 200 000-draw figure the right
+to be quoted. Three minutes for any pair of mutant and pin, and it is written in `mutants.ts` where
+whoever is about to pin something will be reading.
+
 ## Which commands ask twice — settled
 
 **A command that can destroy or overwrite shows first and writes on a second word. A command that can
@@ -1024,21 +1066,12 @@ while the list does not. The remedy costs two sentences, and this section is its
   needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
   to buy a check that would still be matching words against prose. Looked for, priced, and declared
   rather than dressed as a mechanism — which is the treatment this list exists to give.
-- **The rule that a pin names what is red on every run**, stated on L-05 in `mutants.ts` and kept by
-  nothing: a battery sees one draw, so every pin is checked against the run that wrote it. The one
-  instance is `G-14` of `string-slugify`, whose `as-committed` cell pins `p1-two-spellings-one-slug` —
-  a guard that needs a draw where a rich spelling meets a stacked mark. `G-07`, two mutants above,
-  leaves that same guard out of both its cells and says why in a comment, so the repair is one line and
-  the rule was already known when the pin was written. **What makes it serious is the direction it
-  fails in**: a draw that does not redden it makes the cell disagree under `expected killed, measured
-  killed`, the false red the pre-flight was built to stop manufacturing — and a pin that reddens four
-  times out of five trains its reader to ignore the red, which is the only known way to destroy this
-  instrument. It is not repaired in pencil: a pin edited on a guess is the same defect facing the other
-  way, and `mutants.ts` prices the honest repair at four targeted reruns, which `--only` takes in
-  seconds. Closing the *class* is the same four runs of every cell, so the 23-minute replay taken four
-  times. Recorded rather than corrected, and the entry carries what is re-derivable and what is not:
-  the replay at `277a637` has it red on both cells of `G-14`, which is exactly what makes an
-  intermittent pin invisible; the run on which it stayed green is not one this repository can name.
+- **The rule that a pin names what is red on every run**, stated on L-05 in `mutants.ts`, whose
+  *instance* closed and whose *class* stays open. The instance was `G-14` of `string-slugify` pinning
+  `p1-two-spellings-one-slug`; that pin is gone and the section below says on what argument. What no
+  mechanism keeps is the general case: a battery sees one draw, so any pin is still checked against
+  the run that wrote it, and closing that would mean four runs of every cell — the 23-minute replay
+  taken four times. Priced, declared, and not built.
 
 **Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever
