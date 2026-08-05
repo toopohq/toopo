@@ -440,18 +440,27 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
     cells: [{ mutant: 'FX-1', verdict: 'killed', kind: 'defect' }],
   })
 
-  it('refuses a total taken over a set of artefacts that is not one replay of this commit', () => {
-    const complete = [measuredAt(2_000)]
+  const COMPLETE = [measuredAt(2_000)]
+  const COMMITTED_AT = 1_000
 
-    expect(scoreFaults(['fixture'], complete, [], 1_000)).toEqual([])
+  it('accepts the one set of artefacts that is a whole replay of this commit', () => {
+    expect(scoreFaults(['fixture'], COMPLETE, [], COMMITTED_AT)).toEqual([])
+  })
 
-    expect(scoreFaults(['fixture', 'site'], complete, [], 1_000).join('\n')).toMatch(
+  it('refuses a total missing a battery, which would silently be a total of the others', () => {
+    expect(scoreFaults(['fixture', 'site'], COMPLETE, [], COMMITTED_AT).join('\n')).toMatch(
       /site declares a battery and wrote no result/,
     )
-    expect(scoreFaults(['fixture'], complete, ['site.partial.json'], 1_000).join('\n')).toMatch(
+  })
+
+  it('refuses a total taken while a filtered run was writing beside it', () => {
+    expect(scoreFaults(['fixture'], COMPLETE, ['site.partial.json'], COMMITTED_AT).join('\n')).toMatch(
       /site\.partial\.json is a partial run/,
     )
-    expect(scoreFaults(['fixture'], [measuredAt(500)], [], 1_000).join('\n')).toMatch(
+  })
+
+  it('refuses an artefact older than the commit it would describe', () => {
+    expect(scoreFaults(['fixture'], [measuredAt(500)], [], COMMITTED_AT).join('\n')).toMatch(
       /fixture was measured before the commit it would describe/,
     )
   })
