@@ -112,6 +112,12 @@
  * that adds guards to files that already exist touches only their entries. The page itself has no
  * test file of its own on purpose: what it publishes is checked where the pages are checked and where
  * the port is checked, because that is what those guards are about.
+ *
+ * A ninth on the archive, and it is the first taken by a unit that wrote no guard at all. `packaging/`
+ * already had its fifteen and no battery; giving them one added a **seventh configuration** with two
+ * entries and moved nothing else, because a battery is not collected by any suite. That is the shape
+ * of every later unit that closes this same debt elsewhere, and it is the cheapest entry this file
+ * will ever gain.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -196,6 +202,11 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'site/playground.test.ts': 10,
     'site/read-literal.test.ts': 10,
     'site/source.test.ts': 8,
+  },
+
+  'packaging/vitest.config.ts': {
+    'packaging/archive.test.ts': 7,
+    'packaging/freeze.test.ts': 8,
   },
 
   'mutation/fixture/vitest.config.ts': {

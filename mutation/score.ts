@@ -39,7 +39,7 @@ export type MeasuredCell = {
   /**
    * `arm/lens`, which is what makes this a cell rather than a mutant.
    *
-   * Six of the eighteen batteries read their contract through two lenses, so one mutant is two cells
+   * A battery may read its contract through two lenses, so one mutant is two cells
    * and they can disagree - that difference is the whole measurement the error convention was decided
    * on. A surviving list addressed by `battery/mutant` prints those two as one string twice, which
    * reads as a rendering bug rather than as two results. Seen in the first output this tool produced.

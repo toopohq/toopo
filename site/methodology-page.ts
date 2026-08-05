@@ -13,7 +13,7 @@
  *
  * What that forbids in practice is prose carrying numbers. Every figure below is computed at build
  * time from two values - `servedMethodology()` through the port, and `theMeasurement()` over the
- * eighteen batteries - and nothing is transcribed. A figure typed into a paragraph is true on the day
+ * batteries - and nothing is transcribed. A figure typed into a paragraph is true on the day
  * it is typed and goes false silently, which is the failure this repository has caught in its own
  * documentation four times.
  *

@@ -12,7 +12,7 @@
  *
  * So this reads the other half, which is committed: **what a cell must produce is pinned in its
  * battery**, and `measure.ts` exits non-zero on any cell that disagrees. Anybody with a checkout
- * re-derives every figure below from the same eighteen files, and the derivation moves the day a
+ * re-derives every figure below from the batteries themselves, and the derivation moves the day a
  * battery does.
  *
  * ---------------------------------------------------------------------------
@@ -53,6 +53,7 @@ import { battery as dateAdd } from './date-add.battery.ts'
 import { battery as fixture } from './fixture.battery.ts'
 import { battery as numberParseSpec } from './number-parse-spec.battery.ts'
 import { battery as numberParse } from './number-parse.battery.ts'
+import { battery as packaging } from './packaging.battery.ts'
 import { battery as registryStorage } from './registry-storage.battery.ts'
 import { battery as site } from './site.battery.ts'
 import { battery as stringLevenshteinSpec } from './string-levenshtein-spec.battery.ts'
@@ -82,6 +83,7 @@ export const THE_BATTERIES: readonly Battery[] = [
   fixture,
   numberParseSpec,
   numberParse,
+  packaging,
   registryStorage,
   site,
   stringLevenshteinSpec,

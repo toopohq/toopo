@@ -512,7 +512,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   /**
    * A mutant read through two lenses is two cells, and the surviving list has to say which.
    *
-   * Six of the eighteen batteries carry a second lens, so this is not a corner: the first output this
+   * A battery may carry a second lens, so this is not a corner: the first output this
    * tool produced printed `number-parse/P-02` twice on one line, which reads as a rendering fault
    * rather than as two results that could have disagreed and did not.
    */
