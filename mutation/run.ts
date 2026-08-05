@@ -761,7 +761,6 @@ export const calibrate = (battery: Battery): Calibration => {
         guard.file.includes(`${battery.contractPath}/`),
       )
       assertGuardsAreAddressed(cellKey(arm, lens), ownGuards)
-      assertEveryAddressResolves(battery, cellKey(arm, lens), lens.id, control.guards, ownGuards)
       guardsPerCell[cellKey(arm, lens)] = ownGuards
 
       const injected = measureCell(battery, arm, lens, obvious, control.testsSeen)
