@@ -163,17 +163,22 @@ a guard identifier already are: the registry will cite it in a benchmark figure,
 a URL anchor, and a validation report will name the profile a submission failed. It was already an
 address in fact — the five specification batteries pin `profile-<name>` identifiers and one of them
 documents `profile-identical` as *the address* in as many words — and it was the only derived
-identifier in the catalogue that nothing declared frozen. Twenty-eight guards were left alone: the gap
-was the missing declaration, not the names.
+identifier in the catalogue that nothing declared frozen. No guard was touched: the gap was the
+missing declaration, not the names. That sentence used to publish a count of the guards left alone,
+and the count was wrong by one before anybody read it back — a state does not drift where a tally
+does, which is the rule this file already carries and had not applied to itself here.
 
-**And the freeze is a policy, not a mechanism, which is said here rather than discovered later.** A
-mutant that renames a profile still renames the guard built from it. Where a battery pins that
-identifier the rename is caught, because the pinned `by` no longer matches; where it only appears in a
-silence declaration, what the rename produces is a declaration naming nothing and a new unaccounted
-silence. Neither is a guard over the freeze itself. `benchmarks.profiles[].name` is therefore
-classified `one-directional` in `field-map.ts` — a real declaration that nothing here enforces — and
-what closes the class for every address at once is the pre-flight refusal of a pin naming a guard no
-guard carries, recorded in the launch debts below.
+**The freeze was a policy rather than a mechanism when this was written, and the pre-flight made it
+one.** A mutant that renames a profile still renames the guard built from it: all five
+`profiles.test.ts` construct the title in a loop over `benchmarkProfiles`, so no title is ever left
+behind and **a guard resolving the record against those titles could not fail** — which is what
+disqualifies the obvious mechanism rather than any argument about its worth. What is resolved instead
+is what a *battery* names, and both spellings this paragraph once called unguarded — a pin that stops
+matching, a silence declaration naming nothing — are refused in `calibrate()` before a verdict exists.
+Measured at `277a637`: the five declare **27** profiles, the suite collects **27** guard titles
+`profile-<name>`, and **27 of 27** are named by a battery, so every one resolves.
+`benchmarks.profiles[].name` stays `one-directional` in `field-map.ts` for its **other** half — a name
+makes a claim about its own samples that no guard reads — and that half is in the launch debts below.
 
 **Uniqueness is per contract.** The instrument can only break inside a contract — a battery injects
 into one folder, and attribution already filters guards to the contract under measurement — and the
@@ -945,6 +950,19 @@ like a rule, with nothing making it hold.** The vocabulary for it already exists
 close. A published version is frozen for life, so a declaration that is decorative at launch is
 decorative for ever.
 
+**An entry is written in two halves, and the reason is that three times in one week a published
+sentence of this repository was false — twice with the true sentence and the false one in the same
+file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
+while the list does not. The remedy costs two sentences, and this section is its own demonstration:
+*Guard identifiers* above named the pre-flight as the thing that would close
+`benchmarks.profiles[].name`, the pre-flight was built, and nobody came back here.
+
+1. **An entry names what would close it.** One that names no closing mechanism cannot be recognised on
+   the day it closes, which is exactly how the entry below outlived its own closure.
+2. **The change that builds such a mechanism sweeps this list for every entry naming it, and closes
+   them in the same commit.** The mechanism and the entry are one event; separating them is what
+   leaves the false half of a true sentence lying where somebody will read it.
+
 **Closed by stage 1 of the validation pipeline.**
 
 - `staticAnalysisRequirements` of `date/add@1` — stage 1 reads the twenty forbidden local-time methods
@@ -969,9 +987,18 @@ decorative for ever.
 - `CLOCK_DEPENDENCE_RULE` — declared, cited in prose, imported by nothing executable. It is one of the
   four a reader keeps: which guards *can* depend on elapsed time is a judgement about what a defect
   could do to a guard.
-- `benchmarks.profiles[].name` — frozen by the section above, enforced by nothing.
+- `benchmarks.profiles[].name`, **the content half of it and no longer the address half.** The
+  address is closed and is recorded below with the mechanism that closed it. What stays open is that a
+  profile's name makes a claim about its own samples that no guard reads: measured by leaving
+  `small-integers` named `small-integers` and classed `accepted` while its samples became
+  `['1e308', '0.000000000000001', '-1e-300']`, not one of them a small integer — 472 of 472 green in
+  `contracts/`, and the one red in `registry/` was `the-served-bytes-are-the-committed-bytes` noticing
+  that bytes had moved at all. It is GS-11's shape on a second field, so it closes where the two below
+  close: the validation pipeline, the only thing that will ever read a declared name against what it
+  describes.
 - `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
-  `one-directional` fields the schema already carried, with GS-11 as the measurement.
+  `one-directional` fields the schema already carried, with GS-11 as the measurement. Closed by the
+  validation pipeline, for the reason the entry above closes there.
 - **The rule that an alias must not name what its contract refuses to be.** The eight liars are gone
   and the criterion is in `catalogue/every-contract.ts`, but nothing keeps it: the executable form
   needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
@@ -1027,6 +1054,26 @@ it reddens where the repository's own rule says name all of a set of five or few
 **The class is closed. An address a battery names is resolved in `calibrate()`, against the guards the
 run really collected, before a single verdict exists.** It costs the seconds a control run costs rather
 than the twenty-odd minutes a battery does.
+
+**And it closed a listed entry, which is the first application of the rule at the head of this
+section — applied late, which is how the rule was found.** `benchmarks.profiles[].name` sat in the
+list reading *frozen by the section above, enforced by nothing* while this paragraph, two screens
+down, said the class was closed: two statements of one fact in one file, and it is always the list
+that lies. Measured at `277a637`: the five contracts declare **27** profiles, the suite collects **27**
+guard titles `profile-<name>`, and **27 of 27** are named by a battery — so the address half resolves
+for every one of them. The content half stayed in the list and now says what it is.
+
+**Nothing was built on top of it, and the measurement is what refused it rather than a preference.**
+The obvious guard — resolve a record's profile names against the guard titles the suite carries — is
+structurally incapable of failing, because all five `profiles.test.ts` build the title in a loop over
+`benchmarkProfiles`: renaming `long-inputs` in the record produced `profile-long-inputs-RENAMED` and
+six green tests, with nothing left behind to catch. A second guard resolving what the **batteries**
+name, at the suite's cadence instead of the pre-flight's, genuinely would fail — and it would catch
+the same fault twenty-three minutes earlier, which is the one costume this repository cannot argue
+with: two guards over one fault have no answer to *which of us is right* on the day they disagree. It
+is the class this file spent months removing from its prose, and putting it into executable code would
+be worse, because a comment that contradicts another is read by a person and two guards that
+contradict each other are read by nobody until one goes red.
 
 **Both halves were measured before the mechanism was written**, at `82d09a7`, by putting back the two
 mistakes this repository had already made and corrected before measuring — and neither outcome is the

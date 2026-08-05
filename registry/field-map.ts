@@ -190,10 +190,24 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
    * from a mutant. A profile's name is frozen with the major - the registry cites it in a benchmark
    * figure, the site anchors on it, a validation report names the profile a submission failed - and
    * it was already an address in fact, since the five specification batteries pin `profile-<name>`
-   * identifiers. Nothing enforces the freeze. A mutant that renamed a profile would rename the guard
-   * built from it; where a battery pins that identifier the rename is caught by the pin no longer
-   * matching, and where it only appears in a silence declaration what comes out is a declaration
-   * naming nothing beside a new unaccounted silence. Neither is a guard over the freeze.
+   * identifiers.
+   *
+   * **The address half is closed, and this comment used to end by saying it never would be.** Both
+   * spellings it named as unguarded - a pin caught only by no longer matching, and a silence
+   * declaration naming nothing - are what `assertEveryAddressResolves` refuses in `calibrate()`,
+   * before a verdict exists. Measured at `277a637`: the five declare 27 profiles and 27 of 27 are
+   * named by a battery, so every one resolves. A mutant that renames a profile still renames the
+   * guard built from it, which is why the resolution reads what a battery names and not what the
+   * suite collects: `profiles.test.ts` builds the title from this very field, so the two can never
+   * disagree.
+   *
+   * **What keeps the classification is the other half, and it is GS-11's shape on a second field: a
+   * name makes a claim about its own samples that no guard reads.** Measured by leaving
+   * `small-integers` named and classed `accepted` while its samples became `['1e308',
+   * '0.000000000000001', '-1e-300']`, not one of them a small integer - 472 of 472 green in
+   * `contracts/`, and the one red in this folder was `the-served-bytes-are-the-committed-bytes`
+   * noticing that bytes had moved at all. The declared value may disagree with what the guards keep,
+   * and nothing sees it. It closes with the validation pipeline or not at all.
    */
   'benchmarks.profiles[].name': { visibility: 'public', verification: 'one-directional' },
   'benchmarks.profiles[].description': { visibility: 'public', verification: 'documentary' },
