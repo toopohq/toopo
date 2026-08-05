@@ -71,6 +71,8 @@ const methodFile = (find: string, replace: string) => ({
   find,
   replace,
 })
+const indexingFile = (find: string, replace: string) => ({ file: 'indexing.ts', find, replace })
+const siteFile = (find: string, replace: string) => ({ file: 'site.ts', find, replace })
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -182,6 +184,20 @@ const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove')
 const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`
 
 const THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS = `    paragraph(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]),`
+
+const EVERYTHING_IS_READABLE = `  ['User-agent: *', 'Allow: /', '', \`Sitemap: \${THE_ORIGIN}/\${SITEMAP}\`, ''].join('\\n')`
+
+const THE_SITEMAP_IS_THE_PAGES = `  theCrawlerFiles([...pages.keys()])`
+
+const A_LINK_IS_THE_FOLDER_AND_NOT_THE_FILE = `export const linkTo = (page: string): string => page.replace(/index\\.html$/, '')`
+
+const A_URL_LINE_CARRIES_NO_DATE = `    ...pages.map((page) => \`  <url><loc>\${escaped(urlOf(page))}</loc></url>\`),`
+
+const THE_ORIGIN_IS_WRITTEN_ONCE = `export const THE_ORIGIN = 'https://toopo.dev'`
+
+const XML_IS_ESCAPED = `    .replaceAll('&', '&amp;')`
+
+const THE_SITEMAP_IS_WHERE_A_CRAWLER_LOOKS = `export const SITEMAP = 'sitemap.xml'`
 
 const A_PAGE_IS_ADDRESSED_BY_ITS_CONTRACT = `export const pageOf = (address: ContractAddress): string => \`\${renderContract(address)}/index.html\``
 
@@ -903,6 +919,131 @@ const mutants: readonly Mutant[] = [
       'the whole page is written against',
     [methodFile(THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS, `    paragraph('Some of these are not holes.'),`)],
     killed(['every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-55 to W-63 - the two files nobody reads
+  // -------------------------------------------------------------------------
+  //
+  // Every defect below leaves a site that builds, renders, reads and links correctly. What it changes
+  // is whether any of it is ever found, which is a failure with no symptom at all until somebody
+  // notices, weeks later, that the catalogue is nowhere.
+
+  sameOnEveryLens(
+    'W-55',
+    'closes the site to every crawler. **It is the launch failure of this whole folder**: one word, ' +
+      'nothing breaks, every page still serves, every link still resolves, and the catalogue is ' +
+      'simply never indexed. It costs nothing to write by accident and everything to find late, and ' +
+      'the only thing standing between it and production is a guard that reads the file',
+    [indexingFile(EVERYTHING_IS_READABLE, `  ['User-agent: *', 'Disallow: /', '', \`Sitemap: \${THE_ORIGIN}/\${SITEMAP}\`, ''].join('\\n')`)],
+    killed(['robots-txt-lets-a-crawler-read-everything-and-names-the-sitemap']),
+  ),
+
+  sameOnEveryLens(
+    'W-56',
+    'leaves the method page out of the sitemap. The page is written, linked and served; it is only ' +
+      'invisible to whoever would have found it by searching - which is the half of the site that ' +
+      'has no reader coming to it from anywhere else',
+    [
+      siteFile(
+        THE_SITEMAP_IS_THE_PAGES,
+        `  theCrawlerFiles([...pages.keys()].filter((path) => !path.startsWith('method/')))`,
+      ),
+    ],
+    killed(['every-page-is-in-the-sitemap-and-nothing-else-is']),
+  ),
+
+  sameOnEveryLens(
+    'W-57',
+    'stops turning a page path into the folder it is served from, so every published URL names the ' +
+      'file instead. **It is the mutant that separates the two sitemap guards**: the set comparison ' +
+      'rebuilds what it expects with the very function this breaks, so it moves with the defect and ' +
+      'stays green, and only reading the URL back finds that it now names nothing a server has',
+    [pathsFile(A_LINK_IS_THE_FOLDER_AND_NOT_THE_FILE, `export const linkTo = (page: string): string => page`)],
+    killed(['every-url-in-the-sitemap-decodes-to-a-page-this-site-writes']),
+  ),
+
+  sameOnEveryLens(
+    'W-58',
+    'stamps every URL with the day the build ran. The protocol makes the field optional and this is ' +
+      'why: there is no date here that is not a fact about the machine, so a published file starts ' +
+      'carrying a machine-dependent value - and a crawler told a page changed today refetches it for ' +
+      'ever, while one told it changed a year ago may not come back at all',
+    [
+      indexingFile(
+        A_URL_LINE_CARRIES_NO_DATE,
+        `    ...pages.map(\n` +
+          `      (page) =>\n` +
+          `        \`  <url><loc>\${escaped(urlOf(page))}</loc><lastmod>\${new Date()\n` +
+          `          .toISOString()\n` +
+          `          .slice(0, 10)}</lastmod></url>\`,\n` +
+          `    ),`,
+      ),
+    ],
+    killed(['the-sitemap-carries-no-date-this-repository-cannot-derive']),
+  ),
+
+  sameOnEveryLens(
+    'W-59',
+    'writes the origin a second time, inside the one line that assembles a URL. It agrees with the ' +
+      'declaration on the day it is written, which is the whole difficulty: the two part company on ' +
+      'the day the address moves, and the copy that lies is the one in a published file',
+    [
+      indexingFile(
+        EVERYTHING_IS_READABLE,
+        `  ['User-agent: *', 'Allow: /', '', \`Sitemap: https://toopo.dev/\${SITEMAP}\`, ''].join('\\n')`,
+      ),
+    ],
+    killed(['the-origin-is-declared-once']),
+  ),
+
+  sameOnEveryLens(
+    'W-60',
+    'publishes each location relative to the origin rather than absolute. It reads perfectly and the ' +
+      'protocol requires otherwise, so a crawler is entitled to ignore the file entirely - which is ' +
+      'the same outcome as W-55 reached by a route that looks like tidying',
+    [
+      indexingFile(
+        A_URL_LINE_CARRIES_NO_DATE,
+        `    ...pages.map(\n` +
+          `      (page) => \`  <url><loc>\${escaped(urlOf(page).slice(THE_ORIGIN.length))}</loc></url>\`,\n` +
+          `    ),`,
+      ),
+    ],
+    killed(['every-url-a-crawler-is-given-is-absolute-and-on-the-published-origin']),
+  ),
+
+  sameOnEveryLens(
+    'W-61',
+    'stops escaping the ampersand, which no address in this catalogue holds today - and that is what ' +
+      'makes it worth a mutant rather than a comment: the escape is there for data that does not ' +
+      'exist yet, so nothing about the current output can tell whether it was dropped. The failure ' +
+      'it prevents is not a wrong character but a document a parser rejects whole',
+    [indexingFile(XML_IS_ESCAPED, `    .replaceAll('&', '&')`)],
+    killed(['a-path-that-would-break-the-xml-is-escaped']),
+  ),
+
+  sameOnEveryLens(
+    'W-62',
+    'names the second domain in a comment. It is a fact about DNS and not about this site, and the ' +
+      'moment it is written here it is a second statement of where the catalogue lives - kept in the ' +
+      'one place nobody edits when the first one changes',
+    [
+      indexingFile(
+        `export const robotsOf = (): string =>`,
+        `/** The second name redirects here: https://toopo.io */\nexport const robotsOf = (): string =>`,
+      ),
+    ],
+    killed(['the-generator-knows-of-no-domain-but-the-one-it-publishes-on']),
+  ),
+
+  sameOnEveryLens(
+    'W-63',
+    'serves the sitemap from a folder of its own, which is a perfectly good URL that no crawler ' +
+      'looks at. Both files are found by convention and by nothing else, so moving one is the same ' +
+      'as not writing it - and the robots line goes on naming it correctly, so nothing disagrees',
+    [pathsFile(THE_SITEMAP_IS_WHERE_A_CRAWLER_LOOKS, `export const SITEMAP = 'sitemap/index.xml'`)],
+    killed(['the-two-crawler-files-are-at-the-addresses-a-crawler-looks-for']),
   ),
 ]
 

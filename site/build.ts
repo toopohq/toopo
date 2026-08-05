@@ -35,7 +35,7 @@ const { THE_BROWSER_GRAPH, asABrowserModule, theReferenceModules } = await impor
 const { heldByTheRegistry } = await import('./catalogue.ts')
 const { toHtml } = await import('./document.ts')
 const { localSource } = await import('./local-source.ts')
-const { theSite } = await import('./site.ts')
+const { theCrawlerFilesOf, theSite } = await import('./site.ts')
 
 const OUT = join(import.meta.dirname, 'out')
 const ROOT = join(import.meta.dirname, '..')
@@ -73,9 +73,13 @@ const write = (path: string, contents: string): void => {
   process.stdout.write(`${String(bytes).padStart(7)} B  ${path}\n`)
 }
 
+const crawlerFiles = theCrawlerFilesOf(pages)
+
 for (const [path, page] of pages) write(path, toHtml(page))
 for (const [path, module] of modules) write(path, module)
+for (const [path, contents] of crawlerFiles) write(path, contents)
 
 process.stdout.write(
-  `${String(total).padStart(7)} B  ${pages.size} pages, ${modules.size} modules\n`,
+  `${String(total).padStart(7)} B  ${pages.size} pages, ${modules.size} modules, ` +
+    `${crawlerFiles.size} for crawlers\n`,
 )

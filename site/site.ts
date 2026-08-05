@@ -30,6 +30,7 @@ import type { Document } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
 import { contractPage } from './contract-page.js'
 import { heldByTheRegistry } from './catalogue.js'
+import { theCrawlerFiles } from './indexing.js'
 import { methodologyPage } from './methodology-page.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, pageOf } from './paths.js'
 import { refusalsPage } from './refusals-page.js'
@@ -50,3 +51,14 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
     ),
   ])
 }
+
+/**
+ * What a crawler reads, derived from what the site *is* rather than listed beside it.
+ *
+ * It takes the page map instead of the source, and that is the whole of why it lives here: a second
+ * function that rebuilt the pages could be given a different source, or a filtered one, and would
+ * publish a sitemap of a site nobody serves. Taking the map makes the sitemap a projection of exactly
+ * the thing `build.ts` writes, and the two cannot be about different sets.
+ */
+export const theCrawlerFilesOf = (pages: ReadonlyMap<string, Document>): ReadonlyMap<string, string> =>
+  theCrawlerFiles([...pages.keys()])

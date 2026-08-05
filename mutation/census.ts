@@ -190,6 +190,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 
   'site/vitest.config.ts': {
     'site/document.test.ts': 8,
+    'site/indexing.test.ts': 9,
     'site/literal.test.ts': 11,
     'site/pages.test.ts': 23,
     'site/playground.test.ts': 10,
