@@ -411,6 +411,7 @@ describe('comparing a project with what the registry serves now', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: first.writes,
         removals: first.removals,
+        leaving: null,
         lockfile: first.lockfile,
         configuration: null,
       })
@@ -583,6 +584,7 @@ describe('comparing a project with what the registry serves now', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: update.writes,
         removals: update.removals,
+        leaving: null,
         lockfile: update.lockfile,
         configuration: null,
       })
@@ -636,6 +638,7 @@ describe('comparing a project with what the registry serves now', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: update.writes,
         removals: update.removals,
+        leaving: null,
         lockfile: update.lockfile,
         configuration: null,
       })

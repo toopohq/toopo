@@ -43,6 +43,7 @@ import { renderCount } from './diff.js'
 import type { InstalledEntry, Installation } from './install.js'
 import type { Listing } from './list.js'
 import type { FeatureOutcome, FileOutcome, FileVerdict, Reconciliation } from './reconcile.js'
+import type { Relocation } from './relocate.js'
 import type { Removal } from './remove.js'
 import { listed } from './remove.js'
 import type { Displayed, Result, Search } from './search.js'
@@ -147,16 +148,69 @@ const commitAdvice = (
     ? [...paragraph(whatToCommit(configuration, ignores)).map((line) => `${INDENT}${line}`), '']
     : []
 
+/**
+ * Every file that moved, named one by one, and the one part of the work that is left to the user.
+ *
+ * **The lines are file by file because this is the tool moving things inside somebody else's
+ * repository.** A count would say how much and this has to say what: a folder change that reported *3
+ * files moved* would be more frightening than the truth and impossible to check.
+ *
+ * **The sentence about imports is not politeness, it is the whole reason this screen exists.** The
+ * user wrote `import { slugify } from './lib/toopo/...'` and that path has just stopped existing.
+ * Toopo never touches the user's own code, so nothing can repair it for them - and if this does not
+ * say so, their build fails on an import and nothing anywhere tells them why. That is the exact trap
+ * `whatToCommit` above is written for, one floor up, and it is worth the same sentence: **the one part
+ * of the work that stays theirs must not be the one part nobody mentions.**
+ *
+ * A file the lockfile claims and the disk does not hold is absent from these lines and from the count.
+ * It did not move, saying it did would be false, and `toopo update` is what puts it back - under the
+ * new folder, which is where it now belongs.
+ */
+const relocationLines = (relocation: Relocation, leftBehind: string | null): readonly string[] => {
+  const moved = relocation.moves.filter((move) => move.verdict !== 'not-on-disk')
+  if (moved.length === 0) return []
+
+  return [
+    `${INDENT}${relocation.from}  ->  ${relocation.to}`,
+    '',
+    // The two folders are named once and each file by the path they share, which is the path the
+    // lockfile records. Printing both sides on every line would repeat the move as many times as
+    // there are files and leave the reader comparing two long strings to find the one difference.
+    ...moved.map((move) => `${INDENT}  ~ ${move.path}`),
+    '',
+    `${INDENT}${moved.length} ${moved.length === 1 ? 'file' : 'files'} moved`,
+    ...(leftBehind === null
+      ? []
+      : [
+          '',
+          ...paragraph(
+            `${leftBehind}/ still holds something toopo did not put there, so it was left where ` +
+              `it is. Everything toopo had written is now under ${relocation.to}/.`,
+          ).map((line) => `${INDENT}${line}`),
+        ]),
+    '',
+    ...paragraph(
+      `Imports in your own code naming ${relocation.from}/ have to be changed to ` +
+        `${relocation.to}/ - toopo never reads or edits your sources, so this is the one part of ` +
+        `the move it cannot do for you.`,
+    ).map((line) => `${INDENT}${line}`),
+    '',
+  ]
+}
+
 export const renderInit = (
   configuration: Configuration,
   existed: boolean,
   ignores: boolean | null,
+  relocation: Relocation | null,
+  leftBehind: string | null,
 ): string =>
   [
     '',
     `${INDENT}${CONFIGURATION_FILE}  ${existed ? 'updated' : 'written'}`,
     `${INDENT}features    ${configuration.directory}`,
     '',
+    ...(relocation === null ? [] : relocationLines(relocation, leftBehind)),
     ...paragraph(whatToCommit(configuration, ignores)).map((line) => `${INDENT}${line}`),
     '',
     `${INDENT}Change the folder with  toopo init --dir <path>`,

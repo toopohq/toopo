@@ -174,6 +174,9 @@ describe('what breaks for somebody', () => {
       'a-copy-deduplicated-away-is-taken-with-the-entry-that-stops-claiming-it': 'update.test.ts',
       'every-file-missing-at-once-says-the-folder-is-not-committed': 'update.test.ts',
       'a-file-already-equal-to-what-we-would-write-is-not-a-conflict': 'update.test.ts',
+      'every-installed-file-moves-and-not-one-byte-changes': 'relocate.test.ts',
+      'a-destination-holding-something-else-refuses-the-whole-move': 'relocate.test.ts',
+      'the-folder-that-was-left-stays-when-it-holds-something-else': 'relocate.test.ts',
     })
   })
 

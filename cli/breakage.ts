@@ -244,6 +244,48 @@ export const WHAT_BREAKS: readonly Breakage[] = [
       'without the other.',
   },
   {
+    situation: 'the configured folder is changed while features are installed',
+    verdict: 'refused-cleanly',
+    guard: 'every-installed-file-moves-and-not-one-byte-changes',
+    detail:
+      'not a breakage at all, and the entry a reader would most expect to be one. **It used to be**: ' +
+      'the installed copy stayed where it was, claimed by nobody, because `toopo.lock` records each ' +
+      "file's path relative to the configured directory and never the directory itself - so the entry " +
+      'went on being valid and pointed somewhere else. `toopo list` then called every file missing, ' +
+      '`toopo update --apply` put a second copy in the new folder, and the first sat in the folder git ' +
+      'ignores where nothing would mention it again. It was found by following this tool\'s own advice: ' +
+      'the sentence above about an ignored folder says to pick one that is committed. **`init` is the ' +
+      'only command that can ever see both folders** - after it writes, the old path is recoverable ' +
+      'from nothing on disk - so it moves the tree itself. A renaming and no more: measured, the ' +
+      'lockfile comes out identical byte for byte, no import is repointed and no registry is asked. ' +
+      'The screen names every file and says the one part that stays the user\'s, which is the imports ' +
+      'in their own code.',
+  },
+  {
+    situation: 'the folder a change would move into already holds a file of that name',
+    verdict: 'refused-cleanly',
+    guard: 'a-destination-holding-something-else-refuses-the-whole-move',
+    detail:
+      'the other half of the entry above, and the same rule as the first entry of this list: a file ' +
+      'that is not ours is not overwritten, whatever is in it. The **whole** relocation is refused ' +
+      'rather than the offending file skipped, because a project half in one folder and half in ' +
+      'another is a state no command afterwards could describe. A destination already holding exactly ' +
+      'the bytes that were about to be written is the exception and is not a refusal - it is the move ' +
+      'already having happened, which is what a run killed between the renames and the removals leaves ' +
+      'behind, and without it the retry would be refused by the rule that exists to protect it.',
+  },
+  {
+    situation: 'the folder that was left still holds something the user put there',
+    verdict: 'refused-cleanly',
+    guard: 'the-folder-that-was-left-stays-when-it-holds-something-else',
+    detail:
+      'the emptied folder is taken, because the screen says the files moved and a folder carrying this ' +
+      "tool's name still sitting there contradicts it. One that is not empty is left alone and named. " +
+      'It is not the rule `emptiedFolders` carries in `write.ts`: `remove` and `update` must never ' +
+      'delete the configured folder, because it goes on being the configured folder - here it stops ' +
+      'being one, and an abandoned folder is not an emptied folder.',
+  },
+  {
     situation: 'the process is killed between the first file and the lockfile',
     verdict: 'refused-cleanly',
     guard: 'a-file-already-equal-to-what-we-would-write-is-not-a-conflict',

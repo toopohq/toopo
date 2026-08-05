@@ -45,11 +45,15 @@ describe('writing into somebody else project', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
 
-      expect(written).toEqual({ written: ['src/lib/toopo/string/pad/pad.ts', 'src/lib/toopo/number/sign/sign.ts'] })
+      expect(written).toEqual({
+        written: ['src/lib/toopo/string/pad/pad.ts', 'src/lib/toopo/number/sign/sign.ts'],
+        leftBehind: null,
+      })
       expect(project.installed('string/pad/pad.ts')).toBe('export const pad = 1\n')
       expect(readLockfile(project.root)).toEqual(EMPTY_LOCKFILE)
     })
@@ -64,6 +68,7 @@ describe('writing into somebody else project', () => {
       commit(project.root, project.configuration.directory, {
         writes: [A_FILE('export const pad = 1\n')],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -86,6 +91,7 @@ describe('writing into somebody else project', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -119,6 +125,7 @@ describe('writing into somebody else project', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: [A_FILE('export const pad = 2\n'), ANOTHER('export const sign = 2\n')],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -141,6 +148,7 @@ describe('writing into somebody else project', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: [A_FILE('export const pad = 1\n')],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -163,6 +171,7 @@ describe('writing into somebody else project', () => {
       commit(project.root, project.configuration.directory, {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -176,6 +185,7 @@ describe('writing into somebody else project', () => {
       commit(project.root, project.configuration.directory, {
         writes: [A_FILE('export const pad = 1\n'), ANOTHER('export const sign = 1\n')],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -183,6 +193,7 @@ describe('writing into somebody else project', () => {
       commit(project.root, project.configuration.directory, {
         writes: [],
         removals: ['string/pad/pad.ts'],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -207,6 +218,7 @@ describe('writing into somebody else project', () => {
           { path: 'string/pad/digits.ts', bytes: Buffer.from('export const DIGITS = 1\n', 'utf8') },
         ],
         removals: [],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })
@@ -214,6 +226,7 @@ describe('writing into somebody else project', () => {
       commit(project.root, project.configuration.directory, {
         writes: [],
         removals: ['string/pad/pad.ts'],
+        leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
       })

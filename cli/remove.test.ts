@@ -85,6 +85,7 @@ const recording = (
   const written = commit(project.root, project.configuration.directory, {
     writes: [],
     removals: [],
+    leaving: null,
     lockfile: after,
     configuration: null,
   })
@@ -136,6 +137,7 @@ const applying = (project: TemporaryProject, removal: Removal): void => {
   const written = commit(project.root, project.configuration.directory, {
     writes: removal.reconciliation.writes,
     removals: removal.reconciliation.removals,
+    leaving: null,
     lockfile: removal.reconciliation.lockfile,
     configuration: null,
   })
@@ -320,6 +322,7 @@ describe('taking a feature out of a project', () => {
       const written = commit(project.root, project.configuration.directory, {
         writes: deduplicated.reconciliation.writes,
         removals: deduplicated.reconciliation.removals,
+        leaving: null,
         lockfile: deduplicated.reconciliation.lockfile,
         configuration: null,
       })

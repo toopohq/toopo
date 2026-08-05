@@ -118,6 +118,11 @@
  * entries and moved nothing else, because a battery is not collected by any suite. That is the shape
  * of every later unit that closes this same debt elsewhere, and it is the cheapest entry this file
  * will ever gain.
+ *
+ * A tenth on the folder that moves: one new file and one count moved, both under the fifth
+ * configuration, and the refusal did not fire because they were written before the battery ran. It is
+ * the ordinary shape a unit takes here - a module of its own gets a file of its own, and the screen it
+ * changed is counted where screens are counted.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -186,8 +191,9 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/install.test.ts': 19,
     'cli/list.test.ts': 4,
     'cli/plan.test.ts': 6,
+    'cli/relocate.test.ts': 10,
     'cli/remove.test.ts': 12,
-    'cli/report.test.ts': 8,
+    'cli/report.test.ts': 11,
     'cli/rewrite.test.ts': 7,
     'cli/search.test.ts': 12,
     'cli/source.test.ts': 6,

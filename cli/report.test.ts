@@ -11,6 +11,7 @@ import {
   renderInstallation,
   renderRefusal,
 } from './report.js'
+import type { Relocation } from './relocate.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject } from './temporary-project.js'
 
 /**
@@ -23,6 +24,17 @@ import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject } from './temporary-project.
  */
 
 const CONFIGURATION = { version: 1, directory: 'src/lib/toopo' } as const
+
+/** Two files carried across and one the disk has not got, which is what separates the lines from the claims. */
+const A_RELOCATION: Relocation = {
+  from: 'lib/toopo',
+  to: 'src/lib/toopo',
+  moves: [
+    { path: 'number/round/round.ts', verdict: 'moved', bytes: Buffer.from('a', 'utf8') },
+    { path: 'string/pad/pad.ts', verdict: 'already-moved', bytes: null },
+    { path: 'number/sign/sign.ts', verdict: 'not-on-disk', bytes: null },
+  ],
+}
 
 const anInstallation = (): Installation => {
   const project = aProject()
@@ -95,18 +107,66 @@ describe('what the user reads', () => {
    * sentence that was always given.
    */
   it('an-init-says-what-has-to-be-committed', () => {
-    const screen = renderInit(CONFIGURATION, false, null)
+    const screen = renderInit(CONFIGURATION, false, null, null, null)
 
     expect(screen).toContain('Commit toopo.json, toopo.lock and src/lib/toopo/')
     expect(screen).toContain('source code in your project')
-    expect(renderInit({ version: 1, directory: 'app/vendor' }, true, false)).toContain(
+    expect(renderInit({ version: 1, directory: 'app/vendor' }, true, false, null, null)).toContain(
       'toopo.lock and app/vendor/',
     )
 
-    const ignored = renderInit(CONFIGURATION, false, true)
+    const ignored = renderInit(CONFIGURATION, false, true, null, null)
 
     expect(ignored).toContain('git ignores src/lib/toopo/')
     expect(ignored).not.toContain('Commit toopo.json, toopo.lock and')
+  })
+
+  /**
+   * A folder change names every file it moved, because this is the tool moving things inside somebody
+   * else's repository. A count would say how much where this has to say what, and a reader cannot check
+   * a number against their own project.
+   *
+   * A file the lockfile claims and the disk has not got is absent from the lines and from the count: it
+   * did not move, and saying it did would be false about the one thing this screen is for.
+   */
+  it('a-folder-change-names-every-file-that-moved', () => {
+    const screen = renderInit(CONFIGURATION, true, null, A_RELOCATION, null)
+
+    expect(screen).toContain('lib/toopo  ->  src/lib/toopo')
+    expect(screen).toContain('~ number/round/round.ts')
+    expect(screen).toContain('~ string/pad/pad.ts')
+    expect(screen).not.toContain('number/sign/sign.ts')
+    expect(screen).toContain('2 files moved')
+  })
+
+  /**
+   * And says the one part of the move it cannot make: the user's own imports.
+   *
+   * They wrote `from './lib/toopo/...'` and that path has just stopped existing. Toopo never reads or
+   * edits their sources, so nothing can repair it for them - and a screen that stays silent leaves
+   * their build failing on an import with nothing anywhere saying why. That is the trap `whatToCommit`
+   * is written for, one floor up, and **the one part of the work that stays theirs must not be the one
+   * part nobody mentions.**
+   */
+  it('a-folder-change-says-the-imports-are-the-users-to-change', () => {
+    const screen = renderInit(CONFIGURATION, true, null, A_RELOCATION, null)
+
+    expect(screen).toContain('Imports in your own code naming lib/toopo/')
+    expect(screen).toContain('src/lib/toopo/')
+    expect(screen).toContain('cannot do for you')
+  })
+
+  /**
+   * A folder that could not be taken because the user had put something of their own in it is named.
+   *
+   * Left silent it is the orphan defect with the roles reversed: a folder this tool has stopped naming,
+   * still holding somebody's file, mentioned by nothing ever again.
+   */
+  it('a-folder-that-could-not-be-taken-is-named', () => {
+    expect(renderInit(CONFIGURATION, true, null, A_RELOCATION, 'lib/toopo')).toContain(
+      'lib/toopo/ still holds something toopo did not put there',
+    )
+    expect(renderInit(CONFIGURATION, true, null, A_RELOCATION, null)).not.toContain('still holds')
   })
 
   it('a-refusal-says-nothing-was-written-before-it-says-why', () => {

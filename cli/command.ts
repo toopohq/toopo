@@ -53,6 +53,8 @@ import { listProject } from './list.js'
 import { UnusableArtefact } from './artefact.js'
 import { UnusableLockfile, readLockfile } from './lockfile.js'
 import { nothingMoved } from './reconcile.js'
+import type { Moving } from './relocate.js'
+import { filesToMove, pathsLeftBehind, whatMoves } from './relocate.js'
 import { prepareRemoval } from './remove.js'
 import {
   renderCatalogue,
@@ -111,6 +113,41 @@ export const run = (theRegistry: () => RegistrySource): void => {
     return held
   }
 
+  /**
+   * `init` with nothing to move writes the one file it owns.
+   *
+   * Not through `commit`, and the reason is not economy: a commit writes a `toopo.lock`, and a project
+   * that has none must not be given one by the command that only chooses a folder.
+   */
+  const theConfigurationAlone = (configuration: Configuration): string | null => {
+    writeConfiguration(root, configuration)
+
+    return null
+  }
+
+  /**
+   * The installed tree moved into the folder that was just named, as one act.
+   *
+   * The lockfile goes through the commit unchanged - measured, a relocation leaves it identical byte
+   * for byte, because its paths are relative to the configured directory and never name it. It is
+   * written anyway because it is what `commit` renames **last**: the files land, the old copies go,
+   * and only then does `toopo.json` start naming the new folder. A run killed anywhere in that order
+   * leaves a project whose configuration still describes where its files are.
+   */
+  const theRelocation = (configuration: Configuration, moving: Moving): string | null => {
+    const written = commit(root, configuration.directory, {
+      writes: filesToMove(moving.relocation),
+      removals: pathsLeftBehind(moving.relocation),
+      leaving: moving.relocation.from,
+      lockfile: moving.lockfile,
+      configuration,
+    })
+
+    if ('faults' in written) refuse(written.faults)
+
+    return written.leftBehind
+  }
+
   /** The lockfile, or the refusal that says nothing is installed, in the words of what was asked. */
   const theLockfile = (verb: string): Lockfile => {
     const held = readLockfile(root)
@@ -131,9 +168,24 @@ export const run = (theRegistry: () => RegistrySource): void => {
         version: 1,
         directory: parsed.command.directory ?? held?.directory ?? proposeDirectory(root),
       }
+      const change = whatMoves(root, held, configuration, readLockfile(root))
 
-      writeConfiguration(root, configuration)
-      out(renderInit(configuration, held !== null, gitIgnores(root, configuration.directory)))
+      if ('faults' in change) refuse(change.faults)
+
+      const leftBehind =
+        'moving' in change
+          ? theRelocation(configuration, change.moving)
+          : theConfigurationAlone(configuration)
+
+      out(
+        renderInit(
+          configuration,
+          held !== null,
+          gitIgnores(root, configuration.directory),
+          'moving' in change ? change.moving.relocation : null,
+          leftBehind,
+        ),
+      )
     } else if (parsed.command.name === 'add') {
       const lockfile = readLockfile(root) ?? EMPTY
       // The one command that does not need a project to have been configured: `configuration.ts`
@@ -168,6 +220,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
           const written = commit(root, configuration.directory, {
             writes: [],
             removals: [],
+            leaving: null,
             lockfile: after,
             configuration: configurationToWrite,
           })
@@ -187,6 +240,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         const written = commit(root, configuration.directory, {
           writes: filesToWrite(outcome.installation),
           removals: [],
+          leaving: null,
           lockfile: lockfileAfter(lockfile, outcome.installation.features),
           configuration: configurationToWrite,
         })
@@ -221,6 +275,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         const written = commit(root, configuration.directory, {
           writes: removal.reconciliation.writes,
           removals: removal.reconciliation.removals,
+          leaving: null,
           lockfile: removal.reconciliation.lockfile,
           configuration: null,
         })
@@ -270,6 +325,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         const written = commit(root, configuration.directory, {
           writes: reconciliation.writes,
           removals: reconciliation.removals,
+          leaving: null,
           lockfile: reconciliation.lockfile,
           configuration: null,
         })

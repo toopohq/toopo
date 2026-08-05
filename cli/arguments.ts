@@ -67,6 +67,25 @@ export type Command =
  * unless told not to and half refuse to write unless told to. That is worse than either rule alone,
  * and nobody would choose it deliberately - which is exactly why it has to be refusable by pointing at
  * a sentence.
+ *
+ * ---------------------------------------------------------------------------
+ * The case that tested it: `toopo init --dir` moving an installed folder
+ * ---------------------------------------------------------------------------
+ *
+ * That command now takes files out of one folder and writes them into another, which reads at first
+ * like the very thing the rule asks a second word for. It does not, on two counts, and both are worth
+ * having on the record because the next command that moves something will raise the question again.
+ *
+ * **The rule separates destroying from obeying.** Somebody who types `--dir app/toopo` is asking for
+ * their files to be in `app/toopo`. Moving them is doing what they wrote; asking again would be asking
+ * whether they meant what they had just typed. `update` and `remove` are not in that position - what
+ * they would do next is decided by the registry and by the project, not by the words in the line.
+ *
+ * **And a move destroys nothing, which is what makes obeying safe.** No file's contents change, a
+ * destination holding somebody else's file refuses the whole thing, and afterwards the project holds
+ * byte for byte what it held. It is even its own inverse: a folder named by mistake is undone by naming
+ * the right one, with nothing lost in between. `add` is the other command that writes at once, and for
+ * the same reason - it can only refuse.
  */
 export const THE_WRITE_DISCIPLINE =
   'a command that can destroy or overwrite shows first and writes only on a second command; a ' +

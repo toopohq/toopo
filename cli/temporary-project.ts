@@ -58,6 +58,7 @@ export const committing = (
   const written = commit(project.root, project.configuration.directory, {
     writes: filesToWrite(installation),
     removals: [],
+    leaving: null,
     lockfile: after,
     configuration: null,
   })

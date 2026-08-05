@@ -34,6 +34,28 @@
  * prediction about writability, which is why it is not the shape refused above.
  *
  * ---------------------------------------------------------------------------
+ * One commit that spans two folders, and the folder it abandons
+ * ---------------------------------------------------------------------------
+ *
+ * Every command but one writes and removes under the same configured folder. `toopo init --dir` moving
+ * that folder is the exception: the files land under the new one and leave the old one, in one act. So
+ * `Commit` names the folder being left rather than deriving it - a required field with `null` for *not
+ * moving*, which is the shape `Commit.configuration` already takes and for the same reason. A caller
+ * that could omit it is a caller that will, and the alternative - two folder fields, five call sites
+ * repeating one string - is duplication that reads like a copy-paste rather than like a decision.
+ *
+ * **A folder that is being left is removed when the removals emptied it, and that is not the rule
+ * `emptiedFolders` carries.** `remove` and `update` must never delete the configured folder: it goes on
+ * being the configured folder, and a project that installs again wants it there. Here it stops being
+ * one. An abandoned folder is not an emptied folder, so the two facts are decided apart rather than
+ * folded into one walk that would then be wrong for one of them.
+ *
+ * It goes only when it is empty, and that condition is the whole of its safety: a folder still holding
+ * something is one the user put something in, so it is left where it is and the caller is told which it
+ * was. `rmdir` answers that by refusing, which is the same reason `emptiedFolders` asks it that way
+ * rather than looking first.
+ *
+ * ---------------------------------------------------------------------------
  * What is still not closed, and it is one line
  * ---------------------------------------------------------------------------
  *
@@ -72,8 +94,16 @@ export type FileToWrite = {
  */
 export type Commit = {
   readonly writes: readonly FileToWrite[]
-  /** Paths under the configured directory this command removes. */
+  /** Paths this command removes, under `leaving` when there is one and under the configured directory otherwise. */
   readonly removals: readonly string[]
+  /**
+   * The folder this commit is leaving behind, or `null` when the configured folder is not moving.
+   *
+   * Set only by `toopo init --dir` on a project that holds something. It is what makes one commit span
+   * two folders - the files are written under the new one and taken out of this one - and it is what
+   * tells this function there is a folder to abandon at the end.
+   */
+  readonly leaving: string | null
   readonly lockfile: Lockfile
   /**
    * The configuration to write beside the lockfile, or `null` when the project already has one.
@@ -164,17 +194,27 @@ const emptiedFolders = (root: string, from: string): readonly string[] => {
   return folders
 }
 
+export type CommitOutcome =
+  | {
+      readonly written: readonly string[]
+      /**
+       * The folder this commit left, when it still held something and was therefore not removed.
+       *
+       * `null` covers both the ordinary commit, which abandons nothing, and the relocation that emptied
+       * the folder it left - and the caller says nothing for either, because there is nothing a reader
+       * has to know about a folder that is gone.
+       */
+      readonly leftBehind: string | null
+    }
+  | { readonly faults: readonly string[] }
+
 /**
  * Write everything or write nothing, and say which files landed.
  *
  * The answer is the paths that were renamed into place, in the order they were, because the caller's
  * report says what happened to the project and a count would leave it saying how much.
  */
-export const commit = (
-  root: string,
-  directory: string,
-  what: Commit,
-): { readonly written: readonly string[] } | { readonly faults: readonly string[] } => {
+export const commit = (root: string, directory: string, what: Commit): CommitOutcome => {
   const staged: { readonly temporary: string; readonly destination: string; readonly path: string }[] = []
   const faults: string[] = []
 
@@ -218,11 +258,13 @@ export const commit = (
 
   for (const entry of staged) renameSync(entry.temporary, entry.destination)
 
+  const removeUnder = join(root, what.leaving ?? directory)
+
   for (const path of what.removals) {
-    const full = join(root, directory, path)
+    const full = join(removeUnder, path)
     rmSync(full, { force: true })
 
-    for (const folder of emptiedFolders(join(root, directory), full)) {
+    for (const folder of emptiedFolders(removeUnder, full)) {
       // `rmdir` refuses a folder that still holds something, which is the answer this wants: a folder
       // is tidied away exactly when the removal emptied it, and asking first would be asking a
       // question the removal has already answered.
@@ -236,5 +278,24 @@ export const commit = (
 
   for (const file of rootFiles) renameSync(`${file.at}${STAGED}`, file.at)
 
-  return { written: staged.map((entry) => entry.path) }
+  return { written: staged.map((entry) => entry.path), leftBehind: whatWasAbandoned(root, what.leaving) }
+}
+
+/**
+ * The folder a relocation left, when it could not be taken with it.
+ *
+ * Asked after the removals rather than before, so the question is about the folder as this commit
+ * leaves it. `rmdir` is what answers it: a folder still holding one of the user's own files refuses to
+ * go, and that refusal *is* the answer rather than an error to report.
+ */
+const whatWasAbandoned = (root: string, leaving: string | null): string | null => {
+  if (leaving === null) return null
+
+  try {
+    rmdirSync(join(root, leaving))
+
+    return null
+  } catch {
+    return leaving
+  }
 }
