@@ -250,13 +250,19 @@ export const contractPage = (held: Held): Document => {
         `This calls ${playground.calls} on whatever you type. Each field holds a literal, written ` +
           `exactly the way the cases above are written, and the form opens on ${playground.opensOnCase} ` +
           `so there is a call that works to edit. What comes back is what the function answered — the ` +
-          `settled answer is on the case's own line above, and is deliberately not repeated here.`,
+          `settled answer is on the case's own line above, and is deliberately not repeated here.` +
+          (playground.describes === null
+            ? ''
+            : ` When it answers nothing, ${playground.describes} is called on the same input and its ` +
+              `reason is printed underneath: the two exports are one surface, and every input this ` +
+              `contract turns down answers ${playground.calls} alike.`),
       ),
       line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),
       el('div', {
         id: 'playground',
         'data-playground': JSON.stringify({
           calls: playground.calls,
+          describes: playground.describes,
           module: THE_REFERENCE_MODULE,
           fields: playground.fields,
         }),

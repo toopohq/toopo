@@ -4,7 +4,7 @@ import { dirname, join, posix } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
-import type { ExportRecord } from '../registry/contract-record.js'
+import type { CaseRecord, ExportRecord } from '../registry/contract-record.js'
 import type { FrozenContract } from '../registry/snapshot.js'
 import { THE_BROWSER_GRAPH, asABrowserModule, theReferenceModules } from './browser.js'
 import type { Held } from './catalogue.js'
@@ -70,6 +70,56 @@ const theHeld = (): readonly Held[] => heldByTheRegistry(source)
 const answerOf = (contract: FrozenContract): ExportRecord =>
   contract.surface.exports.find((entry) => entry.role === 'the-answer') as ExportRecord
 
+const diagnosticOf = (contract: FrozenContract): ExportRecord | undefined =>
+  contract.surface.exports.find((entry) => entry.role === 'the-diagnostic')
+
+/**
+ * One case, replayed through the artefact a browser runs: the answer, and the reason underneath it.
+ *
+ * Faults are returned rather than asserted so that a bad row names itself instead of stopping the
+ * sweep at the first one, which is what makes the list at the end readable.
+ */
+const replayed = (
+  one: Held,
+  module: Record<string, (...args: readonly unknown[]) => unknown>,
+  entry: CaseRecord,
+): readonly string[] => {
+  const answer = answerOf(one.contract)
+  const diagnostic = diagnosticOf(one.contract)
+  const { written, answered } = theCallOf(entry, answer)
+  const made = `${renderContract(one.contract.address)}#${entry.id}: ${answer.name}(${written.join(', ')})`
+  const wanted = diagnostic === undefined ? 1 : 2
+
+  if (answered.length !== wanted) {
+    return [`${made} leaves ${answered.length} field(s) after the call where ${wanted} is expected`]
+  }
+
+  /**
+   * Caught rather than left to propagate, and that is about the failure being readable: the module
+   * under test is imported from a `data:` URL, so an escaping stack trace carries the whole base64 of
+   * a contract's implementation - ten thousand characters in which the one line that matters cannot
+   * be found. It was seen once, which is why this is here.
+   */
+  try {
+    const given = argumentsOf(answer.parameters, written)
+    const got = answerWritten((module[answer.name] as (...args: readonly unknown[]) => unknown)(...given))
+    const settled = literal(answered[0].value)
+
+    if (got !== settled) return [`${made} answers ${got} where the case settles ${settled}`]
+    if (diagnostic === undefined) return []
+
+    const described = module[diagnostic.name] as (...args: readonly unknown[]) => unknown
+    const reason = answerWritten(described(...given))
+    const settledReason = literal(answered[1].value)
+
+    return reason === settledReason
+      ? []
+      : [`${made} is described ${reason} where the case settles ${settledReason}`]
+  } catch (thrown) {
+    return [`${made} throws ${thrown instanceof Error ? thrown.message : String(thrown)}`]
+  }
+}
+
 /** The very module `build.ts` writes, imported without touching a disk. */
 const shipped = async (one: Held): Promise<Record<string, (...args: readonly unknown[]) => unknown>> => {
   const path = `${renderContract(one.contract.address)}/${THE_REFERENCE_MODULE}`
@@ -85,28 +135,9 @@ describe('the playground, against the catalogue it opens on', () => {
 
     for (const one of held) {
       const module = await shipped(one)
-      const answer = answerOf(one.contract)
-      const call = module[answer.name] as (...args: readonly unknown[]) => unknown
 
       for (const table of one.contract.caseTables) {
-        for (const entry of table.cases) {
-          const { written, answered } = theCallOf(entry, answer)
-          const settled = literal((answered[0] as (typeof answered)[number]).value)
-          const made = `${renderContract(one.contract.address)}#${entry.id}: ${answer.name}(${written.join(', ')})`
-
-          /**
-           * Caught rather than left to propagate, and that is about the failure being readable: the
-           * module under test is imported from a `data:` URL, so an escaping stack trace carries the
-           * whole base64 of a contract's implementation - ten thousand characters in which the one
-           * line that matters cannot be found. It was seen once, which is why this is here.
-           */
-          try {
-            const got = answerWritten(call(...argumentsOf(answer.parameters, written)))
-            if (got !== settled) faults.push(`${made} answers ${got} where the case settles ${settled}`)
-          } catch (thrown) {
-            faults.push(`${made} throws ${thrown instanceof Error ? thrown.message : String(thrown)}`)
-          }
-        }
+        for (const entry of table.cases) faults.push(...replayed(one, module, entry))
       }
     }
 
@@ -115,6 +146,45 @@ describe('the playground, against the catalogue it opens on', () => {
       held.map(() => true),
     )
     expect(faults).toEqual([])
+  })
+
+  /**
+   * The two spellings of `1 000` answer the same thing and are described differently, and that is the
+   * pair this whole section exists for.
+   *
+   * `contracts/number/parse/edge-cases.ts` names its separator characters instead of pasting them
+   * because a no-break space and an ordinary one are the same glyph on screen, and that argument is
+   * what settled the field holding a literal. Against the answer alone both rows print `null`, so the
+   * playground would have contradicted the page it sits on. This is that pair, replayed by identifier
+   * rather than by position, so the guard names the rows it is about.
+   */
+  it('two-inputs-that-look-alike-are-described-apart', async () => {
+    const one = theHeld().find(
+      (candidate) => renderContract(candidate.contract.address) === 'number/parse@1',
+    ) as Held
+    const module = await shipped(one)
+    const cases = one.contract.caseTables.flatMap((table) => table.cases)
+    const alike = ['no-break-space-grouping', 'an-ordinary-space-between-digits'].map(
+      (id) => cases.find((entry) => entry.id === id) as CaseRecord,
+    )
+    const described = module[diagnosticOf(one.contract)?.name as string] as (
+      ...args: readonly unknown[]
+    ) => unknown
+
+    expect(alike.map((entry) => entry?.id)).toEqual([
+      'no-break-space-grouping',
+      'an-ordinary-space-between-digits',
+    ])
+    expect(alike.flatMap((entry) => replayed(one, module, entry))).toEqual([])
+
+    const reasons = alike.map((entry) => {
+      const { written } = theCallOf(entry, answerOf(one.contract))
+
+      return answerWritten(described(...argumentsOf(answerOf(one.contract).parameters, written)))
+    })
+
+    // Both are refused, and the whole point is that they are refused for different reasons.
+    expect(reasons[0]).not.toBe(reasons[1])
   })
 
   /**

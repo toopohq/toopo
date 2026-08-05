@@ -32,6 +32,7 @@ import { answerWritten, argumentsOf } from './playground.js'
 /** What the page hands over in `data-playground`, written by `contract-page.ts`. */
 type ThePlayground = {
   readonly calls: string
+  readonly describes: string | null
   readonly module: string
   readonly fields: readonly {
     readonly name: string
@@ -75,17 +76,32 @@ const start = async (): Promise<void> => {
     Record<string, (...args: readonly unknown[]) => unknown>
   >
   const call = module[playground.calls]
-  if (call === undefined) return
+  const describe = playground.describes === null ? null : module[playground.describes]
+  if (call === undefined || describe === undefined) return
 
   const form = document.createElement('div')
   const rows = playground.fields.map(labelled)
   const answer = document.createElement('pre')
 
+  /**
+   * Both halves of the surface, and the second only when there is one to show.
+   *
+   * A contract answers `T | null` and publishes its reason beside it, so on a refused input `call`
+   * alone prints `null` and everything that tells one refusal from another is in the other export.
+   * The coupling property is that a call fails exactly when it has a description, which is why the
+   * second line appears exactly when the first is `null` rather than always.
+   */
   const run = (): void => {
     try {
       const given = argumentsOf(parameters, [...form.querySelectorAll('input')].map((one) => one.value))
+      const answered = call(...given)
+      const lines = [`${playground.calls}(…) → ${answerWritten(answered)}`]
 
-      answer.textContent = `${playground.calls}(…) → ${answerWritten(call(...given))}`
+      if (answered === null && describe !== null) {
+        lines.push(`${playground.describes}(…) → ${answerWritten(describe(...given))}`)
+      }
+
+      answer.textContent = lines.join('\n')
     } catch (thrown) {
       answer.textContent = thrown instanceof Error ? thrown.message : String(thrown)
     }

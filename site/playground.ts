@@ -162,8 +162,23 @@ export type PlaygroundField = {
 }
 
 export type Playground = {
-  /** The export that is called. Its diagnostic is not run: one answer is what a reader came for. */
   readonly calls: string
+  /**
+   * The diagnostic called when the answer is `null`, or `null` on a contract that publishes none.
+   *
+   * **A playground that called only `calls` would show half the contract, and it would undo the
+   * measurement the whole site rests on.** The error convention is `T | null` beside a diagnostic
+   * owned by the contract, so on a refused input the answer is `null` and everything that
+   * distinguishes one refusal from another is in the other export. `'1 000'` with a no-break space
+   * and `'1 000'` with an ordinary one are the two rows that argued the field should hold a literal -
+   * they are the same eight glyphs on screen and carry opposite answers - and against `calls` alone
+   * both print `null` and the distinction a reader came to see is invisible.
+   *
+   * It is called only when the answer is `null`, because the coupling property of both fallible
+   * contracts is that a call fails exactly when it has a description: printing `→ null` under every
+   * answered call would be a line that is always the same.
+   */
+  readonly describes: string | null
   readonly fields: readonly PlaygroundField[]
   /** The case the form opens on, so that a reader edits a call that works. */
   readonly opensOnCase: string
@@ -198,6 +213,7 @@ export const playgroundOf = (contract: FrozenContract, what: string): Playground
 
   return {
     calls: answer.name,
+    describes: theDiagnosticOf(contract, answer, what),
     opensOnCase: opening.id,
     fields: answer.parameters.map((parameter, index) => ({
       name: parameter.name,
@@ -206,6 +222,38 @@ export const playgroundOf = (contract: FrozenContract, what: string): Playground
       constructedBy: refuseAnUnknownType(parameter, what),
     })),
   }
+}
+
+const spelledCall = (parameters: readonly ParameterRecord[]): string =>
+  parameters.map((parameter) => `${parameter.name}: ${parameter.type}`).join(', ')
+
+/**
+ * The diagnostic, and the refusal that lets the form call it with the answer's own arguments.
+ *
+ * The form is built out of the answer's parameters, so a diagnostic declaring anything else could not
+ * be called from it at all - and the schema does not require the two to agree. Measured over the
+ * catalogue: they agree on two of two, exactly. So the reading is checked rather than assumed, and a
+ * contract that broke it would stop the build instead of publishing a playground that calls one export
+ * with another's arguments.
+ */
+const theDiagnosticOf = (
+  contract: FrozenContract,
+  answer: ExportRecord,
+  what: string,
+): string | null => {
+  const diagnostic = contract.surface.exports.find((entry) => entry.role === 'the-diagnostic')
+  if (diagnostic === undefined) return null
+
+  if (spelledCall(diagnostic.parameters) !== spelledCall(answer.parameters)) {
+    throw new ThePlaygroundCannotBeBuilt(
+      what,
+      `its diagnostic \`${diagnostic.name}\` takes (${spelledCall(diagnostic.parameters)}) where ` +
+        `\`${answer.name}\` takes (${spelledCall(answer.parameters)}), and the form has one field per ` +
+        `parameter of the answer - so there is nothing to call the diagnostic with`,
+    )
+  }
+
+  return diagnostic.name
 }
 
 const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string | null => {
