@@ -437,7 +437,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   const measuredAt = (writtenAt: number): MeasuredBattery => ({
     battery: 'fixture',
     writtenAt,
-    cells: [{ mutant: 'FX-1', verdict: 'killed', kind: 'defect' }],
+    cells: [{ mutant: 'FX-1', cell: 'C/as-committed', verdict: 'killed', kind: 'defect' }],
   })
 
   const COMPLETE = [measuredAt(2_000)]
@@ -453,10 +453,18 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
     )
   })
 
-  it('refuses a total taken while a filtered run was writing beside it', () => {
-    expect(scoreFaults(['fixture'], COMPLETE, ['site.partial.json'], COMMITTED_AT).join('\n')).toMatch(
-      /site\.partial\.json is a partial run/,
+  /**
+   * Both halves, because the rule was wrong in one direction on its first real run: it refused a whole
+   * replay over six partials dated days earlier, from commits that had nothing to do with it.
+   */
+  it('refuses a total taken while a mutant of this same commit was being investigated', () => {
+    const investigating = [{ name: 'site.partial.json', writtenAt: COMMITTED_AT + 1 }]
+    const leftOver = [{ name: 'site.partial.json', writtenAt: COMMITTED_AT - 1 }]
+
+    expect(scoreFaults(['fixture'], COMPLETE, investigating, COMMITTED_AT).join('\n')).toMatch(
+      /site\.partial\.json is a filtered run measured against this same commit/,
     )
+    expect(scoreFaults(['fixture'], COMPLETE, leftOver, COMMITTED_AT)).toEqual([])
   })
 
   it('refuses an artefact older than the commit it would describe', () => {
@@ -476,15 +484,19 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
         battery: 'fixture',
         writtenAt: 1,
         cells: [
-          { mutant: 'FX-1', verdict: 'killed', kind: 'defect' },
-          { mutant: 'FX-2', verdict: 'survived', kind: 'defect' },
-          { mutant: 'FX-3', verdict: 'killed', kind: 'probe' },
+          { mutant: 'FX-1', cell: 'C/as-committed', verdict: 'killed', kind: 'defect' },
+          { mutant: 'FX-2', cell: 'C/as-committed', verdict: 'survived', kind: 'defect' },
+          { mutant: 'FX-3', cell: 'C/as-committed', verdict: 'killed', kind: 'probe' },
         ],
       },
     ])
 
     expect(noProbeSurvives).toEqual({
-      defects: { cells: 2, killed: 1, surviving: ['fixture/FX-2'] },
+      defects: {
+        cells: 2,
+        killed: 1,
+        surviving: [{ battery: 'fixture', mutant: 'FX-2', cell: 'C/as-committed' }],
+      },
       probes: { cells: 1, killed: 1, surviving: [] },
     })
 
@@ -492,7 +504,36 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
 
     expect(rendered).toMatch(/defects\s+2 cells\s+1 killed\s+1 surviving/)
     expect(rendered).toMatch(/probes\s+1 cells/)
-    expect(rendered).toContain('fixture/FX-2')
+    expect(rendered).toContain('FX-2 on C/as-committed')
+    expect(rendered).toContain('surviving probes - none')
+  })
+
+  /**
+   * A mutant read through two lenses is two cells, and the surviving list has to say which.
+   *
+   * Six of the eighteen batteries carry a second lens, so this is not a corner: the first output this
+   * tool produced printed `number-parse/P-02` twice on one line, which reads as a rendering fault
+   * rather than as two results that could have disagreed and did not.
+   */
+  it('addresses a surviving cell by its lens and not by its mutant alone', () => {
+    const bothLenses = theScore([
+      {
+        battery: 'number-parse',
+        writtenAt: 1,
+        cells: [
+          { mutant: 'P-02', cell: 'B/as-committed', verdict: 'survived', kind: 'defect' },
+          { mutant: 'P-02', cell: 'B/reason-blind', verdict: 'survived', kind: 'defect' },
+        ],
+      },
+    ])
+
+    expect(bothLenses.defects.surviving.map((one) => one.cell)).toEqual([
+      'B/as-committed',
+      'B/reason-blind',
+    ])
+    expect(renderScore(bothLenses, 1, 'abc1234')).toContain(
+      'P-02 on B/as-committed, P-02 on B/reason-blind',
+    )
   })
 
   /**

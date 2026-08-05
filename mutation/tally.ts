@@ -43,7 +43,10 @@ const written = new Set(
   })(),
 )
 
-const partial = [...written].filter((file) => file.endsWith('.partial.json')).sort()
+const partial = [...written]
+  .filter((file) => file.endsWith('.partial.json'))
+  .sort()
+  .map((name) => ({ name, writtenAt: statSync(join(RESULTS, name)).mtimeMs }))
 
 const measured: readonly MeasuredBattery[] = await Promise.all(
   declared
@@ -59,6 +62,7 @@ const measured: readonly MeasuredBattery[] = await Promise.all(
         writtenAt: statSync(file).mtimeMs,
         cells: results.map((cell) => ({
           mutant: cell.mutant,
+          cell: `${cell.arm}/${cell.lens}`,
           verdict: cell.verdict,
           // A result naming a mutant its battery no longer declares is a stale artefact, and it is
           // reported as one rather than quietly counted under a kind it does not have.

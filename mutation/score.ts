@@ -36,6 +36,15 @@ import type { MutantKind, Verdict } from './run.ts'
 
 export type MeasuredCell = {
   readonly mutant: string
+  /**
+   * `arm/lens`, which is what makes this a cell rather than a mutant.
+   *
+   * Six of the eighteen batteries read their contract through two lenses, so one mutant is two cells
+   * and they can disagree - that difference is the whole measurement the error convention was decided
+   * on. A surviving list addressed by `battery/mutant` prints those two as one string twice, which
+   * reads as a rendering bug rather than as two results. Seen in the first output this tool produced.
+   */
+  readonly cell: string
   readonly verdict: Verdict
   readonly kind: MutantKind
 }
@@ -48,11 +57,17 @@ export type MeasuredBattery = {
   readonly cells: readonly MeasuredCell[]
 }
 
+/** One cell that survived, at the address a reader goes and looks at it by. */
+export type Surviving = {
+  readonly battery: string
+  readonly mutant: string
+  readonly cell: string
+}
+
 export type Population = {
   readonly cells: number
   readonly killed: number
-  /** `battery/mutant` for each cell that survived, which is the address a reader goes and looks at. */
-  readonly surviving: readonly string[]
+  readonly surviving: readonly Surviving[]
 }
 
 export type Score = {
@@ -74,7 +89,7 @@ const populationOf = (
     killed: applicable.filter((cell) => cell.verdict !== 'survived').length,
     surviving: applicable
       .filter((cell) => cell.verdict === 'survived')
-      .map((cell) => `${cell.battery}/${cell.mutant}`),
+      .map(({ battery, mutant, cell }) => ({ battery, mutant, cell })),
   }
 }
 
@@ -82,6 +97,12 @@ export const theScore = (measured: readonly MeasuredBattery[]): Score => ({
   defects: populationOf(measured, 'defect'),
   probes: populationOf(measured, 'probe'),
 })
+
+/** A filtered run's artefact, which `measure.ts` deliberately writes beside the complete one. */
+export type MeasuredPartial = {
+  readonly name: string
+  readonly writtenAt: number
+}
 
 /**
  * Why a set of artefacts is not a measurement of anything, or nothing.
@@ -93,19 +114,27 @@ export const theScore = (measured: readonly MeasuredBattery[]): Score => ({
  * would simply be smaller and would look like a score. The list of batteries is read off
  * `mutation/*.battery.ts` rather than declared here, so adding one cannot opt it out.
  *
- * **A partial artefact** is `measure.ts` under `--only`, which writes elsewhere precisely so that a
- * fragment cannot replace a complete measurement. Its presence beside the complete files means somebody
- * was measuring one mutant, and a total taken in the middle of that is a total of a working state.
- *
  * **An artefact older than the commit it must describe** is the stale one. A battery refuses a dirty
  * tree, so every artefact was produced against *some* commit; the question is whether it was this one.
  * `HEAD`'s own timestamp is the boundary, and it needs no threshold and no judgement about how long a
  * replay takes.
+ *
+ * **A partial artefact written against this same commit** is `measure.ts` under `--only`, which writes
+ * elsewhere precisely so that a fragment cannot replace a complete measurement. One written *now* means
+ * somebody is measuring a single mutant, and a total taken in the middle of that is a total of a
+ * working state.
+ *
+ * **The `writtenAt` on that last one is a correction the first real run forced**, and it is recorded
+ * because the rule before it was wrong rather than merely strict. It refused on the presence of a
+ * partial at all - and refused the very first complete replay, over six partials dated two and three
+ * days earlier, under the sentence *a measurement was filtered while this set was being written*, which
+ * had not happened. A leftover from a previous commit says nothing about this one. So the boundary that
+ * already decided the complete artefacts decides these too, and there is one rule here rather than two.
  */
 export const scoreFaults = (
   declared: readonly string[],
   measured: readonly MeasuredBattery[],
-  partial: readonly string[],
+  partial: readonly MeasuredPartial[],
   headCommittedAt: number,
 ): readonly string[] => {
   const found = new Set(measured.map((one) => one.battery))
@@ -118,10 +147,13 @@ export const scoreFaults = (
           `${battery} declares a battery and wrote no result, so this total would silently be a ` +
           `total of the other batteries`,
       ),
-    ...partial.map(
-      (name) =>
-        `${name} is a partial run, so a measurement was filtered while this set was being written`,
-    ),
+    ...partial
+      .filter((one) => one.writtenAt >= headCommittedAt)
+      .map(
+        (one) =>
+          `${one.name} is a filtered run measured against this same commit, so a mutant was being ` +
+          `investigated while this set stood`,
+      ),
     ...measured
       .filter((one) => one.writtenAt < headCommittedAt)
       .map(
@@ -132,22 +164,38 @@ export const scoreFaults = (
   ]
 }
 
-const listed = (surviving: readonly string[]): string =>
-  surviving.length === 0 ? '-' : surviving.join(', ')
+const counted = (name: string, population: Population): string =>
+  `  ${name.padEnd(8)}${String(population.cells).padStart(4)} cells  ` +
+  `${String(population.killed).padStart(4)} killed  ` +
+  `${String(population.surviving.length).padStart(3)} surviving`
+
+/** The survivors of one population, a battery to a line, so that a long list stays a list. */
+const listed = (what: string, surviving: readonly Surviving[]): readonly string[] => {
+  const batteries = [...new Set(surviving.map((one) => one.battery))].sort()
+
+  return [
+    `  ${what}${surviving.length === 0 ? ' - none' : ''}`,
+    ...batteries.map(
+      (battery) =>
+        `    ${battery.padEnd(24)}` +
+        surviving
+          .filter((one) => one.battery === battery)
+          .map((one) => `${one.mutant} on ${one.cell}`)
+          .join(', '),
+    ),
+  ]
+}
 
 export const renderScore = (score: Score, batteries: number, at: string): string =>
   [
     `${batteries} batteries, measured against ${at}`,
     '',
-    `  defects  ${String(score.defects.cells).padStart(4)} cells  ` +
-      `${String(score.defects.killed).padStart(4)} killed  ` +
-      `${String(score.defects.surviving.length).padStart(3)} surviving`,
-    `  probes   ${String(score.probes.cells).padStart(4)} cells  ` +
-      `${' '.repeat(4)} ${' '.repeat(6)}  ` +
-      `${String(score.probes.surviving.length).padStart(3)} surviving`,
+    counted('defects', score.defects),
+    counted('probes', score.probes),
     '',
-    `  surviving defects  ${listed(score.defects.surviving)}`,
-    `  surviving probes   ${listed(score.probes.surviving)}`,
+    ...listed('surviving defects', score.defects.surviving),
+    '',
+    ...listed('surviving probes', score.probes.surviving),
     '',
     '  A probe is not a defect and never enters the score: it asks whether a region can be reached,',
     '  so a probe that survives is that question answered no.',
