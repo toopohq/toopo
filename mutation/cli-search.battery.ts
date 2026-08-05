@@ -444,7 +444,6 @@ export const battery: Battery = {
         'a-dependency-that-left-the-closure-is-removed',
         'a-directory-that-does-not-travel-is-refused',
         'a-directory-where-a-file-goes-is-refused-by-name',
-        'a-feature-already-installed-is-not-installed-again',
         'a-feature-another-root-still-imports-stays-and-stops-being-a-root',
         'a-feature-nothing-else-holds-leaves-with-everything-it-pulled-in',
         'a-feature-pulled-in-and-then-asked-for-becomes-a-root',

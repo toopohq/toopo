@@ -351,6 +351,80 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   /**
+   * The three below are one refusal, and they are three guards because they read three different
+   * universes: a pin resolves against every guard the run collected, a declared silence against the
+   * guards of the contract under measurement, and a declared silent *suite* against the describe
+   * titles those guards sit under. One meta-test would have covered whichever universe it happened to
+   * touch and left the other two able to break in silence.
+   *
+   * What they are for was measured on the real thing rather than imagined - `run.ts` carries the two
+   * outputs. The half that reddens reddens under `no longer caught by`, which invents a regression;
+   * the half that does not is not reported at all.
+   *
+   * And the refusal found one the moment it existed: `cli-search` declared
+   * `a-feature-already-installed-is-not-installed-again` silent, a string that occurred nowhere else
+   * in the repository, beside the `reinstalling-what-is-already-there-changes-nothing` that is the
+   * guard it was once the name of. Nothing had ever said so.
+   */
+  it(
+    'refuses a pin naming a guard the suite does not carry',
+    () => {
+      const pinnedOnAGuardThatIsGone = sameOnEveryLens(
+        'FX-M9',
+        'the fixture defect, pinned on an identifier no guard of the suite answers to',
+        [reference(DOUBLED, `export const doubled = (value: number): number => value`)],
+        killed(['doubles-a-positive-number-and-zero']),
+      )
+
+      expect(() =>
+        calibrate({ ...battery, mutants: [...battery.mutants, pinnedOnAGuardThatIsGone] }),
+      ).toThrow(/doubles-a-positive-number-and-zero\s+\(pinned by FX-M9\)/)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a guard declared silent under a name no guard carries',
+    () => {
+      const declaresAGuardThatIsGone: Battery = {
+        ...battery,
+        unprobedRegions: [
+          ...battery.unprobedRegions,
+          {
+            nature: 'claims detection',
+            reason: 'a region named after a guard that has been renamed since',
+            guards: ['doubles-zero-exactly'],
+          },
+        ],
+      }
+
+      expect(() => calibrate(declaresAGuardThatIsGone)).toThrow(
+        /1 declared silent, which nothing reports at all:\s+doubles-zero-exactly/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a suite declared silent under a title no suite carries',
+    () => {
+      // A describe title is prose and is reworded, where a guard identifier is frozen - so this is
+      // the half of the family most likely to break, and the one nothing would have said a word about.
+      const declaresASuiteThatIsGone: Battery = {
+        ...battery,
+        unreachableGuards: [
+          { suites: ['the fixture'], reason: 'a suite title as it read before it was reworded' },
+        ],
+      }
+
+      expect(() => calibrate(declaresASuiteThatIsGone)).toThrow(
+        /1 declared silent by suite, which nothing reports at all:\s+the fixture/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  /**
    * An interrupted run leaves a mutant in the tree, and that is the one way a defect enters this
    * catalogue in silence: a *surviving* mutant reddens nothing by definition, so `npm test` is green,
    * the tree is dirty, and the whole thing is committable with nothing protesting. The next battery

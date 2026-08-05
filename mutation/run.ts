@@ -603,6 +603,83 @@ const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[
 }
 
 /**
+ * Every guard this battery names is a guard the run carries - checked before a single verdict exists.
+ *
+ * **Both halves of this were measured rather than argued**, on `site` at `82d09a7`, by putting back the
+ * two mistakes this repository has already made once and corrected before measuring. Neither outcome is
+ * the one the debt was filed expecting.
+ *
+ * A **pin** naming a guard no guard carries does redden, and the red says the wrong thing:
+ *
+ *     1 cell(s) disagree with the battery:
+ *       W-41 on W/as-committed: expected killed, measured killed
+ *         no longer caught by: an-invisible-character-is-read-back-as-the-character-it-names
+ *
+ * `expected killed, measured killed` is the two verdicts agreeing, on a line announcing that they do
+ * not. `no longer caught by` then sends its reader into `read-literal.test.ts` after a guard that
+ * stopped catching a defect - and there is no such guard, and there never was. A red that manufactures
+ * a regression costs more than a silence, because somebody goes and looks for it.
+ *
+ * A guard declared silent under a name nothing carries is not reported **at all**: the name occurred
+ * zero times in that run's output, the list printed the three real entries, and the run finished on
+ * `every guard of this contract is either witnessed or accounted for`.
+ *
+ * So the addresses are resolved here, where the identities are already gathered, in the seconds
+ * calibration costs rather than in the minutes a battery does. It is what turns a case identifier, a
+ * guard identifier or a benchmark profile name that has stopped resolving from a silence into an error,
+ * with no renaming anywhere - the class `CLAUDE.md` has been carrying against five kinds of address.
+ *
+ * **Each half is resolved against the universe its own mechanism reads, and that is why neither can
+ * refuse wrongly.** `agreesWith` looks a pin up among every guard that reddened anywhere in the run, so
+ * a pin resolves against every guard collected. `attributeColumn` only ever sees the guards of the
+ * contract under measurement, so a silence declaration resolves against those - a guard declared silent
+ * from outside the folder would be silent whether it existed or not.
+ */
+const assertEveryAddressResolves = (
+  battery: Battery,
+  cell: string,
+  lens: string,
+  collected: readonly GuardIdentity[],
+  own: readonly GuardIdentity[],
+): void => {
+  const anywhere = new Set(collected.map((guard) => guard.id))
+  const here = new Set(own.map((guard) => guard.id))
+  const suitesHere = new Set(own.map((guard) => guard.suite))
+
+  const pinned = battery.mutants
+    .flatMap((mutant) => (mutant.expected[cell]?.by ?? []).map((guard) => ({ mutant, guard })))
+    .filter(({ guard }) => !anywhere.has(guard))
+
+  const declared = [...battery.unreachableGuards, ...battery.unprobedRegions].filter(
+    (group) => group.lenses === undefined || group.lenses.includes(lens),
+  )
+  const guards = declared.flatMap((group) => (group.guards ?? []).filter((id) => !here.has(id)))
+  const suites = declared.flatMap((group) => (group.suites ?? []).filter((id) => !suitesHere.has(id)))
+
+  if (pinned.length === 0 && guards.length === 0 && suites.length === 0) return
+
+  const listed = (what: string, consequence: string, names: readonly string[]): string =>
+    names.length === 0
+      ? ''
+      : `  ${names.length} ${what}, ${consequence}:\n${names.map((name) => `    ${name}`).join('\n')}\n`
+
+  throw new Error(
+    `${cell}: this battery names guards that no guard of this run carries, so those addresses ` +
+      `resolve to nothing.\n` +
+      listed(
+        'pinned by a cell',
+        'which disagrees under "no longer caught by" and sends a reader after a regression that ' +
+          'never happened',
+        pinned.map(({ mutant, guard }) => `${guard}  (pinned by ${mutant.id})`),
+      ) +
+      listed('declared silent', 'which nothing reports at all', guards) +
+      listed('declared silent by suite', 'which nothing reports at all', suites) +
+      `  A guard identifier is frozen with its contract's major version. Repoint the address if the ` +
+      `guard was renamed, and drop it if the guard is gone.`,
+  )
+}
+
+/**
  * The run collected the suite the repository says it has - and not the suite the run itself says.
  *
  * This is the anchor `assertWholeSuiteRan` never had. That guard compares a cell against the control
@@ -684,6 +761,7 @@ export const calibrate = (battery: Battery): Calibration => {
         guard.file.includes(`${battery.contractPath}/`),
       )
       assertGuardsAreAddressed(cellKey(arm, lens), ownGuards)
+      assertEveryAddressResolves(battery, cellKey(arm, lens), lens.id, control.guards, ownGuards)
       guardsPerCell[cellKey(arm, lens)] = ownGuards
 
       const injected = measureCell(battery, arm, lens, obvious, control.testsSeen)
