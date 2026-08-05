@@ -56,6 +56,7 @@ const planFile = (find: string, replace: string) => ({ file: 'plan.ts', find, re
 const rewriteFile = (find: string, replace: string) => ({ file: 'rewrite.ts', find, replace })
 const installFile = (find: string, replace: string) => ({ file: 'install.ts', find, replace })
 const localFile = (find: string, replace: string) => ({ file: 'local-source.ts', find, replace })
+const relocateFile = (find: string, replace: string) => ({ file: 'relocate.ts', find, replace })
 
 /**
  * What an install asks a registry for, and how each answer is checked.
@@ -78,6 +79,38 @@ const THE_ENTRY_FILE_IS_RENAMED = `const destinationOf = (contractName: string, 
     : \`\${contractName}/\${file}\``
 
 const A_SHARED_BLOB_IS_FOUND_BY_DIGEST = `      const shared = isEntry ? undefined : placedByDigest.get(served.sha256)`
+
+// ---------------------------------------------------------------------------
+// The folder moving, which is the other half of `toopo init`
+// ---------------------------------------------------------------------------
+
+const WHAT_IS_CARRIED_ACROSS = `    .filter((move) => move.bytes !== null)`
+
+const THE_LOCKFILE_TRAVELS_UNCHANGED = `    ? { moving: { relocation: planned.relocation, lockfile } }`
+
+const EVERY_CLAIMED_FILE_IS_CONSIDERED = `      moves.push({
+        path: file.path,`
+
+const OUR_OWN_BYTES_AT_THE_DESTINATION = `  if (destination === source) return 'already-moved'`
+
+const A_FREE_DESTINATION = `  if (destination === null) return 'moved'`
+
+const ONLY_WHAT_EXISTS_ELSEWHERE_IS_TAKEN = `  relocation.moves.filter((move) => move.verdict !== 'not-on-disk').map((move) => move.path)`
+
+const THE_FOLDER_IS_ACTUALLY_CHANGING = `  if (held === null || lockfile === null || held.directory === to.directory) {`
+
+const A_FOLDER_IS_ABANDONED_OR_NOT = `  if (leaving === null) return null`
+
+const AN_ABANDONED_FOLDER_GOES_ONLY_IF_EMPTY = `    rmdirSync(join(root, leaving))`
+
+const THE_REFUSAL_COMES_FIRST = `      if ('faults' in change) refuse(change.faults)`
+
+const EVERY_FILE_THAT_MOVED_IS_NAMED = `    ...moved.map((move) => \`\${INDENT}  ~ \${move.path}\`),`
+
+const THE_IMPORTS_ARE_THE_USERS = `      \`Imports in your own code naming \${relocation.from}/ have to be changed to \` +`
+
+const A_FOLDER_LEFT_BEHIND_IS_NAMED = `    ...(leftBehind === null
+      ? []`
 
 const A_SECOND_VERSION_IS_SEEN = `    const already = seenContracts.get(contract)`
 
@@ -829,6 +862,160 @@ void theFive`,
       },
     ],
     killed(['git-answers-whether-the-folder-is-ignored-and-says-nothing-when-it-cannot']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // The folder moving with what is installed in it
+  //
+  // `toopo init --dir` on a project that holds something used to leave the installed copy behind,
+  // claimed by nobody, inside the folder the advice above had just told the user to leave. Thirteen
+  // defects, and what they are aimed at is the three things that make the move safe rather than the
+  // arithmetic of it: **that every claimed file is carried across unchanged**, **that a destination
+  // is never overwritten and never wrongly refused**, and **that the screen says what happened** -
+  // including the one part of the work the tool cannot do, which is the user's own imports.
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'C-51',
+    'carries nothing across, so a folder change moves the configuration and leaves every file where ' +
+      'it was - which is the orphan this unit exists to stop, with the report saying it did not happen',
+    [relocateFile(WHAT_IS_CARRIED_ACROSS, `    .filter(() => false)`)],
+    killed(['every-installed-file-moves-and-not-one-byte-changes']),
+  ),
+
+  sameOnEveryLens(
+    'C-52',
+    'puts the configured folder into the lockfile\'s own paths, so a record whose whole property is ' +
+      'that it names no folder starts naming one and the next command looks in the wrong place twice',
+    [
+      relocateFile(
+        THE_LOCKFILE_TRAVELS_UNCHANGED,
+        `    ? { moving: { relocation: planned.relocation, lockfile: { ...lockfile, features: ` +
+          `lockfile.features.map((f) => ({ ...f, files: f.files.map((x) => ({ ...x, path: ` +
+          `\`\${to.directory}/\${x.path}\` })) })) } } }`,
+      ),
+    ],
+    killed(['a-relocation-leaves-the-lockfile-exactly-as-it-was']),
+  ),
+
+  sameOnEveryLens(
+    'C-53',
+    'leaves a file the user edited behind rather than carrying it across, which is the tool losing ' +
+      'somebody\'s work in the folder it has just stopped naming - and the defect the whole design ' +
+      'was chosen to make impossible',
+    [
+      relocateFile(
+        EVERY_CLAIMED_FILE_IS_CONSIDERED,
+        `      if (verdict === 'moved' && digestOnDisk(root, from, file.path) !== file.sha256) continue
+      moves.push({
+        path: file.path,`,
+      ),
+    ],
+    killed(['a-file-the-user-edited-moves-with-the-edit-in-it']),
+  ),
+
+  sameOnEveryLens(
+    'C-54',
+    'refuses a destination that already holds exactly our bytes, so a run killed between the renames ' +
+      'and the removals leaves a project the retry cannot repair - stuck by the rule written to ' +
+      'protect it, on a state this tool produced itself',
+    [relocateFile(OUR_OWN_BYTES_AT_THE_DESTINATION, `  if (destination === source && false) return 'already-moved'`)],
+    killed(['a-destination-already-holding-our-bytes-is-a-move-that-happened']),
+  ),
+
+  sameOnEveryLens(
+    'C-55',
+    'writes over whatever sits at the destination, which is the first entry of `WHAT_BREAKS` failing ' +
+      'through a door that entry does not watch: a file toopo did not write, replaced by a command ' +
+      'that only claimed to be choosing a folder',
+    [relocateFile(A_FREE_DESTINATION, `  if (destination === null || true) return 'moved'`)],
+    killed([
+      'a-destination-holding-something-else-refuses-the-whole-move',
+      'a-refused-folder-change-leaves-the-configuration-naming-the-old-folder',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'C-56',
+    'deletes a path under the folder being left for a file that was never on disk there, so a claimed ' +
+      'file that is merely missing is reported as having moved',
+    [relocateFile(ONLY_WHAT_EXISTS_ELSEWHERE_IS_TAKEN, `  relocation.moves.map((move) => move.path)`)],
+    killed(['a-file-the-lockfile-claims-and-the-disk-has-not-got-moves-nothing']),
+  ),
+
+  sameOnEveryLens(
+    'C-57',
+    'moves a folder onto itself, so `toopo init` run twice with the same folder reads every file, ' +
+      'rewrites every file and then removes the folder it has just written into',
+    [relocateFile(THE_FOLDER_IS_ACTUALLY_CHANGING, `  if (held === null || lockfile === null) {`)],
+    killed(['a-folder-that-is-not-moving-and-a-project-with-nothing-to-move-both-move-nothing']),
+  ),
+
+  sameOnEveryLens(
+    'C-58',
+    'never takes the folder it left, so the screen says the files moved and a folder carrying this ' +
+      'tool\'s name is still sitting there - the sentence and the disk disagreeing on the one screen ' +
+      'written to settle where things are',
+    [{ file: 'write.ts', find: A_FOLDER_IS_ABANDONED_OR_NOT, replace: `  if (leaving === null || true) return null` }],
+    killed([
+      'the-folder-that-was-left-goes-when-it-is-empty',
+      'the-folder-that-was-left-stays-when-it-holds-something-else',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'C-59',
+    'takes the folder it left whatever it still holds, so a file the user put there themselves is ' +
+      'deleted by a command that was told to change a setting',
+    [
+      {
+        file: 'write.ts',
+        find: AN_ABANDONED_FOLDER_GOES_ONLY_IF_EMPTY,
+        replace: `    rmSync(join(root, leaving), { recursive: true })`,
+      },
+    ],
+    killed(['the-folder-that-was-left-stays-when-it-holds-something-else']),
+  ),
+
+  sameOnEveryLens(
+    'C-60',
+    'writes the configuration before the refusal can stop it, which leaves `toopo.json` naming a ' +
+      'folder nothing is in - the exact defect this unit closes, arriving through the repair for it',
+    [
+      {
+        file: 'command.ts',
+        find: THE_REFUSAL_COMES_FIRST,
+        replace: `      writeConfiguration(root, configuration)\n      if ('faults' in change) refuse(change.faults)`,
+      },
+    ],
+    killed(['a-refused-folder-change-leaves-the-configuration-naming-the-old-folder']),
+  ),
+
+  sameOnEveryLens(
+    'C-61',
+    'stops naming the files that moved, so the tool moves things inside somebody else\'s repository ' +
+      'and hands them a count instead of a list - a number they have no way to check against their ' +
+      'own project',
+    [{ file: 'report.ts', find: EVERY_FILE_THAT_MOVED_IS_NAMED, replace: `    ...[],` }],
+    killed(['a-folder-change-names-every-file-that-moved']),
+  ),
+
+  sameOnEveryLens(
+    'C-62',
+    'says nothing about the imports in the user\'s own code, so the one part of the move this tool ' +
+      'cannot make is the one part nobody mentions - and their build fails on an import with nothing ' +
+      'anywhere saying why, which is the trap `whatToCommit` exists for, one floor up',
+    [{ file: 'report.ts', find: THE_IMPORTS_ARE_THE_USERS, replace: '      `` + `` +' }],
+    killed(['a-folder-change-says-the-imports-are-the-users-to-change']),
+  ),
+
+  sameOnEveryLens(
+    'C-63',
+    'leaves the folder it could not take unnamed, which is the orphan defect with the roles reversed: ' +
+      'a folder this tool has stopped naming, still holding somebody\'s file, mentioned by nothing ever ' +
+      'again',
+    [{ file: 'report.ts', find: A_FOLDER_LEFT_BEHIND_IS_NAMED, replace: `    ...(leftBehind === null || true\n      ? []` }],
+    killed(['a-folder-that-could-not-be-taken-is-named']),
   ),
 ]
 
