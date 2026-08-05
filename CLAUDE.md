@@ -503,7 +503,7 @@ the corollary almost nobody else can offer — the defects that were tried are c
 the exact edit it makes and the verdict it must produce.
 
 **A survivor declares its kind, and the aggregate is never available without the split.** A count of
-surviving cells published alone reads as a count of holes. Measured at `1e68d99` over the nineteen
+surviving cells published alone reads as a count of holes. Measured at `7042c3c` over the nineteen
 batteries: **36 surviving defect cells — 12 equivalent, 7 outside what the contract specifies, 4
 unreachable on this catalogue, 1 a declared open class, and 12 that live only where a lens blinded the
 suite.** Exactly one is a debt. `survived` is a function requiring a `SurvivalNature`, so a survivor
@@ -1446,14 +1446,14 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `1e68d99`, one run of the nineteen took
-**25 min 10 s** and gave **588 defect cells, 552 killed, 36 surviving, beside 26 probe cells of which 4
+Measured at `7042c3c`, one run of the nineteen took
+**25 min 21 s** and gave **589 defect cells, 553 killed, 36 surviving, beside 26 probe cells of which 4
 survive**; the largest single battery was `cli-install` at 230 s. **A duration is published beside its
-spread**, because a stamp stops a figure being stale and does not stop it being read as a period: four
-replays of the eighteen batteries before this one, on the same machine, took 22 min 14 s, 23 min 4 s,
-23 min 10 s and 26 min 32 s, so a single number to ten seconds is a precision the measurement has not
-got. `THE_REPLAY` carries both and the page renders both. The two populations are printed together
-because they
+spread**, because a stamp stops a figure being stale and does not stop it being read as a period: the
+run before this one took 25 min 10 s, and four replays of the eighteen batteries before them took
+22 min 14 s, 23 min 4 s, 23 min 10 s and 26 min 32 s — so a single number to ten seconds is a precision
+the measurement has not got. `THE_REPLAY` carries both and the page renders both. The two populations
+are printed together because they
 collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
 38*, and both were true — 556 is the defects, 582 is every cell including the probes. Each figure was
 held by somebody who did not know the other population was there, and **no committed code produced
