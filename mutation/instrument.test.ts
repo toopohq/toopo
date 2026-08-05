@@ -666,18 +666,40 @@ describe('what this repository publishes about its own defect detection', () => 
   })
 
   /**
-   * The aggregate and the breakdown are one value on purpose, and this is what that buys: every
-   * surviving cell falls into exactly one kind, so a page cannot show a total its own list does not
-   * account for.
+   * Every cell the page lists as surviving is a cell the batteries pin as surviving.
+   *
+   * **The obvious guard here was written first and could not fail, which is why this one is a second
+   * walk rather than an arithmetic identity.** `killed + surviving === cells` is preserved by any
+   * defect that moves a cell from one column to the other: measured, counting only `killed` as a kill
+   * files the five `killed-by-typecheck` cells as survivors, and the sum stays right - so the page
+   * would publish thirty-nine survivors and the identity would agree. What cannot be preserved is the
+   * verdict each listed cell actually carries, and reading it off the batteries again is the only
+   * thing that checks it.
+   *
+   * The sum is kept beside it, because it catches the other half - a cell counted in neither column,
+   * or in both - which the walk does not see.
    */
-  it('the-survivors-of-each-population-are-partitioned-by-kind', () => {
+  it('every-cell-published-as-surviving-is-pinned-as-surviving', () => {
     const measured = theMeasurement()
+    const pinned = new Set(
+      THE_BATTERIES.flatMap((one) =>
+        one.mutants.flatMap((mutant) =>
+          Object.entries(mutant.expected)
+            .filter(([, expectation]) => expectation.verdict === 'survived')
+            .map(([cell]) => `${one.name} ${mutant.id} ${cell}`),
+        ),
+      ),
+    )
 
     for (const population of [measured.defects, measured.probes]) {
-      expect(population.surviving.map((one) => one.why).filter((why) => why === undefined)).toEqual(
-        [],
-      )
+      expect(
+        population.surviving
+          .map((one) => `${one.battery} ${one.mutant} ${one.cell}`)
+          .filter((address) => !pinned.has(address)),
+      ).toEqual([])
       expect(population.killed + population.surviving.length).toBe(population.cells)
     }
+
+    expect(measured.defects.surviving.length + measured.probes.surviving.length).toBe(pinned.size)
   })
 })
