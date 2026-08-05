@@ -95,7 +95,10 @@ const AN_EMPTIED_FOLDER_IS_TIDIED = `  while (at.startsWith(root) && at !== root
 
 const A_FOLDER_IS_ONLY_REMOVED_WHEN_EMPTY = `        rmdirSync(folder)`
 
-const THE_LOCKFILE_IS_STAGED_TOO = `      writeLockfile(root, what.lockfile, lockfileTemporary)`
+// The anchor moved when the commit gained `toopo.json` as a second root file: the lockfile is staged
+// through the same list rather than on a line of its own, and the defect is the same one - a root file
+// written straight to its destination while everything else waits.
+const THE_LOCKFILE_IS_STAGED_TOO = `      write: (to: string) => writeLockfile(root, what.lockfile, to),`
 
 const AN_UNTOUCHED_FILE_IS_UPDATED = `  if (mustChange && !wasEdited) return 'updated'`
 
@@ -310,7 +313,12 @@ const mutants: readonly Mutant[] = [
     'U-15',
     'writes the lockfile in place while every other file is staged, so it is the one file of a ' +
       'commit whose write can still be half done',
-    [writeFile(THE_LOCKFILE_IS_STAGED_TOO, `      writeLockfile(root, what.lockfile)`)],
+    [
+      writeFile(
+        THE_LOCKFILE_IS_STAGED_TOO,
+        `      write: () => writeLockfile(root, what.lockfile),`,
+      ),
+    ],
     killed(['a-commit-writes-the-files-and-the-lockfile-together']),
   ),
 
