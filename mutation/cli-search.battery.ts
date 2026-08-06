@@ -561,6 +561,7 @@ export const battery: Battery = {
         'remove-without-a-contract-is-refused',
         'remove-writes-only-when-it-is-asked-to',
         'taking-out-the-last-root-asks-the-registry-nothing',
+        'the-commands-that-reach-the-registry-are-these-and-no-others',
         'the-cost-is-stated-before-the-files',
         'the-cost-is-the-files-the-bytes-and-the-depth',
         'the-diff-op-codes-are-what-node-answers',
