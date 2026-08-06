@@ -38,12 +38,13 @@
  * The files are never executed. They are written, parsed and deleted.
  */
 
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, posix } from 'node:path'
 
 import { importSpecifiersIn } from '../validation/forbidden-constructs.js'
 import { readSources } from '../validation/source.js'
+import { removeDirectory } from './remove-directory.js'
 
 /** One file to be rewritten, addressed by the path the catalogue serves it at. */
 export type SourceToRewrite = {
@@ -193,6 +194,8 @@ export const rewrittenSources = (
       },
     )
   } finally {
-    rmSync(root, { recursive: true, force: true })
+    // Through `removeDirectory` rather than `rmSync`, because this `finally` would otherwise replace a
+    // rewrite that worked with an install that failed. `remove-directory.ts` carries the measurement.
+    removeDirectory(root)
   }
 }

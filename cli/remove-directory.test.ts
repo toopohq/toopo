@@ -1,5 +1,5 @@
 /**
- * The one guard over this folder's test support, and it exists because the apparatus was the defect.
+ * The guard over `removeDirectory`, which exists because the apparatus was the defect.
  *
  * `the-commands-that-reach-the-registry-are-these-and-no-others` reddened a calibration control of
  * `cli-install` with nothing injected, and the failure was not its assertion: all 169 assertions were
@@ -7,6 +7,11 @@
  * `finally`. A teardown that throws reddens whichever guard happens to be running, and the mutation
  * instrument reads a red guard as a verdict - so a removal failing in a `finally` produces a cell that
  * looks exactly like a kill.
+ *
+ * **And the same `finally` is on the install path**, which is what took the repair out of test support
+ * and into a module of its own: `rewrite.ts` removes the folder it parsed a submission's imports in,
+ * and a throw there replaces a rewrite that worked with an install that failed. One guard covers both
+ * callers, because there is one rule about the operating system and a copy in each would be two.
  *
  * **The rate it was found at.** Three reds in 139 consecutive runs of this suite alone, 2.16 per cent,
  * every one of them this same exception at this same line. It had been recorded as a leak of state
@@ -24,7 +29,8 @@ import { existsSync, rmSync } from 'node:fs'
 
 import { describe, expect, it } from 'vitest'
 
-import { aProject, removeDirectory, waitFor } from './temporary-project.js'
+import { removeDirectory, waitFor } from './remove-directory.js'
+import { aProject } from './temporary-project.js'
 
 /**
  * How long the holder keeps the directory after it has said it is there.

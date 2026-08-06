@@ -9,7 +9,8 @@ import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import { CONFIGURATION_FILE } from './configuration.js'
 import { CHECK_IGNORE, gitIgnores } from './ignored.js'
 import { LOCKFILE } from './lockfile.js'
-import { THE_ENTRY_POINT, aProject, removeDirectory } from './temporary-project.js'
+import { removeDirectory } from './remove-directory.js'
+import { THE_ENTRY_POINT, aProject } from './temporary-project.js'
 import type { TemporaryProject } from './temporary-project.js'
 
 /**
