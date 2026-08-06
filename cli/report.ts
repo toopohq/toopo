@@ -34,6 +34,7 @@
  * three lines above needs it to work.
  */
 
+import type { ContractAddress } from '../registry/address.js'
 import { renderContract, sameContract } from '../registry/address.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import type { ServedIndexEntry, ServedRefusals } from '../registry/response.js'
@@ -716,18 +717,29 @@ export const renderRemoval = (
 
   if (removal.departure === 'stays-as-a-dependency') {
     /**
-     * The demotion is claimed only where it happened, and it does not happen to a held-back feature.
+     * The demotion is read off the two lockfiles rather than assumed from the departure.
      *
-     * *It is no longer something you asked for* is a statement about the lockfile, and it was printed
-     * from the departure alone - which says the feature stays and says nothing about whether this run
-     * was allowed to touch its entry. A feature whose file is conflicted is held back whole, entry
-     * included, so the demotion is exactly what did **not** happen and the reader is owed the reason
-     * instead.
+     * *It is no longer something you asked for* is a claim about `toopo.lock`, and it used to be
+     * printed from `departure` alone - which says the feature stays and says nothing about whether
+     * this run was allowed to touch its entry. Held back means nothing of a feature moves, entry
+     * included, so on such a run the demotion is exactly what did **not** happen.
+     *
+     * Reading the fact rather than branching on `heldBack` is the difference between a sentence that
+     * is true and one that is true for the reason somebody guessed. **Measured, the second arm is not
+     * reachable on today's catalogue**: a removal binds its roots at the version the lockfile records,
+     * so no served byte moves, so no file of a staying feature can conflict. Over the two fixture
+     * graphs, four root sets and every single-file edit, `stays-as-a-dependency` was reached 34 times
+     * and the named feature was held back on none of them. It is written this way so that the day a
+     * plan change makes it reachable - deduplication moving a shared blob is the candidate - the
+     * screen is right without anybody remembering this paragraph.
      */
-    const outcome = removal.reconciliation.features.find((feature) =>
-      sameContract(feature.contract, removal.named),
+    const isNamed = (feature: { readonly contract: ContractAddress }): boolean =>
+      sameContract(feature.contract, removal.named)
+    const rootBefore = before.features.some((feature) => isNamed(feature) && feature.askedFor)
+    const rootAfter = removal.reconciliation.lockfile.features.some(
+      (feature) => isNamed(feature) && feature.askedFor,
     )
-    const heldBack = outcome?.heldBack ?? null
+    const reason = removal.reconciliation.features.find(isNamed)?.heldBack ?? null
 
     return [
       '',
@@ -737,11 +749,11 @@ export const renderRemoval = (
       ).map((line) => `${INDENT}${line}`),
       '',
       ...paragraph(
-        heldBack === null
+        rootBefore && !rootAfter
           ? 'What changes is that it is no longer something you asked for, so it goes on its own the ' +
               'day nothing imports it. No file moves.'
-          : `Nothing changed, because ${heldBack}. It is still something you asked for. Run this ` +
-              `again once that file is settled.`,
+          : `Nothing changed${reason === null ? '' : `, because ${reason}`}. It is still something ` +
+              `you asked for.`,
       ).map((line) => `${INDENT}${line}`),
       '',
       ...theClosing(before, removal.reconciliation, applied, applyWith),

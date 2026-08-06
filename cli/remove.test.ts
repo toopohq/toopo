@@ -418,6 +418,42 @@ describe('taking a feature out of a project', () => {
   })
 
   /**
+   * *Held back, nothing changed* is a claim about the lockfile, and nothing had ever checked it.
+   *
+   * It was false. `remove` handed `reconcile` a lockfile with `askedFor` already cleared, so the entry
+   * a held-back feature carried over was the demoted one: the screen said nothing had moved while the
+   * file on disk recorded a decision the reader was being told had not been taken. It is not cosmetic -
+   * the feature is then a non-root kept alive only by the held-back rule, so the day somebody reverts
+   * the edit it leaves on the next update, on a decision nobody was told about.
+   *
+   * The comparison is over the serialised form, because that is what lands on disk, and over the
+   * **whole** file rather than over `askedFor`: `locallyModified` was being refreshed on the same
+   * entry, and refreshing one field is still moving the entry on the one screen that says nothing
+   * moved.
+   *
+   * The closing line is here too, because repairing the first exposed it: *Written, and recorded in
+   * toopo.lock* was printed two lines under *held back, nothing changed*, read off `--apply` having
+   * been typed rather than off anything having happened.
+   */
+  it('a-held-back-removal-leaves-the-lockfile-exactly-as-it-was', () => {
+    inProject(imaginedSource(), ['number/round'], (project, lockfile) => {
+      project.write(
+        `${project.configuration.directory}/number/round/round.ts`,
+        'export const round = 1\n',
+      )
+
+      const removal = removing(imaginedSource(), project, lockfile, 'number/round')
+
+      expect(JSON.stringify(removal.reconciliation.lockfile)).toBe(JSON.stringify(lockfile))
+
+      const screen = renderRemoval(removal, lockfile, project.configuration, true)
+      expect(screen).toContain('held back, nothing changed')
+      expect(screen).toContain('Nothing was written - the project is exactly as it was.')
+      expect(screen).not.toContain('Written, and recorded in toopo.lock')
+    })
+  })
+
+  /**
    * The edited file that stays holds the whole removal back, dependencies included.
    *
    * **Found by this suite rather than by reading.** `round.ts` is kept because the user changed it, and
