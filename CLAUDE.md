@@ -1528,6 +1528,19 @@ while the list does not. The remedy costs two sentences, and this section is its
   the run that wrote it, and closing that would mean four runs of every cell — the 23-minute replay
   taken four times. Priced, declared, and not built.
 
+  **And now observed, which it had not been before.** A replay at `e6acff9` reported
+  `G-02 on S/table-blind: expected killed, measured killed — no longer caught by:
+  p6-a-letter-or-a-digit-answers`: two verdicts agreeing on a line announcing that they do not, which is
+  the shape the pre-flight section below already describes and the reason it costs more than a silence.
+  P6 caught it again on the next run and on **60 real runs out of 60**, and the generator reproduced
+  beside the mutant gives a per-draw catching probability of **0.8175 %** over 2 000 000 draws — a
+  predicted miss of **0.03 %** at the contract's 1000 draws, which 20 000 simulated runs confirm at
+  0.01 %. The reproduction and the real runs agree, so the entry stays what it was: a rate small enough
+  to be legitimate under the rule, on a mechanism that still checks a pin against one draw. What the
+  observation adds is that *unobservable over the lifetime of the project* was met once, on a cell nobody
+  was looking at, by somebody measuring something else — and that 60 clean runs cannot separate
+  1-in-3 300 from 1-in-100, which is the measurement this entry would need and does not have.
+
 **Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever
 the operating system threw are refusals with a sentence. A folder that cannot be written to fails during
@@ -1668,13 +1681,16 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `a381860`, one run of the nineteen took
-**28 min 59 s** and gave **592 defect cells, 556 killed, 36 surviving, beside 26 probe cells of which 4
-survive**; the largest single battery was `cli-install` at 317 s. **A duration is published beside its
+Measured at `e6acff9`, one run of the nineteen took
+**34 min 51 s** and gave **605 defect cells, 569 killed, 36 surviving, beside 26 probe cells of which 4
+survive**; the largest single battery was `cli-install` at 459 s. **A duration is published beside its
 spread**, because a stamp stops a figure being stale and does not stop it being read as a period: the
-two runs before this one, three defect cells smaller, took 25 min 21 s and 25 min 10 s, and four
-replays of the eighteen batteries before them took 22 min 14 s, 23 min 4 s, 23 min 10 s and
-26 min 32 s — so a single number to ten seconds is a precision the measurement has not got. `THE_REPLAY` carries both and the page renders both. The two populations
+run before this one, on the same commit, took 36 min 59 s, and four replays of the same nineteen
+batteries thirteen defect cells earlier ran from 25 min 8 s to 28 min 59 s — so a single number to ten
+seconds is a precision the measurement has not got. **Part of that step is accounted for and part is
+not**, which is said rather than smoothed over: `cli-install` went from 317 s to 459 s with the thirteen
+cells it gained, about two and a half of the six minutes, and nothing here attributes the rest.
+`THE_REPLAY` carries both and the page renders both. The two populations
 are printed together because they
 collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
 38*, and both were true — 556 is the defects, 582 is every cell including the probes. Each figure was
