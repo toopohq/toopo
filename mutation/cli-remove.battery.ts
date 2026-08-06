@@ -124,7 +124,7 @@ const THE_UP_TO_DATE_SCREEN_NAMES_EVERY_FEATURE = `      update.features.map(`
 // will not accept the folder - and it is `renderInit`'s line rather than `commitAdvice`'s, which is
 // what keeps this mutant aimed at what it was aimed at: the moment the folder is being chosen.
 const INIT_SAYS_WHAT_TO_COMMIT =
-  `    ...paragraph(whatToCommit(configuration, ignores)).map((line) => \`\${INDENT}\${line}\`),`
+  `    ...paragraph(whatToCommit(configuration, git)).map((line) => \`\${INDENT}\${line}\`),`
 
 const REMOVE_TAKES_THE_ACCEPTANCE = `    const read = contractThenFlags('remove', rest, { valued: [], switches: ['apply'] })`
 

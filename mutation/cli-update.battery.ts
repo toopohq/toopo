@@ -118,7 +118,17 @@ const HOLDING_BACK_PROPAGATES = `  for (let again = true; again; ) {`
  */
 const NOTHING_IS_REMOVED_WHILE_ANYTHING_IS_HELD = `  const somethingIsHeldBack = held.size > 0 || editedIn.some((edited) => edited.length > 0)`
 
-const ONLY_A_ROOT_IS_RESOLVED_FROM = `  const roots = request.lockfile.features.filter((feature) => feature.askedFor)`
+/**
+ * The filter gained a second conjunct, and the two halves belong to two batteries.
+ *
+ * `!isDemoted(...)` is dead code for an update - `demoted` is `null` on every reconciliation this
+ * battery makes - so that half is `cli-remove`'s region and R-04 injects into it. This one goes on
+ * probing what it always probed, *which entries are roots at all*, by taking the whole filter away.
+ * Two sub-expressions of one line, each probed by the battery whose command they are about.
+ */
+const ONLY_A_ROOT_IS_RESOLVED_FROM = `  const roots = request.lockfile.features.filter(
+    (feature) => feature.askedFor && !isDemoted(request, feature.contract),
+  )`
 
 /**
  * The binding an update resolves through, which is now one branch of a choice rather than the only
