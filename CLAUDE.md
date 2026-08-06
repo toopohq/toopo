@@ -1807,11 +1807,12 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `5a9fea2`, one run of the nineteen took
-**29 min 22 s** and gave **605 defect cells, 569 killed, 36 surviving, beside 26 probe cells of which 4
-survive**; the largest single battery was `cli-install` at 364 s. **A duration is published beside its
-spread**, because a stamp stops a figure being stale and does not stop it being read as a period: three
-runs of these same 605 cells took 29 min 22 s, 34 min 51 s and 36 min 59 s, and four replays of the 592
+Measured at `4f71860`, one run of the nineteen took
+**31 min 16 s** and gave **605 defect cells, 569 killed, 36 surviving, beside 26 probe cells of which 4
+survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
+`cli-install` at 419 s. **A duration is published beside its spread**, because a stamp stops a figure
+being stale and does not stop it being read as a period: six runs of these same 605 cells took 29 min
+22 s, 34 min 51 s, 36 min 59 s, 29 min 52 s, 37 min 0 s and 31 min 16 s, and four replays of the 592
 cells before them ran from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision
 the measurement has not got. **No share of that step is attributed to anything, and this repository
 published an attribution once before withdrawing it**: the six minutes were credited to `cli-install`
@@ -1830,6 +1831,33 @@ the tally refuse**, because the boundary is `HEAD`'s own timestamp and a docs co
 back is to replay. It is the conservative direction on purpose — the alternative is a definition of
 which commits could have changed what a battery measures, which is a second statement that can be
 wrong.
+
+## A control that is red with nothing injected — open, and measured rather than explained
+
+**A replay refused itself, and the refusal is the instrument working.** `cli-install`'s calibration
+answered *the unmutated `C/as-committed` is red, so every verdict from this battery would be noise*,
+naming `the-commands-that-reach-the-registry-are-these-and-no-others`. Sixty-three verdicts built on a
+red control would have looked exactly like verdicts.
+
+**One intermittent guard produces two failures that name anything but itself.** In another replay the
+same guard reddened while a `cli-search` mutant was injected, and the attribution concluded *declared
+silent and a mutant reddened it* — a stale declaration reported against a mutant with nothing to do
+with it. Neither report can say *this guard is intermittent*, because neither is looking at that.
+
+**What is measured.** Over four full replays at `77d3cd9` and `4f71860`: one red control, one spurious
+attribution, two clean. **The cell verdicts were identical in all four** — 605 cells, 569 killed, the
+same thirty-six survivors by name — so nothing about what the mutants do is in question, and the
+published figure is not in doubt. And **0 red in 30 runs of the unmutated `cli` suite alone**, on an
+idle machine, which is why running the suite does not find it.
+
+**Why is not measured, and is therefore not written here.** The guard runs each command end to end
+through `run()`, so it replaces `process.argv`, `process.cwd`, `process.exit` and `process.stdout.write`
+for the length of a call and creates and destroys a temporary project inside it. **That is where a
+repair would look, and it is not a cause** — naming one from a plausible reading is the fault the
+section on diagnostics exists to close, and it would be worse here than on a screen, because this
+repository would then measure itself against it. What would settle it is reproducing under the only
+condition it has appeared in, which is a full replay at half an hour a run for an event seen twice in
+four. Priced, and not spent until it decides something.
 
 ## Rules for this stage
 
