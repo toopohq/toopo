@@ -628,6 +628,29 @@ export const battery: Battery = {
         'remove-writes-only-when-it-is-asked-to',
       ],
     },
+    /**
+     * The screen `toopo init` prints when the configured folder moves, and it is three guards of the
+     * thirteen that unit added.
+     *
+     * The other ten redden here, which is the same measurement this file already makes about `remove`:
+     * a relocation is decided against files on disk and committed through `write.ts`, and both are
+     * reached by anything injected into the plan, the lockfile or the commit. What no defect of this
+     * battery can reach is `renderInit` itself - an update never calls it - so the three guards over
+     * what that screen says are `cli-install`'s, where C-61, C-62 and C-63 are each alone on one.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'what `toopo init` says when it moves a folder, which `cli-install` carries with three ' +
+        'defects. This battery never renders that screen: an update changes no configuration, so the ' +
+        'relocation half of `renderInit` is out of its reach however the arithmetic underneath is ' +
+        'broken - and the arithmetic underneath does redden here, on ten of the same unit\'s guards.',
+      guards: [
+        'a-folder-change-names-every-file-that-moved',
+        'a-folder-change-says-the-imports-are-the-users-to-change',
+        'a-folder-that-could-not-be-taken-is-named',
+      ],
+    },
     {
       nature: 'claims detection',
       reason:
