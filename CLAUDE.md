@@ -1528,18 +1528,37 @@ while the list does not. The remedy costs two sentences, and this section is its
   the run that wrote it, and closing that would mean four runs of every cell — the 23-minute replay
   taken four times. Priced, declared, and not built.
 
-  **And now observed, which it had not been before.** A replay at `e6acff9` reported
-  `G-02 on S/table-blind: expected killed, measured killed — no longer caught by:
-  p6-a-letter-or-a-digit-answers`: two verdicts agreeing on a line announcing that they do not, which is
-  the shape the pre-flight section below already describes and the reason it costs more than a silence.
-  P6 caught it again on the next run and on **60 real runs out of 60**, and the generator reproduced
-  beside the mutant gives a per-draw catching probability of **0.8175 %** over 2 000 000 draws — a
-  predicted miss of **0.03 %** at the contract's 1000 draws, which 20 000 simulated runs confirm at
-  0.01 %. The reproduction and the real runs agree, so the entry stays what it was: a rate small enough
-  to be legitimate under the rule, on a mechanism that still checks a pin against one draw. What the
-  observation adds is that *unobservable over the lifetime of the project* was met once, on a cell nobody
-  was looking at, by somebody measuring something else — and that 60 clean runs cannot separate
-  1-in-3 300 from 1-in-100, which is the measurement this entry would need and does not have.
+  **And now observed, which it had not been before — and that observation settles the pin without any
+  number.** A replay at `e6acff9` reported `G-02 on S/table-blind: expected killed, measured killed —
+  no longer caught by: p6-a-letter-or-a-digit-answers`: two verdicts agreeing on a line announcing that
+  they do not, which is the shape the pre-flight section below describes and the reason it costs more
+  than a silence. **The rule says a pin on a property-based guard is legitimate only when its miss rate
+  is unobservable over the lifetime of the project. It was observed, in the first months. That question
+  is answered by the observation and not by a confidence interval**, so what the measurements below
+  decide is *how* the pin changes — widen the alphabet on this class, raise the draw count, or take the
+  property out of the pin — and never whether it does. Written down because a later reader would
+  otherwise think a number was being waited for.
+
+  Step 1 of the method is passed and was checked rather than assumed: `POLICED` declares
+  `keep: ['P4', 'P6']` and G-02 replaces the `keep` loop, so the guard does police the step the mutant
+  breaks. This is not `G-14`.
+
+  **What the measurements say, and they do not agree with each other.** Real runs: **1 silent in 500**,
+  and 573 controlled passes in all hold that single silence — about **0.18 %**. The model says
+  otherwise, and both of its cheap failure modes were checked and eliminated *in situ*, by instrumenting
+  the real predicate: the draw count is **exactly 1000**, and the catching count per run is binomial at
+  **0.96 times** the binomial spread over 150 runs, at **0.87 %** per draw — slightly *higher* than the
+  0.8226 % reproduced beside the mutant, which makes a silence rarer still. So the model is confirmed by
+  the instrument and predicts **one silent run in about 6 100**, while direct observation says one in
+  500. Pooled — two silences over roughly 1 093 trials — the model carries a likelihood of about
+  **1.3 %**: unlikely, not excluded, and a single event cannot pin a rate whichever way it falls.
+  Separating one-in-6 100 from one-in-500 needs some 5 000 real passes, about an hour and a half, and
+  that is priced rather than spent.
+
+  What the exercise did settle is bigger than the cell and lives in `mutants.ts` beside the method: the
+  miss rate is a probability raised to the draw count, so a 25 % error on the input is a factor of seven
+  on the answer, and **no rate obtained by reproducing a generator is trustworthy to better than an
+  order of magnitude.**
 
 **Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever

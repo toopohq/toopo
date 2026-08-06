@@ -101,6 +101,36 @@ export const edgeCases = (find: string, replace: string): Edit => ({
  * guards and two are pinned, because the third needs a pair the arbitraries draw on 0.221% of runs
  * and is therefore red on 175 runs out of 200.
  *
+ * ---------------------------------------------------------------------------
+ * What a rate obtained this way is worth, which is one order of magnitude and no more
+ * ---------------------------------------------------------------------------
+ *
+ * **The miss rate is the per-draw probability raised to the number of draws, so the exponent turns a
+ * small error on the input into a large one on the answer.** Measured on `G-02` of `string-slugify`,
+ * whose pin on P6 this repository reads at 1000 draws: a per-draw catching probability of 0.8226%
+ * predicts one silent run in 3 866, and 0.6195% predicts one in 500. That is a **25% error on the
+ * input becoming a factor of seven on the answer**, and 25% is well inside what a reproduction can be
+ * wrong by while looking right.
+ *
+ * So: **no miss rate obtained by reproducing a generator is trustworthy to better than an order of
+ * magnitude**, and publishing one to four significant figures claims a precision the method has not
+ * got - the same fault as a byte count published without the divisor that produced it. Quote the
+ * order, name the draw count it was raised to, and let the real runs decide anything finer.
+ *
+ * It is written here rather than beside `G-02` because it is not a fact about that cell. It holds for
+ * every pin on a property-based guard this instrument will ever carry, and it was found by measuring
+ * one of them.
+ *
+ * **The two cheap checks that come before spending real runs**, both learned from the same cell and
+ * both eliminating a hypothesis in minutes. *Is the draw count the one the model raises to?* -
+ * instrument the predicate and count, because a property reading 600 draws where the model assumed
+ * 1000 moves the answer further than any refinement of the probability will. *Is the draw sequence
+ * actually independent and identically distributed?* - collect the catching count per run over a
+ * hundred runs and compare its spread against the binomial one, because overdispersion is what
+ * produces silent runs a binomial model cannot account for, and it shows up long before a silence
+ * does. On `G-02` both came back clean: 1000 draws exactly, and a spread of 0.96 times binomial over
+ * 150 runs at 0.87% per draw.
+ *
  * **A pin names an identifier, never a title.** `run.ts` states the rule; the consequence here is
  * that rewording the sentence a guard shows in the runner's output leaves every pin standing, and
  * that a pin naming a string no guard of the contract answers to is not an address at all - which
