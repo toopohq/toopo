@@ -182,11 +182,13 @@ const migrationFaults = (
 
   const names = featureNamesIn(value)
 
+  // *Was written by an earlier `toopo`* names an author where a version number was read. The number
+  // is the fact, it is what decides the refusal, and it is what the reader can check.
   return [
-    `${LOCKFILE} was written by an earlier \`toopo\`. Version 1 did not record which features you ` +
-      `asked for and which arrived as dependencies, and that cannot be worked out from the file - ` +
-      `guessing it would either move a dependency to a version nothing was published against, or ` +
-      `drop something you had asked for.`,
+    `${LOCKFILE} carries version 1. That version did not record which features you asked for and ` +
+      `which arrived as dependencies, and that cannot be worked out from the file - guessing it ` +
+      `would either move a dependency to a version nothing was published against, or drop ` +
+      `something you had asked for.`,
     `Delete ${LOCKFILE} and add back the features you want, by name. Nothing on disk is rewritten: ` +
       `a file whose bytes are already the ones toopo would write is recognised and recorded rather ` +
       `than replaced.` +

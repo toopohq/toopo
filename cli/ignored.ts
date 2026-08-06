@@ -89,6 +89,8 @@
 
 import { spawnSync } from 'node:child_process'
 
+import { LOCKFILE } from './lockfile.js'
+
 /**
  * The exit codes `git check-ignore` answers with, pinned because this repository depends on them.
  *
@@ -124,4 +126,36 @@ export const gitIgnores = (root: string, path: string): boolean | null => {
   if (done.status === CHECK_IGNORE.NOT_IGNORED) return false
 
   return null
+}
+
+/** What git says about the two things a project has to commit for a clone to be usable. */
+export type CommitStanding = {
+  readonly directory: boolean | null
+  /** `null` when it was not asked, which is every run where the folder is not ignored. */
+  readonly lockfile: boolean | null
+}
+
+/**
+ * Nothing was asked, which is a different thing from git having no answer and reads the same here.
+ *
+ * It is what the showing half of an update passes: that run wrote nothing, so there is nothing on
+ * disk for git to have an opinion about yet.
+ */
+export const GIT_WAS_NOT_ASKED: CommitStanding = { directory: null, lockfile: null }
+
+/**
+ * The folder, and - only when git refuses it - the lockfile beside it.
+ *
+ * **The second question exists because the screen was answering it without asking.** *what was just
+ * written will not be committed - and toopo.lock will be* is two claims about the user's repository
+ * and git had been consulted about one of them. The whole warning rests on the second: a lockfile that
+ * is committed while the folder is not is what leaves the next clone naming files that are not there,
+ * and a project that ignores both has no such trap and needs a different sentence. It costs one more
+ * `check-ignore`, on the one branch that says anything about the lockfile, and `-q` takes a single
+ * pathname so it could not have been folded into the first call anyway.
+ */
+export const whatGitIgnores = (root: string, directory: string): CommitStanding => {
+  const folder = gitIgnores(root, directory)
+
+  return { directory: folder, lockfile: folder === true ? gitIgnores(root, LOCKFILE) : null }
 }

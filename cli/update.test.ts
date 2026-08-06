@@ -7,6 +7,7 @@ import { renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import { GIT_WAS_NOT_ASKED } from './ignored.js'
 import {
   imaginedSource,
   sourceWithIndependentCarriers,
@@ -142,7 +143,7 @@ describe('comparing a project with what the registry serves now', () => {
        * establish: a publisher may republish identical bytes for any reason at all. What the run does
        * know is that the version moved and no byte of this feature did, and that is what it says.
        */
-      const block = renderUpdate(update, lockfile, project.configuration, false, null)
+      const block = renderUpdate(update, lockfile, project.configuration, false, GIT_WAS_NOT_ASKED)
       expect(block).toContain('the same bytes, at a version the registry moved')
       expect(block).not.toContain('republished against a dependency')
     })
@@ -189,7 +190,7 @@ describe('comparing a project with what the registry serves now', () => {
       const update = updating(project, lockfile)
       const round = update.features.find((feature) => feature.contract.name === 'number/round')
 
-      expect(round?.heldBack).toBe('you edited a file the registry changed too')
+      expect(round?.heldBack).toBe('a file of it changed here and in the registry')
       expect(update.writes.some((write) => write.path.startsWith('number/round/'))).toBe(false)
     })
   })
@@ -445,7 +446,7 @@ describe('comparing a project with what the registry serves now', () => {
     inProject((project, lockfile) => {
       project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
 
-      const rendered = renderUpdate(updating(project, lockfile), lockfile, project.configuration, false, null)
+      const rendered = renderUpdate(updating(project, lockfile), lockfile, project.configuration, false, GIT_WAS_NOT_ASKED)
       const blocks = rendered.split(/\n(?=  \S)/)
       const blockOf = (contract: string): string =>
         blocks.find((block) => block.startsWith(`  ${contract} `)) ?? ''
@@ -472,7 +473,7 @@ describe('comparing a project with what the registry serves now', () => {
 
       // A feature's header and not the tally, which also sits at this indent and also carries
       // `held back` - the count of them.
-      const headers = renderUpdate(updating(project, lockfile), lockfile, project.configuration, false, null)
+      const headers = renderUpdate(updating(project, lockfile), lockfile, project.configuration, false, GIT_WAS_NOT_ASKED)
         .split('\n')
         .filter((line) => /^ {2}\S+@\d+ · /.test(line))
 
@@ -665,8 +666,8 @@ describe('comparing a project with what the registry serves now', () => {
       const update = updating(project, lockfile)
 
       expect(update.everyClaimedFileIsMissing).toBe(true)
-      expect(renderUpdate(update, lockfile, project.configuration, true, null)).toContain(
-        'the installed folder is not committed',
+      expect(renderUpdate(update, lockfile, project.configuration, true, GIT_WAS_NOT_ASKED)).toContain(
+        'installed folder is not committed',
       )
     })
   })
@@ -740,8 +741,8 @@ describe('comparing a project with what the registry serves now', () => {
         'restored',
       )
       expect(update.everyClaimedFileIsMissing).toBe(false)
-      expect(renderUpdate(update, lockfile, project.configuration, true, null)).not.toContain(
-        'the installed folder is not committed',
+      expect(renderUpdate(update, lockfile, project.configuration, true, GIT_WAS_NOT_ASKED)).not.toContain(
+        'installed folder is not committed',
       )
     })
   })

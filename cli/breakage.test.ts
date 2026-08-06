@@ -206,8 +206,8 @@ describe('what breaks for somebody', () => {
       const outcome = installing(localSource(), project, 'string/slugify', lockfile)
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'src/lib/toopo/string/slugify/slugify.ts was edited after it was installed. Toopo never ' +
-          'replaces your changes: move them aside, or keep them and skip this install.',
+        'src/lib/toopo/string/slugify/slugify.ts is not the file toopo wrote there. Toopo never ' +
+          'replaces a change it did not make: move it aside, or keep it and skip this install.',
       ])
     } finally {
       project.remove()
@@ -261,7 +261,7 @@ describe('what breaks for somebody', () => {
       expect(() => readLockfile(project.root)).toThrow(UnusableLockfile)
 
       const faults = lockfileFaults(asVersionOne).join('\n')
-      expect(faults).toContain('Version 1 did not record which features you asked for')
+      expect(faults).toContain('That version did not record which features you asked for')
       expect(faults).toContain('toopo add string/slugify')
     } finally {
       project.remove()

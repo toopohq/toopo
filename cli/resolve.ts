@@ -91,9 +91,20 @@ const installable = (entry: ServedIndexEntry): Found<Chosen> =>
   entry.installable
     ? { found: { address: entry.address, summary: entry.summary, exports: entry.exports } }
     : {
+        /**
+         * What the field says, and not the decision that is the usual way of arriving at it.
+         *
+         * It read *it was considered and decided against. The registry publishes what it refuses and
+         * why* - two claims from one boolean. `servedIndex` sets `installable` from membership of the
+         * published set, so a contract with an identity and no publication is not installable and has
+         * no refusal to publish either; `search.ts` already models that, with `refusal: … ?? null`,
+         * and prints the reason only where there is one. Two modules of this folder disagreed about
+         * what one field means, and this was the one telling the user.
+         */
         faults: [
-          `${renderContract(entry.address)} is in the catalogue and is not installable: it was ` +
-            `considered and decided against. The registry publishes what it refuses and why.`,
+          `${renderContract(entry.address)} is in the catalogue and the registry publishes no ` +
+            `implementation of it, so there is nothing to install. \`toopo search ` +
+            `${entry.address.name}\` shows what the catalogue says about it.`,
         ],
       }
 

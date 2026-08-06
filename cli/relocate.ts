@@ -126,10 +126,13 @@ const verdictOf = (
   if (destination === null) return 'moved'
   if (destination === source) return 'already-moved'
 
+  // Not *a file toopo did not write*: the two digests differ, which says the destination is not this
+  // file and never who put it there. A folder restored from git after a `--dir` there and back holds
+  // a file toopo wrote, at bytes that have since moved.
   return {
     fault:
-      `${to}/${path} is already there and holds something else, so moving ${from}/${path} onto it ` +
-      `would replace a file toopo did not write. Move it aside, or name a different folder.`,
+      `${to}/${path} is already there and holds different bytes, so moving ${from}/${path} onto it ` +
+      `would replace it. Move it aside, or name a different folder.`,
   }
 }
 

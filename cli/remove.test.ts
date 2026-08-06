@@ -399,7 +399,7 @@ describe('taking a feature out of a project', () => {
         (feature) => feature.contract.name === 'number/round',
       )
 
-      expect(round?.heldBack).toBe('you edited a file of it, so it stays where it is')
+      expect(round?.heldBack).toBe('a file of it is not the one toopo wrote, so it stays where it is')
       expect(round?.files.map((file) => file.verdict)).toEqual(['kept-orphan'])
 
       /**

@@ -499,12 +499,16 @@ const whatIsHeldBack = (
     // The reason does not name the files, because the lines underneath it do. A held-back feature
     // prints one sentence and then a `!` line per file, and saying the paths twice makes the reader
     // check whether the two lists are the same one.
+    // *You edited* named an agent no measurement designates: what a conflict establishes is that the
+    // bytes moved on both sides, never whose hand moved the local one. A formatter, a merge and a
+    // colleague all produce it, and telling the wrong person they edited a file is the one part of
+    // this sentence they know to be false.
     if (conflicted.length > 0) {
       held.set(
         keyOf(feature.implementation.contract),
         conflicted.length === 1
-          ? 'you edited a file the registry changed too'
-          : `you edited ${conflicted.length} files the registry changed too`,
+          ? 'a file of it changed here and in the registry'
+          : `${conflicted.length} files of it changed here and in the registry`,
       )
     }
   }
@@ -798,8 +802,8 @@ const assemble = (
     const edited = editedIn[at] as readonly FileOutcome[]
     const heldBack =
       edited.length > 0
-        ? `you edited ${edited.length === 1 ? 'a file' : `${edited.length} files`} of it, so it ` +
-          `stays where it is`
+        ? `${edited.length === 1 ? 'a file of it is not the one' : `${edited.length} files of it are not the ones`} ` +
+          `toopo wrote, so it stays where it is`
         : somethingIsHeldBack
           ? 'nothing is removed while a feature is held back, because a held-back feature runs its ' +
             'old code and that code may still import this'

@@ -197,10 +197,12 @@ const diskStanding = (
       continue
     }
 
+    // Not *you edited it*: the digests differ, and which hand moved the local bytes is not in that
+    // comparison. The two facts it does establish are both here, and the offer is the same either way.
     if (held.sha256 !== onDisk) {
       faults.push(
-        `${where} was edited after it was installed. Toopo never replaces your changes: move them ` +
-          `aside, or keep them and skip this install.`,
+        `${where} is not the file toopo wrote there. Toopo never replaces a change it did not ` +
+          `make: move it aside, or keep it and skip this install.`,
       )
     }
   }

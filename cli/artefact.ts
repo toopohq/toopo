@@ -185,9 +185,11 @@ export const artefactFaults = (value: unknown): readonly string[] => {
 
   if (value['formatVersion'] !== ARTEFACT_FORMAT) {
     return [
+      // The third sentence used to name what built the archive, which the format number does not
+      // establish - a truncated or hand-edited file carries a number too. It said nothing the two
+      // facts above do not, so it goes rather than being qualified.
       `${ARTEFACT_FILE} is written under format ${JSON.stringify(value['formatVersion'])} and this ` +
-        `\`toopo\` reads format ${ARTEFACT_FORMAT}. The archive it came from was built by a ` +
-        `different version of this tool.`,
+        `\`toopo\` reads format ${ARTEFACT_FORMAT}.`,
     ]
   }
 
@@ -220,8 +222,10 @@ export class UnusableArtefact extends Error {
 export const readArtefact = (path: string): ServedArtefact => {
   if (!existsSync(path)) {
     throw new UnusableArtefact([
-      `${path} is not there. This \`toopo\` was published without the catalogue it serves, which is ` +
-        `a defect in the archive rather than anything you did.`,
+      // Neither *published without it* nor *rather than anything you did*: what was measured is that
+      // the path holds nothing. A `rm` under `node_modules` produces exactly this, so absolving the
+      // reader is a claim about their own machine that nothing here can make.
+      `${path} is not there, so this \`toopo\` has no catalogue to install from.`,
     ])
   }
 

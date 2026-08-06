@@ -337,8 +337,9 @@ export const clamp = (value: number, low: number, high: number): number =>
       const outcome = installing(localSource(), project, 'array/group-by')
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'array/group-by@1 is in the catalogue and is not installable: it was considered and decided ' +
-          'against. The registry publishes what it refuses and why.',
+        'array/group-by@1 is in the catalogue and the registry publishes no implementation of it, ' +
+          'so there is nothing to install. `toopo search array/group-by` shows what the catalogue ' +
+          'says about it.',
       ])
     } finally {
       project.remove()

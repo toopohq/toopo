@@ -47,7 +47,7 @@ import {
   readConfiguration,
   writeConfiguration,
 } from './configuration.js'
-import { gitIgnores } from './ignored.js'
+import { GIT_WAS_NOT_ASKED, whatGitIgnores } from './ignored.js'
 import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
 import { listProject } from './list.js'
 import { UnusableArtefact } from './artefact.js'
@@ -181,7 +181,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         renderInit(
           configuration,
           held !== null,
-          gitIgnores(root, configuration.directory),
+          whatGitIgnores(root, configuration.directory),
           'moving' in change ? change.moving.relocation : null,
           leftBehind,
         ),
@@ -253,7 +253,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
             outcome.installation,
             configuration,
             chosen.write,
-            gitIgnores(root, configuration.directory),
+            whatGitIgnores(root, configuration.directory),
           ),
         )
       }
@@ -323,7 +323,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         // Never asked on the showing half: the sentence is about what has just been written, and this
         // run wrote nothing. Saying it in the past tense about files that do not exist yet would be
         // the report describing something other than what happened.
-        out(renderUpdate(reconciliation, lockfile, configuration, false, null))
+        out(renderUpdate(reconciliation, lockfile, configuration, false, GIT_WAS_NOT_ASKED))
       } else {
         const written = commit(root, configuration.directory, {
           writes: reconciliation.writes,
@@ -340,7 +340,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
             lockfile,
             configuration,
             true,
-            gitIgnores(root, configuration.directory),
+            whatGitIgnores(root, configuration.directory),
           ),
         )
       }

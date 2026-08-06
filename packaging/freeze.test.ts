@@ -115,9 +115,12 @@ describe('the catalogue an archive carries', () => {
 
 describe('what a published toopo refuses to read', () => {
   it('an-artefact-of-a-format-this-toopo-does-not-read-is-refused', () => {
+    // The two format numbers, and no third sentence about what produced the archive: a truncated or
+    // hand-edited file carries a number too, so *built by a different version of this tool* named a
+    // cause the comparison does not establish and said nothing the numbers do not.
     expect(artefactFaults({ ...artefact, formatVersion: ARTEFACT_FORMAT + 1 })).toEqual([
       `registry.json is written under format ${ARTEFACT_FORMAT + 1} and this \`toopo\` reads format ` +
-        `${ARTEFACT_FORMAT}. The archive it came from was built by a different version of this tool.`,
+        `${ARTEFACT_FORMAT}.`,
     ])
   })
 
@@ -140,9 +143,17 @@ describe('what a published toopo refuses to read', () => {
     expect(missing('blobs')).toEqual(['registry.json carries no files'])
   })
 
+  /**
+   * It says the path holds nothing, and stops there.
+   *
+   * It used to add *which is a defect in the archive rather than anything you did* - absolution this
+   * tool cannot hand out, since a `rm` under `node_modules` produces exactly the state it is reading.
+   * The header above says why this refusal is not filed in `WHAT_BREAKS`; that argument is ours and
+   * belongs in a comment, not on the user's screen as a claim about their machine.
+   */
   it('an-artefact-that-is-not-there-is-refused-with-the-sentence-a-user-can-act-on', () => {
     expect(() => readArtefact('nowhere/registry.json')).toThrow(
-      /was published without the catalogue it serves/,
+      /nowhere[/\\]registry\.json is not there, so this `toopo` has no catalogue to install from/,
     )
   })
 })

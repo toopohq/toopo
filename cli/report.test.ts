@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
+import type { CommitStanding } from './ignored.js'
+import { GIT_WAS_NOT_ASKED } from './ignored.js'
 import { imaginedSource } from './imagined-source.js'
 import type { Installation } from './install.js'
 import { prepareInstallation } from './install.js'
@@ -24,6 +26,17 @@ import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject } from './temporary-project.
  */
 
 const CONFIGURATION = { version: 1, directory: 'src/lib/toopo' } as const
+
+/**
+ * The three answers git gives, as `whatGitIgnores` pairs them.
+ *
+ * `lockfile` is `null` wherever the folder is not ignored, because that is the only branch on which
+ * the second question is asked - a pair saying otherwise would be a fixture describing a run this
+ * tool cannot have.
+ */
+const GIT_TRACKS_THE_FOLDER: CommitStanding = { directory: false, lockfile: null }
+const GIT_IGNORES_THE_FOLDER: CommitStanding = { directory: true, lockfile: false }
+const GIT_IGNORES_BOTH: CommitStanding = { directory: true, lockfile: true }
 
 /** Two files carried across and one the disk has not got, which is what separates the lines from the claims. */
 const A_RELOCATION: Relocation = {
@@ -62,7 +75,7 @@ describe('what the user reads', () => {
    * after the list is a promise the reader has already stopped looking for.
    */
   it('the-cost-is-stated-before-the-files', () => {
-    const lines = renderInstallation(anInstallation(), CONFIGURATION, false, null).split('\n')
+    const lines = renderInstallation(anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED).split('\n')
     const cost = lines.findIndex((line) => line.includes('depth'))
     const firstFile = lines.findIndex((line) => line.includes('+ src/lib/toopo/'))
 
@@ -77,7 +90,7 @@ describe('what the user reads', () => {
    * them what the installer did.
    */
   it('a-line-says-what-was-done-to-that-file', () => {
-    const rendered = renderInstallation(anInstallation(), CONFIGURATION, false, null)
+    const rendered = renderInstallation(anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED)
     const lines = rendered.split('\n').filter((line) => line.includes('+ src/lib/toopo/'))
 
     expect(lines.map((line) => line.trim())).toEqual([
@@ -107,18 +120,45 @@ describe('what the user reads', () => {
    * sentence that was always given.
    */
   it('an-init-says-what-has-to-be-committed', () => {
-    const screen = renderInit(CONFIGURATION, false, null, null, null)
+    const screen = renderInit(CONFIGURATION, false, GIT_WAS_NOT_ASKED, null, null)
 
     expect(screen).toContain('Commit toopo.json, toopo.lock and src/lib/toopo/')
     expect(screen).toContain('source code in your project')
-    expect(renderInit({ version: 1, directory: 'app/vendor' }, true, false, null, null)).toContain(
-      'toopo.lock and app/vendor/',
-    )
+    expect(
+      renderInit({ version: 1, directory: 'app/vendor' }, true, GIT_TRACKS_THE_FOLDER, null, null),
+    ).toContain('toopo.lock and app/vendor/')
 
-    const ignored = renderInit(CONFIGURATION, false, true, null, null)
+    const ignored = renderInit(CONFIGURATION, false, GIT_IGNORES_THE_FOLDER, null, null)
 
     expect(ignored).toContain('git ignores src/lib/toopo/')
     expect(ignored).not.toContain('Commit toopo.json, toopo.lock and')
+  })
+
+  /**
+   * The trap is a committed lockfile beside an uncommitted folder, so the lockfile's own standing is
+   * asked rather than predicted - and a project that ignores both is told the other thing.
+   *
+   * *and toopo.lock will be* was this tool guessing what the user's git would do with a second path it
+   * had never been given. The whole warning rests on that guess: with `toopo.lock` ignored too there is
+   * no lockfile naming files that are not there, because there is no committed lockfile at all. The
+   * sentence that replaces it is worth more than the one it replaces, since ignoring `toopo.lock` is
+   * the exact mistake this product argues against.
+   */
+  it('the-lockfile-standing-is-asked-and-not-predicted', () => {
+    const tracked = renderInit(CONFIGURATION, false, GIT_IGNORES_THE_FOLDER, null, null)
+    const neither = renderInit(CONFIGURATION, false, GIT_IGNORES_BOTH, null, null)
+
+    expect(tracked).toContain('toopo.lock is not ignored, so whoever clones this next gets a')
+    expect(tracked).not.toContain('nothing toopo wrote will be committed at all')
+
+    expect(neither).toContain('git ignores toopo.lock as well')
+    expect(neither).not.toContain('whoever clones this next')
+
+    // Git having no answer says nothing about either path, which is the third outcome `ignored.ts`
+    // exists to keep: never a claim about a project this tool could not read.
+    const silent = renderInit(CONFIGURATION, false, GIT_WAS_NOT_ASKED, null, null)
+    expect(silent).not.toContain('toopo.lock is not ignored')
+    expect(silent).not.toContain('git ignores toopo.lock')
   })
 
   /**
@@ -130,7 +170,7 @@ describe('what the user reads', () => {
    * did not move, and saying it did would be false about the one thing this screen is for.
    */
   it('a-folder-change-names-every-file-that-moved', () => {
-    const screen = renderInit(CONFIGURATION, true, null, A_RELOCATION, null)
+    const screen = renderInit(CONFIGURATION, true, GIT_WAS_NOT_ASKED, A_RELOCATION, null)
 
     expect(screen).toContain('lib/toopo  ->  src/lib/toopo')
     expect(screen).toContain('~ number/round/round.ts')
@@ -149,7 +189,7 @@ describe('what the user reads', () => {
    * part nobody mentions.**
    */
   it('a-folder-change-says-the-imports-are-the-users-to-change', () => {
-    const screen = renderInit(CONFIGURATION, true, null, A_RELOCATION, null)
+    const screen = renderInit(CONFIGURATION, true, GIT_WAS_NOT_ASKED, A_RELOCATION, null)
 
     expect(screen).toContain('Imports in your own code naming lib/toopo/')
     expect(screen).toContain('src/lib/toopo/')
@@ -163,10 +203,13 @@ describe('what the user reads', () => {
    * still holding somebody's file, mentioned by nothing ever again.
    */
   it('a-folder-that-could-not-be-taken-is-named', () => {
-    expect(renderInit(CONFIGURATION, true, null, A_RELOCATION, 'lib/toopo')).toContain(
-      'lib/toopo/ still holds something toopo did not put there',
+    // *still holds something toopo did not put there* named what is in the folder, where `rmdir`
+    // refusing establishes only that it is not empty - and a run killed part-way leaves our own
+    // `.toopo-part` files exactly there.
+    expect(renderInit(CONFIGURATION, true, GIT_WAS_NOT_ASKED, A_RELOCATION, 'lib/toopo')).toContain(
+      'lib/toopo/ is not empty, so it was left where it is',
     )
-    expect(renderInit(CONFIGURATION, true, null, A_RELOCATION, null)).not.toContain('still holds')
+    expect(renderInit(CONFIGURATION, true, GIT_WAS_NOT_ASKED, A_RELOCATION, null)).not.toContain('still holds')
   })
 
   it('a-refusal-says-nothing-was-written-before-it-says-why', () => {
@@ -190,7 +233,7 @@ describe('what the user reads', () => {
    * an address - `number/parse` exports `parseNumber`.
    */
   it('an-import-line-is-printed-ready-to-copy', () => {
-    const line = renderInstallation(anInstallation(), CONFIGURATION, false, null)
+    const line = renderInstallation(anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED)
       .split('\n')
       .find((held) => held.includes('import {'))
 

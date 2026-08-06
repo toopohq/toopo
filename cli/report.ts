@@ -39,6 +39,7 @@ import type { Lockfile } from '../registry/implementation-record.js'
 import type { ServedIndexEntry, ServedRefusals } from '../registry/response.js'
 import type { Configuration } from './configuration.js'
 import { CONFIGURATION_FILE } from './configuration.js'
+import type { CommitStanding } from './ignored.js'
 import { renderCount } from './diff.js'
 import type { InstalledEntry, Installation } from './install.js'
 import type { Listing } from './list.js'
@@ -122,15 +123,38 @@ export const renderImportLine = (
  * then the advice is the one that was always printed. **Never a claim about a project this tool could
  * not read**, because the reader cannot check this one themselves.
  */
-const whatToCommit = (configuration: Configuration, ignores: boolean | null): string =>
-  ignores === true
-    ? `git ignores ${configuration.directory}/, so what was just written will not be committed - ` +
-      `and toopo.lock will be. Whoever clones this next gets a lockfile naming files that are not ` +
-      `there. What toopo installs is source code in your project, not a dependency your package ` +
-      `manager restores: un-ignore ${configuration.directory}/, or pick a folder that is committed ` +
-      `with toopo init --dir <path> and add it again.`
-    : `Commit toopo.json, toopo.lock and ${configuration.directory}/ - what toopo installs is ` +
+const whatToCommit = (configuration: Configuration, git: CommitStanding): string => {
+  if (git.directory !== true) {
+    return (
+      `Commit toopo.json, toopo.lock and ${configuration.directory}/ - what toopo installs is ` +
       `source code in your project, not a dependency your package manager restores.`
+    )
+  }
+
+  /**
+   * The lockfile's own standing, asked rather than assumed.
+   *
+   * *and toopo.lock will be* was the tool predicting what the user's git would do with a second path
+   * it had never been asked about, and the whole warning rests on it: the trap is a committed lockfile
+   * naming files that were not committed. A project that ignores both has no trap and is owed the
+   * other sentence - which is worth more than the first, because ignoring `toopo.lock` is the exact
+   * mistake this product exists to argue against.
+   */
+  const lockfile =
+    git.lockfile === true
+      ? 'git ignores toopo.lock as well, so nothing toopo wrote will be committed at all.'
+      : git.lockfile === false
+        ? 'toopo.lock is not ignored, so whoever clones this next gets a lockfile naming files ' +
+          'that are not there.'
+        : ''
+
+  return (
+    `git ignores ${configuration.directory}/, so what was just written will not be committed. ` +
+    `${lockfile} What toopo installs is source code in your project, not a dependency your ` +
+    `package manager restores: un-ignore ${configuration.directory}/, or pick a folder that is ` +
+    `committed with toopo init --dir <path> and add it again.`
+  )
+}
 
 /**
  * The advice, printed under its own condition, which is not the same condition for its two halves.
@@ -142,11 +166,11 @@ const whatToCommit = (configuration: Configuration, ignores: boolean | null): st
  */
 const commitAdvice = (
   configuration: Configuration,
-  ignores: boolean | null,
+  git: CommitStanding,
   wroteConfiguration: boolean,
 ): readonly string[] =>
-  ignores === true || wroteConfiguration
-    ? [...paragraph(whatToCommit(configuration, ignores)).map((line) => `${INDENT}${line}`), '']
+  git.directory === true || wroteConfiguration
+    ? [...paragraph(whatToCommit(configuration, git)).map((line) => `${INDENT}${line}`), '']
     : []
 
 /**
@@ -184,9 +208,12 @@ const relocationLines = (relocation: Relocation, leftBehind: string | null): rea
       ? []
       : [
           '',
+          // Not *something toopo did not put there*: what `rmdir` refused establishes that the folder
+          // is not empty and nothing about what is in it. A run killed part-way leaves our own
+          // `.toopo-part` files exactly there, which `write.ts` says in as many words.
           ...paragraph(
-            `${leftBehind}/ still holds something toopo did not put there, so it was left where ` +
-              `it is. Everything toopo had written is now under ${relocation.to}/.`,
+            `${leftBehind}/ is not empty, so it was left where it is. Everything toopo had written ` +
+              `is now under ${relocation.to}/.`,
           ).map((line) => `${INDENT}${line}`),
         ]),
     '',
@@ -202,7 +229,7 @@ const relocationLines = (relocation: Relocation, leftBehind: string | null): rea
 export const renderInit = (
   configuration: Configuration,
   existed: boolean,
-  ignores: boolean | null,
+  git: CommitStanding,
   relocation: Relocation | null,
   leftBehind: string | null,
 ): string =>
@@ -212,7 +239,7 @@ export const renderInit = (
     `${INDENT}features    ${configuration.directory}`,
     '',
     ...(relocation === null ? [] : relocationLines(relocation, leftBehind)),
-    ...paragraph(whatToCommit(configuration, ignores)).map((line) => `${INDENT}${line}`),
+    ...paragraph(whatToCommit(configuration, git)).map((line) => `${INDENT}${line}`),
     '',
     `${INDENT}Change the folder with  toopo init --dir <path>`,
     `${INDENT}Install something with  toopo add string/slugify`,
@@ -245,7 +272,7 @@ export const renderInstallation = (
   installation: Installation,
   configuration: Configuration,
   wroteConfiguration: boolean,
-  ignores: boolean | null,
+  git: CommitStanding,
 ): string => {
   const { cost } = installation
   const found = installation.writes.filter((write) => write.alreadyOnDisk).length
@@ -312,7 +339,7 @@ export const renderInstallation = (
         ]),
     ...renderImportLine(installation.entry, configuration),
     '',
-    ...commitAdvice(configuration, ignores, wroteConfiguration),
+    ...commitAdvice(configuration, git, wroteConfiguration),
     `${INDENT}Recorded in toopo.lock`,
     '',
   ].join('\n')
@@ -368,17 +395,34 @@ export const renderUnchanged = (
 const VERDICTS: Readonly<Record<Exclude<FileVerdict, 'unchanged'>, readonly [string, string]>> = {
   updated: ['~', ''],
   restored: ['+', 'it was gone, and this puts it back'],
-  'already-written': ['+', 'an interrupted run had already written it'],
+  /**
+   * The two facts, and not the run that is the likeliest way to arrive at them.
+   *
+   * It read *an interrupted run had already written it*. What `verdictOf` measures is that the file
+   * holds the bytes this run would write and that `toopo.lock` records different ones - a state an
+   * interruption produces, and so does a `toopo.lock` that came out of a merge holding the old digest
+   * while a colleague's files were committed. Nobody was interrupted there, and the reader is sent
+   * looking for a crash that never happened.
+   */
+  'already-written': ['+', 'it already held these bytes, which toopo.lock did not record'],
   // No sentence, because *why* a file goes is a fact about its feature and not about the file: under
   // `update` its feature stopped being imported, under `remove` its feature may be the one that was
   // named. The feature line says which, once, and it used to say it twice with one of the two wrong.
   removed: ['-', ''],
-  // Two verdicts share the `!` mark and each needs its own sentence to be told apart, but neither
-  // restates the feature's own reason above it: a `conflict` line says which file changed on both
-  // sides, and the line above says what that means for the feature.
-  kept: ['!', 'your version is kept - the registry did not change this file'],
+  /**
+   * Two verdicts share the `!` mark and each needs its own sentence to be told apart, but neither
+   * restates the feature's own reason above it: a `conflict` line says which file changed on both
+   * sides, and the line above says what that means for the feature.
+   *
+   * **None of the three names who changed the file, and `conflict` never did.** *Your version* was
+   * read off `sha256` differing from what was written, which establishes that the bytes moved and
+   * nothing at all about the hand that moved them: a formatter running on save, a merge, a colleague.
+   * Telling somebody whose Prettier reindented a file that they edited it is naming an agent no
+   * measurement designates, and `changed on both sides` had been carrying the honest form all along.
+   */
+  kept: ['!', 'kept as it is - the registry did not change this file'],
   conflict: ['!', 'changed on both sides'],
-  'kept-orphan': ['!', 'your version is kept'],
+  'kept-orphan': ['!', 'kept as it is'],
 }
 
 /**
@@ -393,12 +437,12 @@ const VERDICTS: Readonly<Record<Exclude<FileVerdict, 'unchanged'>, readonly [str
  */
 const THE_WAYS_OUT: Readonly<Record<'update' | 'removal', string>> = {
   update:
-    'Two ways out. Keep your version: do nothing, this feature stays where it is and everything ' +
-    'else still updates. Or take ours: delete the file, run this again, and put your change back ' +
+    'Two ways out. Keep the file as it is: do nothing, this feature stays where it is and everything ' +
+    'else still updates. Or take ours: delete the file, run this again, and put the change back ' +
     'on top of the new one.',
   removal:
-    'Two ways out. Keep your version: do nothing, this feature stays where it is and nothing else ' +
-    'is affected. Or let it go: delete the file and run this again, and the removal goes through.',
+    'Two ways out. Keep the file as it is: do nothing, this feature stays where it is and nothing ' +
+    'else is affected. Or let it go: delete the file and run this again, and the removal goes through.',
 }
 
 /**
@@ -596,18 +640,24 @@ const theClosing = (
 }
 
 /**
- * The symptom of a folder nobody committed, said where it can still be acted on.
+ * The observation, said where it can still be acted on, and no account of how it came about.
  *
- * Not one file missing - **every** file the lockfile claims. A project somebody deleted a folder from
- * has some of its files; a checkout that never received the folder has none of them, and the repair
- * this command performs is what hides the cause: it works, the build goes green, and the next person
- * to clone meets exactly the same thing.
+ * Not one file missing - **every** file the lockfile claims. That is worth saying because the repair
+ * this command performs is what hides it: the files come back, the build goes green, and the next
+ * person to clone meets exactly the same thing.
+ *
+ * **It used to end *Otherwise something removed it*, and nothing had.** The measurement is that no
+ * claimed file is on disk; who or what took them is not in it, and a folder change alone produced a
+ * run where neither half of that sentence was true. Naming a cause the tool has not established sends
+ * its reader hunting for a deletion that never happened - and replacing one invented cause with a list
+ * of candidates would be the same fault wearing a hedge. So this states what was seen and what is
+ * worth looking at, which is all anybody can act on.
  */
-const THE_FOLDER_IS_NOT_COMMITTED =
-  'Every file toopo.lock claims was missing from disk. If this is a fresh checkout, the installed ' +
-  'folder is not committed - what toopo writes is source code in your project rather than a ' +
-  'dependency your package manager restores, so it belongs in version control with the rest of it. ' +
-  'Otherwise something removed it, and this run puts it back.'
+const EVERY_CLAIMED_FILE_WAS_MISSING =
+  'Every file toopo.lock claims was missing from disk, and this run puts them back. A project whose ' +
+  'installed folder is not committed looks exactly like this from here, so it is worth checking ' +
+  'before the next person clones: what toopo writes is source code in your project rather than a ' +
+  'dependency your package manager restores, and it belongs in version control with the rest of it.'
 
 /**
  * What was found, and what was or was not done about it.
@@ -621,7 +671,7 @@ export const renderUpdate = (
   before: Lockfile,
   configuration: Configuration,
   applied: boolean,
-  ignores: boolean | null,
+  git: CommitStanding,
 ): string =>
   [
     '',
@@ -631,11 +681,12 @@ export const renderUpdate = (
     theTally(update),
     '',
     ...(update.everyClaimedFileIsMissing
-      ? [...paragraph(THE_FOLDER_IS_NOT_COMMITTED, 72).map((line) => `${INDENT}${line}`), '']
+      ? [...paragraph(EVERY_CLAIMED_FILE_WAS_MISSING, 72).map((line) => `${INDENT}${line}`), '']
       : []),
-    // The symptom above and the cause here are two different findings and both are printed when both
-    // hold: every claimed file missing *and* a folder git will not accept is the whole diagnosis.
-    ...commitAdvice(configuration, ignores, false),
+    // Two different observations, both printed when both hold: every claimed file missing, and a
+    // folder git has been asked about and will not accept. Neither is offered as the reason for the
+    // other - the second is measured, and the first is a state with more than one way of arising.
+    ...commitAdvice(configuration, git, false),
     ...theClosing(before, update, applied, 'toopo update --apply'),
     '',
   ].join('\n')
@@ -755,7 +806,7 @@ export const renderUpToDate = (update: Reconciliation): string =>
           [
             renderContract(feature.contract),
             standingOf(feature),
-            feature.files.some((file) => file.verdict === 'kept') ? 'your own changes are kept' : '',
+            feature.files.some((file) => file.verdict === 'kept') ? 'kept as it is' : '',
           ] as const,
       ),
     ),
@@ -824,9 +875,12 @@ export const renderList = (listing: Listing, configuration: Configuration): stri
     ...(missing.length === 0
       ? []
       : [
+          // *`toopo update --apply` puts them back* was a prediction this command cannot make: a
+          // missing file whose feature carries a conflict elsewhere is held back whole and comes
+          // back on no run at all. What is true is what that command does first, which is show.
           ...paragraph(
             `${countOf(missing.length, 'file is', 'files are')} missing. ` +
-              `\`toopo update --apply\` puts ${missing.length === 1 ? 'it' : 'them'} back.`,
+              `\`toopo update\` shows what would be put back.`,
             72,
           ).map((line) => `${INDENT}${line}`),
           '',

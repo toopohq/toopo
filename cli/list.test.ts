@@ -118,7 +118,10 @@ describe('what this project holds', () => {
           .map((file) => file.path),
       ).toEqual(['string/pad/digits.ts'])
       expect(screen).toContain('missing')
-      expect(screen).toContain('toopo update --apply')
+      // Not `toopo update --apply` and not *puts it back*: a missing file whose feature carries a
+      // conflict elsewhere is held back whole and comes back on no run. What that command does first
+      // is show, and that is what this may promise.
+      expect(screen).toContain('`toopo update` shows what would be put back')
     })
   })
 

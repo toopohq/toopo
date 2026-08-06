@@ -188,7 +188,7 @@ describe('the configured folder moving', () => {
 
       expect('faults' in change && change.faults).toHaveLength(1)
       expect('faults' in change && change.faults[0]).toContain(`${TO}/number/sign/sign.ts`)
-      expect('faults' in change && change.faults[0]).toContain('holds something else')
+      expect('faults' in change && change.faults[0]).toContain('holds different bytes')
       // Nothing moved, and the file that was there is the one that is there.
       expect(readFileSync(join(project.root, FROM, 'number/round/round.ts'), 'utf8')).toContain('round')
     })
