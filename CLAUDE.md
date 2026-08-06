@@ -66,7 +66,14 @@ moves, which is that same unit's advice followed to the hole it opened**: `toopo
 setting and left the installed copy behind, claimed by nobody, inside the very folder git ignores — so
 `toopo list` called it missing and `toopo update` wrote a second one. `init` is the only command that can
 ever see both folders, so it moves the tree itself, and the two designs that would have refused or merely
-reported are refuted below by measurement rather than by preference.
+reported are refuted below by measurement rather than by preference. **And now the sweep of what this
+tool tells people, which is the first unit here aimed at a sentence rather than at a behaviour**: two
+screens were known to name a cause nothing had measured, reading every string the CLI can print found
+seven more, and one of the nine turned out to be a single word — *you*, on a comparison that establishes
+that bytes moved and nothing about the hand that moved them. The worst of them was reproduced rather
+than reasoned about: `toopo remove --apply` said *held back, nothing changed* while the lockfile went to
+`askedFor: false`, and the invariant it broke was already written three lines away in the module that
+broke it.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -901,25 +908,82 @@ reads or edits their sources, so nothing can repair it for them. Silence there l
 on an import with nothing anywhere saying why — the exact trap `whatToCommit` is written for, one floor
 up. **The one part of the work that stays theirs must not be the one part nobody mentions.**
 
-## A diagnostic that names a cause no measurement establishes — open, and it is a class
+## A diagnostic that names a cause no measurement establishes — settled
 
-Two instances were found by walking a real project during the unit above, and they are one fault rather
-than two. **A report may state what it observed; it may not name a cause it did not measure.**
+**A report may state what it observed; it may not name a cause it did not measure.** It is the worst
+class this repository has found in its own product, and the reason is not severity but asymmetry: a
+false comment is read by somebody who can open the file beside it, and a false diagnostic is read by
+somebody who has never seen this code, believes it on our word, and acts on it. An invented cause sends
+them hunting for a problem that does not exist — which is exactly what the pre-flight measured on
+`no longer caught by: <a name nothing carries>`, transposed onto the only screen a client ever sees.
 
-`toopo remove <feature> --apply` on an edited file prints *held back, nothing changed* and records
-`askedFor: false` — the lockfile moved while the screen said nothing had, so the feature is now a
-non-root kept alive only by the held-back rule, and it leaves silently the day the edit does.
+**The corollary is as binding as the rule: an invented cause is not repaired by a list of candidates.**
+*If this is a fresh checkout … Otherwise something removed it* was already that shape, and it is worse
+than a single wrong cause rather than better — it looks like a diagnosis, it cannot be acted on, and it
+launders a guess as completeness. Where the cause is not known, the report says what was seen and what
+is worth looking at.
 
-`toopo update --apply` on a project whose files are all missing prints *If this is a fresh checkout, the
-installed folder is not committed … Otherwise something removed it* — and after a folder change neither
-half is true: nothing removed anything, the files are still there under the old name. The unit above
-makes that **symptom** disappear, because after a relocation nothing is missing. It does not touch the
-class, and a diagnostic that asserts a cause it has not measured will say something else false by another
-route.
+**The sweep is the deliverable, not the two instances that raised it.** Every string this tool can print
+was read against one question — does this assert something the run established, or something it
+inferred? The population is the 48 refusal sites across thirteen modules, the eleven renderers of
+`report.ts`, and the held-back reasons `reconcile.ts` builds. **Nine assert.** Two were the filed
+instances; seven were found by reading, which is the argument for sweeping a surface rather than fixing
+what somebody tripped over.
 
-Filed here rather than fixed, because it is the next unit and because the two together say what the
-repair has to be: `everyClaimedFileIsMissing` is an observation and reads as one; the sentence built on
-it is a cause and does not.
+**What separates a named cause from a stated inference, and it is the line the sweep was decided on.**
+`bindingAt` says *a published version is served for life, so this is a registry that cannot answer right
+now rather than an artefact that went away* — a cause, and it stays. It publishes its premise, that
+premise is permanent rule 6, and a reader can check it. **An inference offered with its premise is
+argument; a conclusion offered alone is assertion.** None of the nine published anything of the kind.
+
+**Three of the nine were one word.** *You edited*, *your version*, *your changes*, *rather than anything
+you did* — the measurement is that the bytes differ from what was written, and the hand that moved them
+is not in that comparison. A formatter running on save, a merge, a colleague. Telling somebody whose
+Prettier reindented a file that they edited it is naming an agent nothing designates, on the shortest
+word in the sentence. `conflict` had been carrying the honest form since the day it was written:
+*changed on both sides*.
+
+**One was repaired by measuring instead, and it is the only one where that was the cheaper half.**
+*what was just written will not be committed — and toopo.lock will be* is two claims about the user's
+repository, and git had been consulted about one of them while the whole warning rests on the other: the
+trap is a committed lockfile naming files that were not committed. `whatGitIgnores` asks, on the one
+branch that mentions the lockfile. Measured on two real repositories at `d78c428` — `lib/` ignored gives
+`0` for the folder and `1` for the lockfile and the trap sentence prints; `toopo.lock` ignored as well
+gives `0` for both and the screen says nothing toopo wrote will be committed at all, which is the more
+valuable sentence of the two because ignoring `toopo.lock` is the mistake this product argues against.
+
+## Derive the sentence from the fact — settled, repository-wide
+
+**The mechanism this class has, and it is not "no mechanism".** Where a sentence claims something
+happened, it is computed from the thing that happened rather than asserted beside it. That is
+*Make the omission impossible rather than forbidding it* applied to an assertion instead of to a field,
+and it is the same move as `note` being required, as `INVOKED_BY` being total over the grammar, and as
+the census.
+
+Three instances, and the third is what proved the shape rather than illustrating it:
+
+- **`theClosing`.** *Written, and recorded in toopo.lock* was printed whenever `--apply` had been typed,
+  which is a fact about the command line. It is now `commitChangesSomething` and the two counts, so a
+  run that changed nothing says so, and a run that only re-recorded stops announcing a write.
+- **The demotion sentence.** *It is no longer something you asked for* is a claim about `toopo.lock`,
+  and it is read off `askedFor` in the lockfile before and the lockfile after. The first draft branched
+  on `heldBack`, which is a guess at *why* the entry did not move; the two lockfiles are the fact.
+- **`promoted`,** which arrived before the rule had a name and is recorded under *What a contract page
+  publishes*: one boolean was answering for two claims, and the repair was a second value rather than a
+  better sentence.
+
+**A sentence that cannot be false is worth more than a sentence somebody checked.** The nine repairs
+above are prose, and prose drifts; the three derivations cannot drift, because falsifying them and
+reddening a guard are the same event — which is the rule this file already applies to a count in an
+identifier.
+
+**What has no mechanism, priced rather than dressed as one.** A guard over the *class* would have to ask
+whether a sentence names a cause the run established, and that is a judgement about prose. There is no
+choke point to hang it on either: the sentences are authored in fourteen modules and only their
+*presentation* is shared, so even a lint over string literals would be a lint over thirteen files with a
+list of allowed verbs. It is the price the alias rule was refused at, and it is refused here on the same
+argument. **What is affordable is the per-sentence derivation above, and the discipline of sweeping a
+whole surface at once rather than repairing what somebody tripped over.** Recorded in the list below.
 
 ## A case of block 4.4 is a call — settled, catalogue-wide
 
@@ -1521,6 +1585,16 @@ while the list does not. The remedy costs two sentences, and this section is its
   needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
   to buy a check that would still be matching words against prose. Looked for, priced, and declared
   rather than dressed as a mechanism — which is the treatment this list exists to give.
+- **The rule that a report may not name a cause no measurement establishes**, whose nine instances are
+  repaired and whose class nothing keeps. It closes **one sentence at a time**, and what closes a
+  sentence is naming it in *Derive the sentence from the fact* above: three are there, so those three
+  cannot drift and the rest are prose that can. That is the recognisable event this list asks an entry
+  to carry — a sentence leaves this rule's reach on the day it is computed from what it claims, not on
+  the day somebody rereads it. The class-wide form is the one that is refused: the sentences are
+  authored in fourteen modules and only their presentation is shared, so a guard would be a lint over
+  thirteen files judging prose, at the price the alias rule above was refused at. What would close
+  *that* is a validation stage reading this repository's own strings the way stage 1 reads a
+  submission's — named so it can be recognised, and not built.
 - **The rule that a pin names what is red on every run**, stated on L-05 in `mutants.ts`, whose
   *instance* closed and whose *class* stays open. The instance was `G-14` of `string-slugify` pinning
   `p1-two-spellings-one-slug`; that pin is gone and the section below says on what argument. What no
