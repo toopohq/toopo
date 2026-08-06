@@ -355,15 +355,16 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '34 min 51 s',
-  measuredAt: 'e6acff9',
+  duration: '29 min 22 s',
+  measuredAt: '5a9fea2',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'the run before it, on the same commit, took 36 min 59 s, and four replays of the same nineteen ' +
-    'batteries thirteen defect cells earlier ran from 25 min 8 s to 28 min 59 s. Part of that step ' +
-    'is accounted for and part is not: `cli-install` went from 317 s to 459 s with the thirteen ' +
-    'cells it gained, which is about two and a half of the six minutes, and the rest is not ' +
-    'attributed to anything. So that is one run rather than how long it takes',
+    'three runs of these same 605 cells took 29 min 22 s, 34 min 51 s and 36 min 59 s, and four ' +
+    'replays of the 592 cells before them ran from 25 min 8 s to 28 min 59 s. **No share of that ' +
+    'step is attributed to anything**, and the reason is measurable rather than modest: `cli-install` ' +
+    'ran 364 s and 459 s on two of those three, a quarter of its own duration between runs of ' +
+    'identical work, so a machine this variable cannot support an account of where six minutes went. ' +
+    'That is one run rather than how long it takes',
   reprintedBy: 'npm run tally',
   /**
    * What the second command is for, now that the first one prints the total itself.

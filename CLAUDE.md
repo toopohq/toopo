@@ -1733,15 +1733,17 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `e6acff9`, one run of the nineteen took
-**34 min 51 s** and gave **605 defect cells, 569 killed, 36 surviving, beside 26 probe cells of which 4
-survive**; the largest single battery was `cli-install` at 459 s. **A duration is published beside its
-spread**, because a stamp stops a figure being stale and does not stop it being read as a period: the
-run before this one, on the same commit, took 36 min 59 s, and four replays of the same nineteen
-batteries thirteen defect cells earlier ran from 25 min 8 s to 28 min 59 s — so a single number to ten
-seconds is a precision the measurement has not got. **Part of that step is accounted for and part is
-not**, which is said rather than smoothed over: `cli-install` went from 317 s to 459 s with the thirteen
-cells it gained, about two and a half of the six minutes, and nothing here attributes the rest.
+Measured at `5a9fea2`, one run of the nineteen took
+**29 min 22 s** and gave **605 defect cells, 569 killed, 36 surviving, beside 26 probe cells of which 4
+survive**; the largest single battery was `cli-install` at 364 s. **A duration is published beside its
+spread**, because a stamp stops a figure being stale and does not stop it being read as a period: three
+runs of these same 605 cells took 29 min 22 s, 34 min 51 s and 36 min 59 s, and four replays of the 592
+cells before them ran from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision
+the measurement has not got. **No share of that step is attributed to anything, and this repository
+published an attribution once before withdrawing it**: the six minutes were credited to `cli-install`
+gaining thirteen cells, and the next run had that same battery at 364 s where the one before had it at
+459 s. **A quarter of its own duration between runs of identical work is a machine too variable to
+support the account**, so the account went rather than being qualified.
 `THE_REPLAY` carries both and the page renders both. The two populations
 are printed together because they
 collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
