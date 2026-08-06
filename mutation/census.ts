@@ -123,6 +123,13 @@
  * configuration, and the refusal did not fire because they were written before the battery ran. It is
  * the ordinary shape a unit takes here - a module of its own gets a file of its own, and the screen it
  * changed is counted where screens are counted.
+ *
+ * An eleventh on the teardown, and it is the first taken by a unit whose defect was in the apparatus
+ * rather than in anything the apparatus measures: one new file under the fifth configuration and no
+ * count moved, because the guard it adds is over this folder's own test support. What made it
+ * necessary is that a removal answering `EPERM` in a `finally` reddens whichever guard is running, and
+ * a red guard is what this instrument reads as a verdict - so the census gaining an entry here is the
+ * cheapest half of the repair, and the retry beside it is the other.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -198,6 +205,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/rewrite.test.ts': 7,
     'cli/search.test.ts': 12,
     'cli/source.test.ts': 6,
+    'cli/temporary-project.test.ts': 1,
     'cli/update.test.ts': 25,
     'cli/write.test.ts': 8,
   },

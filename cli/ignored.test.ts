@@ -3,13 +3,13 @@ import { mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { describe, it, expect } from 'vitest'
+import { afterAll, describe, it, expect } from 'vitest'
 
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import { CONFIGURATION_FILE } from './configuration.js'
 import { CHECK_IGNORE, gitIgnores } from './ignored.js'
 import { LOCKFILE } from './lockfile.js'
-import { THE_ENTRY_POINT, aProject } from './temporary-project.js'
+import { THE_ENTRY_POINT, aProject, removeDirectory } from './temporary-project.js'
 import type { TemporaryProject } from './temporary-project.js'
 
 /**
@@ -44,14 +44,25 @@ const inRepository = <T>(
   }
 }
 
-/** An environment in which `git` cannot be found, which is the third outcome and the commonest one. */
-const withNoGit = (): NodeJS.ProcessEnv => {
-  const empty = mkdtempSync(join(tmpdir(), 'toopo-no-git-'))
+/**
+ * The empty directory that stands in for a `PATH` with no git on it.
+ *
+ * Made once and removed with the file, rather than once per call. It used to be made per call and
+ * removed never, which is a leak nothing would ever have reported: measured, one directory per run of
+ * this suite, and 1 933 of them under the operating system's temporary directory on the machine where
+ * this was found.
+ */
+const NO_GIT_PATH = mkdtempSync(join(tmpdir(), 'toopo-no-git-'))
 
+afterAll(() => {
+  removeDirectory(NO_GIT_PATH)
+})
+
+/** An environment in which `git` cannot be found, which is the third outcome and the commonest one. */
+const withNoGit = (): NodeJS.ProcessEnv =>
   // Both spellings, because Windows resolves the variable case-insensitively and a JavaScript object
   // does not: setting only `PATH` beside an inherited `Path` leaves git perfectly reachable.
-  return { ...process.env, PATH: empty, Path: empty }
-}
+  ({ ...process.env, PATH: NO_GIT_PATH, Path: NO_GIT_PATH })
 
 /**
  * A screen as one run of words, for asserting a sentence rather than a layout.
