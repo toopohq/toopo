@@ -57,6 +57,30 @@ const ZERO_WIDTH_JOINER = '‍'
 const GOTHIC_AHSA = String.fromCodePoint(0x10330)
 
 /**
+ * A second astral letter, and it is here for a **rate** rather than for coverage.
+ *
+ * The coverage was already had: one astral letter is enough to separate the two walks, which is what
+ * the comment above says and what the case of block 4.4 demonstrates. What one was not enough for is
+ * the *probability* that P6 meets the separation inside its declared number of draws. With a single
+ * astral symbol a catching text — one whose only keepable content is astral — comes up on 0.87% of
+ * draws, so P6 is silent on about one run in six thousand; `G-02` of `string-slugify` pins P6, and
+ * that silence was observed on a replay. A pin met by a green teaches its reader to ignore the red,
+ * which is the one way this instrument gets destroyed.
+ *
+ * A second symbol of the same kind roughly doubles the probability and squares the rarity: measured,
+ * 1.60% of draws catch, and the silence goes below one run in a hundred thousand under any reading
+ * of the measurement this repository can make. **The margin is the point rather than the figure** —
+ * `mutants.ts` records that a rate reproduced this way is good to an order of magnitude, so a repair
+ * is chosen for leaving that uncertainty no room, not for the digits it prints.
+ *
+ * Old Italic rather than a second Gothic letter, so that what the alphabet says is *astral letters*
+ * rather than *this one script*. It carries the same kinds as the one above — a letter, astral,
+ * NFKC-stable, no decomposition, no case — so it adds probability without adding a region, and the
+ * partition guard at the end of this file is what holds that.
+ */
+const OLD_ITALIC_A = String.fromCodePoint(0x10300)
+
+/**
  * Characters this contract discards. They are drawn as a set rather than as one representative
  * because P5 asserts that swapping one for another changes nothing, and a single representative
  * would make that assertion vacuous.
@@ -127,6 +151,7 @@ const ALPHABET = [
   'Ａ',
   '²',
   GOTHIC_AHSA,
+  OLD_ITALIC_A,
   ...DISCARDED,
 ] as const
 
@@ -574,8 +599,8 @@ describe('string/slugify@1 property preconditions', () => {
       marksThatCompose: 1,
       marksThatDoNot: 3,
       lettersThatFold: 1,
-      lettersThatDoNot: 11,
-      astralLetters: 1,
+      lettersThatDoNot: 12,
+      astralLetters: 2,
       discarded: 11,
       spellings: { precomposed: 4, compatibility: 4, caseOnly: 1 },
     })

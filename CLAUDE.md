@@ -1560,6 +1560,39 @@ while the list does not. The remedy costs two sentences, and this section is its
   on the answer, and **no rate obtained by reproducing a generator is trustworthy to better than an
   order of magnitude.**
 
+  **Repaired, by widening the alphabet rather than by raising the draw count.** `propertyRuns` is shared
+  by all eight properties of the contract, so raising it pays on the whole file to fix one pin; and
+  taking P6 out of the pin would leave P7, re-drawn in the same way with a rate nobody has measured —
+  moving the problem under a name that stops announcing it. A second astral letter, Old Italic beside
+  the Gothic one, carries the same kinds and so adds probability without adding a region: measured in
+  situ, catching draws go from 0.87 % to 1.686 %, still binomial at 1.08 times the binomial spread, and
+  **the smallest count over a hundred runs goes from 2 to 8** — which is the margin visible without a
+  rate at all. `support-the-texts-reach-every-region` reddened on the two counts it holds, which is that
+  guard doing its job on a foreseen change; the partition was updated and nothing else moved.
+
+  **The new rate is published as an order and not as a figure, which is this repository's own limit
+  applied at its first use.** Better than **one silent run in 100 000 under both readings** — the model
+  in situ gives one in tens of millions, the least favourable reading the measurements permit gives one
+  in hundreds of thousands, and the two are a factor of seventy apart. Quoting six significant figures
+  from a method good to one would be the fault this file records one paragraph up. Measured at the
+  commit that carries this change; `mutants.ts` holds the method and the rule that a repair is chosen
+  for its margin rather than its precision.
+
+- **A reproduced miss rate that disagrees with what the runs show, by a factor nothing accounts for.**
+  It is a fact about the *method* rather than about `G-02`, which is why it does not close with the pin
+  that revealed it: the same reproduce-and-predict method justifies every other pin on a property-based
+  guard, and `mutants.ts` prescribes it. Measured on the cell that raised it, both of the cheap
+  explanations were eliminated **in situ** by instrumenting the real predicate — the draw count is
+  exactly the 1000 the model raises to, and the catching count per run is binomial at 0.96 times the
+  binomial spread over 150 runs. The model was thereby *confirmed* and predicts one silent run in about
+  6 200; direct observation gave one in 500, and pooled over roughly 1 093 trials the model carries a
+  likelihood near 1.3 %. **Unlikely, not excluded, and unexplained.** What would settle it is about
+  5 000 real passes of the one cell — a factor of twelve is a ten-event question, and 500 passes buy
+  one — costing roughly an hour and a half of machine time. **Priced and not spent, on the rule this
+  gap itself produced: a measurement that enters no decision is not bought at any price.** It entered
+  none, because every candidate repair cleared both readings by orders of magnitude. It will enter one
+  the day a pin's repair is close enough that the factor decides between two of them.
+
 **Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever
 the operating system threw are refusals with a sentence. A folder that cannot be written to fails during

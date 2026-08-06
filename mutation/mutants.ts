@@ -121,6 +121,16 @@ export const edgeCases = (find: string, replace: string): Edit => ({
  * every pin on a property-based guard this instrument will ever carry, and it was found by measuring
  * one of them.
  *
+ * **So a repair is chosen for its margin, never for its precision**, and that is the rule the sentence
+ * above is worth: **take the repair whose margin swallows the known uncertainty of the method.** A
+ * factor of ten is what a reproduced rate may be wrong by, so a repair that improves the rate by a
+ * factor of ten has bought nothing that survives its own error bar, and one that improves it by a
+ * factor of thousands is safe whichever way the model is wrong. On `G-02` the second astral symbol
+ * takes P6 from one silent run in some thousands to one in some tens of millions on the model, and to
+ * one in some hundreds of thousands on the least favourable reading the measurements permit - two
+ * readings a factor of seventy apart, both far past anything that matters. **That is what decides it,
+ * and the third decimal of either never enters.**
+ *
  * **The two cheap checks that come before spending real runs**, both learned from the same cell and
  * both eliminating a hypothesis in minutes. *Is the draw count the one the model raises to?* -
  * instrument the predicate and count, because a property reading 600 draws where the model assumed

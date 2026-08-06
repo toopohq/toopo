@@ -159,9 +159,13 @@ const behaviour: readonly Mutant[] = [
     'G-02',
     'walks UTF-16 code units rather than code points, which is what a loop written with an index ' +
       'and `length` does. Emoji cannot see it - both conventions discard them - so the only inputs ' +
-      'that can are letters outside the basic plane, and the contract carries exactly one row and ' +
-      'one alphabet symbol for that reason. The alphabet symbol is why the blinded column still ' +
-      'catches it',
+      'that can are letters outside the basic plane, and the contract carries one row and two ' +
+      'alphabet symbols for that reason. The alphabet symbols are why the blinded column still ' +
+      'catches it, and the second one is here because **this pin was observed being met by a ' +
+      'green**: with one astral symbol P6 met the separation on 0.87% of draws and was silent on ' +
+      'about one run in six thousand, which a replay duly produced. Two put it beyond one in a ' +
+      'hundred thousand under any reading of the measurement - see `mutants.ts`, which records why ' +
+      'a rate reproduced that way is quoted as an order and not as a figure',
     [reference(LOOP, `  for (const point of text.normalize('NFKC').split('')) {`)],
     {
       'as-committed': killed([AN_ASTRAL_LETTER, NON_EMPTY, FIXED_POINT]),
