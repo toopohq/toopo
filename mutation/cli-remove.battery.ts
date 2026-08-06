@@ -76,9 +76,20 @@ const A_FEATURE_STILL_REACHED_STAYS = `  if (stillReachedBy.length === 0) {`
 
 const WHAT_WAS_NEVER_ASKED_FOR_IS_REFUSED = `  if (!named.feature.askedFor) {`
 
-const ONLY_THE_ONE_NAMED_IS_DEMOTED = `    renderContract(feature.contract) === renderContract(named)`
+/**
+ * The demotion moved out of `remove.ts`, and the two anchors moved with it.
+ *
+ * `remove` used to hand `reconcile` a lockfile with `askedFor` already cleared, so one value answered
+ * both *what does the project hold* and *what does this command want as roots* - and a held-back
+ * feature recorded the demotion on a screen that said nothing had changed. `ReconcileRequest.demoted`
+ * is the repair, and it is honoured in exactly the two places below: the roots a plan is built from,
+ * and the `askedFor` of an entry this run rewrites. **Both are call sites rather than `isDemoted`
+ * itself**, because an edit to that function's body leaves a parameter unread and would be killed by
+ * the compiler rather than by a guard - a death, but not the one either of these cells is about.
+ */
+const EVERY_ENTRY_KEEPS_WHAT_IT_HAD = `      askedFor: (was?.askedFor ?? false) && !isDemoted(request, planning.implementation.contract),`
 
-const DEMOTING_CLEARS_THE_FLAG = `      ? { ...feature, askedFor: false }`
+const THE_NAMED_ONE_STOPS_BEING_A_ROOT = `    (feature) => feature.askedFor && !isDemoted(request, feature.contract),`
 
 const THE_REMAINING_ROOTS_ARE_BOUND_AS_RECORDED = `    boundAs: 'as-the-lockfile-records-it',`
 
@@ -157,15 +168,15 @@ export const mutants: readonly Mutant[] = [
     'R-03',
     'demotes every feature rather than the one that was named, so one `toopo remove` makes the whole ' +
       'project rootless and the next update has nowhere to start',
-    [removeFile(ONLY_THE_ONE_NAMED_IS_DEMOTED, `    true`)],
+    [reconcileFile(EVERY_ENTRY_KEEPS_WHAT_IT_HAD, `      askedFor: false,`)],
     killed(['only-what-the-removed-feature-alone-pulled-in-goes-with-it']),
   ),
 
   sameOnEveryLens(
     'R-04',
-    'demotes nothing, so the feature stays a root, the plan keeps holding it, and the command reports ' +
-      'a removal that removed nothing at all',
-    [removeFile(DEMOTING_CLEARS_THE_FLAG, `      ? feature`)],
+    'keeps the named feature among the roots, so the plan goes on holding it, nothing it pulled in is ' +
+      'reconsidered, and the command reports a removal that took nothing out at all',
+    [reconcileFile(THE_NAMED_ONE_STOPS_BEING_A_ROOT, `    (feature) => feature.askedFor,`)],
     killed([
       'a-feature-nothing-else-holds-leaves-with-everything-it-pulled-in',
       'only-what-the-removed-feature-alone-pulled-in-goes-with-it',
