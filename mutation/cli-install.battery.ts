@@ -1072,6 +1072,7 @@ export const battery: Battery = {
         'a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen',
         'an-init-says-what-has-to-be-committed',
         'remove-writes-only-when-it-is-asked-to',
+        'the-lockfile-standing-is-asked-and-not-predicted',
       ],
     },
     {

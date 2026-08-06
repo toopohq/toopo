@@ -627,13 +627,14 @@ export const battery: Battery = {
       nature: 'claims detection',
       reason:
         '`toopo remove` and `toopo list`, which `cli-remove` carries with twenty defects. Only the ' +
-        'five below are out of reach here: the rest of that unit reddens on this battery, because a ' +
+        'ones below are out of reach here: the rest of that unit reddens on this battery, because a ' +
         'removal is a reconciliation with one feature demoted and this is the battery over the ' +
         'reconciliation.',
       guards: [
         'a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen',
         'a-command-that-takes-nothing-is-read-and-refuses-an-argument',
         'an-init-says-what-has-to-be-committed',
+        'the-lockfile-standing-is-asked-and-not-predicted',
         'remove-without-a-contract-is-refused',
         'remove-writes-only-when-it-is-asked-to',
       ],
