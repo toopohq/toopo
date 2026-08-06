@@ -1,10 +1,17 @@
 /**
  * `toopo list` - what this project holds, answered by the project and by nothing else.
  *
- * It is the mirror of `search`, and the pair is worth naming: `search` is the only command that reads
- * no project, and this is the only one that reads no registry. Between them they answer the two
- * questions somebody has before they have anything else - *what is there* and *what have I got* - and
- * neither can be blocked by the other side being unavailable.
+ * It is the mirror of `search`: between them they answer the two questions somebody has before they
+ * have anything else - *what is there* and *what have I got* - and neither can be blocked by the other
+ * side being unavailable.
+ *
+ * **Which commands answer with no registry is not said here, because a guard says it.** This file used
+ * to claim to be the only one, and that was false from the day it was written: `init` reads no registry
+ * either, checked at `9a5c60c` and true of every commit since. Nothing kept the sentence, so nothing
+ * could notice. `the-commands-that-reach-the-registry-are-these-and-no-others` in `command.test.ts`
+ * runs every command through the thunk `run` already takes its registry by and publishes the map - a
+ * list that is produced cannot disagree with itself, which is the whole reason the sentence is gone
+ * rather than corrected.
  *
  * **It existed as a gap rather than as an idea.** Before this, the only way to see what was installed
  * was to open `toopo.lock`, and `toopo update` on a project with nothing to do answered *Nothing to do*

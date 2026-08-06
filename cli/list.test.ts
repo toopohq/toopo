@@ -13,7 +13,11 @@ import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
 
 /**
- * `toopo list` - the only command that reads no registry.
+ * `toopo list` - what this project holds, answered by the project and by nothing else.
+ *
+ * Which commands answer with no registry at all is `command.test.ts`'s, and it is a map that guard
+ * produces rather than a sentence either file writes. This one used to call itself the only one, which
+ * was false from its first day.
  *
  * What is worth guarding is the half that could have been written the lazy way. The lockfile carries
  * `locallyModified` and reading it would have been one field access; every file is hashed against the
