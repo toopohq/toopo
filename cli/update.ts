@@ -71,5 +71,9 @@ export const prepareUpdate = (source: RegistrySource, request: UpdateRequest): R
     }
   }
 
-  return reconcileProject(source, { ...request, boundAs: 'as-the-registry-serves-it-today' })
+  return reconcileProject(source, {
+    ...request,
+    demoted: null,
+    boundAs: 'as-the-registry-serves-it-today',
+  })
 }

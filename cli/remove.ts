@@ -16,8 +16,15 @@
  * re-planning what remains: what only it pulled in leaves with it, a shared blob another carrier still
  * needs is rewritten in that carrier's folder, a file the user edited is not deleted, and the feature
  * itself stays if something else still reaches it. None of that is written here - it is `reconcile.ts`,
- * shared with `update`, and this module supplies two things: a lockfile with one `askedFor` cleared,
- * and the binding policy `as-the-lockfile-records-it`.
+ * shared with `update`, and this module supplies two things: the name of the feature that stops being a
+ * root, and the binding policy `as-the-lockfile-records-it`.
+ *
+ * **The name, and not a lockfile with the demotion already applied.** This module used to clear
+ * `askedFor` itself and hand the modified file over, which made one value answer both *what does the
+ * project hold* and *what does this command want as roots*. A held-back feature then recorded the
+ * demotion while the screen said nothing had changed - the lockfile moved on a run reported as having
+ * moved nothing. `ReconcileRequest.demoted` is the repair, and it is the reason a removal can now say
+ * *nothing changed* and be right.
  *
  * **The policy is the load-bearing half.** A removal that re-planned the remaining roots at *today's*
  * publication would not merely update four features nobody asked about; it would decide which files
@@ -87,16 +94,6 @@ export type Removal = {
 export type RemoveOutcome =
   | { readonly removal: Removal }
   | { readonly faults: readonly string[] }
-
-/** The lockfile with this one feature no longer a root, which is the whole of what a removal asks. */
-const demoting = (lockfile: Lockfile, named: ContractAddress): Lockfile => ({
-  version: lockfile.version,
-  features: lockfile.features.map((feature) =>
-    renderContract(feature.contract) === renderContract(named)
-      ? { ...feature, askedFor: false }
-      : feature,
-  ),
-})
 
 /**
  * Contracts as a sentence names them, so that a refusal reads and does not enumerate.
@@ -172,7 +169,8 @@ export const prepareRemoval = (source: RegistrySource, request: RemoveRequest): 
   const outcome = reconcileProject(source, {
     root: request.root,
     configuration: request.configuration,
-    lockfile: demoting(request.lockfile, address),
+    lockfile: request.lockfile,
+    demoted: address,
     boundAs: 'as-the-lockfile-records-it',
     at: request.at,
   })

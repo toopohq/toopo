@@ -43,6 +43,7 @@ import { renderCount } from './diff.js'
 import type { InstalledEntry, Installation } from './install.js'
 import type { Listing } from './list.js'
 import type { FeatureOutcome, FileOutcome, FileVerdict, Reconciliation } from './reconcile.js'
+import { commitChangesSomething } from './reconcile.js'
 import type { Relocation } from './relocate.js'
 import type { Removal } from './remove.js'
 import { listed } from './remove.js'
@@ -557,15 +558,42 @@ const theTally = (reconciliation: Reconciliation): string => {
 }
 
 /**
- * The two ways a report that may or may not have been applied ends.
+ * The three ways a report that may or may not have been applied ends.
  *
  * The command to type is a parameter because it is the only part that differs, and a second copy of
  * these three lines would be a second place for the discipline they enforce to be softened.
+ *
+ * **`changed` is the third way, and it exists because the first was read off the wrong fact.** *Written,
+ * and recorded in toopo.lock* used to be printed whenever `--apply` had been typed, which is a fact
+ * about the command line and not about the project: a removal whose every feature is held back writes
+ * no byte and leaves a byte-identical lockfile, and closed by announcing a write, two lines under
+ * *held back, nothing changed*. The two sentences were on one screen and only one of them could be
+ * true. It is now `commitChangesSomething`, which is the same walk the caller commits.
  */
-const theClosing = (applied: boolean, applyWith: string): readonly string[] =>
-  applied
-    ? [`${INDENT}Written, and recorded in toopo.lock`]
-    : [`${INDENT}Nothing has been written.`, '', `${INDENT}Apply it with  ${applyWith}`]
+const theClosing = (
+  before: Lockfile,
+  after: Reconciliation,
+  applied: boolean,
+  applyWith: string,
+): readonly string[] => {
+  if (!applied) return [`${INDENT}Nothing has been written.`, '', `${INDENT}Apply it with  ${applyWith}`]
+
+  if (!commitChangesSomething(before, after)) {
+    return [`${INDENT}Nothing was written - the project is exactly as it was.`]
+  }
+
+  // *Written* is about bytes, so it is said when bytes moved and not when the run only re-recorded.
+  // A removal that demotes a feature nothing takes off disk lands here, and so does an update whose
+  // only change is a version the registry moved without changing a byte - which used to close by
+  // announcing a write that had not happened.
+  return [
+    `${INDENT}${
+      after.writes.length + after.removals.length === 0
+        ? 'Recorded in toopo.lock'
+        : 'Written, and recorded in toopo.lock'
+    }`,
+  ]
+}
 
 /**
  * The symptom of a folder nobody committed, said where it can still be acted on.
@@ -590,6 +618,7 @@ const THE_FOLDER_IS_NOT_COMMITTED =
  */
 export const renderUpdate = (
   update: Reconciliation,
+  before: Lockfile,
   configuration: Configuration,
   applied: boolean,
   ignores: boolean | null,
@@ -607,7 +636,7 @@ export const renderUpdate = (
     // The symptom above and the cause here are two different findings and both are printed when both
     // hold: every claimed file missing *and* a folder git will not accept is the whole diagnosis.
     ...commitAdvice(configuration, ignores, false),
-    ...theClosing(applied, 'toopo update --apply'),
+    ...theClosing(before, update, applied, 'toopo update --apply'),
     '',
   ].join('\n')
 
@@ -627,6 +656,7 @@ export const renderUpdate = (
  */
 export const renderRemoval = (
   removal: Removal,
+  before: Lockfile,
   configuration: Configuration,
   applied: boolean,
 ): string => {
@@ -634,6 +664,20 @@ export const renderRemoval = (
   const applyWith = `toopo remove ${removal.named.name} --apply`
 
   if (removal.departure === 'stays-as-a-dependency') {
+    /**
+     * The demotion is claimed only where it happened, and it does not happen to a held-back feature.
+     *
+     * *It is no longer something you asked for* is a statement about the lockfile, and it was printed
+     * from the departure alone - which says the feature stays and says nothing about whether this run
+     * was allowed to touch its entry. A feature whose file is conflicted is held back whole, entry
+     * included, so the demotion is exactly what did **not** happen and the reader is owed the reason
+     * instead.
+     */
+    const outcome = removal.reconciliation.features.find((feature) =>
+      sameContract(feature.contract, removal.named),
+    )
+    const heldBack = outcome?.heldBack ?? null
+
     return [
       '',
       ...paragraph(
@@ -642,13 +686,14 @@ export const renderRemoval = (
       ).map((line) => `${INDENT}${line}`),
       '',
       ...paragraph(
-        'What changes is that it is no longer something you asked for, so it goes on its own the ' +
-          'day nothing imports it. No file moves.',
+        heldBack === null
+          ? 'What changes is that it is no longer something you asked for, so it goes on its own the ' +
+              'day nothing imports it. No file moves.'
+          : `Nothing changed, because ${heldBack}. It is still something you asked for. Run this ` +
+              `again once that file is settled.`,
       ).map((line) => `${INDENT}${line}`),
       '',
-      ...(applied
-        ? [`${INDENT}Recorded in toopo.lock`]
-        : [`${INDENT}Nothing has been written.`, '', `${INDENT}Apply it with  ${applyWith}`]),
+      ...theClosing(before, removal.reconciliation, applied, applyWith),
       '',
     ].join('\n')
   }
@@ -667,7 +712,7 @@ export const renderRemoval = (
     ),
     theTally(removal.reconciliation),
     '',
-    ...theClosing(applied, applyWith),
+    ...theClosing(before, removal.reconciliation, applied, applyWith),
     '',
   ].join('\n')
 }

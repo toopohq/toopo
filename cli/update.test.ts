@@ -142,7 +142,7 @@ describe('comparing a project with what the registry serves now', () => {
        * establish: a publisher may republish identical bytes for any reason at all. What the run does
        * know is that the version moved and no byte of this feature did, and that is what it says.
        */
-      const block = renderUpdate(update, project.configuration, false, null)
+      const block = renderUpdate(update, lockfile, project.configuration, false, null)
       expect(block).toContain('the same bytes, at a version the registry moved')
       expect(block).not.toContain('republished against a dependency')
     })
@@ -445,7 +445,7 @@ describe('comparing a project with what the registry serves now', () => {
     inProject((project, lockfile) => {
       project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
 
-      const rendered = renderUpdate(updating(project, lockfile), project.configuration, false, null)
+      const rendered = renderUpdate(updating(project, lockfile), lockfile, project.configuration, false, null)
       const blocks = rendered.split(/\n(?=  \S)/)
       const blockOf = (contract: string): string =>
         blocks.find((block) => block.startsWith(`  ${contract} `)) ?? ''
@@ -472,7 +472,7 @@ describe('comparing a project with what the registry serves now', () => {
 
       // A feature's header and not the tally, which also sits at this indent and also carries
       // `held back` - the count of them.
-      const headers = renderUpdate(updating(project, lockfile), project.configuration, false, null)
+      const headers = renderUpdate(updating(project, lockfile), lockfile, project.configuration, false, null)
         .split('\n')
         .filter((line) => /^ {2}\S+@\d+ · /.test(line))
 
@@ -665,7 +665,7 @@ describe('comparing a project with what the registry serves now', () => {
       const update = updating(project, lockfile)
 
       expect(update.everyClaimedFileIsMissing).toBe(true)
-      expect(renderUpdate(update, project.configuration, true, null)).toContain(
+      expect(renderUpdate(update, lockfile, project.configuration, true, null)).toContain(
         'the installed folder is not committed',
       )
     })
@@ -740,7 +740,7 @@ describe('comparing a project with what the registry serves now', () => {
         'restored',
       )
       expect(update.everyClaimedFileIsMissing).toBe(false)
-      expect(renderUpdate(update, project.configuration, true, null)).not.toContain(
+      expect(renderUpdate(update, lockfile, project.configuration, true, null)).not.toContain(
         'the installed folder is not committed',
       )
     })

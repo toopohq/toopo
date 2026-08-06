@@ -124,14 +124,25 @@ export type ReconcileRequest = {
   readonly root: string
   readonly configuration: Configuration
   /**
-   * The lockfile the reconciliation starts from, and the whole of what a caller shapes.
+   * The lockfile as the project holds it, which callers hand over unchanged.
    *
-   * `remove` hands over the file with one feature's `askedFor` cleared and changes nothing else: the
-   * roots are read off this field, so demoting a feature is the whole of what asking for its removal
-   * means, and the entry that comes out the other side carries the demotion because it is read from
-   * here too.
+   * **It used to be the thing a caller shaped, and that is what made a report lie.** `remove` passed
+   * this file with one feature's `askedFor` already cleared, so one value was answering two questions -
+   * *what does the project hold* and *what does this command want as roots* - and every reader below
+   * got the second when it wanted the first. A feature held back then recorded the demotion while the
+   * screen said nothing had changed. It is the shape `install.ts` records for `promoted`: the defect is
+   * never a wrong value, it is one value answering for two claims.
    */
   readonly lockfile: Lockfile
+  /**
+   * The feature this command is taking out of the roots, or `null` when it is not a removal.
+   *
+   * Required rather than optional, the shape `Commit.leaving` already takes: a caller that could omit
+   * it is a caller that will. It is applied in exactly two places - the roots a plan is built from, and
+   * the `askedFor` of an entry this run rewrites - and **never to a feature that is held back**, which
+   * is what makes *held back, nothing changed* a sentence rather than a hope.
+   */
+  readonly demoted: ContractAddress | null
   readonly boundAs: HowRootsAreBound
   /** The instant recorded in the lockfile, supplied rather than read, so a guard is reproducible. */
   readonly at: string
@@ -537,16 +548,41 @@ const whatIsHeldBack = (
  * lockfile equal to the one that was read is exactly the run that would rewrite nothing.
  */
 export const nothingMoved = (before: Lockfile, after: Reconciliation): boolean =>
-  after.writes.length === 0 &&
-  after.removals.length === 0 &&
-  after.features.every((feature) => feature.heldBack === null) &&
-  JSON.stringify(after.lockfile) === JSON.stringify(before)
+  !commitChangesSomething(before, after) &&
+  after.features.every((feature) => feature.heldBack === null)
+
+/**
+ * Whether committing this would change anything at all: a byte on disk, or a line of the lockfile.
+ *
+ * **Not the same question as `nothingMoved`, and separating them repaired a sentence.** That one
+ * decides whether a command may say *nothing to do*, so it also requires that nothing is held back -
+ * a project with a conflict in it has something to do even when this run writes nothing. This one is
+ * only about what the commit does, and it is what the closing line is entitled to say: a removal whose
+ * every feature is held back used to close with *Written, and recorded in toopo.lock* directly under
+ * *held back, nothing changed*, because the closing was read off `--apply` having been typed rather
+ * than off anything having happened.
+ */
+export const commitChangesSomething = (before: Lockfile, after: Reconciliation): boolean =>
+  after.writes.length > 0 ||
+  after.removals.length > 0 ||
+  JSON.stringify(after.lockfile) !== JSON.stringify(before)
+
+/**
+ * Whether this contract is the one the command is taking out of the roots.
+ *
+ * One reading of `demoted`, used by both places that honour it, because two spellings of *is this the
+ * feature being removed* is how the plan and the entry come to disagree about which feature it was.
+ */
+const isDemoted = (request: ReconcileRequest, contract: ContractAddress): boolean =>
+  request.demoted !== null && keyOf(request.demoted) === keyOf(contract)
 
 export const reconcileProject = (
   source: RegistrySource,
   request: ReconcileRequest,
 ): ReconcileOutcome => {
-  const roots = request.lockfile.features.filter((feature) => feature.askedFor)
+  const roots = request.lockfile.features.filter(
+    (feature) => feature.askedFor && !isDemoted(request, feature.contract),
+  )
   const graph = theNewGraph(source, roots, request.boundAs)
   if ('faults' in graph) return { faults: graph.faults }
 
@@ -718,7 +754,15 @@ const assemble = (
       // The instant moves only when something did, so that running this twice leaves one lockfile.
       installedAt: moved ? request.at : (was as LockedFeature).installedAt,
       locallyModified: files.some((file) => EDITED.has(file.verdict)),
-      askedFor: was?.askedFor ?? false,
+      /**
+       * The demotion lands here and only here, on a feature this run is rewriting anyway.
+       *
+       * A feature reached by another root is the case: it stays on disk, it stops being something the
+       * user asked for, and the screen says both. Held-back features never reach this line - they
+       * `continue` above with their entry carried over untouched - which is the whole of what makes
+       * *nothing changed* true rather than nearly true.
+       */
+      askedFor: (was?.askedFor ?? false) && !isDemoted(request, planning.implementation.contract),
     })
   }
 
@@ -769,8 +813,16 @@ const assemble = (
       heldBack,
     })
 
+    /**
+     * The entry is carried over exactly as it was read, field for field.
+     *
+     * It used to arrive with `locallyModified` refreshed, and refreshing one field is still moving the
+     * entry - on the one screen that says nothing moved. There is nothing to lose by leaving it: the
+     * field is what was true when the last command ran, and `list.ts` re-hashes every file rather than
+     * reading it, precisely because a cached observation is not the observation.
+     */
     if (heldBack !== null) {
-      lockfile = withFeature(lockfile, { ...entry.feature, locallyModified: edited.length > 0 })
+      lockfile = withFeature(lockfile, entry.feature)
       continue
     }
 

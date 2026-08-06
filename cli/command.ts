@@ -259,10 +259,13 @@ export const run = (theRegistry: () => RegistrySource): void => {
       }
     } else if (parsed.command.name === 'remove') {
       const configuration = theConfiguration()
+      // Bound rather than passed inline, for the reason `update` binds its own: the closing line is a
+      // claim about the difference between this file and the one the reconciliation leaves behind.
+      const lockfile = theLockfile('remove')
       const outcome = prepareRemoval(theRegistry(), {
         root,
         configuration,
-        lockfile: theLockfile('remove'),
+        lockfile,
         contract: parsed.command.contract,
         at: new Date().toISOString(),
       })
@@ -283,7 +286,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         if ('faults' in written) refuse(written.faults)
       }
 
-      out(renderRemoval(removal, configuration, parsed.command.apply))
+      out(renderRemoval(removal, lockfile, configuration, parsed.command.apply))
     } else if (parsed.command.name === 'list') {
       const configuration = theConfiguration()
 
@@ -320,7 +323,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         // Never asked on the showing half: the sentence is about what has just been written, and this
         // run wrote nothing. Saying it in the past tense about files that do not exist yet would be
         // the report describing something other than what happened.
-        out(renderUpdate(reconciliation, configuration, false, null))
+        out(renderUpdate(reconciliation, lockfile, configuration, false, null))
       } else {
         const written = commit(root, configuration.directory, {
           writes: reconciliation.writes,
@@ -334,6 +337,7 @@ export const run = (theRegistry: () => RegistrySource): void => {
         out(
           renderUpdate(
             reconciliation,
+            lockfile,
             configuration,
             true,
             gitIgnores(root, configuration.directory),

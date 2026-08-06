@@ -251,7 +251,7 @@ describe('taking a feature out of a project', () => {
       )
       expect(pad?.askedFor).toBe(false)
 
-      const screen = renderRemoval(removal, project.configuration, false)
+      const screen = renderRemoval(removal, lockfile, project.configuration, false)
       expect(screen).toContain('string/pad@1 stays where it is: number/round@1 imports it')
       expect(screen).toContain('no longer something you asked for')
 
@@ -407,7 +407,7 @@ describe('taking a feature out of a project', () => {
        * what caught: the screen offered *put your change back on top of the new one* to somebody who
        * had asked for the feature to be deleted, about a file that is not going to exist.
        */
-      const screen = renderRemoval(removal, project.configuration, false)
+      const screen = renderRemoval(removal, lockfile, project.configuration, false)
       expect(screen).toContain('Or let it go: delete the file')
       expect(screen).not.toContain('everything else still updates')
 
@@ -471,7 +471,7 @@ describe('taking a feature out of a project', () => {
 
       expect(removal.reconciliation.removals.length).toBeGreaterThan(0)
       expect(onDisk(project, 'number/round/round.ts')).toBe(true)
-      expect(renderRemoval(removal, project.configuration, false)).toContain(
+      expect(renderRemoval(removal, lockfile, project.configuration, false)).toContain(
         'Apply it with  toopo remove number/round --apply',
       )
 
