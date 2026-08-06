@@ -61,7 +61,12 @@ about its own build that are wider than what anything measures. **And now the fi
 the first unit here aimed at somebody who has read nothing**: `toopo add` stops needing `toopo init`,
 the project that friction was covering by accident is refused on purpose, and git is asked whether the
 folder about to receive somebody's code will ever be committed — a question this repository had recorded
-a decision against, reversed on a measurement that falsified its premise.
+a decision against, reversed on a measurement that falsified its premise. **And now the folder that
+moves, which is that same unit's advice followed to the hole it opened**: `toopo init --dir` changed the
+setting and left the installed copy behind, claimed by nobody, inside the very folder git ignores — so
+`toopo list` called it missing and `toopo update` wrote a second one. `init` is the only command that can
+ever see both folders, so it moves the tree itself, and the two designs that would have refused or merely
+reported are refuted below by measurement rather than by preference.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -809,6 +814,112 @@ and `toopo.json`. Only the advice differs. Seen red by letting the answer reach 
 not let you* on one screen is a tool arguing with itself, and the reader believes neither. It is printed
 where something was written — `add`, `init`, `update --apply` — and never on the showing half of an
 update, where the past tense would describe files that do not exist yet.
+
+## What a folder change moves, and the one part it leaves — settled
+
+**The unit before this one closed a hole by opening the next one a floor down, and it was found by
+following this repository's own advice.** A user whose folder git ignores now reads *pick a folder that
+is committed with `toopo init --dir <path>`*. They obey, and `init` used to write the setting and stop:
+`toopo.lock` records each file's path relative to the configured directory and **never the directory
+itself**, so the entry stayed valid and pointed somewhere else. Measured end to end, the old copy was
+not merely stranded — it was unreachable:
+
+```
+toopo init --dir app/toopo   ->  toopo.json updated       (not a word about what is installed)
+toopo list                   ->  app/toopo/.../slugify.ts  missing
+toopo update --apply         ->  + app/toopo/.../slugify.ts   "it was gone, and this puts it back"
+find                         ->  app/toopo/.../slugify.ts  and  lib/toopo/.../slugify.ts
+```
+
+The orphan lands inside the folder git ignores, so `git status` never shows it, `toopo list` never shows
+it, and nothing mentions it again.
+
+**`init` is the only command that can ever see both folders, and that decides the shape.** After it
+writes, the old path is recoverable from nothing on disk — the sentence `configurationToInstallUnder`
+already carries about a lockfile with no configuration beside it. So a relocation not taken there cannot
+be taken later by anything, which is what disqualifies *report the orphan and let the user tidy up*:
+there would be no command for them to run.
+
+**Refusing was disqualified by measurement rather than by taste.** The way out a refusal would have to
+name is remove-then-re-add, and permanent rule 4 stops it on the projects that need it most: `toopo
+remove --apply` on an edited file answers *held back, nothing changed*, and the only route through is
+*delete the file*. **A way out that costs the user their own work is not a way out** — and a wall in
+front of the action the previous screen told them to take is the class `ignored.ts` had just closed. A
+move has nothing to re-fetch, so it has nothing to lose: the edited file is carried across as it is, and
+`toopo list` goes on reporting it `edited` at its new path.
+
+**A relocation is a renaming, and that is structural rather than lucky.** Nothing that decides a byte can
+see the configured directory — `plan.ts`, `rewrite.ts` and `resolve.ts` never read it, and every use in
+`cli/` is a `join` to reach the disk, a line to print, or a `commit`. Measured at both ends: one contract
+installed under two different folders leaves lockfiles identical byte for byte once `installedAt` is
+pinned; and on the imagined graph — five files, six cross-feature specifiers including the repointed
+`../../string/pad/digits.js` that deduplication produces — renaming the whole tree and changing nothing
+else gives `toopo update`: **nothing moved, no file to write, no file to remove, every verdict
+`unchanged`, lockfile identical.** No import is repointed, no digest recomputed, and **no registry is
+asked** — which keeps `init` in the pair with `list`, the commands that need no server.
+
+**Four answers about a file, and the third is designed for the interruption rather than discovered by
+it.** `commit` renames every staged file into place and only then removes the old copies, so a run killed
+between the two leaves the files at *both* paths with `toopo.json` still naming the old folder. A
+destination already holding exactly the bytes we were about to write is therefore **a move that
+happened**, not a file to refuse — without it the retry meets an occupied destination and is refused by
+the rule that exists to protect it, on a state this tool produced itself. It is `PlannedWrite.alreadyOnDisk`
+and `update`'s `already-written` arriving at a third case. A destination holding anything *else* refuses
+the **whole** relocation, because a project half in one folder and half in another is a state no command
+afterwards could describe.
+
+**A file the lockfile claims and the disk has not got is compared against nothing.** There is nothing to
+carry across, so nothing is written and nothing is overwritten; whatever sits at the destination becomes
+the project's business under the ordinary rules. Comparing it would need bytes this module does not
+have — an edited file hashes to neither of the lockfile's two digests — and refusing on that would strand
+exactly the project this unit exists for.
+
+**What is compared and what is written are not the same bytes.** The comparison is over the served
+normalisation, because `canonical.ts` imposes that on the whole folder; what is written is the source's
+own bytes, carried across untouched. Normalising on the way would silently rewrite the line endings of
+somebody who is only moving a folder, and **a move that edits a file is not a move**.
+
+**`toopo init --dir` writes at once, and `THE_WRITE_DISCIPLINE` gains the argument rather than an
+exception.** The rule separates *destroying* from *obeying*: somebody who types `--dir app/toopo` is
+asking for their files to be in `app/toopo`, so moving them is doing what they wrote and a second word
+would ask whether they meant what they had just typed. `update` and `remove` are not in that position —
+what they do next is decided by the registry and the project, not by the words in the line. And a move
+destroys nothing: no file's contents change, an occupied destination refuses, and it is **its own
+inverse**, so a folder named by mistake is undone by naming the right one with nothing lost in between.
+
+**The folder that was left goes when it is empty, and that is not `emptiedFolders`.** `remove` and
+`update` must never delete the configured folder, because it goes on being the configured folder; here it
+stops being one. **An abandoned folder is not an emptied folder**, so the two facts are decided apart. It
+goes only when empty — a folder still holding something is one the user put something in — and then it is
+left alone and *named*, because a folder this tool has stopped naming, still holding somebody's file, is
+the orphan defect with the roles reversed. `Commit.leaving` carries it: required, `null` for not moving,
+the shape `Commit.configuration` already takes.
+
+**The screen names every file, and says the one part of the work that stays the user's.** After the move
+their `import { slugify } from './lib/toopo/...'` names a path that no longer exists, and toopo never
+reads or edits their sources, so nothing can repair it for them. Silence there leaves their build failing
+on an import with nothing anywhere saying why — the exact trap `whatToCommit` is written for, one floor
+up. **The one part of the work that stays theirs must not be the one part nobody mentions.**
+
+## A diagnostic that names a cause no measurement establishes — open, and it is a class
+
+Two instances were found by walking a real project during the unit above, and they are one fault rather
+than two. **A report may state what it observed; it may not name a cause it did not measure.**
+
+`toopo remove <feature> --apply` on an edited file prints *held back, nothing changed* and records
+`askedFor: false` — the lockfile moved while the screen said nothing had, so the feature is now a
+non-root kept alive only by the held-back rule, and it leaves silently the day the edit does.
+
+`toopo update --apply` on a project whose files are all missing prints *If this is a fresh checkout, the
+installed folder is not committed … Otherwise something removed it* — and after a folder change neither
+half is true: nothing removed anything, the files are still there under the old name. The unit above
+makes that **symptom** disappear, because after a relocation nothing is missing. It does not touch the
+class, and a diagnostic that asserts a cause it has not measured will say something else false by another
+route.
+
+Filed here rather than fixed, because it is the next unit and because the two together say what the
+repair has to be: `everyClaimedFileIsMissing` is an observation and reads as one; the sentence built on
+it is a cause and does not.
 
 ## A case of block 4.4 is a call — settled, catalogue-wide
 
