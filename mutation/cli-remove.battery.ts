@@ -164,12 +164,27 @@ export const mutants: readonly Mutant[] = [
     killed(['a-feature-that-was-never-asked-for-is-refused-with-what-imports-it']),
   ),
 
+  /**
+   * The pin moved with the anchor, and the two are not the same defect wearing one name.
+   *
+   * While the demotion was applied to the lockfile `remove` handed over, clearing every flag also
+   * changed the *plan* - the roots were read off that same file - so what caught it was a guard about
+   * which files leave. The demotion now lands only on an entry the run rewrites, so the plan is
+   * untouched and every file goes exactly where it should. What is wrong is the record: every entry
+   * comes back a non-root, so the lockfile moves on a run that should not have moved it and an update
+   * afterwards has nowhere to start. Those are the two guards below, and both had been declared silent
+   * here - a declaration a mutant contradicts is stale, and the instrument refused it before this was
+   * noticed by anybody reading.
+   */
   sameOnEveryLens(
     'R-03',
-    'demotes every feature rather than the one that was named, so one `toopo remove` makes the whole ' +
-      'project rootless and the next update has nowhere to start',
+    'demotes every feature rather than the one that was named, so one `toopo remove` records a whole ' +
+      'project of non-roots and the next update has nowhere to start',
     [reconcileFile(EVERY_ENTRY_KEEPS_WHAT_IT_HAD, `      askedFor: false,`)],
-    killed(['only-what-the-removed-feature-alone-pulled-in-goes-with-it']),
+    killed([
+      'applying-an-update-twice-changes-nothing-the-second-time',
+      'nothing-to-do-is-said-only-when-the-lockfile-does-not-move',
+    ]),
   ),
 
   sameOnEveryLens(
@@ -533,7 +548,6 @@ export const battery: Battery = {
         'an-unreadable-lockfile-stops-the-install',
         'an-update-keeps-the-implementation-the-lockfile-names',
         'an-update-writes-the-bytes-the-registry-now-serves',
-        'applying-an-update-twice-changes-nothing-the-second-time',
         'each-of-the-five-installs-one-file-named-after-itself',
         'each-side-says-for-itself-that-it-has-no-final-newline',
         'every-breakage-is-classified',
@@ -547,7 +561,6 @@ export const battery: Battery = {
         'nothing-at-all-is-refused',
         'nothing-but-the-local-adapter-reaches-the-serialisation',
         'nothing-is-removed-while-a-feature-is-held-back',
-        'nothing-to-do-is-said-only-when-the-lockfile-does-not-move',
         'only-the-feature-that-was-asked-for-is-a-root',
         'only-the-lines-around-a-change-are-shown',
         're-adding-what-you-asked-for-changes-nothing-and-claims-nothing',
