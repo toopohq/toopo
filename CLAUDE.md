@@ -1813,14 +1813,14 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `4f71860`, one run of the nineteen took
-**31 min 16 s** and gave **605 defect cells, 569 killed, 36 surviving, beside 26 probe cells of which 4
+Measured at `0d8e41d`, one run of the nineteen took
+**28 min 38 s** and gave **606 defect cells, 570 killed, 36 surviving, beside 26 probe cells of which 4
 survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
-`cli-install` at 419 s. **A duration is published beside its spread**, because a stamp stops a figure
-being stale and does not stop it being read as a period: six runs of these same 605 cells took 29 min
-22 s, 34 min 51 s, 36 min 59 s, 29 min 52 s, 37 min 0 s and 31 min 16 s, and four replays of the 592
-cells before them ran from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision
-the measurement has not got. **No share of that step is attributed to anything, and this repository
+`cli-install` at 370 s. **A duration is published beside its spread**, because a stamp stops a figure
+being stale and does not stop it being read as a period: that is one run of these 606 cells, six runs
+of the 605 before them ran from 29 min 22 s to 37 min 0 s, and four replays of the 592 before those
+from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision the measurement has
+not got. **No share of that step is attributed to anything, and this repository
 published an attribution once before withdrawing it**: the six minutes were credited to `cli-install`
 gaining thirteen cells, and the next run had that same battery at 364 s where the one before had it at
 459 s. **A quarter of its own duration between runs of identical work is a machine too variable to
@@ -1930,6 +1930,24 @@ wait on a compiler, on `git` and on a disk. It was nobody's decision — no cont
 finishes in five seconds — so `cli/vitest.config.ts` now declares 60 000, twenty-two times the slowest
 guard, and the sentence in `packaging/vitest.config.ts` claiming everything else here decides in memory
 is narrowed, because it was already false of `cli/` when it was written.
+
+**A third cause of the same symptom is open, and it is the census's finest hour rather than a hole.**
+Twice in eight battery invocations a run collected **nothing at all** — every file of the configuration
+reporting zero — and both times `assertTheCensusHolds` refused before a verdict existed, naming each
+file and its declared count. Sixty-three verdicts on a dead control would have looked exactly like
+verdicts; what the operator gets instead is a refusal that says what to do. **The cost of this defect is
+a replay, never a figure**, which is what makes it affordable to leave open.
+
+The cause is not established and is therefore not named. What is measured: the failing runs report
+**28 collected assertions**, which is the count `run.ts` already documents for the json-reporter door,
+and every stack in them renders the drive letter in **lower case** — 19 of 19 in the failing replay and
+0 of 19 in the one that succeeded. That correlation is perfect over two runs, and a lower-case drive is
+separately measured to collapse collection on its own, at 0 assertions against 169. **Two figures that
+do not agree**: 28 is not 0, so the lower case may be concomitant rather than causal, and the drive
+letter could not be reproduced in 20 invocations through npm, 30 through node, in the foreground or in
+the background. What would close it is catching a failing run with the resolved path printed beside the
+collection count — one flag in `measure.ts`, not a theory — and it is not built, because a defence built
+on the wrong half of a correlation is exactly what this repository calls making a symptom disappear.
 
 **And a leak the sweep found beside it.** `withNoGit` made an empty directory per call and removed
 none — one per run of this suite, 1 933 of them under the operating system's temporary directory on the
