@@ -53,6 +53,7 @@ import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { GUARD_SEPARATOR, guardIdOf, isFrozenIdentifier } from '../catalogue/identifier.ts'
+import { THE_VITEST_ENTRY_POINT } from '../vitest-entry-point.ts'
 
 import type { CollectedFile, SuiteCensus } from './census.ts'
 import { censusFaults, censusFor } from './census.ts'
@@ -291,12 +292,6 @@ export type Calibration = {
 }
 
 const REPORT = join(THE_INSTRUMENT_FOLDER, '.vitest-report.json')
-
-/**
- * Named rather than built inside the argument list, because it is the one spelling that decides what
- * a run collects and the census refusal prints it. `paths.ts` carries the measurement.
- */
-const THE_VITEST_ENTRY_POINT = join(THE_REPOSITORY, 'node_modules', 'vitest', 'vitest.mjs')
 
 const git = (...args: readonly string[]): string =>
   execFileSync('git', args, { cwd: THE_REPOSITORY, encoding: 'utf8' })

@@ -4,7 +4,9 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
 import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } from './run.ts'
-import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY, withCanonicalDriveLetter } from './paths.ts'
+import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
+import { withCanonicalDriveLetter } from '../vitest-entry-point.ts'
+import { censusFor } from './census.ts'
 import { attributionOf, disagreementsIn } from './attribution.ts'
 import type { MeasuredBattery } from './score.ts'
 import { renderScore, scoreFaults, theScore } from './score.ts'
@@ -646,27 +648,32 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
 })
 
 /**
- * What the instrument pins rather than inherits from whoever invoked it.
+ * What is pinned rather than inherited from whoever invoked it.
  *
- * `Battery.timeZone` is the older half of this and carries the argument: an ambient property of the
+ * `Battery.timeZone` is the oldest part of this and carries the argument: an ambient property of the
  * machine, pinned because a verdict measured under whatever the operator's carries is not a verdict
- * anybody can reproduce. `paths.ts` is the second half, and it was written after the ambient
- * property in question collapsed two replays - it carries the door and the measurement.
+ * anybody can reproduce. `../vitest-entry-point.ts` is the second, written after the ambient property
+ * in question collapsed two replays - it carries the door and the measurement.
  *
- * The two guards below cannot substitute for each other, which is why there are two. The first pins
- * a rule the second cannot see, because `C:\users\...` was measured to collect the whole suite: a
- * function that upper-cased the entire path would keep every replay green while making a claim
- * about segments whose spelling lives on the disk. The second is the real condition, and nothing
- * short of a child process can reach it - the root is resolved when `paths.ts` is imported, so a
- * guard in this process is measuring the invocation it is already inside.
+ * **There are two routes into this repository's suites and both are guarded here.** The instrument
+ * builds its own child command; every npm script goes through `../run-vitest.ts`. They share the
+ * rule and neither restates it, so the guards below are not one claim written twice.
  *
- * They were seen red together, on one edit that makes `withCanonicalDriveLetter` the identity, and
- * the other twenty-eight guards of this file stayed green. That is the exception to the rule stated
- * at the head of this file, and it is recorded rather than glossed: no single edit reddens one of
- * this pair alone, because the second contains the first. What the first adds is the direction the
- * second is blind to.
+ * None of the three can substitute for another. The first pins a rule the other two cannot see,
+ * because `C:\users\...` was measured to collect the whole suite: a function that upper-cased the
+ * entire path would keep every replay green while making a claim about segments whose spelling lives
+ * on the disk. The second and third are the real condition on their own route, and nothing short of
+ * a child process reaches either - the paths are resolved when the modules are imported, so a guard
+ * in this process is measuring the invocation it is already inside.
+ *
+ * The first two were seen red together, on one edit that makes `withCanonicalDriveLetter` the
+ * identity, and that edit reddens the third as well: all three sit downstream of one rule, and no
+ * single edit reddens one of the first pair alone. That is the exception to the rule stated at the
+ * head of this file, and it is recorded rather than glossed. What each adds is a direction the
+ * others are blind to - the second and third were seen red separately, on edits that leave the rule
+ * alone and break one route's entry point.
  */
-describe('what the instrument pins rather than inherits', () => {
+describe('what is pinned rather than inherited', () => {
   it('only-the-drive-letter-is-pinned :: the rest of a path is left alone', () => {
     expect(withCanonicalDriveLetter('c:\\Users\\x\\toopo')).toBe('C:\\Users\\x\\toopo')
     expect(withCanonicalDriveLetter('c:/Users/x/toopo')).toBe('C:/Users/x/toopo')
@@ -705,6 +712,50 @@ describe('what the instrument pins rather than inherits', () => {
 
       expect(output).toContain('control green (3 tests)')
       expect(output).toContain('every cell agrees with the verdict this battery pins for it')
+      expect(done.status).toBe(0)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'the-launcher-invoked-under-a-lower-case-drive-letter-collects-its-suite',
+    () => {
+      /**
+       * The route a stranger takes, invoked exactly as a launcher that does not normalise invokes
+       * it. `npm run <suite>` used to reach vitest through `node_modules/.bin`, whose shim derives
+       * the entry point from wherever PATH found it, and an ordinary `npm run site` was seen
+       * collapsing that way. This is that invocation with the shim's spelling forced rather than
+       * waited for.
+       *
+       * The fixture's configuration is what it collects, because it is the cheapest suite in the
+       * repository - measured at 153 ms - and because the door is about collection rather than about
+       * what is collected. How many guards that suite has is read off the census instead of written
+       * here, so that a fixture gaining a test moves one number and does not redden a guard about
+       * drive letters.
+       *
+       * On a platform with no drive letter the spelling below is unchanged and this reduces to
+       * running the fixture suite, exactly as its neighbour does.
+       */
+      const asALauncherWould = join(THE_REPOSITORY, 'run-vitest.ts').replace(
+        /^[A-Z]:/,
+        (letter) => letter.toLowerCase(),
+      )
+
+      const config = battery.vitestConfig
+      if (config === undefined) throw new Error('the fixture battery names no configuration')
+
+      const collected = Object.values(censusFor(config)).reduce(
+        (total, guards) => total + guards,
+        0,
+      )
+
+      const done = spawnSync(process.execPath, [asALauncherWould, 'run', '--config', config], {
+        cwd: THE_REPOSITORY,
+        encoding: 'utf8',
+      })
+      const output = `${done.stdout}${done.stderr}`
+
+      expect(output).toMatch(new RegExp(`Tests\\s+${collected} passed \\(${collected}\\)`))
       expect(done.status).toBe(0)
     },
     META_TIMEOUT_MS,
