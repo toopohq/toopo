@@ -171,6 +171,38 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   it(
+    'says what the run said about a file that collected nothing',
+    () => {
+      /**
+       * The refusal above names the files and used to stop there, and that silence cost two replays:
+       * the fourth door of `census.ts` was a lower-case drive letter, the reason was sitting in
+       * `testResults[].message` for every one of the sixteen empty files, and `runSuite` read past
+       * it. Naming a file says *something is wrong*; quoting the run says *what*.
+       *
+       * A lens rather than a mutant, because the census only runs during calibration - and a file
+       * that throws while being collected is the shape every door in that family takes.
+       */
+      const lensThatBreaksAFileAtImport = {
+        id: 'as-committed',
+        description: 'a lens that makes one fixture file throw while it is being collected',
+        arms: ['C'],
+        edits: [
+          {
+            file: 'second-file.test.ts',
+            find: `import { doubled } from './reference.js'`,
+            replace: `import { doubled } from './reference.js'\nthrow new Error('collection failed')`,
+          },
+        ],
+      }
+
+      expect(() => calibrate({ ...battery, lenses: [lensThatBreaksAFileAtImport] })).toThrow(
+        /second-file\.test\.ts: declared 1, collected 0\n {4}the run said: collection failed/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
     'refuses a suite it has never counted, rather than skipping the count',
     () => {
       // A configuration nobody has counted would opt its whole suite out of the census, which is the

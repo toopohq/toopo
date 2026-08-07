@@ -54,7 +54,7 @@ import { join } from 'node:path'
 
 import { GUARD_SEPARATOR, guardIdOf, isFrozenIdentifier } from '../catalogue/identifier.ts'
 
-import type { SuiteCensus } from './census.ts'
+import type { CollectedFile, SuiteCensus } from './census.ts'
 import { censusFaults, censusFor } from './census.ts'
 import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
 
@@ -292,6 +292,12 @@ export type Calibration = {
 
 const REPORT = join(THE_INSTRUMENT_FOLDER, '.vitest-report.json')
 
+/**
+ * Named rather than built inside the argument list, because it is the one spelling that decides what
+ * a run collects and the census refusal prints it. `paths.ts` carries the measurement.
+ */
+const THE_VITEST_ENTRY_POINT = join(THE_REPOSITORY, 'node_modules', 'vitest', 'vitest.mjs')
+
 const git = (...args: readonly string[]): string =>
   execFileSync('git', args, { cwd: THE_REPOSITORY, encoding: 'utf8' })
 
@@ -409,6 +415,8 @@ type Assertion = {
 
 type ReportedFile = {
   readonly name?: string
+  /** `file.result.errors[0].message`, and `''` when the file had no error of its own. */
+  readonly message?: string
   readonly assertionResults?: readonly Assertion[]
 }
 
@@ -423,6 +431,14 @@ type SuiteRun = {
    */
   readonly testsSeen: number | null
   readonly guards: readonly GuardIdentity[]
+  /**
+   * Every file the run reported on, against what it said about it - empty where it said nothing.
+   *
+   * `guards` cannot answer for a file that collected nothing, because a file with no assertion
+   * contributes no guard and so disappears from it. This is the list the census needs: a file that
+   * is silent is exactly the one worth asking about.
+   */
+  readonly reportedFiles: Readonly<Record<string, string>>
 }
 
 const reportedFiles = (): readonly ReportedFile[] | null => {
@@ -465,7 +481,7 @@ const runSuite = (battery: Battery): SuiteRun => {
     execFileSync(
       process.execPath,
       [
-        join(THE_REPOSITORY, 'node_modules', 'vitest', 'vitest.mjs'),
+        THE_VITEST_ENTRY_POINT,
         'run',
         '--typecheck',
         '--reporter=default',
@@ -486,7 +502,9 @@ const runSuite = (battery: Battery): SuiteRun => {
   }
 
   const files = reportedFiles()
-  if (files === null) return { green, failedGuards: [], testsSeen: null, guards: [] }
+  if (files === null) {
+    return { green, failedGuards: [], testsSeen: null, guards: [], reportedFiles: {} }
+  }
 
   const assertions = files.flatMap((file) => file.assertionResults ?? [])
 
@@ -495,6 +513,9 @@ const runSuite = (battery: Battery): SuiteRun => {
     failedGuards: assertions.filter((t) => t.status === 'failed').map((t) => guardIdOf(t.title)),
     testsSeen: assertions.length,
     guards: guardsIn(files),
+    reportedFiles: Object.fromEntries(
+      files.map((file) => [relative(file.name ?? ''), file.message ?? '']),
+    ),
   }
 }
 
@@ -715,15 +736,23 @@ const assertEveryAddressResolves = (
  * where a red control with no failed guard says only that something did.
  */
 const assertTheCensusHolds = (label: string, run: SuiteRun, census: SuiteCensus): void => {
-  const collected: Record<string, number> = {}
-  for (const guard of run.guards) collected[guard.file] = (collected[guard.file] ?? 0) + 1
+  const collected: Record<string, CollectedFile> = Object.fromEntries(
+    Object.entries(run.reportedFiles).map(([file, said]) => [
+      file,
+      {
+        guards: run.guards.filter((guard) => guard.file === file).length,
+        reported: said === '' ? null : (said.split('\n')[0] ?? null),
+      },
+    ]),
+  )
 
   const faults = censusFaults(collected, census)
   if (faults.length === 0) return
 
   throw new Error(
     `${label}: this run did not collect the suite this repository declares.\n${faults.join('\n')}\n` +
-      `  A run that collects a fraction of the suite produces verdicts that look exactly like ` +
+      `  It ran ${THE_VITEST_ENTRY_POINT}; mutation/paths.ts says why that spelling is printed here. ` +
+      `A run that collects a fraction of the suite produces verdicts that look exactly like ` +
       `verdicts. If a guard was deliberately added or removed, update mutation/census.ts; if not, ` +
       `something about the collection is wrong and no measurement below it means anything.`,
   )

@@ -272,17 +272,42 @@ export const censusFor = (config: string | undefined): SuiteCensus => {
 }
 
 /**
- * Which files disagree with the census, each with what was declared and what was collected. Empty
- * when the run collected exactly the declared suite.
+ * What a run collected in one file, and what the run said about it if it said anything.
+ *
+ * The second field is why this is a record rather than a count, and it was paid for. The fourth door
+ * above survived two replays because the refusal named the empty files and threw away the only
+ * sentence that said why they were empty: vitest reports it in `testResults[].message`, and
+ * `runSuite` read past it. Naming the files says *something is wrong*; quoting the run says *what*.
+ */
+export type CollectedFile = {
+  readonly guards: number
+  /** The first line of the first error the run reported for it. A file that collected is silent. */
+  readonly reported: string | null
+}
+
+const fault = (file: string, count: string, reported: string | null): string =>
+  `  ${file}: ${count}${reported === null ? '' : `\n    the run said: ${reported}`}`
+
+/**
+ * Which files disagree with the census, each with what was declared, what was collected, and what
+ * the run said about it. Empty when the run collected exactly the declared suite.
  */
 export const censusFaults = (
-  collected: Readonly<Record<string, number>>,
+  collected: Readonly<Record<string, CollectedFile>>,
   declared: SuiteCensus,
 ): readonly string[] => [
   ...Object.entries(declared)
-    .filter(([file, guards]) => (collected[file] ?? 0) !== guards)
-    .map(([file, guards]) => `  ${file}: declared ${guards}, collected ${collected[file] ?? 0}`),
-  ...Object.keys(collected)
-    .filter((file) => declared[file] === undefined)
-    .map((file) => `  ${file}: collected ${collected[file] ?? 0}, and the census does not name it`),
+    .filter(([file, guards]) => (collected[file]?.guards ?? 0) !== guards)
+    .map(([file, guards]) =>
+      fault(
+        file,
+        `declared ${guards}, collected ${collected[file]?.guards ?? 0}`,
+        collected[file]?.reported ?? null,
+      ),
+    ),
+  ...Object.entries(collected)
+    .filter(([file]) => declared[file] === undefined)
+    .map(([file, one]) =>
+      fault(file, `collected ${one.guards}, and the census does not name it`, one.reported),
+    ),
 ]

@@ -2001,6 +2001,14 @@ directory. **The census stays the backstop, and it is why this was ever a door r
 the red-control refusal prints `control.failedGuards`, and no guard failed — *a red control with no
 failed guard says only that something did*. What said which sixteen files, twice, is the census.
 
+**And the census now quotes the run instead of only counting it**, which is the filed remedy built
+rather than dropped once the door was named. It listed the empty files and threw away the one sentence
+saying why they were empty: vitest reports it per file in `testResults[].message`, `runSuite` read past
+it, and that silence is what cost two replays. A fault line now carries `the run said: <what it said>`,
+and the refusal names the entry point it ran — the spelling the isolation above shows is the deciding
+input. Under this door the two lines read `Cannot read properties of undefined (reading 'config')` and
+a path beginning `c:`, which is the whole diagnosis on one screen.
+
 **Seen red on the real condition rather than on a reconstitution**, by a guard that invokes the
 instrument exactly as a launcher that does not normalise invokes it. With the rule made the identity
 the child answers `control RED (0 tests)` and calibration refuses on the census; with it restored the
