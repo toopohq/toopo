@@ -1864,14 +1864,18 @@ Measured at `ee5f974`, one run of the nineteen took
 **28 min 33 s** and gave **606 defect cells, 570 killed, 36 surviving, beside 26 probe cells of which 4
 survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
 `cli-install` at 367 s. **A duration is published beside its spread**, because a stamp stops a figure
-being stale and does not stop it being read as a period: that is one of three runs of these 606 cells,
-which ran from 28 min 19 s to 28 min 38 s; six runs of the 605 before them ran from 29 min 22 s to
-37 min 0 s, and four replays of the 592 before those from 25 min 8 s to 28 min 59 s — so a single
-number to ten seconds is a precision the measurement has not got. **No share of that step is attributed to anything, and this repository
-published an attribution once before withdrawing it**: the six minutes were credited to `cli-install`
-gaining thirteen cells, and the next run had that same battery at 364 s where the one before had it at
-459 s. **A quarter of its own duration between runs of identical work is a machine too variable to
-support the account**, so the account went rather than being qualified.
+being stale and does not stop it being read as a period: that is one run among several of these 606
+cells, which have run from 28 min 19 s to 33 min 38 s; six runs of the 605 before them ran from
+29 min 22 s to 37 min 0 s, and four replays of the 592 before those from 25 min 8 s to 28 min 59 s — so
+a single number to ten seconds is a precision the measurement has not got. **The count in that sentence
+was dropped rather than incremented**: it read *one of three runs*, a fourth was taken at `e596851` and
+came in at 33 min 38 s, and a tally that has to be edited on every replay is one that will be wrong
+between two of them. The range only ever widens and needs no counting. **No share of that step is
+attributed to anything, and this repository published an attribution once before withdrawing it**: the
+six minutes were credited to `cli-install` gaining thirteen cells, and later runs had that same battery
+at 364 s, 437 s and 459 s on identical work. **A quarter of its own duration between runs of identical
+work is a machine too variable to support the account**, so the account went rather than being
+qualified.
 `THE_REPLAY` carries both and the page renders both. The two populations
 are printed together because they
 collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
@@ -2035,8 +2039,11 @@ contributor for ever is a design question and not a footnote.** One node process
 Bare `node -e ""` is **54 ms** on the same machine, so the 58 ms is the process itself and about 4 ms
 is stripping the two modules — irreducible short of not having the process, and a plain `.mjs`
 launcher would buy those 4 ms at the price of a file the typechecker never sees. Across the seven
-suites that is **0.41 s**, against roughly 34 s for a full pass. It is below the noise: two identical
-baseline runs of the seven differed by 11 s, and `packaging` alone moved 7.7 s between them.
+suites that is **0.41 s**. Against a full pass — **34 s** on the machine this repair was asked from,
+**38 s and 49 s** on two runs of the machine it was built on, which are two machines and are said to be
+two — it is below the noise rather than a share of it: those two runs of identical work differed by
+**11 s**, and `packaging` alone moved **7.7 s** between them, nineteen times the whole cost of the
+change.
 
 **What is shared is the rule and not the launching**, and that is written in `run-vitest.ts` because
 it is what somebody will undo. `mutation/run.ts` goes on building its own child command — it needs
