@@ -516,6 +516,16 @@ goes wrong later — the failure this file has caught in its own prose four time
 executable code. Its limit is declared rather than discovered: **a literal equal to today's value
 passes today**, and goes red the day the data moves, which is the day it would otherwise start lying.
 
+**And the set it matches against must hold figures and nothing else, which is the half that was wrong
+and which W-47 found.** `THE_REPLAY.measuredAt` was stamped `0d8e41d`, whose digit runs are `0`, `8`
+and **`41`** — and `41` occurs nowhere else in that data, so the commit stamp handed the pool a figure
+nothing had derived, and the mutant that writes the literal `41` into a derived sentence stopped being
+killed the moment the stamp landed. The guard went **quiet rather than red**, because the data moved
+*towards* a stale literal instead of away from it, and that is the one direction its declared limit
+does not cover. A commit identifier is an address, so it now comes off both sides — off the reading as
+well, since the page renders it. What that repair does not have is a mechanism: it names the one
+address this data carries, and a second would have to be named beside it.
+
 **An assertion and an observation are not one object, and the page says which it is showing.** Every
 figure is read off pins in committed code; `measure.ts` exits non-zero on any cell that disagrees, so a
 replay agrees with them or fails. The two therefore coincide — and a reader who has run nothing holds
@@ -1953,11 +1963,29 @@ spelling: `c:\...\toopo` collapses **20 of 20**, `C:\...\toopo` collects 472 **2
 is carried rather than produced — `realpath` does not normalise a Windows drive letter,
 `import.meta.url` keeps whatever resolved the entry point, `join` carries it on — and both shells
 measured normalise a typed `cd`, which is exactly why fifty invocations through npm and through node
-had reproduced nothing. What does not normalise is a process spawned with an explicit lower-case `cwd`,
-or a script named by a lower-case absolute path: `node c:\...\mutation\measure.ts fixture` refuses at
-calibration from a shell whose own directory is `C:`. Eight invocations from mixed launchers giving two
-collapses was never a probability — it was a predicate on the invocation, counted as though it were
-one, which is this section's own lesson arriving on the defect that closes it.
+had reproduced nothing. What does not normalise is a script named by a lower-case absolute path:
+`node c:\...\mutation\measure.ts fixture` refuses at calibration from a shell whose own directory is
+`C:`. Eight invocations from mixed launchers giving two collapses was never a probability — it was a
+predicate on the invocation, counted as though it were one, which is this section's own lesson
+arriving on the defect that closes it.
+
+**And the two paths a run is given were separated rather than moved together.** `runSuite` hands the
+child a working directory and an entry point, and the twenty-run measurement above varied both at
+once. Split, on the same suite: `cwd C: entry c:` collects **28**, `cwd c: entry C:` collects **472**.
+**The working directory is irrelevant; the path node is given for `vitest.mjs` decides.** A
+configuration cannot defend itself either — canonicalising `root` inside `site/vitest.config.ts` and
+running from a lower-case entry point still collects 0 of 78 — so the only place the spelling can be
+fixed is where the path is built, which is why `mutation/paths.ts` is one constant and not six.
+
+**The half of this that is not ours was observed, once, and is recorded rather than repaired.** The
+five `npm run <suite>` scripts reach `vitest` through `node_modules/.bin`, whose shim derives
+`vitest.mjs` from wherever PATH found it — and an ordinary `npm run site` collapsed exactly this way:
+seven files, no test, root `c:/...`, while node in that same shell answered `C:` for its working
+directory moments later and the next `npm run site` collected all 78. What produced that spelling was
+not isolated and is not guessed at. It is loud rather than dangerous — the run exits non-zero having
+collected nothing, so no verdict is ever built on it — and the repair available is to route all five
+scripts through a node entry point that canonicalises, five one-line scripts becoming a program to
+turn a failure that announces itself into no failure. Priced and not taken.
 
 **And it is the drive letter and nothing else.** `C:\users\...`,
 `C:\Users\Mathis\Desktop\toopo\toopo` and both mistakes at once each collect 472 — so the repair
