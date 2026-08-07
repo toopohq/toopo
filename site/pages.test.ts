@@ -457,6 +457,11 @@ describe('the page that says how we verify', () => {
    * answers and the constants beside them - or be a count derived from them. A literal that happens to
    * match today is still refused tomorrow, which is the whole point: the day the data moves, the
    * literal stops being in the set and this goes red.
+   *
+   * **And the set it is matched against must hold figures and nothing else**, which is the half this
+   * guard got wrong and W-47 found. The data moved *towards* a stale literal instead of away from it,
+   * so the guard went quiet rather than red - the one direction that costs nothing to nobody until
+   * somebody reads the page.
    */
   it('every-figure-on-the-method-page-comes-from-what-it-was-built-from', () => {
     const measured = theMeasurement()
@@ -484,14 +489,31 @@ describe('the page that says how we verify', () => {
       ),
     ].map(String)
 
+    /**
+     * A commit identifier is an address and not a figure, so it comes off both sides rather than
+     * being allowed on either.
+     *
+     * Measured: `THE_REPLAY.measuredAt` was `0d8e41d`, whose digit runs are `0`, `8` and **`41`** -
+     * and `41` occurs nowhere else in this data. So stamping that commit handed the pool a figure
+     * nothing had derived, and W-47, which writes the literal `41` into a derived sentence, stopped
+     * being killed the moment the stamp landed. Taking it off the reading as well is what keeps the
+     * honest page passing, since it is rendered there.
+     *
+     * It names the one address this data carries. A second would have to be named here too, and
+     * that is the limit of this repair rather than a mechanism.
+     */
+    const withoutTheCommit = (text: string): string => text.replaceAll(THE_REPLAY.measuredAt, '')
+
     const fromTheData = new Set([
       ...counts,
-      ...(JSON.stringify([methodology, measured, THE_REPLAY, THE_PINS_ARE_AN_ASSERTION]).match(
-        /\d+/g,
-      ) ?? []),
+      ...(withoutTheCommit(
+        JSON.stringify([methodology, measured, THE_REPLAY, THE_PINS_ARE_AN_ASSERTION]),
+      ).match(/\d+/g) ?? []),
     ])
 
-    expect((reading().match(/\d+/g) ?? []).filter((figure) => !fromTheData.has(figure))).toEqual([])
+    expect(
+      (withoutTheCommit(reading()).match(/\d+/g) ?? []).filter((figure) => !fromTheData.has(figure)),
+    ).toEqual([])
   })
 
   /**
