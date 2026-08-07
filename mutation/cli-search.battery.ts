@@ -489,6 +489,7 @@ export const battery: Battery = {
         'a-name-the-project-does-not-hold-is-refused-with-what-it-does',
         'a-path-with-a-space-installs-normally',
         'a-project-holding-nothing-says-so-rather-than-printing-a-blank-screen',
+        'a-project-is-removed-while-another-process-still-holds-it',
         'a-project-that-was-never-initialised-answers-nothing',
         'a-project-with-no-package-json-installs-normally',
         'a-project-with-nothing-in-it-is-configured-rather-than-refused',

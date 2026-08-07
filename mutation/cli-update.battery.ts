@@ -703,6 +703,7 @@ export const battery: Battery = {
         'a-file-we-did-not-write-is-never-overwritten',
         'a-line-says-what-was-done-to-that-file',
         'a-name-the-catalogue-does-not-hold-is-refused',
+        'a-project-is-removed-while-another-process-still-holds-it',
         'a-refusal-leaves-the-project-exactly-as-it-was',
         'a-refusal-says-nothing-was-written-before-it-says-why',
         'a-refused-contract-is-in-the-index-and-is-not-installable',

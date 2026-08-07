@@ -57,6 +57,11 @@ const rewriteFile = (find: string, replace: string) => ({ file: 'rewrite.ts', fi
 const installFile = (find: string, replace: string) => ({ file: 'install.ts', find, replace })
 const localFile = (find: string, replace: string) => ({ file: 'local-source.ts', find, replace })
 const relocateFile = (find: string, replace: string) => ({ file: 'relocate.ts', find, replace })
+const removalFile = (find: string, replace: string) => ({
+  file: 'remove-directory.ts',
+  find,
+  replace,
+})
 
 /**
  * What an install asks a registry for, and how each answer is checked.
@@ -1016,6 +1021,24 @@ void theFive`,
       'again',
     [{ file: 'report.ts', find: A_FOLDER_LEFT_BEHIND_IS_NAMED, replace: `    ...(leftBehind === null || true\n      ? []` }],
     killed(['a-folder-that-could-not-be-taken-is-named']),
+  ),
+
+  /**
+   * The one defect here that was found by the apparatus failing rather than by anybody writing it.
+   *
+   * `rewrite.ts` removes the folder it parsed a submission's imports in from a `finally`, and a
+   * `finally` that throws replaces what was being returned - so a directory the operating system
+   * refuses for an instant turns a rewrite that worked into an install that failed. The same call
+   * reddened a calibration control of this battery with nothing injected, at three runs in 139, which
+   * is how it was found: a teardown that throws reddens whichever guard is running, and this
+   * instrument reads a red guard as a verdict.
+   */
+  sameOnEveryLens(
+    'C-64',
+    'stops asking again when the operating system refuses a removal, so a folder held for an instant ' +
+      'throws out of a `finally` and an install fails on a rewrite that had already succeeded',
+    [removalFile('const REMOVAL_ATTEMPTS = 10', 'const REMOVAL_ATTEMPTS = 0')],
+    killed(['a-project-is-removed-while-another-process-still-holds-it']),
   ),
 ]
 

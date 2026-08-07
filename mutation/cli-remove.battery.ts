@@ -499,6 +499,7 @@ export const battery: Battery = {
         'a-missing-final-newline-is-said-rather-than-lost',
         'a-name-the-catalogue-does-not-hold-is-refused',
         'a-path-with-a-space-installs-normally',
+        'a-project-is-removed-while-another-process-still-holds-it',
         'a-project-that-was-never-initialised-answers-nothing',
         'a-project-with-no-package-json-installs-normally',
         'a-project-with-nothing-in-it-is-configured-rather-than-refused',
