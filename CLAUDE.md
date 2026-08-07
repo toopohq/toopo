@@ -73,7 +73,13 @@ seven more, and one of the nine turned out to be a single word — *you*, on a c
 that bytes moved and nothing about the hand that moved them. The worst of them was reproduced rather
 than reasoned about: `toopo remove --apply` said *held back, nothing changed* while the lockfile went to
 `askedFor: false`, and the invariant it broke was already written three lines away in the module that
-broke it.
+broke it. **And now the control that was red with nothing injected, which is the first unit here whose
+defect was in the apparatus and not in anything the apparatus measures**: the guard was reddening in its
+teardown rather than in its assertion, and the reading it had been filed under — state leaking between
+batteries — was refuted by reproducing it in isolation, where the thirty clean runs that had established
+that reading turn out to happen half the time at the rate actually measured. The same defect was then
+found one floor down on the install path, where a `finally` that throws replaces a rewrite that worked
+with an install that failed.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -1832,32 +1838,104 @@ back is to replay. It is the conservative direction on purpose — the alternati
 which commits could have changed what a battery measures, which is a second statement that can be
 wrong.
 
-## A control that is red with nothing injected — open, and measured rather than explained
+## A control that is red with nothing injected — settled, and filed under the wrong cause
 
 **A replay refused itself, and the refusal is the instrument working.** `cli-install`'s calibration
 answered *the unmutated `C/as-committed` is red, so every verdict from this battery would be noise*,
 naming `the-commands-that-reach-the-registry-are-these-and-no-others`. Sixty-three verdicts built on a
 red control would have looked exactly like verdicts.
 
-**One intermittent guard produces two failures that name anything but itself.** In another replay the
+**One intermittent guard produced two failures that named anything but itself.** In another replay the
 same guard reddened while a `cli-search` mutant was injected, and the attribution concluded *declared
 silent and a mutant reddened it* — a stale declaration reported against a mutant with nothing to do
 with it. Neither report can say *this guard is intermittent*, because neither is looking at that.
 
-**What is measured.** Over four full replays at `77d3cd9` and `4f71860`: one red control, one spurious
-attribution, two clean. **The cell verdicts were identical in all four** — 605 cells, 569 killed, the
-same thirty-six survivors by name — so nothing about what the mutants do is in question, and the
-published figure is not in doubt. And **0 red in 30 runs of the unmutated `cli` suite alone**, on an
-idle machine, which is why running the suite does not find it.
+**It was never that guard's assertion.** All 169 assertions were collected and its seven booleans were
+right. The failure was in its `finally`: `rmSync` answering `EPERM` on the temporary project it had
+installed into. A teardown that throws reddens whichever guard happens to be running, and this
+instrument reads a red guard as a verdict — so a removal failing in a `finally` produces a cell that
+looks exactly like a kill. **That is the third member of the family `run.ts` names twice**, arriving
+from the apparatus rather than from the contract, and none of the three guards written for that family
+can see it: an edit that does not apply and a suite that half ran are both about what the *run*
+collected, and this run collected everything.
 
-**Why is not measured, and is therefore not written here.** The guard runs each command end to end
-through `run()`, so it replaces `process.argv`, `process.cwd`, `process.exit` and `process.stdout.write`
-for the length of a call and creates and destroys a temporary project inside it. **That is where a
-repair would look, and it is not a cause** — naming one from a plausible reading is the fault the
-section on diagnostics exists to close, and it would be worse here than on a screen, because this
-repository would then measure itself against it. What would settle it is reproducing under the only
-condition it has appeared in, which is a full replay at half an hour a run for an event seen twice in
-four. Priced, and not spent until it decides something.
+**The reading this was filed under was wrong, and the arithmetic is what says so.** It was recorded as
+state leaking between batteries on the strength of *0 red in 30 runs of the unmutated `cli` suite
+alone*. Measured at `d0ee718`, over that same suite, alone, sequential, with nothing injected and no
+battery anywhere: **3 reds in 139 runs — 2.16 per cent**, 95 per cent Clopper-Pearson [0.45, 6.18],
+every one of them the same exception at the same line. At that rate thirty clean runs happen **52 per
+cent** of the time. *Clean in isolation, faulty in sequence* was the sample size and not a signature.
+**Nothing leaks between batteries, and the parallelisation this was said to stand in front of is not
+blocked by it.**
+
+**So the rule this produces is about the shape of the evidence, not about this defect.** A run of zero
+over *n* trials bounds nothing until *n* is put beside the rate being looked for. Thirty was about a
+thirtieth of what this question needed, and *0 red in 30* was true, was measured, and carried a
+conclusion it could not support — which is this file's own diagnostics rule arriving on a measurement
+instead of on a screen: an inference offered with its premise is argument, a conclusion offered alone
+is assertion, and the premise here was a number nobody had compared with anything. It is `G-14`'s
+lesson met from the other side. There a pin claimed a determinism the draws did not have; here a
+silence claimed an absence the trials could not establish.
+
+**Two readings were built and refuted rather than argued**, which is the whole reason the third one
+could be believed. The working directory on its own — **0 failures in 400 rounds**. The `git`
+subprocess an install spawns, which is the one thing this guard does that its forty-two neighbours do
+not — **0 in 200, across four arms**. What *is* established is that a directory held as a process's
+working directory answers exactly `EPERM` on exactly `rmSync`, and that `command.test.ts` is the only
+one of this folder's 43 teardowns that ever makes a project the working directory. **What holds it
+during the natural failures is not established**: 600 rounds outside vitest reproduced none, so nothing
+here names one. The previous version of this section refused to name a cause for the same reason, and
+that refusal is what left the question in a state somebody could still measure.
+
+**`maxRetries` is not the mechanism, because it does not work.** Measured on node v24.15.0, three runs
+alike, against a directory held as another process's working directory:
+
+```
+rmSync(root, { recursive: true, force: true })                        EPERM after 0ms
+rmSync(root, { recursive: true, force: true, maxRetries: 10, ... })   EPERM after 0ms
+await rm(root, { recursive: true, force: true, maxRetries: 10, ... }) removed after 634ms
+```
+
+Node documents that option as retrying exactly `EPERM` when `recursive` is true. The synchronous form
+answers in zero milliseconds, which is the shape of an option read and dropped. Reaching the
+asynchronous one would turn this folder's 43 teardowns, every helper above them, and `rewrite.ts`
+through to `command.ts` into promises — and `command.ts` is the file whose whole property is that
+everything it decides is reachable from a guard with no process. So the retry is written in
+`remove-directory.ts` with the measurement beside it, which is the treatment `ignored.ts` already gives
+`git check-ignore`'s exit codes.
+
+**The sweep found the same defect on the install path, and there it is worse.** `rewrite.ts` removes
+the folder it parsed a submission's imports in from a `finally`, and a `finally` that throws replaces
+what was being returned — so an `EPERM` there turns a rewrite that worked into an install that failed,
+on the one path that writes into somebody else's project. One module answers for both callers, because
+there is one rule about an operating system and a copy in each would be two.
+
+**The guard is seen red on the real condition rather than on a reconstitution.** A child process holds
+the project as its working directory and writes a sentinel before anything is removed, so the guard
+cannot pass by winning a race against a holder that never started. With the retry taken away it answers
+the identical `EPERM` on the identical call; with it restored the directory goes.
+
+**Before and after, over the same loop at two commits.** 3 in 149 at `d0ee718`; **0 in 700** at
+`0813211`. If the repair had changed nothing, P(0 in 700) = 6.6 × 10⁻⁷, and 0 in 700 bounds that class
+under **0.427 per cent** against 2.01 — a margin of about five, which is what a repair is chosen on
+rather than on the second decimal of either figure.
+
+**And the after arm found a second cause of the same symptom, which is the whole argument for measuring
+a repair instead of declaring one.** One run in 700 reddened
+`only-what-the-removed-feature-alone-pulled-in-goes-with-it`, and it was not `EPERM` but
+*Test timed out in 5000ms* — on a run that took **62.4 s against a 6.0 s median**, a stall of ten.
+Measured over ten idle runs, the slowest guard of this folder is 2 688 ms, which is **1.9 times** that
+default and 1.4 under load: a threshold that gives way at a stall of two, in the one folder whose guards
+wait on a compiler, on `git` and on a disk. It was nobody's decision — no contract says an install
+finishes in five seconds — so `cli/vitest.config.ts` now declares 60 000, twenty-two times the slowest
+guard, and the sentence in `packaging/vitest.config.ts` claiming everything else here decides in memory
+is narrowed, because it was already false of `cli/` when it was written.
+
+**And a leak the sweep found beside it.** `withNoGit` made an empty directory per call and removed
+none — one per run of this suite, 1 933 of them under the operating system's temporary directory on the
+machine where this was found. It is now made once and removed with the file, and what is checked is the
+delta per run rather than a total anybody would have to trust: `1, 2, 3` before, **0 on every one of
+700 runs** after.
 
 ## Rules for this stage
 
