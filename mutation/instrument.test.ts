@@ -666,12 +666,15 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
  * a child process reaches either - the paths are resolved when the modules are imported, so a guard
  * in this process is measuring the invocation it is already inside.
  *
- * The first two were seen red together, on one edit that makes `withCanonicalDriveLetter` the
- * identity, and that edit reddens the third as well: all three sit downstream of one rule, and no
- * single edit reddens one of the first pair alone. That is the exception to the rule stated at the
- * head of this file, and it is recorded rather than glossed. What each adds is a direction the
- * others are blind to - the second and third were seen red separately, on edits that leave the rule
- * alone and break one route's entry point.
+ * All three redden together on one edit that makes `withCanonicalDriveLetter` the identity -
+ * measured, 3 failed and 29 passed - because all three sit downstream of one rule. That is the
+ * exception to the rule stated at the head of this file, and it is recorded rather than glossed.
+ *
+ * What the third adds was measured on its own: an edit that leaves the rule alone and has
+ * `run-vitest.ts` build its own path reddens the third and nothing else - 1 failed and 31 passed -
+ * and the assertion prints the door verbatim, `TypeError: Cannot read properties of undefined
+ * (reading 'config')`, under both of the fixture's files. **No edit was found that reddens the
+ * second alone**, and that is written down rather than left to be assumed from the symmetry.
  */
 describe('what is pinned rather than inherited', () => {
   it('only-the-drive-letter-is-pinned :: the rest of a path is left alone', () => {

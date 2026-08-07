@@ -526,6 +526,18 @@ does not cover. A commit identifier is an address, so it now comes off both side
 well, since the page renders it. What that repair does not have is a mechanism: it names the one
 address this data carries, and a second would have to be named beside it.
 
+**The rule that closes it for every future guard over published figures: an address is not a figure,
+and it leaves the data by both sides or by neither.** That is what made the stamp silent rather than
+red. A rendered address leaks into the comparison from both directions at once — it joins the pool as
+though something had derived it, and it joins the reading as though the page had published it — and
+either leak alone would be caught, since a figure with no derivation reddens and a derivation nothing
+renders is unread. **It is the pair that is silent, because the two leaks cancel.** So every address
+comes off both sides before anything is compared, and **it is the rendering that decides which strings
+are addresses, never their shape**: a run of digits is not evidence of a figure. The frozen
+identifiers this file spends its length on — a case, a guard, a reason literal, a profile name — are
+the population this rule is written against, and a commit stamp is only the first of them to be
+rendered on a page.
+
 **An assertion and an observation are not one object, and the page says which it is showing.** Every
 figure is read off pins in committed code; `measure.ts` exits non-zero on any cell that disagrees, so a
 replay agrees with them or fails. The two therefore coincide — and a reader who has run nothing holds
@@ -1390,6 +1402,25 @@ draws was the general-purpose alphabet having an accident. **Without this step, 
 an accident; with it, there is no rate to measure and only a pin to drop.** The pin is dropped on that
 argument rather than on its 59-in-60.
 
+**And before either: check that the thing is stochastic at all.** This is the sister of the rule above
+and it was paid for outside this section. The drive-letter door presented itself as a rate — eight
+invocations from mixed launchers gave two collapses, twenty from one shell gave none, and *two in
+eight* was written down as though it were a frequency. Nothing about it was random. It is a predicate
+on the invocation, **20 of 20 under one spelling of the entry point and 0 of 20 under the other**, and
+what *two in eight* measured was how often the sampling happened to include the deciding input. **A
+frequency measured over trials that differ in a hidden deterministic input is a number about the
+sampling and not about the system** — and it is worse than no number, because it cannot be reproduced,
+so every failure to reproduce it reads as evidence that the rate is low. That reading cost two replays
+and about half an hour before anybody looked for a predicate instead of a probability.
+
+The check is the same one either way and it is cheap: **vary one input at a time and look for a cell
+that is 0 of *n* or *n* of *n*.** A stochastic phenomenon has no such cell; a hidden predicate is
+nothing but such cells, and one of them ends the question without a confidence interval. `mutants.ts`
+carries it as the third of a series, and they read together: a rate is worth measuring only if the
+guard polices the step, only if the phenomenon is stochastic, and only against a trial count put
+beside the rate being looked for. The third of those is the *0 in 30* lesson from the teardown, and
+this is the first time all three are stated as one thing.
+
 **The detour is recorded because it was expensive and it looked right.** Widening the spelling table
 with a decomposed entry was proposed, built, and measured: 0 of 100 000 against `G-14`, unchanged, and
 *fewer* catches on the two mutants P1 does police — 35 487 against 38 142, 80 700 against 83 995 —
@@ -1975,17 +2006,51 @@ once. Split, on the same suite: `cwd C: entry c:` collects **28**, `cwd c: entry
 **The working directory is irrelevant; the path node is given for `vitest.mjs` decides.** A
 configuration cannot defend itself either — canonicalising `root` inside `site/vitest.config.ts` and
 running from a lower-case entry point still collects 0 of 78 — so the only place the spelling can be
-fixed is where the path is built, which is why `mutation/paths.ts` is one constant and not six.
+fixed is where the path is built, which is why `vitest-entry-point.ts` is one constant and not one
+per caller.
 
-**The half of this that is not ours was observed, once, and is recorded rather than repaired.** The
-five `npm run <suite>` scripts reach `vitest` through `node_modules/.bin`, whose shim derives
-`vitest.mjs` from wherever PATH found it — and an ordinary `npm run site` collapsed exactly this way:
-seven files, no test, root `c:/...`, while node in that same shell answered `C:` for its working
-directory moments later and the next `npm run site` collected all 78. What produced that spelling was
-not isolated and is not guessed at. It is loud rather than dangerous — the run exits non-zero having
-collected nothing, so no verdict is ever built on it — and the repair available is to route all five
-scripts through a node entry point that canonicalises, five one-line scripts becoming a program to
-turn a failure that announces itself into no failure. Priced and not taken.
+**The half of this that was not ours is closed, and what closed it is a reframing rather than a
+measurement.** Every script that starts vitest reached it through `node_modules/.bin`, whose shim
+derives `vitest.mjs` from wherever PATH found it — and an ordinary `npm run site` collapsed exactly
+this way: seven files, no test, root `c:/...`, while node in that same shell answered `C:` for its
+working directory moments later and the next `npm run site` collected all 78. What produced that
+spelling was not isolated and is still not guessed at. It was priced and refused once, on the reading
+that it is loud rather than dangerous — the run exits non-zero having collected nothing, so no verdict
+is ever built on it. **That reading is true of the instrument and false of a stranger**: somebody who
+clones this on the day it is published and types `npm run site` gets `TypeError: Cannot read
+properties of undefined (reading 'config')` with no explanation and no relation to what they just did,
+on the first project whose front page sells verifiability. `run-vitest.ts` is the entry point every
+script now goes through, and `vitest-entry-point.ts` owns the rule both routes share.
+
+**The count in that paragraph was wrong before anybody read it back, and it is dropped rather than
+corrected.** It said *the five `npm run <suite>` scripts*; seven start vitest — `test`, `meta`,
+`registry`, `validation`, `cli`, `site`, `packaging` — and `npm test` was the one missing from a
+sentence about what a stranger types. It is the fourth count retired in this file, on the rule the
+others established: a state does not drift where a tally does, so the sentence now says *every script
+that starts vitest* and has no number to go stale.
+
+**What the repair costs, measured rather than asserted, because a cost paid on every commit by every
+contributor for ever is a design question and not a footnote.** One node process per suite: median
+**134 ms** through the launcher against **76 ms** direct, over ten invocations of `--version` each.
+Bare `node -e ""` is **54 ms** on the same machine, so the 58 ms is the process itself and about 4 ms
+is stripping the two modules — irreducible short of not having the process, and a plain `.mjs`
+launcher would buy those 4 ms at the price of a file the typechecker never sees. Across the seven
+suites that is **0.41 s**, against roughly 34 s for a full pass. It is below the noise: two identical
+baseline runs of the seven differed by 11 s, and `packaging` alone moved 7.7 s between them.
+
+**What is shared is the rule and not the launching**, and that is written in `run-vitest.ts` because
+it is what somebody will undo. `mutation/run.ts` goes on building its own child command — it needs
+pipes to read a report back, a pinned `TZ`, a json reporter named beside the default one and an output
+file it chooses, none of which a forwarded command line can express. Both import
+`THE_VITEST_ENTRY_POINT`; neither restates it.
+
+**Three guards, and the third was measured on its own.** `mutation/instrument.test.ts` holds them
+together because there is one door and two routes into it. On the edit that makes
+`withCanonicalDriveLetter` the identity all three redden — 3 failed, 29 passed. On an edit that leaves
+the rule alone and has `run-vitest.ts` build its own path, **only the third reddens** — 1 failed, 31
+passed — and its assertion prints the door verbatim under both of the fixture's files. No edit was
+found that reddens the second alone, and that is recorded rather than left to be assumed from the
+symmetry.
 
 **And it is the drive letter and nothing else.** `C:\users\...`,
 `C:\Users\Mathis\Desktop\toopo\toopo` and both mistakes at once each collect 472 — so the repair
@@ -1995,7 +2060,7 @@ spellings that live on the disk rather than in a function.
 **Pinned rather than refused, on the argument `Battery.timeZone` already makes.** That field pins the
 process time zone because a verdict measured under whatever zone the operator's machine carries is not
 one anybody else can reproduce; a drive letter is the same ambient input reaching the same apparatus,
-so `mutation/paths.ts` chooses one spelling and every child process of that folder is given it.
+so `vitest-entry-point.ts` chooses one spelling and every child process started here is given it.
 Refusing would have cost a replay and taught an operator to relaunch, and the two spellings name one
 directory. **The census stays the backstop, and it is why this was ever a door rather than a mystery**:
 the red-control refusal prints `control.failedGuards`, and no guard failed — *a red control with no

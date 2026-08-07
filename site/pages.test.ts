@@ -493,6 +493,15 @@ describe('the page that says how we verify', () => {
      * A commit identifier is an address and not a figure, so it comes off both sides rather than
      * being allowed on either.
      *
+     * **The rule this is an instance of, stated because the next guard over published digits will
+     * need it and there is no mechanism to hand it over.** An address that is rendered leaks into
+     * this comparison from *both* directions at once: it joins the pool as though something had
+     * derived it, and it joins the reading as though the page had published it. Either side alone
+     * would be caught - a figure with no derivation reddens, and a derivation nothing renders is
+     * unread - and it is the pair that is silent, because the two leaks cancel. So **every address
+     * comes off both sides before the comparison, and it is the rendering that decides which strings
+     * are addresses**, not their shape: a digit run is not evidence of a figure.
+     *
      * Measured: `THE_REPLAY.measuredAt` was `0d8e41d`, whose digit runs are `0`, `8` and **`41`** -
      * and `41` occurs nowhere else in this data. So stamping that commit handed the pool a figure
      * nothing had derived, and W-47, which writes the literal `41` into a derived sentence, stopped

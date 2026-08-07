@@ -91,6 +91,26 @@ export const edgeCases = (find: string, replace: string): Edit => ({
  * general-purpose alphabet having an accident. Without this step first, a rate gets optimised for an
  * accident; with it, there is no rate to measure, only a pin to drop.
  *
+ * **And before either, check that the thing is stochastic at all.** The rule above has a sister, and
+ * it is the one that was paid for outside this file. The drive-letter door in
+ * `../vitest-entry-point.ts` presented itself as a rate: eight invocations from mixed launchers gave
+ * two collapses, twenty from one shell gave none, and *two in eight* was written down as though it
+ * were a frequency. Nothing about it was random. It is a predicate on the invocation - 20 of 20
+ * under one spelling of the entry point and 0 of 20 under the other - and what *two in eight*
+ * measured was how often the sampling happened to include the deciding input.
+ *
+ * **A frequency measured over trials that differ in a hidden deterministic input is a number about
+ * the sampling and not about the system**, and it is worse than no number: it cannot be reproduced,
+ * so every failure to reproduce it reads as evidence that the rate is low. That reading cost two
+ * replays and about half an hour before anybody looked for a predicate instead of a probability.
+ *
+ * The check is cheap and it is the same one either way: **vary one input at a time and look for a
+ * cell that is 0 of n or n of n.** A genuinely stochastic phenomenon has no such cell; a hidden
+ * predicate is nothing but such cells, and finding one ends the question without a confidence
+ * interval. It is the third of a series with the two rules above, and they read together: a rate is
+ * worth measuring only if the guard polices the step, only if the phenomenon is stochastic, and only
+ * against a trial count put beside the rate being looked for.
+ *
  * The method, three minutes for any pair of mutant and pin, and it is the validation that makes it
  * worth anything rather than the code: inject the mutant, reproduce the generator beside it, check
  * the reproduction against a series of real runs before believing it, then read the rate. Measured
