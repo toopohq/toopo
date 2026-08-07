@@ -79,7 +79,13 @@ teardown rather than in its assertion, and the reading it had been filed under �
 batteries — was refuted by reproducing it in isolation, where the thirty clean runs that had established
 that reading turn out to happen half the time at the rate actually measured. The same defect was then
 found one floor down on the install path, where a `finally` that throws replaces a rewrite that worked
-with an install that failed.
+with an install that failed. **And now the fourth door into a run that collects nothing, which is the
+first one a guard of this repository found rather than a reader stumbled into**: a lower-case Windows
+drive letter in the path the instrument hands vitest collapses every runtime file, and the two figures
+that had stopped anybody naming it — 28 assertions and 0 — are that one door read through two
+configurations. It looked like a rate because it is a predicate on the invocation, so the spelling is
+now pinned rather than inherited, on the argument `Battery.timeZone` has been making since the first
+battery.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -1931,23 +1937,50 @@ finishes in five seconds — so `cli/vitest.config.ts` now declares 60 000, twen
 guard, and the sentence in `packaging/vitest.config.ts` claiming everything else here decides in memory
 is narrowed, because it was already false of `cli/` when it was written.
 
-**A third cause of the same symptom is open, and it is the census's finest hour rather than a hole.**
-Twice in eight battery invocations a run collected **nothing at all** — every file of the configuration
-reporting zero — and both times `assertTheCensusHolds` refused before a verdict existed, naming each
-file and its declared count. Sixty-three verdicts on a dead control would have looked exactly like
-verdicts; what the operator gets instead is a refusal that says what to do. **The cost of this defect is
-a replay, never a figure**, which is what makes it affordable to leave open.
+**The third cause is closed, and it was the drive letter after all — the correlation the last unit was
+right not to promote on the evidence it had.** Twice in eight battery invocations a run collected
+**nothing at all**, and both times `assertTheCensusHolds` refused before a verdict existed, naming each
+file and its declared count. What stopped a cause being named was arithmetic: 28 collected assertions
+is not the 0 a lower-case drive had been separately measured to give. **Both figures are that one door,
+read through two configurations.** The contracts' own declares five `.test-d.ts`, which tsc collects in
+the parent process where no worker is involved, and 9 + 5 + 4 + 5 + 5 is 28; `cli/vitest.config.ts`
+declares no typecheck files at all, so nothing survives and the run collects 0 of 170. Under the
+lower-case spelling all sixteen runtime files fail with `TypeError: Cannot read properties of undefined
+(reading 'config')`.
 
-The cause is not established and is therefore not named. What is measured: the failing runs report
-**28 collected assertions**, which is the count `run.ts` already documents for the json-reporter door,
-and every stack in them renders the drive letter in **lower case** — 19 of 19 in the failing replay and
-0 of 19 in the one that succeeded. That correlation is perfect over two runs, and a lower-case drive is
-separately measured to collapse collection on its own, at 0 assertions against 169. **Two figures that
-do not agree**: 28 is not 0, so the lower case may be concomitant rather than causal, and the drive
-letter could not be reproduced in 20 invocations through npm, 30 through node, in the foreground or in
-the background. What would close it is catching a failing run with the resolved path printed beside the
-collection count — one flag in `measure.ts`, not a theory — and it is not built, because a defence built
-on the wrong half of a correlation is exactly what this repository calls making a symptom disappear.
+**It is not a rate, which is why nobody could reproduce it.** Measured over twenty runs of each
+spelling: `c:\...\toopo` collapses **20 of 20**, `C:\...\toopo` collects 472 **20 of 20**. The spelling
+is carried rather than produced — `realpath` does not normalise a Windows drive letter,
+`import.meta.url` keeps whatever resolved the entry point, `join` carries it on — and both shells
+measured normalise a typed `cd`, which is exactly why fifty invocations through npm and through node
+had reproduced nothing. What does not normalise is a process spawned with an explicit lower-case `cwd`,
+or a script named by a lower-case absolute path: `node c:\...\mutation\measure.ts fixture` refuses at
+calibration from a shell whose own directory is `C:`. Eight invocations from mixed launchers giving two
+collapses was never a probability — it was a predicate on the invocation, counted as though it were
+one, which is this section's own lesson arriving on the defect that closes it.
+
+**And it is the drive letter and nothing else.** `C:\users\...`,
+`C:\Users\Mathis\Desktop\toopo\toopo` and both mistakes at once each collect 472 — so the repair
+upper-cases the drive letter and touches no other segment, because the rest of a path is a claim about
+spellings that live on the disk rather than in a function.
+
+**Pinned rather than refused, on the argument `Battery.timeZone` already makes.** That field pins the
+process time zone because a verdict measured under whatever zone the operator's machine carries is not
+one anybody else can reproduce; a drive letter is the same ambient input reaching the same apparatus,
+so `mutation/paths.ts` chooses one spelling and every child process of that folder is given it.
+Refusing would have cost a replay and taught an operator to relaunch, and the two spellings name one
+directory. **The census stays the backstop, and it is why this was ever a door rather than a mystery**:
+the red-control refusal prints `control.failedGuards`, and no guard failed — *a red control with no
+failed guard says only that something did*. What said which sixteen files, twice, is the census.
+
+**Seen red on the real condition rather than on a reconstitution**, by a guard that invokes the
+instrument exactly as a launcher that does not normalise invokes it. With the rule made the identity
+the child answers `control RED (0 tests)` and calibration refuses on the census; with it restored the
+fixture battery agrees with every verdict pinned for it. A second guard beside it pins that only the
+drive letter moves — a function upper-casing the whole path would keep every replay green, since
+`C:\users\...` collects all 472. `paths.ts` also ends four copies of the same two lines: `run.ts`,
+`replay.ts`, `tally.ts` and `instrument.test.ts` each derived the folder and the root from their own
+module URL, and a rule about one of them held in four places is held in none.
 
 **And a leak the sweep found beside it.** `withNoGit` made an empty directory per call and removed
 none — one per run of this suite, 1 933 of them under the operating system's temporary directory on the

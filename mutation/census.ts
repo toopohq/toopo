@@ -18,11 +18,11 @@
  * by reading a previous run, not by trusting the control.** A future reader who "simplifies" this
  * into a computation will restore the blind spot exactly.
  *
- * Three doors into this failure have been found, all three by accident, none of them by a guard:
- * naming the json reporter alone under `--typecheck`, a type error inside the root `tsconfig.json`'s
- * include, and passing a file filter alongside `--config`. Measured on this repository when this
- * file was written - dated rather than left in the present tense, because the entries below are a
- * record of three runs and not a claim about today:
+ * Three doors into this failure were found by accident, none of them by a guard: naming the json
+ * reporter alone under `--typecheck`, a type error inside the root `tsconfig.json`'s include, and
+ * passing a file filter alongside `--config`. Measured on this repository when this file was
+ * written - dated rather than left in the present tense, because the entries below are a record of
+ * three runs and not a claim about today:
  *
  * - the json reporter alone: 21 files reported, **28 assertions**, sixteen runtime files collecting
  *   nothing. `success: false`, and **zero failed assertions** - so calibration refuses it as a red
@@ -40,6 +40,26 @@
  *
  * The next unit is the read API. It adds configuration surface, which is where every one of these
  * doors was.
+ *
+ * ---------------------------------------------------------------------------
+ * The fourth door, and the first this refusal found rather than survived
+ * ---------------------------------------------------------------------------
+ *
+ * A lower-case Windows drive letter in the root handed to vitest collapses every runtime file with
+ * `TypeError: Cannot read properties of undefined (reading 'config')` - deterministically, over
+ * twenty runs of each spelling: 28 assertions of 472 under the contracts' configuration, and 0 of
+ * 170 under `cli/`, which declares no typecheck files for the parent process to collect.
+ * `mutation/paths.ts` carries the measurement and closes it by pinning the spelling.
+ *
+ * It is the fourth door and the first that was not a setting anybody typed - and unlike the other
+ * three it was **named by this refusal** rather than stumbled into. Calibration would have stopped
+ * either way, because sixteen files that fail to collect make the control red; but that refusal
+ * prints `control.failedGuards`, and no guard failed. *A red control with no failed guard says only
+ * that something did.* What said which sixteen files, twice, before any verdict existed, is the
+ * refusal below - and naming them is what turned an operator's half-hour into a door.
+ *
+ * The entry stays after the closure for the reason all four stay: the next one will not be a drive
+ * letter.
  *
  * ---------------------------------------------------------------------------
  * Why a pinned number here is not the published-figure rule being broken

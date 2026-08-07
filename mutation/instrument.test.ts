@@ -34,9 +34,12 @@ import { THE_BATTERIES, survivorFaults, theMeasurement } from './published.ts'
  * exactly one test went red, and every time it was the one that covers the guard that had been
  * removed. None of them is decorative and none of them stands in for another.
  *
- * A complete pass costs 6.9 seconds of wall clock on the machine this was written on, against 65
- * seconds for the cheapest contract battery. That ratio is the fixture's entire justification: the
- * price of running a guard is what decides whether it is ever run.
+ * A complete pass costs 10.7 seconds of wall clock at `b474c36`. It read 6.9 seconds before the pair
+ * of drive-letter guards at the foot of this file, the second of which spawns a battery of its own.
+ *
+ * The cheapest contract battery took 65 seconds when this file was written, and that ratio is the
+ * fixture's entire justification: the price of running a guard is what decides whether it is ever
+ * run.
  *
  * **Where the chain stops.** These meta-tests are themselves guards, and nothing measures them. The
  * regression is cut here, deliberately and not by oversight: each was shown red by the hand that
@@ -624,6 +627,12 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
  * about segments whose spelling lives on the disk. The second is the real condition, and nothing
  * short of a child process can reach it - the root is resolved when `paths.ts` is imported, so a
  * guard in this process is measuring the invocation it is already inside.
+ *
+ * They were seen red together, on one edit that makes `withCanonicalDriveLetter` the identity, and
+ * the other twenty-eight guards of this file stayed green. That is the exception to the rule stated
+ * at the head of this file, and it is recorded rather than glossed: no single edit reddens one of
+ * this pair alone, because the second contains the first. What the first adds is the direction the
+ * second is blind to.
  */
 describe('what the instrument pins rather than inherits', () => {
   it('only-the-drive-letter-is-pinned :: the rest of a path is left alone', () => {
