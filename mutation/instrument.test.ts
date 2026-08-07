@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
 import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } from './run.ts'
+import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY, withCanonicalDriveLetter } from './paths.ts'
 import { attributionOf, disagreementsIn } from './attribution.ts'
 import type { MeasuredBattery } from './score.ts'
 import { renderScore, scoreFaults, theScore } from './score.ts'
@@ -51,9 +51,6 @@ import { THE_BATTERIES, survivorFaults, theMeasurement } from './published.ts'
  * instrument checks out arms into the tree it is measuring, and a restore would destroy anything
  * uncommitted.
  */
-
-const HERE = dirname(fileURLToPath(import.meta.url))
-const REPO = join(HERE, '..')
 
 /**
  * Every guard here spawns child processes, so its verdict can depend on elapsed time, so it declares
@@ -548,7 +545,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   it(
     'puts the tree back when a run is interrupted',
     () => {
-      const path = join(REPO, 'mutation', 'fixture', 'reference.ts')
+      const path = join(THE_INSTRUMENT_FOLDER, 'fixture', 'reference.ts')
       const before = readFileSync(path, 'utf8')
 
       try {
@@ -559,7 +556,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
 
         expect(readFileSync(path, 'utf8')).toBe(before)
       } finally {
-        execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: REPO })
+        execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: THE_REPOSITORY })
       }
     },
     META_TIMEOUT_MS,
@@ -599,15 +596,75 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
       // Arms are git refs and the instrument materialises them by checking out over the working
       // tree, so measuring a dirty tree would both destroy the operator's uncommitted work and
       // measure an arm that is not the commit it claims to be.
-      const path = join(REPO, 'mutation', 'fixture', 'reference.ts')
+      const path = join(THE_INSTRUMENT_FOLDER, 'fixture', 'reference.ts')
 
       try {
         writeFileSync(path, `${readFileSync(path, 'utf8')}\nexport const dirt = 1\n`)
 
         expect(() => calibrate(battery)).toThrow(/the working tree carries uncommitted changes/)
       } finally {
-        execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: REPO })
+        execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: THE_REPOSITORY })
       }
+    },
+    META_TIMEOUT_MS,
+  )
+})
+
+/**
+ * What the instrument pins rather than inherits from whoever invoked it.
+ *
+ * `Battery.timeZone` is the older half of this and carries the argument: an ambient property of the
+ * machine, pinned because a verdict measured under whatever the operator's carries is not a verdict
+ * anybody can reproduce. `paths.ts` is the second half, and it was written after the ambient
+ * property in question collapsed two replays - it carries the door and the measurement.
+ *
+ * The two guards below cannot substitute for each other, which is why there are two. The first pins
+ * a rule the second cannot see, because `C:\users\...` was measured to collect the whole suite: a
+ * function that upper-cased the entire path would keep every replay green while making a claim
+ * about segments whose spelling lives on the disk. The second is the real condition, and nothing
+ * short of a child process can reach it - the root is resolved when `paths.ts` is imported, so a
+ * guard in this process is measuring the invocation it is already inside.
+ */
+describe('what the instrument pins rather than inherits', () => {
+  it('only-the-drive-letter-is-pinned :: the rest of a path is left alone', () => {
+    expect(withCanonicalDriveLetter('c:\\Users\\x\\toopo')).toBe('C:\\Users\\x\\toopo')
+    expect(withCanonicalDriveLetter('c:/Users/x/toopo')).toBe('C:/Users/x/toopo')
+    expect(withCanonicalDriveLetter('C:\\Users\\x\\toopo')).toBe('C:\\Users\\x\\toopo')
+    expect(withCanonicalDriveLetter('/home/x/toopo')).toBe('/home/x/toopo')
+    expect(withCanonicalDriveLetter('c:\\users\\x')).toBe('C:\\users\\x')
+  })
+
+  it(
+    'a-battery-invoked-under-a-lower-case-drive-letter-collects-its-suite',
+    () => {
+      /**
+       * The instrument invoked exactly as a launcher that does not normalise invokes it: by an
+       * absolute path whose drive letter is lower-case, from a shell whose own directory is not.
+       * Before `paths.ts` this collapsed every time - the fixture's control reported `RED (0 tests)`
+       * and calibration refused on the census, naming both of the fixture's files.
+       *
+       * It writes `mutation/results/fixture.json`. That is a complete measurement of this battery at
+       * this commit, which is exactly what a replay writes there, so it can neither poison a total
+       * nor stand in for one.
+       *
+       * On a platform with no drive letter the spelling below is unchanged and this reduces to
+       * running the fixture battery. That is stated rather than guarded around: the door it is
+       * written for cannot exist there.
+       */
+      const asALauncherWould = join(THE_INSTRUMENT_FOLDER, 'measure.ts').replace(
+        /^[A-Z]:/,
+        (letter) => letter.toLowerCase(),
+      )
+
+      const done = spawnSync(process.execPath, [asALauncherWould, 'fixture'], {
+        cwd: THE_REPOSITORY,
+        encoding: 'utf8',
+      })
+      const output = `${done.stdout}${done.stderr}`
+
+      expect(output).toContain('control green (3 tests)')
+      expect(output).toContain('every cell agrees with the verdict this battery pins for it')
+      expect(done.status).toBe(0)
     },
     META_TIMEOUT_MS,
   )
@@ -628,7 +685,7 @@ describe('what this repository publishes about its own defect detection', () => 
    * one door that check cannot see, because that one reads the directory and this list does not.
    */
   it('every-battery-of-this-folder-is-published', () => {
-    const onDisk = readdirSync(HERE)
+    const onDisk = readdirSync(THE_INSTRUMENT_FOLDER)
       .filter((file) => file.endsWith('.battery.ts'))
       .map((file) => file.replace(/\.battery\.ts$/, ''))
       .sort()

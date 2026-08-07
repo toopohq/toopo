@@ -15,20 +15,18 @@
 
 import { execFileSync } from 'node:child_process'
 import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 
 import type { Battery, RunResult } from './run.ts'
 import type { MeasuredBattery } from './score.ts'
 import { renderScore, scoreFaults, theScore } from './score.ts'
+import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
 
-const HERE = dirname(fileURLToPath(import.meta.url))
-const REPO = join(HERE, '..')
-const RESULTS = join(HERE, 'results')
+const RESULTS = join(THE_INSTRUMENT_FOLDER, 'results')
 
 const BATTERY = /\.battery\.ts$/
 
-const declared = readdirSync(HERE)
+const declared = readdirSync(THE_INSTRUMENT_FOLDER)
   .filter((file) => BATTERY.test(file))
   .map((file) => file.replace(BATTERY, ''))
   .sort()
@@ -73,7 +71,7 @@ const measured: readonly MeasuredBattery[] = await Promise.all(
 )
 
 const head = execFileSync('git', ['show', '-s', '--format=%ct %h', 'HEAD'], {
-  cwd: REPO,
+  cwd: THE_REPOSITORY,
   encoding: 'utf8',
 }).trim()
 

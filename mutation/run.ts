@@ -50,13 +50,13 @@
 
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs'
-import { join, dirname } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 
 import { GUARD_SEPARATOR, guardIdOf, isFrozenIdentifier } from '../catalogue/identifier.ts'
 
 import type { SuiteCensus } from './census.ts'
 import { censusFaults, censusFor } from './census.ts'
+import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
 
 export type Edit = {
   /** Path relative to the contract folder, e.g. `reference.ts`. */
@@ -290,12 +290,10 @@ export type Calibration = {
   readonly guardsPerCell: Readonly<Record<string, readonly GuardIdentity[]>>
 }
 
-const HERE = dirname(fileURLToPath(import.meta.url))
-const REPO = join(HERE, '..')
-const REPORT = join(HERE, '.vitest-report.json')
+const REPORT = join(THE_INSTRUMENT_FOLDER, '.vitest-report.json')
 
 const git = (...args: readonly string[]): string =>
-  execFileSync('git', args, { cwd: REPO, encoding: 'utf8' })
+  execFileSync('git', args, { cwd: THE_REPOSITORY, encoding: 'utf8' })
 
 const assertCleanTree = (): void => {
   const dirty = git('status', '--porcelain', '--untracked-files=no').trim()
@@ -387,7 +385,7 @@ export const restoringOnSignal = (contractPath: string): (() => void) => {
  */
 const applyEdits = (contractPath: string, edits: readonly Edit[], label: string): void => {
   for (const edit of edits) {
-    const path = join(REPO, contractPath, edit.file)
+    const path = join(THE_REPOSITORY, contractPath, edit.file)
     const before = readFileSync(path, 'utf8').replace(/\r\n/g, '\n')
     const occurrences = before.split(edit.find).length - 1
 
@@ -436,7 +434,7 @@ const reportedFiles = (): readonly ReportedFile[] | null => {
 }
 
 /** Reported paths are absolute and platform-shaped; the census and the attribution both want neither. */
-const REPO_PREFIX = `${REPO.replaceAll('\\', '/')}/`
+const REPO_PREFIX = `${THE_REPOSITORY.replaceAll('\\', '/')}/`
 
 const relative = (name: string): string => name.replaceAll('\\', '/').replace(REPO_PREFIX, '')
 
@@ -467,7 +465,7 @@ const runSuite = (battery: Battery): SuiteRun => {
     execFileSync(
       process.execPath,
       [
-        join(REPO, 'node_modules', 'vitest', 'vitest.mjs'),
+        join(THE_REPOSITORY, 'node_modules', 'vitest', 'vitest.mjs'),
         'run',
         '--typecheck',
         '--reporter=default',
@@ -475,7 +473,12 @@ const runSuite = (battery: Battery): SuiteRun => {
         `--outputFile.json=${REPORT}`,
         ...(battery.vitestConfig === undefined ? [] : ['--config', battery.vitestConfig]),
       ],
-      { cwd: REPO, encoding: 'utf8', stdio: 'pipe', env: { ...process.env, TZ: battery.timeZone } },
+      {
+        cwd: THE_REPOSITORY,
+        encoding: 'utf8',
+        stdio: 'pipe',
+        env: { ...process.env, TZ: battery.timeZone },
+      },
     )
     green = true
   } catch {
@@ -863,7 +866,7 @@ export const runBattery = (
  * leaves behind something that looks exactly like a result.
  */
 export const writeResults = (name: string, payload: unknown, complete: boolean): string => {
-  const out = join(HERE, 'results')
+  const out = join(THE_INSTRUMENT_FOLDER, 'results')
   mkdirSync(out, { recursive: true })
 
   const file = join(out, complete ? `${name}.json` : `${name}.partial.json`)

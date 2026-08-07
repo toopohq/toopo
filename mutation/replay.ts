@@ -64,18 +64,15 @@
  */
 
 import { spawnSync } from 'node:child_process'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
 
 import { THE_BATTERIES } from './published.ts'
-
-const HERE = dirname(fileURLToPath(import.meta.url))
-const REPO = join(HERE, '..')
+import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
 
 /** Run one of this folder's entry points as a reader would, and answer its exit status. */
 const run = (script: string, args: readonly string[] = []): number => {
-  const done = spawnSync(process.execPath, [join(HERE, script), ...args], {
-    cwd: REPO,
+  const done = spawnSync(process.execPath, [join(THE_INSTRUMENT_FOLDER, script), ...args], {
+    cwd: THE_REPOSITORY,
     stdio: 'inherit',
   })
 
