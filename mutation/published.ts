@@ -355,11 +355,12 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '28 min 38 s',
-  measuredAt: '0d8e41d',
+  duration: '28 min 33 s',
+  measuredAt: 'ee5f974',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'that is one run of these 606 cells; six runs of the 605 before them ran from 29 min 22 s to ' +
+    'that is one of three runs of these 606 cells, which ran from 28 min 19 s to 28 min 38 s; six ' +
+    'runs of the 605 before them ran from 29 min 22 s to ' +
     '37 min 0 s, and four replays of the 592 before those from 25 min 8 s to 28 min 59 s. **No share ' +
     'of that step is attributed to anything**, and the reason is measurable rather than modest: ' +
     '`cli-install` ran 364 s and 459 s on two runs of identical work, a quarter of its own duration, ' +

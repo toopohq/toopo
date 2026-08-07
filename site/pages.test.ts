@@ -523,6 +523,14 @@ describe('the page that says how we verify', () => {
    * exactly one of them is a debt. A page that prints the total and drops the breakdown is not
    * shorter, it is a different and worse claim - and it is the shape a page takes when somebody tidies
    * it.
+   *
+   * **The block is found by a phrase only that sentence can carry, and it was not.** It used to be
+   * found by the cell count and the word `cells,` in the same paragraph - two fragments any prose
+   * about a replay can put together by accident, and the paragraph above this one duly did the day it
+   * gained the words *these 606 cells, which ran from*. The guard then reddened on a paragraph that
+   * has no business carrying a breakdown, which is a red pointing at the wrong thing: expensive,
+   * because somebody goes and looks. The anchor is the renderer's own `cells, <killed> caught.`, and
+   * if that wording changes this fails on `toBeDefined` rather than on a stranger's sentence.
    */
   it('a-count-of-survivors-is-never-shown-without-its-breakdown', () => {
     const measured = theMeasurement()
@@ -531,9 +539,10 @@ describe('the page that says how we verify', () => {
       const byKind = survivorsByKind(population)
       const sentence = reading()
         .split('\n\n')
-        .find((block) => block.includes(`${population.cells}`) && block.includes('cells,'))
+        .find((block) => block.includes(`cells, ${population.killed} caught.`))
 
       expect(sentence).toBeDefined()
+      expect(sentence).toContain(`${population.cells}`)
       expect(sentence).toContain(`${population.surviving.length}`)
 
       for (const [why, many] of Object.entries(byKind)) {
