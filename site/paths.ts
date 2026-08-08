@@ -12,28 +12,22 @@
  */
 
 import type { ContractAddress } from '../registry/address.js'
-import { renderContract } from '../registry/address.js'
+import { THE_ORIGIN, renderContract } from '../registry/address.js'
 
 /**
- * Where this site is published, written once and derived from everywhere else.
+ * Where this site is published, re-exported rather than declared.
  *
- * **It is an address and not a setting, and the cost is the same cost every frozen identifier here
- * carries.** A case identifier is frozen because an API response cites it and a URL anchors on it;
- * this is the other half of that same URL. Changing it changes every address this site has ever
- * published — every page a search engine has indexed, every link anybody has saved, every anchor a
- * case identifier was frozen to make possible. A case identifier moving breaks the links into one
- * page; this moving breaks all of them at once.
+ * It used to be declared here, and it moved to `registry/address.ts` the day a second consumer
+ * appeared: the licence header of an installed file carries the origin too, and a header is frozen
+ * into somebody else's repository for ever. `the-origin-is-declared-once` grew with it — it used to
+ * require the literal in this file and now requires it in no file of this folder at all, because the
+ * declaration is one floor up and a re-export carries no spelling of its own.
  *
- * So it is declared here beside the other addresses rather than in a configuration file, where it
- * would read as a knob. `the-origin-is-declared-once` refuses a second spelling of it anywhere in this
- * folder, for the reason two statements of one fact always end with the second one lying — and the
- * second one here would be a published URL nobody would notice was wrong until a crawler followed it.
- *
- * Nothing in this repository knows about any other domain. A second name that redirects is a fact
- * about DNS, and a generator that knew about it would be publishing an opinion about infrastructure
- * it does not own.
+ * It is re-exported rather than imported at each use so that the pages go on naming their own folder's
+ * vocabulary: everything about where this site lives is read from here, which is what makes this file
+ * the one place to look.
  */
-export const THE_ORIGIN = 'https://toopo.dev'
+export { THE_ORIGIN }
 
 /** The file a page is written to, relative to the root of the site. */
 export const pageOf = (address: ContractAddress): string => `${renderContract(address)}/index.html`

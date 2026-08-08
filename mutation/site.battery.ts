@@ -994,7 +994,7 @@ const mutants: readonly Mutant[] = [
         `  ['User-agent: *', 'Allow: /', '', \`Sitemap: https://toopo.dev/\${SITEMAP}\`, ''].join('\\n')`,
       ),
     ],
-    killed(['the-origin-is-declared-once']),
+    killed(['no-file-of-this-folder-spells-the-origin']),
   ),
 
   sameOnEveryLens(

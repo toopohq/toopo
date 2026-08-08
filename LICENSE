@@ -1,0 +1,97 @@
+MIT License
+
+Copyright (c) 2026 Mathis Perron
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+===============================================================================
+The exception: what toopo copies into your project is MIT-0
+===============================================================================
+
+Some files in this repository are licensed under the MIT No Attribution licence
+(MIT-0) instead of the MIT licence above. Each one says so in its own first two
+lines:
+
+    // string/slugify@1 - https://toopo.dev/string/slugify@1/
+    // Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
+
+A file carrying that SPDX identifier is under MIT-0, whose full text is at the
+end of this file. Every other file in this repository is under the MIT licence
+above.
+
+
+Which files, and why it is not a list
+-------------------------------------
+
+They are exactly the files `toopo add` copies into your project. Today that is
+one implementation file per contract, and the repository derives the set from
+the installer's own answer rather than from a list somebody wrote down: a
+hand-written list of paths goes stale the day a contract gains a second file,
+and the failure is silent and lands in somebody else's repository. A test
+resolves the marked files against what the installer would copy, in both
+directions - nothing copied is unmarked, and nothing unmarked is copied.
+
+
+Why MIT-0 and not MIT
+---------------------
+
+Toopo does not ship you a dependency. It copies source code into your
+repository, and that code becomes yours to read, edit and maintain. The MIT
+licence would make that copy carry an obligation: its clause above requires the
+copyright notice *and the permission notice* - the whole paragraph - to travel
+with every substantial portion of the software.
+
+Two things follow, and both are bad. Satisfying it literally means pasting
+about 1 100 characters of licence text at the top of a 2 kB function, which is
+a third of what you receive and a third of what your reviewers read. Satisfying
+it with a one-line identifier is the ordinary convention and is not what the
+clause asks for, so every user would be quietly non-compliant for a function
+they now maintain themselves.
+
+MIT-0 is the MIT licence with that clause removed. It is OSI-approved and
+recognised by the usual licence scanners. Under it you owe nothing: no notice,
+no attribution, no mention anywhere. You may delete the two header lines the
+moment the file lands.
+
+We would rather you kept them, and the reason is yours rather than ours: the
+first line is the address of the contract that file was verified against, so
+whoever finds it in six months can look up what it is meant to do and check it
+still does. That is provenance, and it is a service, not a condition.
+
+
+===============================================================================
+MIT No Attribution (MIT-0), applying to the files marked above
+===============================================================================
+
+Copyright (c) 2026 Mathis Perron
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

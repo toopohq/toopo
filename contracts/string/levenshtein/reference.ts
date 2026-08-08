@@ -1,3 +1,6 @@
+// string/levenshtein@1 - https://toopo.dev/string/levenshtein@1/
+// Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
+
 /**
  * `string/levenshtein@1` - count the single-character insertions, deletions and substitutions that
  * turn one string into the other.

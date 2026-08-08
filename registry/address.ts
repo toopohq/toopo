@@ -123,6 +123,39 @@ export const sameContract = (a: ContractAddress, b: ContractAddress): boolean =>
   a.language === b.language && a.name === b.name && a.major === b.major
 
 /**
+ * Where this registry is published, declared once for the whole repository.
+ *
+ * **It is an address and not a setting**, which is why it sits here with the other addresses rather
+ * than in a configuration file where it would read as a knob. Changing it changes every URL this
+ * project has ever published - every page a search engine has indexed, every link anybody has saved,
+ * every anchor a case identifier was frozen to make possible. A case identifier moving breaks the
+ * links into one page; this moving breaks all of them at once.
+ *
+ * **It lived in `site/paths.ts` and moved here when a second consumer appeared**, which is the shape
+ * this repository keeps arriving at: one declaration, N transcriptions, a guard resolving them. The
+ * generator was the only consumer while the site was the only thing publishing a URL, and
+ * `the-origin-is-declared-once` held it inside that folder. The licence header of an installed file
+ * carries this origin too, and a header is frozen into somebody else's repository for ever - so the
+ * guard is now repository-wide and the declaration had to move above both readers.
+ *
+ * Nothing in this repository knows about any other domain. A second name that redirects is a fact
+ * about DNS, and a module that knew about it would be publishing an opinion about infrastructure it
+ * does not own.
+ */
+export const THE_ORIGIN = 'https://toopo.dev'
+
+/**
+ * The page a contract is published at, absolute, and the one spelling of it anything may write.
+ *
+ * `site/paths.ts` builds the same string out of a file path and a trailing-slash rule, and
+ * `the-contract-url-is-the-page-the-site-publishes` holds the two together. Two derivations of one URL
+ * would be the defect this whole family exists to prevent, and this one is the copy that cannot be
+ * corrected: it is frozen into the header of every file the installer has ever written.
+ */
+export const contractUrl = (address: ContractAddress): string =>
+  `${THE_ORIGIN}/${renderContract(address)}/`
+
+/**
  * Why an address is malformed, one reason per part, so that a refusal names the part rather than the
  * whole. Empty when the address is well formed.
  */

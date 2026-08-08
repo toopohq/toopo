@@ -185,6 +185,14 @@ describe('the archive somebody installs', () => {
    * **It found six the day it was written.** `cli/source.js`, `registry/field-map.js` and four more
    * were emitted because something is *typed* against them, shipped because `files` said `dist`, and
    * loaded by nothing - 44 kB of 362 kB. `build.ts` now drops them, and this is what says so.
+   *
+   * **And it found `LICENSE` the day that file existed**, which is the guard working and not a false
+   * refusal. npm adds the licence, the readme and the changelog to every tarball whatever `files`
+   * says, so they arrive without anybody choosing them - and no program will ever load a licence. They
+   * are a third category rather than a widening of `readByPath`: that set is *read by this program at
+   * a path it knows*, and these are read by a person, by npm's own web page, and by every licence
+   * scanner a company runs before allowing an install. Naming them here is what stops the next
+   * addition from being waved through under a set whose sentence it does not fit.
    */
   it('every-file-in-the-archive-is-loaded-by-a-command', () => {
     const loaded = new Set([
@@ -195,8 +203,13 @@ describe('the archive somebody installs', () => {
       ...archive.loadedBy('remove', 'string/levenshtein'),
     ])
     const readByPath = new Set(['package.json', 'dist/registry.json'])
+    const readByAPerson = new Set(['LICENSE'])
 
-    expect(archive.carries.filter((path) => !readByPath.has(path) && !loaded.has(path))).toEqual([])
+    expect(
+      archive.carries.filter(
+        (path) => !readByPath.has(path) && !readByAPerson.has(path) && !loaded.has(path),
+      ),
+    ).toEqual([])
   })
 
   /**

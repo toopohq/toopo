@@ -1,3 +1,6 @@
+// string/slugify@1 - https://toopo.dev/string/slugify@1/
+// Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
+
 /**
  * `string/slugify@1` - turn human-authored text into an identifier that is safe in a URL path
  * segment, readable, and stable.

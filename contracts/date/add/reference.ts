@@ -1,3 +1,6 @@
+// date/add@1 - https://toopo.dev/date/add@1/
+// Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
+
 /**
  * `date/add@1` - add a duration to a Date and get a new Date back, in UTC, without mutating the
  * input, or `null` when the call cannot be answered exactly.

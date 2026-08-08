@@ -150,6 +150,12 @@
  * necessary is that a removal answering `EPERM` in a `finally` reddens whichever guard is running, and
  * a red guard is what this instrument reads as a verdict - so the census gaining an entry here is the
  * cheapest half of the repair, and the retry beside it is the other.
+ *
+ * A twelfth on the licence, and it is the first spread over two configurations for a reason other than
+ * scale: one new file under the registry's, one count moved under the site's. What is guarded is a
+ * single origin and a single licence perimeter, whose declaration is in `registry/` and whose consumer
+ * is in `site/` - and neither folder may hold the other's guard, so the entries land where the reach
+ * falls rather than where the subject is.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -195,6 +201,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'registry/served-files.test.ts': 10,
     'registry/signature.test.ts': 14,
     'registry/snapshot.test.ts': 45,
+    'registry/publication.test.ts': 5,
     'registry/the-sixth-contract.test.ts': 14,
     'registry/verifiability.test.ts': 12,
     'registry/visibility.test.ts': 10,
@@ -232,7 +239,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 
   'site/vitest.config.ts': {
     'site/document.test.ts': 8,
-    'site/indexing.test.ts': 8,
+    'site/indexing.test.ts': 9,
     'site/literal.test.ts': 11,
     'site/pages.test.ts': 23,
     'site/playground.test.ts': 10,

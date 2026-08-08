@@ -8,6 +8,15 @@
  * the file lands in - which is why the two rules below are stated here and not in the five files they
  * govern.
  *
+ * **The two-line header above that documentation is the one exception, and it is not a comment about
+ * the registry's rules.** It carries a licence marking and the address of the contract this file was
+ * verified against, for a reader who has met neither - which is the opposite of the sentence above
+ * rather than a breach of it, because that reader has the file and nothing else.
+ * `registry/licence.ts` owns its text and `publication.test.ts` resolves what is written here against
+ * it, in both directions. Do not edit those two lines in place: the perimeter is derived from what the
+ * installer copies, so a header corrected by hand and not in the declaration reddens the guard rather
+ * than the file.
+ *
  * Declared as data, in the shape `date/add@1` already uses for its own static analysis requirements:
  * these are established by reading an implementation rather than by running it, so the validation
  * pipeline is what enforces them. A requirement that lived only inside that tool would not be part of
