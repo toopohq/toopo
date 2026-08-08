@@ -616,9 +616,19 @@ separates them — `linkTo` stops stripping the file name, every reconstruction 
 stays green, and only the decoding finds that every published URL now names nothing.
 
 **Verified over HTTP rather than assumed**, which is the third unit running where a browser found what
-no static check could: the XML parses with no parser error, root `urlset` in the sitemaps namespace,
-seven `loc`, zero `lastmod`, and all seven URLs answer 200 with no redirect — the `@` addresses
-included.
+no static check could. Measured at `0d8e41d`: the XML parses with no parser error, root `urlset` in
+the sitemaps namespace, seven `loc`, zero `lastmod`, and all seven URLs answered 200 with no
+redirect — the `@` addresses included.
+
+**That sentence stood in the present tense and went false, which is the fifth instance of this file's
+own class and the first found by measuring rather than by rereading.** Measured at `8d934cb`:
+`toopo.dev` resolves to `216.24.57.7` and **every path answers 403**, with an identical 8 096-byte
+body on `/`, `/number/parse@1/`, `/method/` and `/sitemap.xml`. Nothing is served. So the verification
+above is stamped and stays true of its commit for ever, and the live state is a separate sentence with
+its own — because *what a browser answered on the day somebody looked* and *what a browser answers*
+are two claims, and only the first is ever settled. It is the rule two sections up arriving on this
+file's oldest habit: a dated number followed by a present-tense clause about the same quantity
+publishes a truth and a lie in one sentence, and it is the lie the reader believes.
 
 **And a guard that could not be the only red on anything was deleted rather than kept.**
 `every-url-a-crawler-is-given-is-absolute-and-on-the-published-origin` fired only where the set
@@ -705,6 +715,16 @@ it: nothing is published, `private: true` says so deliberately, and a reader who
 `toopo add number/parse` on a contract page has no way to get `toopo`. The site does not claim
 otherwise — it is silent — and silence in front of a command is the remaining gap. Closing it is a
 publication decision, not a change to this repository.
+
+**And that decision now has an order, which is the one thing about publication this repository can
+record.** Every file the installer copies carries `https://toopo.dev/<contract>/` in its first line,
+and that line is frozen in somebody else's repository from the moment it lands: a redirect repairs a
+site's own link for everybody at once and repairs this one for nobody, because we will never see those
+files again. Measured at `8d934cb`, every path on that origin answers 403. **So the site answers 200
+before the package is published, and never the other way round** — publishing first buys nothing that
+waiting does not, and costs a dead link in every artefact written in between, permanently. The order is
+free while nothing is published, which is exactly why it is written down now rather than met by luck
+later.
 
 ## What a battery over the archive can reach — settled
 
@@ -2095,6 +2115,63 @@ none — one per run of this suite, 1 933 of them under the operating system's t
 machine where this was found. It is now made once and removed with the file, and what is checked is the
 delta per run rather than a total anybody would have to trust: `1, 2, 3` before, **0 on every one of
 700 runs** after.
+
+## What licence covers what, and why the perimeter is derived — settled
+
+**The repository is MIT and what the installer copies is MIT-0, and the asymmetry is the product's
+rather than a preference.** A tool is a dependency you install; an implementation is source code that
+becomes yours to read, edit and maintain. Before this there was no `LICENSE` at all, which under
+default copyright means everybody may read this and nobody may use it — so the first thing this unit
+established is that publishing was impossible, not merely unpolished.
+
+**The one-line header the unit was commissioned to write does not satisfy MIT, and that is what the
+measurement found.** MIT requires *the copyright notice and this permission notice* — the whole
+paragraph — in every substantial portion. Measured: the full notice is **1 180 bytes**, against a
+smallest published reference of **2 259** and **16 534** over the four, so literal compliance costs
+**+52 %** on one file and **+28.5 %** on the catalogue — a third of the one figure a contract page
+sells. The ordinary `SPDX-License-Identifier: MIT` one-liner is a convention and is not what the clause
+asks for, which would leave every user quietly non-compliant for a function they now maintain
+themselves. **The legal argument therefore carries either 1 180 bytes or nothing; what carries the
+header is provenance**, which stands on its own. Checked against the closest comparable: shadcn/ui is
+MIT, copies files into user projects, and its components carry no header, no SPDX and no copyright at
+all.
+
+MIT-0 removes the clause rather than answering it badly. It was chosen over 0BSD on reading rather than
+on law — both are OSI-approved and both are recognised by the usual scanners, and *MIT without the
+attribution clause* explains itself by its name to anybody who already knows MIT, where 0BSD sends a
+reviewer into a second family to establish the same thing.
+
+**The perimeter is derived from `referenceImplementationOf`, and that is the load-bearing half.** A
+hand-written list of paths is a legal boundary kept by a declaration nothing enforces — and the day a
+contract gains a second file, the installer copies a file this repository believes is MIT into somebody
+else's repository under a header saying MIT-0. **Getting a licence wrong inside somebody else's
+repository is the most expensive defect this project can produce and the only one that is invisible
+from here.** Measured: the derivation is three lines against the installer's own function, **5 files
+copied and 32 served and never copied**, so both directions of the guard have a populated population.
+`nothing-the-installer-does-not-copy-is-marked` is the half that matters as the catalogue grows: a
+missing header is loud, and a stray one is silent.
+
+**Two lines, ASCII, no version.** The address rather than a slug, because `renderContract` is frozen
+with the major and a slug would be a second name that can disagree with the first. No implementation
+version, because `0.0.0-local` is minted by whatever serves the file and does not exist in the source —
+writing one would be a second declaration of it, and false. ASCII because these are the only bytes of
+this repository that land in a codebase whose encoding, editor and toolchain nobody here can see.
+
+**`THE_ORIGIN` moved to `registry/address.ts` for a reason the site alone never had.** It was declared
+in `site/paths.ts` and `the-origin-is-declared-once` held it inside that folder; a header freezes the
+origin into a repository we will never see again, so the guard had to grow past `site/` and the
+declaration had to move above both readers. The folder guard became
+`no-file-of-this-folder-spells-the-origin` — the assertion went from one file to none, and a name
+rendering a count outlives the data it counted. Its pin in `site.battery.ts` moved with it, which is
+the pre-flight's resolution doing its job.
+
+**What has no mechanism, priced rather than dressed as one.** The *repository* licence is a
+transcription in `package.json` and in `LICENSE`, and `the-public-fields-npm-shows-are-the-ones-this-
+code-declares` resolves the two fields that are facts. A description and a keyword list are prose about
+the tool, derivable from nothing, and a guard comparing prose against prose is a copy of the prose — so
+they are written and unguarded, and it is recorded here rather than left to look like an oversight.
+**`repository` is absent because there is no remote**, and inventing a URL to fill a field is the class
+this repository spends its length removing.
 
 ## Rules for this stage
 
