@@ -12,7 +12,7 @@
  * and be counted as a contract catching it. Nothing here can reach a contract battery, and no contract
  * battery can reach this one.
  *
- * **Two of the ten are corrections rather than injections.** I-01 and I-02 are defects this
+ * **Two are corrections rather than injections.** I-01 and I-02 are defects this
  * repository actually had, found while reading it for this unit, and both are fixed. They are here
  * so that the fix is held rather than remembered.
  *
@@ -35,7 +35,7 @@
  *
  * The suite this battery runs is typechecked - vitest reports "Type Errors no errors" under the
  * instrument's own command line - so `killed-by-typecheck` is reachable here as it is anywhere else.
- * None of the ten produces it: every one of them is a defect of behaviour that typechecks.
+ * None produces it: every one is a defect of behaviour that typechecks.
  */
 
 import type { Battery, Mutant } from './run.ts'
@@ -58,6 +58,7 @@ const onEach = (guard: string): readonly string[] => THE_FIVE.map((slug) => `${g
 const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts', find, replace })
 const signatureFile = (find: string, replace: string) => ({ file: 'signature.ts', find, replace })
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
+const licenceFile = (find: string, replace: string) => ({ file: 'licence.ts', find, replace })
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
 
@@ -128,6 +129,14 @@ const A_BINDING_IS_ONLY_STANDING = `  readonly lifecycle: Lifecycle
 
 const A_BINDING_IS_BUILT_FROM_STANDING = `  lifecycle: entry.standing.lifecycle,
 })`
+
+// --- The licence perimeter, which is derived from what the installer copies ---
+
+const THE_PERIMETER_IS_THE_ENTRY_FILE = `    (file) => file.path === 'reference.ts',`
+
+const WHAT_A_COPY_IS_UNDER = `export const THE_COPIED_LICENCE = 'MIT-0'`
+
+const WHAT_THIS_REPOSITORY_IS_UNDER = `export const THE_REPOSITORY_LICENCE = 'MIT'`
 
 const NORMALISE_THEN_HASH = `  const recomputed = digestOfBytes(servedBytes(response.bytes))`
 
@@ -442,6 +451,90 @@ const mutants: readonly Mutant[] = [
     [serialiseFile(AN_ADDRESS_IS_HELD_ONCE, `  const taken: readonly string[] = []`)],
     killed(['a-group-that-takes-a-case-address-is-refused']),
   ),
+
+  /**
+   * The licence perimeter widened, which is the mutant the whole derivation exists for.
+   *
+   * `referenceImplementationOf` is the single answer to *what does the installer copy*, and the licence
+   * guards read it rather than a list of paths. This edit makes it answer the whole harness, so
+   * `contract.ts` and six others enter the copied set carrying no MIT-0 header - the exact shape of the
+   * failure a hand-written perimeter would produce silently on the day a contract gains a second file.
+   *
+   * **The file-list guards redden with it, and that is the point rather than a redundancy.** The list
+   * is well guarded already; what none of those guards establishes is that the *licence* follows the
+   * list. The red set is over the line the pin rule draws, so the pin names only the guard this was
+   * written for.
+   *
+   * What no mutant here can produce is the case that matters most: a file entering the copied set
+   * **legitimately**, which needs a contract to declare a second file. Every simulation of it also
+   * contradicts a declared file list, so those fire too. That sub-case is unprobed by construction,
+   * and it is the one where this guard is the only thing standing between a new contract and a
+   * mislicensed file in somebody's repository.
+   */
+  sameOnEveryLens(
+    'I-26',
+    'copies the whole harness rather than the entry file, so seven files land in a user project and ' +
+      'six of them carry no licence header at all',
+    [serialiseFile(THE_PERIMETER_IS_THE_ENTRY_FILE, `    (file) => file.path.endsWith('.ts'),`)],
+    killed(['every-file-the-installer-copies-is-marked-mit-0']),
+  ),
+
+  /**
+   * The perimeter emptied, which is the same derivation read from the other end.
+   *
+   * With nothing copied, the marking guard passes vacuously - an empty set is all marked - and the five
+   * files that really do carry a header become strays under a licence nobody chose. That asymmetry is
+   * why the perimeter is guarded in both directions rather than once: the half that survives an empty
+   * answer is not the half that catches it.
+   *
+   * It reddens the origin guard too, and honestly so. Those five headers are allowed to spell the
+   * origin *because* they are copied; stop copying them and the allowance goes with it.
+   */
+  sameOnEveryLens(
+    'I-27',
+    'copies nothing, so the marking guard is satisfied by an empty set while five files carry a ' +
+      'licence header the perimeter no longer accounts for',
+    [serialiseFile(THE_PERIMETER_IS_THE_ENTRY_FILE, `    () => false,`)],
+    killed([
+      'nothing-the-installer-does-not-copy-is-marked',
+      'the-origin-is-spelled-only-where-a-guard-resolves-it',
+    ]),
+  ),
+
+  /**
+   * The copied licence changed in the declaration and not in the files, which is the drift a
+   * transcription exists to be caught by.
+   *
+   * Both guards it reddens read `licenceHeaderOf`, and they are two claims rather than one: that the
+   * five sources carry the header, and that the example `LICENSE` shows a reader is the header those
+   * sources carry. An example is the part of a licence a reader trusts most and the part nothing else
+   * checks.
+   */
+  sameOnEveryLens(
+    'I-28',
+    'declares copies to be MIT while every copied file says MIT-0, so the licence a user reads on the ' +
+      'file and the licence the project believes it granted are different',
+    [licenceFile(WHAT_A_COPY_IS_UNDER, `export const THE_COPIED_LICENCE = 'MIT'`)],
+    killed([
+      'every-file-the-installer-copies-is-marked-mit-0',
+      'the-licence-file-quotes-a-header-a-contract-really-carries',
+    ]),
+  ),
+
+  /**
+   * The repository's own licence, changed where nothing but `package.json` would notice.
+   *
+   * It is the smallest mutant in this battery and it is here because the field it moves is the one a
+   * licence scanner reads before a company allows an install - so a disagreement between the manifest
+   * and this declaration is settled by whichever the tool happens to read.
+   */
+  sameOnEveryLens(
+    'I-29',
+    'declares this repository Apache-2.0 while `package.json` and `LICENSE` both say MIT, so the npm ' +
+      'page and the code disagree about the terms',
+    [licenceFile(WHAT_THIS_REPOSITORY_IS_UNDER, `export const THE_REPOSITORY_LICENCE = 'Apache-2.0'`)],
+    killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -523,8 +616,9 @@ export const battery: Battery = {
       nature: 'claims detection',
       reason:
         'the schema, rather than the storage. These guards were written by the unit that built the ' +
-        'contract record and have no battery of their own; the ten mutants here aim at the canonical ' +
-        'form, the served bytes, the frozen projection and the ledger, and none of them reaches a ' +
+        'contract record and have no battery of their own; the mutants here aim at the canonical ' +
+        'form, the served bytes, the frozen projection, the ledger and the licence perimeter, and ' +
+        'none of them reaches a ' +
         'statement about what a record contains.',
       suites: [
         'a record accounts for everything its contract declares',
