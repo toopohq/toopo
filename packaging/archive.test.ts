@@ -203,7 +203,7 @@ describe('the archive somebody installs', () => {
       ...archive.loadedBy('remove', 'string/levenshtein'),
     ])
     const readByPath = new Set(['package.json', 'dist/registry.json'])
-    const readByAPerson = new Set(['LICENSE'])
+    const readByAPerson = new Set(['LICENSE', 'README.md'])
 
     expect(
       archive.carries.filter(
