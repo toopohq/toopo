@@ -1880,17 +1880,18 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `ee5f974`, one run of the nineteen took
-**28 min 33 s** and gave **606 defect cells, 570 killed, 36 surviving, beside 26 probe cells of which 4
+Measured at `6a6d515`, one run of the nineteen took
+**29 min 13 s** and gave **610 defect cells, 574 killed, 36 surviving, beside 26 probe cells of which 4
 survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
-`cli-install` at 367 s. **A duration is published beside its spread**, because a stamp stops a figure
-being stale and does not stop it being read as a period: that is one run among several of these 606
-cells, which have run from 28 min 19 s to 33 min 38 s; six runs of the 605 before them ran from
-29 min 22 s to 37 min 0 s, and four replays of the 592 before those from 25 min 8 s to 28 min 59 s — so
-a single number to ten seconds is a precision the measurement has not got. **The count in that sentence
-was dropped rather than incremented**: it read *one of three runs*, a fourth was taken at `e596851` and
-came in at 33 min 38 s, and a tally that has to be edited on every replay is one that will be wrong
-between two of them. The range only ever widens and needs no counting. **No share of that step is
+`cli-install` at 386 s. **A duration is published beside its
+spread**, because a stamp stops a figure being stale and does not stop it being read as a period: these
+610 cells have run at that, the 606 before them ran from 28 min 19 s to
+35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before those from
+25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision the measurement has not
+got. **The count in that sentence was dropped rather than incremented**: it read *one of three runs*, a
+fourth was taken and a tally that has to be edited on every replay is one that will be wrong between
+two of them. The range only ever widens and needs no counting — which is why the runs of each
+population are no longer counted at all, only bounded. **No share of that step is
 attributed to anything, and this repository published an attribution once before withdrawing it**: the
 six minutes were credited to `cli-install` gaining thirteen cells, and later runs had that same battery
 at 364 s, 437 s and 459 s on identical work. **A quarter of its own duration between runs of identical
