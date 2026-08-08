@@ -622,12 +622,12 @@ export const battery: Battery = {
         'statement about what a record contains.',
       suites: [
         'a record accounts for everything its contract declares',
-        // The five schema suites plus this one. `the files a contract is made of` is deliberately
+        // The schema suites still wholly silent. `the files a contract is made of` is deliberately
         // absent: it is a storage suite, every one of its guards is reddened by I-02, and declaring
         // it here is what the instrument refused when the two guards still sat in the file above.
+        // `the implementations under the five contracts` left this list for the same reason, below.
         'the registry encoding',
         'the public/private frontier',
-        'the implementations under the five contracts',
         'a sixth contract enters without a migration',
       ],
       /**
@@ -640,9 +640,20 @@ export const battery: Battery = {
        * next run rather than a reader catching it never. Listing the guards costs forty-three lines
        * and buys the opposite behaviour: the next guard added here is *unaccounted for* and says so.
        *
-       * The other five suites stay named as suites, and that is a bet rather than an oversight: none
+       * **And it happened a second time, to `the implementations under the five contracts`.** I-26 and
+       * I-27 move the licence perimeter, which is `referenceImplementationOf` - the very function ten
+       * of that suite's eighteen guards call - so ten went red under a declaration saying none of them
+       * ever had. The instrument refused on the next run, as before. The eight that stay silent are
+       * named below rather than absorbed, so the next guard added to that file is *unaccounted for*
+       * instead of quietly covered.
+       *
+       * The suites still named as suites stay that way, and it is a bet rather than an oversight: none
        * of them is probed at all, so a guard added to one is as unprobed as its neighbours and the
-       * declaration stays true. This one stopped being that the moment a mutant reached inside it.
+       * declaration stays true. Two have now stopped being that, each the moment a mutant reached
+       * inside it, and each was caught by the instrument rather than by a reader. **A suite name is
+       * worth its brevity exactly until one mutant reaches into it, and there is no warning before
+       * that day** - which is the argument for reading this refusal as maintenance rather than as
+       * something going wrong.
        */
       guards: [
         'every-declared-type-occurs-in-the-contract-number-parse',
@@ -688,6 +699,17 @@ export const battery: Battery = {
         'every-harness-file-is-hashed-array-group-by',
         'every-harness-file-is-hashed-string-levenshtein',
         'every-harness-file-is-hashed-string-slugify',
+        // `the implementations under the five contracts`, named guard by guard since I-26 and I-27
+        // reached ten of its eighteen. These eight are what is left silent: the perimeter mutants move
+        // which files an implementation carries, and none of these reads that.
+        'the-implementation-belongs-to-its-contract-number-parse',
+        'the-implementation-belongs-to-its-contract-date-add',
+        'the-implementation-belongs-to-its-contract-array-group-by',
+        'the-implementation-belongs-to-its-contract-string-levenshtein',
+        'the-implementation-belongs-to-its-contract-string-slugify',
+        'every-reference-has-no-dependencies',
+        'nothing-is-measured-yet',
+        'a-lockfile-is-json',
       ],
     },
     {
