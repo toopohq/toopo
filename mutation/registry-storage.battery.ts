@@ -644,6 +644,26 @@ export const battery: Battery = {
         'it reads reason literals written in `address.test.ts`, and this battery edits production ' +
         'sources only - so no edit it can make reaches them',
     },
+    /**
+     * Out of reach by construction, and the construction is the direction a damaged string fails in.
+     *
+     * The guard asks where a sentence the catalogue shares sits inside a contract's prose, and that
+     * seam is composed in `contracts/*\/contract.ts`. `serialise.ts` is the only module of this folder
+     * the string passes through, and it copies it. To redden the guard an edit would have to produce a
+     * *misplaced* occurrence; every edit that damages the string removes the occurrence instead, and
+     * then there is nothing to be wrong about.
+     *
+     * Measured rather than argued: `reason: property.reason` replaced by `reason: ''` in `serialise.ts`
+     * leaves the whole registry suite green, these five included. That is the strongest edit available
+     * here and it reddens nothing, which is what separates this from a region awaiting a mutant.
+     */
+    {
+      guards: onEach('a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands'),
+      reason:
+        'the seam it reads is composed in a contract folder, and this battery edits `registry/` only ' +
+        '- measured, emptying the reason in `serialise.ts` removes the occurrence rather than ' +
+        'misplacing it, and the whole suite stays green',
+    },
   ],
 
   /**
@@ -666,6 +686,32 @@ export const battery: Battery = {
    * twenty-two had no perturbation written at all.
    */
   unprobedRegions: [
+    /**
+     * Reachable, seen red, and not promoted into a cell - and the reason is a price rather than a
+     * doubt.
+     *
+     * `a-sentence-rendered-whole-is-not-also-a-complement` reads `VERIFIABLE`, which is a production
+     * source of this folder, so a cell is writable and the edit is known: putting
+     * `WHAT_A_SIGNATURE_DOES_NOT_PROVE` back into the `butNot` of
+     * `who-published-a-snapshot-and-from-what-build` reddens this guard and nothing else in the
+     * registry suite. That was measured by making the edit and running the suite, which is how the
+     * defect it exists for was found in the first place.
+     *
+     * **What a cell costs here is not two seconds of replay.** It moves the number of defect cells,
+     * which `README.md` transcribes, which `readme.test.ts` resolves against the instrument, and which
+     * `THE_REPLAY.spread` describes as a population that has been replayed once. Adding one obliges a
+     * full replay of the nineteen to restamp that sentence, and a unit about published prose is not
+     * where that is bought. The guard is kept on the rule that covers exactly this: a guard whose
+     * failure has been seen on its real condition is kept even where no cell produces it.
+     */
+    {
+      guards: ['a-sentence-rendered-whole-is-not-also-a-complement'],
+      reason:
+        'reachable from here and seen red by hand - putting `WHAT_A_SIGNATURE_DOES_NOT_PROVE` back ' +
+        'into the `butNot` it was published in reddens this guard alone. What is missing is the cell, ' +
+        'and its price is a restamp of the replayed population rather than the run itself',
+    },
+
     /**
      * The reading of a declared signature, on the shapes the five actually write.
      *
