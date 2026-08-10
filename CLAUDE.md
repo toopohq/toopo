@@ -2062,13 +2062,17 @@ the whole-suite regime the same 612 cells ran at 31 min 25 s, the 610 before the
 and the 592 before those from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a
 precision the measurement has not got. **The count is what has always told these populations apart, and
 here it did not move**: 612 either way, so nothing but the clause could have said that comparing the two
-series is wrong. The old readings stay, labelled, because they are what makes the change visible. **That regime has
-three readings now, and the third breaks the ordering rather than extending it.** Measured at
-`f37525f`: **615 cells in 27 min 34 s**, against 614 in 34 min 6 s and 612 in 27 min 8 s — the largest
-population is the second fastest run and the middle one is the outlier. Seven minutes over three
-populations three cells apart is the machine and not the cells, which is a thing two readings could
-only fail to establish and three settle; it is also why the two-reading entry could say no more than
-that a quarter of the time was unaccounted for. **The count in that sentence was dropped rather than incremented**: it read *one of three
+series is wrong. The old readings stay, labelled, because they are what makes the change visible. **And that regime now
+carries a reading that needs no population at all, which is what every count of readings here was
+standing in for.** Measured at `06e264b`: **618 cells in 27 min 22 s**, and the same 618 cells in
+28 min 42 s on the run before it — identical work, on one machine, eighty seconds apart. Every earlier
+reading compared populations and could always be answered with *the cells moved*; this one cannot,
+because nothing moved. The cross-population readings agree with it and no longer have to carry the
+claim alone: 615 in 27 min 34 s, 614 in 34 min 6 s, 612 in 27 min 8 s, so the smallest population is
+the fastest run and the second smallest is the slowest by seven minutes. **The tally of readings is
+gone from this sentence rather than incremented** — it read *three readings now*, a fourth was taken,
+and this paragraph had already caught itself doing exactly that one sentence earlier. **The count in
+that sentence was dropped rather than incremented**: it read *one of three
 runs*, a fourth was taken and a tally that has to be edited on every replay is one that will be wrong
 between two of them. The range only ever widens and needs no counting — which is why the runs of each
 population are no longer counted at all, only bounded. **No share of that step is
@@ -2299,6 +2303,27 @@ none — one per run of this suite, 1 933 of them under the operating system's t
 machine where this was found. It is now made once and removed with the file, and what is checked is the
 delta per run rather than a total anybody would have to trust: `1, 2, 3` before, **0 on every one of
 700 runs** after.
+
+**A fourth event of this family is recorded and not diagnosed, which is the whole of what one event
+supports.** The first of the two replays taken at `06e264b` reported *`cli-search`:
+`every-shape-of-import-is-repointed-and-not-only-the-obvious-one` is declared silent and a mutant
+reddened it*. Rerun alone, immediately afterwards, that battery agreed on all twenty of its cells and
+the guard was silent again; the second full replay was clean throughout. So the event is not
+deterministic, and the two things it is not are worth writing down: it is not that battery's cells,
+which reproduce, and it is not the unit that was running, which edits nothing under `cli/`.
+
+The guard reaches `rewrite.ts`, which is one of the two callers of `removeDirectory` — the module this
+section exists for, whose retry gives up after 2 750 ms. That is a *candidate* and it is left as one.
+**Nothing here establishes it, because the instrument cannot say why a guard failed**: a reddened
+silence declaration is reported as a stale declaration and the exception behind it is not carried, which
+is the limit this section already names — neither report is looking at whether a guard is intermittent.
+
+**What forbids going further is this section's own lesson rather than a shortage of time.** *0 red in
+30* was true, was measured, and carried a conclusion it could not support; *1 red in 2* is the same
+shape with the sign reversed. A rate needs a trial count put beside the rate being looked for, and two
+replays is not that at any price — the cheap form is the isolated loop that settled the `EPERM` case,
+and it is not this unit's to run. What is owed is that the observation exists with its date, so the
+next occurrence is a second event rather than a first one.
 
 ## What licence covers what, and why the perimeter is derived — settled
 

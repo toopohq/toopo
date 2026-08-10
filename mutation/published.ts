@@ -355,14 +355,19 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * collects its own contract's suite rather than all five. The earlier readings stay, labelled, because
  * they measure a real past state and it is they that make the change visible at all.
  *
- * **The narrowed regime has three readings now, and the third is what turned a suggestion into a
- * finding.** With two - 612 cells at 27 min 8 s and 614 at 34 min 6 s - a reader could believe the
- * population and the duration moved together, and this entry could only say that they had not been
- * shown to. The third reading is 615 cells at 27 min 34 s: the largest population is the second
- * fastest run and the middle one is the outlier, so the ordering is broken rather than merely
- * unestablished. Seven minutes over three populations three cells apart is the same order as
- * `cli-install`'s own gap between runs of work that is exactly identical. **A reader who wanted to
- * know what a cell costs still cannot be told, and now the reason is measured instead of declared.**
+ * **The narrowed regime broke its own ordering at the third reading, and the fourth stopped needing an
+ * ordering at all.** With two - 612 cells at 27 min 8 s and 614 at 34 min 6 s - a reader could believe
+ * the population and the duration moved together. The third, 615 cells at 27 min 34 s, broke that: the
+ * smallest population is the fastest run and the second smallest is the slowest by seven minutes, so
+ * the ordering is broken rather than merely unestablished.
+ *
+ * **The fourth reading is a different kind of evidence, and it is the kind every reading before it was
+ * standing in for.** These 618 cells ran twice, at 27 min 22 s and at 28 min 42 s - identical work, on
+ * one machine, eighty seconds apart. Every earlier comparison had to reason across populations and
+ * could always be answered with *the cells moved*; this one cannot, because nothing moved. It is what
+ * `cli-install` has been showing one floor down, arriving at the level of a whole replay. **A reader
+ * who wanted to know what a cell costs still cannot be told, and the reason no longer needs a
+ * population to be argued from.**
  */
 export const THE_REPLAY = {
   command: 'npm run mutation',
@@ -371,15 +376,16 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '27 min 34 s',
-  measuredAt: 'f37525f',
+  duration: '27 min 22 s',
+  measuredAt: '06e264b',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'the narrowed regime has three readings now and they do not order themselves by population: ' +
-    'these 615 cells ran at the figure above, the 614 before them at 34 min 6 s, and the 612 before ' +
-    'those at 27 min 8 s. Seven minutes separate the fastest and the slowest of three populations ' +
-    'three cells apart, and the middle one is the outlier - so the variation is the machine rather ' +
-    'than the cells, which two readings could only suggest and three settle. Before this regime a ' +
+    'these same 618 cells also ran at 28 min 42 s, on the run before the one above - identical work, ' +
+    'eighty seconds apart, which is what every reading below can only approximate by comparing ' +
+    'populations. Those readings do not order themselves by population either: the 615 before these ' +
+    'ran at 27 min 34 s, the 614 before those at 34 min 6 s, and the 612 before those at 27 min 8 s, ' +
+    'so the smallest population is the fastest run and the second smallest is the slowest by seven ' +
+    'minutes. The variation is the machine rather than the cells. Before this regime a ' +
     "cell of a contract battery collected all five contracts rather than its own: the same 612 " +
     'cells ran there at ' +
     '31 min 25 s, the 610 before them at 29 min 13 s, the 606 before those from 28 min 19 s to ' +
