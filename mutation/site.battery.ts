@@ -177,7 +177,26 @@ const THE_LIMIT_IS_READ_FIRST = `    line('h2', 'What this does not prove'),
     ),
 `
 
-const A_PIN_IS_NOT_AN_OBSERVATION = `    line('p', THE_PINS_ARE_AN_ASSERTION),`
+const A_PIN_IS_NOT_AN_OBSERVATION = `    paragraph(THE_PINS_ARE_AN_ASSERTION),`
+
+/**
+ * The two anchors of the defects this repository published, and the second is deliberately the
+ * *opening* of the paragraph rather than the whole of it: what was wrong was the call, and the
+ * sentence it carries goes on being read by `every-figure-on-the-method-page-comes-from-what-it-was-
+ * built-from`, which would redden on any edit that touched the figures instead.
+ */
+const A_CONTRACT_NAME_IS_A_TITLE = `          el(
+            'h3',
+            { class: 'call' },
+            el(
+              'a',
+              { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },
+              text(renderContract(entry.address)),
+            ),
+          ),`
+
+const THE_REPLAY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `    paragraph(
+      \`\${THE_REPLAY.command} is what turns it into something you have watched happen: it \` +`
 
 const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
 
@@ -1044,6 +1063,52 @@ const mutants: readonly Mutant[] = [
       'as not writing it - and the robots line goes on naming it correctly, so nothing disagrees',
     [pathsFile(THE_SITEMAP_IS_WHERE_A_CRAWLER_LOOKS, `export const SITEMAP = 'sitemap/index.xml'`)],
     killed(['the-two-crawler-files-are-at-the-addresses-a-crawler-looks-for']),
+  ),
+
+  /**
+   * The two defects below are the two this repository actually published, put back verbatim.
+   *
+   * Neither was found by a guard - the first by reading the front page in document order, the second
+   * by re-reading the other six afterwards - so what each one pins is a guard that exists because
+   * somebody read a page, and the mutant is the reading made repeatable.
+   */
+  sameOnEveryLens(
+    'W-64',
+    'writes a contract name as a bare anchor rather than as the title it is. An anchor is phrasing ' +
+      'content and carries no separator, so every summary on the front page begins mid-line - ' +
+      '`typescript/number/parse@1Convert a string to a finite number` - and the outline of the page ' +
+      'that is this whole site\'s navigation holds not one contract name. Every word is still ' +
+      'present, so the projection guard stays green: two blocks have become one sentence, which a ' +
+      'person reads and a guard about presence cannot',
+    [
+      cataloguePageFile(
+        A_CONTRACT_NAME_IS_A_TITLE,
+        `          el(\n` +
+          `            'a',\n` +
+          `            { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },\n` +
+          `            text(renderContract(entry.address)),\n` +
+          `          ),`,
+      ),
+    ],
+    killed(['no-element-runs-into-the-one-beside-it']),
+  ),
+
+  sameOnEveryLens(
+    'W-65',
+    'renders the one paragraph carrying both inline marks without parsing them, which is the call ' +
+      'site this page had wrong: the asterisks and the backticks reach the reader as themselves, on ' +
+      'the page whose whole subject is rigour. `inline` goes on existing and goes on being right - ' +
+      'what the edit removes is a paragraph going through it, which is the shape of every failure of ' +
+      'a rule that is declared and implemented and reached by hand',
+    [
+      methodFile(
+        THE_REPLAY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
+        `    line(\n` +
+          `      'p',\n` +
+          `      \`\${THE_REPLAY.command} is what turns it into something you have watched happen: it \` +`,
+      ),
+    ],
+    killed(['no-mark-a-sentence-carries-reaches-the-reader-as-itself']),
   ),
 ]
 
