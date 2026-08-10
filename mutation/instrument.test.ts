@@ -219,11 +219,14 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   it(
     'refuses a folder no counted file lies under, rather than comparing against nothing',
     () => {
-      // The other half of the refusal above, and it arrives from the opposite side: there the
-      // configuration was unknown and here it is known and the folder inside it is not. An empty
-      // census agrees with a run that collected nothing, so calibration would go on to refuse a red
-      // control naming no guard - which says only that something did. It is what a contractPath left
-      // behind by a rename looks like, and it costs nothing to find out: no run has happened yet.
+      // The other half of the refusal above, arriving from the opposite side: there the configuration
+      // was unknown, here it is known and the folder inside it is not. An empty census agrees with a
+      // run that collected nothing, so nothing downstream would object on its own terms.
+      //
+      // Measured with the refusal taken out: calibration walks on and dies on `Command failed: git
+      // checkout HEAD -- mutation/fixture-renamed` - a subprocess error that names no census, no
+      // configuration and no count, in front of somebody who has just renamed a folder. That is what
+      // this buys, and it buys it before any run has happened.
       expect(() => calibrate({ ...battery, contractPath: 'mutation/fixture-renamed' })).toThrow(
         /no file of "mutation\/fixture\/vitest\.config\.ts" lies under "mutation\/fixture-renamed"/,
       )
