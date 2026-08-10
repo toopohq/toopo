@@ -12,6 +12,7 @@ import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { readingOf, toHtml, toText, wordsOf } from './document.js'
 import { localSource } from './local-source.js'
+import { inline } from './methodology-page.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 import { theSite } from './site.js'
 
@@ -497,6 +498,28 @@ describe('the site', () => {
 describe('the page that says how we verify', () => {
   const reading = (): string => toText(page(METHOD_PAGE))
 
+  /**
+   * Every sentence this page renders has had its two marks parsed, and none reaches a reader as itself.
+   *
+   * `methodology-page.ts` says what these are for in as many words - the sentences come from
+   * `mutation/`, where `**this**` and `` `that` `` are read by a person in an editor, and *printed as
+   * they are, a reader of the page sees the asterisks*. That rule was declared, implemented in
+   * `inline`, and then broken by two call sites reaching for `line` instead of `paragraph`: the page
+   * published `**No share of any of those steps is attributed to anything**` and `` `cli-install` ``
+   * with the punctuation showing, on the page whose whole subject is rigour.
+   *
+   * Neither mark is legitimate content here, which is what makes the assertion exact rather than a
+   * heuristic. A backtick becomes `code` and an asterisk pair becomes `strong`, so a parsed page has
+   * none of either left in its reading - and this page is built entirely from `mutation/` prose, where
+   * both marks are the convention. It is deliberately not asked of a contract page: those publish
+   * contract prose that writes `` `Intl` `` for a reader, on 5 pages and 53 lines, and is a separate
+   * question about the register of the catalogue's own text rather than about this page's renderer.
+   */
+  it('no-mark-a-sentence-carries-reaches-the-reader-as-itself', () => {
+    expect(reading().match(/\*\*[^*]+\*\*/g) ?? [], 'unparsed bold on the method page').toEqual([])
+    expect(reading().match(/`[^`]+`/g) ?? [], 'unparsed code on the method page').toEqual([])
+  })
+
 
   /**
    * **No figure on this page is typed into a sentence.**
@@ -661,12 +684,17 @@ describe('the page that says how we verify', () => {
    * list of the fields to check is a second statement of what the type holds - so the walk is over the
    * object. A field added there and left out of the sentence does not pass, which is the reason this
    * is a loop and not five lines.
+   *
+   * Each value is asked for **as a reader sees it** rather than as it is written, because these
+   * sentences carry the two marks `inline` parses and the page no longer prints them. Stripping the
+   * marks here instead would be a copy of that function going stale on the day it learns a third.
    */
   it('the-page-separates-what-is-asserted-from-what-a-run-would-observe', () => {
     const shown = reading()
+    const asRead = (prose: string): string => inline(prose).map(readingOf).join('')
 
-    expect(shown).toContain(THE_PINS_ARE_AN_ASSERTION)
-    for (const value of Object.values(THE_REPLAY)) expect(shown).toContain(value)
+    expect(shown).toContain(asRead(THE_PINS_ARE_AN_ASSERTION))
+    for (const value of Object.values(THE_REPLAY)) expect(shown).toContain(asRead(value))
   })
 
   /**

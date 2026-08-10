@@ -100,7 +100,15 @@ const asCode = (prose: string): readonly Node[] =>
         : text(piece),
     )
 
-const inline = (prose: string): readonly Node[] =>
+/**
+ * Exported for the guard that requires each of these sentences on the page.
+ *
+ * It has to ask for them *as a reader sees them*, which is no longer the literal in `mutation/` now
+ * that the marks are parsed - and a guard stripping the marks itself would be a second statement of
+ * what this function does, wrong on the day a third mark is added. `whatRunsInYourBrowser` is exported
+ * one file along for the same reason: a guard that transcribes goes stale on the first reword.
+ */
+export const inline = (prose: string): readonly Node[] =>
   prose
     .split(/(\*\*[^*]+\*\*)/g)
     .filter((piece) => piece !== '')
@@ -290,9 +298,8 @@ export const methodologyPage = (
     ),
 
     line('h2', 'What the tests catch'),
-    line('p', THE_PINS_ARE_AN_ASSERTION),
-    line(
-      'p',
+    paragraph(THE_PINS_ARE_AN_ASSERTION),
+    paragraph(
       `${THE_REPLAY.command} is what turns it into something you have watched happen: it ` +
         `${THE_REPLAY.what} One run of it over the ${measured.batteries} batteries took ` +
         `${THE_REPLAY.duration}, measured at ${THE_REPLAY.measuredAt}; ${THE_REPLAY.spread}. ` +
