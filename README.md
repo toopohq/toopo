@@ -112,5 +112,11 @@ npm run packaging    # builds the archive, installs it, runs toopo out of it
 npm run meta         # the mutation instrument's own guards
 ```
 
-`CLAUDE.md` is the project specification: what is settled, what it was measured against, and what
-this repository declares that nothing yet enforces.
+[CONTRIBUTING.md](CONTRIBUTING.md) says what this catalogue can receive and what it cannot — an
+implementation, an input where ours is wrong, a correction to a search alias, and never a contract.
+The reason is arithmetic rather than a policy, and it is counted there so you can check it.
+
+`CLAUDE.md` is this project's working journal: every decision that has been settled, the measurement
+it rests on, and what the repository declares that nothing yet enforces. It is long, it is written in
+the order things were learned, and it is the honest record of how this was built. **It is not a
+specification**, and it is not what to read before contributing.
