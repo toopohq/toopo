@@ -401,7 +401,13 @@ export const methodologyPage = (
 
     line('h2', 'The draws are re-seeded every run'),
     paragraph(
-      `The property tests are not run against a frozen sample. ${methodology.seeding.whyNotFrozen}. ` +
+      /**
+       * A colon and not a full stop, because `whyNotFrozen` is a clause. Written after a stop it read
+       * *…against a frozen sample. a property whose draws are frozen…* - the defect
+       * `DETERMINISM_ORDERING_FINDING` had on five contract pages, met again here on a value this page
+       * composes rather than one a contract does.
+       */
+      `The property tests are not run against a frozen sample: ${methodology.seeding.whyNotFrozen}. ` +
         `So your run is a different sample of the same properties, and a run of ours passing is not ` +
         `a promise that yours will draw what ours drew.`,
     ),

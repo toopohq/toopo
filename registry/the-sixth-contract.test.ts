@@ -82,8 +82,8 @@ const theSixth: ContractRecord = {
       'Finite doubles in the range money and measurements are written in. It is not a decimal ' +
       'arithmetic library and not a formatter.',
     searchAliases: ['round to 2 decimals', 'toFixed', 'round number javascript'],
-    relationToTheLanguage: 'the language ships `toFixed`, which answers a string and rounds by the ' +
-      'double nearest the input rather than by the decimal the caller wrote',
+    relationToTheLanguage: 'The language ships `toFixed`, which answers a string and rounds by the ' +
+      'double nearest the input rather than by the decimal the caller wrote.',
   },
   surface: {
     exports: [

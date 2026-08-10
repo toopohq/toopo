@@ -595,20 +595,6 @@ export type UniversalPropertyDeclaration = {
 }
 
 /**
- * Why `no ambient output` is inapplicable everywhere, measured once and confirmed twice.
- *
- * A test that snapshots global state inside its own `it` runs after the earlier tests have called the
- * function hundreds of times, so it cannot see a write that already happened: measured on
- * `number/parse@1`, an implementation writing `globalThis.__parseNumberCalls` passes the whole suite.
- * A correct memoising cache passes it too, and should - a cache is not a defect. The guarantee is
- * obtained by static analysis in the validation pipeline, which forbids a feature from reaching global
- * state at all.
- *
- * Published here rather than restated three times, because it is a fact about what a property can
- * observe and not about parsing, dates or grouping. A contract still declares its own entry: this is
- * the reason it is allowed to give, not a declaration it is spared.
- */
-/**
  * `deterministic` and `no ambient input` are ordered rather than independent, measured on all three
  * prototypes.
  *
@@ -628,10 +614,16 @@ export type UniversalPropertyDeclaration = {
  * array reversed in place, a Date the implementation moved under itself - so it is not decorative.
  * What it is not is independent, and that is worth publishing rather than leaving a reader to assume
  * two guards where there is one and a half.
+ *
+ * **A whole sentence, because it lands in prose a contract page prints.** It used to be a clause, and
+ * all five contracts composed it as `` `...own first answer. ${this} - X is that mutant here.` `` - so
+ * every contract page published a sentence beginning in lower case after a full stop.
+ * `contract-record.ts` carries the register and names the two guards that keep it.
  */
 export const DETERMINISM_ORDERING_FINDING =
-  'ordered under `no ambient input` rather than independent of it: every mutant measured to redden ' +
-  'this property reddens that one too, and the memoise-last mutant reddens that one and not this'
+  'This property is ordered under `no ambient input` rather than independent of it: every mutant ' +
+  'measured to redden it reddens that one too, and the memoise-last mutant reddens that one and not ' +
+  'this.'
 
 /**
  * A guard perturbs the claim, never the object derived from it.
@@ -662,9 +654,28 @@ export const GUARD_PERTURBATION_RULE =
   'a guard perturbs the claim, never the object derived from it: perturbing the derived object ' +
   'establishes that the derivation is self-consistent, which is true of a derivation with a hole in it'
 
+/**
+ * Why `no ambient output` is inapplicable everywhere, measured once and confirmed twice.
+ *
+ * A test that snapshots global state inside its own `it` runs after the earlier tests have called the
+ * function hundreds of times, so it cannot see a write that already happened: measured on
+ * `number/parse@1`, an implementation writing `globalThis.__parseNumberCalls` passes the whole suite.
+ * A correct memoising cache passes it too, and should - a cache is not a defect. The guarantee is
+ * obtained by static analysis in the validation pipeline, which forbids a feature from reaching global
+ * state at all.
+ *
+ * Published here rather than restated five times, because it is a fact about what a property can
+ * observe and not about parsing, dates or grouping. A contract still declares its own entry: this is
+ * the reason it is allowed to give, not a declaration it is spared.
+ *
+ * **A whole sentence, for the reason `DETERMINISM_ORDERING_FINDING` is one.** All five contracts open
+ * their `no ambient output` reason with it, so as a clause it opened a paragraph of four contract
+ * pages in lower case. This doc block also used to sit sixty lines above the constant it describes,
+ * stacked on another constant's, which is how it stayed there while the value under it was wrong.
+ */
 export const NO_AMBIENT_OUTPUT_FINDING =
-  'not reachable by a property - a test cannot observe a write that happened before it ran, and a ' +
-  'correct memoising cache is indistinguishable from a defect by behaviour alone'
+  'Not reachable by a property - a test cannot observe a write that happened before it ran, and a ' +
+  'correct memoising cache is indistinguishable from a defect by behaviour alone.'
 
 /**
  * The guard each contract's `properties.test.ts` calls, and it checks three things where the three

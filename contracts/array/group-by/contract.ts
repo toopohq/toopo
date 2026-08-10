@@ -404,7 +404,7 @@ export const universalProperties = [
       'Violable in practice, and witnessed by M-21, which reverses the input in place: reversal is an ' +
       'involution, so two identical consecutive calls really do answer differently. Conditional on a ' +
       'deterministic key function, which the generators supply - see `keyFunctionRules`, where that ' +
-      `restriction is published together with the obligation that stops it from hiding anything. ${DETERMINISM_ORDERING_FINDING} - ` +
+      `restriction is published together with the obligation that stops it from hiding anything. ${DETERMINISM_ORDERING_FINDING} ` +
       'M-22 is that mutant here.',
   },
   {
@@ -426,7 +426,7 @@ export const universalProperties = [
     name: 'no ambient output',
     applicable: false,
     reason:
-      `${NO_AMBIENT_OUTPUT_FINDING}. Confirmed here on a third shape without changing a word of it.`,
+      `${NO_AMBIENT_OUTPUT_FINDING} Confirmed here on a third shape without changing a word of it.`,
   },
 ] as const
 

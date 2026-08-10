@@ -75,7 +75,7 @@ export const identity = {
    * against what the language *ships*.
    */
   relationToTheLanguage:
-    'the language ships no edit distance, and nothing in Intl measures the gap between two strings',
+    'The language ships no edit distance, and nothing in Intl measures the gap between two strings.',
 
   searchAliases: [
     'levenshtein',
@@ -279,7 +279,7 @@ export const universalProperties = [
       'has not been seen red on the sentence it makes, which is the standard `array/group-by@1` set ' +
       'when it wrote M-21. That there is no third witness is a measurement rather than an omission: ' +
       'every other candidate was a cache, and a cache answers a repeated call from its own first ' +
-      `answer. ${DETERMINISM_ORDERING_FINDING} - L-20 is that mutant here.`,
+      `answer. ${DETERMINISM_ORDERING_FINDING} L-20 is that mutant here.`,
   },
   {
     name: 'no ambient input',
@@ -296,7 +296,7 @@ export const universalProperties = [
   {
     name: 'no ambient output',
     applicable: false,
-    reason: `${NO_AMBIENT_OUTPUT_FINDING}. Confirmed here on a fourth shape without changing a word of it.`,
+    reason: `${NO_AMBIENT_OUTPUT_FINDING} Confirmed here on a fourth shape without changing a word of it.`,
   },
 ] as const
 

@@ -8,6 +8,7 @@ import {
   theMeasurement,
 } from '../mutation/published.js'
 import { renderCase, renderContract } from '../registry/address.js'
+import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { readingOf, toHtml, toText, wordsOf } from './document.js'
@@ -461,6 +462,49 @@ describe('the site', () => {
       for (const node of document.body) walk(node)
 
       expect(collide, `${path} reads two elements as one sentence`).toEqual([])
+    }
+  })
+
+  /**
+   * A value the registry carries, printed as a paragraph of its own, is a sentence.
+   *
+   * **This is the guard above met one level down, and the measurement is why it had to be a second
+   * one rather than a widening.** Both defects it exists for sit in a `<p>` with a single text child -
+   * `left sibling: none, right sibling: none` - so there is no pair of elements for
+   * `no-element-runs-into-the-one-beside-it` to look at, and one level up the paragraph's own
+   * neighbours are a `<p>` and an `<h2>`, both of which separate. That guard's subject is the boundary
+   * *between two elements*; these are boundaries *inside one string*, and no predicate over element
+   * pairs can reach them. The two were found by reading the pages, as the five before them were.
+   *
+   * The population is derived from the two things that already exist - every string the record carries,
+   * and every paragraph of the page - so there is no list of prose fields anywhere and no second
+   * statement to drift. What that derivation buys is the exclusions: `couplingRule` and a table's
+   * `purpose` are punctuated *by the page*, so the paragraph's reading is not the carried string and
+   * they fall out on their own, correctly, without being named. Measured over the four pages: 212
+   * paragraphs are a carried string, and before the repair 6 of them were fragments - the two values of
+   * `identity.relationToTheLanguage`, and `NO_AMBIENT_OUTPUT_FINDING` opening a reason on four pages.
+   *
+   * The other half of the class is `a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands`
+   * in `registry/against-the-five.test.ts`. A value is standing alone or it is embedded; this guard
+   * cannot see an embedded one, because the string it lands in is a sentence whatever the seam does.
+   */
+  it('a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const carried = stringsIn(held.contract)
+      const fragments: string[] = []
+
+      const walk = (node: Parameters<typeof readingOf>[0]): void => {
+        if (node.kind === 'text') return
+
+        const reading = readingOf(node).trim()
+        if (node.tag === 'p' && carried.has(reading) && !isASentence(reading)) fragments.push(reading)
+
+        for (const child of node.children) walk(child)
+      }
+
+      for (const node of page(pageOf(held.contract.address)).body) walk(node)
+
+      expect(fragments, `${held.contract.address.name} prints a fragment as a paragraph`).toEqual([])
     }
   })
 

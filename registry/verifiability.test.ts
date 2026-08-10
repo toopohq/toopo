@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { isFrozenIdentifier } from '../catalogue/identifier.js'
+import { WHAT_A_SIGNATURE_DOES_NOT_PROVE } from './attestation.js'
 import { ENDPOINTS } from './endpoints.js'
 import { FIELD_MAP } from './field-map.js'
 import { theFive } from './the-five.js'
@@ -62,6 +63,26 @@ describe('the two columns', () => {
     )
 
     expect(overclaiming.map((claim) => claim.id)).toEqual([])
+  })
+
+  /**
+   * A sentence written to stand alone is not a complement, and this is where that cost a false one.
+   *
+   * The page writes `This does not establish ${butNot}.`, so a `butNot` is the tail of a sentence
+   * somebody else began. `WHAT_A_SIGNATURE_DOES_NOT_PROVE` sat in that slot and is a whole sentence
+   * about three separate things, so the method page published *This does not establish a signature
+   * attests who published this snapshot and from what build* - denying, two lines under it, the claim
+   * the row exists to make. No shape check could have seen it: the composed sentence is well formed and
+   * false, which is the half of this class that register cannot reach.
+   *
+   * It is the one string this can be asked of, because it is the one the methodology answer renders
+   * whole and also offers to this table. A second such value would need naming beside it, and that is
+   * the price this repository pays per sentence rather than per class.
+   */
+  it('a-sentence-rendered-whole-is-not-also-a-complement', () => {
+    const reused = VERIFIABLE.filter((claim) => claim.butNot === WHAT_A_SIGNATURE_DOES_NOT_PROVE)
+
+    expect(reused.map((claim) => claim.id)).toEqual([])
   })
 
   /**

@@ -232,7 +232,7 @@ export const universalProperties = [
     applicable: true,
     reason:
       'Violable in practice, and witnessed by P-08 of the battery: a regular expression carrying the ' +
-      `global flag keeps a lastIndex between calls and answers differently on the second one. ${DETERMINISM_ORDERING_FINDING} - ` +
+      `global flag keeps a lastIndex between calls and answers differently on the second one. ${DETERMINISM_ORDERING_FINDING} ` +
       'P-21 is that mutant here.',
   },
   {
@@ -252,7 +252,7 @@ export const universalProperties = [
     name: 'no ambient output',
     applicable: false,
     reason:
-      `${NO_AMBIENT_OUTPUT_FINDING}. Measured here first, on the implementation that writes ` +
+      `${NO_AMBIENT_OUTPUT_FINDING} Measured here first, on the implementation that writes ` +
       'globalThis.__parseNumberCalls and passes the whole suite, and the attempt was removed rather ' +
       'than left decorative.',
   },

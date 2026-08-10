@@ -2,7 +2,9 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
+import * as catalogue from '../catalogue/every-contract.js'
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
+import { isASentence, stringsIn } from './contract-record.js'
 import type { CaseTableSource, ContractSource } from './serialise.js'
 import {
   CaseIsNotACall,
@@ -47,6 +49,53 @@ describe('the five, read against their own source', () => {
         .map((entry) => entry.name)
 
       expect(missing).toEqual([])
+    },
+  )
+
+  /**
+   * A sentence the catalogue shares is a whole sentence wherever a contract puts it.
+   *
+   * **The half of the register that no guard over a field can hold.** `contract-record.ts` settles
+   * that a string a page prints as a paragraph is a sentence, and `site/pages.test.ts` asks it of every
+   * such paragraph - but a shared value is *embedded*, so the string it lands in is a sentence whatever
+   * the seam does. `DETERMINISM_ORDERING_FINDING` was a clause composed as
+   * `` `...its own first answer. ${it} - L-20 is that mutant here.` `` on five of five, and every
+   * contract page read *…from its own first answer. ordered under `no ambient input`…*: a sentence
+   * beginning in lower case after a full stop, in the middle of a paragraph that opens and closes
+   * perfectly well.
+   *
+   * The population is derived twice over and no constant is listed here. What the catalogue shares is
+   * whatever it exports; what is *prose* is whatever carries a space, which is the one thing an
+   * identifier of this repository can never do - `CLAUDE.md` chooses ` :: ` as a separator on exactly
+   * that argument. Measured: nine exported strings, five of them prose, and two of the five occur in a
+   * record. A sixth shared sentence is covered the day it is written.
+   *
+   * What is asked of an occurrence rather than of the constant, and the difference is load-bearing: a
+   * clause the catalogue shares is legitimate until it lands in prose, and `CLOCK_DEPENDENCE_RULE`
+   * and `GUARD_PERTURBATION_RULE` are two that never do.
+   */
+  it.each(eachContract)(
+    'a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands-%s',
+    (_name, source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const shared = Object.values(catalogue).filter(
+        (value): value is string => typeof value === 'string' && value.includes(' '),
+      )
+
+      const seams = [...stringsIn(record)].flatMap((carried) =>
+        shared
+          .filter((value) => carried.includes(value))
+          .filter((value) => {
+            const at = carried.indexOf(value)
+            const opens = at === 0 || /[.!?] $/.test(carried.slice(at - 2, at))
+            const after = carried.slice(at + value.length)
+
+            return !(isASentence(value) && opens && (after === '' || after.startsWith(' ')))
+          })
+          .map((value) => `${value.slice(0, 40)}… in "…${carried.slice(0, 40)}…"`),
+      )
+
+      expect(seams).toEqual([])
     },
   )
 

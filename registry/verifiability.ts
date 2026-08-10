@@ -118,7 +118,17 @@ export const VERIFIABLE: readonly VerifiableClaim[] = [
     claim: 'this artefact was published by a named identity from a named build',
     by: 'verifying the Sigstore bundle with `cosign`, against an issuer and identity the reader supplies',
     about: ['attestations'],
-    butNot: WHAT_A_SIGNATURE_DOES_NOT_PROVE,
+    /**
+     * A complement, because the page writes `This does not establish ${butNot}.` and every other entry
+     * supplies one. `WHAT_A_SIGNATURE_DOES_NOT_PROVE` stood here and is a whole sentence about three
+     * things, so the page published *This does not establish a signature attests who published this
+     * snapshot and from what build* - which denies the claim two lines above it. It goes on being
+     * rendered whole under its own heading, which is the position it was written for.
+     */
+    butNot:
+      'that what was published is right - the contract\'s verification says an implementation ' +
+      'answers the contract, and neither that nor a signature says the contract is the right ' +
+      'specification',
   },
   {
     id: 'an-implementation-answers-its-contract',

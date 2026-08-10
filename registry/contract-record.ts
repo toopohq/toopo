@@ -98,6 +98,74 @@ export type Lifecycle =
 // ---------------------------------------------------------------------------
 
 /**
+ * ---------------------------------------------------------------------------
+ * The register of a prose field, settled: a paragraph is a sentence
+ * ---------------------------------------------------------------------------
+ *
+ * **A string this record carries that a page prints as a paragraph of its own opens like a sentence
+ * and ends in a full stop.** It is not a style preference: a paragraph is a block, and a block that
+ * reads as a fragment is a block the reader has to attach to the one above it - the class
+ * `no-element-runs-into-the-one-beside-it` is written for, one level down, where the two things run
+ * together inside one string instead of across two elements.
+ *
+ * The register was decided by a census rather than by taste. Over the four contracts the registry
+ * serves, `summary`, `description` and `inputDomain` are sentences twelve times out of twelve; of the
+ * four `relationToTheLanguage` values ever written, the one that is a sentence is `array/group-by@1`'s
+ * and it agrees with all twelve, while the three clauses are the exception. The alternative - declare
+ * the field a clause and let the page frame it, as the page already frames `couplingRule` and a
+ * table's `purpose` - is refused by the same census: `array/group-by@1`'s value is *two* sentences, so
+ * no frame fits it, and a frame that fitted would have to be re-decided for prose that is already
+ * written.
+ *
+ * **What keeps it is two guards, and they are a partition rather than a pair.** A value is standing
+ * alone or it is embedded, and nothing else. `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence`
+ * in `site/pages.test.ts` takes every string this record carries and asks it of each one that is the
+ * whole reading of a paragraph - 212 of them today, derived from the page and the record, so a prose
+ * field added tomorrow is covered with nothing edited here.
+ * `a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands` in
+ * `registry/against-the-five.test.ts` takes the other half: a value the catalogue shares between
+ * contracts is composed into a longer string, so no field-shaped guard can see its seam.
+ *
+ * The limit is declared rather than discovered: **a contract the catalogue refused has no page**, so
+ * nothing asks this of `array/group-by@1`'s prose. That is the limit every guard about a page already
+ * has, and it is the right one here - a clause is not wrong in a record, it is wrong rendered as a
+ * paragraph.
+ */
+
+/**
+ * The register itself, as a predicate: it opens like a sentence and it ends like one.
+ *
+ * Shape and nothing else, which is what separates it from a lint over prose. *Is this well written* is
+ * a judgement and would be the class `CLAUDE.md` prices and refuses; *does this begin with a capital
+ * and end in a full stop* is decidable, is the whole of what a rendering needs, and cannot be wrong
+ * about what it claims.
+ *
+ * The one refusal it can make wrongly is named rather than left to be met: a sentence that legitimately
+ * opens on a lower-case identifier. Five exist in this catalogue's prose today - `parseFloat("1.2.3")
+ * answers…`, `luxon…` - and all five are mid-string, where nothing asks. A paragraph that opened that
+ * way would be refused and would have to be rewritten, which is the loud direction and the cheap one.
+ */
+export const isASentence = (value: string): boolean => /^[A-Z][\s\S]*[.!?]$/.test(value)
+
+/**
+ * Every string a record carries, at any depth.
+ *
+ * Both guards of the register need it and neither may own it, so it is here, beside the rule. It takes
+ * `unknown` for the reason `pathsIn` does: a `ContractRecord` and the `FrozenContract` a page is built
+ * from are two types over one shape, and the walk is about the shape. Nothing is skipped and no field
+ * is named - a walk that knew which fields hold prose would be the list this rule exists without.
+ */
+export const stringsIn = (value: unknown, into: Set<string> = new Set()): ReadonlySet<string> => {
+  if (typeof value === 'string') into.add(value)
+  else if (Array.isArray(value)) for (const entry of value) stringsIn(entry, into)
+  else if (typeof value === 'object' && value !== null) {
+    for (const entry of Object.values(value)) stringsIn(entry, into)
+  }
+
+  return into
+}
+
+/**
  * The seven fields `contractAnatomy` measured present in five of five, and the eighth it measured at
  * three of five.
  *
@@ -106,6 +174,11 @@ export type Lifecycle =
  * divergence replay, and `CLAUDE.md` records that as one debt with two symptoms. A schema that
  * required it would force the debt closed by transcription, which is the one repair that proves
  * nothing.
+ *
+ * It is also the field the register above was written for. It had none: three of its four values were
+ * clauses and one was a sentence, and the page printed a clause as a bare paragraph on two contract
+ * pages for as long as the field has existed. Filling the two contracts that lack it is a separate
+ * decision about content and is still owed.
  */
 export type IdentityRecord = {
   readonly exportName: string

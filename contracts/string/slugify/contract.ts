@@ -76,7 +76,7 @@ export const identity = {
    * four most used libraries agree on seven. The rest of that measurement is in `ecosystem` below.
    */
   relationToTheLanguage:
-    'the language ships normalisation and percent-encoding, and nothing that produces an identifier',
+    'The language ships normalisation and percent-encoding, and nothing that produces an identifier.',
 
   searchAliases: [
     'slugify',
@@ -356,7 +356,7 @@ export const universalProperties = [
       'reaches when it is made "reusable" - answers the slug on the first call and the slug of ' +
       'every call so far on the second. It is the only witness that reddens this property on its ' +
       'own failure condition; every other candidate on a function of this shape is a cache, and a ' +
-      `cache answers a repeated call from its own first answer. ${DETERMINISM_ORDERING_FINDING} - ` +
+      `cache answers a repeated call from its own first answer. ${DETERMINISM_ORDERING_FINDING} ` +
       'G-20 is that mutant here.',
   },
   {
@@ -373,7 +373,7 @@ export const universalProperties = [
   {
     name: 'no ambient output',
     applicable: false,
-    reason: `${NO_AMBIENT_OUTPUT_FINDING}. Confirmed here on a fifth shape without changing a word of it.`,
+    reason: `${NO_AMBIENT_OUTPUT_FINDING} Confirmed here on a fifth shape without changing a word of it.`,
   },
 ] as const
 

@@ -405,7 +405,7 @@ export const universalProperties = [
       'either: consulted first, it is primed by the property\'s own first call and returns that ' +
       'same answer to the second. D-02, which mutates the input and hands the object back rather ' +
       'than a copy, leaves this property green for a third reason - measured - because both calls ' +
-      `then return the one object and it is compared against itself. ${DETERMINISM_ORDERING_FINDING} - ` +
+      `then return the one object and it is compared against itself. ${DETERMINISM_ORDERING_FINDING} ` +
       'D-22 is that mutant here.',
   },
   {
@@ -429,7 +429,7 @@ export const universalProperties = [
     name: 'no ambient output',
     applicable: false,
     reason:
-      `${NO_AMBIENT_OUTPUT_FINDING}. Here it is a static analysis requirement instead, declared in ` +
+      `${NO_AMBIENT_OUTPUT_FINDING} Here it is a static analysis requirement instead, declared in ` +
       '`staticAnalysisRequirements` above.',
   },
 ] as const
