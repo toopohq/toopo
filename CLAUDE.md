@@ -101,7 +101,14 @@ arrives with, which is the last thing before the launch that is design work rath
 publish**: there was no `CONTRIBUTING.md` at all, and the README sent a stranger to *this file* and
 called it the project specification — which is the one of its three jobs it does worst. What settles
 the answer is arithmetic rather than a preference, and the arithmetic said something the first reading
-of it did not.
+of it did not. **And now the first screen, which is the third appearance of one class and the first
+where the repair was in the page rather than in the projection**: the contract list read
+`typescript/number/parse@1Convert a string to a finite number` five times, because an anchor is
+phrasing content and the summary after it began mid-line. What decided where to repair it is a census
+rather than a preference — of fourteen visible anchors on seven pages, not one is written inside a
+sentence — and what fixed its shape is that this site already contained the right rendering of the
+same pair on another page. Re-reading the other six afterwards found the page arguing for rigour
+publishing its own asterisks, and a guard three lines from the new one undoing those marks by hand.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -347,6 +354,66 @@ table rather than described.
 `number/parse@1` and `date/add@1` both diverge — from `Number` and from every library's fractional
 month — and neither carries such a guard. That is recorded here as a debt against this rule rather
 than as an exception to it.
+
+## What separates two elements in a reading — settled
+
+**A title is written as a title, and the separator table is about blocks.** Every entry of `SEPARATOR`
+is a block-level element; `a` is phrasing content, and giving it one would state about a phrasing
+element something false of every other phrasing element beside it. So a contract name on the front
+page is `h3.call` — **the tag is the outline and the class is the look**, the rule this file already
+carries, settling both halves at once.
+
+**Both branches of that decision were measured, and only one of them exists.** Over the seven pages
+there are 211 anchors: 197 are `aria-hidden` and leave the projection entirely, and of the 14 a reader
+can see, **nine are already the sole child of an element that separates and five had siblings — the
+five defects.** Not one anchor on this site is written inside a sentence, so the question of what an
+inline link becomes in a projection never arose. The shape came from the site rather than from taste:
+the refusals page already renders this exact pair — an address and the summary under it — as a heading
+and a paragraph, and 121 of the 126 list items open with `.call`. **Two renderings of one thing drift
+until one lies**, and the one that lied was the front page, whose outline held its four sections and
+not one contract name, on the page that *is* this site's navigation.
+
+**The guard is the class, and the guard it stands beside is two of its instances.**
+`a-label-and-the-sentence-under-it-are-two-lines` was written for the same failure on a contract page
+and enumerates the two places somebody had already found — which is exactly why the third was found by
+re-reading instead of by a red. `no-element-runs-into-the-one-beside-it` asks it of every element pair
+on every page. **Both siblings must be elements, and that is measured rather than cautious**: with text
+nodes admitted the predicate holds 53 pairs and 48 are ordinary inline markup, where the author writes
+the spacing into the prose and is right to. It is also what keeps a link written inside a sentence
+invisible to it, since its neighbours carry the spaces.
+
+**A rule that is declared, implemented and reached by hand is the shape every failure of it takes.**
+`methodology-page.ts` says the sentences from `mutation/` carry `**this**` and `` `that` ``, and that
+printed as they are *a reader of the page sees the asterisks*. `inline` parses them and two call sites
+reached for `line` instead, so the page whose whole subject is rigour published its own markup.
+`no-mark-a-sentence-carries-reaches-the-reader-as-itself` is what was missing, and it is asked of that
+page alone: a contract page publishes contract prose that writes `` `Intl` `` for a reader, which is a
+separate question about the register of the catalogue's own text.
+
+**Where a guard's cell goes is decided by where the guard is alone, not by where the defect happened.**
+Every other sentence the method page takes from `mutation/` is also required by name somewhere, so the
+same edit there reddens two guards and shows neither to be needed. At the silences it is the only red
+in the folder — and it is the more robust anchor besides, since `THE_REPLAY.spread` carries one
+asterisk pair where the page renders 64 silence reasons of which 48 carry a mark.
+
+**And three guards over one page were undoing those marks three ways**, which is what looking for that
+cell turned up: one stripped them by hand with `.replaceAll`, one compared the literal, and this unit
+added a third spelling while arguing in its own commit message against the first. `asRead` is one
+function now. **A copy of a parser is not a second opinion, it is the same statement written where
+nobody will maintain it.**
+
+**Two more the reading found, left open on purpose and named so they can be recognised.** Both are the
+neighbouring class — *a value written to be embedded, rendered as though it stood alone* — and neither
+is a rendering repair, which is why they are a unit rather than a line. `identity.relationToTheLanguage`
+is published as a bare paragraph opening in lower case with no full stop, on the two contract pages
+whose value is a clause; measured over the four declared values, three are clauses and one is a
+sentence, so **the field has no settled register and the page assumes one of the two**. And
+`DETERMINISM_ORDERING_FINDING` is a clause that all five contracts compose as `` `…answer. ${CLAUSE} -
+…` ``, so every contract page reads *…from its own first answer. ordered under `no ambient input`…* —
+a sentence beginning in lower case after a full stop. What closes them is one decision each — a label
+or none, a clause or a sentence — taken once and applied to five contract files and one catalogue
+constant, with the site battery replayed behind it. The backticks a contract page publishes in its own
+prose, 53 lines over 5 pages, are the same question and close with them.
 
 ## What a page is, and the two projections of it — settled
 
