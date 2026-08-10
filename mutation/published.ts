@@ -344,9 +344,16 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * A duration published on its own reads as a period - as though the replay took that long, the way a
  * kettle takes three minutes. It is a wall clock on one machine on one afternoon, and the spread
  * between runs of the same batteries on the same machine is wider than the precision the figure is
- * written to. So `spread` goes beside `duration` and the page renders both: one run, and what a second
- * one cost. Publishing the first without the second would be a precision this measurement has not got,
- * which is the same defect as a count with no coordinates one folder up.
+ * written to. So `spread` goes beside `duration` and the page renders both: one run, and what the runs
+ * around it cost. Publishing the first without the second would be a precision this measurement has
+ * not got, which is the same defect as a count with no coordinates one folder up.
+ *
+ * **A change of regime resets what the spread is a spread of, and the entry has to say which change.**
+ * The cell count is what has told these populations apart until now, and here it did not move - 612
+ * either way - so a reader given two series of numbers would have no way to know that comparing them
+ * is wrong. The clause therefore names the change itself: a cell of a contract battery now collects
+ * its own contract's suite instead of all five. The earlier readings stay, labelled, because they
+ * measure a real past state and it is they that make the change visible at all.
  */
 export const THE_REPLAY = {
   command: 'npm run mutation',
@@ -355,14 +362,17 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '31 min 25 s',
-  measuredAt: 'b3534ad',
+  duration: '27 min 8 s',
+  measuredAt: '57958fd',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'these 612 cells have run at 31 min 25 s; the 610 before them ran at 29 min 13 s, the 606 ' +
-    'before those from 28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to ' +
-    '37 min 0 s, and the 592 before those from 25 min 8 s to 28 min 59 s. **No share ' +
-    'of that step is attributed to anything**, and the reason is measurable rather than modest: ' +
+    'these 612 cells have run at 27 min 8 s, and it is the first reading under a changed regime: a ' +
+    "cell of a contract battery now collects its own contract's suite instead of all five, so the " +
+    'readings before it are what this replaced rather than a spread it sits inside. Under the ' +
+    'whole-suite regime the same 612 cells ran at 31 min 25 s, the 610 before them at 29 min 13 s, ' +
+    'the 606 before those from 28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to ' +
+    '37 min 0 s, and the 592 before those from 25 min 8 s to 28 min 59 s. **No share of any of those ' +
+    'steps is attributed to anything**, and the reason is measurable rather than modest: ' +
     '`cli-install` has run from 364 s to 459 s on identical work, a quarter of its own duration, so ' +
     'a machine this variable cannot support an account of where any of it went. That is one run ' +
     'rather than how long it takes',

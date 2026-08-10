@@ -91,7 +91,12 @@ since the day it was written, `sameContract` compares it, the lockfile writes it
 dropped it, so the URL, the page path, the case anchor and the licence header frozen into every
 installed file were built without it. What made it survivable is what made it invisible: each consumer
 sees one rendering, and no consumer of one rendering can notice a coordinate missing from all of them.
-The module that owns every address this project has had never been guarded directly.
+The module that owns every address this project has had never been guarded directly. **And now the
+first unit here that makes the instrument cheaper instead of stricter, and the first whose whole value
+is in a slope**: every cell of a contract battery ran the entire contracts' suite, so the cost of a
+replay grew with the product of the catalogue's cells and the catalogue's suite — seven minutes at
+five contracts, eighteen hours at a hundred, and the page that hands `npm run mutation` to a stranger
+stops being an invitation somewhere in between.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -1886,15 +1891,19 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `b3534ad`, one run of the nineteen took
-**31 min 25 s** and gave **612 defect cells, 576 killed, 36 surviving, beside 26 probe cells of which 4
+Measured at `57958fd`, one run of the nineteen took
+**27 min 8 s** and gave **612 defect cells, 576 killed, 36 surviving, beside 26 probe cells of which 4
 survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
-`cli-install` at 409 s. **A duration is published beside its
-spread**, because a stamp stops a figure being stale and does not stop it being read as a period: these
-612 cells have run at that, the 610 before them ran at 29 min 13 s, the 606 before those from
-28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before
-those from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision the measurement
-has not got. **The count in that sentence was dropped rather than incremented**: it read *one of three
+`cli-install` at 367 s. **A duration is published beside its
+spread**, because a stamp stops a figure being stale and does not stop it being read as a period — and
+**that reading is the first under a changed regime**, which the spread has to name rather than merely
+signal: a cell of a contract battery now collects its own contract's suite instead of all five. Under
+the whole-suite regime the same 612 cells ran at 31 min 25 s, the 610 before them at 29 min 13 s, the
+606 before those from 28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s,
+and the 592 before those from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a
+precision the measurement has not got. **The count is what has always told these populations apart, and
+here it did not move**: 612 either way, so nothing but the clause could have said that comparing the two
+series is wrong. The old readings stay, labelled, because they are what makes the change visible. **The count in that sentence was dropped rather than incremented**: it read *one of three
 runs*, a fourth was taken and a tally that has to be edited on every replay is one that will be wrong
 between two of them. The range only ever widens and needs no counting — which is why the runs of each
 population are no longer counted at all, only bounded. **No share of that step is
@@ -2285,6 +2294,82 @@ everything else, against the whole suite: **30 guards redden, of which 2 are thi
 before it**, across `registry/`, `cli/`, `site/` and `packaging/`. Had only the new file caught it, 71
 assertions would have quietly stopped saying anything about addresses. The contracts' own suite stays
 green at 472, correctly — nothing in `contracts/` renders an address.
+
+## What one cell of a battery collects — settled
+
+**A contract battery's cell now collects its own contract's suite, and the whole of the value is a
+slope.** Measured over one to five contracts, three runs of each, a suite run costs `705 + 78·N` ms;
+the 74 cells a contract carries turn that into `52·N + 5.8·N²` seconds, which is the quadratic the
+method page's invitation dies of. Narrowed, a run costs 743 ms whatever N is and the same cells cost
+`55·N`.
+
+**At five contracts it is worth two minutes nineteen, and that figure invites the wrong conclusion.**
+Measured on the ten contract batteries alone, before and after: **10 min 9 s → 7 min 50 s**. The
+comparison is deliberately those ten and not two full replays, because two replays of identical work on
+this machine differ by more than this change does — `cli-install` alone has moved 95 s between runs of
+the same cells. There is no saving to sell today; there is a term that grew and is now flat.
+
+**Which configuration can be narrowed is a measurement, not a choice, and that is what makes the design
+unarguable.** A vitest filter ending in `/` is resolved against the configuration's own root; a filter
+without one is a substring of the whole path. Six of the seven configurations set `root` to their own
+folder, so a filter naming that folder resolves *under* it and names nothing. Measured on vitest 4.1.10:
+
+```
+--config registry/vitest.config.ts   registry/                 0 files, exit 1
+--config registry/vitest.config.ts   registry                 16 files - a no-op
+(the contracts' configuration)       contracts/number/parse/   4 files, 122 assertions
+```
+
+So the narrowing is expressible under the contracts' configuration, whose root is the repository, and
+under no other — nobody can generalise it to the six, because vitest does not permit it. The six need
+none: their own `root` and `include` already collect exactly the folder their battery injects into. The
+trailing slash is also what makes the filter precise, since `contracts/number/parse` without it would
+match a future `contracts/number/parse-int`.
+
+**The census is selected, never redeclared, and that is the premise this unit removed rather than
+paid.** A narrowed run collects a fraction of its configuration, so it cannot be compared against the
+whole table — and the obvious repair, *a census per battery*, multiplies every integer in a file that
+already grows with the catalogue. What a run collects is instead selected from the same table by the
+folder the battery injects into: a field it already holds, and already the predicate `run.ts` used to
+decide which guards were its own. **No integer is new and none moved.** For the six own-root
+configurations the selection is the whole table, so it is one rule with no branch — which is what makes
+its refusal cover every battery rather than only the narrowed ones.
+
+**The wall this does not move, said rather than left to look addressed.** Four to five hand-written
+counts per contract, twenty-one for the five, ~2 100 at five hundred. Deriving them was measured and
+refused: over the five, an `edge-cases.test.ts` collects `cases + 1`, `cases + 4`, `2 × cases + 1`,
+`2 × cases + 6` and `cases + 4` — the constant differs per contract, so a derivation needs a
+hand-written integer *and* a formula, where the formula is a second statement about the shape of a test
+file. The counting is its own demonstration: reading `id:` off the five case tables gives 194 where the
+catalogue publishes 187 cases, because a group carries one too.
+
+**`ownGuards` went with the difference it expressed.** A pin resolved against every guard the run
+collected and a declared silence against the guards of this contract, because the run collected all
+five and the two sets differed. A narrowed run makes them one set, so the parameter that expressed the
+difference is gone — two mechanisms over one scope have nothing to say on the day they disagree, which
+is the argument that already refused a second guard over profile names. The cost is that a pin may no
+longer name a guard outside its own contract, which is a tightening: measured over the ten contract
+batteries before any of this was written, **220 pins, 409 declared silent guards and 8 declared silent
+suites, and not one needed the wider universe.**
+
+**The acceptance criterion was the 370 verdicts, and what it bought was the eight cells it did not
+excuse.** Every contract-owned cell was measured under both regimes and compared on its verdict *and*
+on `failedGuards`: **0 verdicts differ, 0 cells absent on either side.** Eight cells moved a guard, so
+the question was settled by a control rather than by the structural argument — two runs under the *same*
+regime move **ten**, and every guard that moves in either comparison lives in `properties.test.ts`,
+none in a case table, a profile or a signature. **The re-drawing is louder than the change**, which is
+the only form in which that comparison could have been believed.
+
+**Two refusals, each seen red alone.** A configuration nobody has counted was already refused; a folder
+no counted file lies under is the new half, and it fails on the opposite condition — an empty census
+agrees with a run that collected nothing. What it buys was measured by removing it: calibration walks
+on and dies on `Command failed: git checkout HEAD -- mutation/fixture-renamed`, naming no census, no
+configuration and no count, in front of somebody who has just renamed a folder.
+
+**And the mechanism that saves the time carries no guard of its own, deliberately.** A filter dropped
+makes the run collect the whole configuration and the census refuses it by naming every file it did not
+declare; a filter added to one of the six collapses the run and the same refusal names every file that
+collected nothing. Both directions were already held by the mechanism that was there.
 
 ## Rules for this stage
 
