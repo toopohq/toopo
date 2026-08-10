@@ -1886,23 +1886,24 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `6a6d515`, one run of the nineteen took
-**29 min 13 s** and gave **610 defect cells, 574 killed, 36 surviving, beside 26 probe cells of which 4
+Measured at `b3534ad`, one run of the nineteen took
+**31 min 25 s** and gave **612 defect cells, 576 killed, 36 surviving, beside 26 probe cells of which 4
 survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
-`cli-install` at 386 s. **A duration is published beside its
+`cli-install` at 409 s. **A duration is published beside its
 spread**, because a stamp stops a figure being stale and does not stop it being read as a period: these
-610 cells have run at that, the 606 before them ran from 28 min 19 s to
-35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before those from
-25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision the measurement has not
-got. **The count in that sentence was dropped rather than incremented**: it read *one of three runs*, a
-fourth was taken and a tally that has to be edited on every replay is one that will be wrong between
-two of them. The range only ever widens and needs no counting — which is why the runs of each
+612 cells have run at that, the 610 before them ran at 29 min 13 s, the 606 before those from
+28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before
+those from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a precision the measurement
+has not got. **The count in that sentence was dropped rather than incremented**: it read *one of three
+runs*, a fourth was taken and a tally that has to be edited on every replay is one that will be wrong
+between two of them. The range only ever widens and needs no counting — which is why the runs of each
 population are no longer counted at all, only bounded. **No share of that step is
-attributed to anything, and this repository published an attribution once before withdrawing it**: the
-six minutes were credited to `cli-install` gaining thirteen cells, and later runs had that same battery
-at 364 s, 437 s and 459 s on identical work. **A quarter of its own duration between runs of identical
-work is a machine too variable to support the account**, so the account went rather than being
-qualified.
+attributed to anything, and this repository published an attribution once before withdrawing it**: six
+minutes were once credited to `cli-install` gaining thirteen cells, and that same battery has since run
+anywhere from 364 s to 459 s on identical work. **A quarter of its own duration between runs of
+identical work is a machine too variable to support the account**, so the account went rather than being
+qualified — and the list of its individual runs went with it, on the rule the sentence above states: a
+range widens, a list of readings is a tally somebody has to edit.
 `THE_REPLAY` carries both and the page renders both. The two populations
 are printed together because they
 collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
