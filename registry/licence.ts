@@ -51,6 +51,7 @@
 
 import type { ContractAddress } from './address.js'
 import { contractUrl, renderContract } from './address.js'
+import { THE_AUTHOR } from './publication.js'
 
 /** What this repository is under, and the value `package.json` carries. */
 export const THE_REPOSITORY_LICENCE = 'MIT'
@@ -65,8 +66,16 @@ export const THE_COPIED_LICENCE = 'MIT-0'
  * `CLOCK_DEPENDENCE_RULE` is about values that make two runs disagree, and this one does not move
  * between runs. It moves when somebody publishes a new contract in a new year, which is the correct
  * behaviour for a copyright line and the reason it is not derived from anything.
+ *
+ * **The holder is the author of the package**, so it is composed from `THE_AUTHOR` rather than spelled
+ * a second time. Two literals of one person's name agree on the day they are written and are two things
+ * to correct afterwards, and the second is always the one nobody remembers - which is this repository's
+ * oldest failure, met here on a string that is frozen into other people's repositories. The
+ * recomposition needs no guard of its own: `every-file-the-installer-copies-is-marked-mit-0` compares
+ * the five copied files against `licenceHeaderOf` byte for byte, so a composition off by a character is
+ * already red.
  */
-export const THE_COPYRIGHT = 'Copyright (c) 2026 Mathis Perron'
+export const THE_COPYRIGHT = `Copyright (c) 2026 ${THE_AUTHOR.name}`
 
 /**
  * The two lines that head every file the installer copies, and the only place they are spelled.

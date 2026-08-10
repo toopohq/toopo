@@ -62,6 +62,7 @@ const licenceFile = (find: string, replace: string) => ({ file: 'licence.ts', fi
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
 const addressFile = (find: string, replace: string) => ({ file: 'address.ts', find, replace })
+const publicationFile = (find: string, replace: string) => ({ file: 'publication.ts', find, replace })
 const verifiabilityFile = (find: string, replace: string) => ({
   file: 'verifiability.ts',
   find,
@@ -149,6 +150,12 @@ const A_BINDING_IS_BUILT_FROM_STANDING = `  lifecycle: entry.standing.lifecycle,
 // --- The licence perimeter, which is derived from what the installer copies ---
 
 const THE_PERIMETER_IS_THE_ENTRY_FILE = `    (file) => file.path === 'reference.ts',`
+
+const THE_SOURCE_CARRIES_NPM_S_PREFIX = `export const THE_SOURCE_REPOSITORY = 'git+https://github.com/toopohq/toopo.git'`
+
+const THE_ADDRESS_IS_THE_PROJECT_S = `  email: 'hello@toopo.dev',`
+
+const THE_FLOOR_IS_WHAT_THE_CODE_CALLS = `export const THE_MINIMUM_RUNTIME = '^22.15.0 || >=24.0.0'`
 
 const WHAT_A_COPY_IS_UNDER = `export const THE_COPIED_LICENCE = 'MIT-0'`
 
@@ -641,6 +648,73 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['a-sentence-rendered-whole-is-not-also-a-complement']),
+  ),
+
+  /**
+   * The repository URL loses npm's prefix, which is the edit somebody makes who reads it as noise.
+   *
+   * It is deliberately the plausible mutant rather than a wrong URL: `https://github.com/toopohq/toopo.git`
+   * is the address Mathis gave and every character of it survives here - what moves is the one thing
+   * npm's own documentation owns, and the one thing nothing in this repository can measure, since the
+   * rendering of this field belongs to a page no test here reaches.
+   *
+   * **A dead or missing link in this field is silent in a way the other three are not.** A wrong licence
+   * is read by a scanner, a wrong homepage is a redirect somebody notices; a `repository` npm cannot
+   * resolve produces a page with no link to the code and nothing that says a link was intended - on a
+   * package whose whole argument is that the reader should go and check.
+   */
+  sameOnEveryLens(
+    'I-33',
+    'drops the prefix npm documents for `repository.url`, so the manifest states the source repository ' +
+      'in a spelling nothing here can measure the rendering of',
+    [
+      publicationFile(
+        THE_SOURCE_CARRIES_NPM_S_PREFIX,
+        `export const THE_SOURCE_REPOSITORY = 'https://github.com/toopohq/toopo.git'`,
+      ),
+    ],
+    killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
+  ),
+
+  /**
+   * The author's address becomes a personal one, which is what filling the field from `git config` does.
+   *
+   * The defect it restores is not a broken build and would pass every review that reads the manifest for
+   * correctness: the field is well formed, it names the right person, and it works. What it does is
+   * publish somebody's personal inbox into an immutable version, where it is harvested and cannot be
+   * withdrawn from the copies that carried it.
+   *
+   * It edits the address and not the name on purpose. The name reaches `THE_COPYRIGHT` and therefore the
+   * five copied files, so a mutant on it would redden the marking guards too and say nothing about which
+   * guard reads the manifest. The address is in no licence header, so this cell reddens exactly the one
+   * assertion it was written for.
+   */
+  sameOnEveryLens(
+    'I-34',
+    'publishes a personal e-mail as the package author instead of the project address, in a manifest ' +
+      'field that is immutable once a version exists',
+    [publicationFile(THE_ADDRESS_IS_THE_PROJECT_S, `  email: 'mathis.perron@example.com',`)],
+    killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
+  ),
+
+  /**
+   * The runtime floor is lowered to the baseline every manifest carries, and nothing else moves.
+   *
+   * `engines` is the one field npm reads *before* installing, so it is the only place this project can
+   * refuse a runtime rather than crash on it. Lowered, an install on the named version succeeds and
+   * `toopo` fails at import on `node:util`'s `diff` - a stack trace naming a node internal, in front of
+   * somebody who has just typed the line a contract page gave them and has no way to relate the two.
+   *
+   * The value is derived from two APIs the code calls, so the mutant is what a derivation looks like
+   * when it is replaced by a habit: `>=18.0.0` is right about nothing here and is what most manifests
+   * say.
+   */
+  sameOnEveryLens(
+    'I-35',
+    'lowers the declared runtime floor below the version the APIs this code calls were added in, so ' +
+      'npm accepts an install that can only fail at import',
+    [publicationFile(THE_FLOOR_IS_WHAT_THE_CODE_CALLS, `export const THE_MINIMUM_RUNTIME = '>=18.0.0'`)],
+    killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
   ),
 ]
 

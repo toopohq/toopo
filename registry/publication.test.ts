@@ -7,6 +7,7 @@ import { describe, it, expect } from 'vitest'
 import { THE_ORIGIN, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
 import { THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
+import { THE_AUTHOR_FIELD, THE_MINIMUM_RUNTIME, THE_SOURCE_REPOSITORY } from './publication.js'
 import { REPOSITORY_ROOT, referenceImplementationOf } from './serialise.js'
 import { theFive } from './the-five.js'
 
@@ -113,20 +114,36 @@ describe('what this repository publishes about itself', () => {
   })
 
   /**
-   * The npm page and the code agree, on the two fields that are facts rather than prose.
+   * The npm page and the code agree, on the four fields that are facts rather than prose.
    *
    * `package.json` cannot import, so these are transcriptions and this is what resolves them. The
    * fields nobody can derive - a description, a keyword list - are not asserted here: a guard
    * comparing prose against prose would be a copy of the prose.
+   *
+   * **It read two of them for as long as it existed, and the two it did not read were the two that
+   * were missing.** `repository` was absent and `author` carried a name with no address, so the guard
+   * whose subject is *what npm shows* was green over a page offering no link to the code. A guard that
+   * names a population and enumerates part of it is the shape this repository keeps finding, and the
+   * repair is the population rather than the two entries: these are every field of the manifest that
+   * resolves to something declared in code, and the day a fifth is declared it belongs here.
+   *
+   * `type: 'git'` is npm's schema rather than our fact, so it is spelled here beside the manifest it
+   * describes and not in `publication.ts`, which holds the address.
    */
   it('the-public-fields-npm-shows-are-the-ones-this-code-declares', () => {
     const manifest = JSON.parse(readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8')) as {
       readonly license?: unknown
       readonly homepage?: unknown
+      readonly repository?: unknown
+      readonly author?: unknown
+      readonly engines?: unknown
     }
 
     expect(manifest.license).toBe(THE_REPOSITORY_LICENCE)
     expect(manifest.homepage).toBe(THE_ORIGIN)
+    expect(manifest.repository).toEqual({ type: 'git', url: THE_SOURCE_REPOSITORY })
+    expect(manifest.author).toBe(THE_AUTHOR_FIELD)
+    expect(manifest.engines).toEqual({ node: THE_MINIMUM_RUNTIME })
   })
 
   /**

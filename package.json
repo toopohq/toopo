@@ -4,8 +4,12 @@
   "version": "0.0.0-local",
   "description": "Copy utility functions into your project, each verified against a public, executable contract. Not a dependency: the source lands in your repository and it is yours.",
   "license": "MIT",
-  "author": "Mathis Perron",
+  "author": "Mathis Perron <hello@toopo.dev>",
   "homepage": "https://toopo.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/toopohq/toopo.git"
+  },
   "keywords": [
     "registry",
     "contract",
@@ -17,6 +21,9 @@
     "typescript"
   ],
   "type": "module",
+  "engines": {
+    "node": "^22.15.0 || >=24.0.0"
+  },
   "bin": {
     "toopo": "dist/cli/published.js"
   },

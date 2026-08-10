@@ -20,8 +20,15 @@
  * observed under, 28 and 0, are one door read through two configurations rather than two faults.
  *
  * **It is the drive letter and nothing else about the path.** Measured on the same suite,
- * `C:\users\...`, `C:\Users\Mathis\Desktop\toopo\toopo` and both mistakes at once each collect 472.
- * Only a lower-case drive letter collapses the run, and it collapses every time.
+ * `C:\users\...`, `C:\...\toopo\toopo` and both mistakes at once each collect 472. Only a lower-case
+ * drive letter collapses the run, and it collapses every time.
+ *
+ * The two elisions are a redaction and not a rounding. What this measurement is about is the *case* of
+ * a segment, so the case of every segment shown is the spelling that was really run; what is elided is
+ * one machine's home directory, which the measurement never depended on and which a published file
+ * would carry for ever. **A transcript is redacted of what is not its subject and never of its
+ * subject** - a measurement missing its subject is worth nothing, and one missing the rest is worth
+ * what it always was.
  *
  * ---------------------------------------------------------------------------
  * Which path decides it, separated rather than assumed
