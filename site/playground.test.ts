@@ -160,7 +160,7 @@ describe('the playground, against the catalogue it opens on', () => {
    */
   it('two-inputs-that-look-alike-are-described-apart', async () => {
     const one = theHeld().find(
-      (candidate) => renderContract(candidate.contract.address) === 'number/parse@1',
+      (candidate) => renderContract(candidate.contract.address) === 'typescript/number/parse@1',
     ) as Held
     const module = await shipped(one)
     const cases = one.contract.caseTables.flatMap((table) => table.cases)

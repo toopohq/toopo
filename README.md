@@ -51,11 +51,11 @@ Five contracts, four of them installable.
 
 | Contract | What it settles |
 | --- | --- |
-| `number/parse@1` | Turning text into a number without `Number`'s traps |
-| `date/add@1` | Calendar arithmetic, including what a fractional month means |
-| `string/levenshtein@1` | Edit distance, over code points rather than code units |
-| `string/slugify@1` | Text to a URL-safe identifier, Unicode rather than ASCII |
-| `array/group-by@1` | **Refused.** ES2024 shipped `Map.groupBy` and it answers the contract |
+| `typescript/number/parse@1` | Turning text into a number without `Number`'s traps |
+| `typescript/date/add@1` | Calendar arithmetic, including what a fractional month means |
+| `typescript/string/levenshtein@1` | Edit distance, over code points rather than code units |
+| `typescript/string/slugify@1` | Text to a URL-safe identifier, Unicode rather than ASCII |
+| `typescript/array/group-by@1` | **Refused.** ES2024 shipped `Map.groupBy` and it answers the contract |
 
 The fifth is published as a refusal rather than quietly dropped, with the argument and the
 measurement that decided it. A registry that only ever says yes is not curating anything.
@@ -76,8 +76,11 @@ response can all cite the same one.
   empty for the same reason — there is no reference machine and nothing to compare against.
 - **No submissions yet.** The validation pipeline that judges a third-party implementation exists
   at its first stage only.
-- **TypeScript only**, and the address carries the language so that this can change without
-  renaming anything.
+- **TypeScript only**, and every address says so: `typescript/number/parse@1` is the contract's page,
+  the first line of every file you install, and what `toopo.lock` records. A second language would
+  bring its own contracts rather than sharing these, and it renames none of these addresses. The
+  command takes no prefix — `toopo add number/parse` — because the language is which client you ran,
+  not something you choose per install.
 - **A published contract major is frozen for life.** An incompatible change creates `name@2` beside
   `name@1` and never edits `name@1`. That is the promise the whole registry is built to keep, and
   it is why so little has been published.

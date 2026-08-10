@@ -43,6 +43,28 @@
  * the file it names did not land where the specifier says it would.*
  *
  * ---------------------------------------------------------------------------
+ * The path carries neither the language nor the major, and that is a decision
+ * ---------------------------------------------------------------------------
+ *
+ * `renderContract` renders `typescript/number/parse@1`; this path is `number/parse/parse.ts`. The
+ * asymmetry is deliberate and is argued here because this is where somebody would come to remove it.
+ *
+ * **A path is a place on disk and not an address.** What governs it is *one feature is one folder*, the
+ * rule the refusal below is written on, and a folder somebody opens every day carries what tells two
+ * features apart and nothing more. The major is not in it either, so adding the language alone would
+ * put half an address into a string that deliberately is not one.
+ *
+ * **The case it would supposedly protect against exists, and something else already refuses it.**
+ * Measured by widening `Language` and asking for one contract name in two languages: both plan to
+ * `number/parse/parse.ts`, `placedByPath` finds two digests at one path, and the install is refused by
+ * name with nothing written. That refusal is only *true* because the address carries the language -
+ * keyed on a language-less rendering the two collide one step earlier, in `seenContracts`, and the
+ * sentence that comes out names two versions that do not exist. `registry/address.ts` quotes both.
+ *
+ * So the protection is in the refusal rather than in the path. Putting it in both would be two
+ * mechanisms over one fault, with nothing to say for themselves on the day they disagree.
+ *
+ * ---------------------------------------------------------------------------
  * The shared blob, and why the entry file is exempt from it
  * ---------------------------------------------------------------------------
  *

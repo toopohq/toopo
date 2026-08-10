@@ -1,4 +1,4 @@
-// string/levenshtein@1 - https://toopo.dev/string/levenshtein@1/
+// typescript/string/levenshtein@1 - https://toopo.dev/typescript/string/levenshtein@1/
 // Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
 
 /**

@@ -1,4 +1,4 @@
-// string/slugify@1 - https://toopo.dev/string/slugify@1/
+// typescript/string/slugify@1 - https://toopo.dev/typescript/string/slugify@1/
 // Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
 
 /**

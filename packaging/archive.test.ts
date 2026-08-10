@@ -108,7 +108,7 @@ describe('the archive somebody installs', () => {
 
     expect(added.stderr).toBe('')
     expect(added.status).toBe(0)
-    expect(added.stdout).toContain('string/slugify@1')
+    expect(added.stdout).toContain('typescript/string/slugify@1')
 
     const written = archive.project.installed('string/slugify/slugify.ts')
     const catalogue = readFileSync(join(REPOSITORY, 'contracts/string/slugify/reference.ts'))

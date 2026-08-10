@@ -95,7 +95,7 @@ describe('what the user reads', () => {
 
     expect(lines.map((line) => line.trim())).toEqual([
       '+ src/lib/toopo/string/pad/pad.ts',
-      '+ src/lib/toopo/string/pad/digits.ts   shared with number/clamp@1',
+      '+ src/lib/toopo/string/pad/digits.ts   shared with typescript/number/clamp@1',
       '+ src/lib/toopo/number/clamp/clamp.ts  import repointed',
       '+ src/lib/toopo/number/sign/sign.ts    import repointed',
       '+ src/lib/toopo/number/round/round.ts  import repointed',

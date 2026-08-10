@@ -190,6 +190,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'registry/vitest.config.ts': {
+    'registry/address.test.ts': 3,
     'registry/against-the-five.test.ts': 45,
     'registry/attestation.test.ts': 3,
     'registry/coverage.test.ts': 20,

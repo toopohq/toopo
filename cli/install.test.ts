@@ -142,10 +142,10 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('every-feature-the-install-writes-gets-its-own-lockfile-entry', () => {
     withTheGraph((_project, installation) => {
       expect(installation.features.map((feature) => renderContract(feature.contract))).toEqual([
-        'string/pad@1',
-        'number/clamp@1',
-        'number/sign@1',
-        'number/round@1',
+        'typescript/string/pad@1',
+        'typescript/number/clamp@1',
+        'typescript/number/sign@1',
+        'typescript/number/round@1',
       ])
       expect(installation.features.map((feature) => feature.files.map((file) => file.served.path))).toEqual([
         ['reference.ts', 'digits.ts'],
@@ -165,10 +165,10 @@ export const clamp = (value: number, low: number, high: number): number =>
       expect(
         installation.features.map((feature) => [renderContract(feature.contract), feature.askedFor]),
       ).toEqual([
-        ['string/pad@1', false],
-        ['number/clamp@1', false],
-        ['number/sign@1', false],
-        ['number/round@1', true],
+        ['typescript/string/pad@1', false],
+        ['typescript/number/clamp@1', false],
+        ['typescript/number/sign@1', false],
+        ['typescript/number/round@1', true],
       ])
     })
   })
@@ -234,7 +234,7 @@ export const clamp = (value: number, low: number, high: number): number =>
       // The screen says it, and it is the only run on which it may.
       expect(directly.promoted).toBe(true)
       expect(
-        renderUnchanged('string/pad@1', directly.entry, project.configuration, directly.promoted),
+        renderUnchanged('typescript/string/pad@1', directly.entry, project.configuration, directly.promoted),
       ).toContain('It was there as a dependency')
     } finally {
       project.remove()
@@ -278,7 +278,7 @@ export const clamp = (value: number, low: number, high: number): number =>
 
       expect(again.promoted).toBe(false)
       expect(
-        renderUnchanged('string/pad@1', again.entry, project.configuration, again.promoted),
+        renderUnchanged('typescript/string/pad@1', again.entry, project.configuration, again.promoted),
       ).not.toContain('It was there as a dependency')
 
       // Byte for byte the file that was already there, the instant included.
@@ -337,7 +337,7 @@ export const clamp = (value: number, low: number, high: number): number =>
       const outcome = installing(localSource(), project, 'array/group-by')
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'array/group-by@1 is in the catalogue and the registry publishes no implementation of it, ' +
+        'typescript/array/group-by@1 is in the catalogue and the registry publishes no implementation of it, ' +
           'so there is nothing to install. `toopo search array/group-by` shows what the catalogue ' +
           'says about it.',
       ])
@@ -427,13 +427,13 @@ export const clamp = (value: number, low: number, high: number): number =>
     const project = aProject()
     try {
       const outcome = installing(
-        imaginedSource(['string/pad@1/reference@1.0.0']),
+        imaginedSource(['typescript/string/pad@1/reference@1.0.0']),
         project,
         'number/round',
       )
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'string/pad@1/reference@1.0.0 is named by an edge and the registry holds no such published ' +
+        'typescript/string/pad@1/reference@1.0.0 is named by an edge and the registry holds no such published ' +
           'implementation',
       ])
       expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
@@ -455,7 +455,7 @@ export const clamp = (value: number, low: number, high: number): number =>
 
       const again = installing(localSource(), project, 'string/slugify', lockfile)
 
-      expect('unchanged' in again && renderContract(again.unchanged.contract)).toBe('string/slugify@1')
+      expect('unchanged' in again && renderContract(again.unchanged.contract)).toBe('typescript/string/slugify@1')
     } finally {
       project.remove()
     }

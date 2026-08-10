@@ -364,7 +364,7 @@ describe('what breaks for somebody', () => {
       expect(screen).toContain(`${CONFIGURATION_FILE}  written`)
       expect(screen).toContain('features    lib/toopo')
       expect(screen).toContain(`Commit ${CONFIGURATION_FILE}, toopo.lock and lib/toopo/`)
-      expect(screen).toContain('string/slugify@1')
+      expect(screen).toContain('typescript/string/slugify@1')
 
       expect(readConfiguration(project.root)).toEqual({ version: 1, directory: 'lib/toopo' })
       expect(

@@ -29,7 +29,7 @@ Some files in this repository are licensed under the MIT No Attribution licence
 (MIT-0) instead of the MIT licence above. Each one says so in its own first two
 lines:
 
-    // string/slugify@1 - https://toopo.dev/string/slugify@1/
+    // typescript/string/slugify@1 - https://toopo.dev/typescript/string/slugify@1/
     // Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
 
 A file carrying that SPDX identifier is under MIT-0, whose full text is at the

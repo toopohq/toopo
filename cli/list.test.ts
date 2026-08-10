@@ -63,18 +63,18 @@ describe('what this project holds', () => {
       expect(
         listing.features.map((feature) => [renderContract(feature.contract), feature.askedFor]),
       ).toEqual([
-        ['number/clamp@1', false],
-        ['number/round@1', true],
-        ['number/sign@1', false],
-        ['string/pad@1', false],
+        ['typescript/number/clamp@1', false],
+        ['typescript/number/round@1', true],
+        ['typescript/number/sign@1', false],
+        ['typescript/string/pad@1', false],
       ])
       expect(listing.files).toBe(5)
       expect(listing.bytes).toBeGreaterThan(0)
 
       const screen = renderList(listing, project.configuration)
       expect(screen).toContain('4 features · 5 files')
-      expect(screen).toContain('number/round@1 · reference@1.0.0 · you asked for it')
-      expect(screen).toContain('string/pad@1 · reference@1.0.0 · pulled in as a dependency')
+      expect(screen).toContain('typescript/number/round@1 · reference@1.0.0 · you asked for it')
+      expect(screen).toContain('typescript/string/pad@1 · reference@1.0.0 · pulled in as a dependency')
       expect(screen).toContain('src/lib/toopo/number/round/round.ts')
     })
   })

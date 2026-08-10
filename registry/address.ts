@@ -30,6 +30,11 @@ import { isFrozenIdentifier } from '../catalogue/identifier.js'
  * What it does not do is make the schema language-neutral, and `contract-record.ts` says where the
  * frontier actually falls: the *shape* of a record is neutral, its *content* is TypeScript, and
  * pretending otherwise would be an abstraction no contract fills.
+ *
+ * **The insurance was measured rather than trusted.** Widening this union to `'typescript' | 'python'`
+ * and typechecking all six projects gives exactly one error - `THE_WORDS_FOR` in `cli/search.ts`,
+ * which is total over it by construction and says so. One site, in a repository of fifty-odd modules
+ * that pass an address around, is what a coordinate written before it had a second value buys.
  */
 export type Language = 'typescript'
 
@@ -104,8 +109,51 @@ export type MutantAddress = {
   readonly mutant: string
 }
 
+/**
+ * The one spelling of a contract's address: `typescript/number/parse@1`.
+ *
+ * Every address here that contains a contract is this string with something after it, and so are the
+ * page path, the published URL and the licence header of an installed file. The language is a
+ * coordinate of the address, so it is in the rendering - a coordinate the record carries, `sameContract`
+ * compares and the lockfile writes, dropped by the one function that turns the address into something a
+ * reader, a crawler and a foreign repository see.
+ *
+ * The spelling is the record's own value and not an abbreviation of it. `ts/` saves sixteen bytes per
+ * copied file - 0.68 per cent of the smallest one - and buys a correspondence table between two
+ * spellings of one value, which is the drift this file exists to prevent. `licence.ts` refused the
+ * literal MIT notice at +52 per cent on that same figure; there is no arbitration at 0.68.
+ *
+ * ---------------------------------------------------------------------------
+ * Why there is no second, language-less form - measured rather than preferred
+ * ---------------------------------------------------------------------------
+ *
+ * A short form for local use reads as an economy: a screen line is not frozen, and every address inside
+ * one client carries one language, so the coordinate is constant there. It is refused because that form
+ * has already produced a defect, and the defect is in a *key* rather than on a screen. `planInstall`
+ * keys the features of one plan by this string. With the language dropped, two contracts of two
+ * languages carrying one name collide there, and the refusal that comes out is false:
+ *
+ *     number/parse@1 is asked for at two versions in one install -
+ *     number/parse@1/reference@1.0.0 and number/parse@1/reference@1.0.0.
+ *
+ * It names a cause no measurement establishes - *two versions* - and prints one string twice as the
+ * evidence that two things differ. With the language in place the same call answers the true refusal,
+ * naming the one file path both would be written to. Both measured by widening `Language` and passing
+ * two implementations of one name to `planInstall`.
+ *
+ * So a short form is not a cheaper spelling of this one; it is the spelling that made a report lie. And
+ * a form that lives on a screen reaches a bug report, then an issue, then a key.
+ *
+ * **The cost is real and is the only one here paid continuously**: eleven characters on every line of
+ * `toopo list` and `toopo search`, carrying a value that is the same on all of them. The way out, the
+ * day it is worth taking, is a *layout* - a column states a value once for a whole screen and is still
+ * one spelling - and never a second string.
+ *
+ * **The disk path is the one rendered thing that does not carry it.** That is argued in `cli/plan.ts`
+ * where the path is built, because that is where somebody would go to make the two agree.
+ */
 export const renderContract = (address: ContractAddress): string =>
-  `${address.name}@${address.major}`
+  `${address.language}/${address.name}@${address.major}`
 
 export const renderImplementation = (address: ImplementationAddress): string =>
   `${renderContract(address.contract)}/${address.id}@${address.version}`

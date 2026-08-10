@@ -1,4 +1,4 @@
-// array/group-by@1 - https://toopo.dev/array/group-by@1/
+// typescript/array/group-by@1 - https://toopo.dev/typescript/array/group-by@1/
 // Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
 
 /**

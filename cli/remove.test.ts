@@ -187,10 +187,10 @@ describe('taking a feature out of a project', () => {
 
       expect(removal.departure).toBe('leaves')
       expect(leaving(removal)).toEqual([
-        'number/clamp@1',
-        'number/round@1',
-        'number/sign@1',
-        'string/pad@1',
+        'typescript/number/clamp@1',
+        'typescript/number/round@1',
+        'typescript/number/sign@1',
+        'typescript/string/pad@1',
       ])
       expect(staying(removal)).toEqual([])
       expect(removal.reconciliation.writes).toEqual([])
@@ -216,8 +216,8 @@ describe('taking a feature out of a project', () => {
     inProject(imaginedSource(), ['number/round', 'number/sign'], (project, lockfile) => {
       const removal = removing(imaginedSource(), project, lockfile, 'number/round')
 
-      expect(leaving(removal)).toEqual(['number/clamp@1', 'number/round@1'])
-      expect(staying(removal)).toEqual(['number/sign@1', 'string/pad@1'])
+      expect(leaving(removal)).toEqual(['typescript/number/clamp@1', 'typescript/number/round@1'])
+      expect(staying(removal)).toEqual(['typescript/number/sign@1', 'typescript/string/pad@1'])
 
       applying(project, removal)
 
@@ -242,7 +242,7 @@ describe('taking a feature out of a project', () => {
       const removal = removing(imaginedSource(), project, lockfile, 'string/pad')
 
       expect(removal.departure).toBe('stays-as-a-dependency')
-      expect(removal.stillReachedBy.map(renderContract)).toEqual(['number/round@1'])
+      expect(removal.stillReachedBy.map(renderContract)).toEqual(['typescript/number/round@1'])
       expect(removal.reconciliation.writes).toEqual([])
       expect(removal.reconciliation.removals).toEqual([])
 
@@ -252,7 +252,13 @@ describe('taking a feature out of a project', () => {
       expect(pad?.askedFor).toBe(false)
 
       const screen = renderRemoval(removal, lockfile, project.configuration, false)
-      expect(screen).toContain('string/pad@1 stays where it is: number/round@1 imports it')
+      // Read with its wrapping collapsed, because the claim is the sentence and the line breaks are
+      // presentation. It fitted on one line until the address gained its language: two of them in one
+      // sentence carry it past `paragraph`'s 72 columns, which is where the eleven characters this
+      // rendering costs first became visible.
+      expect(screen.replace(/\s+/g, ' ')).toContain(
+        'typescript/string/pad@1 stays where it is: typescript/number/round@1 imports it',
+      )
       expect(screen).toContain('no longer something you asked for')
 
       applying(project, removal)
@@ -269,7 +275,7 @@ describe('taking a feature out of a project', () => {
   it('a-feature-that-was-never-asked-for-is-refused-with-what-imports-it', () => {
     inProject(imaginedSource(), ['number/round'], (project, lockfile) => {
       expect(refusalOf(imaginedSource(), project, lockfile, 'string/pad')).toEqual([
-        'string/pad@1 is in this project because number/round@1 imports it, and you never asked for ' +
+        'typescript/string/pad@1 is in this project because typescript/number/round@1 imports it, and you never asked for ' +
           'it yourself - so there is nothing of yours to take back. Removing that feature is what ' +
           'would take this one with it.',
       ])
@@ -285,7 +291,7 @@ describe('taking a feature out of a project', () => {
      */
     inProject(imaginedSource(), ['number/sign', 'number/clamp'], (project, lockfile) => {
       expect(refusalOf(imaginedSource(), project, lockfile, 'string/pad')).toEqual([
-        'string/pad@1 is in this project because number/clamp@1 and number/sign@1 import it, and you ' +
+        'typescript/string/pad@1 is in this project because typescript/number/clamp@1 and typescript/number/sign@1 import it, and you ' +
           'never asked for it yourself - so there is nothing of yours to take back. Removing those ' +
           'features is what would take this one with it.',
       ])
@@ -334,8 +340,8 @@ describe('taking a feature out of a project', () => {
 
       const removal = removing(source, project, lockfile, 'text/left')
 
-      expect(leaving(removal)).toEqual(['text/left@1'])
-      expect(staying(removal)).toEqual(['text/right@1'])
+      expect(leaving(removal)).toEqual(['typescript/text/left@1'])
+      expect(staying(removal)).toEqual(['typescript/text/right@1'])
       expect(removal.reconciliation.writes.map((write) => write.path).sort()).toEqual([
         'text/right/right.ts',
         'text/right/trim.ts',
@@ -376,7 +382,7 @@ describe('taking a feature out of a project', () => {
           .filter((feature) => feature.now !== null)
           .map((feature) => `${renderContract(feature.contract)} ${feature.now?.version}`)
           .sort(),
-      ).toEqual(['number/sign@1 1.0.0', 'string/pad@1 1.0.0'])
+      ).toEqual(['typescript/number/sign@1 1.0.0', 'typescript/string/pad@1 1.0.0'])
     })
   })
 
@@ -533,7 +539,7 @@ describe('taking a feature out of a project', () => {
       const faults = refusalOf(updatedImaginedSource(), project, lockfile, 'number/round')
 
       expect(faults).toHaveLength(1)
-      expect(faults[0]).toContain('the registry is not serving number/sign@1/reference@1.0.0')
+      expect(faults[0]).toContain('the registry is not serving typescript/number/sign@1/reference@1.0.0')
       expect(faults[0]).toContain('A published version is served for life')
       expect(faults[0]).toContain('Nothing was changed.')
 
@@ -583,8 +589,8 @@ describe('taking a feature out of a project', () => {
 
       expect(faults).toHaveLength(1)
       expect(faults[0]).toContain('toopo.lock does not record `number/rond`')
-      expect(faults[0]).toContain('number/round@1')
-      expect(faults[0]).toContain('string/pad@1')
+      expect(faults[0]).toContain('typescript/number/round@1')
+      expect(faults[0]).toContain('typescript/string/pad@1')
     })
   })
 })

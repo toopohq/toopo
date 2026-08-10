@@ -1,4 +1,4 @@
-// number/parse@1 - https://toopo.dev/number/parse@1/
+// typescript/number/parse@1 - https://toopo.dev/typescript/number/parse@1/
 // Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
 
 /**

@@ -380,9 +380,9 @@ describe('what `toopo add` has to be told, and a depth could not tell it', () =>
    */
   it('a-shared-dependency-is-resolved-once :: dependencies before dependents', () => {
     expect(rendered(resolveDependencies(round, HOLDINGS))).toEqual([
-      'string/pad@1/reference@1.0.0',
-      'number/clamp@1/reference@1.0.0',
-      'number/sign@1/reference@1.0.0',
+      'typescript/string/pad@1/reference@1.0.0',
+      'typescript/number/clamp@1/reference@1.0.0',
+      'typescript/number/sign@1/reference@1.0.0',
     ])
   })
 

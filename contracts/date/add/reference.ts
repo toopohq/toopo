@@ -1,4 +1,4 @@
-// date/add@1 - https://toopo.dev/date/add@1/
+// typescript/date/add@1 - https://toopo.dev/typescript/date/add@1/
 // Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
 
 /**

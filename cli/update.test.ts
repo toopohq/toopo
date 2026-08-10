@@ -206,14 +206,14 @@ describe('comparing a project with what the registry serves now', () => {
       const update = updating(project, lockfile)
 
       expect([...heldBack(update)].sort()).toEqual([
-        'number/clamp@1',
-        'number/round@1',
-        'number/sign@1',
-        'string/pad@1',
+        'typescript/number/clamp@1',
+        'typescript/number/round@1',
+        'typescript/number/sign@1',
+        'typescript/string/pad@1',
       ])
       expect(
         update.features.find((feature) => feature.contract.name === 'number/round')?.heldBack,
-      ).toBe('it imports number/clamp@1, which is held back')
+      ).toBe('it imports typescript/number/clamp@1, which is held back')
       expect(update.writes).toEqual([])
     })
   })
@@ -452,10 +452,10 @@ describe('comparing a project with what the registry serves now', () => {
         blocks.find((block) => block.startsWith(`  ${contract} `)) ?? ''
 
       // Both held back, and only the one the reader put something into is offered a way out.
-      expect(blockOf('number/round@1')).toContain('held back')
-      expect(blockOf('number/sign@1')).toContain('held back')
-      expect(blockOf('number/round@1')).toContain('Two ways out')
-      expect(blockOf('number/sign@1')).not.toContain('Two ways out')
+      expect(blockOf('typescript/number/round@1')).toContain('held back')
+      expect(blockOf('typescript/number/sign@1')).toContain('held back')
+      expect(blockOf('typescript/number/round@1')).toContain('Two ways out')
+      expect(blockOf('typescript/number/sign@1')).not.toContain('Two ways out')
     })
   })
 

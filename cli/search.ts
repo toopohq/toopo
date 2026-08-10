@@ -134,10 +134,16 @@ type Field = {
 /**
  * Everything of an entry a query may meet.
  *
- * The name is the *rendered* address - `number/parse@1` - rather than the bare name, so that typing
- * the major answers instead of refusing: every word of a query has to be answered, and `1` would
- * otherwise be a word nothing answers. There is no separate domain field because the rendered address
- * already carries it.
+ * The name is the *rendered* address - `typescript/number/parse@1` - rather than the bare name, so
+ * that typing the major answers instead of refusing: every word of a query has to be answered, and `1`
+ * would otherwise be a word nothing answers. There is no separate domain field because the rendered
+ * address already carries it.
+ *
+ * The rendering gaining the language put `typescript` into this field as well as into the one below,
+ * and that is worth a sentence rather than a repair. The two are not one fact restated: the name field
+ * answers somebody who pasted an address off a contract page, the language field answers `js` and
+ * `javascript`, which no address spells. A query matching both scores twice, which is right - it named
+ * the language two ways.
  */
 const fieldsOf = (entry: ServedIndexEntry): readonly Field[] => {
   const rendered = renderContract(entry.address)

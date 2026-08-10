@@ -108,8 +108,8 @@ describe('where every file lands', () => {
     const result = planInstall([frozen(pad), frozen(newer), frozen(clamp)])
 
     expect('faults' in result && result.faults).toEqual([
-      `string/pad@1 is asked for at two versions in one install - string/pad@1/reference@${IMAGINED_VERSION} ` +
-        `and string/pad@1/reference@1.0.1. One feature is one folder, so the second would overwrite ` +
+      `typescript/string/pad@1 is asked for at two versions in one install - typescript/string/pad@1/reference@${IMAGINED_VERSION} ` +
+        `and typescript/string/pad@1/reference@1.0.1. One feature is one folder, so the second would overwrite ` +
         `the first and whichever dependent asked for it would silently get the other one's code.`,
     ])
   })

@@ -87,32 +87,33 @@ describe('finding a contract from what somebody typed', () => {
    */
   it('a-corpus-of-real-queries-ranks-the-right-contract-first', () => {
     const corpus: readonly (readonly [string, string])[] = [
-      ['number/parse', 'number/parse@1'],
-      ['number/parse@1', 'number/parse@1'],
-      ['parseNumber', 'number/parse@1'],
-      ['describeParseFailure', 'number/parse@1'],
-      ['convert string to number', 'number/parse@1'],
-      ['string to int', 'number/parse@1'],
-      ['addDays', 'date/add@1'],
-      ['add days to date', 'date/add@1'],
-      ['subtract days from date', 'date/add@1'],
-      ['date/add', 'date/add@1'],
-      ['groupBy', 'array/group-by@1'],
-      ['Map.groupBy', 'array/group-by@1'],
-      ['group array by key', 'array/group-by@1'],
-      ['levenshtein', 'string/levenshtein@1'],
-      ['edit distance', 'string/levenshtein@1'],
-      ['compare two strings', 'string/levenshtein@1'],
-      ['did you mean', 'string/levenshtein@1'],
-      ['leven', 'string/levenshtein@1'],
-      ['slugify', 'string/slugify@1'],
-      ['title to url', 'string/slugify@1'],
-      ['seo friendly url', 'string/slugify@1'],
-      ['convert a string to a number in javascript', 'number/parse@1'],
-      ['how do I convert a string to a number', 'number/parse@1'],
-      ['what is the edit distance between two strings', 'string/levenshtein@1'],
-      ['I need to slugify a title for a url', 'string/slugify@1'],
-      ['add days to a date in javascript', 'date/add@1'],
+      ['number/parse', 'typescript/number/parse@1'],
+      ['number/parse@1', 'typescript/number/parse@1'],
+      ['typescript/number/parse@1', 'typescript/number/parse@1'],
+      ['parseNumber', 'typescript/number/parse@1'],
+      ['describeParseFailure', 'typescript/number/parse@1'],
+      ['convert string to number', 'typescript/number/parse@1'],
+      ['string to int', 'typescript/number/parse@1'],
+      ['addDays', 'typescript/date/add@1'],
+      ['add days to date', 'typescript/date/add@1'],
+      ['subtract days from date', 'typescript/date/add@1'],
+      ['date/add', 'typescript/date/add@1'],
+      ['groupBy', 'typescript/array/group-by@1'],
+      ['Map.groupBy', 'typescript/array/group-by@1'],
+      ['group array by key', 'typescript/array/group-by@1'],
+      ['levenshtein', 'typescript/string/levenshtein@1'],
+      ['edit distance', 'typescript/string/levenshtein@1'],
+      ['compare two strings', 'typescript/string/levenshtein@1'],
+      ['did you mean', 'typescript/string/levenshtein@1'],
+      ['leven', 'typescript/string/levenshtein@1'],
+      ['slugify', 'typescript/string/slugify@1'],
+      ['title to url', 'typescript/string/slugify@1'],
+      ['seo friendly url', 'typescript/string/slugify@1'],
+      ['convert a string to a number in javascript', 'typescript/number/parse@1'],
+      ['how do I convert a string to a number', 'typescript/number/parse@1'],
+      ['what is the edit distance between two strings', 'typescript/string/levenshtein@1'],
+      ['I need to slugify a title for a url', 'typescript/string/slugify@1'],
+      ['add days to a date in javascript', 'typescript/date/add@1'],
     ]
 
     expect(
@@ -193,7 +194,7 @@ describe('finding a contract from what somebody typed', () => {
 
     expect(screen).toContain(`The catalogue holds ${INDEX.length} contracts.`)
     expect(INDEX.filter((entry) => !screen.includes(renderContract(entry.address)))).toEqual([])
-    expect(screen).toContain('array/group-by@1   not installable')
+    expect(screen).toContain('typescript/array/group-by@1   not installable')
     expect(screen).toContain('toopo add <domain>/<name>')
   })
 
@@ -246,9 +247,9 @@ describe('finding a contract from what somebody typed', () => {
       const results = search(SOURCE, query).results
 
       expect(results.map((result) => renderContract(result.address))).toEqual([
-        'string/levenshtein@1',
-        'string/slugify@1',
-        'number/parse@1',
+        'typescript/string/levenshtein@1',
+        'typescript/string/slugify@1',
+        'typescript/number/parse@1',
       ])
       expect(results.at(-1)?.score).toBeLessThan(results[0]?.score ?? 0)
     }
@@ -264,10 +265,10 @@ describe('finding a contract from what somebody typed', () => {
    * may never extend one.
    */
   it('a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not', () => {
-    expect(firstFor('leven')).toBe('string/levenshtein@1')
-    expect(firstFor('slugif')).toBe('string/slugify@1')
-    expect(firstFor('arrays')).toBe('array/group-by@1')
-    expect(firstFor('dates')).toBe('date/add@1')
+    expect(firstFor('leven')).toBe('typescript/string/levenshtein@1')
+    expect(firstFor('slugif')).toBe('typescript/string/slugify@1')
+    expect(firstFor('arrays')).toBe('typescript/array/group-by@1')
+    expect(firstFor('dates')).toBe('typescript/date/add@1')
 
     expect(firstFor('levenshtien')).toBe(null)
     expect(firstFor('slugfy')).toBe(null)
