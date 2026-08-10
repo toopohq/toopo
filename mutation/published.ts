@@ -349,11 +349,18 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * not got, which is the same defect as a count with no coordinates one folder up.
  *
  * **A change of regime resets what the spread is a spread of, and the entry has to say which change.**
- * The cell count is what has told these populations apart until now, and here it did not move - 612
- * either way - so a reader given two series of numbers would have no way to know that comparing them
- * is wrong. The clause therefore names the change itself: a cell of a contract battery now collects
- * its own contract's suite instead of all five. The earlier readings stay, labelled, because they
- * measure a real past state and it is they that make the change visible at all.
+ * The cell count is what has told these populations apart until now, and across that change it did not
+ * move - 612 either way - so a reader given two series of numbers would have no way to know that
+ * comparing them is wrong. The clause therefore names the change itself: a cell of a contract battery
+ * collects its own contract's suite rather than all five. The earlier readings stay, labelled, because
+ * they measure a real past state and it is they that make the change visible at all.
+ *
+ * **The narrowed regime now has two readings, and they are a quarter apart on populations two cells
+ * apart.** That is the strongest thing this entry can say and it is worth more than either figure: the
+ * gap between two runs of what is very nearly identical work is the same order as `cli-install`'s own
+ * gap between runs of work that is exactly identical. A reader who wanted to know what the two cells
+ * cost cannot be told, and the reason is published beside the numbers rather than left to be inferred
+ * from their absence.
  */
 export const THE_REPLAY = {
   command: 'npm run mutation',
@@ -362,20 +369,20 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '27 min 8 s',
-  measuredAt: '57958fd',
+  duration: '34 min 6 s',
+  measuredAt: 'e8ba2eb',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'these 612 cells have run at 27 min 8 s, and it is the first reading under a changed regime: a ' +
-    "cell of a contract battery now collects its own contract's suite instead of all five, so the " +
-    'readings before it are what this replaced rather than a spread it sits inside. Under the ' +
-    'whole-suite regime the same 612 cells ran at 31 min 25 s, the 610 before them at 29 min 13 s, ' +
-    'the 606 before those from 28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to ' +
-    '37 min 0 s, and the 592 before those from 25 min 8 s to 28 min 59 s. **No share of any of those ' +
-    'steps is attributed to anything**, and the reason is measurable rather than modest: ' +
-    '`cli-install` has run from 364 s to 459 s on identical work, a quarter of its own duration, so ' +
-    'a machine this variable cannot support an account of where any of it went. That is one run ' +
-    'rather than how long it takes',
+    'these 614 cells have run once, and the 612 before them ran at 27 min 8 s under the same ' +
+    'regime - two populations two cells apart, a quarter apart in time, which is what the narrowed ' +
+    'regime has instead of a spread within one population. Before it a cell of a contract ' +
+    "battery collected all five contracts rather than its own: the same 612 cells ran there at " +
+    '31 min 25 s, the 610 before them at 29 min 13 s, the 606 before those from 28 min 19 s to ' +
+    '35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before those ' +
+    'from 25 min 8 s to 28 min 59 s. **No share of any of those steps is attributed to anything**, ' +
+    'and the reason is measurable rather than modest: `cli-install` has run from 364 s to 475 s on ' +
+    'identical work, a quarter of its own duration, so a machine this variable cannot support an ' +
+    'account of where any of it went. That is one run rather than how long it takes',
   reprintedBy: 'npm run tally',
   /**
    * What the second command is for, now that the first one prints the total itself.
