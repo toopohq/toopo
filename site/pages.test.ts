@@ -499,6 +499,18 @@ describe('the page that says how we verify', () => {
   const reading = (): string => toText(page(METHOD_PAGE))
 
   /**
+   * A sentence of `mutation/` as a reader of this page sees it.
+   *
+   * Every guard below that requires one has to ask for it this way, because the page parses the two
+   * marks these sentences are written with and the literal in `mutation/` still carries them. It is one
+   * function rather than three: `every-surviving-cell-is-published-with-its-own-battery-sentence` used
+   * to strip the marks by hand, which is a copy of `inline` that goes stale the day it learns a third -
+   * and `every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words` compared the literal,
+   * which is right only for as long as no entry of that vocabulary gains a mark.
+   */
+  const asRead = (prose: string): string => inline(prose).map(readingOf).join('')
+
+  /**
    * Every sentence this page renders has had its two marks parsed, and none reaches a reader as itself.
    *
    * `methodology-page.ts` says what these are for in as many words - the sentences come from
@@ -645,7 +657,7 @@ describe('the page that says how we verify', () => {
       for (const survivor of population.surviving) {
         expect(shown).toContain(`${survivor.battery} · ${survivor.mutant}`)
         expect(shown).toContain(survivor.cell)
-        expect(shown).toContain(survivor.description.replaceAll('**', '').replaceAll('`', ''))
+        expect(shown).toContain(asRead(survivor.description))
       }
     }
   })
@@ -664,7 +676,7 @@ describe('the page that says how we verify', () => {
       ),
     )
 
-    for (const why of used) expect(shown).toContain(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why])
+    for (const why of used) expect(shown).toContain(asRead(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]))
   })
 
   /**
@@ -691,7 +703,6 @@ describe('the page that says how we verify', () => {
    */
   it('the-page-separates-what-is-asserted-from-what-a-run-would-observe', () => {
     const shown = reading()
-    const asRead = (prose: string): string => inline(prose).map(readingOf).join('')
 
     expect(shown).toContain(asRead(THE_PINS_ARE_AN_ASSERTION))
     for (const value of Object.values(THE_REPLAY)) expect(shown).toContain(asRead(value))

@@ -195,8 +195,7 @@ const A_CONTRACT_NAME_IS_A_TITLE = `          el(
             ),
           ),`
 
-const THE_REPLAY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `    paragraph(
-      \`\${THE_REPLAY.command} is what turns it into something you have watched happen: it \` +`
+const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `        paragraph(silence.reason, { class: 'why' }),`
 
 const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
 
@@ -1093,19 +1092,31 @@ const mutants: readonly Mutant[] = [
     killed(['no-element-runs-into-the-one-beside-it']),
   ),
 
+  /**
+   * The published defect was this edit on the paragraph carrying `THE_REPLAY`, and the cell is written
+   * at the silences instead, on two measurements.
+   *
+   * **It is the one call site of this class no other guard covers.** Every other sentence the page
+   * takes from `mutation/` is also required by name somewhere - the survivors' descriptions, the
+   * vocabulary of kinds, `THE_PINS_ARE_AN_ASSERTION` and each value of `THE_REPLAY` - so the same edit
+   * there reddens two guards and says nothing about which of them was needed. Measured: at the
+   * silences this guard is the only red in the whole folder, and at `THE_REPLAY` it is never alone.
+   *
+   * And it is the more robust of the two. `THE_REPLAY.spread` carries one asterisk pair, so the cell
+   * would quietly stop being a defect the day that sentence is reworded; the page renders 64 silence
+   * reasons and 48 of them carry a mark.
+   */
   sameOnEveryLens(
     'W-65',
-    'renders the one paragraph carrying both inline marks without parsing them, which is the call ' +
-      'site this page had wrong: the asterisks and the backticks reach the reader as themselves, on ' +
-      'the page whose whole subject is rigour. `inline` goes on existing and goes on being right - ' +
-      'what the edit removes is a paragraph going through it, which is the shape of every failure of ' +
-      'a rule that is declared and implemented and reached by hand',
+    'renders a battery\'s own sentence without parsing the two marks it is written with, so the ' +
+      'asterisks and the backticks reach the reader as themselves - on the page whose whole subject ' +
+      'is rigour. `inline` goes on existing and goes on being right: what the edit removes is a ' +
+      'paragraph going through it, which is the shape every failure of this rule has taken, including ' +
+      'the one this repository published',
     [
       methodFile(
-        THE_REPLAY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
-        `    line(\n` +
-          `      'p',\n` +
-          `      \`\${THE_REPLAY.command} is what turns it into something you have watched happen: it \` +`,
+        A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
+        `        line('p', silence.reason, { class: 'why' }),`,
       ),
     ],
     killed(['no-mark-a-sentence-carries-reaches-the-reader-as-itself']),
