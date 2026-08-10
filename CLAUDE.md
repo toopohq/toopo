@@ -109,6 +109,20 @@ rather than a preference — of fourteen visible anchors on seven pages, not one
 sentence — and what fixed its shape is that this site already contained the right rendering of the
 same pair on another page. Re-reading the other six afterwards found the page arguing for rigour
 publishing its own asterisks, and a guard three lines from the new one undoing those marks by hand.
+**And now the fourth appearance of that class, which is the first where the existing guard was measured
+and found structurally blind rather than merely absent**: two defects filed as *a value written to be
+embedded, rendered as though it stood alone*, both sitting in a paragraph whose only child is a text
+node — so the guard that asks whether two elements run together has no pair to look at, 595 of them over
+the seven pages and none colliding. Its subject is the boundary between two elements and these are
+boundaries inside one string. What settles them is a register decided by census rather than by
+preference, written beside the field, and two derived guards that partition the class: a value stands
+alone or it is embedded. The predicate found a third instance nobody had filed, three lines from the
+first in the same file; the mandated re-reading of the seven pages found two more on the method page,
+one of which was not a fragment but a sentence denying the claim printed two lines above it. **And the
+third guard was nearly excused by a price and refused by a required field of one word** — `nature`,
+whose value would have been *claims detection*, which `run.ts` says is decorative until a mutant reaches
+it, with no nuance. The cell exists, the nineteen batteries were replayed behind it, and the third
+reading of the narrowed regime broke an ordering that two readings could only fail to establish.
 
 - The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
   `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
@@ -402,18 +416,91 @@ added a third spelling while arguing in its own commit message against the first
 function now. **A copy of a parser is not a second opinion, it is the same statement written where
 nobody will maintain it.**
 
-**Two more the reading found, left open on purpose and named so they can be recognised.** Both are the
-neighbouring class — *a value written to be embedded, rendered as though it stood alone* — and neither
-is a rendering repair, which is why they are a unit rather than a line. `identity.relationToTheLanguage`
-is published as a bare paragraph opening in lower case with no full stop, on the two contract pages
-whose value is a clause; measured over the four declared values, three are clauses and one is a
-sentence, so **the field has no settled register and the page assumes one of the two**. And
-`DETERMINISM_ORDERING_FINDING` is a clause that all five contracts compose as `` `…answer. ${CLAUSE} -
-…` ``, so every contract page reads *…from its own first answer. ordered under `no ambient input`…* —
-a sentence beginning in lower case after a full stop. What closes them is one decision each — a label
-or none, a clause or a sentence — taken once and applied to five contract files and one catalogue
-constant, with the site battery replayed behind it. The backticks a contract page publishes in its own
-prose, 53 lines over 5 pages, are the same question and close with them.
+**Two more the reading found, filed here as the neighbouring class and closed by the section below.**
+`identity.relationToTheLanguage` published as a bare fragment, and `DETERMINISM_ORDERING_FINDING`
+composed after a full stop on five contracts. **What that filing got wrong is worth keeping**: it said
+the backticks a contract page publishes in its own prose *close with them*, and they did not. They are
+a decision about the register of the catalogue's own text, where these two were a decision about where
+a value may be printed — one predicate settles the second and nothing mechanical settles the first. A
+prediction that two things close together is a claim like any other, and this one was made without
+measuring either.
+
+## A value written for one position, published in another — settled
+
+**It is the neighbour of the class above, and neither guard there can see it.**
+`no-element-runs-into-the-one-beside-it` asks whether two sibling *elements* run together. Both defects
+filed against this unit sit in a `<p>` whose only child is a text node, so there is no pair inside it to
+look at; one level up, the paragraph's own neighbours are a `<p>` ending `\n\n` and an `<h2>`, so the
+predicate is false there too. Measured over the seven pages: **595 sibling pairs of elements, 0
+colliding.** That guard's subject is the boundary *between two elements*; these are boundaries *inside
+one string*, and no predicate over element pairs reaches them. **A declared limit rather than a hole** —
+and the reason the class has been found three times by a reader and never by a guard.
+
+**The register of a prose field is settled, by census rather than by taste: a string this record carries
+that a page prints as a paragraph of its own opens like a sentence and ends in a full stop.**
+`identity.relationToTheLanguage` had no register — three clauses and one sentence over its four declared
+values — and the page prints it bare, so two contract pages published a fragment for as long as the
+field has existed. Its siblings decide it: `summary`, `description` and `inputDomain` are sentences
+**twelve times out of twelve** over the four contracts the registry serves, and the one value that is
+already a sentence, `array/group-by@1`'s, agrees with all twelve. The alternative — declare the field a
+clause and let the page frame it, as the page already frames `couplingRule` and a table's `purpose` — is
+refused by that same census: `array/group-by@1`'s value is *two* sentences, so no frame fits it. The rule
+is written beside the field in `contract-record.ts`. **Filling the two contracts that carry no such field
+is a separate decision about content and is still owed.**
+
+**Three instances in the catalogue and not two, and the third was found by the measurement rather than by
+a reader.** `DETERMINISM_ORDERING_FINDING` is a clause all five contracts composed as `` `…own first
+answer. ${it} - X is that mutant here.` ``. `NO_AMBIENT_OUTPUT_FINDING` is the same clause at the *head*
+of a reason, opening a paragraph in lower case on four pages — three lines from the first in the same
+file, and invisible to everybody who had read that file. Both are sentences now, and the ten composition
+sites lost the joins that hid them.
+
+**Two guards, and they are a partition rather than a pair: a value stands alone or it is embedded.**
+`a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` derives its population from the two things
+that already exist — every string the record carries, and every paragraph of the page — so **no list of
+prose fields exists anywhere to drift**. Measured: 212 paragraphs are a carried string and 6 were
+fragments, which is every instance of the class and nothing else. What the derivation buys is the
+exclusions: `couplingRule` and a table's `purpose` are punctuated *by the page*, so their paragraph is
+not the carried string and they fall out on their own rather than being named.
+`a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands` takes the half no field-shaped guard
+can reach, because a shared value is embedded and the string it lands in is a sentence whatever the seam
+does. What the catalogue shares is whatever it exports; what is prose is whatever carries a space, which
+is the one thing an identifier of this repository can never do — the argument ` :: ` was already chosen
+on. Nine exported strings, five of them prose, two of the five in a record.
+
+**The reading of the seven pages found two more, and one is not a fragment but a false sentence.**
+`whyNotFrozen` was composed after a full stop, which is the catalogue defect verbatim on a value the page
+composes rather than a contract. And `WHAT_A_SIGNATURE_DOES_NOT_PROVE`, a whole sentence, sat in the slot
+where the page writes `This does not establish ${butNot}.` — publishing *This does not establish a
+signature attests who published this snapshot and from what build*, which **denies the claim two lines
+above it**. Every other `butNot` of that table is a complement. **No shape check could ever have caught
+it: the composed sentence is well formed and false**, which is the half of this class that register
+cannot reach, and `a-sentence-rendered-whole-is-not-also-a-complement` is what does.
+
+**A guard that claims detection is not excused by a price, and a required field of one word is what said
+so.** That third guard was first declared an unprobed region of `registry-storage`, with the cost of a
+cell written out: a cell moves the published count, which `README.md` transcribes and `THE_REPLAY.spread`
+describes as a population that has run, so it obliges a full replay to restamp. `UnprobedRegion` refused
+the entry — `nature` is required, the value would have been `claims detection`, and `run.ts` says what
+that means with no nuance: never having been red, such a guard is decorative until a mutant reaches it.
+**The type turned a price into a decision**, which is *Make the omission impossible* arriving on the
+instrument's own declarations. I-32 is the cell, and the replay behind it is what this section's figures
+are stamped on.
+
+**The five instances of the seam guard are out of reach, and the construction is the direction a damaged
+string fails in.** The seam is composed in a contract folder; `serialise.ts` is the only module of
+`registry/` the string passes through and it copies it. To redden the guard an edit would have to produce
+a *misplaced* occurrence, and every edit that damages the string removes the occurrence instead. Measured
+rather than argued: `reason: property.reason` replaced by `reason: ''` leaves the whole registry suite
+green, those five included.
+
+**Two neighbours are named and left, because their register is not this one's and neither is frozen.** A
+table's `purpose` is rendered as a lower-case paragraph on the three contracts with one table — the page
+supplies its full stop and not its capital — and it cannot simply become a sentence, because it is an
+`h3` on the two contracts with two tables. The refusals page prints `decidedAgainst` and `keptAs` as bare
+lower-case paragraphs, and there the `h3` directly above each one is its label, which is the shape a
+clause is entitled to. Both are decisions about a rendering rather than about frozen prose, so the cost
+of leaving them is a regeneration and not a repository somebody else owns.
 
 ## What a page is, and the two projections of it — settled
 
@@ -1968,14 +2055,20 @@ Measured at `57958fd`, one run of the nineteen took
 survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
 `cli-install` at 367 s. **A duration is published beside its
 spread**, because a stamp stops a figure being stale and does not stop it being read as a period — and
-**that reading is the first under a changed regime**, which the spread has to name rather than merely
+**that reading was the first under a changed regime**, which the spread has to name rather than merely
 signal: a cell of a contract battery now collects its own contract's suite instead of all five. Under
 the whole-suite regime the same 612 cells ran at 31 min 25 s, the 610 before them at 29 min 13 s, the
 606 before those from 28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s,
 and the 592 before those from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a
 precision the measurement has not got. **The count is what has always told these populations apart, and
 here it did not move**: 612 either way, so nothing but the clause could have said that comparing the two
-series is wrong. The old readings stay, labelled, because they are what makes the change visible. **The count in that sentence was dropped rather than incremented**: it read *one of three
+series is wrong. The old readings stay, labelled, because they are what makes the change visible. **That regime has
+three readings now, and the third breaks the ordering rather than extending it.** Measured at
+`f37525f`: **615 cells in 27 min 34 s**, against 614 in 34 min 6 s and 612 in 27 min 8 s — the largest
+population is the second fastest run and the middle one is the outlier. Seven minutes over three
+populations three cells apart is the machine and not the cells, which is a thing two readings could
+only fail to establish and three settle; it is also why the two-reading entry could say no more than
+that a quarter of the time was unaccounted for. **The count in that sentence was dropped rather than incremented**: it read *one of three
 runs*, a fourth was taken and a tally that has to be edited on every replay is one that will be wrong
 between two of them. The range only ever widens and needs no counting — which is why the runs of each
 population are no longer counted at all, only bounded. **No share of that step is

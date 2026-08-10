@@ -355,12 +355,14 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * collects its own contract's suite rather than all five. The earlier readings stay, labelled, because
  * they measure a real past state and it is they that make the change visible at all.
  *
- * **The narrowed regime now has two readings, and they are a quarter apart on populations two cells
- * apart.** That is the strongest thing this entry can say and it is worth more than either figure: the
- * gap between two runs of what is very nearly identical work is the same order as `cli-install`'s own
- * gap between runs of work that is exactly identical. A reader who wanted to know what the two cells
- * cost cannot be told, and the reason is published beside the numbers rather than left to be inferred
- * from their absence.
+ * **The narrowed regime has three readings now, and the third is what turned a suggestion into a
+ * finding.** With two - 612 cells at 27 min 8 s and 614 at 34 min 6 s - a reader could believe the
+ * population and the duration moved together, and this entry could only say that they had not been
+ * shown to. The third reading is 615 cells at 27 min 34 s: the largest population is the second
+ * fastest run and the middle one is the outlier, so the ordering is broken rather than merely
+ * unestablished. Seven minutes over three populations three cells apart is the same order as
+ * `cli-install`'s own gap between runs of work that is exactly identical. **A reader who wanted to
+ * know what a cell costs still cannot be told, and now the reason is measured instead of declared.**
  */
 export const THE_REPLAY = {
   command: 'npm run mutation',
@@ -369,15 +371,17 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '34 min 6 s',
-  measuredAt: 'e8ba2eb',
+  duration: '27 min 34 s',
+  measuredAt: 'f37525f',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'these 615 cells have not been replayed since the last of them was written; the 614 before them ' +
-    'ran once at the figure above, and the 612 before those at 27 min 8 s under the same ' +
-    'regime - two populations two cells apart, a quarter apart in time, which is what the narrowed ' +
-    'regime has instead of a spread within one population. Before it a cell of a contract ' +
-    "battery collected all five contracts rather than its own: the same 612 cells ran there at " +
+    'the narrowed regime has three readings now and they do not order themselves by population: ' +
+    'these 615 cells ran at the figure above, the 614 before them at 34 min 6 s, and the 612 before ' +
+    'those at 27 min 8 s. Seven minutes separate the fastest and the slowest of three populations ' +
+    'three cells apart, and the middle one is the outlier - so the variation is the machine rather ' +
+    'than the cells, which two readings could only suggest and three settle. Before this regime a ' +
+    "cell of a contract battery collected all five contracts rather than its own: the same 612 " +
+    'cells ran there at ' +
     '31 min 25 s, the 610 before them at 29 min 13 s, the 606 before those from 28 min 19 s to ' +
     '35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before those ' +
     'from 25 min 8 s to 28 min 59 s. **No share of any of those steps is attributed to anything**, ' +
