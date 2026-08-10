@@ -62,6 +62,11 @@ const licenceFile = (find: string, replace: string) => ({ file: 'licence.ts', fi
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
 const addressFile = (find: string, replace: string) => ({ file: 'address.ts', find, replace })
+const verifiabilityFile = (find: string, replace: string) => ({
+  file: 'verifiability.ts',
+  find,
+  replace,
+})
 
 const THE_DIAGNOSTIC_TRAVELS_WITH_THE_ANSWER = `  ...exports.filter((entry) => entry.role === 'the-answer'),
   ...exports.filter((entry) => entry.role !== 'the-answer'),`
@@ -83,6 +88,11 @@ const AN_ADDRESS_RENDERS_ITS_LANGUAGE = '  `${address.language}/${address.name}@
 
 const A_MUTANT_IS_RENDERED_ON_ITS_CONTRACT =
   '  `${renderContract(address.contract)}:${address.battery}/${address.mutant}`'
+
+const A_COMPLEMENT_RATHER_THAN_A_SENTENCE = `    butNot:
+      'that what was published is right - the contract\\'s verification says an implementation ' +
+      'answers the contract, and neither that nor a signature says the contract is the right ' +
+      'specification',`
 
 // --- The reading of a declared signature, which is what makes a case a call ---
 
@@ -603,6 +613,35 @@ const mutants: readonly Mutant[] = [
     ],
     killed(['every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract']),
   ),
+
+  /**
+   * A sentence written to stand alone, put back into the slot that takes a complement.
+   *
+   * It is the defect this repository shipped with, restored. The methodology page writes
+   * `This does not establish ${butNot}.`, and `WHAT_A_SIGNATURE_DOES_NOT_PROVE` is a whole sentence
+   * about three things, so the page published *This does not establish a signature attests who
+   * published this snapshot and from what build* - denying, two lines under it, the claim the row
+   * exists to make.
+   *
+   * **The composed sentence is well formed and false, which is why the guard cannot be a shape check
+   * and the cell cannot be skipped.** Nothing about its punctuation is wrong; what is wrong is which
+   * slot the value is in, and the only thing that can know is a guard that knows the value is rendered
+   * whole somewhere else. A guard that claims detection and has never been red is decorative until a
+   * mutant reaches it - `run.ts` says so and says the rule has no nuance - so this cell is what
+   * `unprobedRegions` was briefly asked to excuse and correctly could not.
+   */
+  sameOnEveryLens(
+    'I-32',
+    'puts a sentence the methodology page renders whole back into the slot where the page writes ' +
+      '`This does not establish ...`, so the page denies the claim it is published under',
+    [
+      verifiabilityFile(
+        A_COMPLEMENT_RATHER_THAN_A_SENTENCE,
+        '    butNot: WHAT_A_SIGNATURE_DOES_NOT_PROVE,',
+      ),
+    ],
+    killed(['a-sentence-rendered-whole-is-not-also-a-complement']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -686,32 +725,6 @@ export const battery: Battery = {
    * twenty-two had no perturbation written at all.
    */
   unprobedRegions: [
-    /**
-     * Reachable, seen red, and not promoted into a cell - and the reason is a price rather than a
-     * doubt.
-     *
-     * `a-sentence-rendered-whole-is-not-also-a-complement` reads `VERIFIABLE`, which is a production
-     * source of this folder, so a cell is writable and the edit is known: putting
-     * `WHAT_A_SIGNATURE_DOES_NOT_PROVE` back into the `butNot` of
-     * `who-published-a-snapshot-and-from-what-build` reddens this guard and nothing else in the
-     * registry suite. That was measured by making the edit and running the suite, which is how the
-     * defect it exists for was found in the first place.
-     *
-     * **What a cell costs here is not two seconds of replay.** It moves the number of defect cells,
-     * which `README.md` transcribes, which `readme.test.ts` resolves against the instrument, and which
-     * `THE_REPLAY.spread` describes as a population that has been replayed once. Adding one obliges a
-     * full replay of the nineteen to restamp that sentence, and a unit about published prose is not
-     * where that is bought. The guard is kept on the rule that covers exactly this: a guard whose
-     * failure has been seen on its real condition is kept even where no cell produces it.
-     */
-    {
-      guards: ['a-sentence-rendered-whole-is-not-also-a-complement'],
-      reason:
-        'reachable from here and seen red by hand - putting `WHAT_A_SIGNATURE_DOES_NOT_PROVE` back ' +
-        'into the `butNot` it was published in reddens this guard alone. What is missing is the cell, ' +
-        'and its price is a restamp of the replayed population rather than the run itself',
-    },
-
     /**
      * The reading of a declared signature, on the shapes the five actually write.
      *

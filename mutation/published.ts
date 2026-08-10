@@ -373,7 +373,8 @@ export const THE_REPLAY = {
   measuredAt: 'e8ba2eb',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'these 614 cells have run once, and the 612 before them ran at 27 min 8 s under the same ' +
+    'these 615 cells have not been replayed since the last of them was written; the 614 before them ' +
+    'ran once at the figure above, and the 612 before those at 27 min 8 s under the same ' +
     'regime - two populations two cells apart, a quarter apart in time, which is what the narrowed ' +
     'regime has instead of a spread within one population. Before it a cell of a contract ' +
     "battery collected all five contracts rather than its own: the same 612 cells ran there at " +

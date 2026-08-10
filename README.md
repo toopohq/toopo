@@ -24,9 +24,9 @@ install, nothing of ours runs in your program.
 
 Because the tests are measured, and the measurement is a command you can run.
 
-This repository carries 19 mutation batteries. They inject **614 deliberate defects** into it — each
+This repository carries 19 mutation batteries. They inject **615 deliberate defects** into it — each
 one a committed file naming the exact edit it makes and the verdict it must produce — and re-run the
-whole suite once per defect. **578 are caught.** The 36 that survive are each classified, and the
+whole suite once per defect. **579 are caught.** The 36 that survive are each classified, and the
 split is published with the total because a survivor count alone reads as a count of holes: 12 are
 equivalent mutants, 7 are behaviour the contract declines to specify, 4 are unreachable on this
 catalogue, 12 exist only where a lens deliberately took the suite's sight away, and **exactly one is
@@ -34,7 +34,7 @@ a debt**.
 
 ```sh
 npm install
-npm run mutation     # about half an hour; replays all 614 cells and prints the total
+npm run mutation     # about half an hour; replays all 615 cells and prints the total
 npm run tally        # prints it again from what the replay left, measuring nothing
 ```
 
