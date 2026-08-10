@@ -61,6 +61,7 @@ const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts'
 const licenceFile = (find: string, replace: string) => ({ file: 'licence.ts', find, replace })
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
+const addressFile = (find: string, replace: string) => ({ file: 'address.ts', find, replace })
 
 const THE_DIAGNOSTIC_TRAVELS_WITH_THE_ANSWER = `  ...exports.filter((entry) => entry.role === 'the-answer'),
   ...exports.filter((entry) => entry.role !== 'the-answer'),`
@@ -77,6 +78,11 @@ const implementationFile = (find: string, replace: string) => ({
 // ---------------------------------------------------------------------------
 
 const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(directory, name)))'
+
+const AN_ADDRESS_RENDERS_ITS_LANGUAGE = '  `${address.language}/${address.name}@${address.major}`'
+
+const A_MUTANT_IS_RENDERED_ON_ITS_CONTRACT =
+  '  `${renderContract(address.contract)}:${address.battery}/${address.mutant}`'
 
 // --- The reading of a declared signature, which is what makes a case a call ---
 
@@ -535,6 +541,68 @@ const mutants: readonly Mutant[] = [
     [licenceFile(WHAT_THIS_REPOSITORY_IS_UNDER, `export const THE_REPOSITORY_LICENCE = 'Apache-2.0'`)],
     killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
   ),
+
+  /**
+   * The address stops rendering its language, which is the state this repository shipped in until the
+   * rendering was repaired - so this cell is the defect put back rather than one invented for it.
+   *
+   * It is the whole of what made the omission survivable for so long: the coordinate was in the record,
+   * in `sameContract` and in the lockfile, every consumer went on working, and the only thing that
+   * changed was the strings a reader, a crawler and a foreign repository see. Nothing was in a position
+   * to notice, because each consumer sees one rendering and the claim is about all of them.
+   *
+   * **Five guards and all five are named**, under the rule that a red set of five or fewer is named in
+   * full. They are three different claims and that is the useful part: the two address guards say the
+   * rendering lost a coordinate, the two licence guards say five files in somebody else's repository
+   * now carry a header that is not the one this code writes, and `a-shared-dependency-is-resolved-once`
+   * says the resolution's own answer moved. A defect in an address is not local to the address.
+   *
+   * **The abbreviation was measured and is not a second cell.** Rendering `ts/` instead of the
+   * language's own value reddens exactly these five, so it establishes nothing this one does not and
+   * would be a cell whose only content is a second spelling of one edit. The refusal is recorded here
+   * rather than left for somebody to propose again.
+   */
+  sameOnEveryLens(
+    'I-30',
+    'renders an address without its language, so every URL, page path, case anchor and installed ' +
+      'licence header goes back to a spelling a second language could never be added to',
+    [addressFile(AN_ADDRESS_RENDERS_ITS_LANGUAGE, '  `${address.name}@${address.major}`')],
+    killed([
+      'every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract',
+      'a-rendered-address-is-the-spelling-frozen-with-the-major',
+      'every-file-the-installer-copies-is-marked-mit-0',
+      'the-licence-file-quotes-a-header-a-contract-really-carries',
+      'a-shared-dependency-is-resolved-once',
+    ]),
+  ),
+
+  /**
+   * One rendering builds the address by hand instead of calling `renderContract`, and every other
+   * rendering goes on being right.
+   *
+   * **This is the cell that makes the family guard load-bearing, and its width is the measurement.**
+   * It reddens exactly one guard in this folder, against I-30's five - because everything that resolves
+   * a rendering resolves it against `renderContract`, so a form that stops going through
+   * `renderContract` stops being compared with anything. A guard aimed at `renderContract` alone would
+   * be green here, and so would every consumer: `renderMutant` feeds a provenance citation that nothing
+   * else reads back.
+   *
+   * The edit is deliberately the *plausible* one rather than a wrong one. Interpolating the parts is
+   * what somebody writes who has the address in hand and does not think of it as a rendered thing, and
+   * it is right about the parts it names - which is why nothing but a guard over the family catches it.
+   */
+  sameOnEveryLens(
+    'I-31',
+    'renders a mutant address out of the contract\'s parts rather than through `renderContract`, so ' +
+      'one address in the family silently loses the language while the others keep it',
+    [
+      addressFile(
+        A_MUTANT_IS_RENDERED_ON_ITS_CONTRACT,
+        '  `${address.contract.name}@${address.contract.major}:${address.battery}/${address.mutant}`',
+      ),
+    ],
+    killed(['every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -556,7 +624,27 @@ export const battery: Battery = {
     { id: 'as-committed', description: 'the arm exactly as its commit left it', arms: ['R'], edits: [] },
   ],
 
-  unreachableGuards: [],
+  /**
+   * One guard, and it is out of reach by construction rather than unprobed.
+   *
+   * `every-export-that-renders-no-contract-says-why` reads the classification `address.test.ts`
+   * declares about its own module - a record of literal reasons written in the test file. This battery
+   * edits production sources and nothing else, as every one of its thirty-one cells does, so no edit it
+   * can make reaches a string that guard looks at. Calling it unprobed would be asking for a mutant
+   * that cannot exist.
+   *
+   * What *is* kept about that record is kept by the compiler and not by a cell: it is total over the
+   * module's exports, so an export added to `address.ts` fails to typecheck until it is classified -
+   * which this battery does see, as a `killed-by-typecheck`.
+   */
+  unreachableGuards: [
+    {
+      guards: ['every-export-that-renders-no-contract-says-why'],
+      reason:
+        'it reads reason literals written in `address.test.ts`, and this battery edits production ' +
+        'sources only - so no edit it can make reaches them',
+    },
+  ],
 
   /**
    * The guards of `registry/` that no mutant of this battery reddens, declared as regions it does not
