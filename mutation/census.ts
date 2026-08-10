@@ -156,6 +156,35 @@
  * single origin and a single licence perimeter, whose declaration is in `registry/` and whose consumer
  * is in `site/` - and neither folder may hold the other's guard, so the entries land where the reach
  * falls rather than where the subject is.
+ *
+ * A thirteenth on the narrowing, and it is the first that moved no number at all: a contract battery
+ * now collects its own contract instead of all five, so what changed is which entries a run is
+ * compared against and not how many there are. That is the whole of what `censusFor` gained, and the
+ * shape it did *not* take is worth recording beside it - see below.
+ *
+ * ---------------------------------------------------------------------------
+ * The census this file is not, and the wall it does not move
+ * ---------------------------------------------------------------------------
+ *
+ * A narrowed run collects a fraction of its configuration, so it cannot be compared against the whole
+ * table. The obvious repair is a census **per battery**, and it is the wrong one: it multiplies every
+ * integer here by the number of batteries a contract carries, on a file that already grows with the
+ * catalogue. What a run collects is instead *selected* from the same table, by the folder the battery
+ * injects into - a field it already holds, and already the predicate `run.ts` uses to decide which
+ * guards are its own. **No integer here is new, and none moved.**
+ *
+ * That leaves the file's own scale exactly where it was, and this is said rather than left to look
+ * addressed: **four to five hand-written counts per contract**, twenty-one for the five, and nothing
+ * about the narrowing changes that arithmetic.
+ *
+ * Deriving them was measured and refused. A count is not a function of any one committed value: over
+ * the five, an `edge-cases.test.ts` collects `cases + 1`, `cases + 4`, `2 x cases + 1`, `2 x cases + 6`
+ * and `cases + 4` - the constant differs per contract, so a derivation would need a hand-written
+ * integer per contract *and* a formula, where the formula is a second statement about the shape of a
+ * test file and can drift from it. The counting itself is the demonstration: reading `id:` off the
+ * five case tables gives 194 where the catalogue publishes 187 cases, because a group carries one
+ * too. An independent source would need a second careful statement, which is what the first paragraph
+ * of this file refuses.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */
@@ -260,13 +289,26 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 }
 
 /**
- * A battery that collects under a configuration nobody has counted is refused before it measures
- * anything.
+ * What one run of a battery must collect: the files its configuration declares that lie under the
+ * folder it injects into.
  *
- * Without this, adding a configuration would silently opt that suite out of the census - which is the
- * same failure one level up: a guard that is absent looks exactly like a guard that passed.
+ * Two refusals, and they fail on opposite conditions.
+ *
+ * A configuration nobody has counted is refused before the battery measures anything. Without it,
+ * adding a configuration would silently opt that suite out of the census - the same failure one level
+ * up, where a guard that is absent looks exactly like a guard that passed.
+ *
+ * A folder no file of that configuration lies under is refused for the same reason and it is the newer
+ * half: an empty census agrees with a run that collected nothing at all, so a `contractPath` that has
+ * stopped naming anything would leave calibration refusing a red control that names no guard - *which
+ * says only that something did*, the sentence this whole file exists to replace.
+ *
+ * **One rule and no branch, which is what makes the second refusal cover every battery.** Six of the
+ * seven configurations set `root` to their own folder and collect nothing outside it, so the selection
+ * is the whole table for them and a mistyped folder is caught there too - not only under the one
+ * configuration that is actually narrowed.
  */
-export const censusFor = (config: string | undefined): SuiteCensus => {
+export const censusFor = (config: string | undefined, folder: string): SuiteCensus => {
   const census = CENSUS[config ?? THE_CONTRACTS_SUITE]
   if (census === undefined) {
     throw new Error(
@@ -276,7 +318,16 @@ export const censusFor = (config: string | undefined): SuiteCensus => {
     )
   }
 
-  return census
+  const scoped = Object.entries(census).filter(([file]) => file.startsWith(`${folder}/`))
+  if (scoped.length === 0) {
+    throw new Error(
+      `no file of "${config ?? THE_CONTRACTS_SUITE}" lies under "${folder}", so this battery would ` +
+        `be compared against an empty census - which agrees with a run that collected nothing. ` +
+        `Check the battery's contractPath, and count the folder in mutation/census.ts if it is new.`,
+    )
+  }
+
+  return Object.fromEntries(scoped)
 }
 
 /**

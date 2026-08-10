@@ -18,10 +18,11 @@
  * saw is a guard this file cannot see at all, and the silence it leaves is indistinguishable from a
  * region no mutant reaches.
  *
- * Only the guards of the contract under measurement are attributed. A run executes the whole
- * repository suite - that is what makes the count check possible - but a guard of another contract
- * cannot be reddened by a defect injected into this one, and reporting three hundred of those as
- * silent would bury the handful that mean something.
+ * Only the guards of the contract under measurement are attributed, and since `theFilesToCollect`
+ * narrowed a contract battery's run to its own contract, that is every guard the run collected. The
+ * reason it was ever a restriction is unchanged and is why the narrowing is safe: a guard of another
+ * contract cannot be reddened by a defect injected into this one, so reporting three hundred of them
+ * as silent would have buried the handful that mean something.
  *
  * Three buckets, and the third is the one that has to be accounted for rather than merely printed.
  *

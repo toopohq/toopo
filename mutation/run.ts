@@ -193,6 +193,9 @@ export type Battery = {
    * the contracts' output as though it were one of them and would enter every cell of every contract
    * battery. Naming a configuration here is what lets `vitest.config.ts` keep saying "the contracts'
    * own suite, and nothing else" and mean it.
+   *
+   * Absent is also the one value that has to be narrowed, because it is the one configuration more
+   * than one contract collects under - see `theFilesToCollect`.
    */
   readonly vitestConfig?: string
   /**
@@ -281,10 +284,11 @@ export type GuardIdentity = {
  * contract may legitimately name a different number of cases, and a figure shared between them would
  * either be wrong for one or too loose for both.
  *
- * `guardsPerCell` holds only the guards of the contract under measurement. The run executes the whole
- * repository suite - which is what makes the count check possible - but a guard belonging to another
- * contract cannot be reddened by a defect injected into this one, so attributing it here would drown
- * the answer in three hundred irrelevant silences.
+ * `guardsPerCell` holds the guards of the contract under measurement, and since the run is narrowed to
+ * that contract they are every guard the run collected. That sentence used to say *the run executes
+ * the whole repository suite*, and it stopped being true the day `theFilesToCollect` was written: the
+ * filtering this field once needed is now done one floor down, on the command line, where it also
+ * makes the run flat in the size of the catalogue.
  */
 export type Calibration = {
   readonly testsPerCell: Readonly<Record<string, number>>
@@ -459,6 +463,58 @@ const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
     })),
   )
 
+/**
+ * The file filters one run of this battery is given, and why exactly one configuration takes any.
+ *
+ * ---------------------------------------------------------------------------
+ * What it buys, which is a slope and not a saving
+ * ---------------------------------------------------------------------------
+ *
+ * A contract battery used to collect all five contracts on every one of its cells, so the cost of a
+ * replay grew with the *product* of the catalogue's cells and the catalogue's suite. Measured over one
+ * to five contracts, three runs of each, a suite run costs `705 + 78 x N` ms; the 74 cells a contract
+ * carries turn that into `52 x N + 5.8 x N^2` seconds. Narrowed, a run costs 743 ms whatever N is, and
+ * the same cells cost `55 x N`.
+ *
+ * **At five contracts this is worth two or three minutes and the number invites the wrong reading.**
+ * Measured on the ten contract batteries alone: 10 min 9 s before, and what the same ten cost after is
+ * the honest comparison, because two full replays differ by more than this change does. The whole of
+ * the value is that a term which grew is now flat.
+ *
+ * ---------------------------------------------------------------------------
+ * Which configuration can be narrowed is a measurement, not a choice
+ * ---------------------------------------------------------------------------
+ *
+ * A filter ending in `/` is resolved against the configuration's own root; a filter without one is a
+ * substring of the whole path. The six configurations of this repository set `root` to their own
+ * folder, so a filter naming that folder resolves under it and names nothing. Measured on vitest
+ * 4.1.10:
+ *
+ *     --config registry/vitest.config.ts   registry/                 0 files, exit 1
+ *     --config registry/vitest.config.ts   registry                 16 files - a no-op
+ *     (the contracts' configuration)       contracts/number/parse/   4 files, 122 assertions
+ *
+ * So the narrowing is expressible under the contracts' configuration, whose root is the repository,
+ * and under no other. The six need none: their own `root` and `include` already collect exactly the
+ * folder their battery injects into. Nobody can generalise this to them, because vitest does not allow
+ * it.
+ *
+ * The trailing slash is also what makes the filter precise. Without it `contracts/number/parse` is a
+ * substring match and would collect a future `contracts/number/parse-int` as well.
+ *
+ * ---------------------------------------------------------------------------
+ * Neither direction of this needs a guard of its own, and that was measured
+ * ---------------------------------------------------------------------------
+ *
+ * A filter dropped makes the run collect the whole configuration, and `assertTheCensusHolds` refuses
+ * it by naming every file the census does not declare. A filter added to one of the six collapses the
+ * run to nothing, and the same refusal names every file that collected nothing. **The mechanism that
+ * saves the time is held by the mechanism that was already there**, which is why no second guard is
+ * written over it - two mechanisms over one fault have nothing to say on the day they disagree.
+ */
+export const theFilesToCollect = (battery: Battery): readonly string[] =>
+  battery.vitestConfig === undefined ? [`${battery.contractPath}/`] : []
+
 const runSuite = (battery: Battery): SuiteRun => {
   rmSync(REPORT, { force: true })
 
@@ -483,6 +539,7 @@ const runSuite = (battery: Battery): SuiteRun => {
         '--reporter=json',
         `--outputFile.json=${REPORT}`,
         ...(battery.vitestConfig === undefined ? [] : ['--config', battery.vitestConfig]),
+        ...theFilesToCollect(battery),
       ],
       {
         cwd: THE_REPOSITORY,
@@ -667,26 +724,30 @@ const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[
  * guard identifier or a benchmark profile name that has stopped resolving from a silence into an error,
  * with no renaming anywhere - the class `CLAUDE.md` has been carrying against five kinds of address.
  *
- * **Each half is resolved against the universe its own mechanism reads, and that is why neither can
- * refuse wrongly.** `agreesWith` looks a pin up among every guard that reddened anywhere in the run, so
- * a pin resolves against every guard collected. `attributeColumn` only ever sees the guards of the
- * contract under measurement, so a silence declaration resolves against those - a guard declared silent
- * from outside the folder would be silent whether it existed or not.
+ * **The two universes this read are one, and narrowing the run is what made them one.** A pin used to
+ * resolve against every guard that reddened anywhere in the run and a declared silence against the
+ * guards of the contract under measurement, because the run collected all five contracts and the two
+ * sets genuinely differed. `theFilesToCollect` collapsed that difference, so the parameter that
+ * expressed it went with it rather than staying as a second name for one set - two mechanisms over one
+ * scope have nothing to say on the day they disagree.
+ *
+ * What the collapse costs is that a pin may no longer name a guard outside its own contract, and that
+ * is a tightening rather than a loss: a battery injects into one folder, so such a pin was already
+ * meaningless. Measured over the ten contract batteries before the narrowing was written - 220 pins,
+ * 409 declared silent guards and 8 declared silent suites - **not one needed the wider universe.**
  */
 const assertEveryAddressResolves = (
   battery: Battery,
   cell: string,
   lens: string,
   collected: readonly GuardIdentity[],
-  own: readonly GuardIdentity[],
 ): void => {
-  const anywhere = new Set(collected.map((guard) => guard.id))
-  const here = new Set(own.map((guard) => guard.id))
-  const suitesHere = new Set(own.map((guard) => guard.suite))
+  const here = new Set(collected.map((guard) => guard.id))
+  const suitesHere = new Set(collected.map((guard) => guard.suite))
 
   const pinned = battery.mutants
     .flatMap((mutant) => (mutant.expected[cell]?.by ?? []).map((guard) => ({ mutant, guard })))
-    .filter(({ guard }) => !anywhere.has(guard))
+    .filter(({ guard }) => !here.has(guard))
 
   const declared = [...battery.unreachableGuards, ...battery.unprobedRegions].filter(
     (group) => group.lenses === undefined || group.lenses.includes(lens),
@@ -773,7 +834,7 @@ export const calibrate = (battery: Battery): Calibration => {
 
   const testsPerCell: Record<string, number> = {}
   const guardsPerCell: Record<string, readonly GuardIdentity[]> = {}
-  const census = censusFor(battery.vitestConfig)
+  const census = censusFor(battery.vitestConfig, battery.contractPath)
   const stopListening = restoringOnSignal(battery.contractPath)
 
   try {
@@ -803,12 +864,9 @@ export const calibrate = (battery: Battery): Calibration => {
         )
       }
       testsPerCell[cellKey(arm, lens)] = control.testsSeen
-      const ownGuards = control.guards.filter((guard) =>
-        guard.file.includes(`${battery.contractPath}/`),
-      )
-      assertGuardsAreAddressed(cellKey(arm, lens), ownGuards)
-      assertEveryAddressResolves(battery, cellKey(arm, lens), lens.id, control.guards, ownGuards)
-      guardsPerCell[cellKey(arm, lens)] = ownGuards
+      assertGuardsAreAddressed(cellKey(arm, lens), control.guards)
+      assertEveryAddressResolves(battery, cellKey(arm, lens), lens.id, control.guards)
+      guardsPerCell[cellKey(arm, lens)] = control.guards
 
       const injected = measureCell(battery, arm, lens, obvious, control.testsSeen)
       process.stdout.write(

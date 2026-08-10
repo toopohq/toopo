@@ -6,7 +6,7 @@ import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
 import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } from './run.ts'
 import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
 import { withCanonicalDriveLetter } from '../vitest-entry-point.ts'
-import { censusFor } from './census.ts'
+import { CENSUS, censusFor, THE_CONTRACTS_SUITE } from './census.ts'
 import { attributionOf, disagreementsIn } from './attribution.ts'
 import type { MeasuredBattery } from './score.ts'
 import { renderScore, scoreFaults, theScore } from './score.ts'
@@ -215,6 +215,44 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
     },
     META_TIMEOUT_MS,
   )
+
+  it(
+    'refuses a folder no counted file lies under, rather than comparing against nothing',
+    () => {
+      // The other half of the refusal above, and it arrives from the opposite side: there the
+      // configuration was unknown and here it is known and the folder inside it is not. An empty
+      // census agrees with a run that collected nothing, so calibration would go on to refuse a red
+      // control naming no guard - which says only that something did. It is what a contractPath left
+      // behind by a rename looks like, and it costs nothing to find out: no run has happened yet.
+      expect(() => calibrate({ ...battery, contractPath: 'mutation/fixture-renamed' })).toThrow(
+        /no file of "mutation\/fixture\/vitest\.config\.ts" lies under "mutation\/fixture-renamed"/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  /**
+   * The selection is what let a narrowed run keep the census it already had, so it is what would
+   * silently stop narrowing.
+   *
+   * It is asserted as a *comparison* rather than against a written-out table, deliberately: the four
+   * counts of a contract are hand-written in `census.ts` and copying them here would be a second
+   * statement of the same integers, growing with the catalogue in a file that has no reason to. What
+   * is checked is the shape - everything selected is under this contract, and there is strictly less
+   * of it than the configuration declares - and both halves of that go red on the one edit that
+   * matters, a selection that stops selecting.
+   */
+  it('a-contract-battery-is-compared-against-its-own-contract-alone', () => {
+    const parse = THE_BATTERIES.find((one) => one.name === 'number-parse')
+    if (parse === undefined) throw new Error('number-parse is not among the published batteries')
+
+    const scoped = Object.keys(censusFor(parse.vitestConfig, parse.contractPath))
+    const whole = Object.keys(CENSUS[THE_CONTRACTS_SUITE] ?? {})
+
+    expect(scoped.filter((file) => !file.startsWith(`${parse.contractPath}/`))).toEqual([])
+    expect(scoped.length).toBeLessThan(whole.length)
+    expect(whole).toEqual(expect.arrayContaining(scoped))
+  })
 
   it(
     'refuses an apparatus that is stuck red, which would call every mutant killed',
@@ -747,7 +785,7 @@ describe('what is pinned rather than inherited', () => {
       const config = battery.vitestConfig
       if (config === undefined) throw new Error('the fixture battery names no configuration')
 
-      const collected = Object.values(censusFor(config)).reduce(
+      const collected = Object.values(censusFor(config, battery.contractPath)).reduce(
         (total, guards) => total + guards,
         0,
       )
