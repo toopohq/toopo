@@ -106,5 +106,31 @@ export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Doc
         'measurements did not catch is published beside what they did.',
     ),
     el('p', NOTHING, el('a', { href: linkTo(METHOD_PAGE) }, text('How we verify, and what it does not prove'))),
+
+    /**
+     * The question every visitor arrives with and the site had no answer to, and silence in front of
+     * it is not neutrality.
+     *
+     * **It carries no link, and that is the page's own guard rather than an omission.**
+     * `every-page-is-reachable-from-the-front-page` compares every `href` here against the set of
+     * pages, so an address outside the site cannot be written on this page at all - and there is no
+     * address to write: this repository has no public remote, and inventing a URL to fill the gap is
+     * the class the whole project spends its length removing. So the file is named and not linked.
+     *
+     * **No figure, deliberately.** The ratio that carries this argument lives in `CONTRIBUTING.md`,
+     * where a guard derives it from the five records; restating it here would be a second statement
+     * of one measurement, on the surface that cannot compute it. A sentence that is true without
+     * counting does not count.
+     */
+    line('h2', 'What a contribution can be'),
+    line(
+      'p',
+      'An implementation, or an input where ours is wrong — never a contract. A contract is frozen ' +
+        'for the life of its major version, and almost everything it settles is an address that can ' +
+        'never move, so it is ours to keep rather than yours to send. An implementation freezes ' +
+        'nothing: it competes under a contract that already exists, and that contract\'s own suite — ' +
+        'public, and runnable by anyone — is what decides between it and ours. CONTRIBUTING.md in the ' +
+        'repository says what can be received today and what cannot.',
+    ),
   ],
 })
