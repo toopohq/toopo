@@ -126,11 +126,20 @@ const renderNode = (node: Node): string => {
 const isChrome = (node: Node): boolean =>
   node.kind === 'element' && node.attributes['aria-hidden'] === 'true'
 
-const textOfNode = (node: Node): string => {
+/**
+ * What a reader reads of one node, separator included.
+ *
+ * Exported because the whole-page projection cannot answer the question two elements raise about each
+ * other: `toText` trims and collapses, so by the time a page is a string the boundary between two
+ * siblings has become indistinguishable from the boundary inside one. A guard asking whether two
+ * elements run together needs each one's reading *with its own trailing separator still on it*, which
+ * is exactly this and is nothing more than the step `toText` is built out of.
+ */
+export const readingOf = (node: Node): string => {
   if (node.kind === 'text') return node.text
   if (isChrome(node)) return ''
 
-  return node.children.map(textOfNode).join('') + (SEPARATOR[node.tag] ?? '')
+  return node.children.map(readingOf).join('') + (SEPARATOR[node.tag] ?? '')
 }
 
 /**
@@ -183,7 +192,9 @@ pre {
 .cases { margin: 0 }
 .cases > div { padding: .85rem 0; border-top: 1px solid var(--rule) }
 .cases > div:target { background: var(--wash); box-shadow: 0 0 0 .75rem var(--wash); border-radius: 3px }
-.call { display: block; margin-bottom: .3rem }
+/* The title line of a list item, at whatever tag the outline asks for: a contract's name on the front
+   page is a heading because it titles a section, and must not take the standing margin of one. */
+.call { display: block; margin: 0 0 .3rem }
 .why { margin: 0; color: var(--dim) }
 .anchor { color: var(--dim); text-decoration: none; font-size: .8rem; float: right }
 .anchor:hover { color: var(--link); text-decoration: underline }
@@ -225,7 +236,7 @@ export const toHtml = (document: Document): string =>
  * and not about the reading.
  */
 export const toText = (document: Document): string =>
-  [document.title, '', document.description, '', ...document.body.map(textOfNode)]
+  [document.title, '', document.description, '', ...document.body.map(readingOf)]
     .join('\n')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')

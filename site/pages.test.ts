@@ -10,7 +10,7 @@ import {
 import { renderCase, renderContract } from '../registry/address.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
-import { toHtml, toText, wordsOf } from './document.js'
+import { readingOf, toHtml, toText, wordsOf } from './document.js'
 import { localSource } from './local-source.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 import { theSite } from './site.js'
@@ -412,13 +412,64 @@ describe('the site', () => {
   })
 
   /**
+   * Two elements that each carry content are two things in the reading, never one sentence.
+   *
+   * **This is the class, and the guard below it is two of its instances.** Both were found by reading a
+   * page in document order and by nothing else: `not applicableThe signature takes a single string` on
+   * a contract page, and `typescript/number/parse@1Convert a string to a finite number` on the front
+   * page - the second of them a year of guards later, on the first screen of the product. Every word is
+   * present in both, so `every-word-of-every-page-survives-both-projections` is green; what is wrong is
+   * that an element with no separator was put where a block belonged, and the element after it began
+   * mid-line.
+   *
+   * The two siblings must both be **elements**, and that is a measurement rather than a caution. With
+   * text nodes admitted the predicate holds 53 pairs across the seven pages and 48 of them are ordinary
+   * inline markup - `<strong>...</strong>: the sentence continues`, `<code>x</code>, ` - where the
+   * author writes the spacing into the prose and is right to. Restricted to element pairs it held
+   * exactly the five defects and nothing else. It is also what keeps the guard true of a link written
+   * *inside* a sentence, which is `text + a + text` and correctly invisible here: the question of what
+   * an inline anchor becomes in a projection never arises, because its neighbours carry the spaces.
+   */
+  it('no-element-runs-into-the-one-beside-it', () => {
+    for (const [path, document] of pages()) {
+      const collide: string[] = []
+
+      const walk = (node: Parameters<typeof readingOf>[0]): void => {
+        if (node.kind === 'text') return
+
+        const carrying = node.children
+          .map((child) => ({ child, reading: readingOf(child) }))
+          .filter((seen) => seen.reading !== '')
+
+        for (const [at, left] of carrying.entries()) {
+          const right = carrying[at + 1]
+
+          if (right === undefined) continue
+          if (left.child.kind !== 'element' || right.child.kind !== 'element') continue
+          if (/\s$/.test(left.reading) || /^\s/.test(right.reading)) continue
+
+          collide.push(
+            `<${node.tag}>: <${left.child.tag}> runs into <${right.child.tag}> — ` +
+              `"${left.reading.slice(-30)}|${right.reading.slice(0, 30)}"`,
+          )
+        }
+
+        for (const child of node.children) walk(child)
+      }
+
+      for (const node of document.body) walk(node)
+
+      expect(collide, `${path} reads two elements as one sentence`).toEqual([])
+    }
+  })
+
+  /**
    * A label and the sentence under it are two lines, not one.
    *
-   * Found by reading a page in document order and by nothing else: every property of every contract
-   * came out as `never mutates its arguments — not applicableThe signature takes a single string…`,
-   * because a `code` is inline and the paragraph after it had nothing to separate them. Every word was
-   * present, so the projection guard was green; what was wrong was that two blocks had become one
-   * sentence, which a person reads and a guard about presence cannot.
+   * Two instances of the class above, kept for the half that is not separation: these assert the label's
+   * own *rendering* - the em dash, and the words `checked` and `not applicable` - so a label reformatted
+   * without breaking apart reddens here and nowhere else. Neither guard subsumes the other, which is why
+   * both are affordable: this one is blind to the front page, and that one is blind to the em dash.
    */
   it('a-label-and-the-sentence-under-it-are-two-lines', () => {
     for (const held of heldByTheRegistry(source)) {
@@ -445,6 +496,7 @@ describe('the site', () => {
  */
 describe('the page that says how we verify', () => {
   const reading = (): string => toText(page(METHOD_PAGE))
+
 
   /**
    * **No figure on this page is typed into a sentence.**

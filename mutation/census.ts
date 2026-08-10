@@ -271,7 +271,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'site/document.test.ts': 8,
     'site/indexing.test.ts': 9,
     'site/literal.test.ts': 11,
-    'site/pages.test.ts': 23,
+    'site/pages.test.ts': 24,
     'site/playground.test.ts': 10,
     'site/read-literal.test.ts': 10,
     'site/source.test.ts': 8,

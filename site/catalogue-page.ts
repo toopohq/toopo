@@ -67,10 +67,33 @@ export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Doc
         el(
           'li',
           NOTHING,
+          /**
+           * A contract's name is a heading that happens to be a link, and it used to be a bare anchor.
+           *
+           * Read in document order it came out as `typescript/number/parse@1Convert a string to a
+           * finite number` - an anchor is phrasing content and carries no separator, so the summary
+           * began mid-line, on the first screen of the site. **The repair is here rather than in the
+           * separator table, and the measurement is what says so:** across the seven pages there is not
+           * one anchor written inside a sentence, and nine of the fourteen a reader can see are already
+           * the sole child of an element that separates. Giving `a` a separator would state something
+           * about a phrasing element that is false of every other phrasing element beside it, to repair
+           * five places where the mistake is that a title was not written as one.
+           *
+           * The tag is the outline and the class is the look, which is what settles both halves at once.
+           * The tag, because the refusals page already renders this exact pair - an address and the
+           * summary under it - as a heading and a paragraph, and two renderings of one thing drift until
+           * one lies: the front page's outline held its four sections and not one contract name, on the
+           * page that *is* this site's navigation. The class, because 121 of the 126 list items here
+           * open with `.call` and these five are the only departure.
+           */
           el(
-            'a',
-            { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },
-            text(renderContract(entry.address)),
+            'h3',
+            { class: 'call' },
+            el(
+              'a',
+              { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },
+              text(renderContract(entry.address)),
+            ),
           ),
           line('p', entry.summary, { class: 'why' }),
           line(
