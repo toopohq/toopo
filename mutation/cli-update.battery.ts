@@ -587,6 +587,28 @@ export const battery: Battery = {
    * them silent, each named a defect that could be written, and U-32 to U-34 write it.
    */
   unprobedRegions: [
+    /**
+     * The registry reached over a socket, which `cli-install` carries with two defects.
+     *
+     * This battery injects into the diff, the two-phase write, the comparison, the import line and the
+     * two places `askedFor` is decided - and an update reads a registry through the same held view
+     * every other command does, so nothing it can break reaches the transport underneath it. That is
+     * the division this file already makes about `remove` and about `init`, arriving on the port.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the port over HTTP, which `cli-install` carries with C-67 and C-68. Nothing this battery ' +
+        'injects into reaches `http-source.ts` or `fixpoint.ts`: an update is decided against a held ' +
+        'view, and how those answers arrived is settled a floor below anything it can break.',
+      guards: [
+        'a-status-that-is-neither-the-answer-nor-a-404-is-an-error-and-not-an-absence',
+        'an-install-over-http-plans-exactly-what-the-same-registry-plans-in-process',
+        'bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that',
+        'the-same-decision-against-a-warm-cache-and-no-network-is-the-same-plan',
+        'the-walk-costs-one-round-trip-per-level-and-fetches-each-frontier-at-once',
+      ],
+    },
     {
       nature: 'claims detection',
       reason:

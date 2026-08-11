@@ -429,7 +429,9 @@ export const battery: Battery = {
         'the configured folder, the lockfile and what a plan does with a shared file - a query ' +
         'reaches none of it, and the three batteries next door carry ninety-odd defects over exactly ' +
         'these. `search` is the one command that reads no project, so the division needs no argument ' +
-        'beyond that sentence.',
+        'beyond that sentence. The registry over HTTP is in the list on a second one: a query does go ' +
+        'through the fixpoint, but every defect this battery injects is in `search.ts` and in the ' +
+        'screen it renders, so none of them reaches the loop or the transport under it.',
       guards: [
         'a-blob-that-is-not-what-its-address-names-is-refused',
         'a-command-that-takes-nothing-is-read-and-refuses-an-argument',
@@ -514,6 +516,7 @@ export const battery: Battery = {
         'a-size-is-read-the-way-a-file-manager-shows-it',
         'a-snapshot-that-is-not-what-its-digest-names-is-refused',
         'a-source-carrying-more-than-the-port-declares-is-refused',
+        'a-status-that-is-neither-the-answer-nor-a-404-is-an-error-and-not-an-absence',
         'a-switch-takes-no-value-and-swallows-nothing',
         'a-version-that-moved-with-no-byte-changing-is-recorded-anyway',
         'a-version-this-toopo-does-not-write-is-refused',
@@ -532,6 +535,7 @@ export const battery: Battery = {
         'an-import-of-a-file-this-install-does-not-carry-is-refused',
         'an-import-of-something-outside-the-registry-is-refused',
         'an-init-says-what-has-to-be-committed',
+        'an-install-over-http-plans-exactly-what-the-same-registry-plans-in-process',
         'an-installation-is-the-same-with-git-and-without',
         'an-installed-file-imports-what-was-installed',
         'an-unchanged-specifier-is-left-alone',
@@ -540,6 +544,7 @@ export const battery: Battery = {
         'an-update-keeps-the-implementation-the-lockfile-names',
         'an-update-writes-the-bytes-the-registry-now-serves',
         'applying-an-update-twice-changes-nothing-the-second-time',
+        'bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that',
         'each-of-the-five-installs-one-file-named-after-itself',
         'each-side-says-for-itself-that-it-has-no-final-newline',
         'every-breakage-is-classified',
@@ -580,14 +585,16 @@ export const battery: Battery = {
         'the-plan-is-in-the-resolutions-order',
         'the-port-answers-every-need-behind-it-and-nothing-else',
         'the-proposed-directory-follows-the-shape-of-the-project',
+        'the-same-decision-against-a-warm-cache-and-no-network-is-the-same-plan',
         'the-three-spellings-of-one-file-all-resolve',
         'the-updated-lockfile-holds-what-was-served-and-what-was-written',
         'the-users-tsconfig-is-never-read',
+        'the-walk-costs-one-round-trip-per-level-and-fetches-each-frontier-at-once',
         'the-ways-out-are-offered-only-where-the-reader-put-something',
         'two-changes-far-apart-are-two-hunks',
         'two-different-files-on-one-destination-are-refused',
-        'two-identical-texts-have-nothing-to-show',
         'two-edges-naming-one-address-at-two-digests-are-refused',
+        'two-identical-texts-have-nothing-to-show',
         'two-versions-of-one-feature-are-refused',
         'two-versions-of-one-feature-are-refused-before-anything-is-written',
         'update-writes-only-when-it-is-asked-to',
