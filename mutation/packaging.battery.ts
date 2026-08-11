@@ -79,12 +79,16 @@ const A_BINDING_IS_KEYED_BY_ITS_ADDRESS = `        bindings.set(renderContract(a
 
 const THE_INDEX_IS_CARRIED_WHOLE = `  const index = source.contractIndex()`
 
-const A_FILE_THE_REGISTRY_DOES_NOT_SERVE_STOPS_THE_BUILD = `      if (source.blob(file.sha256) === null) {
-        throw new TheRegistryContradictsItself(
-          \`\${renderContract(holding.contract)}, whose \${file.path} it does not serve\`,
-          [\`no file is served at \${file.sha256}\`],
-        )
-      }`
+/**
+ * The refusal that stops a build, which moved when `freeze.ts` learnt to warm before it records.
+ *
+ * It used to throw from inside the loop over a holding's files. The walk is replayed by the fixpoint
+ * now, so it answers `Found` instead - a round run against a cache holding nothing has to be able to
+ * refuse harmlessly, where an exception would end the build on the first round of its own warming.
+ * The anchor moved with it and the defect did not: `source.blob` is still called for every file, so
+ * the recording is untouched and what the edit removes is only the refusal.
+ */
+const A_FILE_THE_REGISTRY_DOES_NOT_SERVE_STOPS_THE_BUILD = `  if (unserved.length > 0) return { faults: unserved }`
 
 const A_LIST_IS_WRITTEN_IN_ITS_OWN_ORDER = `  [...entries].sort((a, b) => (keyOf(a) < keyOf(b) ? -1 : 1))`
 
@@ -182,7 +186,7 @@ const mutants: readonly Mutant[] = [
     'A-04',
     'builds the archive around a registry that does not serve a file it says it holds, so the refusal ' +
       'moves from the person building the archive to the person installing out of it',
-    [freezeFile(A_FILE_THE_REGISTRY_DOES_NOT_SERVE_STOPS_THE_BUILD, `      source.blob(file.sha256)`)],
+    [freezeFile(A_FILE_THE_REGISTRY_DOES_NOT_SERVE_STOPS_THE_BUILD, `  if (false) return { faults: unserved }`)],
     killed(['a-registry-that-serves-no-bytes-stops-the-build']),
   ),
 
