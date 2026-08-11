@@ -62,12 +62,20 @@ const contractAt = (rendered: string): ContractAddress => {
   const at = rendered.lastIndexOf('@')
   const slash = rendered.indexOf('/')
   const major = Number(rendered.slice(at + 1))
+  const language = rendered.slice(0, slash)
 
   if (at === -1 || slash === -1 || !Number.isInteger(major)) {
     throw new Error(`"${rendered}" is not a rendered contract address`)
   }
 
-  return { language: 'typescript', name: rendered.slice(slash + 1, at), major }
+  // Read rather than assumed, which is the whole subject of the unit that put a language into every
+  // rendering: a parser that supplies the coordinate itself is one that cannot be wrong about it, and
+  // would answer this registry's TypeScript catalogue to a question about somebody else's.
+  if (language !== 'typescript') {
+    throw new Error(`"${rendered}" names ${language}, and this registry serves typescript`)
+  }
+
+  return { language, name: rendered.slice(slash + 1, at), major }
 }
 
 /**

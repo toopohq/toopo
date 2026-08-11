@@ -125,10 +125,11 @@ export const overWhatArrived = (
    * The one cast in this module, and what stands behind it.
    *
    * A cache over five methods answering five types is heterogeneous, so something has to carry the
-   * pairing of a key with the shape stored under it. Here it is `ask` below: it is total over the
-   * union, it is the only thing that writes this map, and every read and every write goes through
-   * `asked` - so the only way to break the pairing is to spell a key two ways, which is the thing
-   * `asked` being one function makes impossible.
+   * pairing of a key with the shape stored under it. Here it is the single line of `deciding` that
+   * writes this map: it stores `ask(source, question)` under `asked(question)`, for the same
+   * `question`, and it is the only write there is. `ask` is total over the union, so what that line
+   * stores is the port's own answer to the method the key names - and the only way to break the
+   * pairing would be to spell a key two ways, which is what `asked` being one function prevents.
    */
   const answering = <T>(question: Question, whereNothingIsHeld: T): T => {
     const key = asked(question)
