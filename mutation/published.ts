@@ -376,22 +376,25 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '27 min 22 s',
-  measuredAt: '06e264b',
+  duration: '28 min 1 s',
+  measuredAt: '4fdcfcc',
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'these same 618 cells also ran at 28 min 42 s, on the run before the one above - identical work, ' +
-    'eighty seconds apart, which is what every reading below can only approximate by comparing ' +
-    'populations. Those readings do not order themselves by population either: the 615 before these ' +
-    'ran at 27 min 34 s, the 614 before those at 34 min 6 s, and the 612 before those at 27 min 8 s, ' +
-    'so the smallest population is the fastest run and the second smallest is the slowest by seven ' +
-    'minutes. The variation is the machine rather than the cells. Before this regime a ' +
+    'these same 621 cells ran at 32 min 28 s half an hour earlier, at `b0c57ee` - four and a half ' +
+    'minutes apart on identical work, and the widest such reading this machine has given. That run ' +
+    'disagreed with four batteries and so was no replay, which moves no cell count and is why the ' +
+    'duration still compares. Every reading below can only approximate the same point by comparing ' +
+    'populations, and they do not order themselves by population either: the 618 before these ran ' +
+    'at 27 min 22 s and at 28 min 42 s, the 615 before those at 27 min 34 s, the 614 before those ' +
+    'at 34 min 6 s, and the 612 before those at 27 min 8 s - so the smallest population is the ' +
+    'fastest run and the second smallest is the slowest by seven minutes. The variation is the ' +
+    'machine rather than the cells. Before this regime a ' +
     "cell of a contract battery collected all five contracts rather than its own: the same 612 " +
     'cells ran there at ' +
     '31 min 25 s, the 610 before them at 29 min 13 s, the 606 before those from 28 min 19 s to ' +
     '35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before those ' +
     'from 25 min 8 s to 28 min 59 s. **No share of any of those steps is attributed to anything**, ' +
-    'and the reason is measurable rather than modest: `cli-install` has run from 364 s to 475 s on ' +
+    'and the reason is measurable rather than modest: `cli-install` has run from 364 s to 484 s on ' +
     'identical work, a quarter of its own duration, so a machine this variable cannot support an ' +
     'account of where any of it went. That is one run rather than how long it takes',
   reprintedBy: 'npm run tally',
