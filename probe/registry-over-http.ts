@@ -110,7 +110,19 @@ export type Served = {
  * to establish is what crossed the wire, and a client that answered from a cache it forgot to mention
  * would be counting its own intentions.
  */
-export const servingOverHttp = async (held: ServedArtefact): Promise<Served> => {
+export const servingOverHttp = async (
+  held: ServedArtefact,
+  /**
+   * Addresses this registry answers with somebody else's answer, requested address to served one.
+   *
+   * A parameter rather than a second server, on the argument `imaginedSource(refuse)` already makes:
+   * two servers differing in one answer is a copy waiting to drift. What it models is the one failure
+   * no local implementation can have - both of them look an answer up *by* its digest in a map keyed
+   * on that digest, so the pairing of an answer with its address is held by a data structure. Over a
+   * wire it is held by whatever the server chooses to send.
+   */
+  misrouted: ReadonlyMap<string, string> = new Map(),
+): Promise<Served> => {
   const requests: Wanted[] = []
 
   const server = createServer((request, response) => {
@@ -127,7 +139,7 @@ export const servingOverHttp = async (held: ServedArtefact): Promise<Served> => 
     const wanted: Wanted = { method, key: decodeURIComponent(key) }
     requests.push(wanted)
 
-    const body = BODY_FOR[method](held, wanted.key)
+    const body = BODY_FOR[method](held, misrouted.get(wanted.key) ?? wanted.key)
     if (body === null) {
       response.writeHead(404).end()
 

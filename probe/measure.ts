@@ -93,8 +93,9 @@ const installing = (source: RegistrySource, root: string, contract: string): Ins
 const withServer = async <T>(
   held: ServedArtefact,
   body: (origin: string, requests: readonly Wanted[]) => Promise<T>,
+  misrouted: ReadonlyMap<string, string> = new Map(),
 ): Promise<T> => {
-  const server = await servingOverHttp(held)
+  const server = await servingOverHttp(held, misrouted)
   try {
     return await body(server.origin, server.requests)
   } finally {
@@ -311,6 +312,68 @@ const twoRootsOverTheNetwork = async (): Promise<void> => {
 // 2b - what a wire adds that no local source has: an answer that is not the answer
 // ---------------------------------------------------------------------------
 
+/**
+ * The same question about a snapshot, which is the half that decides *which* files are installed.
+ *
+ * The first attempt at this measured the wrong thing and is recorded because the wrong thing looked
+ * right: it paired one snapshot's body with the other's declared address, which is an answer that
+ * contradicts *itself* - and `servedSnapshotFaults` already catches that, under both spellings. The
+ * failure a wire really adds is an answer that is perfectly consistent and is simply not the one that
+ * was asked for. Worse than a swapped blob, because the plan is built from it and every blob the
+ * installation then fetches is the right blob of the wrong implementation.
+ */
+const aSnapshotThatIsNotTheOneAskedFor = async (): Promise<void> => {
+  const artefact = frozenArtefact(imaginedSource())
+
+  /** A snapshot by the contract its body freezes, so a substitution can be chosen rather than found. */
+  const addressOfTheSnapshotOf = (name: string): string => {
+    const held = artefact.snapshots.find((snapshot) => {
+      const parsed = JSON.parse(snapshot.canonicalText) as {
+        readonly frozen: { readonly contract: { readonly name: string } }
+      }
+
+      return parsed.frozen.contract.name === name
+    })
+    if (held === undefined) throw new Error(`the imagined artefact freezes no ${name}`)
+
+    return held.addressedBy
+  }
+
+  const project = aProject()
+
+  // The root and a dependency, because they are answered by different code: a substituted root is
+  // asked about by `chooseContract` and reconciled against the plan by `entryOf`, and a substituted
+  // dependency arrives inside `gatherHoldings`, where nothing knows what was asked for.
+  for (const [where, from, to] of [
+    ['the root', 'number/round', 'string/pad'],
+    ['a dependency', 'number/sign', 'string/pad'],
+  ] as const) {
+    await withServer(
+      artefact,
+      async (origin) => {
+        for (const addressedBy of ['by-the-question', 'by-what-arrived'] as const) {
+          const rounds = await decidingOverTheNetwork(
+            origin,
+            (remote) => installing(remote, project.root, 'number/round'),
+            addressedBy,
+          )
+
+          out(`  ${where}: ${to}'s whole snapshot answered at ${from}'s address, ${addressedBy}:`)
+          out(
+            '    ' +
+              ('faults' in rounds.answer
+                ? `refused - ${rounds.answer.faults.join(' / ')}`
+                : `INSTALLED ${shapeOf(rounds.answer).length} files, nothing objected`),
+          )
+        }
+      },
+      new Map([[addressOfTheSnapshotOf(from), addressOfTheSnapshotOf(to)]]),
+    )
+  }
+
+  project.remove()
+}
+
 const aCorruptedFile = async (): Promise<void> => {
   const artefact = frozenArtefact(imaginedSource())
   const first = artefact.blobs[0]
@@ -419,6 +482,8 @@ await twoRootsOverTheNetwork()
 
 heading('2b - the check that is a tautology until the client addresses the answer by the question')
 await aCorruptedFile()
+out()
+await aSnapshotThatIsNotTheOneAskedFor()
 
 heading('the real command, in a real project, against the network')
 await theRealCommand()
