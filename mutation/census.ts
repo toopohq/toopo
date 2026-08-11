@@ -47,9 +47,15 @@
  *
  * A lower-case Windows drive letter in the root handed to vitest collapses every runtime file with
  * `TypeError: Cannot read properties of undefined (reading 'config')` - deterministically, over
- * twenty runs of each spelling: 28 assertions of 472 under the contracts' configuration, and 0 of
- * 170 under `cli/`, which declares no typecheck files for the parent process to collect.
+ * twenty runs of each spelling: **28 assertions** under the contracts' configuration, which are the
+ * five `.test-d.ts` files tsc collects in the parent process where no worker is involved, and **none
+ * at all** under `cli/`, which declares no typecheck files for that process to collect.
  * `mutation/paths.ts` carries the measurement and closes it by pinning the spelling.
+ *
+ * Those two figures used to be written *of 472* and *of 170*, and the second went false the day this
+ * folder's suite gained a file. What the sentence is about is the pair 28 and zero being one door read
+ * through two configurations, and neither half needs the population it was a fraction of - the rule
+ * this file's own header states about a number that describes something, arriving on the header.
  *
  * It is the fourth door and the first that was not a setting anybody typed - and unlike the other
  * three it was **named by this refusal** rather than stumbled into. Calibration would have stopped
@@ -259,6 +265,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/command.test.ts': 1,
     'cli/configuration.test.ts': 9,
     'cli/diff.test.ts': 10,
+    'cli/http-source.test.ts': 5,
     'cli/ignored.test.ts': 3,
     'cli/install.test.ts': 21,
     'cli/list.test.ts': 4,

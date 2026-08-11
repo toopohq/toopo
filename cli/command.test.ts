@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 import type { Command } from './arguments.js'
 import { run } from './command.js'
 import { writeConfiguration } from './configuration.js'
+import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import type { TemporaryProject } from './temporary-project.js'
@@ -33,16 +34,18 @@ import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './tempor
  */
 
 /** A project holding an installed feature, so that every command gets as far as it would in real use. */
-const aProjectHoldingSomething = (): TemporaryProject => {
+const aProjectHoldingSomething = async (): Promise<TemporaryProject> => {
   const project = aProject()
-  const outcome = prepareInstallation(imaginedSource(), {
-    root: project.root,
-    configuration: project.configuration,
-    lockfile: EMPTY_LOCKFILE,
-    contract: 'number/round',
-    implementation: null,
-    at: A_PINNED_INSTANT,
-  })
+  const { answer: outcome } = await deciding(imaginedSource(), (held) =>
+    prepareInstallation(held, {
+      root: project.root,
+      configuration: project.configuration,
+      lockfile: EMPTY_LOCKFILE,
+      contract: 'number/round',
+      implementation: null,
+      at: A_PINNED_INSTANT,
+    }),
+  )
 
   if (!('installation' in outcome)) throw new Error(JSON.stringify(outcome))
 
@@ -61,7 +64,10 @@ class Exited extends Error {}
  * Everything the command would print is swallowed and everything it would change is under a temporary
  * project, so the only thing this reads out of the run is whether the thunk was called.
  */
-const reachesTheRegistry = (project: TemporaryProject, words: readonly string[]): boolean => {
+const reachesTheRegistry = async (
+  project: TemporaryProject,
+  words: readonly string[],
+): Promise<boolean> => {
   let reached = false
 
   const argv = process.argv
@@ -77,7 +83,10 @@ const reachesTheRegistry = (project: TemporaryProject, words: readonly string[])
   process.stdout.write = (() => true) as typeof process.stdout.write
 
   try {
-    run(() => {
+    // Awaited, and that is what keeps the observation honest: `run` is asynchronous now, so without it
+    // the `finally` would put `process.argv` and the working directory back while the command was
+    // still deciding, and `reached` would be read before the thunk was called.
+    await run(() => {
       reached = true
 
       return imaginedSource()
@@ -122,13 +131,16 @@ describe('what a command reads', () => {
    * is a promise being withdrawn, and a command that reaches nothing when it should is one that will
    * refuse in front of somebody instead.
    */
-  it('the-commands-that-reach-the-registry-are-these-and-no-others', () => {
-    const project = aProjectHoldingSomething()
+  it('the-commands-that-reach-the-registry-are-these-and-no-others', async () => {
+    const project = await aProjectHoldingSomething()
 
     try {
-      const reached = Object.fromEntries(
-        Object.entries(INVOKED_BY).map(([name, words]) => [name, reachesTheRegistry(project, words)]),
-      )
+      // One at a time, because each run replaces `process.argv` and the working directory for the
+      // length of the command - two of them in flight would be two commands sharing one process.
+      const reached: Record<string, boolean> = {}
+      for (const [name, words] of Object.entries(INVOKED_BY)) {
+        reached[name] = await reachesTheRegistry(project, words)
+      }
 
       expect(reached).toEqual({
         init: false,

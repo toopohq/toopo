@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
+import { deciding, withoutAsking } from './fixpoint.js'
 import { localSource } from './local-source.js'
 import { renderCatalogue, renderSearch } from './report.js'
+import type { Search } from './search.js'
 import { displayed, search } from './search.js'
+import type { HeldRegistry } from './source.js'
 
 /**
  * How a ranking is put to the test when it has five things to rank.
@@ -29,10 +32,31 @@ import { displayed, search } from './search.js'
  * source per query takes the corpus past a thirty-second timeout.
  */
 const SOURCE = localSource()
-const INDEX = SOURCE.contractIndex().entries
+
+/**
+ * The answers a search needs, fetched once, so that every trial below is a synchronous decision.
+ *
+ * `search` asks a registry two questions and both are answered in the first round, so warming it with
+ * one query warms it for all of them - and `answering` refuses rather than fabricating if that ever
+ * stops being true, because a view that quietly answered *the catalogue is empty* would turn every
+ * trial in this file green at once.
+ */
+const { arrived: ANSWERS } = await deciding(SOURCE, (held) => search(held, 'warm'))
+
+const answering = <T>(decide: (held: HeldRegistry) => T): T => {
+  const { answer, wanted } = withoutAsking(ANSWERS, decide)
+  if (wanted.length > 0) throw new Error(`the warmed registry does not hold ${wanted.join(', ')}`)
+
+  return answer
+}
+
+/** `search` against that registry, so that each trial reads like the call it measures. */
+const searching = (query: string): Search => answering((held) => search(held, query))
+
+const INDEX = answering((held) => held.contractIndex()).entries
 
 const firstFor = (query: string): string | null => {
-  const [best] = search(SOURCE, query).results
+  const [best] = searching(query).results
 
   return best === undefined ? null : renderContract(best.address)
 }
@@ -168,7 +192,7 @@ describe('finding a contract from what somebody typed', () => {
 
     expect(
       nothing
-        .map((query) => [query, search(SOURCE, query).results] as const)
+        .map((query) => [query, searching(query).results] as const)
         .filter(([, results]) => results.length > 0)
         .map(([query, results]) => `"${query}" -> ${results.length} results`),
     ).toEqual([])
@@ -189,7 +213,7 @@ describe('finding a contract from what somebody typed', () => {
    */
   it('the-catalogue-lists-every-contract-and-marks-the-one-it-refuses', () => {
     const screen = renderCatalogue(
-      INDEX.map((entry) => displayed(entry, SOURCE.refusals().refusals)),
+      INDEX.map((entry) => displayed(entry, answering((held) => held.refusals()).refusals)),
     )
 
     expect(screen).toContain(`The catalogue holds ${INDEX.length} contracts.`)
@@ -209,8 +233,8 @@ describe('finding a contract from what somebody typed', () => {
    * answers for itself.
    */
   it('a-query-with-no-words-answers-nothing', () => {
-    expect(search(SOURCE, '   ').results).toEqual([])
-    expect(search(SOURCE, '- -').results).toEqual([])
+    expect(searching('   ').results).toEqual([])
+    expect(searching('- -').results).toEqual([])
   })
 
   /**
@@ -220,8 +244,8 @@ describe('finding a contract from what somebody typed', () => {
    * thing this command says about *why* it found nothing.
    */
   it('a-miss-names-the-words-no-contract-carries', () => {
-    expect(search(SOURCE, 'deep clone').unknownWords).toEqual(['deep', 'clone'])
-    expect(search(SOURCE, 'memoize the levenshtein').unknownWords).toEqual(['memoize'])
+    expect(searching('deep clone').unknownWords).toEqual(['deep', 'clone'])
+    expect(searching('memoize the levenshtein').unknownWords).toEqual(['memoize'])
   })
 
   /**
@@ -244,7 +268,7 @@ describe('finding a contract from what somebody typed', () => {
    */
   it('a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias', () => {
     for (const query of ['string', 'strings']) {
-      const results = search(SOURCE, query).results
+      const results = searching(query).results
 
       expect(results.map((result) => renderContract(result.address))).toEqual([
         'typescript/string/levenshtein@1',
@@ -284,7 +308,7 @@ describe('finding a contract from what somebody typed', () => {
    * nothing else would tell them the catalogue had no opinion.
    */
   it('a-refused-contract-is-found-with-the-reason-it-was-refused', () => {
-    const [only, ...rest] = search(SOURCE, 'Map.groupBy').results
+    const [only, ...rest] = searching('Map.groupBy').results
 
     expect(rest).toEqual([])
     expect(only?.installable).toBe(false)
@@ -299,7 +323,7 @@ describe('finding a contract from what somebody typed', () => {
    * everything else here.
    */
   it('an-installable-contract-carries-no-refusal', () => {
-    expect(search(SOURCE, 'slugify').results.map((result) => result.refusal)).toEqual([null])
+    expect(searching('slugify').results.map((result) => result.refusal)).toEqual([null])
   })
 
   /**
@@ -311,12 +335,12 @@ describe('finding a contract from what somebody typed', () => {
    * contradicting itself on the first screen a stranger sees.
    */
   it('a-refused-contract-is-offered-no-install-line', () => {
-    const refused = renderSearch(search(SOURCE, 'Map.groupBy'))
+    const refused = renderSearch(searching('Map.groupBy'))
 
     expect(refused).toContain('not installable')
     expect(refused).not.toContain('toopo add')
 
-    expect(renderSearch(search(SOURCE, 'slugify'))).toContain('toopo add string/slugify')
+    expect(renderSearch(searching('slugify'))).toContain('toopo add string/slugify')
   })
 
   /**
@@ -327,7 +351,7 @@ describe('finding a contract from what somebody typed', () => {
    * what the contract claims.
    */
   it('a-cut-summary-says-that-it-was-cut', () => {
-    expect(renderSearch(search(SOURCE, 'add days to date'))).toContain('...')
-    expect(renderSearch(search(SOURCE, 'slugify'))).not.toContain('...')
+    expect(renderSearch(searching('add days to date'))).toContain('...')
+    expect(renderSearch(searching('slugify'))).not.toContain('...')
   })
 })

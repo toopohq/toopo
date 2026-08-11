@@ -24,4 +24,4 @@ import '../typescript-imports.ts'
 const { run } = await import('./command.ts')
 const { localSource } = await import('./local-source.ts')
 
-run(localSource)
+await run(localSource)

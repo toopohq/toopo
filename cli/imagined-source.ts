@@ -113,19 +113,19 @@ const sourceOver = (
   const index: ServedIndex = { addressing: 'named', entries: indexed.map(indexEntryOf) }
 
   return {
-    contractIndex: () => index,
+    contractIndex: async () => index,
 
-    implementationBindings: (address: ContractAddress) =>
+    implementationBindings: async (address: ContractAddress) =>
       held.filter((record) => sameContract(record.contract, address)).map(bindingOf),
 
     // The imagined graph is four features nobody decided against, so this is empty rather than
     // fabricated: a fixture that invented a refusal would let a guard pass on a shape the catalogue
     // does not produce.
-    refusals: () => ({ addressing: 'named', refusals: [], absorbed: [] }),
+    refusals: async () => ({ addressing: 'named', refusals: [], absorbed: [] }),
 
-    snapshot: (digest) => snapshots.get(digest) ?? null,
+    snapshot: async (digest) => snapshots.get(digest) ?? null,
 
-    blob: (sha256) => {
+    blob: async (sha256) => {
       const bytes = IMAGINED_BLOBS.get(sha256)
 
       return bytes === undefined ? null : servedBlob(bytes)

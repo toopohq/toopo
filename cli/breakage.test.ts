@@ -8,6 +8,7 @@ import { guardIdOf } from '../catalogue/identifier.js'
 import { WHAT_BREAKS } from './breakage.js'
 import { CONFIGURATION_FILE, readConfiguration } from './configuration.js'
 import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
+import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
 import { filesToWrite, prepareInstallation } from './install.js'
 import { localSource } from './local-source.js'
@@ -40,20 +41,24 @@ import type { TemporaryProject } from './temporary-project.js'
 
 const HERE = import.meta.dirname
 
-const installing = (
+const installing = async (
   source: RegistrySource,
   project: TemporaryProject,
   contract: string,
   lockfile: Lockfile = EMPTY_LOCKFILE,
-): InstallOutcome =>
-  prepareInstallation(source, {
-    root: project.root,
-    configuration: project.configuration,
-    lockfile,
-    contract,
-    implementation: null,
-    at: A_PINNED_INSTANT,
-  })
+): Promise<InstallOutcome> =>
+  (
+    await deciding(source, (held) =>
+      prepareInstallation(held, {
+        root: project.root,
+        configuration: project.configuration,
+        lockfile,
+        contract,
+        implementation: null,
+        at: A_PINNED_INSTANT,
+      }),
+    )
+  ).answer
 
 /**
  * **The two refusals below assert the refusal and nothing after it, and that is a repair.**
@@ -73,10 +78,11 @@ const mustInstall = (outcome: InstallOutcome): Installation => {
 }
 
 /** One install, committed, with its lockfile - the state every guard below starts from. */
-const alreadyInstalled = (
+const alreadyInstalled = async (
   project: TemporaryProject,
   contract = 'string/slugify',
-): Lockfile => committing(project, mustInstall(installing(localSource(), project, contract)))
+): Promise<Lockfile> =>
+  committing(project, mustInstall(await installing(localSource(), project, contract)))
 
 /**
  * Every guard this folder's suite carries, as its address against the file - or files - that hold it.
@@ -180,12 +186,12 @@ describe('what breaks for somebody', () => {
     })
   })
 
-  it('a-file-we-did-not-write-is-never-overwritten', () => {
+  it('a-file-we-did-not-write-is-never-overwritten', async () => {
     const project = aProject()
     try {
       project.write('src/lib/toopo/string/slugify/slugify.ts', 'export const slugify = "mine"\n')
 
-      const outcome = installing(localSource(), project, 'string/slugify')
+      const outcome = await installing(localSource(), project, 'string/slugify')
 
       expect('faults' in outcome && outcome.faults).toEqual([
         'src/lib/toopo/string/slugify/slugify.ts is already there, toopo.lock does not claim it, ' +
@@ -197,13 +203,13 @@ describe('what breaks for somebody', () => {
   })
 
   /** Permanent rule 4, decided on the user's own machine from what it already holds. */
-  it('an-edited-file-is-never-replaced', () => {
+  it('an-edited-file-is-never-replaced', async () => {
     const project = aProject()
     try {
-      const lockfile = alreadyInstalled(project)
+      const lockfile = await alreadyInstalled(project)
       project.write('src/lib/toopo/string/slugify/slugify.ts', 'export const slugify = "edited"\n')
 
-      const outcome = installing(localSource(), project, 'string/slugify', lockfile)
+      const outcome = await installing(localSource(), project, 'string/slugify', lockfile)
 
       expect('faults' in outcome && outcome.faults).toEqual([
         'src/lib/toopo/string/slugify/slugify.ts is not the file toopo wrote there. Toopo never ' +
@@ -222,13 +228,13 @@ describe('what breaks for somebody', () => {
    * what a version-1 lockfile leaves behind, and equally what a project that gitignores `toopo.lock`
    * hands to the next person who checks it out.
    */
-  it('a-file-already-holding-our-bytes-is-claimed-and-not-rewritten', () => {
+  it('a-file-already-holding-our-bytes-is-claimed-and-not-rewritten', async () => {
     const project = aProject()
     try {
-      alreadyInstalled(project)
+      await alreadyInstalled(project)
       const before = project.installed('string/slugify/slugify.ts')
 
-      const installation = mustInstall(installing(localSource(), project, 'string/slugify'))
+      const installation = mustInstall(await installing(localSource(), project, 'string/slugify'))
 
       expect(installation.writes.map((write) => [write.path, write.alreadyOnDisk])).toEqual(
         installation.writes.map((write) => [write.path, true]),
@@ -248,10 +254,10 @@ describe('what breaks for somebody', () => {
    * this tool writes into somebody else's project. What is asserted here is the pair a reader needs:
    * that it is refused, and that the refusal names the feature to type back.
    */
-  it('a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run', () => {
+  it('a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run', async () => {
     const project = aProject()
     try {
-      const lockfile = alreadyInstalled(project)
+      const lockfile = await alreadyInstalled(project)
       const asVersionOne = {
         version: 1,
         features: lockfile.features.map(({ askedFor: _askedFor, ...rest }) => rest),
@@ -298,10 +304,10 @@ describe('what breaks for somebody', () => {
    * have been used, and a monorepo package, a Deno project or a plain folder is a project like any
    * other.
    */
-  it('a-project-with-no-package-json-installs-normally', () => {
+  it('a-project-with-no-package-json-installs-normally', async () => {
     const project = aProject()
     try {
-      committing(project, mustInstall(installing(localSource(), project, 'string/slugify')))
+      committing(project, mustInstall(await installing(localSource(), project, 'string/slugify')))
 
       expect(existsSync(join(project.root, 'package.json'))).toBe(false)
       expect(readdirSync(join(project.root, 'src/lib/toopo/string/slugify'))).toEqual(['slugify.ts'])
@@ -311,10 +317,10 @@ describe('what breaks for somebody', () => {
   })
 
   /** No shell ever sees a path, which is what makes this uninteresting - and worth proving once. */
-  it('a-path-with-a-space-installs-normally', () => {
+  it('a-path-with-a-space-installs-normally', async () => {
     const project = aProject('src/my code/toopo')
     try {
-      committing(project, mustInstall(installing(imaginedSource(), project, 'number/round')))
+      committing(project, mustInstall(await installing(imaginedSource(), project, 'number/round')))
 
       expect(project.installed('number/clamp/clamp.ts')).toContain(
         `from '../../string/pad/pad.js'`,
@@ -328,12 +334,12 @@ describe('what breaks for somebody', () => {
    * The user's own configuration is not read, so it cannot be wrong. Measured by putting a
    * `tsconfig.json` in the project that would refuse everything, and installing anyway.
    */
-  it('the-users-tsconfig-is-never-read', () => {
+  it('the-users-tsconfig-is-never-read', async () => {
     const project = aProject()
     try {
       project.write('tsconfig.json', '{ "this": is not even json }')
 
-      const installation = mustInstall(installing(imaginedSource(), project, 'number/round'))
+      const installation = mustInstall(await installing(imaginedSource(), project, 'number/round'))
       committing(project, installation)
 
       expect(installation.writes).toHaveLength(5)

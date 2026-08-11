@@ -23,7 +23,7 @@ import type { InstallPlan } from './plan.js'
 import { THE_ENTRY_FILE, planInstall } from './plan.js'
 import { chooseContract, bindingFor, fetchedSources, gatherHoldings, heldAt, refused } from './resolve.js'
 import { rewrittenSources } from './rewrite.js'
-import type { RegistrySource } from './source.js'
+import type { HeldRegistry } from './source.js'
 import type { FileToWrite } from './write.js'
 
 export type Cost = {
@@ -215,7 +215,7 @@ const diskStanding = (
 // ---------------------------------------------------------------------------
 
 export const prepareInstallation = (
-  source: RegistrySource,
+  source: HeldRegistry,
   request: InstallRequest,
 ): InstallOutcome => {
   const chosen = chooseContract(source, request.contract)

@@ -6,6 +6,7 @@ import { describe, it, expect } from 'vitest'
 
 import type { Lockfile } from '../registry/implementation-record.js'
 import { readConfiguration, writeConfiguration } from './configuration.js'
+import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import { filesToMove, pathsLeftBehind, planRelocation, whatMoves } from './relocate.js'
@@ -35,26 +36,34 @@ const FROM = 'src/lib/toopo'
 const TO = 'app/toopo'
 
 /** Five files across four features, which is the only graph in this repository with a shared file. */
-const installed = (): { readonly project: TemporaryProject; readonly lockfile: Lockfile } => {
+const installed = async (): Promise<{
+  readonly project: TemporaryProject
+  readonly lockfile: Lockfile
+}> => {
   const project = aProject(FROM)
-  const outcome = prepareInstallation(imaginedSource(), {
-    root: project.root,
-    configuration: project.configuration,
-    lockfile: EMPTY_LOCKFILE,
-    contract: 'number/round',
-    implementation: null,
-    at: A_PINNED_INSTANT,
-  })
+  const { answer: outcome } = await deciding(imaginedSource(), (held) =>
+    prepareInstallation(held, {
+      root: project.root,
+      configuration: project.configuration,
+      lockfile: EMPTY_LOCKFILE,
+      contract: 'number/round',
+      implementation: null,
+      at: A_PINNED_INSTANT,
+    }),
+  )
 
   if (!('installation' in outcome)) throw new Error(JSON.stringify(outcome))
 
   return { project, lockfile: committing(project, outcome.installation) }
 }
 
-const inProject = <T>(use: (project: TemporaryProject, lockfile: Lockfile) => T): T => {
-  const { project, lockfile } = installed()
+/** `return await`, because the `finally` would otherwise remove the project under an async callback. */
+const inProject = async <T>(
+  use: (project: TemporaryProject, lockfile: Lockfile) => T | Promise<T>,
+): Promise<T> => {
+  const { project, lockfile } = await installed()
   try {
-    return use(project, lockfile)
+    return await use(project, lockfile)
   } finally {
     project.remove()
   }
@@ -89,8 +98,8 @@ describe('the configured folder moving', () => {
    * configured directory, so a relocation that rewrote anything would be a defect rather than a
    * feature. Measured over the shared blob too - `string/pad/digits.ts` is the file two carriers name.
    */
-  it('every-installed-file-moves-and-not-one-byte-changes', () => {
-    inProject((project, lockfile) => {
+  it('every-installed-file-moves-and-not-one-byte-changes', async () => {
+    await inProject((project, lockfile) => {
       const before = new Map(
         lockfile.features.flatMap((feature) =>
           feature.files.map(
@@ -117,8 +126,8 @@ describe('the configured folder moving', () => {
    * registry. A guard rather than a remark, because the day one of those becomes false this is what
    * says so.
    */
-  it('a-relocation-leaves-the-lockfile-exactly-as-it-was', () => {
-    inProject((project, lockfile) => {
+  it('a-relocation-leaves-the-lockfile-exactly-as-it-was', async () => {
+    await inProject((project, lockfile) => {
       moveIt(project, lockfile)
 
       expect(readFileSync(join(project.root, 'toopo.lock'), 'utf8')).toBe(
@@ -135,8 +144,8 @@ describe('the configured folder moving', () => {
    * `toopo remove` holds an edited feature back, correctly, and the only way through it costs the user
    * their own work. A move has nothing to re-fetch, so it has nothing to lose.
    */
-  it('a-file-the-user-edited-moves-with-the-edit-in-it', () => {
-    inProject((project, lockfile) => {
+  it('a-file-the-user-edited-moves-with-the-edit-in-it', async () => {
+    await inProject((project, lockfile) => {
       project.write(`${FROM}/number/round/round.ts`, 'export const round = "mine"\n')
       moveIt(project, lockfile)
 
@@ -154,8 +163,8 @@ describe('the configured folder moving', () => {
    * Without this answer the retry would meet an occupied destination and refuse - the project stuck by
    * the rule that exists to protect it, on a state this tool produced itself.
    */
-  it('a-destination-already-holding-our-bytes-is-a-move-that-happened', () => {
-    inProject((project, lockfile) => {
+  it('a-destination-already-holding-our-bytes-is-a-move-that-happened', async () => {
+    await inProject((project, lockfile) => {
       const path = 'string/pad/digits.ts'
       project.write(`${TO}/${path}`, readFileSync(join(project.root, FROM, path), 'utf8'))
 
@@ -180,8 +189,8 @@ describe('the configured folder moving', () => {
    * another is a state no command afterwards could describe, and nothing has been written at the point
    * this answers.
    */
-  it('a-destination-holding-something-else-refuses-the-whole-move', () => {
-    inProject((project, lockfile) => {
+  it('a-destination-holding-something-else-refuses-the-whole-move', async () => {
+    await inProject((project, lockfile) => {
       project.write(`${TO}/number/sign/sign.ts`, 'export const sign = "not ours"\n')
 
       const change = whatMoves(project.root, HERE, THERE, lockfile)
@@ -202,8 +211,8 @@ describe('the configured folder moving', () => {
    * calls it a conflict if it is the user's own. Comparing it here would need bytes this module does
    * not have: an edited file hashes to neither of the lockfile's two digests.
    */
-  it('a-file-the-lockfile-claims-and-the-disk-has-not-got-moves-nothing', () => {
-    inProject((project, lockfile) => {
+  it('a-file-the-lockfile-claims-and-the-disk-has-not-got-moves-nothing', async () => {
+    await inProject((project, lockfile) => {
       rmSync(join(project.root, FROM, 'number/sign/sign.ts'))
 
       const planned = planRelocation(project.root, FROM, TO, lockfile)
@@ -227,8 +236,8 @@ describe('the configured folder moving', () => {
    * the rule `emptiedFolders` carries: `remove` must not delete the configured folder because it goes
    * on being the configured folder, and here it stops being one.
    */
-  it('the-folder-that-was-left-goes-when-it-is-empty', () => {
-    inProject((project, lockfile) => {
+  it('the-folder-that-was-left-goes-when-it-is-empty', async () => {
+    await inProject((project, lockfile) => {
       expect(moveIt(project, lockfile)).toBe(null)
       expect(existsSync(join(project.root, FROM))).toBe(false)
     })
@@ -240,8 +249,8 @@ describe('the configured folder moving', () => {
    * The caller is told which folder it was, because a file of theirs quietly left behind in a folder
    * this tool has stopped naming is the orphan defect again with the roles reversed.
    */
-  it('the-folder-that-was-left-stays-when-it-holds-something-else', () => {
-    inProject((project, lockfile) => {
+  it('the-folder-that-was-left-stays-when-it-holds-something-else', async () => {
+    await inProject((project, lockfile) => {
       project.write(`${FROM}/notes.md`, 'mine\n')
 
       expect(moveIt(project, lockfile)).toBe(FROM)
@@ -256,8 +265,8 @@ describe('the configured folder moving', () => {
    * configuration beside it. `toopo init --dir` is what repairs it, and there is no old folder to move
    * from - which is exactly why only the user can name the new one.
    */
-  it('a-folder-that-is-not-moving-and-a-project-with-nothing-to-move-both-move-nothing', () => {
-    inProject((project, lockfile) => {
+  it('a-folder-that-is-not-moving-and-a-project-with-nothing-to-move-both-move-nothing', async () => {
+    await inProject((project, lockfile) => {
       expect(whatMoves(project.root, HERE, HERE, lockfile)).toEqual({ nothingToMove: true })
       expect(whatMoves(project.root, null, THERE, lockfile)).toEqual({ nothingToMove: true })
       expect(whatMoves(project.root, HERE, THERE, null)).toEqual({ nothingToMove: true })
@@ -273,8 +282,8 @@ describe('the configured folder moving', () => {
    * leave a project whose configuration names a folder nothing is in - which is the very defect this
    * unit exists to close, arriving through the repair for it.
    */
-  it('a-refused-folder-change-leaves-the-configuration-naming-the-old-folder', () => {
-    inProject((project) => {
+  it('a-refused-folder-change-leaves-the-configuration-naming-the-old-folder', async () => {
+    await inProject((project) => {
       writeConfiguration(project.root, HERE)
       project.write(`${TO}/number/sign/sign.ts`, 'export const sign = "not ours"\n')
 

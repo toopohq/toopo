@@ -18,25 +18,33 @@
  * that away, and would take it away silently. `THE_WRITE_DISCIPLINE` in `arguments.ts` says which
  * commands ask twice and why `add` does not.
  *
- * **A registry reached over a network keeps that property, and the condition is about this file.**
- * Measured at `0ce32d6` against the artefact served over HTTP: the shape that works is *decide, note
- * what was missing, fetch all of it, decide again from nothing* - a fixpoint whose decision is
- * `prepareInstallation` or `reconcileProject`, unchanged and synchronous, with the await in the loop
- * around it. Both were run nine times over one install and left the project byte for byte identical,
- * which is what a decision has to be for a loop to be allowed to replay it. **So `commit` must stay
- * outside that loop, and this file is what is outside it** - the moment writing moves into the thing
- * being replayed, an interrupted fetch writes a project once per round.
+ * **A registry reached over a network keeps that property, and the condition is about this file.** The
+ * shape is *decide, note what was missing, fetch all of it, decide again from nothing* - a fixpoint
+ * whose decision is `prepareInstallation`, `prepareUpdate`, `prepareRemoval` or `search`, unchanged and
+ * synchronous, with the await in the loop around it. `fixpoint.ts` is that loop and carries the whole
+ * argument. **So `commit` must stay outside it, and this file is what is outside it** - the moment
+ * writing moves into the thing being replayed, an interrupted fetch writes a project once per round.
  *
- * The cost is not what it looks like. Nine replays of the `update` decision cost `[0.3, 0.0, 0.0, 0.1,
- * 0.0, 0.1, 0.1, 0.1, 59.4]` milliseconds: every replay but the last refuses at the first answer it
- * does not hold, so the disk hashing, the diffing and the import rewriting happen exactly once. It is
+ * **The clock moved out of the decision for the same reason, and the loop is what made it visible.**
+ * `at` is read once here and passed in; left inside, it would be read again on every round and the
+ * decision would stop being a function of its arguments. Nothing had to notice that while a decision
+ * ran once.
+ *
+ * The cost of replaying is not what it looks like: every replay but the last refuses at the first
+ * answer it does not hold, so the disk hashing, the diffing and the import rewriting happen once. It is
  * `Found<T>` being paid for somewhere nobody wrote it for - a step that answers *what it found or why
  * it refused, never an absence* is a step a loop can re-enter for nothing.
  *
- * Round trips are `3 + 2·depth + 1`, measured at both ends: four for a contract that depends on
- * nothing, eight for the imagined graph at depth two, and the frontier is batched rather than walked -
- * two roots fetched `[1, 2, 2, 3]`. It is the shape of the endpoints and not of the loop: a snapshot
- * digest comes from a binding, so a level is two round trips whoever writes the walk.
+ * **Round trips are `4 + depth`, and this paragraph published `3 + 2·depth + 1` until somebody
+ * measured it.** That formula was written at `0ce32d6`, against a maquette, before an edge carried the
+ * digest of what it names; `9f11770` took the same install from eight round trips to six and nothing
+ * came back here. Measured at the wire by
+ * `the-walk-costs-one-round-trip-per-level-and-fetches-each-frontier-at-once`: **four round trips and
+ * five requests** for a contract that depends on nothing, **six and eleven** for the imagined graph at
+ * depth two. The frontier is batched rather than walked - that walk's rounds are `[1, 1, 1, 2, 1, 5]`,
+ * so two edges arrive together and five files arrive together. It is the shape of the endpoints and not
+ * of the loop: a snapshot digest arrives inside a binding or inside an edge, so a level is one round
+ * trip whoever writes the walk.
  *
  * **The registry is a parameter, and that is what makes one build of this file installable.** It used
  * to call `localSource()`, which serialises this working tree - and a published `toopo` has no working
@@ -67,6 +75,7 @@ import {
   readConfiguration,
   writeConfiguration,
 } from './configuration.js'
+import { deciding } from './fixpoint.js'
 import { GIT_WAS_NOT_ASKED, whatGitIgnores } from './ignored.js'
 import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
 import { listProject } from './list.js'
@@ -100,7 +109,7 @@ const out = (text: string): void => {
 
 const EMPTY: Lockfile = { version: LOCKFILE_VERSION, features: [] }
 
-export const run = (theRegistry: () => RegistrySource): void => {
+export const run = async (theRegistry: () => RegistrySource): Promise<void> => {
   /**
    * Annotated on the constant rather than on the arrow, which is not a style choice: TypeScript only
    * treats a call as never-returning - and therefore only narrows what follows it - when the callee is
@@ -220,14 +229,23 @@ export const run = (theRegistry: () => RegistrySource): void => {
 
       const { configuration } = chosen
       const configurationToWrite = chosen.write ? configuration : null
-      const outcome = prepareInstallation(theRegistry(), {
-        root,
-        configuration,
-        lockfile,
-        contract: parsed.command.contract,
-        implementation: parsed.command.implementation,
-        at: new Date().toISOString(),
-      })
+      // Read once, outside the loop. A replayed decision has to be a function of its arguments, and a
+      // clock inside one is an input that changes between rounds - which `fixpoint.ts` makes visible
+      // and nothing had to notice while the decision ran once.
+      const at = new Date().toISOString()
+      // Bound out of the narrowed command, because a property access does not stay narrowed inside a
+      // closure - the decision is a callback now, and the grammar's union is what pays for it.
+      const { contract, implementation } = parsed.command
+      const { answer: outcome } = await deciding(theRegistry(), (held) =>
+        prepareInstallation(held, {
+          root,
+          configuration,
+          lockfile,
+          contract,
+          implementation,
+          at,
+        }),
+      )
 
       if ('faults' in outcome) refuse(outcome.faults)
       else if ('unchanged' in outcome) {
@@ -282,13 +300,11 @@ export const run = (theRegistry: () => RegistrySource): void => {
       // Bound rather than passed inline, for the reason `update` binds its own: the closing line is a
       // claim about the difference between this file and the one the reconciliation leaves behind.
       const lockfile = theLockfile('remove')
-      const outcome = prepareRemoval(theRegistry(), {
-        root,
-        configuration,
-        lockfile,
-        contract: parsed.command.contract,
-        at: new Date().toISOString(),
-      })
+      const at = new Date().toISOString()
+      const { contract } = parsed.command
+      const { answer: outcome } = await deciding(theRegistry(), (held) =>
+        prepareRemoval(held, { root, configuration, lockfile, contract, at }),
+      )
 
       if ('faults' in outcome) refuse(outcome.faults)
 
@@ -315,23 +331,27 @@ export const run = (theRegistry: () => RegistrySource): void => {
       // The only two commands that read no project at all - no `toopo.json`, no lockfile, not even the
       // working directory. It is a property rather than an accident: looking for a feature comes
       // before having somewhere to put it, and `search` is the first command that says so.
-      out(renderSearch(search(theRegistry(), parsed.command.query)))
-    } else if (parsed.command.name === 'catalogue') {
-      const source = theRegistry()
-      const refusals = source.refusals().refusals
+      const { query } = parsed.command
+      const { answer } = await deciding(theRegistry(), (held) => search(held, query))
 
-      out(renderCatalogue(source.contractIndex().entries.map((entry) => displayed(entry, refusals))))
+      out(renderSearch(answer))
+    } else if (parsed.command.name === 'catalogue') {
+      const { answer } = await deciding(theRegistry(), (held) => {
+        const refusals = held.refusals().refusals
+
+        return held.contractIndex().entries.map((entry) => displayed(entry, refusals))
+      })
+
+      out(renderCatalogue(answer))
     } else {
       const configuration = theConfiguration()
       // Bound rather than passed inline, because "nothing to do" is a claim about the difference
       // between this file and the one the reconciliation leaves behind.
       const lockfile = theLockfile('update')
-      const outcome = prepareUpdate(theRegistry(), {
-        root,
-        configuration,
-        lockfile,
-        at: new Date().toISOString(),
-      })
+      const at = new Date().toISOString()
+      const { answer: outcome } = await deciding(theRegistry(), (held) =>
+        prepareUpdate(held, { root, configuration, lockfile, at }),
+      )
 
       if ('faults' in outcome) refuse(outcome.faults)
 

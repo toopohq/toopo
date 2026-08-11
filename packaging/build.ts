@@ -84,7 +84,7 @@ for (const file of dropped) rmSync(file)
 
 mkdirSync(DIST, { recursive: true })
 
-const artefact = frozenArtefact(localSource())
+const artefact = await frozenArtefact(localSource())
 const text = canonical(artefact, 'artefact')
 
 writeFileSync(join(DIST, ARTEFACT_FILE), text, 'utf8')

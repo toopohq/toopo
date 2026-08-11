@@ -27,4 +27,4 @@ import { ARTEFACT_FILE, readArtefact } from './artefact.js'
 import { run } from './command.js'
 import { packagedSource } from './packaged-source.js'
 
-run(() => packagedSource(readArtefact(join(import.meta.dirname, '..', ARTEFACT_FILE))))
+await run(() => packagedSource(readArtefact(join(import.meta.dirname, '..', ARTEFACT_FILE))))

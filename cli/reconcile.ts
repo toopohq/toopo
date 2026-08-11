@@ -100,7 +100,7 @@ import {
   refused,
 } from './resolve.js'
 import { rewrittenSources } from './rewrite.js'
-import type { RegistrySource } from './source.js'
+import type { HeldRegistry } from './source.js'
 import type { FileToWrite } from './write.js'
 
 /**
@@ -273,7 +273,7 @@ type TheGraph = {
 }
 
 const theNewGraph = (
-  source: RegistrySource,
+  source: HeldRegistry,
   roots: readonly LockedFeature[],
   boundAs: HowRootsAreBound,
 ): TheGraph | { readonly faults: readonly string[] } => {
@@ -591,7 +591,7 @@ const isDemoted = (request: ReconcileRequest, contract: ContractAddress): boolea
   request.demoted !== null && keyOf(request.demoted) === keyOf(contract)
 
 export const reconcileProject = (
-  source: RegistrySource,
+  source: HeldRegistry,
   request: ReconcileRequest,
 ): ReconcileOutcome => {
   const roots = request.lockfile.features.filter(

@@ -1,8 +1,13 @@
 /**
- * The only implementation of `RegistrySource` there is, and the only module allowed to reach the
- * serialisation of this working tree.
+ * The implementation of `RegistrySource` backed by this working tree, and the only module allowed to
+ * reach the serialisation that makes it one.
  *
- * `source.ts` states the frontier and says why it exists; this file is the one thing on the far side of
+ * It used to open by calling itself *the only implementation there is*, which had been false since
+ * `packaged-source.ts` was written and is further from true now that a source can be reached over a
+ * wire. What is singular about this one is not that it is alone: it is that nothing else may cross the
+ * frontier below.
+ *
+ * `source.ts` states that frontier and says why it exists; this file is the one thing on the far side of
  * it. Everything it does is a stand-in for a publication that has not happened, and every stand-in
  * below is *visibly* one rather than plausibly one.
  *
@@ -202,9 +207,9 @@ export const localSource = (): RegistrySource => {
   const held = gather()
 
   return {
-    contractIndex: () => servedIndex(held.ledger, held.holdings),
+    contractIndex: async () => servedIndex(held.ledger, held.holdings),
 
-    implementationBindings: (address) =>
+    implementationBindings: async (address) =>
       held.ledger.implementations
         .filter((entry) => sameContract(entry.address.contract, address))
         .map((entry) => {
@@ -230,11 +235,11 @@ export const localSource = (): RegistrySource => {
           })
         }),
 
-    refusals: () => servedRefusals(held.ledger),
+    refusals: async () => servedRefusals(held.ledger),
 
-    snapshot: (digest) => held.snapshots.get(digest) ?? null,
+    snapshot: async (digest) => held.snapshots.get(digest) ?? null,
 
-    blob: (sha256) => {
+    blob: async (sha256) => {
       const bytes = held.blobs.get(sha256)
 
       return bytes === undefined ? null : servedBlob(bytes)

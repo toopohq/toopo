@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import type { CommitStanding } from './ignored.js'
 import { GIT_WAS_NOT_ASKED } from './ignored.js'
+import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
 import type { Installation } from './install.js'
 import { prepareInstallation } from './install.js'
@@ -49,17 +50,19 @@ const A_RELOCATION: Relocation = {
   ],
 }
 
-const anInstallation = (): Installation => {
+const anInstallation = async (): Promise<Installation> => {
   const project = aProject()
   try {
-    const outcome = prepareInstallation(imaginedSource(), {
-      root: project.root,
-      configuration: CONFIGURATION,
-      lockfile: EMPTY_LOCKFILE,
-      contract: 'number/round',
-      implementation: null,
-      at: A_PINNED_INSTANT,
-    })
+    const { answer: outcome } = await deciding(imaginedSource(), (held) =>
+      prepareInstallation(held, {
+        root: project.root,
+        configuration: CONFIGURATION,
+        lockfile: EMPTY_LOCKFILE,
+        contract: 'number/round',
+        implementation: null,
+        at: A_PINNED_INSTANT,
+      }),
+    )
 
     if (!('installation' in outcome)) throw new Error('the imagined graph no longer installs')
 
@@ -74,8 +77,8 @@ describe('what the user reads', () => {
    * The cost is a promise this project makes about what installing something costs. A promise printed
    * after the list is a promise the reader has already stopped looking for.
    */
-  it('the-cost-is-stated-before-the-files', () => {
-    const lines = renderInstallation(anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED).split('\n')
+  it('the-cost-is-stated-before-the-files', async () => {
+    const lines = renderInstallation(await anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED).split('\n')
     const cost = lines.findIndex((line) => line.includes('depth'))
     const firstFile = lines.findIndex((line) => line.includes('+ src/lib/toopo/'))
 
@@ -89,8 +92,8 @@ describe('what the user reads', () => {
    * with, because a name tells the reader what their project looks like where "written once" only tells
    * them what the installer did.
    */
-  it('a-line-says-what-was-done-to-that-file', () => {
-    const rendered = renderInstallation(anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED)
+  it('a-line-says-what-was-done-to-that-file', async () => {
+    const rendered = renderInstallation(await anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED)
     const lines = rendered.split('\n').filter((line) => line.includes('+ src/lib/toopo/'))
 
     expect(lines.map((line) => line.trim())).toEqual([
@@ -232,8 +235,8 @@ describe('what the user reads', () => {
    * on disk is `.ts`. And the exports are the contract's, because an export name is not derivable from
    * an address - `number/parse` exports `parseNumber`.
    */
-  it('an-import-line-is-printed-ready-to-copy', () => {
-    const line = renderInstallation(anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED)
+  it('an-import-line-is-printed-ready-to-copy', async () => {
+    const line = renderInstallation(await anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED)
       .split('\n')
       .find((held) => held.includes('import {'))
 
@@ -242,9 +245,9 @@ describe('what the user reads', () => {
     )
   })
 
-  it('the-import-line-follows-the-configured-directory', () => {
+  it('the-import-line-follows-the-configured-directory', async () => {
     const elsewhere = { version: 1, directory: 'lib/toopo' } as const
-    const line = renderImportLine(anInstallation().entry, elsewhere).find((held) =>
+    const line = renderImportLine((await anInstallation()).entry, elsewhere).find((held) =>
       held.includes('import {'),
     )
 
@@ -256,17 +259,19 @@ describe('what the user reads', () => {
    * `describeParseFailure` exists writes their own error message instead, which is the error convention
    * being sold and not delivered.
    */
-  it('an-import-line-names-the-diagnostic-beside-the-answer', () => {
+  it('an-import-line-names-the-diagnostic-beside-the-answer', async () => {
     const project = aProject()
     try {
-      const outcome = prepareInstallation(localSource(), {
-        root: project.root,
-        configuration: CONFIGURATION,
-        lockfile: EMPTY_LOCKFILE,
-        contract: 'number/parse',
-        implementation: null,
-        at: A_PINNED_INSTANT,
-      })
+      const { answer: outcome } = await deciding(localSource(), (held) =>
+        prepareInstallation(held, {
+          root: project.root,
+          configuration: CONFIGURATION,
+          lockfile: EMPTY_LOCKFILE,
+          contract: 'number/parse',
+          implementation: null,
+          at: A_PINNED_INSTANT,
+        }),
+      )
 
       if (!('installation' in outcome)) throw new Error('number/parse no longer installs')
 

@@ -37,11 +37,18 @@
  *
  * The synchronous form answers in zero milliseconds, which is the shape of an option that was read and
  * dropped; only the asynchronous form honours it. Going asynchronous to reach it would turn this
- * folder's 43 teardowns and every helper above them into promises, and would make `rewrite.ts`
- * asynchronous through to `command.ts` - which is the file whose whole property is that everything it
- * decides is reachable from a guard with no process. So the retry is taken here, and the measurement is
+ * folder's teardowns and every helper above them into promises, and would make `rewrite.ts`
+ * asynchronous through to the decisions themselves. So the retry is taken here, and the measurement is
  * recorded beside it: the treatment `ignored.ts` gives `git check-ignore`'s exit codes and `diff.ts`
  * gives `node:util.diff`'s operation codes.
+ *
+ * **Half of that argument named `command.ts`, and `command.ts` is asynchronous now.** The remote port
+ * made it so, and the property it was protecting survived - because what became a promise is the loop
+ * around a decision and never a decision. So the reason this module stays synchronous is narrower than
+ * it was and is the half that always carried the weight: `rewrite.ts` is reached from
+ * `prepareInstallation`, which `fixpoint.ts` replays and which must stay callable with no process at
+ * all. The count of teardowns went with the repair, on the rule this repository has retired four
+ * counts on.
  *
  * ---------------------------------------------------------------------------
  * What the refusal may say

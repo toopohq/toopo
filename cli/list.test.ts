@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
 import type { Lockfile } from '../registry/implementation-record.js'
+import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import { listProject } from './list.js'
@@ -26,26 +27,34 @@ import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './tempor
  * whose answer is always that everything is fine.
  */
 
-const installed = (): { readonly project: TemporaryProject; readonly lockfile: Lockfile } => {
+const installed = async (): Promise<{
+  readonly project: TemporaryProject
+  readonly lockfile: Lockfile
+}> => {
   const project = aProject()
-  const outcome = prepareInstallation(imaginedSource(), {
-    root: project.root,
-    configuration: project.configuration,
-    lockfile: EMPTY_LOCKFILE,
-    contract: 'number/round',
-    implementation: null,
-    at: A_PINNED_INSTANT,
-  })
+  const { answer: outcome } = await deciding(imaginedSource(), (held) =>
+    prepareInstallation(held, {
+      root: project.root,
+      configuration: project.configuration,
+      lockfile: EMPTY_LOCKFILE,
+      contract: 'number/round',
+      implementation: null,
+      at: A_PINNED_INSTANT,
+    }),
+  )
 
   if (!('installation' in outcome)) throw new Error(JSON.stringify(outcome))
 
   return { project, lockfile: committing(project, outcome.installation) }
 }
 
-const inProject = <T>(use: (project: TemporaryProject, lockfile: Lockfile) => T): T => {
-  const { project, lockfile } = installed()
+/** `return await`, because the `finally` would otherwise remove the project under an async callback. */
+const inProject = async <T>(
+  use: (project: TemporaryProject, lockfile: Lockfile) => T | Promise<T>,
+): Promise<T> => {
+  const { project, lockfile } = await installed()
   try {
-    return use(project, lockfile)
+    return await use(project, lockfile)
   } finally {
     project.remove()
   }
@@ -56,8 +65,8 @@ describe('what this project holds', () => {
    * Every feature, what it is, and whether the user asked for it - which is the fact `toopo remove`
    * refuses on and the one nobody could see before.
    */
-  it('every-installed-feature-is-named-with-whether-it-was-asked-for', () => {
-    inProject((project, lockfile) => {
+  it('every-installed-feature-is-named-with-whether-it-was-asked-for', async () => {
+    await inProject((project, lockfile) => {
       const listing = listProject(project.root, project.configuration, lockfile)
 
       expect(
@@ -86,8 +95,8 @@ describe('what this project holds', () => {
    * the files there - and the file has been edited since. A listing that trusted the field would
    * answer that nothing has changed, which is the one answer this command must never give wrongly.
    */
-  it('the-listing-hashes-the-disk-rather-than-reading-what-we-recorded', () => {
-    inProject((project, lockfile) => {
+  it('the-listing-hashes-the-disk-rather-than-reading-what-we-recorded', async () => {
+    await inProject((project, lockfile) => {
       expect(lockfile.features.every((feature) => !feature.locallyModified)).toBe(true)
 
       project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
@@ -104,8 +113,8 @@ describe('what this project holds', () => {
   })
 
   /** A file that is gone is named as missing, with the command that puts it back. */
-  it('a-file-that-is-gone-is-named-with-what-puts-it-back', () => {
-    inProject((project, lockfile) => {
+  it('a-file-that-is-gone-is-named-with-what-puts-it-back', async () => {
+    await inProject((project, lockfile) => {
       rmSync(join(project.root, 'src/lib/toopo/string/pad/digits.ts'))
 
       const listing = listProject(project.root, project.configuration, lockfile)

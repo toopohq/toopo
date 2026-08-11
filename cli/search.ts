@@ -68,7 +68,7 @@
 import type { ContractAddress, Language } from '../registry/address.js'
 import { renderContract, sameContract } from '../registry/address.js'
 import type { ServedIndexEntry, ServedRefusal } from '../registry/response.js'
-import type { RegistrySource } from './source.js'
+import type { HeldRegistry } from './source.js'
 
 /**
  * The words people type for a language, which are not the identifier an address carries.
@@ -300,7 +300,7 @@ const scoreOf = (entry: ServedIndexEntry, words: readonly string[]): number | nu
  * Nothing here reads a clock, a process or a directory, which is the property `command.ts` states for
  * this whole folder and which `search` is the first command to hold without even a project.
  */
-export const search = (source: RegistrySource, query: string): Search => {
+export const search = (source: HeldRegistry, query: string): Search => {
   const words = wordsOf(query)
   const entries = source.contractIndex().entries
   const refusals = source.refusals().refusals

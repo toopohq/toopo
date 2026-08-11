@@ -47,7 +47,7 @@ import type { Lockfile } from '../registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import type { ReconcileOutcome } from './reconcile.js'
 import { reconcileProject } from './reconcile.js'
-import type { RegistrySource } from './source.js'
+import type { HeldRegistry } from './source.js'
 
 export type UpdateRequest = {
   readonly root: string
@@ -57,7 +57,7 @@ export type UpdateRequest = {
   readonly at: string
 }
 
-export const prepareUpdate = (source: RegistrySource, request: UpdateRequest): ReconcileOutcome => {
+export const prepareUpdate = (source: HeldRegistry, request: UpdateRequest): ReconcileOutcome => {
   if (request.lockfile.features.length === 0) {
     return { faults: ['toopo.lock records no installed feature, so there is nothing to update'] }
   }

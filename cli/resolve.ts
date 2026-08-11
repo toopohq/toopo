@@ -31,7 +31,7 @@ import { servedBlobFaults, servedSnapshotFaults } from '../registry/response.js'
 import type { FrozenImplementation, Snapshot } from '../registry/snapshot.js'
 import type { InstallPlan } from './plan.js'
 import type { SourceToRewrite } from './rewrite.js'
-import type { RegistrySource } from './source.js'
+import type { HeldRegistry } from './source.js'
 
 /** What a step found, or why it refused. Never an absence, which a caller could read as an answer. */
 export type Found<T> = { readonly found: T } | { readonly faults: readonly string[] }
@@ -122,7 +122,7 @@ const installable = (entry: ServedIndexEntry): Found<Chosen> =>
         ],
       }
 
-export const chooseContract = (source: RegistrySource, typed: string): Found<Chosen> => {
+export const chooseContract = (source: HeldRegistry, typed: string): Found<Chosen> => {
   const wanted = contractTyped(typed)
   if (Number.isNaN(wanted.major)) {
     return { faults: [`\`${typed}\` does not name a major version, which is a whole number from 1 upwards`] }
@@ -158,7 +158,7 @@ export const chooseContract = (source: RegistrySource, typed: string): Found<Cho
  * version is frozen for life, so this cannot happen to a real registry - and an update that quietly
  * ignored it would be an update that stopped maintaining a feature without saying so.
  */
-export const contractAt = (source: RegistrySource, address: ContractAddress): Found<Chosen> => {
+export const contractAt = (source: HeldRegistry, address: ContractAddress): Found<Chosen> => {
   const entry = source
     .contractIndex()
     .entries.find((candidate) => sameContract(candidate.address, address))
@@ -188,7 +188,7 @@ export const contractAt = (source: RegistrySource, address: ContractAddress): Fo
  * permanent rule 4 forbids making silently.
  */
 export const bindingFor = (
-  source: RegistrySource,
+  source: HeldRegistry,
   address: ContractAddress,
   implementation: string | null,
 ): Found<ChosenBinding> => {
@@ -240,7 +240,7 @@ export const bindingFor = (
  * sentence says it without guessing which.
  */
 export const bindingAt = (
-  source: RegistrySource,
+  source: HeldRegistry,
   address: ContractAddress,
   implementation: { readonly id: string; readonly version: string },
 ): Found<ChosenBinding> => {
@@ -295,7 +295,7 @@ export const bindingAt = (
  * this closes it before the door it would come through is opened.
  */
 export const heldAt = (
-  source: RegistrySource,
+  source: HeldRegistry,
   address: ImplementationAddress,
   digest: string,
 ): Found<FrozenImplementation> => {
@@ -337,7 +337,9 @@ export const heldAt = (
  * something a reader believes rather than checks. The digest is now inside the frozen snapshot that
  * names the edge, so the step is arithmetic and the closure hangs off the root's digest alone.
  * Measured on the imagined graph, `toopo add number/round` goes from 8 round trips to 6 and from five
- * named answers to one.
+ * named answers to one. **Both figures were arithmetic over the endpoints when they were written and
+ * are now counted at a socket**: `cli/http-source.test.ts` serves this walk over `node:http` and reads
+ * six round trips and eleven requests off the server rather than off the client.
  *
  * **An address already held is still compared, and that was found by measuring rather than by reading
  * the loop.** A second dependent naming an address the walk has resolved needs no fetch - and skipping
@@ -356,7 +358,7 @@ export const heldAt = (
  * through.
  */
 export const gatherHoldings = (
-  source: RegistrySource,
+  source: HeldRegistry,
   roots: readonly RootAt[],
 ): Found<readonly FrozenImplementation[]> => {
   const held = new Map<string, { readonly frozen: FrozenImplementation; readonly digest: string }>()
@@ -416,7 +418,7 @@ export const gatherHoldings = (
 // ---------------------------------------------------------------------------
 
 export const fetchedSources = (
-  source: RegistrySource,
+  source: HeldRegistry,
   plan: InstallPlan,
 ): Found<readonly SourceToRewrite[]> => {
   const texts: SourceToRewrite[] = []

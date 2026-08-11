@@ -58,7 +58,7 @@ import type { Configuration } from './configuration.js'
 import type { Reconciliation } from './reconcile.js'
 import { reconcileProject } from './reconcile.js'
 import { contractTyped } from './resolve.js'
-import type { RegistrySource } from './source.js'
+import type { HeldRegistry } from './source.js'
 
 export type RemoveRequest = {
   readonly root: string
@@ -161,7 +161,7 @@ const theOneNamed = (
   return { feature: first }
 }
 
-export const prepareRemoval = (source: RegistrySource, request: RemoveRequest): RemoveOutcome => {
+export const prepareRemoval = (source: HeldRegistry, request: RemoveRequest): RemoveOutcome => {
   const named = theOneNamed(request.lockfile, request.contract)
   if ('faults' in named) return named
 

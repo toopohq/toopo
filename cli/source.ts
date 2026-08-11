@@ -7,8 +7,14 @@
  *
  * `registry/` designs a read API and deliberately builds no service: `response.ts` and `endpoints.ts`
  * model what an answer contains, what it may not contain, and what a reader can do with it alone, and
- * they name no transport at all. So the installer talks to an *interface*, and the only implementation
- * of that interface today is backed by serialising the five contracts out of this working tree.
+ * they name no transport at all. So the installer talks to an *interface*, and what implements it is
+ * this working tree serialised, the frozen artefact an archive carries, a graph that exists to be
+ * walked, and a registry reached over HTTP.
+ *
+ * That sentence used to read *the only implementation of that interface today*, and it had been false
+ * since `packaged-source.ts` was written. What replaces it carries no number, for the reason this
+ * repository has retired four counts on: a tally is edited whenever the data moves and is wrong
+ * between two of those edits, where a list is read.
  *
  * **That serialisation is not a source of distribution and must never become one.** Permanent rule 3
  * says installations are served only from the registry's immutable snapshot, never from a third-party
@@ -50,23 +56,21 @@
  * have.
  *
  * ---------------------------------------------------------------------------
- * *Nothing above it changes* was measured, and one thing inside it has to
+ * *Nothing above it changes* is built, and one thing inside it had to
  * ---------------------------------------------------------------------------
  *
- * The sentence above is a claim about a day that has not come, so it was paid rather than left as one:
- * the frozen artefact was served by `node:http` on an ephemeral port, a source over that wire was
- * handed to the installer's own functions, and the real entry point was run in a real project. Measured
- * at `0ce32d6`, at a maquette reverted in the commit that carries this paragraph.
+ * The sentence above was a claim about a day that had not come. It was paid at `0ce32d6`, at a maquette
+ * reverted for being an implementation of a design nobody had taken, and it is a unit here:
+ * `http-source.ts` is the implementation, `fixpoint.ts` is what lets a decision stay synchronous in
+ * front of it, and `serving-over-http.ts` is the apparatus a guard answers from.
  *
- * **`resolve.ts`, `install.ts`, `reconcile.ts`, `search.ts` and `command.ts` were not edited**, and
- * `toopo add number/round` printed its ordinary screen - five files, `digits.ts` shared with
- * `number/clamp@1`, three imports repointed - out of a registry reached over HTTP. The bytes, the
- * deduplication and the `update` verdicts were compared against the same call on a local source and
- * were identical. So the claim holds for everything above this type.
+ * **`resolve.ts`, `install.ts`, `reconcile.ts`, `remove.ts`, `update.ts` and `search.ts` changed by a
+ * type name and by no line of behaviour**, which is what the claim was about. What did change is
+ * `command.ts`, and it gained a loop rather than an await in a decision.
  *
- * **What it does not hold for is this type's own implementation, and one line of it decides a supply
- * chain.** `localSource` and `packagedSource` both look an answer up *by* its digest in a map keyed on
- * that digest, so the pairing of an answer with the address it was asked at is held by a data
+ * **What the claim does not cover is this type's own implementation, and one line of it decides a
+ * supply chain.** `localSource` and `packagedSource` both look an answer up *by* its digest in a map
+ * keyed on that digest, so the pairing of an answer with the address it was asked at is held by a data
  * structure. There is no such structure on a wire: a server answers what it chooses to answer, and
  * `servedBlobFaults` compares `addressedBy` against a recompute of the bytes beside it. A remote source
  * built with `servedBlob(whatArrived)` therefore checks that the bytes hash to their own hash.
@@ -79,6 +83,12 @@
  *
  *     addressed by the question   refused - these bytes hash to b5b6d4b... and not to 11d3e28...
  *     addressed by what arrived   installed, 5 files, nothing objected
+ *
+ * **The second spelling does not ship, and that is the difference between the maquette and this.** There
+ * it was a parameter, so that corruption could be watched going through; a parameter that selects the
+ * unsafe spelling is a hole with a name on it, and a caller reaching for it would be reaching for the
+ * defect. `http-source.ts` addresses by the question and offers no other way, and what keeps the check
+ * load-bearing is a battery cell that takes the addressing away and has to come back killed.
  *
  * **The snapshot half was narrower and is not any more, and what closed it is `heldAt` rather than this
  * type.** A whole, self-consistent snapshot served at another snapshot's address was refused under both
@@ -106,21 +116,30 @@ import type {
 } from '../registry/response.js'
 
 /**
- * Everything `toopo` may ask of a registry.
+ * Everything `toopo` may ask of a registry, as a transport answers it.
  *
  * Every method answers with what the endpoint answers or with `null`, and `null` means *this registry
- * holds no such thing* rather than *something went wrong*. A transport failure is not modelled here
- * because there is no transport; when one exists it will refuse loudly, and a refusal that arrives as
- * an absence is the failure `validation/source.ts` records one folder along - a thing that was not read
- * passes every check for the wrong reason.
+ * holds no such thing* rather than *something went wrong*. A transport failure is **not** an absence:
+ * `http-source.ts` throws on any status that is neither the answer nor a 404, because a refusal that
+ * arrives as an absence is the failure `validation/source.ts` records one folder along - a thing that
+ * was not read passes every check for the wrong reason. This paragraph used to say a transport failure
+ * was not modelled *because there is no transport*, and the clause stopped being true in the commit
+ * that carries this one.
+ *
+ * **Asynchronous, and that is a claim about a transport rather than about a decision.** Nothing that
+ * decides anything holds this type; decisions hold `HeldRegistry` below, and `fixpoint.ts` is what
+ * stands between the two. Making the three registries that need no network answer promises anyway is
+ * the deliberate half: two shapes would mean `command.ts` branching on which kind of registry it was
+ * handed, so almost every guard would exercise the path with no loop, and the day the catalogue moves
+ * out of this repository the surviving path would be the least tested one.
  */
 export type RegistrySource = {
   /** Every contract the registry knows, installable or refused. */
-  readonly contractIndex: () => ServedIndex
+  readonly contractIndex: () => Promise<ServedIndex>
   /** The implementations competing under a contract, in the registry's own order. */
   readonly implementationBindings: (
     address: ContractAddress,
-  ) => readonly ServedImplementationBinding[]
+  ) => Promise<readonly ServedImplementationBinding[]>
   /**
    * What the catalogue decided against, with the measurement it decided on.
    *
@@ -134,11 +153,35 @@ export type RegistrySource = {
    * `toopo` may ask of a registry* and not everything the installer asks: `resolve.ts` reaches for
    * four of these methods and never for this one.
    */
-  readonly refusals: () => ServedRefusals
+  readonly refusals: () => Promise<ServedRefusals>
   /** A frozen artefact, as the exact text its digest was taken over. */
-  readonly snapshot: (digest: string) => ServedSnapshot | null
+  readonly snapshot: (digest: string) => Promise<ServedSnapshot | null>
   /** The served bytes of one file. */
-  readonly blob: (sha256: string) => ServedBlob | null
+  readonly blob: (sha256: string) => Promise<ServedBlob | null>
+}
+
+/**
+ * The same questions, answered out of what has already arrived.
+ *
+ * **This is the type every decision holds**, and the reason `resolve.ts`, `install.ts`, `reconcile.ts`,
+ * `remove.ts`, `update.ts` and `search.ts` are untouched by a registry becoming remote: they read a
+ * registry that answers now. `command.ts` states the property this protects - everything this tool
+ * decides is reachable from a guard, with no process, no working directory and no clock - and the
+ * measurement behind the shape is that making the port asynchronous and leaving the decisions reading
+ * it directly raises 25 compiler errors across `resolve.ts`, `search.ts` and `command.ts`, **every one
+ * of them an `await` that is missing**. Under this projection all 25 are a type name and not one body
+ * changes, which is the property under test rather than a hope about it.
+ *
+ * Derived rather than declared, so there is one statement of what may be asked and two projections of
+ * it - the shape `toHtml` and `toText` already have one folder along. A method added to the port is in
+ * this view without anybody writing it, which is the totality `THE_ENDPOINT_BEHIND` carries below and
+ * `FIELD_MAP`, `FIELDS_OF` and `EVERY_ARM` carry elsewhere. A hand-written twin would be the second
+ * statement that goes stale on exactly the member nobody enumerated.
+ */
+export type HeldRegistry = {
+  readonly [Question in keyof RegistrySource]: (
+    ...asked: Parameters<RegistrySource[Question]>
+  ) => Awaited<ReturnType<RegistrySource[Question]>>
 }
 
 /**

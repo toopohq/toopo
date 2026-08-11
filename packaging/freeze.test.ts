@@ -23,11 +23,11 @@ import { TheRegistryContradictsItself, frozenArtefact } from './freeze.js'
  */
 
 const local = localSource()
-const artefact = frozenArtefact(local)
+const artefact = await frozenArtefact(local)
 const packaged = packagedSource(artefact)
 
 /** Every contract the registry knows, refused ones included. */
-const everyAddress = local.contractIndex().entries.map((entry) => entry.address)
+const everyAddress = (await local.contractIndex()).entries.map((entry) => entry.address)
 
 describe('the catalogue an archive carries', () => {
   /**
@@ -36,17 +36,17 @@ describe('the catalogue an archive carries', () => {
    * survive base64 - each of them is this guard going red rather than an installation going wrong in
    * somebody else's project.
    */
-  it('the-packaged-source-answers-what-the-local-source-answers', () => {
-    expect(packaged.contractIndex()).toEqual(local.contractIndex())
-    expect(packaged.refusals()).toEqual(local.refusals())
+  it('the-packaged-source-answers-what-the-local-source-answers', async () => {
+    expect(await packaged.contractIndex()).toEqual(await local.contractIndex())
+    expect(await packaged.refusals()).toEqual(await local.refusals())
 
     for (const address of everyAddress) {
-      const bindings = local.implementationBindings(address)
+      const bindings = await local.implementationBindings(address)
 
-      expect(packaged.implementationBindings(address)).toEqual(bindings)
+      expect(await packaged.implementationBindings(address)).toEqual(bindings)
 
       for (const binding of bindings) {
-        expect(packaged.snapshot(binding.digest)).toEqual(local.snapshot(binding.digest))
+        expect(await packaged.snapshot(binding.digest)).toEqual(await local.snapshot(binding.digest))
       }
     }
   })
@@ -59,7 +59,7 @@ describe('the catalogue an archive carries', () => {
    * a case on a lone surrogate, which is exactly the thing a round trip through a JSON string would
    * quietly replace.
    */
-  it('every-file-an-installation-needs-is-served-as-the-bytes-it-was-frozen-from', () => {
+  it('every-file-an-installation-needs-is-served-as-the-bytes-it-was-frozen-from', async () => {
     const files = artefact.snapshots.flatMap((served) => {
       const parsed = JSON.parse(served.canonicalText) as Snapshot
 
@@ -69,8 +69,8 @@ describe('the catalogue an archive carries', () => {
     expect(files.length).toBeGreaterThan(0)
 
     for (const file of files) {
-      expect(packaged.blob(file.sha256)).toEqual(local.blob(file.sha256))
-      expect(packaged.blob(file.sha256)?.bytes.length).toBe(file.bytes)
+      expect(await packaged.blob(file.sha256)).toEqual(await local.blob(file.sha256))
+      expect((await packaged.blob(file.sha256))?.bytes.length).toBe(file.bytes)
     }
   })
 
@@ -82,7 +82,7 @@ describe('the catalogue an archive carries', () => {
    * it was turned down. The walk here inherits that shape rather than restating it, so this guard is
    * what says the inheritance held.
    */
-  it('a-refused-contract-is-carried-as-a-refusal-and-never-as-something-to-install', () => {
+  it('a-refused-contract-is-carried-as-a-refusal-and-never-as-something-to-install', async () => {
     const refused = artefact.index.entries.filter((entry) => !entry.installable)
 
     expect(refused.map((entry) => entry.address.name)).toEqual(['array/group-by'])
@@ -90,15 +90,19 @@ describe('the catalogue an archive carries', () => {
       'array/group-by',
     ])
 
-    for (const entry of refused) expect(packaged.implementationBindings(entry.address)).toEqual([])
+    for (const entry of refused) {
+      expect(await packaged.implementationBindings(entry.address)).toEqual([])
+    }
   })
 
   /**
    * Two builds of one working tree write one byte string, so that an archive's digest is a fact about
    * the catalogue and not about the order a walk happened to take.
    */
-  it('two-freezes-of-one-working-tree-are-one-byte-string', () => {
-    expect(canonical(frozenArtefact(localSource()), 'artefact')).toBe(canonical(artefact, 'artefact'))
+  it('two-freezes-of-one-working-tree-are-one-byte-string', async () => {
+    expect(canonical(await frozenArtefact(localSource()), 'artefact')).toBe(
+      canonical(artefact, 'artefact'),
+    )
   })
 
   /**
@@ -106,10 +110,10 @@ describe('the catalogue an archive carries', () => {
    * A `toopo` that refused at the moment somebody installed something would be the worst possible
    * place to find this out.
    */
-  it('a-registry-that-serves-no-bytes-stops-the-build', () => {
-    const silent: RegistrySource = { ...local, blob: () => null }
+  it('a-registry-that-serves-no-bytes-stops-the-build', async () => {
+    const silent: RegistrySource = { ...local, blob: async () => null }
 
-    expect(() => frozenArtefact(silent)).toThrow(TheRegistryContradictsItself)
+    await expect(frozenArtefact(silent)).rejects.toThrow(TheRegistryContradictsItself)
   })
 })
 

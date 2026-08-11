@@ -37,6 +37,22 @@
  * lines up the stack: a fault is this repository contradicting itself, and the only honest thing to do
  * with it is stop. An archive built around a fault would ship a `toopo` that refuses at the moment
  * somebody installs something, which is the worst possible place to find out.
+ *
+ * ---------------------------------------------------------------------------
+ * It warms the cache and then records one pass, and that order is forced
+ * ---------------------------------------------------------------------------
+ *
+ * The walk is synchronous and the registry answers promises, so this file runs `fixpoint.ts` - and the
+ * two phases may not be collapsed into one. `recording` writes an entry for **every** answer it is
+ * asked for, and a decision replayed against a cold cache is answered with what a registry holding
+ * nothing answers: an empty binding list. Recording during the loop would therefore freeze an artefact
+ * whose bindings are the misses of a first round, and *the catalogue is empty because nobody looked* is
+ * exactly the state the paragraph below already refuses to be able to produce.
+ *
+ * So the loop warms, and then `withoutAsking` takes one pass over a cache that holds everything. That
+ * pass asks for nothing, which is asserted rather than assumed - a pass that still wanted an answer
+ * would mean the warming walk and the recording walk had diverged, which is the one failure a
+ * transcript cannot survive.
  */
 
 import { renderContract, renderImplementation } from '../registry/address.js'
@@ -45,28 +61,23 @@ import type { ServedBlob, ServedSnapshot } from '../registry/response.js'
 import type { FrozenImplementation } from '../registry/snapshot.js'
 import type { ArtefactBindings, ArtefactBlob, ServedArtefact } from '../cli/artefact.js'
 import { ARTEFACT_FORMAT } from '../cli/artefact.js'
+import { deciding, withoutAsking } from '../cli/fixpoint.js'
 import { gatherHoldings, heldAt, refused } from '../cli/resolve.js'
 import type { Found, RootAt } from '../cli/resolve.js'
-import type { RegistrySource } from '../cli/source.js'
+import type { HeldRegistry, RegistrySource } from '../cli/source.js'
 
 export class TheRegistryContradictsItself extends Error {
-  constructor(what: string, faults: readonly string[]) {
+  constructor(faults: readonly string[]) {
     super(
       `this archive cannot be built, because the registry it would carry does not answer for ` +
-        `${what}:\n${faults.join('\n')}`,
+        `everything it offers:\n${faults.join('\n')}`,
     )
     this.name = 'TheRegistryContradictsItself'
   }
 }
 
-const insisted = <T>(answer: Found<T>, what: string): T => {
-  if (refused(answer)) throw new TheRegistryContradictsItself(what, answer.faults)
-
-  return answer.found
-}
-
 type Recording = {
-  readonly source: RegistrySource
+  readonly source: HeldRegistry
   readonly bindings: Map<string, ArtefactBindings>
   readonly snapshots: Map<string, ServedSnapshot>
   readonly blobs: Map<string, ServedBlob>
@@ -80,7 +91,7 @@ type Recording = {
  * something happened to ask, and *the catalogue is empty because nobody looked* is not a state this
  * file should be able to produce.
  */
-const recording = (source: RegistrySource): Recording => {
+const recording = (source: HeldRegistry): Recording => {
   const bindings = new Map<string, ArtefactBindings>()
   const snapshots = new Map<string, ServedSnapshot>()
   const blobs = new Map<string, ServedBlob>()
@@ -117,20 +128,33 @@ const recording = (source: RegistrySource): Recording => {
   }
 }
 
-/** Every implementation the index offers, as the roots a dependency walk starts from. */
-const rootsOf = (source: RegistrySource): readonly RootAt[] =>
-  source
-    .contractIndex()
-    .entries.filter((entry) => entry.installable)
-    .flatMap((entry) =>
-      source.implementationBindings(entry.address).map((binding) => ({
-        frozen: insisted(
-          heldAt(source, binding.address, binding.digest),
-          renderImplementation(binding.address),
-        ),
-        digest: binding.digest,
-      })),
-    )
+/**
+ * Every implementation the index offers, as the roots a dependency walk starts from.
+ *
+ * It answers `Found` rather than throwing, and that is what lets the fixpoint replay it: a round run
+ * against a cache that holds nothing must be able to ask for everything and refuse harmlessly, where an
+ * exception would end the build on the first round of its own warming.
+ */
+const rootsOf = (source: HeldRegistry): Found<readonly RootAt[]> => {
+  const roots: RootAt[] = []
+  const faults: string[] = []
+
+  for (const entry of source.contractIndex().entries.filter((candidate) => candidate.installable)) {
+    for (const binding of source.implementationBindings(entry.address)) {
+      const answer = heldAt(source, binding.address, binding.digest)
+
+      if (refused(answer)) {
+        faults.push(
+          ...answer.faults.map((fault) => `${renderImplementation(binding.address)}: ${fault}`),
+        )
+      } else {
+        roots.push({ frozen: answer.found, digest: binding.digest })
+      }
+    }
+  }
+
+  return faults.length > 0 ? { faults } : { found: roots }
+}
 
 const blobEntry = (blob: ServedBlob): ArtefactBlob => ({
   addressedBy: blob.addressedBy,
@@ -148,32 +172,66 @@ const blobEntry = (blob: ServedBlob): ArtefactBlob => ({
 const byKey = <T>(entries: readonly T[], keyOf: (entry: T) => string): readonly T[] =>
   [...entries].sort((a, b) => (keyOf(a) < keyOf(b) ? -1 : 1))
 
-export const frozenArtefact = (registry: RegistrySource): ServedArtefact => {
-  const held = recording(registry)
-  const { source } = held
+/**
+ * The whole transcript, as a value, taken against whatever the caller holds.
+ *
+ * One function and not two, which is this file's own rule: a warming pass and a recording pass written
+ * apart would be two statements of one walk, and the second would stop asking for something the first
+ * still fetched. The fixpoint runs *this* to find out what to fetch, and runs *this* again to record.
+ */
+const transcribed = (held: HeldRegistry): Found<ServedArtefact> => {
+  const recorded = recording(held)
+  const { source } = recorded
 
   const index = source.contractIndex()
   const refusals = source.refusals()
 
-  const holdings = insisted(gatherHoldings(source, rootsOf(source)), 'the implementations it offers')
+  const roots = rootsOf(source)
+  if (refused(roots)) return roots
 
-  for (const holding of holdings) {
-    for (const file of holding.files) {
-      if (source.blob(file.sha256) === null) {
-        throw new TheRegistryContradictsItself(
-          `${renderContract(holding.contract)}, whose ${file.path} it does not serve`,
-          [`no file is served at ${file.sha256}`],
-        )
-      }
-    }
-  }
+  const holdings = gatherHoldings(source, roots.found)
+  if (refused(holdings)) return holdings
+
+  const unserved = holdings.found.flatMap((holding) =>
+    holding.files
+      .filter((file) => source.blob(file.sha256) === null)
+      .map(
+        (file) =>
+          `${renderContract(holding.contract)}, whose ${file.path} it does not serve: no file is ` +
+          `served at ${file.sha256}`,
+      ),
+  )
+  if (unserved.length > 0) return { faults: unserved }
 
   return {
-    formatVersion: ARTEFACT_FORMAT,
-    index,
-    refusals,
-    bindings: byKey([...held.bindings.values()], (entry) => entry.contract),
-    snapshots: byKey([...held.snapshots.values()], (snapshot) => snapshot.addressedBy),
-    blobs: byKey([...held.blobs.values()].map(blobEntry), (blob) => blob.addressedBy),
+    found: {
+      formatVersion: ARTEFACT_FORMAT,
+      index,
+      refusals,
+      bindings: byKey([...recorded.bindings.values()], (entry) => entry.contract),
+      snapshots: byKey([...recorded.snapshots.values()], (snapshot) => snapshot.addressedBy),
+      blobs: byKey([...recorded.blobs.values()].map(blobEntry), (blob) => blob.addressedBy),
+    },
   }
+}
+
+export const frozenArtefact = async (registry: RegistrySource): Promise<ServedArtefact> => {
+  // Warm. What this round answers is discarded - a transcript of a partial cache is a transcript of
+  // nothing - and what is kept is every question the walk turned out to ask.
+  const { arrived } = await deciding(registry, transcribed)
+
+  // Record. One synchronous pass over a cache that holds everything, which is the shape the acceptance
+  // guard of the fixpoint is written against.
+  const { answer, wanted } = withoutAsking(arrived, transcribed)
+
+  if (wanted.length > 0) {
+    throw new TheRegistryContradictsItself([
+      `the recording pass asked for ${wanted.length} answer(s) the warming walk never fetched, so ` +
+        `the two have diverged: ${wanted.join(', ')}`,
+    ])
+  }
+
+  if (refused(answer)) throw new TheRegistryContradictsItself(answer.faults)
+
+  return answer.found
 }

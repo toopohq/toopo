@@ -2,11 +2,12 @@
  * The registry as a published `toopo` sees it: an artefact that travelled in the archive, and nothing
  * else.
  *
- * It is the second implementation of `RegistrySource` and the first that is not a stand-in.
- * `source.ts` says the port exists so that *the day a server exists it implements this same type and
- * nothing above it changes* - this is that claim being paid rather than asserted, one implementation
- * early: `resolve.ts`, `install.ts`, `search.ts` and `command.ts` are untouched by it, and the only
- * thing that decides which registry an installation is served from is which entry point was run.
+ * It was the second implementation of `RegistrySource` to be written and the first that is not a
+ * stand-in. `source.ts` says the port exists so that *the day a server exists it implements this same
+ * type and nothing above it changes* - this was that claim being paid one implementation early, and
+ * `http-source.ts` is the day itself: `resolve.ts`, `install.ts`, `search.ts` and `reconcile.ts` are
+ * untouched by either, and the only thing that decides which registry an installation is served from is
+ * which entry point was run.
  *
  * **It takes the artefact rather than a path, so that everything it answers is reachable from a guard
  * with no disk at all.** `command.ts` states that property for the tool as a whole and it is the one
@@ -36,15 +37,15 @@ export const packagedSource = (artefact: ServedArtefact): RegistrySource => {
   )
 
   return {
-    contractIndex: () => artefact.index,
+    contractIndex: async () => artefact.index,
 
-    implementationBindings: (address: ContractAddress) =>
+    implementationBindings: async (address: ContractAddress) =>
       bindings.get(renderContract(address)) ?? [],
 
-    refusals: () => artefact.refusals,
+    refusals: async () => artefact.refusals,
 
-    snapshot: (digest) => snapshots.get(digest) ?? null,
+    snapshot: async (digest) => snapshots.get(digest) ?? null,
 
-    blob: (sha256) => blobs.get(sha256) ?? null,
+    blob: async (sha256) => blobs.get(sha256) ?? null,
   }
 }

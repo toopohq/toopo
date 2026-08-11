@@ -102,10 +102,10 @@ describe('where an installer gets what it installs', () => {
    * exists nowhere and would be indistinguishable from one that does, which turns the lockfile's own
    * argument against it: its whole value is that it can be checked offline against a published fact.
    */
-  it('the-local-source-binds-a-visibly-unpublished-version', () => {
+  it('the-local-source-binds-a-visibly-unpublished-version', async () => {
     expect(THE_UNPUBLISHED_VERSION).toBe('0.0.0-local')
 
-    const bindings = localSource().implementationBindings({
+    const bindings = await localSource().implementationBindings({
       language: 'typescript',
       name: 'string/slugify',
       major: 1,
@@ -119,8 +119,8 @@ describe('where an installer gets what it installs', () => {
    * offer it. A registry whose search contradicted its own refusals page would be publishing two
    * answers to one question.
    */
-  it('a-refused-contract-is-in-the-index-and-is-not-installable', () => {
-    const entries = localSource().contractIndex().entries
+  it('a-refused-contract-is-in-the-index-and-is-not-installable', async () => {
+    const entries = (await localSource().contractIndex()).entries
     const refused = entries.find((entry) => entry.address.name === 'array/group-by')
 
     expect(refused?.installable).toBe(false)
