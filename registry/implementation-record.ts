@@ -44,6 +44,34 @@ export type HarnessFile = {
 export type ImplementationStatus = 'listed' | 'default' | 'demoted'
 
 /**
+ * One edge of the dependency graph: which implementation, and the digest of the snapshot that *is* it.
+ *
+ * **The digest is the whole of this type, and what it buys is that the edge stops being a question.**
+ * An edge carrying an address alone names something the registry must then be asked to resolve, and
+ * that answer is `implementation-bindings` - a named answer, which is the registry's word and nothing a
+ * reader can check. Carrying the digest makes the step arithmetic: the client fetches a
+ * content-addressed snapshot and hashes what arrives. Measured on the imagined graph, `toopo add
+ * number/round` goes from believing five named answers to believing one, and from eight round trips to
+ * six, because the round trips that disappear are exactly the ones spent asking which digest an edge
+ * resolves to.
+ *
+ * **A type of its own rather than a coordinate added to `ImplementationAddress`.** That address is also
+ * `PublishedImplementation.address` and `ServedImplementationBinding.address`, where a `digest` field
+ * already sits beside it - widening it would write one fact twice into a served body, which is the drift
+ * this schema refuses everywhere else.
+ *
+ * **An edge is built by `edgeTo` and never written by hand.** The digest is derived from the target's
+ * own snapshot, so a wrong one is unconstructible here rather than forbidden by a sentence. What that
+ * cannot reach is an edge arriving from somewhere else - which is why `declarationFaults` below is a
+ * check and not a second derivation.
+ */
+export type DependencyEdge = {
+  readonly implementation: ImplementationAddress
+  /** The digest of the implementation snapshot this edge names. */
+  readonly digest: string
+}
+
+/**
  * A figure measured on a real machine. Empty for every implementation of the five, for the reason
  * block 4.5 gives: there is no reference machine yet, and a number produced on a developer laptop
  * would be dishonest.
@@ -94,9 +122,10 @@ export type ImplementationRecord = {
    *
    * Frozen, and it belongs in the digest: what a published artefact imports is part of what it *is*,
    * and an edge that could be edited afterwards would let the bytes installed under a fixed digest
-   * change meaning without the digest moving.
+   * change meaning without the digest moving. That is also what makes the digest each edge carries
+   * worth its bytes: it is frozen with the edge, so the whole closure hangs off one root digest.
    */
-  readonly dependsOn: readonly ImplementationAddress[]
+  readonly dependsOn: readonly DependencyEdge[]
   /**
    * The size a bundler would ship, in bytes, or `null` when nothing has measured it.
    *
@@ -140,7 +169,70 @@ export type DependencyNode = {
   readonly id: string
   readonly contract: ContractAddress
   readonly version: string | null
-  readonly dependsOn: readonly ImplementationAddress[]
+  readonly dependsOn: readonly DependencyEdge[]
+}
+
+/**
+ * Why this artefact is not the one that address names. Empty when it is.
+ *
+ * **The one rule that closes both halves of the same hole, which is why it is one function.** A client
+ * obtains a snapshot for an address in two ways and neither of them establishes that what arrived is
+ * what was asked for. Through a *binding*, the registry is asked which digest a name resolves to and is
+ * believed. Through an *edge*, the digest is carried and the name is not checked against it at all - so
+ * an edge naming `string/pad@1/reference@1.0.0` while carrying the digest of `number/sign@1`'s snapshot
+ * is answered honestly by any registry, verified perfectly by `servedSnapshotFaults`, and installs the
+ * other feature.
+ *
+ * Before the edges carried a digest the second half was covered by accident: `gatherHoldings` found the
+ * digest by matching `id` and `version` in the bindings, so the identity was established by the lookup.
+ * That lookup is exactly the round trip an edge's digest removes. **So the field that buys the round
+ * trips is also what takes the check away, and this is the check put back where it can cover both.**
+ *
+ * It takes a `DependencyNode` rather than a `FrozenImplementation` for the reason that type exists: the
+ * subset that decides the answer, so that a caller holding either can ask without widening anything -
+ * and so that this module needs no import from `snapshot.ts`, which imports it.
+ *
+ * The three parts are compared rather than their rendering, and the rendering is used only to say so.
+ * `renderImplementation` joins an id and a version with `@`, and nothing in this schema refuses an id
+ * that carries one - so a comparison of two renderings would be a comparison that can be right about
+ * two strings and wrong about two artefacts.
+ *
+ * An unpublished artefact is the one that answers nothing rather than the wrong thing, and it is said
+ * separately: an address carries a `string` version, `null` is what a record holds until the publishing
+ * tool assigns one, and *this has never been published* is a different sentence from *this is something
+ * else*.
+ */
+export const declarationFaults = (
+  held: DependencyNode,
+  address: ImplementationAddress,
+): readonly string[] => {
+  const asked = renderImplementation(address)
+
+  if (held.version === null) {
+    return [
+      `it is unpublished, where ${asked} names a published version. A snapshot with no version was ` +
+        `never served under any address.`,
+    ]
+  }
+
+  if (
+    held.id === address.id &&
+    held.version === address.version &&
+    sameContract(held.contract, address.contract)
+  ) {
+    return []
+  }
+
+  const declared = renderImplementation({
+    contract: held.contract,
+    id: held.id,
+    version: held.version,
+  })
+
+  return [
+    `it declares itself ${declared}, where ${asked} is what was asked for. A snapshot says which ` +
+      `artefact it is, so this is the wrong artefact rather than a damaged one.`,
+  ]
 }
 
 /**
@@ -150,20 +242,20 @@ export type DependencyNode = {
  * implementation" is one fact about one edge and a second copy of it is a second thing that can come
  * to disagree.
  *
- * An unpublished implementation can never be returned, and that falls out rather than being checked:
- * an address carries a `string` version and an unpublished record carries `null`, so the comparison
- * cannot match. Every record below therefore has a version, by construction.
+ * An unpublished implementation can never be returned, and that is `declarationFaults`' first branch
+ * rather than a comparison that happens not to match. Every record below therefore has a version.
+ *
+ * **What it does not look at is the digest the edge carries**, and that is a division rather than an
+ * omission. This walk runs on a client over snapshots that were *fetched by* that digest, so the pairing
+ * has already been decided one floor up, in `heldAt`, where the thing that arrived can be compared with
+ * the thing that was asked for. Asking again here would be a second guard over one fact, with nothing to
+ * say for itself the day the two disagree.
  */
 const mustHold = <T extends DependencyNode>(
   holdings: readonly T[],
   address: ImplementationAddress,
 ): T => {
-  const found = holdings.find(
-    (candidate) =>
-      candidate.id === address.id &&
-      candidate.version === address.version &&
-      sameContract(candidate.contract, address.contract),
-  )
+  const found = holdings.find((candidate) => declarationFaults(candidate, address).length === 0)
 
   if (found === undefined) {
     throw new UnresolvedDependency(
@@ -204,13 +296,13 @@ export const resolveDependencies = <T extends DependencyNode>(
 
   const walk = (record: T, open: readonly string[]): void => {
     for (const edge of record.dependsOn) {
-      const what = renderImplementation(edge)
+      const what = renderImplementation(edge.implementation)
       if (open.includes(what)) {
         throw new UnresolvedDependency(what, `it imports itself through ${[...open, what].join(' -> ')}`)
       }
       if (seen.has(what)) continue
 
-      const next = mustHold(holdings, edge)
+      const next = mustHold(holdings, edge.implementation)
       walk(next, [...open, what])
       seen.add(what)
       resolved.push(next)
@@ -247,12 +339,12 @@ export const dependencyDepthOf = (
 
   const depths = new Map<string, number>()
 
-  const depthBelow = (address: ImplementationAddress): number => {
-    const what = renderImplementation(address)
+  const depthBelow = (edge: DependencyEdge): number => {
+    const what = renderImplementation(edge.implementation)
     const memoised = depths.get(what)
     if (memoised !== undefined) return memoised
 
-    const edges = mustHold(holdings, address).dependsOn
+    const edges = mustHold(holdings, edge.implementation).dependsOn
     const depth = edges.length === 0 ? 0 : 1 + Math.max(...edges.map(depthBelow))
     depths.set(what, depth)
 

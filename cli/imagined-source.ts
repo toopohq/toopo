@@ -33,7 +33,7 @@ import {
 import type { ImplementationRecord } from '../registry/implementation-record.js'
 import type { ServedImplementationBinding, ServedIndex } from '../registry/response.js'
 import { servedBlob, servedSnapshot } from '../registry/response.js'
-import { digestOfSnapshot, implementationSnapshot } from '../registry/snapshot.js'
+import { digestOfSnapshot, edgeTo, implementationSnapshot } from '../registry/snapshot.js'
 import type { RegistrySource } from './source.js'
 
 /**
@@ -173,16 +173,6 @@ export const sourceServingBothPublications = (): RegistrySource =>
   sourceOver([...NEXT_HOLDINGS, ...HOLDINGS])
 
 /**
- * A source whose `string/pad@1` is held at two versions at once, which is the collision no fixture of
- * the schema produced and every real catalogue eventually will.
- *
- * Two dependents may legitimately have been published against two versions of one feature - `sign`
- * against `1.0.0` and `clamp` against `1.0.1` - and both addresses resolve, because they *are* two
- * artefacts. What cannot happen is both landing in the project: one feature is one folder, so the
- * second write would overwrite the first and the dependent that asked for it would silently get the
- * other one's code.
- */
-/**
  * Two roots that share one file and depend on nothing, which is the shape a removal has to survive and
  * the one the main graph cannot produce.
  *
@@ -196,6 +186,21 @@ export const sourceWithIndependentCarriers = (): RegistrySource =>
 
 export const TWO_VERSIONS_OF_ONE_FEATURE = IMAGINED_NEXT_VERSION
 
+/**
+ * A source whose `string/pad@1` is held at two versions at once, which is the collision no fixture of
+ * the schema produced and every real catalogue eventually will.
+ *
+ * Two dependents may legitimately have been published against two versions of one feature - `sign`
+ * against `1.0.0` and `clamp` against `1.0.1` - and both addresses resolve, because they *are* two
+ * artefacts. What cannot happen is both landing in the project: one feature is one folder, so the
+ * second write would overwrite the first and the dependent that asked for it would silently get the
+ * other one's code.
+ *
+ * The edge to the newer pad is built from the newer pad, so its digest is that artefact's and not a
+ * version string that happens to match one. A fixture that wrote the two apart could name `1.0.1` while
+ * carrying `1.0.0`'s digest - which is the exact defect `heldAt` refuses, arriving inside the fixture
+ * meant to measure something else.
+ */
 export const sourceWithTwoVersionsOfPad = (): RegistrySource => {
   const pad = HOLDINGS.find((record) => record.contract.name === 'string/pad')
   const clamp = HOLDINGS.find((record) => record.contract.name === 'number/clamp')
@@ -206,9 +211,7 @@ export const sourceWithTwoVersionsOfPad = (): RegistrySource => {
   const newerPad: ImplementationRecord = { ...pad, version: TWO_VERSIONS_OF_ONE_FEATURE }
   const clampOnTheNewerPad: ImplementationRecord = {
     ...clamp,
-    dependsOn: [
-      { contract: pad.contract, id: 'reference', version: TWO_VERSIONS_OF_ONE_FEATURE },
-    ],
+    dependsOn: [edgeTo(newerPad)],
   }
 
   return sourceOver(

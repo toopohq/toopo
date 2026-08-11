@@ -90,6 +90,7 @@ import type {
   SurfaceRecord,
 } from './contract-record.js'
 import type {
+  DependencyEdge,
   HarnessFile,
   ImplementationRecord,
   ImplementationStatus,
@@ -129,8 +130,12 @@ export type FrozenImplementation = {
   /**
    * Frozen, because what a published artefact imports is part of what it is. An edge outside the
    * digest would let the code installed under a fixed digest change what it pulls in.
+   *
+   * Each edge carries the digest of the snapshot it names, so this list is what makes the closure a
+   * Merkle tree with one root rather than a list of names to go and resolve. `edgeTo` below is how one
+   * is built, and `declarationFaults` is what a client checks when one arrives.
    */
-  readonly dependsOn: readonly ImplementationAddress[]
+  readonly dependsOn: readonly DependencyEdge[]
 }
 
 /**
@@ -240,6 +245,38 @@ export const implementationSnapshot = (record: ImplementationRecord): Snapshot =
  * *binding* between them is what the registry publishes and freezes - see `Ledger`.
  */
 export const digestOfSnapshot = (snapshot: Snapshot): string => digestOf(snapshot, 'snapshot')
+
+/**
+ * An edge to a published implementation, with its digest read off the artefact rather than written
+ * beside it.
+ *
+ * **This is the only way to build one, and that is the whole mechanism.** A digest transcribed next to
+ * an address is a second statement of one fact, free to be wrong - and an edge that is wrong installs
+ * another feature under the right name, which is the most expensive defect this schema can carry. So
+ * the omission is made impossible rather than forbidden: there is no shape here that lets a caller
+ * supply a digest, exactly as `parametersOf` refuses a declared parameter list and `harnessOf` refuses
+ * a declared size.
+ *
+ * It takes the record it points at, so the digest and the address are read from one value. A caller
+ * that passed the wrong record would name that record - and would name it in both halves, which is a
+ * consistent edge to the wrong feature rather than a lying one.
+ *
+ * An unpublished target is refused rather than encoded, because `ImplementationAddress` carries a
+ * `string` version: an edge to something no address names is not an edge.
+ */
+export const edgeTo = (target: ImplementationRecord): DependencyEdge => {
+  if (target.version === null) {
+    throw new Error(
+      `${renderContract(target.contract)}/${target.id} has no version, so nothing can depend on it. ` +
+        `A version is assigned when an artefact is published, and an edge names a published one.`,
+    )
+  }
+
+  return {
+    implementation: { contract: target.contract, id: target.id, version: target.version },
+    digest: digestOfSnapshot(implementationSnapshot(target)),
+  }
+}
 
 // ---------------------------------------------------------------------------
 // The standing - what the registry may still change about a frozen artefact

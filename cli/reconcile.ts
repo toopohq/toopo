@@ -89,6 +89,7 @@ import { diffOf } from './diff.js'
 import { digestOnDisk, withFeature } from './lockfile.js'
 import type { InstallPlan, PlannedFeature } from './plan.js'
 import { planInstall } from './plan.js'
+import type { RootAt } from './resolve.js'
 import {
   bindingAt,
   bindingFor,
@@ -276,7 +277,7 @@ const theNewGraph = (
   roots: readonly LockedFeature[],
   boundAs: HowRootsAreBound,
 ): TheGraph | { readonly faults: readonly string[] } => {
-  const held: FrozenImplementation[] = []
+  const held: RootAt[] = []
   const faults: string[] = []
 
   for (const feature of roots) {
@@ -295,13 +296,17 @@ const theNewGraph = (
       continue
     }
 
-    const snapshot = heldAt(source, binding.found.digest, renderContract(feature.contract))
+    const snapshot = heldAt(
+      source,
+      { contract: feature.contract, id: binding.found.id, version: binding.found.version },
+      binding.found.digest,
+    )
     if (refused(snapshot)) {
       faults.push(...snapshot.faults)
       continue
     }
 
-    held.push(snapshot.found)
+    held.push({ frozen: snapshot.found, digest: binding.found.digest })
   }
 
   if (faults.length > 0) return { faults }
@@ -316,7 +321,7 @@ const theNewGraph = (
   const reachedBy = new Map<string, ContractAddress[]>()
 
   try {
-    for (const root of held) {
+    for (const { frozen: root } of held) {
       // The closure of this root on its own, before it is folded into the project's order: which root
       // reaches what is exactly the question the order throws away, and the one a removal asks.
       for (const implementation of [...resolveDependencies(root, holdings.found), root]) {
@@ -523,10 +528,15 @@ const whatIsHeldBack = (
       const what = keyOf(implementation.contract)
       if (held.has(what)) continue
 
-      const blocking = implementation.dependsOn.find((edge) => held.has(keyOf(edge.contract)))
+      const blocking = implementation.dependsOn.find((edge) =>
+        held.has(keyOf(edge.implementation.contract)),
+      )
       if (blocking === undefined) continue
 
-      held.set(what, `it imports ${renderContract(blocking.contract)}, which is held back`)
+      held.set(
+        what,
+        `it imports ${renderContract(blocking.implementation.contract)}, which is held back`,
+      )
       again = true
     }
   }

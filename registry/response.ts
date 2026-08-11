@@ -188,6 +188,66 @@ export type ServedContractBinding = {
   readonly lifecycle: Lifecycle
 }
 
+/**
+ * What a reader may do with one field of a named answer.
+ *
+ * **The domain has three of these and `AddressingClass` has two, and that is not a gap in the union.**
+ * A class per *answer* decides the cache policy, and a body carrying one revisable field must be
+ * revalidated whatever else it carries - so `named` is right about both bindings and would stay right
+ * if a third member existed. The distinction is one level down: measured over the five named answers,
+ * two of them carry frozen and revisable fields *in one body*, which is exactly the shape no
+ * per-response class can express.
+ *
+ * It is the question `StandingField` asks about a record - *may the registry change its mind about this
+ * after publication?* - asked about a response, and the answer is not the same one. A record's `digest`
+ * does not exist; a binding's does, it is bound by `refuseRebinding`, and permanent rule 6 is what makes
+ * that binding permanent.
+ */
+export type FieldNature =
+  /** The question that was asked, echoed back. A reader already holds it. */
+  | 'the-question'
+  /** Bound once and for life. A reader cannot check *this* answer, and no later answer may differ. */
+  | 'bound-for-life'
+  /** The registry's opinion today, which it may change without anything being wrong. */
+  | 'revisable'
+
+/**
+ * Every field of a contract binding, and what a reader may do with it.
+ *
+ * Keyed by `keyof`, so a field added to the type does not compile until somebody has said which of the
+ * three it is - the shape `FIELD_MAP`, `THE_ENDPOINT_BEHIND` and `FIELDS_OF` already take. It exists
+ * because a sentence about *what a reader can check here* is a claim about a set of fields, and a
+ * hand-written claim about a set is wrong on exactly the member nobody enumerated.
+ */
+export const CONTRACT_BINDING_NATURES: Readonly<Record<keyof ServedContractBinding, FieldNature>> = {
+  addressing: 'the-question',
+  address: 'the-question',
+  digest: 'bound-for-life',
+  publishedAt: 'bound-for-life',
+  lifecycle: 'revisable',
+}
+
+export const IMPLEMENTATION_BINDING_NATURES: Readonly<
+  Record<keyof ServedImplementationBinding, FieldNature>
+> = {
+  addressing: 'the-question',
+  address: 'the-question',
+  digest: 'bound-for-life',
+  publishedAt: 'bound-for-life',
+  status: 'revisable',
+  benchmarks: 'revisable',
+  minifiedBytes: 'revisable',
+  tags: 'revisable',
+}
+
+/** The fields of a named answer that are the registry's opinion, in the order the type declares them. */
+export const revisableFieldsOf = (
+  natures: Readonly<Record<string, FieldNature>>,
+): readonly string[] =>
+  Object.entries(natures)
+    .filter(([, nature]) => nature === 'revisable')
+    .map(([field]) => field)
+
 export const servedContractBinding = (entry: PublishedContract): ServedContractBinding => ({
   addressing: 'named',
   address: entry.address,

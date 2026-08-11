@@ -46,9 +46,10 @@
  * does to that specifier is the measurement `cli/` exists to make.
  */
 
-import type { ContractAddress, ImplementationAddress } from './address.js'
+import type { ContractAddress } from './address.js'
 import { digestOfBytes, servedBytes } from './canonical.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
+import { edgeTo } from './snapshot.js'
 
 const addressOf = (name: string): ContractAddress => ({ language: 'typescript', name, major: 1 })
 
@@ -86,11 +87,6 @@ export const RIGHT = addressOf('text/right')
  * built from these on purpose, rather than by leaving the whole fixture unable to resolve.
  */
 export const IMAGINED_VERSION = '1.0.0'
-
-export const referenceAt = (
-  contract: ContractAddress,
-  version: string = IMAGINED_VERSION,
-): ImplementationAddress => ({ contract, id: 'reference', version })
 
 const DIGITS_SOURCE = 'export const DIGITS = /^[0-9]+$/\n'
 
@@ -219,10 +215,17 @@ const fileIn = (sources: Readonly<Record<string, string>>, path: string): Harnes
   return { path: path.slice(path.lastIndexOf('/') + 1), sha256: digestOfBytes(bytes), bytes: bytes.byteLength }
 }
 
+/**
+ * One publication of one artefact, taking the *records* it depends on rather than their addresses.
+ *
+ * An edge carries the digest of the snapshot it names, and `edgeTo` reads that digest off the target -
+ * so what this function needs is the target itself. The consequence is that the graph is written in
+ * dependency order below, which it was anyway, and that a wrong digest cannot be written here at all.
+ */
 const publicationAt = (version: string, sources: Readonly<Record<string, string>>) => (
   contract: ContractAddress,
   files: readonly string[],
-  dependsOn: readonly ContractAddress[],
+  dependsOn: readonly ImplementationRecord[],
 ): ImplementationRecord => ({
   id: 'reference',
   contract,
@@ -230,7 +233,7 @@ const publicationAt = (version: string, sources: Readonly<Record<string, string>
   version,
   status: 'default',
   files: files.map((path) => fileIn(sources, path)),
-  dependsOn: dependsOn.map((edge) => referenceAt(edge, version)),
+  dependsOn: dependsOn.map(edgeTo),
   minifiedBytes: null,
   benchmarks: [],
   tags: ['reference'],
@@ -245,11 +248,11 @@ const first = publicationAt(IMAGINED_VERSION, IMAGINED_SOURCES)
 
 export const pad = first(PAD, PAD_FILES, [])
 
-export const sign = first(SIGN, SIGN_FILES, [PAD])
+export const sign = first(SIGN, SIGN_FILES, [pad])
 
-export const clamp = first(CLAMP, CLAMP_FILES, [PAD])
+export const clamp = first(CLAMP, CLAMP_FILES, [pad])
 
-export const round = first(ROUND, ROUND_FILES, [CLAMP, SIGN])
+export const round = first(ROUND, ROUND_FILES, [clamp, sign])
 
 export const HOLDINGS: readonly ImplementationRecord[] = [pad, sign, clamp, round]
 
@@ -267,13 +270,17 @@ export const INDEPENDENT_CARRIERS: readonly ImplementationRecord[] = [
 
 const next = publicationAt(IMAGINED_NEXT_VERSION, IMAGINED_NEXT_SOURCES)
 
+const nextPad = next(PAD, PAD_FILES, [])
+const nextSign = next(SIGN, SIGN_FILES, [nextPad])
+const nextClamp = next(CLAMP, CLAMP_FILES, [nextPad])
+
 export const NEXT_HOLDINGS: readonly ImplementationRecord[] = [
-  next(PAD, PAD_FILES, []),
-  next(SIGN, SIGN_FILES, [PAD]),
-  next(CLAMP, CLAMP_FILES, [PAD]),
+  nextPad,
+  nextSign,
+  nextClamp,
   // No edge to `sign` any more, which is the whole point of the second publication being a graph and
   // not two files: `number/sign@1` is still published and is no longer reachable from `number/round@1`.
-  next(ROUND, ROUND_FILES, [CLAMP]),
+  next(ROUND, ROUND_FILES, [nextClamp]),
 ]
 
 /**

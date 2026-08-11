@@ -22,7 +22,7 @@
  * than them.
  *
  * ---------------------------------------------------------------------------
- * Why the port is four methods
+ * Why the port is exactly the endpoints a consumer reaches for
  * ---------------------------------------------------------------------------
  *
  * Each one answers one endpoint of `endpoints.ts`, and `THE_ENDPOINT_BEHIND` below is the statement of
@@ -80,14 +80,20 @@
  *     addressed by the question   refused - these bytes hash to b5b6d4b... and not to 11d3e28...
  *     addressed by what arrived   installed, 5 files, nothing objected
  *
- * The snapshot half is narrower and is stated at the strength it was measured. A whole, self-consistent
- * snapshot served at another snapshot's address was refused under **both** spellings, in both of the two
- * substitutions tried - the root's and a dependency's. Under the question it is named exactly; under
- * what arrived it is caught downstream, by `entryOf` and by the walk, under sentences that name causes
- * the run did not establish - *publishes no reference.ts* and *the registry holds no such published
- * implementation*, of a contract that publishes one and is served. Two substitutions are not a proof
- * that a third is caught, and the diagnostics are this repository's own worst class arriving through
- * the front door.
+ * **The snapshot half was narrower and is not any more, and what closed it is `heldAt` rather than this
+ * type.** A whole, self-consistent snapshot served at another snapshot's address was refused under both
+ * spellings when this was written, but only one of them named the failure: under what arrived it was
+ * caught downstream, by `entryOf` and by the walk, under *publishes no reference.ts* and *the registry
+ * holds no such published implementation* - of a contract that publishes one and is served. Those are
+ * this repository's own worst class arriving through the front door, and no amount of measuring the
+ * right spelling of *this* type would have removed them.
+ *
+ * What removed them is that a snapshot is now checked against the address it was fetched for, wherever
+ * that address came from. Measured over the six substitutions the imagined graph can express - three at
+ * a root binding, three at an edge - all six are refused naming the digest, what it declares and what
+ * was asked for. Addressing by the question stays the rule for the reason above; what it decides is no
+ * longer whether a substitution is *caught*, only whether the answer or the address is the thing found
+ * to be wrong.
  */
 
 import type { ContractAddress } from '../registry/address.js'

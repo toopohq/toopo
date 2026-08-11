@@ -230,10 +230,10 @@ export const prepareInstallation = (
     version: binding.found.version,
   }
 
-  const root = heldAt(source, binding.found.digest, renderContract(chosen.found.address))
+  const root = heldAt(source, rootAddress, binding.found.digest)
   if (refused(root)) return { faults: root.faults }
 
-  const graph = gatherHoldings(source, [root.found])
+  const graph = gatherHoldings(source, [{ frozen: root.found, digest: binding.found.digest }])
   if (refused(graph)) return { faults: graph.faults }
 
   let order: readonly FrozenImplementation[]

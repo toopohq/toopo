@@ -5,22 +5,24 @@ import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { ContractRecord, Lifecycle } from './contract-record.js'
 import { FIELD_MAP, pathsIn, publicContract } from './field-map.js'
 import {
-  CLAMP,
   HOLDINGS,
+  INDEPENDENT_CARRIERS,
+  NEXT_HOLDINGS,
   ROUND,
   ROUND_SOURCE,
   clamp,
   pad,
-  referenceAt,
   round,
   sign,
 } from './imagined-graph.js'
 import type { ImplementationRecord } from './implementation-record.js'
 import {
   UnresolvedDependency,
+  declarationFaults,
   dependencyDepthOf,
   resolveDependencies,
 } from './implementation-record.js'
+import { digestOfSnapshot, edgeTo, implementationSnapshot } from './snapshot.js'
 import { decode, encode } from './value.js'
 import { contractAnatomy } from '../catalogue/every-contract.js'
 
@@ -395,7 +397,7 @@ describe('what `toopo add` has to be told, and a depth could not tell it', () =>
     const order = rendered(resolveDependencies(round, HOLDINGS))
     const tooLate = resolveDependencies(round, HOLDINGS).flatMap((record, at) =>
       record.dependsOn
-        .map((edge) => renderImplementation(edge))
+        .map((edge) => renderImplementation(edge.implementation))
         .filter((edge) => order.indexOf(edge) > at),
     )
 
@@ -447,14 +449,61 @@ describe('what `toopo add` has to be told, and a depth could not tell it', () =>
   })
 
   /**
-   * An unpublished implementation can never be an edge's target, and it is unrepresentable rather
-   * than refused: an address carries a version string and an unpublished record carries null, so the
-   * lookup cannot match. Asserted because "cannot happen" is the claim most worth a guard.
+   * An unpublished implementation can never be an edge's target, and it is refused at both ends. The
+   * walk cannot resolve one, because `declarationFaults` answers *it is unpublished* before it compares
+   * anything; and `edgeTo` cannot mint one at all, because an edge names a published version and a
+   * record carries `null` until the publishing tool assigns it. Asserted because "cannot happen" is the
+   * claim most worth a guard.
    */
   it('an-unpublished-implementation-cannot-be-depended-on', () => {
     const unpublished = { ...pad, version: null }
 
     expect(() => resolveDependencies(round, [unpublished, clamp, sign])).toThrow(UnresolvedDependency)
+    expect(() => edgeTo(unpublished)).toThrow(/has no version, so nothing can depend on it/)
+  })
+
+  /**
+   * Every edge resolves, by its own digest, to a snapshot declaring the artefact it names.
+   *
+   * **The same rule the client applies, with the registry's resolver instead of a wire.** `heldAt`
+   * fetches at an edge's digest and asks `declarationFaults` whether what arrived is what was named;
+   * here the digest is looked up among the graph's own snapshots and the same question is asked. One
+   * fact, one function, two ways of obtaining the thing it is asked about - which is why there is no
+   * second comparison written anywhere.
+   *
+   * It is not a restatement of `edgeTo`. That function reads a digest off one record; this resolves a
+   * digest against every snapshot the graph publishes, so an `edgeTo` that derived from the wrong
+   * value - the dependent, a file hash, a constant - resolves to nothing or to another artefact and
+   * reddens here.
+   *
+   * All three graphs, because a fixture that was right in the one everybody reads and wrong in the two
+   * that are only reached by a removal or an update is a fixture that measures the wrong thing twice.
+   */
+  it('every-edge-resolves-to-the-artefact-it-names', () => {
+    const everyGraph = [HOLDINGS, NEXT_HOLDINGS, INDEPENDENT_CARRIERS]
+    const edges = everyGraph.flatMap((graph) => graph.flatMap((record) => record.dependsOn))
+
+    const unresolved = everyGraph.flatMap((graph) => {
+      const byDigest = new Map(
+        graph.map((record) => [digestOfSnapshot(implementationSnapshot(record)), record]),
+      )
+
+      return graph.flatMap((record) =>
+        record.dependsOn.flatMap((edge) => {
+          const at = byDigest.get(edge.digest)
+          if (at === undefined) {
+            return [`${renderImplementation(edge.implementation)} carries a digest nothing publishes`]
+          }
+
+          return declarationFaults(at, edge.implementation)
+        }),
+      )
+    })
+
+    // Five: the four of the first graph, three of the second - `number/round@1` drops `number/sign@1`
+    // there - and none at all between the two independent carriers, which share a file and no edge.
+    expect(edges).toHaveLength(7)
+    expect(unresolved).toEqual([])
   })
 
   /**
@@ -463,7 +512,7 @@ describe('what `toopo add` has to be told, and a depth could not tell it', () =>
    * one would write a project whose imports do not terminate.
    */
   it('a-cycle-is-refused-rather-than-deduplicated-away', () => {
-    const padThroughClamp = { ...pad, dependsOn: [referenceAt(CLAMP)] }
+    const padThroughClamp = { ...pad, dependsOn: [edgeTo(clamp)] }
 
     expect(() => resolveDependencies(round, [padThroughClamp, clamp, sign])).toThrow(
       /imports itself through/,

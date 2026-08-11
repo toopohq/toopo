@@ -45,6 +45,7 @@
  */
 
 import type { AddressingClass } from './response.js'
+import { IMPLEMENTATION_BINDING_NATURES, revisableFieldsOf } from './response.js'
 import { NEEDS } from './needs.js'
 
 export type Endpoint = {
@@ -133,9 +134,12 @@ export const ENDPOINTS: readonly Endpoint[] = [
       'record-the-install-in-the-lockfile',
     ],
     whatAReaderCanCheck:
-      'nothing here is checkable, and every field of it is an opinion: which implementation is the ' +
-      'default, which was demoted, what a benchmark measured, what the registry tagged it. The ' +
-      'addresses and digests it carries are checkable once they are fetched.',
+      'that the digest of each entry is the one that address is bound to for life - not by fetching ' +
+      'anything, but because a binding is made once and `publishImplementation` refuses to make it ' +
+      'twice. What is the registry\'s opinion, and changeable without anything being wrong, is ' +
+      `${revisableFieldsOf(IMPLEMENTATION_BINDING_NATURES).join(', ')}. So a reader may pin what ` +
+      'they installed against this answer and be told the truth about it later; what they may not do ' +
+      'is take the standing for a fact about the code.',
   },
   {
     id: 'attestations',
@@ -276,13 +280,28 @@ export const MISSING_FROM_THE_INDICATIVE_LIST: readonly string[] = [
  * edges are frozen, inside the digest, in each implementation's own snapshot - so the walk costs
  * nothing extra and its result is verifiable where ours would not be.
  *
+ * **This sentence used to say *verify every step*, and it was false until an edge carried a digest.**
+ * The edges were frozen and each one named an address, so the client had to ask `implementation-
+ * bindings` which digest that address resolved to - a named answer, one per contract in the closure,
+ * believed rather than checked. The walk was verifiable everywhere except at every edge of it.
+ *
+ * What is true now is smaller and is stated as what it is: one belief, at the root, and it is named
+ * rather than counted. A reader has to trust that `number/round@1` resolves to the digest this
+ * registry says it does - which is the registry's single load-bearing assertion, the one
+ * `contract-binding` already declares and the one nothing can remove, because a name is what a person
+ * types. Every step under it is arithmetic. That is a Merkle tree with one root of trust, which is the
+ * shape an OCI manifest and Go's module graph already have, and it is what makes the claim honest
+ * instead of ambitious.
+ *
  * So `resolveDependencies` stays, and it belongs to the publishing tool: a registry that would not
  * *serve* a resolution still has to refuse publishing a broken graph.
  */
 export const RESOLUTION_IS_THE_CLIENTS =
-  'the edges are frozen inside each implementation snapshot, so a client that fetches the snapshots ' +
-  'it needs anyway can resolve the graph itself and verify every step; a resolution computed here ' +
-  'would be one more thing to believe, bought with nothing'
+  'each implementation snapshot names its edges by digest, so a client that fetches the snapshots it ' +
+  'needs anyway resolves the graph itself with one thing to believe: that the name it started from ' +
+  'is bound to the digest this registry says it is. Every step below that root is checked by ' +
+  'arithmetic, and a resolution computed here would put an unverifiable answer back where the ' +
+  'digests removed one'
 
 /** Every need identifier an endpoint claims to answer. */
 export const ANSWERED_NEEDS = new Set(ENDPOINTS.flatMap((endpoint) => endpoint.answers))

@@ -162,6 +162,13 @@
  * compared against and not how many there are. That is the whole of what `censusFor` gained, and the
  * shape it did *not* take is worth recording beside it - see below.
  *
+ * A fourteenth on the edge that carries a digest: no new file and two counts moved, one under the
+ * registry's and one under the fifth configuration. It is the shape the eighth predicted - a unit that
+ * adds guards to files that already exist touches only their entries - arriving on a change to the
+ * schema rather than to a page, which is worth one line because the schema is where a new file would
+ * have been the expected cost. Both guards ask one question about one fact, so both land beside the
+ * fixture and the installer that already ask everything else about it.
+ *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
  * ---------------------------------------------------------------------------
@@ -232,7 +239,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'registry/signature.test.ts': 14,
     'registry/snapshot.test.ts': 45,
     'registry/publication.test.ts': 5,
-    'registry/the-sixth-contract.test.ts': 14,
+    'registry/the-sixth-contract.test.ts': 15,
     'registry/verifiability.test.ts': 13,
     'registry/visibility.test.ts': 10,
   },
@@ -253,7 +260,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/configuration.test.ts': 9,
     'cli/diff.test.ts': 10,
     'cli/ignored.test.ts': 3,
-    'cli/install.test.ts': 19,
+    'cli/install.test.ts': 21,
     'cli/list.test.ts': 4,
     'cli/plan.test.ts': 6,
     'cli/relocate.test.ts': 10,

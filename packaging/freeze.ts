@@ -46,7 +46,7 @@ import type { FrozenImplementation } from '../registry/snapshot.js'
 import type { ArtefactBindings, ArtefactBlob, ServedArtefact } from '../cli/artefact.js'
 import { ARTEFACT_FORMAT } from '../cli/artefact.js'
 import { gatherHoldings, heldAt, refused } from '../cli/resolve.js'
-import type { Found } from '../cli/resolve.js'
+import type { Found, RootAt } from '../cli/resolve.js'
 import type { RegistrySource } from '../cli/source.js'
 
 export class TheRegistryContradictsItself extends Error {
@@ -118,16 +118,18 @@ const recording = (source: RegistrySource): Recording => {
 }
 
 /** Every implementation the index offers, as the roots a dependency walk starts from. */
-const rootsOf = (source: RegistrySource): readonly FrozenImplementation[] =>
+const rootsOf = (source: RegistrySource): readonly RootAt[] =>
   source
     .contractIndex()
     .entries.filter((entry) => entry.installable)
     .flatMap((entry) =>
-      source.implementationBindings(entry.address).map((binding) => {
-        const what = renderImplementation(binding.address)
-
-        return insisted(heldAt(source, binding.digest, what), what)
-      }),
+      source.implementationBindings(entry.address).map((binding) => ({
+        frozen: insisted(
+          heldAt(source, binding.address, binding.digest),
+          renderImplementation(binding.address),
+        ),
+        digest: binding.digest,
+      })),
     )
 
 const blobEntry = (blob: ServedBlob): ArtefactBlob => ({

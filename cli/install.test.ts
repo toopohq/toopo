@@ -5,7 +5,11 @@ import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
-import type { Lockfile } from '../registry/implementation-record.js'
+import { clamp, pad, sign } from '../registry/imagined-graph.js'
+import type { ImplementationRecord, Lockfile } from '../registry/implementation-record.js'
+import { servedSnapshot } from '../registry/response.js'
+import type { Snapshot } from '../registry/snapshot.js'
+import { digestOfSnapshot, implementationSnapshot } from '../registry/snapshot.js'
 import { imaginedSource, sourceWithTwoVersionsOfPad } from './imagined-source.js'
 import type { Installation, InstallOutcome } from './install.js'
 import { lockfileAfter, prepareInstallation } from './install.js'
@@ -44,6 +48,48 @@ const mustInstall = (outcome: InstallOutcome): Installation => {
   if ('unchanged' in outcome) throw new Error('nothing was installed')
 
   return outcome.installation
+}
+
+const digestOf = (record: ImplementationRecord): string =>
+  digestOfSnapshot(implementationSnapshot(record))
+
+/**
+ * A registry whose `carrier` was published with its edge to `string/pad@1` carrying `instead`'s digest.
+ *
+ * Everything else it answers is honest, and the corrupted snapshot hashes to the address it is served
+ * at - because it *is* the artefact the registry published. What a wire adds over a local source is not
+ * a damaged body, which `servedSnapshotFaults` already catches; it is a whole, self-consistent answer
+ * that is simply not the one that was asked for.
+ *
+ * Shared by the two guards below because they differ only in which edge lies, which is exactly what
+ * separates *the walk follows it* from *the walk has already resolved that address*.
+ */
+const publishedWithALyingEdge = (
+  carrier: string,
+  instead: ImplementationRecord,
+): RegistrySource => {
+  const honest = imaginedSource()
+  const edgeToPad = clamp.dependsOn[0]
+  if (edgeToPad === undefined) throw new Error('the imagined graph no longer has clamp import pad')
+
+  return {
+    ...honest,
+    snapshot: (digest) => {
+      const answer = honest.snapshot(digest)
+      if (answer === null) return null
+
+      const parsed = JSON.parse(answer.canonicalText) as Snapshot
+      if (parsed.unit !== 'implementation' || parsed.frozen.contract.name !== carrier) return answer
+
+      return servedSnapshot({
+        ...parsed,
+        frozen: {
+          ...parsed.frozen,
+          dependsOn: [{ implementation: edgeToPad.implementation, digest: digestOf(instead) }],
+        },
+      })
+    },
+  }
 }
 
 const withTheGraph = <T>(use: (project: TemporaryProject, done: Installation) => T): T => {
@@ -422,7 +468,14 @@ export const clamp = (value: number, low: number, high: number): number =>
     }
   })
 
-  /** An edge the registry does not hold stops the install rather than installing part of a graph. */
+  /**
+   * An edge the registry does not hold stops the install rather than installing part of a graph.
+   *
+   * The refusal names the digest since edges began carrying one, and that is a gain rather than a
+   * change of wording: the client no longer asks which digest an edge resolves to, so what is missing
+   * is a content address rather than an answer about a name, and the sentence says the address that
+   * went unanswered.
+   */
   it('an-edge-the-registry-does-not-hold-is-refused', () => {
     const project = aProject()
     try {
@@ -433,8 +486,86 @@ export const clamp = (value: number, low: number, high: number): number =>
       )
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'typescript/string/pad@1/reference@1.0.0 is named by an edge and the registry holds no such published ' +
-          'implementation',
+        'the registry serves no snapshot at ' +
+          '96474a493a4f619656928148aefb0e73bdaf19c3ee9c127080a0d118eb437a90, which ' +
+          'typescript/string/pad@1/reference@1.0.0 names',
+      ])
+      expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * An edge that names one artefact and carries another's digest is refused, naming both.
+   *
+   * Every other check passes: the registry answers honestly, the body at that digest is a whole
+   * self-consistent snapshot, and `servedSnapshotFaults` recanonicalises it to exactly the address it
+   * was fetched by. Nothing about the bytes is wrong. What is wrong is that they are the wrong
+   * artefact - and until edges carried a digest, `gatherHoldings` could not be told so, because it
+   * found the digest by looking `id` and `version` up in the bindings and the identity fell out of
+   * that lookup.
+   *
+   * **What this guard buys was measured rather than assumed, and it is not what it was written
+   * believing.** Over the six substitutions the imagined graph can express - three at a root binding,
+   * three at an edge - taking this check out leaves five of them refused anyway, downstream, under
+   * *typescript/string/pad@1/reference@1.0.0 cannot be resolved, and the registry holds no such
+   * published implementation* and *typescript/number/sign@1 publishes no reference.ts*. Both name a
+   * cause no measurement establishes: the registry publishes and serves both. So the repair is a
+   * refusal that names the fact instead of one that sends its reader hunting for a problem that does
+   * not exist, which is the class this repository calls its worst. The sixth is
+   * `two-edges-naming-one-address-at-two-digests-are-refused` below.
+   *
+   * `sign` is put in `pad`'s place because they are the two ends of the graph a plan treats
+   * differently: `pad` carries the shared `digits.ts` and `sign` does not.
+   *
+   * The edge is written as a literal here, and this is the only place in the repository where one can
+   * be: `edgeTo` reads the digest off the artefact it points at, so no production path can build this
+   * value. What a test reproduces is what a registry can publish and a wire can deliver.
+   */
+  it('an-edge-whose-digest-names-another-artefact-is-refused', () => {
+    const project = aProject()
+    try {
+      const outcome = installing(publishedWithALyingEdge('number/clamp', sign), project, 'number/round')
+
+      expect('faults' in outcome && outcome.faults).toEqual([
+        `the snapshot served at ${digestOf(sign)}: it declares itself ` +
+          'typescript/number/sign@1/reference@1.0.0, where ' +
+          'typescript/string/pad@1/reference@1.0.0 is what was asked for. A snapshot says which ' +
+          'artefact it is, so this is the wrong artefact rather than a damaged one.',
+      ])
+      expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * Two dependents naming one address at two digests are refused, rather than one of them being
+   * believed because the walk reached it first.
+   *
+   * **The one substitution the guard above does not reach, and it was found by measuring the six
+   * rather than by reading the loop.** `gatherHoldings` fetches an address once, so an edge naming
+   * something already resolved needs no request - and skipping it outright threw its digest away. With
+   * `number/sign@1` published naming `string/pad@1` at `number/clamp@1`'s digest, the honest edge from
+   * `number/clamp@1` arrives first, the lying one is skipped, and the install answers five correct
+   * files. **The right artefact lands because of the order the walk happens to take**, and the same
+   * corrupt registry refuses when the two arrive the other way round.
+   *
+   * It is not registry hygiene. `number/sign@1` was published against `number/clamp@1`'s code and the
+   * project is getting `string/pad@1`'s - a combination nobody published, which is the thing
+   * `reconcile.ts` already refuses to assemble one version at a time.
+   */
+  it('two-edges-naming-one-address-at-two-digests-are-refused', () => {
+    const project = aProject()
+    try {
+      const outcome = installing(publishedWithALyingEdge('number/sign', clamp), project, 'number/round')
+
+      expect('faults' in outcome && outcome.faults).toEqual([
+        'typescript/string/pad@1/reference@1.0.0 is named by two edges at two digests, ' +
+          `${digestOf(pad)} and ${digestOf(clamp)}. One of the features being installed was ` +
+          'published against an artefact the other is not getting, which is a combination nobody ' +
+          'published.',
       ])
       expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
     } finally {

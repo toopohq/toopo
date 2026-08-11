@@ -24,6 +24,8 @@
 
 import type { ContractAddress, ImplementationAddress } from '../registry/address.js'
 import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
+import type { DependencyEdge } from '../registry/implementation-record.js'
+import { declarationFaults } from '../registry/implementation-record.js'
 import type { ServedExport, ServedIndexEntry } from '../registry/response.js'
 import { servedBlobFaults, servedSnapshotFaults } from '../registry/response.js'
 import type { FrozenImplementation, Snapshot } from '../registry/snapshot.js'
@@ -47,6 +49,18 @@ export type Chosen = {
 export type ChosenBinding = {
   readonly id: string
   readonly version: string
+  readonly digest: string
+}
+
+/**
+ * A root of a walk, with the digest it was fetched by.
+ *
+ * The digest travels because an edge naming a root has to be comparable with it - see
+ * `gatherHoldings`. It is never a second statement of anything: every caller obtained the snapshot by
+ * that digest one line earlier, from the binding it resolved the root through.
+ */
+export type RootAt = {
+  readonly frozen: FrozenImplementation
   readonly digest: string
 }
 
@@ -253,11 +267,39 @@ export const bindingAt = (
   return { found: { id: wanted.address.id, version: wanted.address.version, digest: wanted.digest } }
 }
 
+/**
+ * The frozen implementation at a digest, refused unless it is the one the address names.
+ *
+ * **The last check is the one this function exists for, and it is younger than the other three.** A
+ * digest reaches this function from two places and neither of them establishes what arrives. From a
+ * *binding*, the registry was asked which digest a name resolves to and was believed. From an *edge*,
+ * the digest is carried inside a frozen snapshot and the name beside it is checked against nothing. So
+ * a whole, self-consistent snapshot of another artefact - served honestly at the address that was
+ * asked for - passes `servedSnapshotFaults` exactly, and the wrong feature is installed under the
+ * right name.
+ *
+ * It is one check over both, rather than one per door, because it is one fact: *a snapshot is the
+ * artefact it says it is*. Two guards over that would have nothing to say for themselves the day they
+ * disagreed. `declarationFaults` holds it, in the schema, where the three parts of an address are
+ * already compared.
+ *
+ * **What made the edge half urgent is that this unit created it.** Before an edge carried a digest,
+ * `gatherHoldings` found the digest by looking the edge's `id` and `version` up in the bindings, so
+ * identity was established by the lookup - and that lookup is exactly the round trip the digest
+ * removes. Taking it without putting this back would have moved the belief from a named answer onto an
+ * edge and checked neither.
+ *
+ * The root half is older and is latent rather than live: `localSource` and `packagedSource` look an
+ * answer up *by* its digest in a map keyed on that digest, so no local registry can answer one address
+ * with another artefact. It goes live the day a source is remote, which is the distribution unit - so
+ * this closes it before the door it would come through is opened.
+ */
 export const heldAt = (
   source: RegistrySource,
+  address: ImplementationAddress,
   digest: string,
-  where: string,
 ): Found<FrozenImplementation> => {
+  const where = renderImplementation(address)
   const answer = source.snapshot(digest)
   if (answer === null) {
     return { faults: [`the registry serves no snapshot at ${digest}, which ${where} names`] }
@@ -269,6 +311,11 @@ export const heldAt = (
   const parsed = JSON.parse(answer.canonicalText) as Snapshot
   if (parsed.unit !== 'implementation') {
     return { faults: [`${digest} is a ${parsed.unit} snapshot where ${where} names an implementation`] }
+  }
+
+  const misdeclared = declarationFaults(parsed.frozen, address)
+  if (misdeclared.length > 0) {
+    return { faults: misdeclared.map((fault) => `the snapshot served at ${digest}: ${fault}`) }
   }
 
   return { found: parsed.frozen }
@@ -283,54 +330,85 @@ export const heldAt = (
  * `roots` is a list rather than one implementation because `update` resolves the whole project at once:
  * a single walk over every root is what lets one plan see two features carrying one file, where a walk
  * per root would deduplicate nothing across them.
+ *
+ * **An edge is followed without asking the registry anything about it**, and that is the whole of what
+ * the digest on an edge buys. This loop used to fetch `implementation-bindings` for every edge, to
+ * learn which digest it resolved to - a named answer, one per contract in the closure, each of them
+ * something a reader believes rather than checks. The digest is now inside the frozen snapshot that
+ * names the edge, so the step is arithmetic and the closure hangs off the root's digest alone.
+ * Measured on the imagined graph, `toopo add number/round` goes from 8 round trips to 6 and from five
+ * named answers to one.
+ *
+ * **An address already held is still compared, and that was found by measuring rather than by reading
+ * the loop.** A second dependent naming an address the walk has resolved needs no fetch - and skipping
+ * it outright threw away the one thing that edge carried. Measured on the imagined graph with a
+ * `number/sign@1` published naming `string/pad@1` at `number/clamp@1`'s digest: the honest edge from
+ * `number/clamp@1` arrived first, the lying one was skipped, and the install answered five correct
+ * files. The right artefact landed *because of the order the walk happened to take*, and the same
+ * corrupt registry refuses when the two edges arrive the other way round.
+ *
+ * It is not registry hygiene. Two dependents disagreeing about which artefact an address is means one
+ * of them was published against code the project is not getting - a combination nobody published,
+ * which is the thing `reconcile.ts` already refuses to assemble one version at a time.
+ *
+ * `roots` therefore arrive with the digest they were fetched by, so that an edge naming a root is
+ * compared like any other. Every caller already holds it: it is the binding it resolved the root
+ * through.
  */
 export const gatherHoldings = (
   source: RegistrySource,
-  roots: readonly FrozenImplementation[],
+  roots: readonly RootAt[],
 ): Found<readonly FrozenImplementation[]> => {
-  const held = new Map<string, FrozenImplementation>()
+  const held = new Map<string, { readonly frozen: FrozenImplementation; readonly digest: string }>()
   const faults: string[] = []
-  const pending: ImplementationAddress[] = []
+  const pending: DependencyEdge[] = []
   // An address is asked about once even when two dependents name it, so a missing edge is one
-  // refusal rather than one per dependent - the reader has one thing to fix, not two.
+  // refusal rather than one per dependent - the reader has one thing to fix, not two. The same rule
+  // covers a disagreement: three dependents where two carry one wrong digest is one corrupt address.
   const asked = new Set<string>()
+  const disagreed = new Set<string>()
 
   for (const root of roots) {
+    const { frozen } = root
     held.set(
-      renderImplementation({ contract: root.contract, id: root.id, version: root.version ?? '' }),
+      renderImplementation({ contract: frozen.contract, id: frozen.id, version: frozen.version ?? '' }),
       root,
     )
-    pending.push(...root.dependsOn)
+    pending.push(...frozen.dependsOn)
   }
 
   while (pending.length > 0) {
-    const edge = pending.shift() as ImplementationAddress
-    const what = renderImplementation(edge)
-    if (held.has(what) || asked.has(what)) continue
-    asked.add(what)
+    const edge = pending.shift() as DependencyEdge
+    const what = renderImplementation(edge.implementation)
 
-    const binding = source
-      .implementationBindings(edge.contract)
-      .find(
-        (candidate) => candidate.address.id === edge.id && candidate.address.version === edge.version,
-      )
-
-    if (binding === undefined) {
-      faults.push(`${what} is named by an edge and the registry holds no such published implementation`)
+    const already = held.get(what)
+    if (already !== undefined) {
+      if (already.digest !== edge.digest && !disagreed.has(what)) {
+        disagreed.add(what)
+        faults.push(
+          `${what} is named by two edges at two digests, ${already.digest} and ${edge.digest}. ` +
+            `One of the features being installed was published against an artefact the other is ` +
+            `not getting, which is a combination nobody published.`,
+        )
+      }
       continue
     }
+    if (asked.has(what)) continue
+    asked.add(what)
 
-    const answer = heldAt(source, binding.digest, what)
+    const answer = heldAt(source, edge.implementation, edge.digest)
     if (refused(answer)) {
       faults.push(...answer.faults)
       continue
     }
 
-    held.set(what, answer.found)
+    held.set(what, { frozen: answer.found, digest: edge.digest })
     pending.push(...answer.found.dependsOn)
   }
 
-  return faults.length > 0 ? { faults } : { found: [...held.values()] }
+  return faults.length > 0
+    ? { faults }
+    : { found: [...held.values()].map((entry) => entry.frozen) }
 }
 
 // ---------------------------------------------------------------------------
