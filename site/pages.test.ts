@@ -641,6 +641,24 @@ describe('the page that says how we verify', () => {
      *
      * It names the one address this data carries. A second would have to be named here too, and
      * that is the limit of this repair rather than a mechanism.
+     *
+     * ---------------------------------------------------------------------------
+     * What this establishes, and the half it cannot
+     * ---------------------------------------------------------------------------
+     *
+     * **It asks whether a figure a reader can see occurs somewhere in the data. It cannot ask whether
+     * it is the figure that sentence derives.** A page saying *41 such readings* passes while the
+     * lenses number 24, provided 41 is some other count in the same data - and that is not
+     * hypothetical: `measured.unprobed.length` reached exactly 41 when three batteries declared a
+     * transport they cannot reach, and W-47 went from killed to survived without one line of this page
+     * changing. The pool is every derived integer, so it grows with the catalogue and excuses more
+     * literals every time it does.
+     *
+     * Closing it means each rendered figure carrying which derivation produced it, and this comparing
+     * the pair rather than the set - a change to how the page emits every number it has. It is priced
+     * here and not bought, which is what this repository does with a mechanism it can name and cannot
+     * afford. What stands in the meantime is that W-47's literal is chosen to be underivable rather
+     * than merely absent.
      */
     const withoutTheCommit = (text: string): string => text.replaceAll(THE_REPLAY.measuredAt, '')
 

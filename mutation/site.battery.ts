@@ -161,6 +161,24 @@ const A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT = `    until:
  * Its first target was the count of defect cells, which two other guards read - so the mutant
  * reddened three at once and the guard about derived figures was never alone on anything. The
  * sentence about lenses is read by nothing else, so a literal there probes exactly one claim.
+ *
+ * **The literal it writes has moved twice, and the second time says something the first did not.**
+ * It was `41`. The first collision was an address: `THE_REPLAY.measuredAt` was stamped `0d8e41d`,
+ * whose digit runs include `41`, and the repair was to take every address off both sides. The second
+ * was not an address at all - `measured.unprobed.length` *became* 41, when three batteries declared
+ * the transport they cannot reach - so the pool held `41` as a figure something really derived, and
+ * the mutant stopped writing anything the page could not have said.
+ *
+ * **What that exposes is a limit of the guard rather than a bad literal, and it is wider than the one
+ * already declared beside it.** That guard asks whether every figure a reader can see occurs
+ * *somewhere* in the data; it cannot ask whether it is the figure *that sentence* derives. So a mutant
+ * writing any other figure's value passes, and the pool grows with the catalogue - fifty-odd distinct
+ * small integers today. Closing it would mean rendering each figure with its provenance and checking
+ * the pair, which is a redesign of how this page emits numbers and is not bought here.
+ *
+ * So the literal is chosen to be one nothing can derive rather than one that merely does not collide
+ * today: four digits, where every count on that page is a population of batteries, cells, guards or
+ * fields and the only larger figure in the data is a millisecond reading.
  */
 const A_FIGURE_IS_DERIVED = `        \`\${measured.lenses} such readings over the \${measured.batteries} batteries.\`,`
 
@@ -848,7 +866,7 @@ const mutants: readonly Mutant[] = [
       'and goes false in silence the first time a battery gains a mutant - which is the failure this ' +
       'repository has caught in its own prose four times and never once in code, on the page whose ' +
       'whole argument is that a published number carries its derivation',
-    [methodFile(A_FIGURE_IS_DERIVED, '        `41 such readings over the ${measured.batteries} batteries.`,')],
+    [methodFile(A_FIGURE_IS_DERIVED, '        `7919 such readings over the ${measured.batteries} batteries.`,')],
     killed(['every-figure-on-the-method-page-comes-from-what-it-was-built-from']),
   ),
 
