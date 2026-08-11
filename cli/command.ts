@@ -18,6 +18,26 @@
  * that away, and would take it away silently. `THE_WRITE_DISCIPLINE` in `arguments.ts` says which
  * commands ask twice and why `add` does not.
  *
+ * **A registry reached over a network keeps that property, and the condition is about this file.**
+ * Measured at `0ce32d6` against the artefact served over HTTP: the shape that works is *decide, note
+ * what was missing, fetch all of it, decide again from nothing* - a fixpoint whose decision is
+ * `prepareInstallation` or `reconcileProject`, unchanged and synchronous, with the await in the loop
+ * around it. Both were run nine times over one install and left the project byte for byte identical,
+ * which is what a decision has to be for a loop to be allowed to replay it. **So `commit` must stay
+ * outside that loop, and this file is what is outside it** - the moment writing moves into the thing
+ * being replayed, an interrupted fetch writes a project once per round.
+ *
+ * The cost is not what it looks like. Nine replays of the `update` decision cost `[0.3, 0.0, 0.0, 0.1,
+ * 0.0, 0.1, 0.1, 0.1, 59.4]` milliseconds: every replay but the last refuses at the first answer it
+ * does not hold, so the disk hashing, the diffing and the import rewriting happen exactly once. It is
+ * `Found<T>` being paid for somewhere nobody wrote it for - a step that answers *what it found or why
+ * it refused, never an absence* is a step a loop can re-enter for nothing.
+ *
+ * Round trips are `3 + 2·depth + 1`, measured at both ends: four for a contract that depends on
+ * nothing, eight for the imagined graph at depth two, and the frontier is batched rather than walked -
+ * two roots fetched `[1, 2, 2, 3]`. It is the shape of the endpoints and not of the loop: a snapshot
+ * digest comes from a binding, so a level is two round trips whoever writes the walk.
+ *
  * **The registry is a parameter, and that is what makes one build of this file installable.** It used
  * to call `localSource()`, which serialises this working tree - and a published `toopo` has no working
  * tree, cannot reach the modules that serialisation imports, and must be served from a frozen artefact

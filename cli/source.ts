@@ -48,6 +48,46 @@
  * - answer needs the site, an auditor and `update` have. An installer that fetched them would be
  * fetching what it does not use, which is how a client comes to depend on an answer nobody meant it to
  * have.
+ *
+ * ---------------------------------------------------------------------------
+ * *Nothing above it changes* was measured, and one thing inside it has to
+ * ---------------------------------------------------------------------------
+ *
+ * The sentence above is a claim about a day that has not come, so it was paid rather than left as one:
+ * the frozen artefact was served by `node:http` on an ephemeral port, a source over that wire was
+ * handed to the installer's own functions, and the real entry point was run in a real project. Measured
+ * at `0ce32d6`, at a maquette reverted in the commit that carries this paragraph.
+ *
+ * **`resolve.ts`, `install.ts`, `reconcile.ts`, `search.ts` and `command.ts` were not edited**, and
+ * `toopo add number/round` printed its ordinary screen - five files, `digits.ts` shared with
+ * `number/clamp@1`, three imports repointed - out of a registry reached over HTTP. The bytes, the
+ * deduplication and the `update` verdicts were compared against the same call on a local source and
+ * were identical. So the claim holds for everything above this type.
+ *
+ * **What it does not hold for is this type's own implementation, and one line of it decides a supply
+ * chain.** `localSource` and `packagedSource` both look an answer up *by* its digest in a map keyed on
+ * that digest, so the pairing of an answer with the address it was asked at is held by a data
+ * structure. There is no such structure on a wire: a server answers what it chooses to answer, and
+ * `servedBlobFaults` compares `addressedBy` against a recompute of the bytes beside it. A remote source
+ * built with `servedBlob(whatArrived)` therefore checks that the bytes hash to their own hash.
+ *
+ * It is `artefact.ts`'s own sentence one layer up - *digests recomputed from whatever is on disk
+ * certify themselves and prove nothing.* **So a remote implementation addresses every content-addressed
+ * answer by the digest it asked for**, which is what turns `servedSnapshotFaults` and `servedBlobFaults`
+ * into the check `resolve.ts` believes it is making. Measured on a registry serving the wrong bytes at
+ * the right blob address:
+ *
+ *     addressed by the question   refused - these bytes hash to b5b6d4b... and not to 11d3e28...
+ *     addressed by what arrived   installed, 5 files, nothing objected
+ *
+ * The snapshot half is narrower and is stated at the strength it was measured. A whole, self-consistent
+ * snapshot served at another snapshot's address was refused under **both** spellings, in both of the two
+ * substitutions tried - the root's and a dependency's. Under the question it is named exactly; under
+ * what arrived it is caught downstream, by `entryOf` and by the walk, under sentences that name causes
+ * the run did not establish - *publishes no reference.ts* and *the registry holds no such published
+ * implementation*, of a contract that publishes one and is served. Two substitutions are not a proof
+ * that a third is caught, and the diagnostics are this repository's own worst class arriving through
+ * the front door.
  */
 
 import type { ContractAddress } from '../registry/address.js'
