@@ -29,6 +29,10 @@ import {
   IMAGINED_VERSION,
   INDEPENDENT_CARRIERS,
   NEXT_HOLDINGS,
+  clamp,
+  pad,
+  round,
+  sign,
 } from '../registry/imagined-graph.js'
 import type { ImplementationRecord } from '../registry/implementation-record.js'
 import type { ServedImplementationBinding, ServedIndex } from '../registry/response.js'
@@ -196,29 +200,30 @@ export const TWO_VERSIONS_OF_ONE_FEATURE = IMAGINED_NEXT_VERSION
  * second write would overwrite the first and the dependent that asked for it would silently get the
  * other one's code.
  *
- * The edge to the newer pad is built from the newer pad, so its digest is that artefact's and not a
- * version string that happens to match one. A fixture that wrote the two apart could name `1.0.1` while
- * carrying `1.0.0`'s digest - which is the exact defect `heldAt` refuses, arriving inside the fixture
- * meant to measure something else.
+ * **The graph is rebuilt from the changed artefact upwards, and an edge carrying a digest is what forced
+ * that.** This fixture used to swap one record into `HOLDINGS` and serve the rest unchanged, which
+ * worked while an edge named only an address: `number/round@1`'s edge to `number/clamp@1` resolved by
+ * name whatever that clamp had become. An edge now pins the snapshot, so a clamp with a different
+ * dependency is a different artefact with a different digest, and the round that names the old one names
+ * something this source does not serve.
+ *
+ * That is permanent rule 6 arriving inside a test fixture: **replacing what an address resolves to while
+ * keeping its version is exactly the rebinding the ledger refuses**, and it stopped being expressible
+ * here on the day edges became verifiable. What replaces it is what a registry would really publish -
+ * a clamp against the newer pad, and a round published against that clamp.
+ *
+ * The records are named rather than found in `HOLDINGS`, because four `.find` calls with a refusal
+ * behind them are a runtime check for something the compiler already holds.
  */
 export const sourceWithTwoVersionsOfPad = (): RegistrySource => {
-  const pad = HOLDINGS.find((record) => record.contract.name === 'string/pad')
-  const clamp = HOLDINGS.find((record) => record.contract.name === 'number/clamp')
-  if (pad === undefined || clamp === undefined) {
-    throw new Error('the imagined graph no longer holds string/pad and number/clamp')
-  }
-
   const newerPad: ImplementationRecord = { ...pad, version: TWO_VERSIONS_OF_ONE_FEATURE }
-  const clampOnTheNewerPad: ImplementationRecord = {
-    ...clamp,
-    dependsOn: [edgeTo(newerPad)],
+  const clampOnTheNewerPad: ImplementationRecord = { ...clamp, dependsOn: [edgeTo(newerPad)] }
+  const roundOnThatClamp: ImplementationRecord = {
+    ...round,
+    dependsOn: [edgeTo(clampOnTheNewerPad), edgeTo(sign)],
   }
 
-  return sourceOver(
-    HOLDINGS.map((record) =>
-      record.contract.name === 'number/clamp' ? clampOnTheNewerPad : record,
-    ).concat(newerPad),
-  )
+  return sourceOver([pad, sign, clampOnTheNewerPad, roundOnThatClamp, newerPad])
 }
 
 /** The contract the imagined graph is rooted at, so that a caller does not transcribe the name. */
