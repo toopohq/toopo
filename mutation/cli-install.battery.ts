@@ -134,6 +134,10 @@ const A_BLOB_IS_CHECKED = `    const blobFaults = servedBlobFaults(answer)`
 
 const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 
+const A_SNAPSHOT_DECLARES_WHAT_WAS_ASKED_FOR = `  const misdeclared = declarationFaults(parsed.frozen, address)`
+
+const TWO_EDGES_ON_ONE_ADDRESS_AGREE = `      if (already.digest !== edge.digest && !disagreed.has(what)) {`
+
 const WHAT_WAS_WRITTEN_IS_HASHED = `      files.push({ path: file.path, served: file.served, sha256, bytes: bytes.byteLength })`
 
 const A_FILE_WE_DID_NOT_WRITE = `      if (onDisk === wouldWrite.get(file.path)) alreadyOnDisk.add(file.path)`
@@ -1039,6 +1043,54 @@ void theFive`,
       'throws out of a `finally` and an install fails on a rewrite that had already succeeded',
     [removalFile('const REMOVAL_ATTEMPTS = 10', 'const REMOVAL_ATTEMPTS = 0')],
     killed(['a-project-is-removed-while-another-process-still-holds-it']),
+  ),
+
+  /**
+   * A snapshot stops being checked against the address it was fetched for, so a whole self-consistent
+   * answer about another artefact passes every remaining check.
+   *
+   * **The defect this cell restores is the one the digest on an edge created.** Before edges carried
+   * one, `gatherHoldings` learned an edge's digest by looking its `id` and `version` up in the bindings,
+   * and the identity of what arrived fell out of that lookup - the very round trip the digest removes.
+   * Taking the check out therefore does not restore an older, safer state; it restores a state that has
+   * never existed, in which the belief has moved onto the edge and nothing checks it.
+   *
+   * **What it does is not what it was written believing, and that was measured.** Over the six
+   * substitutions the imagined graph can express, five are refused anyway - downstream, by `entryOf` and
+   * by the walk, under *cannot be resolved, and the registry holds no such published implementation* and
+   * *publishes no reference.ts*, of contracts this registry publishes and serves. So this cell's subject
+   * is a refusal that names the fact against one that names a cause no measurement establishes, which is
+   * the class `CLAUDE.md` calls the worst this product can carry.
+   */
+  sameOnEveryLens(
+    'C-65',
+    'stops checking that a snapshot is the artefact the address it was fetched for names, so an edge ' +
+      'carrying another artefact\'s digest is answered honestly and refused, if at all, under a cause ' +
+      'nothing measured',
+    [resolveFile(A_SNAPSHOT_DECLARES_WHAT_WAS_ASKED_FOR, `  const misdeclared: readonly string[] = []`)],
+    killed(['an-edge-whose-digest-names-another-artefact-is-refused']),
+  ),
+
+  /**
+   * Two edges naming one address stop being compared, so whichever the walk reaches first wins.
+   *
+   * **It is the one substitution the cell above does not reach, and it was found by running all six
+   * rather than by reading the loop.** An address already resolved needs no fetch, and skipping it threw
+   * the second edge's digest away with it. Measured: with `number/sign@1` published naming
+   * `string/pad@1` at `number/clamp@1`'s digest, the honest edge arrives first, the lying one is
+   * skipped, and the install answers five correct files - the right artefact landing because of the
+   * order the walk happened to take, on a registry that had published a combination nobody can build.
+   *
+   * The two cells are a partition rather than a pair: this one is green under C-65's edit and C-65 is
+   * green under this one, because the first is about an answer that was fetched and the second about an
+   * edge that never was.
+   */
+  sameOnEveryLens(
+    'C-66',
+    'stops comparing the digests of two edges naming one address, so a feature published against one ' +
+      'artefact silently gets another - and which one depends on the order the walk took',
+    [resolveFile(TWO_EDGES_ON_ONE_ADDRESS_AGREE, `      if (false) {`)],
+    killed(['two-edges-naming-one-address-at-two-digests-are-refused']),
   ),
 ]
 

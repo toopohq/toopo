@@ -155,6 +155,9 @@ const THE_SOURCE_CARRIES_NPM_S_PREFIX = `export const THE_SOURCE_REPOSITORY = 'g
 
 const THE_ADDRESS_IS_THE_PROJECT_S = `  email: 'hello@toopo.dev',`
 
+const AN_EDGE_READS_THE_DIGEST_OFF_THE_ARTEFACT =
+  '    digest: digestOfSnapshot(implementationSnapshot(target)),'
+
 const THE_FLOOR_IS_WHAT_THE_CODE_CALLS = `export const THE_MINIMUM_RUNTIME = '^22.15.0 || >=24.0.0'`
 
 const WHAT_A_COPY_IS_UNDER = `export const THE_COPIED_LICENCE = 'MIT-0'`
@@ -695,6 +698,34 @@ const mutants: readonly Mutant[] = [
       'field that is immutable once a version exists',
     [publicationFile(THE_ADDRESS_IS_THE_PROJECT_S, `  email: 'mathis.perron@example.com',`)],
     killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
+  ),
+
+  /**
+   * `edgeTo` hashes the record instead of the snapshot of it, so every edge carries a digest nothing
+   * publishes.
+   *
+   * **The plausible slip rather than a wrong one.** `digestOf(target, 'snapshot')` is what somebody
+   * writes who has the record in hand and reads `digestOfSnapshot` as a name for the label rather than
+   * for the projection - it canonicalises under the right label, it is deterministic, and every edge it
+   * produces is a well-formed sha-256. What it is not is the address of anything the registry serves.
+   *
+   * It exists because `edgeTo` is the whole of what makes a lying edge unconstructible here: there is no
+   * shape that lets a caller supply a digest, so the only way one can be wrong is for the derivation to
+   * read the wrong value. A guard that resolves each edge against the graph's own snapshots is
+   * `heldAt`'s rule with the registry's resolver instead of a wire, and this is the mutant that says it
+   * is not a restatement of the function it checks.
+   *
+   * It reddens one guard of this folder and no other, because a wrong *digest* leaves every address
+   * intact: `resolveDependencies` walks `edge.implementation`, so the order, the dedup and the depth are
+   * all still right. The client half is out of reach here for the ordinary reason - a battery collects
+   * its own configuration, and `cli-install` owns the guards that follow an edge over a wire.
+   */
+  sameOnEveryLens(
+    'I-35',
+    'derives an edge\'s digest from the record rather than from the snapshot of it, so every edge of ' +
+      'the graph names an address the registry does not serve',
+    [snapshotFile(AN_EDGE_READS_THE_DIGEST_OFF_THE_ARTEFACT, `    digest: digestOf(target, 'snapshot'),`)],
+    killed(['every-edge-resolves-to-the-artefact-it-names']),
   ),
 
   /**
