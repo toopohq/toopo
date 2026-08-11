@@ -168,12 +168,12 @@ const NORMALISE_THEN_HASH = `  const recomputed = digestOfBytes(servedBytes(resp
 
 const INSTALLABLE_MEANS_PUBLISHED = `      installable: published.has(renderContract(identity.address)),`
 
-const WALK_BEFORE_PUSHING = `      const next = mustHold(holdings, edge)
+const WALK_BEFORE_PUSHING = `      const next = mustHold(holdings, edge.implementation)
       walk(next, [...open, what])
       seen.add(what)
       resolved.push(next)`
 
-const WALKS_AFTER_PUSHING = `      const next = mustHold(holdings, edge)
+const WALKS_AFTER_PUSHING = `      const next = mustHold(holdings, edge.implementation)
       seen.add(what)
       resolved.push(next)
       walk(next, [...open, what])`

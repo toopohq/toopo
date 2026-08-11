@@ -231,7 +231,14 @@ const A_CLEAN_REFUSAL_NAMES_ITS_GUARD = `    verdict: 'refused-cleanly',
 const A_NAME_THE_INDEX_DOES_NOT_HOLD =
   '  if (first === undefined) return { faults: [`the registry holds no contract called \\`${typed}\\``] }'
 
-const A_MISSING_EDGE_IS_NAMED = `      faults.push(\`\${what} is named by an edge and the registry holds no such published implementation\`)
+/**
+ * The walk's refusal, which moved a line when edges began carrying a digest.
+ *
+ * It used to be a sentence of its own, built where the binding lookup failed - and that lookup is the
+ * round trip an edge's digest removes. What is left is the one place the walk can refuse at all: what
+ * `heldAt` answered about the address it was sent to.
+ */
+const A_MISSING_EDGE_IS_NAMED = `      faults.push(...answer.faults)
       continue`
 
 const WHAT_IS_WRITTEN_IS_WHAT_ARRIVED = `        Buffer.from(rewritten.sources.get(file.servedAt) as string, 'utf8'),`
@@ -717,10 +724,16 @@ void theFive`,
 
   sameOnEveryLens(
     'C-38',
-    'passes over an edge the registry does not hold, so the refusal that names the missing feature is ' +
-      'replaced by whatever the walk says when it meets the hole',
+    'swallows whatever the walk found wrong about an edge, so a feature the registry does not serve ' +
+      'and one it serves under another name are both passed over in silence',
     [resolveFile(A_MISSING_EDGE_IS_NAMED, `      continue`)],
-    killed(['an-edge-the-registry-does-not-hold-is-refused']),
+    killed([
+      'an-edge-the-registry-does-not-hold-is-refused',
+      // Both, because the walk has one place left to refuse from: this cell drops every fault `heldAt`
+      // answered, and a misdeclared snapshot is one of them. C-65 is where that guard is alone, on the
+      // narrower edit that leaves the walk's own refusal intact.
+      'an-edge-whose-digest-names-another-artefact-is-refused',
+    ]),
   ),
 
   sameOnEveryLens(
