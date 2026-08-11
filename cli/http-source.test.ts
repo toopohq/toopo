@@ -218,11 +218,36 @@ describe('a registry reached over a socket', () => {
    *
    * `null` is *this registry holds no such thing* and is spelled `404`. Anything else that is not the
    * answer throws - because a refusal arriving as an absence is the failure `validation/source.ts`
-   * records one folder along, a thing that was not read passing every check for the wrong reason.
+   * records one folder along, a thing that was not read passing every check for the wrong reason. An
+   * installer told `null` by a registry that is merely broken would report the file as one nobody
+   * publishes, which is a diagnostic naming a cause no measurement establishes.
+   *
+   * **Both halves on one method, because the guard is the difference between them.** The first draft
+   * pointed the client at a dead port, which makes `fetch` reject before any status exists - so it
+   * asserted that a connection failure throws and was named for a status it never saw. A name that
+   * renders a claim its assertion does not make is the class this repository has spent its length
+   * removing, and it arrived here in a guard written to close a different one.
    */
   it('a-status-that-is-neither-the-answer-nor-a-404-is-an-error-and-not-an-absence', async () => {
-    const source = httpSource('http://127.0.0.1:1')
+    const nothingIsServedAt = '0'.repeat(64)
 
-    await expect(source.contractIndex()).rejects.toThrow()
+    const absent = await withARegistry(async (_serving, source) => source.blob(nothingIsServedAt))
+
+    expect(absent).toBe(null)
+
+    // The same question to a registry that fails answering it: 500 rather than 404, and the client may
+    // not turn that into the `null` above.
+    const breaking = await servingOverHttp({
+      ...imaginedSource(),
+      blob: () => Promise.reject(new Error('this registry is having a bad day')),
+    })
+
+    try {
+      await expect(httpSource(breaking.origin).blob(nothingIsServedAt)).rejects.toThrow(
+        /answered 500/,
+      )
+    } finally {
+      await breaking.close()
+    }
   })
 })

@@ -159,11 +159,11 @@ export const httpSource = (origin: string): RegistrySource => {
       const response = await answering({ method: 'blob', sha256 })
       if (response === null) return null
 
-      return {
-        addressing: 'content-addressed',
-        addressedBy: sha256,
-        bytes: Buffer.from(await response.arrayBuffer()),
-      }
+      // Named, so that the two things this line could be addressed by sit beside each other: the digest
+      // that was asked for, and the bytes that turned up. It is the first.
+      const bytes = Buffer.from(await response.arrayBuffer())
+
+      return { addressing: 'content-addressed', addressedBy: sha256, bytes }
     },
   }
 }

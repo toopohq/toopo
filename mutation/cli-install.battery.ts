@@ -74,6 +74,15 @@ const removalFile = (find: string, replace: string) => ({
  */
 const resolveFile = (find: string, replace: string) => ({ file: 'resolve.ts', find, replace })
 
+/**
+ * The implementation of the port that talks to something this process does not own.
+ *
+ * It is measured from this battery rather than from a fifth one because what its defects break is an
+ * *install*: every cell below is a way for the wrong bytes, or no bytes, to reach somebody's folder,
+ * which is the subject this battery already has.
+ */
+const httpSourceFile = (find: string, replace: string) => ({ file: 'http-source.ts', find, replace })
+
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
 // ---------------------------------------------------------------------------
@@ -137,6 +146,20 @@ const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 const A_SNAPSHOT_DECLARES_WHAT_WAS_ASKED_FOR = `  const misdeclared = declarationFaults(parsed.frozen, address)`
 
 const TWO_EDGES_ON_ONE_ADDRESS_AGREE = `      if (already.digest !== edge.digest && !disagreed.has(what)) {`
+
+const A_FAILURE_IS_NOT_AN_ABSENCE = `    if (!response.ok) throw new TheRegistryDidNotAnswer(origin, question, String(response.status))`
+
+const A_BLOB_IS_ADDRESSED_BY_THE_QUESTION = `      return { addressing: 'content-addressed', addressedBy: sha256, bytes }`
+
+/**
+ * The import block of `http-source.ts`, so that a cell can give it something it deliberately lacks.
+ *
+ * Addressing a file by what arrived means hashing what arrived, and this module imports no hash on
+ * purpose - the digest it uses is the one it asked with. So the mutant needs two edits, and needing
+ * them is itself a fact about the design worth leaving visible here.
+ */
+const WHAT_THIS_MODULE_MAY_HASH = `import type {
+  ServedImplementationBinding,`
 
 const WHAT_WAS_WRITTEN_IS_HASHED = `      files.push({ path: file.path, served: file.served, sha256, bytes: bytes.byteLength })`
 
@@ -1104,6 +1127,56 @@ void theFive`,
       'artefact silently gets another - and which one depends on the order the walk took',
     [resolveFile(TWO_EDGES_ON_ONE_ADDRESS_AGREE, `      if (false) {`)],
     killed(['two-edges-naming-one-address-at-two-digests-are-refused']),
+  ),
+
+  /**
+   * A registry that is merely broken becomes a registry that holds nothing.
+   *
+   * `null` is the port's word for *this registry holds no such thing*, and an installer told it by a
+   * registry that answered 500 reports the file as one nobody publishes - a diagnostic naming a cause no
+   * measurement establishes, arriving through the transport rather than through a screen. It is the
+   * failure `validation/source.ts` records one folder along: a thing that was not read passes every
+   * check for the wrong reason.
+   */
+  sameOnEveryLens(
+    'C-67',
+    'turns every status that is not the answer into `null`, so a registry having a bad day is ' +
+      'indistinguishable from one that never published the file',
+    [httpSourceFile(A_FAILURE_IS_NOT_AN_ABSENCE, `    if (!response.ok) return null`)],
+    killed(['a-status-that-is-neither-the-answer-nor-a-404-is-an-error-and-not-an-absence']),
+  ),
+
+  /**
+   * A blob stops being addressed by the digest it was asked for and is addressed by what arrived.
+   *
+   * **This is the cell the whole remote port exists to keep honest, and the spelling it restores is the
+   * one a client falls into rather than an exotic one.** `servedBlob(bytes)` computes `addressedBy` from
+   * the bytes it is handed and `servedBlobFaults` compares `addressedBy` against a recompute of those
+   * same bytes, so the check becomes *these bytes hash to their own hash* and passes on anything at all.
+   *
+   * Measured by writing it before the guard existed: against a registry answering one blob address with
+   * another file's bytes, the install is **accepted** - `'faults' in outcome` is false, five files land,
+   * and one of them is not the file its digest names. `localSource` and `packagedSource` cannot have
+   * that defect, because both look an answer up *by* its digest in a map keyed on it; the pairing is
+   * held by a data structure there and by whatever the server chooses to send here.
+   */
+  sameOnEveryLens(
+    'C-68',
+    'addresses a fetched file by the digest of what arrived rather than by the digest it asked for, ' +
+      'so the verification becomes a tautology and corrupted bytes install',
+    [
+      httpSourceFile(
+        WHAT_THIS_MODULE_MAY_HASH,
+        `import { digestOfBytes, servedBytes } from '../registry/canonical.js'
+import type {
+  ServedImplementationBinding,`,
+      ),
+      httpSourceFile(
+        A_BLOB_IS_ADDRESSED_BY_THE_QUESTION,
+        `      return { addressing: 'content-addressed', addressedBy: digestOfBytes(servedBytes(bytes)), bytes }`,
+      ),
+    ],
+    killed(['bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that']),
   ),
 ]
 
