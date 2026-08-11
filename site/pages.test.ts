@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import {
+  THE_COMMITS_QUOTED,
   THE_PINS_ARE_AN_ASSERTION,
   THE_REPLAY,
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
@@ -639,8 +640,22 @@ describe('the page that says how we verify', () => {
      * being killed the moment the stamp landed. Taking it off the reading as well is what keeps the
      * honest page passing, since it is rendered there.
      *
-     * It names the one address this data carries. A second would have to be named here too, and
-     * that is the limit of this repair rather than a mechanism.
+     * **It used to name the one address this data carries, and the data had carried two for some
+     * time.** `THE_REPLAY.spread` quotes the commit of every reading it compares, and only
+     * `measuredAt` was ever taken off - the others leaked into both sides and cancelled, silently,
+     * which is the exact mechanism this paragraph describes happening to the guard that describes it.
+     * They were absorbed rather than caught because their digit runs occur elsewhere in the data,
+     * which is luck and not a design.
+     *
+     * `THE_COMMITS_QUOTED` is the repair, and it is a record the prose interpolates rather than a list
+     * beside it: a commit cannot be quoted in that spread without being in it, so there is nothing
+     * here to drift.
+     *
+     * **What the stripping is load-bearing for is not the honest page, and that was measured rather
+     * than assumed.** Taking it away entirely leaves this guard green: a rendered address is in the
+     * pool *and* in the reading, so its digit runs cancel and the honest page passes either way. What
+     * it is for is the pool - measured on a page publishing `9269`, a run that occurs nowhere but
+     * inside `measuredAt`: green with no stripping, and red naming `9269` with it.
      *
      * ---------------------------------------------------------------------------
      * What this establishes, and the half it cannot
@@ -660,17 +675,18 @@ describe('the page that says how we verify', () => {
      * afford. What stands in the meantime is that W-47's literal is chosen to be underivable rather
      * than merely absent.
      */
-    const withoutTheCommit = (text: string): string => text.replaceAll(THE_REPLAY.measuredAt, '')
+    const withoutAnAddress = (text: string): string =>
+      THE_COMMITS_QUOTED.reduce((left, commit) => left.replaceAll(commit, ''), text)
 
     const fromTheData = new Set([
       ...counts,
-      ...(withoutTheCommit(
+      ...(withoutAnAddress(
         JSON.stringify([methodology, measured, THE_REPLAY, THE_PINS_ARE_AN_ASSERTION]),
       ).match(/\d+/g) ?? []),
     ])
 
     expect(
-      (withoutTheCommit(reading()).match(/\d+/g) ?? []).filter((figure) => !fromTheData.has(figure)),
+      (withoutAnAddress(reading()).match(/\d+/g) ?? []).filter((figure) => !fromTheData.has(figure)),
     ).toEqual([])
   })
 

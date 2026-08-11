@@ -369,6 +369,33 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * who wanted to know what a cell costs still cannot be told, and the reason no longer needs a
  * population to be argued from.**
  */
+/**
+ * Every commit this data quotes, declared once so that a guard can take all of them off both sides.
+ *
+ * **An address is not a figure, and it leaves the data by both sides or by neither.** A rendered commit
+ * joins the pool as though something had derived it *and* joins the reading as though the page had
+ * published it, and the pair is silent because the two leaks cancel - which is how W-47 stopped being
+ * killed the first time, on a stamp whose digit runs included `41`.
+ *
+ * That rule was written when `measuredAt` was the only address here, and the guard over the method
+ * page's figures still names it alone. **It has not been the only one for some time**: the spread has
+ * quoted a second since the regime changed, and it leaked unnoticed only because its digit runs happen
+ * to occur elsewhere in the data. A third arrives with the reading below.
+ *
+ * So the stamps are a record and the prose interpolates them, which is what keeps the list and the
+ * sentences from drifting apart: a commit cannot be quoted in the spread without being in here. It is
+ * not a field of `THE_REPLAY`, because every value of that object is required on the page and a list of
+ * addresses is not something a reader is owed.
+ */
+const QUOTING = {
+  thisRun: '89e9269',
+  theOtherReadingOfTheseCells: '85e1525',
+  theFasterOfTheOnesBefore: '4fdcfcc',
+  theSlowerOfTheOnesBefore: 'b0c57ee',
+} as const
+
+export const THE_COMMITS_QUOTED: readonly string[] = Object.values(QUOTING)
+
 export const THE_REPLAY = {
   command: 'npm run mutation',
   what:
@@ -376,14 +403,17 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '28 min 1 s',
-  measuredAt: '4fdcfcc',
+  duration: '29 min 2 s',
+  measuredAt: QUOTING.thisRun,
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'these same 621 cells ran at 32 min 28 s half an hour earlier, at `b0c57ee` - four and a half ' +
-    'minutes apart on identical work, and the widest such reading this machine has given. That run ' +
-    'disagreed with four batteries and so was no replay, which moves no cell count and is why the ' +
-    'duration still compares. Every reading below can only approximate the same point by comparing ' +
+    `these same 623 cells ran at 28 min 9 s an hour earlier, at \`${QUOTING.theOtherReadingOfTheseCells}\` - ` +
+    'fifty-three seconds apart on identical work, which is the closest two readings of one population ' +
+    'this machine has given. That run disagreed with one battery and so was no replay, which moves no ' +
+    'cell count and is why the duration still compares. The widest is four and a half minutes, over ' +
+    `the 621 cells before these: 28 min 1 s at \`${QUOTING.theFasterOfTheOnesBefore}\` and ` +
+    `32 min 28 s at \`${QUOTING.theSlowerOfTheOnesBefore}\`. Every reading below can only approximate ` +
+    'the same point by comparing ' +
     'populations, and they do not order themselves by population either: the 618 before these ran ' +
     'at 27 min 22 s and at 28 min 42 s, the 615 before those at 27 min 34 s, the 614 before those ' +
     'at 34 min 6 s, and the 612 before those at 27 min 8 s - so the smallest population is the ' +
