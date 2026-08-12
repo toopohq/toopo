@@ -151,6 +151,9 @@ const A_FAILURE_IS_NOT_AN_ABSENCE = `    if (!response.ok) throw new TheRegistry
 
 const A_BLOB_IS_ADDRESSED_BY_THE_QUESTION = `      return { addressing: 'content-addressed', addressedBy: sha256, bytes }`
 
+const AN_ADDRESS_IS_ASKED_FOR_AS_IT_IS_RENDERED =
+  '  pathTo(endpointOf(THE_ENDPOINT_BEHIND[question.method]), addressAsked(question))'
+
 /**
  * The import block of `http-source.ts`, so that a cell can give it something it deliberately lacks.
  *
@@ -1177,6 +1180,41 @@ import type {
       ),
     ],
     killed(['bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that']),
+  ),
+
+  /**
+   * The client percent-encodes the address it asks about, which is the spelling this repository shipped
+   * until an emitted tree made it impossible.
+   *
+   * `encodeURIComponent` on a rendered address is what somebody writes who is thinking about a URL and
+   * not about a file: it is right for a query parameter, and it turns `typescript/number/parse@1` into
+   * one segment no filesystem can hold and many hosts rewrite before routing. Nothing about the client
+   * looks wrong afterwards - the request is well formed and the registry simply has nothing there.
+   *
+   * **What it measures is that the address belongs to the registry**: `pathTo` is where an answer lives
+   * and the client's job is to ask at it, so a client that decorates the address on the way out is a
+   * second statement of where an answer lives. The four guards it reddens are the ones that put this
+   * client in front of a real socket.
+   */
+  sameOnEveryLens(
+    'C-69',
+    'percent-encodes the address a question names, so every request is well formed and asks at a path ' +
+      'the registry does not answer',
+    [
+      httpSourceFile(
+        AN_ADDRESS_IS_ASKED_FOR_AS_IT_IS_RENDERED,
+        `  pathTo(
+    endpointOf(THE_ENDPOINT_BEHIND[question.method]),
+    encodeURIComponent(addressAsked(question)),
+  )`,
+      ),
+    ],
+    killed([
+      'an-install-over-http-plans-exactly-what-the-same-registry-plans-in-process',
+      'bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that',
+      'the-same-decision-against-a-warm-cache-and-no-network-is-the-same-plan',
+      'the-walk-costs-one-round-trip-per-level-and-fetches-each-frontier-at-once',
+    ]),
   ),
 ]
 

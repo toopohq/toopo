@@ -215,6 +215,9 @@ const A_CONTRACT_NAME_IS_A_TITLE = `          el(
 
 const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `        paragraph(silence.reason, { class: 'why' }),`
 
+const A_PAGE_IS_WRITTEN_AT_THE_FILE_IT_IS =
+  '    ...[...pages].map(([path, page]) => [path, toHtml(page)] as const),'
+
 const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
 
 const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`
@@ -1138,6 +1141,33 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['no-mark-a-sentence-carries-reaches-the-reader-as-itself']),
+  ),
+
+  /**
+   * A page is written at the address it is linked by, which is the edit that reopens the one collision
+   * a static tree cannot survive.
+   *
+   * `linkTo` strips `index.html` because `/typescript/number/parse@1/` is what a reader follows, and
+   * writing the page *there* reads like tidying: one address, no file name. It puts a file exactly
+   * where the answers about that contract need a directory, and no filesystem holds both - so the
+   * build dies on an `EISDIR` naming one path, with nothing saying which two things wanted it.
+   *
+   * It reddens one guard of this folder and no other, measured: the sitemap, the licence header and
+   * the page address are all built from `pageOf`, which this leaves alone. That is the whole argument
+   * for the tree being one value - the collision is a question about the *set* of paths, and nothing
+   * that renders a single address can be asked it.
+   */
+  sameOnEveryLens(
+    'W-66',
+    'writes each page at the address it is linked by rather than at the file it is, so the page of a ' +
+      'contract lands on the folder the answers about that contract live in',
+    [
+      siteFile(
+        A_PAGE_IS_WRITTEN_AT_THE_FILE_IT_IS,
+        "    ...[...pages].map(([path, page]) => [path.replace(/\\/index\\.html$/, ''), toHtml(page)] as const),",
+      ),
+    ],
+    killed(['no-path-is-both-a-file-and-a-directory']),
   ),
 ]
 

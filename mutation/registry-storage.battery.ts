@@ -63,6 +63,8 @@ const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', 
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
 const addressFile = (find: string, replace: string) => ({ file: 'address.ts', find, replace })
 const publicationFile = (find: string, replace: string) => ({ file: 'publication.ts', find, replace })
+const emitFile = (find: string, replace: string) => ({ file: 'emit.ts', find, replace })
+const endpointsFile = (find: string, replace: string) => ({ file: 'endpoints.ts', find, replace })
 const verifiabilityFile = (find: string, replace: string) => ({
   file: 'verifiability.ts',
   find,
@@ -84,6 +86,17 @@ const implementationFile = (find: string, replace: string) => ({
 // ---------------------------------------------------------------------------
 
 const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(directory, name)))'
+
+// --- The emission, and the three ways a walk of the questions stops being one ---
+
+const A_SNAPSHOT_NAMES_EVERY_FILE_IT_FREEZES = '        ...blobsNamedBy(frozen),'
+
+const AN_EDGE_NAMES_THE_CONTRACT_IT_DEPENDS_ON = `          : frozen.frozen.dependsOn.flatMap((edge) => [
+              { method: 'snapshot', digest: edge.digest } as const,
+              ...theQuestionsAbout(edge.implementation.contract),
+            ])),`
+
+const AN_ADDRESS_IS_A_PATH_AND_NOT_A_SEGMENT = '      return `/${address}/${endpoint.id}`'
 
 const AN_ADDRESS_RENDERS_ITS_LANGUAGE = '  `${address.language}/${address.name}@${address.major}`'
 
@@ -746,6 +759,83 @@ const mutants: readonly Mutant[] = [
       'npm accepts an install that can only fail at import',
     [publicationFile(THE_FLOOR_IS_WHAT_THE_CODE_CALLS, `export const THE_MINIMUM_RUNTIME = '>=18.0.0'`)],
     killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
+  ),
+
+  /**
+   * The emission serves what an *installation* fetches instead of what a *client* can ask for.
+   *
+   * It is the mutant the whole shape of `emit.ts` exists against, and it is the plausible one rather
+   * than a wrong one: `packaging/freeze.ts` records the installer's walk and is right to, so somebody
+   * reading both writes the same rule here. Under it every implementation snapshot still names its own
+   * file, so `toopo add` installs correctly and the whole of `cli/` stays green - what disappears is
+   * the harness, twenty-four blobs whose digests a contract page publishes and whose absence permanent
+   * rule 5 is about.
+   *
+   * That is why the closure guard reads the addresses back out of the served bytes rather than asking
+   * the walk what it names: a walk that has stopped naming something agrees with itself.
+   */
+  sameOnEveryLens(
+    'I-37',
+    'emits only the files an installation fetches, so every harness digest a contract page publishes ' +
+      'is served nowhere and the suite this catalogue sells is a page of 404s',
+    [
+      emitFile(
+        A_SNAPSHOT_NAMES_EVERY_FILE_IT_FREEZES,
+        '        ...(frozen.unit === \'contract\' ? [] : blobsNamedBy(frozen)),',
+      ),
+    ],
+    killed(['the-emitted-tree-is-closed', 'every-file-a-published-contract-freezes-is-served']),
+  ),
+
+  /**
+   * An edge names the artefact it points at and not the contract it belongs to, which is the emission
+   * built from the index alone.
+   *
+   * The catalogue cannot express it - the five depend on nothing - so the cell reddens on the imagined
+   * graph, where `pad` is reachable only through `clamp` and `sign`. A reader who fetches a snapshot
+   * and sees it depend on `number/clamp@1` can ask that contract for its implementations, and a tree
+   * that learned its contracts from the index answers 404 to a question the artefact itself invited.
+   */
+  sameOnEveryLens(
+    'I-38',
+    'follows an edge to the artefact it names and not to the contract that owns it, so a dependency ' +
+      'a reader learned about from a snapshot has no answers in the tree',
+    [
+      emitFile(
+        AN_EDGE_NAMES_THE_CONTRACT_IT_DEPENDS_ON,
+        `          : frozen.frozen.dependsOn.map(
+              (edge) => ({ method: 'snapshot', digest: edge.digest }) as const,
+            )),`,
+      ),
+    ],
+    killed(['an-edge-is-followed-to-the-artefact-it-names']),
+  ),
+
+  /**
+   * The address goes back to being percent-encoded, which is the spelling this unit removed.
+   *
+   * `encodeURIComponent` on a rendered address is what somebody writes who is thinking about a URL and
+   * not about a file: it is correct for a query parameter and it produces `typescript%2Fnumber%2Fparse@1`,
+   * a name no filesystem holds and a segment many hosts rewrite before routing. The tree still builds,
+   * every answer is still written, and every address inside it names something that is not there.
+   */
+  sameOnEveryLens(
+    'I-39',
+    'percent-encodes a rendered address into one path segment, so every answer about a contract is ' +
+      'written at a name no filesystem can hold and no page shares',
+    [
+      endpointsFile(
+        AN_ADDRESS_IS_A_PATH_AND_NOT_A_SEGMENT,
+        '      return `/${encodeURIComponent(address)}/${endpoint.id}`',
+      ),
+    ],
+    killed([
+      'a-page-and-the-answers-about-that-contract-share-one-address',
+      'a-url-is-a-file-path-with-its-leading-slash-taken-off',
+      'an-edge-is-followed-to-the-artefact-it-names',
+      'the-emitted-tree-is-closed',
+      'where-an-answer-lives-reads-back-to-the-question-it-answers',
+    ]),
   ),
 ]
 
