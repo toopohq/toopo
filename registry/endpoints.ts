@@ -32,11 +32,35 @@
  * **Three needs have no entry at all**: the methodology page, the refusals page, and attestations.
  *
  * ---------------------------------------------------------------------------
+ * Where an answer lives, and why the segment is the endpoint's own identifier
+ * ---------------------------------------------------------------------------
+ *
+ * An address used to be written out per endpoint, as a `path` with `{...}` in it, and read by nothing.
+ * It is derived now, from one field and three rules: **an answer about the catalogue lives at the
+ * root, an answer about a contract lives in that contract's own directory, and an answer addressed by
+ * content lives in a flat space of its own** - flat because the same bytes are named by several
+ * contracts and a shared thing cannot live under one of its owners.
+ *
+ * The second rule is what makes an emitted tree possible at all. Under a `/contracts/{...}` prefix, a
+ * contract's binding is a *file* at the very path its implementation list needs to be a *directory*,
+ * and no filesystem holds both - which is the one class a static emission finds and a dynamic server
+ * never meets. Putting each answer inside the contract's directory dissolves the prefix and the
+ * collision at once, and it buys the thing the collision was hiding: **the address a reader opens and
+ * the address the client asks are the same address**, so `/typescript/number/parse@1/` is the page and
+ * every answer about that contract is a leaf beside it.
+ *
+ * The leaf is the endpoint's `id`, and not a name chosen to read well. That field is already declared
+ * *the address a report or a deployment cites this endpoint by*, so a second spelling here would be
+ * one thing with two names - the slug `site/paths.ts` refuses for a page, arriving on an endpoint. The
+ * price is `/snapshot/{digest}` where English would write the plural, and the return is that no table
+ * of routes exists anywhere in this repository to drift from these identifiers.
+ *
+ * ---------------------------------------------------------------------------
  * What is not here
  * ---------------------------------------------------------------------------
  *
- * No server, no framework, no routing. A `path` below is the shape of an address, written so that the
- * addressing class can be read off it, and not a route anything registers. Whether two of these
+ * No server, no framework, no routing. `pathTo` is where an answer lives, not a route anything
+ * registers; `askedAt` is its inverse, for whoever has a URL and nothing else. Whether two of these
  * collapse into one request under HTTP/2, whether a harness arrives as an archive, and what a status
  * code is on a digest nobody holds are transport questions a deployment answers.
  *
@@ -48,11 +72,26 @@ import type { AddressingClass } from './response.js'
 import { IMPLEMENTATION_BINDING_NATURES, revisableFieldsOf } from './response.js'
 import { NEEDS } from './needs.js'
 
+/**
+ * What an answer is about, which is the whole of what decides where it lives.
+ *
+ * Three members and not two: an answer addressed by content is shared - one blob is named by every
+ * contract whose harness holds that file - so it cannot live inside any one contract's directory
+ * without lying about whose it is.
+ */
+export type WhatAnAnswerIsAbout =
+  /** The catalogue as a whole. It lives at the root, and it is asked for at no address. */
+  | 'the catalogue'
+  /** One contract. It lives in that contract's own directory, beside the contract's page. */
+  | 'a contract'
+  /** Whatever hashes to the digest it is asked for by. It lives in a flat space of its own. */
+  | 'the content that addresses it'
+
 export type Endpoint = {
   /** Frozen, kebab-case, and the address a report or a deployment cites this endpoint by. */
   readonly id: string
-  /** The shape of the address. `{...}` marks the part that varies. */
-  readonly path: string
+  /** What the answer is about, from which `pathTo` derives where it lives. */
+  readonly about: WhatAnAnswerIsAbout
   readonly addressing: AddressingClass
   /** Which half of the registry the body comes from. Never both - `response.ts` says why. */
   readonly serves: 'the frozen half' | 'served bytes' | "the registry's current opinion"
@@ -65,7 +104,7 @@ export type Endpoint = {
 export const ENDPOINTS: readonly Endpoint[] = [
   {
     id: 'snapshot',
-    path: 'GET /snapshots/{digest}',
+    about: 'the content that addresses it',
     addressing: 'content-addressed',
     serves: 'the frozen half',
     answers: [
@@ -84,7 +123,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
   },
   {
     id: 'blob',
-    path: 'GET /blobs/{sha256}',
+    about: 'the content that addresses it',
     addressing: 'content-addressed',
     serves: 'served bytes',
     answers: [
@@ -99,7 +138,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
   },
   {
     id: 'contract-index',
-    path: 'GET /contracts',
+    about: 'the catalogue',
     addressing: 'named',
     serves: "the registry's current opinion",
     answers: [
@@ -113,7 +152,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
   },
   {
     id: 'contract-binding',
-    path: 'GET /contracts/{domain}/{name}@{major}',
+    about: 'a contract',
     addressing: 'named',
     serves: "the registry's current opinion",
     answers: ['render-a-contract-page', 'compare-the-lockfile-with-the-registry'],
@@ -124,7 +163,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
   },
   {
     id: 'implementation-bindings',
-    path: 'GET /contracts/{domain}/{name}@{major}/implementations',
+    about: 'a contract',
     addressing: 'named',
     serves: "the registry's current opinion",
     answers: [
@@ -143,7 +182,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
   },
   {
     id: 'attestations',
-    path: 'GET /attestations/{digest}',
+    about: 'the content that addresses it',
     addressing: 'named',
     serves: "the registry's current opinion",
     answers: ['check-an-attestation-against-a-snapshot'],
@@ -154,7 +193,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
   },
   {
     id: 'refusals',
-    path: 'GET /refusals',
+    about: 'the catalogue',
     addressing: 'named',
     serves: "the registry's current opinion",
     answers: [
@@ -167,7 +206,7 @@ export const ENDPOINTS: readonly Endpoint[] = [
   },
   {
     id: 'methodology',
-    path: 'GET /methodology',
+    about: 'the catalogue',
     addressing: 'named',
     serves: "the registry's current opinion",
     answers: ['render-the-methodology-page'],
@@ -176,6 +215,120 @@ export const ENDPOINTS: readonly Endpoint[] = [
       'only endpoint here whose value is that it makes the others checkable.',
   },
 ]
+
+// ---------------------------------------------------------------------------
+// Where an answer lives
+// ---------------------------------------------------------------------------
+
+const BY_ID: ReadonlyMap<string, Endpoint> = new Map(
+  ENDPOINTS.map((endpoint) => [endpoint.id, endpoint]),
+)
+
+export class NoSuchEndpoint extends Error {
+  constructor(id: string) {
+    super(
+      `"${id}" is no endpoint of this registry (${[...BY_ID.keys()].join(', ')}), so nothing can ` +
+        `say where its answer lives`,
+    )
+    this.name = 'NoSuchEndpoint'
+  }
+}
+
+export const endpointOf = (id: string): Endpoint => {
+  const endpoint = BY_ID.get(id)
+  if (endpoint === undefined) throw new NoSuchEndpoint(id)
+
+  return endpoint
+}
+
+/**
+ * Where the answer to one question lives - as a URL path, and as a file path with the leading slash
+ * taken off.
+ *
+ * **Total over `WhatAnAnswerIsAbout` by the compiler**, so an endpoint about something new does not
+ * compile until somebody has said where its answers go. That is the whole mechanism: there is no table
+ * of routes, and the three arms below are the only statement of an address this repository has.
+ *
+ * `address` is a rendered address - `renderContract` for a contract, a digest for content - and it is
+ * interpolated rather than encoded, because every character `registry/address.ts` can produce is legal
+ * in a path segment and percent-encoding one would make a name no filesystem can hold. That is asserted
+ * rather than assumed, in `endpoints.test.ts`, over every address this catalogue has.
+ */
+export const pathTo = (endpoint: Endpoint, address = ''): string => {
+  switch (endpoint.about) {
+    case 'the catalogue':
+      return `/${endpoint.id}`
+    case 'a contract':
+      return `/${address}/${endpoint.id}`
+    case 'the content that addresses it':
+      return `/${endpoint.id}/${address}`
+  }
+}
+
+/** The shape of an address, for a reader, with `{...}` where the address goes. */
+export const pathShapeOf = (endpoint: Endpoint): string => pathTo(endpoint, '{...}')
+
+/**
+ * What an answer arrives as, derived from what it serves rather than declared beside it.
+ *
+ * One endpoint serves bytes and every other serves a document about them, so the exception is read off
+ * `serves` and is not a table anybody maintains. Total over that union by the compiler, which is what
+ * makes it the single statement of *a blob travels as its own octets and everything else as JSON* -
+ * a sentence that used to live in the apparatus, where a static host could not read it.
+ *
+ * The octets are what a transport really does, and base64 is how the *archive* carries a blob because
+ * an archive is one JSON file. Sending the bytes also puts the catalogue's lone surrogate on the wire
+ * as itself, which is the one byte string a JSON round trip would quietly repair.
+ */
+export const contentTypeOf = (endpoint: Endpoint): string => {
+  switch (endpoint.serves) {
+    case 'served bytes':
+      return 'application/octet-stream'
+    case 'the frozen half':
+    case "the registry's current opinion":
+      return 'application/json'
+  }
+}
+
+/** One question, as a URL names it. */
+export type AskedAt = {
+  readonly endpoint: Endpoint
+  /** The rendered address, or `''` where the endpoint is about the catalogue and takes none. */
+  readonly address: string
+}
+
+/**
+ * Which question a URL asks, or `null` where it asks none. The inverse of `pathTo`, and checked as one.
+ *
+ * A server needs this and a static host does not, which is the asymmetry worth recording: an emitted
+ * tree answers by *being* the file `pathTo` names, so nothing in front of it parses anything. This
+ * exists for whoever puts the same answers behind a process.
+ *
+ * It cannot be ambiguous, and that is a property of the two vocabularies rather than a precaution: a
+ * rendered contract address ends in `@<major>` and an endpoint identifier is kebab-case with no `@`,
+ * so the last segment of a path is an endpoint's or an address's and never both.
+ */
+export const askedAt = (pathname: string): AskedAt | null => {
+  const segments = pathname.split('/').filter((segment) => segment !== '')
+  const first = segments[0]
+  const last = segments[segments.length - 1]
+  if (first === undefined || last === undefined) return null
+
+  const named = BY_ID.get(last)
+  if (segments.length === 1) {
+    return named === undefined || named.about !== 'the catalogue' ? null : { endpoint: named, address: '' }
+  }
+
+  if (named?.about === 'a contract') {
+    return { endpoint: named, address: segments.slice(0, -1).join('/') }
+  }
+
+  const leading = BY_ID.get(first)
+
+  return leading === undefined || leading.about !== 'the content that addresses it'
+    ? null
+    : { endpoint: leading, address: segments.slice(1).join('/') }
+}
 
 // ---------------------------------------------------------------------------
 // The indicative list of §6.2, verbatim, and what became of each entry

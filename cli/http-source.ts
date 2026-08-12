@@ -61,15 +61,18 @@
  * screen somebody can actually meet.
  *
  * ---------------------------------------------------------------------------
- * The route is the endpoint identifier, and there is no table of paths
+ * The route is not this client's to decide, and there is no table of paths
  * ---------------------------------------------------------------------------
  *
- * `THE_ENDPOINT_BEHIND` already states which endpoint answers each method. A table of URL paths beside
- * it would be a second statement of the same thing, free to drift - so a path *is* the endpoint
- * identifier and, where the endpoint takes one, the address it is asked about. `serving-over-http.ts`
- * reads a request back through this same function rather than through a copy of it.
+ * `THE_ENDPOINT_BEHIND` states which endpoint answers each method, and `registry/endpoints.ts` states
+ * where that endpoint's answers live. A table of URL paths here would be a second statement of an
+ * address the registry already owns - and it was one: this function used to build `/<endpoint>/<the
+ * address, percent-encoded>` out of its own head, which no filesystem can hold and which named
+ * `/contracts/{...}` nothing. `serving-over-http.ts` reads a request back through the registry's own
+ * inverse rather than through a copy of anything.
  */
 
+import { endpointOf, pathTo } from '../registry/endpoints.js'
 import type {
   ServedImplementationBinding,
   ServedIndex,
@@ -81,9 +84,9 @@ import { addressAsked } from './fixpoint.js'
 import type { RegistrySource } from './source.js'
 import { THE_ENDPOINT_BEHIND } from './source.js'
 
-/** Where a question is asked, derived from the endpoint behind it and from nothing else. */
+/** Where a question is asked, which is where the registry says that endpoint's answers live. */
 export const pathOf = (question: Question): string =>
-  `/${THE_ENDPOINT_BEHIND[question.method]}/${encodeURIComponent(addressAsked(question))}`
+  pathTo(endpointOf(THE_ENDPOINT_BEHIND[question.method]), addressAsked(question))
 
 /** What a snapshot body carries that this client reads. Checked by `servedSnapshotFaults`, not here. */
 type SnapshotBody = {

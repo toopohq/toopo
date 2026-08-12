@@ -28,15 +28,20 @@
  * Both sides of the route derive from one declaration
  * ---------------------------------------------------------------------------
  *
- * `pathOf` writes `/<endpoint>/<address>` out of `THE_ENDPOINT_BEHIND`, and `WHERE` below is that same
- * record inverted. Neither is a table of paths, so a method whose endpoint moves moves on both sides at
- * once and there is nothing here to drift from the client. A list of routes written beside it would be
- * the copy of a parser this repository refuses.
+ * `pathOf` asks `registry/endpoints.ts` where an endpoint's answers live, `askedAt` is that function's
+ * own inverse, and `WHERE` below turns the endpoint it names back into a method of this port. Nothing
+ * here is a table of paths, so a method whose endpoint moves moves on both sides at once. A list of
+ * routes written beside it would be the copy of a parser this repository refuses.
+ *
+ * **A tree emitted to a static host needs none of this**, and that is worth seeing from here: it
+ * answers by *being* the file at the path `pathTo` names, so the whole of the routing below is what a
+ * process costs and a directory does not.
  */
 
 import { createServer } from 'node:http'
 
 import type { ContractAddress } from '../registry/address.js'
+import { askedAt, contentTypeOf } from '../registry/endpoints.js'
 import type { RegistrySource } from './source.js'
 import { THE_ENDPOINT_BEHIND } from './source.js'
 
@@ -50,13 +55,14 @@ const WHERE: ReadonlyMap<string, keyof RegistrySource> = new Map(
 const json = (value: unknown): Buffer => Buffer.from(JSON.stringify(value), 'utf8')
 
 /**
- * The contract a bindings request names, read back off its own rendering.
+ * The contract a bindings request names, read back into its parts off its own rendering.
  *
- * The one place in this repository that parses a rendered address, and it is here because a URL is a
- * string and a server has nothing else to go on - which is a fact about HTTP rather than a shortcut. It
- * is the apparatus rather than the product: no module of the client does this, `fixpoint.ts` carries an
- * address as an address precisely so that it never has to, and a real server would read its route
- * parameters the same way this does.
+ * The one place in this repository that takes a rendered contract address apart, and it is here because
+ * a URL is a string and a server has nothing else to go on - which is a fact about HTTP rather than a
+ * shortcut. `askedAt` says which endpoint a path names and hands the address on whole; turning that
+ * string back into a `ContractAddress` is this. It is the apparatus rather than the product: no module
+ * of the client does it, `fixpoint.ts` carries an address as an address precisely so that it never has
+ * to, and a real server would read its route parameters the same way.
  */
 const contractAt = (rendered: string): ContractAddress => {
   const at = rendered.lastIndexOf('@')
@@ -109,22 +115,6 @@ const BODY_FOR: Readonly<
   },
 }
 
-/**
- * A blob travels as its own bytes and everything else as JSON.
- *
- * Base64 is how the *archive* carries a blob, because the archive is one JSON file; a server has no
- * such constraint, and sending the octets is what a server would really do. It also puts the
- * catalogue's lone surrogate on the wire as itself, which is the one byte string a JSON round trip
- * would quietly repair.
- */
-const CONTENT_TYPE: Readonly<Record<keyof RegistrySource, string>> = {
-  contractIndex: 'application/json',
-  refusals: 'application/json',
-  implementationBindings: 'application/json',
-  snapshot: 'application/json',
-  blob: 'application/octet-stream',
-}
-
 /** One request, as the method and address it named. */
 export type Asked = {
   readonly method: keyof RegistrySource
@@ -162,22 +152,22 @@ export const servingOverHttp = async (
 
   const server = createServer((request, response) => {
     const url = new URL(request.url ?? '/', 'http://localhost')
-    const [, endpoint = '', address = ''] = url.pathname.split('/')
-    const method = WHERE.get(endpoint)
+    const question = askedAt(url.pathname)
+    const method = question === null ? undefined : WHERE.get(question.endpoint.id)
 
-    if (method === undefined) {
+    if (question === null || method === undefined) {
       response.writeHead(404).end()
 
       return
     }
 
-    const wanted = decodeURIComponent(address)
+    const wanted = question.address
     asked.push({ method, address: wanted })
 
     void BODY_FOR[method](held, misrouted.get(wanted) ?? wanted)
       .then((body) => {
         if (body === null) response.writeHead(404).end()
-        else response.writeHead(200, { 'content-type': CONTENT_TYPE[method] }).end(body)
+        else response.writeHead(200, { 'content-type': contentTypeOf(question.endpoint) }).end(body)
       })
       // A server that died silently would look to a client exactly like one that is slow, and the
       // guard would hang rather than fail. 500 is what `http-source.ts` throws on.
