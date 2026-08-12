@@ -741,7 +741,7 @@ const mutants: readonly Mutant[] = [
    * say.
    */
   sameOnEveryLens(
-    'I-35',
+    'I-36',
     'lowers the declared runtime floor below the version the APIs this code calls were added in, so ' +
       'npm accepts an install that can only fail at import',
     [publicationFile(THE_FLOOR_IS_WHAT_THE_CODE_CALLS, `export const THE_MINIMUM_RUNTIME = '>=18.0.0'`)],

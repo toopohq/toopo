@@ -830,6 +830,34 @@ describe('what this repository publishes about its own defect detection', () => 
   })
 
   /**
+   * Two cells of one battery answering to one address, which `calibrate()` refuses for a guard and
+   * nothing refused for a mutant.
+   *
+   * **It was found by writing a cell rather than by looking**: `registry-storage` carried `I-35` twice
+   * - the edge that reads its digest off the artefact, and the runtime floor - and had done since the
+   * publication unit. A mutant identifier is an address like any other: a pin cites it, a result file
+   * is keyed by it, and an attribution report puts it in front of whoever is reading a disagreement.
+   * Two cells under one name make a report that names a cell nobody can find, which is the class this
+   * repository spends its length removing from its prose.
+   *
+   * Here rather than in `calibrate()` because it needs no run: it is a fact about the declarations, so
+   * it is answered in the seconds a suite costs rather than in the minutes a battery does - the
+   * division `every-clean-refusal-resolves-to-the-guard-it-names` already draws between a suite guard
+   * over what a module declares and a pre-flight over what a run collected.
+   */
+  it('no-two-cells-of-one-battery-answer-to-one-address', () => {
+    expect(
+      THE_BATTERIES.flatMap((battery) => {
+        const ids = battery.mutants.map((mutant) => mutant.id)
+
+        return [...new Set(ids.filter((id, at) => ids.indexOf(id) !== at))].map(
+          (id) => `${battery.name} declares ${id} more than once`,
+        )
+      }),
+    ).toEqual([])
+  })
+
+  /**
    * A survivor with no nature and no lens to explain it is the cell that gets published as a hole
    * nobody argued about, which is the one reading of these figures that is both wrong and worse than
    * the truth.
