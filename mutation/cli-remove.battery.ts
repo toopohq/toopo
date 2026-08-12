@@ -441,6 +441,25 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
+        'the acceptance of the emitted tree. The two sides of each comparison share every decision ' +
+        'and differ in exactly one thing - which registry they read: the installer stand-in on one ' +
+        'side, the emitted tree on the other. So a defect in a decision changes both sides ' +
+        'identically and the comparison is green on it, and what separates them is a defect in ' +
+        'local-source.ts, which cli-install carries with C-17, C-18, C-22 and C-42. This battery ' +
+        'injects into neither that stand-in nor the emission it is compared against.',
+      guards: [
+        'a-refused-contract-answers-no-binding-and-an-empty-list-of-implementations',
+        'add-decides-the-same-thing-against-the-emitted-tree',
+        'every-byte-the-registry-serves-arrives-unchanged',
+        'remove-decides-the-same-thing-against-the-emitted-tree',
+        'search-decides-the-same-thing-against-the-emitted-tree',
+        'update-decides-the-same-thing-against-the-emitted-tree',
+      ],
+    },
+
+    {
+      nature: 'claims detection',
+      reason:
         'everything that is not a removal. Installing, updating, diffing, searching, the argument ' +
         'grammar, the two-phase write and the folder moving - a removal reaches the write and the ' +
         'reconciliation and nothing else of it, and the three batteries next door carry ninety-odd ' +

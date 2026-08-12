@@ -587,6 +587,23 @@ export const battery: Battery = {
    * them silent, each named a defect that could be written, and U-32 to U-34 write it.
    */
   unprobedRegions: [
+    {
+      nature: 'claims detection',
+      reason:
+        'the acceptance of the emitted tree. The two sides of each comparison share every decision ' +
+        'and differ in exactly one thing - which registry they read: the installer stand-in on one ' +
+        'side, the emitted tree on the other. So a defect in a decision changes both sides ' +
+        'identically and the comparison is green on it, and what separates them is a defect in ' +
+        'local-source.ts, which cli-install carries with C-17, C-18, C-22 and C-42. This battery ' +
+        'injects into neither that stand-in nor the emission it is compared against.',
+      guards: [
+        'a-refused-contract-answers-no-binding-and-an-empty-list-of-implementations',
+        'add-decides-the-same-thing-against-the-emitted-tree',
+        'every-byte-the-registry-serves-arrives-unchanged',
+        'search-decides-the-same-thing-against-the-emitted-tree',
+      ],
+    },
+
     /**
      * The registry reached over a socket, which `cli-install` carries with two defects.
      *
