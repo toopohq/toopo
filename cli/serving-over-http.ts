@@ -7,8 +7,8 @@
  * created inside the test process, listens on a port the operating system picks, and is closed by the
  * guard that made it.
  *
- * It sits in `cli/` beside `imagined-source.ts` and `temporary-project.ts`, which are the other two
- * modules here that exist for guards. `packaging/build.ts` prunes what the published entry point
+ * It sits in `cli/` beside `imagined-source.ts`, `temporary-project.ts` and `serving-a-tree.ts`, which
+ * are the modules here that exist for guards. `packaging/build.ts` prunes what the published entry point
  * cannot reach, so none of the three ships, and `archive.test.ts` is what says so rather than this
  * sentence.
  *
