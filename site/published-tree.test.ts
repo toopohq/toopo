@@ -21,15 +21,27 @@ import { thePublishedTree, theSite } from './site.js'
  * everything being reachable from a guard, and a claim about *paths* has no business reopening it.
  */
 
-const source = localSource()
+/**
+ * Built once and lazily rather than at the top of the file: a mutant that makes the generator or the
+ * serialisation throw would otherwise stop this file collecting, and the instrument reads a file that
+ * collected nothing as a run that measured part of the suite. It is the lesson `pages.test.ts` records
+ * against W-20, and I-01 is where it was met again.
+ */
+let published: readonly string[] | null = null
 
-const modules = new Map<string, string>([
-  ...THE_BROWSER_GRAPH.map((relative) => [relative.replace(/\.ts$/, '.js'), ''] as const),
-  ...theReferenceModules(source, heldByTheRegistry(source)),
-])
+const paths = (): readonly string[] => {
+  if (published !== null) return published
 
-const tree = thePublishedTree(theSite(source), modules, emitted(localReadApi()))
-const paths = [...tree.keys()]
+  const source = localSource()
+  const modules = new Map<string, string>([
+    ...THE_BROWSER_GRAPH.map((relative) => [relative.replace(/\.ts$/, '.js'), ''] as const),
+    ...theReferenceModules(source, heldByTheRegistry(source)),
+  ])
+
+  published = [...thePublishedTree(theSite(source), modules, emitted(localReadApi())).keys()]
+
+  return published
+}
 
 /** The characters no Windows filesystem will open a file with, and the separator of the other one. */
 const FORBIDDEN = new RegExp('[<>:"|?*\\\\]')
@@ -43,9 +55,10 @@ const foldersOf = (path: string): readonly string[] =>
 
 describe('what a host is given', () => {
   it('no-path-is-both-a-file-and-a-directory', () => {
-    const folders = new Set(paths.flatMap(foldersOf))
+    const written = paths()
+    const folders = new Set(written.flatMap(foldersOf))
 
-    expect(paths.filter((path) => folders.has(path))).toEqual([])
+    expect(written.filter((path) => folders.has(path))).toEqual([])
   })
 
   /**
@@ -66,7 +79,7 @@ describe('what a host is given', () => {
       segment.endsWith('.') ||
       reserved.test(segment)
 
-    expect(paths.filter((path) => path.split('/').some(unholdable))).toEqual([])
+    expect(paths().filter((path) => path.split('/').some(unholdable))).toEqual([])
   })
 
   /**
@@ -76,11 +89,13 @@ describe('what a host is given', () => {
    * kind is.
    */
   it('the-tree-carries-pages-modules-crawler-files-and-answers', () => {
+    const written = paths()
+
     expect({
-      pages: paths.some((path) => path.endsWith('index.html')),
-      modules: paths.some((path) => path.endsWith('.js')),
-      crawlers: paths.includes('sitemap.xml') && paths.includes('robots.txt'),
-      answers: paths.includes('contract-index'),
+      pages: written.some((path) => path.endsWith('index.html')),
+      modules: written.some((path) => path.endsWith('.js')),
+      crawlers: written.includes('sitemap.xml') && written.includes('robots.txt'),
+      answers: written.includes('contract-index'),
     }).toEqual({ pages: true, modules: true, crawlers: true, answers: true })
   })
 })

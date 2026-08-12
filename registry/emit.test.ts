@@ -7,6 +7,7 @@ import { localReadApi } from './local-read-api.js'
 import type { ReadApi } from './read-api.js'
 import { NOT_ANSWERED, THE_ENDPOINT_BEHIND } from './read-api.js'
 import { renderContract } from './address.js'
+import type { ContractRecord } from './contract-record.js'
 import { servedBlob, servedSnapshot } from './response.js'
 import { contractSnapshot, digestOfSnapshot, implementationSnapshot } from './snapshot.js'
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
@@ -22,41 +23,14 @@ import { theFive } from './the-five.js'
  * the walk is built on. A guard that asked `WHAT_AN_ANSWER_NAMES` what the answers name would be green
  * for exactly the arm somebody forgot to write, which is `GUARD_PERTURBATION_RULE` arriving on a
  * closure.
- */
-
-const registry = localReadApi()
-const tree = emitted(registry)
-const held = new Set(tree.keys())
-
-/** The five, serialised here rather than read out of the emission, so the readings stay independent. */
-const records = theFive.map((source) => ({
-  folder: source.folder,
-  record: serialiseContract(REPOSITORY_ROOT, source),
-}))
-
-/**
- * The digests a served answer carries that are **not** addresses, and there is exactly one kind.
  *
- * A profile whose samples are produced by an expression records the digest of their canonical encoding
- * so that a reader can regenerate them and check they got the same corpus. Nothing is stored at it: the
- * samples are a function of `producedBy` and not a file this registry holds, and the check is a
- * recomputation rather than a fetch. Every other 64-hex value in the tree addresses something.
+ * **Nothing is built at the top of this file, and that is the apparatus talking rather than taste.** A
+ * mutant that makes the serialisation throw would otherwise stop the whole file collecting, and the
+ * instrument reads a file that collected nothing as a run that measured part of the suite - the lesson
+ * `site/pages.test.ts` records against W-20, met here by I-01 reporting 303 tests where the unmutated
+ * arm reports 314. It is built once and lazily instead, so a throw reddens the guards rather than
+ * hiding them.
  */
-/** Which contracts this registry publishes, which is what decides whose files it has to serve. */
-const published = new Set(
-  registry
-    .contractIndex()
-    .entries.filter((entry) => entry.installable)
-    .map((entry) => renderContract(entry.address)),
-)
-
-const NOT_AN_ADDRESS = new Set(
-  records.flatMap(({ record }) =>
-    record.benchmarks.profiles.flatMap((profile) =>
-      profile.samples.kind === 'produced' ? [profile.samples.sha256] : [],
-    ),
-  ),
-)
 
 const endpointAt = (file: string) => {
   const question = askedAt(`/${file}`)
@@ -65,16 +39,70 @@ const endpointAt = (file: string) => {
   return question.endpoint
 }
 
-/**
- * The served text of every answer that is a document, with one level of JSON escaping undone.
- *
- * A snapshot carries its canonical text as a string, so every address inside it arrives escaped; a
- * reading that did not undo that would see the digests - which need no escaping - and none of the
- * contract addresses, and would quietly check half of what it claims to.
- */
-const documents = [...tree]
-  .filter(([file]) => contentTypeOf(endpointAt(file)) === 'application/json')
-  .map(([file, bytes]) => [file, bytes.toString('utf8').replaceAll('\\"', '"')] as const)
+type Holding = {
+  readonly registry: ReadApi
+  readonly tree: ReadonlyMap<string, Buffer>
+  /** Every address the tree serves. */
+  readonly held: ReadonlySet<string>
+  /** The five, serialised here rather than read out of the emission, so the readings stay independent. */
+  readonly records: readonly { readonly folder: string; readonly record: ContractRecord }[]
+  /** Which contracts this registry publishes, which decides whose files it has to serve. */
+  readonly published: ReadonlySet<string>
+  /**
+   * The digests a served answer carries that are **not** addresses, and there is exactly one kind.
+   *
+   * A profile whose samples are produced by an expression records the digest of their canonical
+   * encoding so that a reader can regenerate them and check they got the same corpus. Nothing is stored
+   * at it: the samples are a function of `producedBy` and not a file this registry holds, and the check
+   * is a recomputation rather than a fetch. Every other 64-hex value in the tree addresses something.
+   */
+  readonly notAnAddress: ReadonlySet<string>
+  /**
+   * The served text of every answer that is a document, with one level of JSON escaping undone.
+   *
+   * A snapshot carries its canonical text as a string, so every address inside it arrives escaped; a
+   * reading that did not undo that would see the digests - which need no escaping - and none of the
+   * contract addresses, and would quietly check half of what it claims to.
+   */
+  readonly documents: readonly (readonly [string, string])[]
+}
+
+const gather = (): Holding => {
+  const registry = localReadApi()
+  const tree = emitted(registry)
+  const records = theFive.map((source) => ({
+    folder: source.folder,
+    record: serialiseContract(REPOSITORY_ROOT, source),
+  }))
+
+  return {
+    registry,
+    tree,
+    held: new Set(tree.keys()),
+    records,
+    published: new Set(
+      registry
+        .contractIndex()
+        .entries.filter((entry) => entry.installable)
+        .map((entry) => renderContract(entry.address)),
+    ),
+    notAnAddress: new Set(
+      records.flatMap(({ record }) =>
+        record.benchmarks.profiles.flatMap((profile) =>
+          profile.samples.kind === 'produced' ? [profile.samples.sha256] : [],
+        ),
+      ),
+    ),
+    documents: [...tree]
+      .filter(([file]) => contentTypeOf(endpointAt(file)) === 'application/json')
+      .map(([file, bytes]) => [file, bytes.toString('utf8').replaceAll('\\"', '"')] as const),
+  }
+}
+
+let gathered: Holding | null = null
+
+/** Everything these guards read, built on the first one that asks and never at import. */
+const holding = (): Holding => (gathered ??= gather())
 
 describe('the tree a host serves', () => {
   /**
@@ -106,7 +134,7 @@ describe('the tree a host serves', () => {
   })
 
   it('the-registry-answers-every-question-its-port-declares', () => {
-    expect(portFaults(THE_ENDPOINT_BEHIND, registry)).toEqual([])
+    expect(portFaults(THE_ENDPOINT_BEHIND, holding().registry)).toEqual([])
   })
 
   /**
@@ -152,7 +180,7 @@ describe('where an answer lives', () => {
    * what the client used to ask for, `%2F` and all.
    */
   it('a-url-is-a-file-path-with-its-leading-slash-taken-off', () => {
-    const wrong = [...tree.keys()].filter((file) => {
+    const wrong = [...holding().tree.keys()].filter((file) => {
       const url = `/${file}`
 
       return theFileAt(url) !== file || encodeURI(url) !== url || askedAt(url) === null
@@ -164,7 +192,7 @@ describe('where an answer lives', () => {
   it('a-page-and-the-answers-about-that-contract-share-one-address', () => {
     const parse = renderContract({ language: 'typescript', name: 'number/parse', major: 1 })
 
-    expect([...held].filter((file) => file.startsWith(`${parse}/`)).sort()).toEqual([
+    expect([...holding().held].filter((file) => file.startsWith(`${parse}/`)).sort()).toEqual([
       `${parse}/contract-binding`,
       `${parse}/implementation-bindings`,
     ])
@@ -188,10 +216,12 @@ describe('the closure', () => {
    * that matches inside strings.
    */
   it('the-emitted-tree-is-closed :: every address an answer names is an address it serves', () => {
+    const { documents, held, notAnAddress } = holding()
+
     const unserved = documents.flatMap(([file, text]) => [
       ...[...text.matchAll(/"([0-9a-f]{64})"/g)]
         .map((match) => match[1] as string)
-        .filter((digest) => !NOT_AN_ADDRESS.has(digest))
+        .filter((digest) => !notAnAddress.has(digest))
         .filter((digest) => !held.has(`snapshot/${digest}`) && !held.has(`blob/${digest}`))
         .map((digest) => `${file} names ${digest}, which is served at no address`),
       ...[...text.matchAll(/"language":"(\w+)","name":"([\w/-]+)","major":(\d+)/g)]
@@ -209,6 +239,8 @@ describe('the closure', () => {
    * publishes every one of their digests, and permanent rule 5 says the suite is public in full.
    */
   it('every-file-a-published-contract-freezes-is-served', () => {
+    const { held, published, records } = holding()
+
     const missing = records
       .filter(({ record }) => published.has(renderContract(record.address)))
       .flatMap(({ folder, record }) =>
@@ -230,6 +262,8 @@ describe('the closure', () => {
    * registry answers and no client can name.
    */
   it('what-is-served-and-cannot-be-asked-for-is-the-refused-contract', () => {
+    const { held, records } = holding()
+
     const unreachable = records
       .filter(({ record }) => !held.has(`snapshot/${digestOfSnapshot(contractSnapshot(record))}`))
       .map(({ record }) => ({
@@ -290,7 +324,7 @@ const overTheImaginedGraph = (): ReadApi => {
         }),
       ),
     refusals: () => ({ addressing: 'named', refusals: [], absorbed: [] }),
-    methodology: () => registry.methodology(),
+    methodology: () => holding().registry.methodology(),
     snapshot: (digest) => snapshots.get(digest) ?? null,
     blob: (sha256) => {
       const bytes = IMAGINED_BLOBS.get(sha256)

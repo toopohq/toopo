@@ -36,15 +36,22 @@ import { prepareUpdate } from './update.js'
  * `cli/local-source.ts`, which is what every other guard in this folder measures against.
  */
 
-/** Written once: emitting serialises five contracts and reads thirty-seven files. */
-const THE_TREE = emitted(localReadApi())
+/**
+ * Built once and lazily: emitting serialises five contracts and reads thirty-seven files, and doing it
+ * at the top of the file would let a mutant that makes the serialisation throw stop the whole file
+ * collecting - which the instrument reads as a run that measured part of the suite rather than as a
+ * defect. It is `site/pages.test.ts`'s lesson from W-20, met here by I-01.
+ */
+let emittedTree: ReadonlyMap<string, Buffer> | null = null
+
+const theTree = (): ReadonlyMap<string, Buffer> => (emittedTree ??= emitted(localReadApi()))
 
 const servingTheTree = async <T>(
   use: (source: RegistrySource) => Promise<T>,
 ): Promise<{ readonly answer: T; readonly asked: readonly AskedOfTheTree[] }> => {
   const root = mkdtempSync(join(tmpdir(), 'toopo-emitted-'))
 
-  for (const [path, bytes] of THE_TREE) {
+  for (const [path, bytes] of theTree()) {
     const destination = join(root, path)
     mkdirSync(dirname(destination), { recursive: true })
     writeFileSync(destination, bytes)
@@ -197,7 +204,7 @@ describe('every command, against the tree a host serves', () => {
    * claim the whole tree exists to make.
    */
   it('every-byte-the-registry-serves-arrives-unchanged', async () => {
-    const digests = [...THE_TREE.keys()]
+    const digests = [...theTree().keys()]
       .filter((path) => path.startsWith('blob/'))
       .map((path) => path.slice('blob/'.length))
     const catalogue = localSource()
@@ -228,8 +235,8 @@ describe('every command, against the tree a host serves', () => {
   it('a-refused-contract-answers-no-binding-and-an-empty-list-of-implementations', async () => {
     const refused = renderContract({ language: 'typescript', name: 'array/group-by', major: 1 })
 
-    expect(THE_TREE.has(`${refused}/contract-binding`)).toBe(false)
-    expect(THE_TREE.get(`${refused}/implementation-bindings`)?.toString('utf8')).toBe('[]')
+    expect(theTree().has(`${refused}/contract-binding`)).toBe(false)
+    expect(theTree().get(`${refused}/implementation-bindings`)?.toString('utf8')).toBe('[]')
 
     const { answer, asked } = await servingTheTree(async (source) =>
       source.implementationBindings({ language: 'typescript', name: 'array/group-by', major: 1 }),
