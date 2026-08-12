@@ -388,10 +388,11 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * addresses is not something a reader is owed.
  */
 const QUOTING = {
-  thisRun: '89e9269',
-  theOtherReadingOfTheseCells: '85e1525',
-  theFasterOfTheOnesBefore: '4fdcfcc',
-  theSlowerOfTheOnesBefore: 'b0c57ee',
+  thisRun: 'fd750d2',
+  theFasterOfTheClosestPair: '85e1525',
+  theSlowerOfTheClosestPair: '89e9269',
+  theFasterOfTheWidestPair: '4fdcfcc',
+  theSlowerOfTheWidestPair: 'b0c57ee',
 } as const
 
 export const THE_COMMITS_QUOTED: readonly string[] = Object.values(QUOTING)
@@ -403,21 +404,23 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '29 min 2 s',
+  duration: '34 min 30 s',
   measuredAt: QUOTING.thisRun,
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    `these same 623 cells ran at 28 min 9 s an hour earlier, at \`${QUOTING.theOtherReadingOfTheseCells}\` - ` +
-    'fifty-three seconds apart on identical work, which is the closest two readings of one population ' +
-    'this machine has given. That run disagreed with one battery and so was no replay, which moves no ' +
-    'cell count and is why the duration still compares. The widest is four and a half minutes, over ' +
-    `the 621 cells before these: 28 min 1 s at \`${QUOTING.theFasterOfTheOnesBefore}\` and ` +
-    `32 min 28 s at \`${QUOTING.theSlowerOfTheOnesBefore}\`. Every reading below can only approximate ` +
+    'this population has one reading, so the figure above is bounded by the readings of every other ' +
+    'population rather than by a twin of its own. The closest two of one population this machine has ' +
+    `given are the 623 cells before these: 28 min 9 s at \`${QUOTING.theFasterOfTheClosestPair}\` and ` +
+    `29 min 2 s at \`${QUOTING.theSlowerOfTheClosestPair}\`, fifty-three seconds apart on identical ` +
+    'work. The widest is four and a half minutes, over ' +
+    `the 621 cells before those: 28 min 1 s at \`${QUOTING.theFasterOfTheWidestPair}\` and ` +
+    `32 min 28 s at \`${QUOTING.theSlowerOfTheWidestPair}\`. Every reading below can only approximate ` +
     'the same point by comparing ' +
     'populations, and they do not order themselves by population either: the 618 before these ran ' +
     'at 27 min 22 s and at 28 min 42 s, the 615 before those at 27 min 34 s, the 614 before those ' +
     'at 34 min 6 s, and the 612 before those at 27 min 8 s - so the smallest population is the ' +
-    'fastest run and the second smallest is the slowest by seven minutes. The variation is the ' +
+    'fastest run and the second smallest is the slowest by seven minutes, and the 614 came within ' +
+    'half a minute of the run above with seventeen cells fewer. The variation is the ' +
     'machine rather than the cells. Before this regime a ' +
     "cell of a contract battery collected all five contracts rather than its own: the same 612 " +
     'cells ran there at ' +
