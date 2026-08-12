@@ -27,6 +27,7 @@
 
 import { theMeasurement } from '../mutation/published.js'
 import type { Document } from './document.js'
+import { toHtml } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
 import { contractPage } from './contract-page.js'
 import { heldByTheRegistry } from './catalogue.js'
@@ -51,6 +52,32 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
     ),
   ])
 }
+
+/**
+ * Everything that is deployed, by the path it is deployed at: the pages as they are served, the
+ * modules a browser loads, what a crawler reads, and every answer the registry can be asked for.
+ *
+ * **One statement of what the tree is**, so that the guard over it and the build cannot be looking at
+ * two different sets - the argument `theCrawlerFilesOf` already makes about taking the page map. It
+ * takes what it composes rather than building it: the modules are read off a disk and the answers come
+ * from the registry's own emission, and a rendering module has no business reaching for either.
+ *
+ * The pages and the answers share a folder on purpose. `/typescript/number/parse@1/` is the page and
+ * every answer about that contract is a leaf beside it, which is what lets a reader open by hand the
+ * exact URL a client asked - and it is what makes *no path is both a file and a directory* a question
+ * about this map rather than about two trees nobody compares.
+ */
+export const thePublishedTree = (
+  pages: ReadonlyMap<string, Document>,
+  modules: ReadonlyMap<string, string>,
+  answers: ReadonlyMap<string, Buffer>,
+): ReadonlyMap<string, string | Buffer> =>
+  new Map<string, string | Buffer>([
+    ...[...pages].map(([path, page]) => [path, toHtml(page)] as const),
+    ...modules,
+    ...theCrawlerFilesOf(pages),
+    ...answers,
+  ])
 
 /**
  * What a crawler reads, derived from what the site *is* rather than listed beside it.
