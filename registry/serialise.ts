@@ -446,6 +446,38 @@ export const harnessOf = (
   })
 }
 
+export class ServedBytesDisagree extends Error {
+  constructor(where: string, hashed: string, read: string) {
+    super(
+      `${where} hashed to ${hashed} when its record was built and to ${read} when it was read to be ` +
+        `served. A file that changes between the two reads is a working tree being edited underneath ` +
+        `an install, and serving it would hand the user bytes no digest covers.`,
+    )
+    this.name = 'ServedBytesDisagree'
+  }
+}
+
+/**
+ * The bytes of a file this repository has already hashed, read again to be served and refused if they
+ * moved in between.
+ *
+ * `harnessOf` above takes one read to answer a digest and a size; anything that *serves* a file takes
+ * a second read, and the two can disagree. It lives here rather than in whichever stand-in noticed
+ * first, because it is one rule about this working tree and there are three readers of it - the
+ * installer's stand-in, the generator's, and the emission that writes every file the registry serves.
+ */
+export const servedFileOf = (
+  root: string,
+  folder: string,
+  file: { readonly path: string; readonly sha256: string },
+): Buffer => {
+  const bytes = servedBytes(readFileSync(join(root, folder, file.path)))
+  const read = digestOfBytes(bytes)
+  if (read !== file.sha256) throw new ServedBytesDisagree(`${folder}/${file.path}`, file.sha256, read)
+
+  return bytes
+}
+
 /**
  * The strongest stratum is the one that has to point at something.
  *

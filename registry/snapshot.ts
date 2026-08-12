@@ -473,9 +473,19 @@ export const withImplementationStanding = (
  * One function rather than a comment, because "verify the digest" is exactly the step a consumer
  * skips when it is described rather than provided.
  */
+/**
+ * The files a snapshot names, whichever half it froze.
+ *
+ * One function because it is one question - *which bytes does this artefact hash* - asked by the check
+ * below and by the emission that has to serve every one of them. Two readings of a two-armed union
+ * would be two places to add the third arm.
+ */
+export const filesNamedBy = (snapshot: Snapshot): readonly HarnessFile[] =>
+  snapshot.unit === 'contract' ? snapshot.frozen.harness : snapshot.frozen.files
+
 export const snapshotFaults = (snapshot: Snapshot, claimed: string): readonly string[] => {
   const computed = digestOfSnapshot(snapshot)
-  const blobs = snapshot.unit === 'contract' ? snapshot.frozen.harness : snapshot.frozen.files
+  const blobs = filesNamedBy(snapshot)
 
   return [
     ...(DIGEST.test(claimed) ? [] : [`"${claimed}" is not a sha-256 digest in lower-case hex`]),

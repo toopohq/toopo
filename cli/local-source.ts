@@ -41,14 +41,13 @@
  * is checked against the first and a disagreement refuses the whole source. A file that changed between
  * the two reads is a working tree being edited underneath an install, and serving it would hand the
  * user bytes no digest covers.
+ *
+ * The check is `servedFileOf`, one floor down, because it is one rule about this working tree and there
+ * are three readers of it. It was written here first, when this was the only stand-in that served bytes.
  */
-
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 
 import type { ContractAddress } from '../registry/address.js'
 import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
-import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { ImplementationRecord } from '../registry/implementation-record.js'
 import type { ServedExport } from '../registry/response.js'
 import {
@@ -69,7 +68,12 @@ import {
   publishImplementation,
   refuseContract,
 } from '../registry/snapshot.js'
-import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
+import {
+  REPOSITORY_ROOT,
+  referenceImplementationOf,
+  serialiseContract,
+  servedFileOf,
+} from '../registry/serialise.js'
 import { theFive } from '../registry/the-five.js'
 import type { RegistrySource } from './source.js'
 
@@ -81,17 +85,6 @@ export const THE_UNPUBLISHED_VERSION = '0.0.0-local'
 
 /** The epoch, because a binding minted here was never published and a clock would be a second lie. */
 const THE_UNPUBLISHED_INSTANT = '1970-01-01T00:00:00.000Z'
-
-export class ServedBytesDisagree extends Error {
-  constructor(where: string, hashed: string, read: string) {
-    super(
-      `${where} hashed to ${hashed} when its record was built and to ${read} when it was read to be ` +
-        `served. A file that changes between the two reads is a working tree being edited underneath ` +
-        `an install, and serving it would hand the user bytes no digest covers.`,
-    )
-    this.name = 'ServedBytesDisagree'
-  }
-}
 
 type Holding = {
   readonly address: ContractAddress
@@ -137,12 +130,7 @@ const gather = (): {
     snapshots.set(implementationDigest, servedSnapshot(implementationShot))
 
     for (const file of record.harness) {
-      const bytes = servedBytes(readFileSync(join(REPOSITORY_ROOT, source.folder, file.path)))
-      const read = digestOfBytes(bytes)
-      if (read !== file.sha256) {
-        throw new ServedBytesDisagree(`${source.folder}/${file.path}`, file.sha256, read)
-      }
-      blobs.set(read, bytes)
+      blobs.set(file.sha256, servedFileOf(REPOSITORY_ROOT, source.folder, file))
     }
 
     /**

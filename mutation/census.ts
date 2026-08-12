@@ -237,6 +237,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'registry/attestation.test.ts': 3,
     'registry/coverage.test.ts': 20,
     'registry/determinism.test.ts': 20,
+    'registry/emit.test.ts': 11,
     'registry/endpoints.test.ts': 12,
     'registry/implementations.test.ts': 18,
     'registry/response.test.ts': 46,
