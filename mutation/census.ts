@@ -266,6 +266,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'cli/command.test.ts': 1,
     'cli/configuration.test.ts': 9,
     'cli/diff.test.ts': 10,
+    'cli/emitted-registry.test.ts': 6,
     'cli/http-source.test.ts': 5,
     'cli/ignored.test.ts': 3,
     'cli/install.test.ts': 21,
