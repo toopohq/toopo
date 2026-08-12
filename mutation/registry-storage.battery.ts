@@ -65,6 +65,7 @@ const addressFile = (find: string, replace: string) => ({ file: 'address.ts', fi
 const publicationFile = (find: string, replace: string) => ({ file: 'publication.ts', find, replace })
 const emitFile = (find: string, replace: string) => ({ file: 'emit.ts', find, replace })
 const endpointsFile = (find: string, replace: string) => ({ file: 'endpoints.ts', find, replace })
+const readApiFile = (find: string, replace: string) => ({ file: 'read-api.ts', find, replace })
 const verifiabilityFile = (find: string, replace: string) => ({
   file: 'verifiability.ts',
   find,
@@ -97,6 +98,15 @@ const AN_EDGE_NAMES_THE_CONTRACT_IT_DEPENDS_ON = `          : frozen.frozen.depe
             ])),`
 
 const AN_ADDRESS_IS_A_PATH_AND_NOT_A_SEGMENT = '      return `/${address}/${endpoint.id}`'
+
+const AN_UNANSWERED_ENDPOINT_IS_NAMED_AS_IT_IS_DECLARED = '  attestations: {'
+
+const A_DEFERRAL_NAMES_THE_EVENT_THAT_CLOSES_IT = `    until:
+      'one snapshot of this catalogue is signed and the bundle is held somewhere this registry can ' +
+      'read, which is the publishing tool binding a digest to a signature rather than a decision here',`
+
+const EVERY_QUESTION_THAT_NEEDS_NOTHING_IS_A_ROOT = `  { method: 'refusals' },
+  { method: 'methodology' },`
 
 const AN_ADDRESS_RENDERS_ITS_LANGUAGE = '  `${address.language}/${address.name}@${address.major}`'
 
@@ -836,6 +846,53 @@ const mutants: readonly Mutant[] = [
       'the-emitted-tree-is-closed',
       'where-an-answer-lives-reads-back-to-the-question-it-answers',
     ]),
+  ),
+
+  /**
+   * The one endpoint nothing answers is declared under a name that is no endpoint.
+   *
+   * A mistyped key, which is the whole of what makes it worth a cell: the record still has an entry,
+   * the reason and the trigger are still there, and the endpoint it was written about is now answered
+   * by nothing and declared by nothing. **The port that is the whole read API is the only one where
+   * that can be caught**, because it is the only one whose totality is an equality.
+   */
+  sameOnEveryLens(
+    'I-40',
+    'declares the unanswered endpoint under a name no endpoint carries, so `attestations` is answered ' +
+      'by nothing and deferred by nothing at once',
+    [readApiFile(AN_UNANSWERED_ENDPOINT_IS_NAMED_AS_IT_IS_DECLARED, '  attestation: {')],
+    killed(['every-endpoint-is-answered-or-declared-unanswerable']),
+  ),
+
+  /**
+   * The trigger is emptied and the reason is left, which is the state `DeferredNeed` was given a second
+   * field to make impossible.
+   *
+   * A reason ages into a description of the past; a trigger stays checkable. The type requires both, so
+   * what a type cannot catch is a field present and empty - which is what this writes.
+   */
+  sameOnEveryLens(
+    'I-41',
+    'leaves an unanswered endpoint its reason and empties the event that would close it, so a ' +
+      'deferral becomes a description of the past that nobody revisits',
+    [readApiFile(A_DEFERRAL_NAMES_THE_EVENT_THAT_CLOSES_IT, "    until: '',")],
+    killed(['an-unanswered-endpoint-names-what-would-close-it']),
+  ),
+
+  /**
+   * A root of the closure is dropped, and the tree it emits is still closed.
+   *
+   * That is the whole reason the roots are declared beside the walk and derived in the guard: nothing
+   * names the methodology, so removing it writes one file fewer and every other guard here stays green.
+   * A smaller tree that is internally consistent is exactly what a walk of the questions cannot notice
+   * about itself.
+   */
+  sameOnEveryLens(
+    'I-42',
+    'drops one of the questions a client can ask having read nothing, so an answer nothing else names ' +
+      'is never written and the tree is smaller and still closed',
+    [emitFile(EVERY_QUESTION_THAT_NEEDS_NOTHING_IS_A_ROOT, "  { method: 'refusals' },")],
+    killed(['the-questions-that-need-nothing-are-the-answers-about-the-catalogue']),
   ),
 ]
 
