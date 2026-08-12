@@ -1251,6 +1251,38 @@ export const battery: Battery = {
    */
   unprobedRegions: [
     /**
+     * The acceptance of the emitted tree, and it is silent here for a structural reason rather than
+     * for want of a mutant.
+     *
+     * Those guards compare one decision taken against the catalogue with the same decision taken
+     * against the tree a host would serve, so **a defect in this folder moves both sides together**
+     * and the comparison stays green on it. What can separate them is an edit to what the emission
+     * *wrote*, which is one folder away: `registry-storage` carries I-37 to I-42 over exactly that, and
+     * a battery collects its own configuration.
+     *
+     * Three of the six do redden here, because they are the three whose served side goes through
+     * `http-source.ts`. The byte comparison is the one worth naming: `response.text()` in place of
+     * `response.arrayBuffer()` is the plausible slip, and measured, it leaves this whole suite green -
+     * every file this registry serves is valid UTF-8, so decoding and re-encoding is the identity on
+     * this catalogue. The guard is not decorative, it is unprobed by the data.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the acceptance of the emitted tree, which compares a decision against the catalogue with the ' +
+        'same decision against the tree - so a defect here moves both sides together and cannot show. ' +
+        'What separates them is an edit to the emission, one folder away, where `registry-storage` ' +
+        'carries six defects. Measured on the byte comparison: reading a blob with `response.text()` ' +
+        'instead of `response.arrayBuffer()` leaves this suite green, because every file this ' +
+        'registry serves is valid UTF-8 and the round trip is the identity on this catalogue.',
+      guards: [
+        'a-refused-contract-answers-no-binding-and-an-empty-list-of-implementations',
+        'every-byte-the-registry-serves-arrives-unchanged',
+        'remove-decides-the-same-thing-against-the-emitted-tree',
+      ],
+    },
+
+    /**
      * `toopo remove` and `toopo list`, and it is four guards out of the twenty-five that unit added.
      *
      * Everything else it added reddens here, which is the same measurement `cli-update` makes from its
