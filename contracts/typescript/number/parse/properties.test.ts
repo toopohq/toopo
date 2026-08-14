@@ -3,7 +3,7 @@ import fc from 'fast-check'
 import {
   UNIVERSAL_PROPERTIES_ARE_ANSWERED,
   expectUniversalPropertiesAnswered,
-} from '../../../../catalogue/every-contract.js'
+} from '../../../../packages/catalogue/every-contract.js'
 import { outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
 import { describeParseFailure, parseNumber } from './reference.js'
 

@@ -6,7 +6,7 @@ import {
   expectEveryCaseIsAddressed,
   expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
-} from '../../../../catalogue/every-contract.js'
+} from '../../../../packages/catalogue/every-contract.js'
 import type { AddFailureReason, Duration } from './contract.js'
 import { failureReasons, outputsAreEqual } from './contract.js'
 import { edgeCaseGroups, edgeCases, untypedEdgeCaseGroups, untypedEdgeCases } from './edge-cases.js'

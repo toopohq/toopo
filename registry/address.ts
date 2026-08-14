@@ -4,7 +4,7 @@
  * An address is not a field among others. The site will make a case identifier a URL anchor, the API
  * will cite one in a response, and a validation report will put one in front of a submitter to name
  * the case their submission failed. An address that changes breaks links, so every address here is
- * frozen with the contract's major version, under the discipline `catalogue/every-contract.ts`
+ * frozen with the contract's major version, under the discipline `packages/catalogue/every-contract.ts`
  * already states for a case and `mutation/run.ts` for a guard.
  *
  * Nothing below is a string. That is the whole content of this file: a `ContractAddress` is a value
@@ -16,7 +16,7 @@
  * unpaired form unrepresentable is what turns it into something the compiler keeps.
  */
 
-import { isFrozenIdentifier } from '../catalogue/identifier.js'
+import { isFrozenIdentifier } from '../packages/catalogue/identifier.js'
 
 /**
  * The language a contract is written in.

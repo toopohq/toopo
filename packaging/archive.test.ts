@@ -28,7 +28,7 @@ import type { InstalledArchive } from './the-archive.js'
  *
  * **The CLI reached vitest.** `toopo search slugify` loaded 147 modules, among them vitest, the
  * TypeScript compiler API and twelve modules of `mutation/`, through
- * `the-five.ts` -> a contract module -> `catalogue/every-contract.ts`. vitest is a dev dependency a
+ * `the-five.ts` -> a contract module -> `packages/catalogue/every-contract.ts`. vitest is a dev dependency a
  * user never receives, so the first command anybody ran would have ended in `ERR_MODULE_NOT_FOUND`.
  *
  * `artefact.ts` and `freeze.ts` carry the fix. This file is the only place in the repository where the

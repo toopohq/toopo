@@ -1,6 +1,6 @@
 /**
  * Contract `string/slugify@1`. The anatomy of a contract folder is the catalogue's and is described
- * in `catalogue/every-contract.js`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
+ * in `packages/catalogue/every-contract.js`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
  *
  * This contract is total. Every string has a slug, so it publishes no diagnostic, there is no
  * coupling property here, and the empty slug is an answer rather than a refusal.
@@ -16,7 +16,7 @@
 import {
   DETERMINISM_ORDERING_FINDING,
   NO_AMBIENT_OUTPUT_FINDING,
-} from '../../../../catalogue/every-contract.js'
+} from '../../../../packages/catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity

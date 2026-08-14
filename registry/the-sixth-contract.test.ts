@@ -24,7 +24,7 @@ import {
 } from './implementation-record.js'
 import { digestOfSnapshot, edgeTo, implementationSnapshot } from './snapshot.js'
 import { decode, encode } from './value.js'
-import { contractAnatomy } from '../catalogue/every-contract.js'
+import { contractAnatomy } from '../packages/catalogue/every-contract.js'
 
 /**
  * A sixth contract enters this schema without a migration, measured rather than asserted.
@@ -258,7 +258,7 @@ describe('a sixth contract enters without a migration', () => {
    * The checklist a sixth contract is measured against says, per entry, where it can be settled
    * from - and the one half of that claim a guard can keep is that a new entry carries the verdict.
    *
-   * It is here rather than beside `contractAnatomy` because `catalogue/` has no suite of its own and
+   * It is here rather than beside `contractAnatomy` because `packages/catalogue/` has no suite of its own and
    * a sixth contract is what that checklist exists for. What it cannot establish is that a verdict is
    * *right*: whether a syntax tree really settles a requirement is decided by writing the check, and
    * three of the eleven are what the pipeline owes.

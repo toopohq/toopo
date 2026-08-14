@@ -43,8 +43,8 @@ import type { HarnessFile, ImplementationRecord } from './implementation-record.
 import { resolveGuard, resolveProvenance } from './evidence.js'
 import { parametersOf } from './signature.js'
 import { encode } from './value.js'
-import type { CaseGroup } from '../catalogue/identifier.js'
-import { groupingFaults, takenAddresses } from '../catalogue/identifier.js'
+import type { CaseGroup } from '../packages/catalogue/identifier.js'
+import { groupingFaults, takenAddresses } from '../packages/catalogue/identifier.js'
 
 /** Anchored on this file rather than on the working directory, as `mutation/run.ts` anchors its own. */
 export const REPOSITORY_ROOT = join(import.meta.dirname, '..')

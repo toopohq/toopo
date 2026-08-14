@@ -26,7 +26,7 @@
  * them import nothing at all.
  */
 
-import { STATES_ITS_OWN_SIGNATURE } from '../catalogue/reference-implementation.js'
+import { STATES_ITS_OWN_SIGNATURE } from '../packages/catalogue/reference-implementation.js'
 
 import type { Finding } from './finding.js'
 import { findingAt } from './finding.js'

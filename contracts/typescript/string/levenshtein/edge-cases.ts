@@ -3,7 +3,7 @@
  *
  * What this block is for, the `Provenance` vocabulary every case carries and the shape of the `id`
  * each one is addressed by belong to the catalogue and are stated once in
- * `catalogue/every-contract.ts`. What is here is this contract's own table.
+ * `packages/catalogue/every-contract.ts`. What is here is this contract's own table.
  *
  * It is the smallest table in the catalogue and the reason is worth stating, because it is the format
  * finding this contract was written to produce. The three earlier contracts were carried by their
@@ -23,8 +23,8 @@
  * table's short history rather than a virtue.
  */
 
-import type { CaseGroup } from '../../../../catalogue/identifier.js'
-import type { Provenance } from '../../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../packages/catalogue/identifier.js'
+import type { Provenance } from '../../../../packages/catalogue/every-contract.js'
 
 /**
  * The six questions this table answers, in the order it answers them. Frozen with the major - see

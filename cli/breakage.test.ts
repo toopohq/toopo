@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { guardIdOf } from '../catalogue/identifier.js'
+import { guardIdOf } from '../packages/catalogue/identifier.js'
 import { WHAT_BREAKS } from './breakage.js'
 import { CONFIGURATION_FILE, readConfiguration } from './configuration.js'
 import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
@@ -87,7 +87,7 @@ const alreadyInstalled = async (
 /**
  * Every guard this folder's suite carries, as its address against the file - or files - that hold it.
  *
- * A title is read the way `catalogue/identifier.ts` says one is read - the identifier, then the
+ * A title is read the way `packages/catalogue/identifier.ts` says one is read - the identifier, then the
  * separator, then the sentence - rather than by a rule restated here. Measured over this folder: every
  * guard title is a plain string literal, no `it.each` and no template, so what the source says and
  * what vitest collects are the same list of names.

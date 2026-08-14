@@ -89,7 +89,7 @@ const mutants: readonly Mutant[] = [
     'NP-1',
     'a case published with no justification. It is the calibration mutant of this battery: the ' +
       'guard it reddens is the one every contract in the catalogue carries, in the same words, out ' +
-      'of `catalogue/every-contract.ts` - so an apparatus that cannot see this one cannot see ' +
+      'of `packages/catalogue/every-contract.ts` - so an apparatus that cannot see this one cannot see ' +
       'anything a specification battery is for',
     [edgeCases(ARBITRARY_TEXT_RATIONALE, `    rationale: '',`)],
     killed([EVERY_CASE_JUSTIFIED]),

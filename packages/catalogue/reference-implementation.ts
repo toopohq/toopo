@@ -1,5 +1,5 @@
 /**
- * How a reference implementation is written, and the one file of `catalogue/` a tool can import.
+ * How a reference implementation is written, and the one file of `packages/catalogue/` a tool can import.
  *
  * A `reference.ts` is the oracle of the registry's differential test, and it is also the one file in
  * this repository that becomes somebody else's code. Its comments say what the function does and why

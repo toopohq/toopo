@@ -1,6 +1,6 @@
 /**
  * Contract `date/add@1`. The anatomy of a contract folder is the catalogue's and is described in
- * `catalogue/every-contract.ts`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
+ * `packages/catalogue/every-contract.ts`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
  *
  * Failure is reported as `null`, with the reason published beside the return channel rather than
  * inside it - the catalogue-wide convention, settled after three forms were built and measured on
@@ -10,7 +10,7 @@
 import {
   DETERMINISM_ORDERING_FINDING,
   NO_AMBIENT_OUTPUT_FINDING,
-} from '../../../../catalogue/every-contract.js'
+} from '../../../../packages/catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity

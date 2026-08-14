@@ -52,7 +52,7 @@ import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync, rmSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { GUARD_SEPARATOR, guardIdOf, isFrozenIdentifier } from '../catalogue/identifier.ts'
+import { GUARD_SEPARATOR, guardIdOf, isFrozenIdentifier } from '../packages/catalogue/identifier.ts'
 import { THE_VITEST_ENTRY_POINT } from '../vitest-entry-point.ts'
 
 import type { CollectedFile, SuiteCensus } from './census.ts'
@@ -263,11 +263,11 @@ export type RunResult = {
  * the claim is about is *none*, which does not drift.
  *
  * **The shape and the separator are imported rather than restated**, which closes the debt
- * `catalogue/identifier.ts` recorded against this file. What forced it is that a second folder began
+ * `packages/catalogue/identifier.ts` recorded against this file. What forced it is that a second folder began
  * reading a guard title: `cli/breakage.test.ts` resolves the guard each declared refusal names, and a
  * third copy of one rule is how the three come to disagree.
  */
-/* The identifier shape and the separator are `catalogue/identifier.ts`'s, imported above. */
+/* The identifier shape and the separator are `packages/catalogue/identifier.ts`'s, imported above. */
 
 /** A guard as the report identifies it: its address, its title, the block it sits in, and its file. */
 export type GuardIdentity = {

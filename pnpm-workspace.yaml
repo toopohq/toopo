@@ -1,0 +1,47 @@
+# The packages of this repository, and exactly what pnpm is here for.
+#
+# npm's flat `node_modules` hoists every transitive dependency to the root, where any file can import
+# one without having declared it and nothing anywhere says so. pnpm links what was declared and leaves
+# the rest under `.pnpm/`. Measured on this repository: 59 packages installed, 4 linked at the root,
+# and `require.resolve('chai')` - vitest's own dependency, which npm hoisted - answers
+# `MODULE_NOT_FOUND`. That is the guarantee, and it is the whole of it.
+#
+# ---------------------------------------------------------------------------
+# What it does not buy, stated exactly rather than flatteringly
+# ---------------------------------------------------------------------------
+#
+# Two of this repository's own edges are outside pnpm's reach, and both stay there deliberately.
+#
+# **Between the packages below, imports are relative** - `../registry/address.js` - and a relative
+# specifier never consults `node_modules`, so no declaration in this file holds one. It could not be
+# otherwise, measured twice: `tsc` emits a module specifier verbatim, so a `paths`-mapped
+# `@lib/thing.js` is emitted as `@lib/thing.js`; and `packaging/reachable.ts` follows relative
+# specifiers only. `@toopo/*` between packages would therefore leave the published archive holding
+# `cli/` and nothing it imports, and the way back would be publishing four npm packages where there is
+# one. What holds those edges is what already held them before this file existed: the frontier guards
+# in `cli/source.test.ts` and `site/source.test.ts`.
+#
+# **And the dev tools are reachable from every package whatever it declares.** Node's resolution walks
+# upwards, and the root has to declare them: `THE_VITEST_ENTRY_POINT` is
+# `<root>/node_modules/vitest/vitest.mjs`, and `typescript` is a runtime dependency of the published
+# package. Measured from `packages/catalogue`, which declares only vitest:
+#
+#     vitest      RESOLVES      chai   MODULE_NOT_FOUND
+#     fast-check  RESOLVES      vite   MODULE_NOT_FOUND
+#     typescript  RESOLVES
+#
+# So a package here can import `fast-check` without declaring it, exactly as it could under npm. That
+# is unchangeable while the root is the package that ships, and it is written down because a
+# declaration nothing keeps is decoration - including this one, about itself.
+#
+# ---------------------------------------------------------------------------
+# Why every manifest here carries `"type": "module"`
+# ---------------------------------------------------------------------------
+#
+# Node reads the *nearest* `package.json`, so a manifest in a package silently overrides what the root
+# says about the files beneath it. Measured: without the field the suite is green and `toopo search
+# slugify` runs, because node detects the module system from the syntax instead. The field is there so
+# that what these files are is declared where the root's declaration stops reaching, rather than
+# inferred correctly by a heuristic.
+packages:
+  - packages/*

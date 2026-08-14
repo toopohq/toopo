@@ -11,7 +11,7 @@
     "skipLibCheck": true
   },
   "include": [
-    "catalogue",
+    "packages/catalogue",
     "contracts",
     "mutation",
     "run-vitest.ts",

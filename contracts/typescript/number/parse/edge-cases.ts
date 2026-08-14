@@ -3,7 +3,7 @@
  *
  * What this block is for, the `Provenance` vocabulary every case carries and the shape of the `id`
  * each one is addressed by belong to the catalogue and are stated once in
- * `catalogue/every-contract.ts`. What is here is this contract's own table.
+ * `packages/catalogue/every-contract.ts`. What is here is this contract's own table.
  *
  * Every case in it is `specified`, and that is still true of the separator family, which arrived after
  * the rest. No mutant of this contract has ever required a case to be added - a fact about this table
@@ -14,8 +14,8 @@
  * `number/parse@2`.
  */
 
-import type { CaseGroup } from '../../../../catalogue/identifier.js'
-import type { Provenance } from '../../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../packages/catalogue/identifier.js'
+import type { Provenance } from '../../../../packages/catalogue/every-contract.js'
 import type { ParseFailureReason } from './contract.js'
 
 /**

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { join } from 'node:path'
 
-import { STATES_ITS_OWN_SIGNATURE } from '../catalogue/reference-implementation.js'
+import { STATES_ITS_OWN_SIGNATURE } from '../packages/catalogue/reference-implementation.js'
 import { readSources } from './source.js'
 import { OWN_SIGNATURE_RULE, importsItsOwnContract } from './states-its-own-signature.js'
 

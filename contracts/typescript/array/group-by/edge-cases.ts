@@ -3,7 +3,7 @@
  *
  * What this block is for, the `Provenance` vocabulary every case carries and the shape of the `id`
  * each one is addressed by belong to the catalogue and are stated once in
- * `catalogue/every-contract.ts`. What is here is this contract's own two tables.
+ * `packages/catalogue/every-contract.ts`. What is here is this contract's own two tables.
  *
  * This is the contract the identifier came from. Its cases carried an explicit title from the start,
  * which is what let a specification mutant redden the guard it was written for while the same family
@@ -26,8 +26,8 @@
  * contract's short history rather than a virtue.
  */
 
-import type { CaseGroup } from '../../../../catalogue/identifier.js'
-import type { Provenance } from '../../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../packages/catalogue/identifier.js'
+import type { Provenance } from '../../../../packages/catalogue/every-contract.js'
 
 /** Key and group, in the order the result must hold them. */
 export type ExpectedGroup = readonly [key: unknown, group: readonly unknown[]]

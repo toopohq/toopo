@@ -1,6 +1,6 @@
 /**
  * Contract `array/group-by@1`. The anatomy of a contract folder is the catalogue's and is described
- * in `catalogue/every-contract.ts`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
+ * in `packages/catalogue/every-contract.ts`; this file carries blocks 4.1, 4.2, 4.3 and 4.5.
  *
  * This contract is total. It answers every array with a Map and never returns `null`, so it
  * publishes no diagnostic and there is no coupling property here. The catalogue's error convention
@@ -15,7 +15,7 @@
 import {
   DETERMINISM_ORDERING_FINDING,
   NO_AMBIENT_OUTPUT_FINDING,
-} from '../../../../catalogue/every-contract.js'
+} from '../../../../packages/catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity

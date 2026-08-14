@@ -72,7 +72,7 @@ describe('finding a contract from what somebody typed', () => {
    * **This guard reviews the search and never the aliases, and it looks exactly like the opposite.**
    * An alias is in the index, so it retrieves the contract that declares it by construction - which is
    * all retrieval can mean - and a phrase promising something the contract refuses to do passes here
-   * as comfortably as a true one. `catalogue/every-contract.ts` carries the rule that does catch one
+   * as comfortably as a true one. `packages/catalogue/every-contract.ts` carries the rule that does catch one
    * and the eight it caught; nothing below can, and a reader who took this for an alias review would
    * be trusting the one measurement that cannot make it.
    *

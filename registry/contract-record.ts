@@ -29,7 +29,7 @@
  * language never has to rename the first one's addresses.
  */
 
-import type { CaseGroup } from '../catalogue/identifier.js'
+import type { CaseGroup } from '../packages/catalogue/identifier.js'
 import type { ContractAddress, GuardAddress } from './address.js'
 import type { EncodedValue } from './value.js'
 import type { CaseProvenance } from './evidence.js'

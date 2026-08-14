@@ -3,7 +3,7 @@
  *
  * What this block is for, the `Provenance` vocabulary every case carries and the shape of the `id`
  * each one is addressed by belong to the catalogue and are stated once in
- * `catalogue/every-contract.ts`. What is here is this contract's own two tables.
+ * `packages/catalogue/every-contract.ts`. What is here is this contract's own two tables.
  *
  * Dates are written as ISO 8601 strings rather than constructed, so that the table reads as data and
  * survives a diff. A string that is not a date is how the invalid input is expressed.
@@ -18,8 +18,8 @@
  * mutation.
  */
 
-import type { CaseGroup } from '../../../../catalogue/identifier.js'
-import type { Provenance } from '../../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../packages/catalogue/identifier.js'
+import type { Provenance } from '../../../../packages/catalogue/every-contract.js'
 import type { AddFailureReason, Duration } from './contract.js'
 import { EARLIEST_REPRESENTABLE, LATEST_REPRESENTABLE } from './contract.js'
 

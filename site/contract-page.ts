@@ -29,7 +29,7 @@
  */
 
 import { renderContract } from '../registry/address.js'
-import type { CaseGroup } from '../catalogue/identifier.js'
+import type { CaseGroup } from '../packages/catalogue/identifier.js'
 import type { CaseRecord, CaseTableRecord, ExportRecord } from '../registry/contract-record.js'
 import type { Document, Node } from './document.js'
 import { el, text } from './document.js'

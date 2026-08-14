@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
-import * as catalogue from '../catalogue/every-contract.js'
+import * as catalogue from '../packages/catalogue/every-contract.js'
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
 import { isASentence, stringsIn } from './contract-record.js'
 import type { CaseTableSource, ContractSource } from './serialise.js'
