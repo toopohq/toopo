@@ -14,8 +14,8 @@
  * `number/parse@2`.
  */
 
-import type { CaseGroup } from '../../../catalogue/identifier.js'
-import type { Provenance } from '../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../catalogue/identifier.js'
+import type { Provenance } from '../../../../catalogue/every-contract.js'
 import type { ParseFailureReason } from './contract.js'
 
 /**

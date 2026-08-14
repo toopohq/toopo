@@ -16,7 +16,7 @@ import {
 import type { Finding } from './finding.js'
 import type { ParsedSource } from './source.js'
 import { readSources } from './source.js'
-import { staticAnalysisRequirements } from '../contracts/date/add/contract.js'
+import { staticAnalysisRequirements } from '../contracts/typescript/date/add/contract.js'
 
 /**
  * Every rule of the security filter, seen refusing a real construction and seen leaving a legitimate

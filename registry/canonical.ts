@@ -10,7 +10,7 @@
  *
  * **Line endings.** `core.autocrlf` is true here and there is no `.gitattributes`, so a checked-out
  * source carries CRLF while the committed content carries LF. Measured on
- * `contracts/string/slugify/contract.ts`: the working tree is 25 115 bytes and hashes to
+ * `contracts/typescript/string/slugify/contract.ts`: the working tree is 25 115 bytes and hashes to
  * `bfcc6145...`, the committed content is 24 641 bytes and hashes to `3c448a88...`. Same commit, two
  * digests, and the one a machine produces depends on its git configuration rather than on the
  * contract. Audited over all 82 tracked blobs: no BOM, no lone carriage return, no CRLF in any

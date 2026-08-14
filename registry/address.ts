@@ -86,7 +86,7 @@ export type CaseAddress = {
  * five of the five, which is what the pair absorbs either way.
  *
  * What it costs is that a guard measured by two batteries of one folder has two true addresses -
- * `date-add` and `date-add-spec` both name the guards of `contracts/date/add`. This is a citation
+ * `date-add` and `date-add-spec` both name the guards of `contracts/typescript/date/add`. This is a citation
  * rather than a permalink, exactly as a `found-by-mutation` provenance is, and a citation naming the
  * measurement it comes from is right rather than ambiguous. A permalink to a guard, when the site
  * needs one, is the contract's page and the identifier - which is the pair `renderGuard` does not

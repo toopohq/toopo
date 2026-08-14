@@ -19,7 +19,7 @@
  * The escaping, which is the difference between documentation and a lie
  * ---------------------------------------------------------------------------
  *
- * `contracts/number/parse/edge-cases.ts` says it in as many words: `'1 000'` written with a no-break
+ * `contracts/typescript/number/parse/edge-cases.ts` says it in as many words: `'1 000'` written with a no-break
  * space and `'1 000'` written with an ordinary one *are the same eight glyphs on screen* and carry
  * opposite answers in that table. A page that printed both as they are would publish two cases a
  * reader cannot tell apart, one of which says the input parses and the other that it does not - which

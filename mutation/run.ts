@@ -492,15 +492,15 @@ const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
  *
  *     --config registry/vitest.config.ts   registry/                 0 files, exit 1
  *     --config registry/vitest.config.ts   registry                 16 files - a no-op
- *     (the contracts' configuration)       contracts/number/parse/   4 files, 122 assertions
+ *     (the contracts' configuration)       contracts/typescript/number/parse/   4 files, 122 assertions
  *
  * So the narrowing is expressible under the contracts' configuration, whose root is the repository,
  * and under no other. The six need none: their own `root` and `include` already collect exactly the
  * folder their battery injects into. Nobody can generalise this to them, because vitest does not allow
  * it.
  *
- * The trailing slash is also what makes the filter precise. Without it `contracts/number/parse` is a
- * substring match and would collect a future `contracts/number/parse-int` as well.
+ * The trailing slash is also what makes the filter precise. Without it `contracts/typescript/number/parse` is a
+ * substring match and would collect a future `contracts/typescript/number/parse-int` as well.
  *
  * ---------------------------------------------------------------------------
  * Neither direction of this needs a guard of its own, and that was measured

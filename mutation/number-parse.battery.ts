@@ -537,7 +537,7 @@ const probes: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'number-parse',
-  contractPath: 'contracts/number/parse',
+  contractPath: 'contracts/typescript/number/parse',
   timeZone: 'UTC',
   calibrationMutant: 'P-18',
 

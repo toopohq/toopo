@@ -128,7 +128,7 @@ describe('the bytes the registry serves', () => {
    * the machine's git configuration did to the working tree.
    *
    * Measured before the normalisation existed: `core.autocrlf` is true here, and every one of the 37
-   * harness files differed from its blob - `contracts/string/slugify/contract.ts` was 25 115 bytes
+   * harness files differed from its blob - `contracts/typescript/string/slugify/contract.ts` was 25 115 bytes
    * hashing to `bfcc6145...` against 24 641 bytes hashing to `3c448a88...`. After it, none differs.
    *
    * **Where this guard has teeth, said out loud.** On a machine whose checkout is already LF - a

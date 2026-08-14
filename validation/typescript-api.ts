@@ -16,7 +16,7 @@
  * node predicates, `SyntaxKind`, the scanner - and `typescript/unstable/sync`, which spawns the
  * compiler and hands back real syntax trees and a checker. Measured end to end on a contract of the
  * catalogue: 78 ms to spawn and load the project, one further millisecond to walk the 646 nodes of
- * `contracts/date/add/reference.ts`.
+ * `contracts/typescript/date/add/reference.ts`.
  *
  * Three alternatives were considered and are recorded as refused rather than left unmentioned.
  *

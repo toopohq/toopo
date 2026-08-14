@@ -6,7 +6,7 @@ import {
   expectEveryCaseIsAddressed,
   expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
-} from '../../../catalogue/every-contract.js'
+} from '../../../../catalogue/every-contract.js'
 import { outputsAreEqual } from './contract.js'
 import { edgeCaseGroups, edgeCases } from './edge-cases.js'
 import { slugify } from './reference.js'

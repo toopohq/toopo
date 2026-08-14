@@ -640,7 +640,7 @@ const probes: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'date-add',
-  contractPath: 'contracts/date/add',
+  contractPath: 'contracts/typescript/date/add',
   timeZone: 'UTC',
   calibrationMutant: 'D-01',
 

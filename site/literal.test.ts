@@ -14,7 +14,7 @@ import { literal, quoted } from './literal.js'
 const shown = (value: unknown): string => literal(encode(value, 'here'))
 
 /**
- * Named rather than pasted, which is the discipline `contracts/number/parse/edge-cases.ts` states and
+ * Named rather than pasted, which is the discipline `contracts/typescript/number/parse/edge-cases.ts` states and
  * the reason it states it: a no-break space and an ordinary one are the same glyph, so a file holding
  * both as literals leaves a reader unable to tell which line is which and a maintainer free to "fix"
  * one into the other. This file exists to prove the two are printed apart; writing them as characters

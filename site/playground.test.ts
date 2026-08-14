@@ -152,7 +152,7 @@ describe('the playground, against the catalogue it opens on', () => {
    * The two spellings of `1 000` answer the same thing and are described differently, and that is the
    * pair this whole section exists for.
    *
-   * `contracts/number/parse/edge-cases.ts` names its separator characters instead of pasting them
+   * `contracts/typescript/number/parse/edge-cases.ts` names its separator characters instead of pasting them
    * because a no-break space and an ordinary one are the same glyph on screen, and that argument is
    * what settled the field holding a literal. Against the answer alone both rows print `null`, so the
    * playground would have contradicted the page it sits on. This is that pair, replayed by identifier

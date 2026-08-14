@@ -3,7 +3,7 @@ import fc from 'fast-check'
 import {
   UNIVERSAL_PROPERTIES_ARE_ANSWERED,
   expectUniversalPropertiesAnswered,
-} from '../../../catalogue/every-contract.js'
+} from '../../../../catalogue/every-contract.js'
 import { metricAxioms, outputsAreEqual, propertyRuns, universalProperties } from './contract.js'
 import { levenshtein } from './reference.js'
 

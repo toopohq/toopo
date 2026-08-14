@@ -6,7 +6,7 @@ import {
   CASE_TABLE_IS_PARTITIONED,
   expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
-} from '../../../catalogue/every-contract.js'
+} from '../../../../catalogue/every-contract.js'
 import { outputsAreEqual } from './contract.js'
 import { edgeCaseGroups, edgeCases } from './edge-cases.js'
 import { levenshtein } from './reference.js'

@@ -612,7 +612,7 @@ const probes: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'string-slugify',
-  contractPath: 'contracts/string/slugify',
+  contractPath: 'contracts/typescript/string/slugify',
   timeZone: 'UTC',
   calibrationMutant: 'G-01',
 

@@ -18,7 +18,7 @@
  *
  * I-01 hashed the bytes in the working tree. `core.autocrlf` is true here and there is no
  * `.gitattributes`, so a checked-out source carries CRLF while the committed content carries LF:
- * measured on `contracts/string/slugify/contract.ts`, 25 115 bytes hashing to `bfcc6145...` against
+ * measured on `contracts/typescript/string/slugify/contract.ts`, 25 115 bytes hashing to `bfcc6145...` against
  * 24 641 bytes hashing to `3c448a88...`. Every one of the 37 harness files differed from its blob;
  * after the fix none does.
  *
@@ -939,10 +939,10 @@ export const battery: Battery = {
      * Out of reach by construction, and the construction is the direction a damaged string fails in.
      *
      * The guard asks where a sentence the catalogue shares sits inside a contract's prose, and that
-     * seam is composed in `contracts/*\/contract.ts`. `serialise.ts` is the only module of this folder
-     * the string passes through, and it copies it. To redden the guard an edit would have to produce a
-     * *misplaced* occurrence; every edit that damages the string removes the occurrence instead, and
-     * then there is nothing to be wrong about.
+     * seam is composed in `contracts/typescript/*\/contract.ts`. `serialise.ts` is the only module of
+     * this folder the string passes through, and it copies it. To redden the guard an edit would have
+     * to produce a *misplaced* occurrence; every edit that damages the string removes the occurrence
+     * instead, and then there is nothing to be wrong about.
      *
      * Measured rather than argued: `reason: property.reason` replaced by `reason: ''` in `serialise.ts`
      * leaves the whole registry suite green, these five included. That is the strongest edit available

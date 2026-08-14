@@ -6,7 +6,7 @@ import {
   CASE_TABLE_IS_PARTITIONED,
   expectEveryCaseIsGrouped,
   expectEveryCaseIsJustified,
-} from '../../../catalogue/every-contract.js'
+} from '../../../../catalogue/every-contract.js'
 import { edgeCaseGroups, edgeCases, untypedCallerCaseGroups, untypedCallerCases } from './edge-cases.js'
 import { assertOutcome, callOnce, callsMatch, renderCalls, renderGroups } from './outcome.js'
 import { groupBy } from './reference.js'

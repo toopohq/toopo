@@ -14,7 +14,7 @@
  * **The serialisation drags the whole repository behind it.** `toopo search slugify` - a command that
  * installs nothing - loads 147 modules, among them `vitest`, the TypeScript compiler API, twelve
  * modules of `mutation/` and four of `validation/`. The chain is
- * `the-five.ts` -> `contracts/*\/contract.ts` -> `catalogue/every-contract.ts` -> `import { expect }
+ * `the-five.ts` -> `contracts/typescript/*\/contract.ts` -> `catalogue/every-contract.ts` -> `import { expect }
  * from 'vitest'`, and vitest is a dev dependency a user never receives. Cutting `local-source.ts` out
  * of the graph drops it from 55 repository modules to 26 and removes vitest entirely.
  *

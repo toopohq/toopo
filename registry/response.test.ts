@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import * as groupBy from '../contracts/array/group-by/contract.js'
+import * as groupBy from '../contracts/typescript/array/group-by/contract.js'
 import { canonical, digestOfBytes } from './canonical.js'
 import { FIELD_MAP, pathsIn } from './field-map.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'

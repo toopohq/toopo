@@ -267,7 +267,7 @@ const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'string-levenshtein-spec',
-  contractPath: 'contracts/string/levenshtein',
+  contractPath: 'contracts/typescript/string/levenshtein',
   timeZone: 'UTC',
   calibrationMutant: 'LS-1',
 

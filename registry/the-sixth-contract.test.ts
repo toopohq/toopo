@@ -35,7 +35,7 @@ import { contractAnatomy } from '../catalogue/every-contract.js'
  * contracts and accepts a sixth, not one dimensioned for a catalogue nobody has.
  *
  * **What this file is not, and this matters more.** `number/round@1` **is not in the catalogue and
- * may never be.** There is no `contracts/number/round` folder, no reference implementation, no
+ * may never be.** There is no `contracts/typescript/number/round` folder, no reference implementation, no
  * property, no battery and no admission decision - and writing one would be about ninety-seven
  * decisions this unit has no business taking. Nothing here has been verified about rounding, the
  * answers below are plausible rather than settled, and no part of it should ever be copied into a

@@ -14,7 +14,7 @@
  * The field holds a literal, and that is a measurement rather than a taste
  * ---------------------------------------------------------------------------
  *
- * `contracts/number/parse/edge-cases.ts` says why in its own source: `'1 000'` with a no-break space
+ * `contracts/typescript/number/parse/edge-cases.ts` says why in its own source: `'1 000'` with a no-break space
  * and `'1 000'` with an ordinary one are the same eight glyphs on screen and carry opposite answers in
  * that table. A field holding raw text reintroduces, in the playground, exactly the ambiguity the
  * contract refuses to have in its own bytes - a reader checking the no-break case would type an

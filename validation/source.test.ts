@@ -14,7 +14,7 @@ import { UnreadableSource, everyNode, positionOf, readSources } from './source.j
  */
 const REPOSITORY_ROOT = dirname(import.meta.dirname)
 const PROJECT = join(REPOSITORY_ROOT, 'tsconfig.json')
-const REFERENCE = join(REPOSITORY_ROOT, 'contracts', 'date', 'add', 'reference.ts')
+const REFERENCE = join(REPOSITORY_ROOT, 'contracts', 'typescript', 'date', 'add', 'reference.ts')
 
 const READ_TIMEOUT_MS = 10_000
 

@@ -15,7 +15,7 @@
 import {
   DETERMINISM_ORDERING_FINDING,
   NO_AMBIENT_OUTPUT_FINDING,
-} from '../../../catalogue/every-contract.js'
+} from '../../../../catalogue/every-contract.js'
 
 // ---------------------------------------------------------------------------
 // Block 4.1 - Identity

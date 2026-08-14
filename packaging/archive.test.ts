@@ -111,7 +111,7 @@ describe('the archive somebody installs', () => {
     expect(added.stdout).toContain('typescript/string/slugify@1')
 
     const written = archive.project.installed('string/slugify/slugify.ts')
-    const catalogue = readFileSync(join(REPOSITORY, 'contracts/string/slugify/reference.ts'))
+    const catalogue = readFileSync(join(REPOSITORY, 'contracts/typescript/string/slugify/reference.ts'))
 
     expect(digestOfBytes(servedBytes(Buffer.from(written, 'utf8')))).toBe(
       digestOfBytes(servedBytes(catalogue)),
@@ -144,7 +144,7 @@ describe('the archive somebody installs', () => {
       ).toEqual({ version: 1, directory: 'lib/toopo' })
 
       const written = readFileSync(join(fresh.project.root, 'lib/toopo/string/slugify/slugify.ts'))
-      const catalogue = readFileSync(join(REPOSITORY, 'contracts/string/slugify/reference.ts'))
+      const catalogue = readFileSync(join(REPOSITORY, 'contracts/typescript/string/slugify/reference.ts'))
 
       expect(digestOfBytes(servedBytes(written))).toBe(digestOfBytes(servedBytes(catalogue)))
     } finally {
@@ -164,7 +164,7 @@ describe('the archive somebody installs', () => {
       }[]
     }
 
-    const catalogue = readFileSync(join(REPOSITORY, 'contracts/string/slugify/reference.ts'))
+    const catalogue = readFileSync(join(REPOSITORY, 'contracts/typescript/string/slugify/reference.ts'))
     const feature = lockfile.features[0]
 
     expect(feature?.implementation.version).toBe(THE_UNPUBLISHED_VERSION)

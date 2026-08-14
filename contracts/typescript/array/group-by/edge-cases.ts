@@ -26,8 +26,8 @@
  * contract's short history rather than a virtue.
  */
 
-import type { CaseGroup } from '../../../catalogue/identifier.js'
-import type { Provenance } from '../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../catalogue/identifier.js'
+import type { Provenance } from '../../../../catalogue/every-contract.js'
 
 /** Key and group, in the order the result must hold them. */
 export type ExpectedGroup = readonly [key: unknown, group: readonly unknown[]]

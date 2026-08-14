@@ -23,8 +23,8 @@
  * table's short history rather than a virtue.
  */
 
-import type { CaseGroup } from '../../../catalogue/identifier.js'
-import type { Provenance } from '../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../catalogue/identifier.js'
+import type { Provenance } from '../../../../catalogue/every-contract.js'
 
 /**
  * The six questions this table answers, in the order it answers them. Frozen with the major - see

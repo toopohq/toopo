@@ -25,16 +25,16 @@ import { SERVED_AS_A_FILE } from './serialise.js'
 import type { ContractAddress } from './address.js'
 import type { Lifecycle } from './contract-record.js'
 
-import * as numberParse from '../contracts/number/parse/contract.js'
-import * as numberParseCases from '../contracts/number/parse/edge-cases.js'
-import * as dateAdd from '../contracts/date/add/contract.js'
-import * as dateAddCases from '../contracts/date/add/edge-cases.js'
-import * as groupBy from '../contracts/array/group-by/contract.js'
-import * as groupByCases from '../contracts/array/group-by/edge-cases.js'
-import * as levenshtein from '../contracts/string/levenshtein/contract.js'
-import * as levenshteinCases from '../contracts/string/levenshtein/edge-cases.js'
-import * as slugify from '../contracts/string/slugify/contract.js'
-import * as slugifyCases from '../contracts/string/slugify/edge-cases.js'
+import * as numberParse from '../contracts/typescript/number/parse/contract.js'
+import * as numberParseCases from '../contracts/typescript/number/parse/edge-cases.js'
+import * as dateAdd from '../contracts/typescript/date/add/contract.js'
+import * as dateAddCases from '../contracts/typescript/date/add/edge-cases.js'
+import * as groupBy from '../contracts/typescript/array/group-by/contract.js'
+import * as groupByCases from '../contracts/typescript/array/group-by/edge-cases.js'
+import * as levenshtein from '../contracts/typescript/string/levenshtein/contract.js'
+import * as levenshteinCases from '../contracts/typescript/string/levenshtein/edge-cases.js'
+import * as slugify from '../contracts/typescript/string/slugify/contract.js'
+import * as slugifyCases from '../contracts/typescript/string/slugify/edge-cases.js'
 
 import { battery as numberParseBattery } from '../mutation/number-parse.battery.js'
 import { battery as numberParseSpec } from '../mutation/number-parse-spec.battery.js'
@@ -136,7 +136,7 @@ export const theFive: readonly ContractSource[] = [
   {
     address: NUMBER_PARSE,
     lifecycle: NOT_YET_PUBLISHED,
-    folder: 'contracts/number/parse',
+    folder: 'contracts/typescript/number/parse',
     files: THE_SEVEN_FILES,
     module: numberParse as unknown as Readonly<Record<string, unknown>>,
     declares: [numberParse, numberParseCases] as unknown as Readonly<Record<string, unknown>>[],
@@ -188,7 +188,7 @@ export const theFive: readonly ContractSource[] = [
   {
     address: DATE_ADD,
     lifecycle: NOT_YET_PUBLISHED,
-    folder: 'contracts/date/add',
+    folder: 'contracts/typescript/date/add',
     files: THE_SEVEN_FILES,
     module: dateAdd as unknown as Readonly<Record<string, unknown>>,
     declares: [dateAdd, dateAddCases] as unknown as Readonly<Record<string, unknown>>[],
@@ -302,7 +302,7 @@ export const theFive: readonly ContractSource[] = [
       measurement: groupBy.catalogueAdmission.measurement,
       keptAs: groupBy.catalogueAdmission.keptAs,
     },
-    folder: 'contracts/array/group-by',
+    folder: 'contracts/typescript/array/group-by',
     // The nine `contractAnatomy` records: the seven, plus the two this contract invented.
     files: [...THE_SEVEN_FILES, 'language.test.ts', 'outcome.ts'],
     module: groupBy as unknown as Readonly<Record<string, unknown>>,
@@ -405,7 +405,7 @@ export const theFive: readonly ContractSource[] = [
   {
     address: LEVENSHTEIN,
     lifecycle: NOT_YET_PUBLISHED,
-    folder: 'contracts/string/levenshtein',
+    folder: 'contracts/typescript/string/levenshtein',
     files: THE_SEVEN_FILES,
     module: levenshtein as unknown as Readonly<Record<string, unknown>>,
     declares: [levenshtein, levenshteinCases] as unknown as Readonly<Record<string, unknown>>[],
@@ -457,7 +457,7 @@ export const theFive: readonly ContractSource[] = [
   {
     address: SLUGIFY,
     lifecycle: NOT_YET_PUBLISHED,
-    folder: 'contracts/string/slugify',
+    folder: 'contracts/typescript/string/slugify',
     files: THE_SEVEN_FILES,
     module: slugify as unknown as Readonly<Record<string, unknown>>,
     declares: [slugify, slugifyCases] as unknown as Readonly<Record<string, unknown>>[],

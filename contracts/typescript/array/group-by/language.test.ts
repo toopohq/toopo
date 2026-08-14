@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { expectEveryCaseIsJustified } from '../../../catalogue/every-contract.js'
+import { expectEveryCaseIsJustified } from '../../../../catalogue/every-contract.js'
 import type { EdgeCase, ExpectedGroup } from './edge-cases.js'
 import { edgeCases, untypedCallerCases } from './edge-cases.js'
 import { assertOutcome, callOnce, callsMatch, groupingMatches, renderCalls, renderGroups } from './outcome.js'

@@ -18,8 +18,8 @@
  * mutation.
  */
 
-import type { CaseGroup } from '../../../catalogue/identifier.js'
-import type { Provenance } from '../../../catalogue/every-contract.js'
+import type { CaseGroup } from '../../../../catalogue/identifier.js'
+import type { Provenance } from '../../../../catalogue/every-contract.js'
 import type { AddFailureReason, Duration } from './contract.js'
 import { EARLIEST_REPRESENTABLE, LATEST_REPRESENTABLE } from './contract.js'
 

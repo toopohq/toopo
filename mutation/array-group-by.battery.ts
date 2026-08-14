@@ -620,7 +620,7 @@ const probes: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'array-group-by',
-  contractPath: 'contracts/array/group-by',
+  contractPath: 'contracts/typescript/array/group-by',
   timeZone: 'UTC',
   calibrationMutant: 'M-04',
 

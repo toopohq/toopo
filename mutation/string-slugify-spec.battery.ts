@@ -271,7 +271,7 @@ const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'string-slugify-spec',
-  contractPath: 'contracts/string/slugify',
+  contractPath: 'contracts/typescript/string/slugify',
   timeZone: 'UTC',
   calibrationMutant: 'GS-1',
 

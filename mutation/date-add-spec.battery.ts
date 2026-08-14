@@ -313,7 +313,7 @@ const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'date-add-spec',
-  contractPath: 'contracts/date/add',
+  contractPath: 'contracts/typescript/date/add',
   timeZone: 'UTC',
   calibrationMutant: 'DA-1',
 

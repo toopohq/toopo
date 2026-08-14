@@ -223,7 +223,7 @@ const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'array-group-by-spec',
-  contractPath: 'contracts/array/group-by',
+  contractPath: 'contracts/typescript/array/group-by',
   timeZone: 'UTC',
   calibrationMutant: 'AG-1',
 
