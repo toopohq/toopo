@@ -33,9 +33,9 @@ catalogue, 12 exist only where a lens deliberately took the suite's sight away, 
 a debt**.
 
 ```sh
-npm install
-npm run mutation     # about half an hour; replays all 631 cells and prints the total
-npm run tally        # prints it again from what the replay left, measuring nothing
+pnpm install
+pnpm run mutation    # about half an hour; replays all 631 cells and prints the total
+pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 
 A high score does not say the code is correct. It says the tests notice the defects that were
@@ -103,13 +103,13 @@ wrong licence.
 ## Working on it
 
 ```sh
-npm test             # the contracts' own suite
-npm run registry     # the registry's schema, storage and read API
-npm run validation   # stage 1 of the submission pipeline
-npm run cli          # the six commands
-npm run site         # the generator
-npm run packaging    # builds the archive, installs it, runs toopo out of it
-npm run meta         # the mutation instrument's own guards
+pnpm test            # the contracts' own suite
+pnpm run registry    # the registry's schema, storage and read API
+pnpm run validation  # stage 1 of the submission pipeline
+pnpm run cli         # the six commands
+pnpm run site        # the generator
+pnpm run packaging   # builds the archive, installs it, runs toopo out of it
+pnpm run meta        # the mutation instrument's own guards
 ```
 
 [CONTRIBUTING.md](CONTRIBUTING.md) says what this catalogue can receive and what it cannot — an

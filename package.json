@@ -24,6 +24,7 @@
   "engines": {
     "node": "^22.15.0 || >=24.0.0"
   },
+  "packageManager": "pnpm@10.24.0",
   "bin": {
     "toopo": "dist/cli/published.js"
   },

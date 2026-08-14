@@ -28,11 +28,20 @@
  * npm is reached as a JavaScript file run by this same node, never as `npm` on a path. The three shims
  * in `node_modules/.bin` are a shell script, a `.cmd` and a `.ps1`, and choosing between them is
  * choosing a shell - which would put a quoted path between this guard and what it measures.
+ *
+ * ---------------------------------------------------------------------------
+ * npm here means npm, and this is the file where somebody would harmonise it away
+ * ---------------------------------------------------------------------------
+ *
+ * This repository installs with pnpm. A user installs `toopo` with npm. **The repository changed
+ * package manager; the product did not change consumer**, so a guard that packed and installed with
+ * whatever the developer happens to run would measure the developer's life instead of the user's -
+ * every figure in this folder moved onto a different product, with nothing anywhere to say so.
  */
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, rmSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { basename, dirname, join, relative } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 import { aProject } from '../cli/temporary-project.js'
@@ -40,24 +49,41 @@ import type { TemporaryProject } from '../cli/temporary-project.js'
 
 const REPOSITORY = join(import.meta.dirname, '..')
 
+/** npm's own entry point, which is what tells it apart from whatever else set `npm_execpath`. */
+const NPM_CLI = 'npm-cli.js'
+
 /**
  * npm as a file this node can run.
  *
- * `npm_execpath` is set by npm itself when a script is running under it, which is how this suite is
- * meant to be started; the path beside `process.execPath` is where every node distribution this
- * repository is developed on keeps the same file. Neither is guessed at: both are checked, and the
- * refusal names the command that sets the first.
+ * `npm_execpath` names **whichever package manager started the script**, and not npm. Measured:
+ *
+ *     npm run packaging    ->  ...\node_modules\npm\bin\npm-cli.js
+ *     pnpm run packaging   ->  ...\node_modules\pnpm\bin\pnpm.cjs
+ *
+ * Taken as it stood, `pnpm run packaging` ran `pnpm pack --json`, which writes a progress line where
+ * npm writes a JSON array: `SyntaxError: Unexpected token '>', "\n> toopo@0."... is not valid JSON`,
+ * with the seven guards behind that `beforeAll` reported as skipped. **That it was loud is luck
+ * rather than design** - a manager whose `--json` happened to parse would have left this folder green
+ * and measuring something else, which is why the name is checked and not the exit status.
+ *
+ * So the variable is trusted only when it names npm, and the path beside `process.execPath` - where
+ * every node distribution this repository is developed on keeps the same file - is what answers
+ * otherwise. Neither is guessed at: both are checked, and the refusal says what is missing rather
+ * than naming a command that no longer installs this repository.
  */
 const npmCli = (): string => {
   const declared = process.env['npm_execpath']
-  if (declared !== undefined && existsSync(declared)) return declared
+  if (declared !== undefined && basename(declared) === NPM_CLI && existsSync(declared)) {
+    return declared
+  }
 
-  const beside = join(dirname(process.execPath), 'node_modules', 'npm', 'bin', 'npm-cli.js')
+  const beside = join(dirname(process.execPath), 'node_modules', 'npm', 'bin', NPM_CLI)
   if (existsSync(beside)) return beside
 
   throw new Error(
-    'npm could not be found as a file this node can run, so no archive can be built. Start this ' +
-      'suite with `npm run packaging`, which sets npm_execpath.',
+    'npm could not be found as a file this node can run, so no archive can be built. This suite ' +
+      'packs and installs with npm because that is what a user of `toopo` runs, whatever this ' +
+      'repository is developed with.',
   )
 }
 

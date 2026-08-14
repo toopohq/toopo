@@ -137,14 +137,14 @@ the boundary is waiting for.
 ## Working in this repository
 
 ```sh
-npm install
-npm test             # the contracts' own suite
-npm run registry     # the registry's schema, storage and read API
-npm run validation   # stage 1 of the submission pipeline
-npm run cli          # the six commands
-npm run site         # the generator
-npm run packaging    # builds the archive, installs it, runs toopo out of it
-npm run meta         # the mutation instrument's own guards
+pnpm install
+pnpm test            # the contracts' own suite
+pnpm run registry    # the registry's schema, storage and read API
+pnpm run validation  # stage 1 of the submission pipeline
+pnpm run cli         # the six commands
+pnpm run site        # the generator
+pnpm run packaging   # builds the archive, installs it, runs toopo out of it
+pnpm run meta        # the mutation instrument's own guards
 ```
 
 A test that cannot fail is not a test. Before claiming a suite is green, break the code on its real
@@ -152,8 +152,8 @@ failure condition and watch it go red — that is the acceptance criterion for e
 is the reason the mutation batteries exist.
 
 ```sh
-npm run battery <name>   # replay one battery
-npm run mutation         # replay all of them; about half an hour
+pnpm run battery <name>  # replay one battery
+pnpm run mutation        # replay all of them; about half an hour
 ```
 
 If you touch a folder a battery injects into, that battery is what says whether your change is
