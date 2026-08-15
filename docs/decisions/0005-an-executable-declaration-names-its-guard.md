@@ -5,7 +5,8 @@ decision-makers: Mathis Perron
 governs:
   - packages/registry/contract-record.ts
 confirmed-by:
-  - every-anatomy-requirement-is-triaged
+  - battery: registry-storage
+    guard: every-anatomy-requirement-is-triaged
 ---
 
 # An executable own declaration names the guard that makes it so

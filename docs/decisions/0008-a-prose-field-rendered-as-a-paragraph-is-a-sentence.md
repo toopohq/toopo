@@ -7,8 +7,10 @@ governs:
   - packages/site/pages.test.ts
   - packages/registry/against-the-five.test.ts
 confirmed-by:
-  - a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence
-  - a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands
+  - battery: site
+    guard: a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence
+  - battery: registry-storage
+    guard: a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands
 ---
 
 # A carried string a page prints as a paragraph is a sentence

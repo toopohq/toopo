@@ -41,9 +41,16 @@ implementations can be made.
 
 ## Confirmation
 
-The absence is kept by the compiler rather than by a guard: `FIELD_MAP` is total over the record, so a
-field reintroduced here does not compile until somebody classifies it, and `registry/address.ts`
-publishes no type carrying an implementation identifier alone.
+**Nothing keeps the absence, and the mechanism this paragraph first claimed does not exist.** It said
+`FIELD_MAP` was total over the record, so that a field reintroduced here would not compile until
+somebody classified it. `FIELD_MAP` is a `Readonly<Record<string, FieldClassification>>` keyed by a
+path string, not by `keyof ContractRecord`: it is resolved against the paths a real record carries,
+which is a guard over data and not a totality over a type. Nothing would refuse a `measurements` field
+added back tomorrow except the argument above.
+
+What *is* kept is the second half. `packages/registry/address.ts` publishes `ImplementationAddress` as
+a contract, an identifier and a version, and publishes no type carrying an implementation identifier
+alone — so the shape that made this list wrong is unrepresentable whether or not the list returns.
 
 ## What would reopen this
 

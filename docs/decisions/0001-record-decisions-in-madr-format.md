@@ -71,11 +71,23 @@ slug would make a reworded title a broken link, which is the failure the whole r
 | Field | What it holds | Argued by |
 | --- | --- | --- |
 | `governs` | the code this decision rules, as repository-relative paths | a back-link that is data can be resolved; one that is prose cannot |
-| `confirmed-by` | the guard identifiers that keep it | `Confirmation` in prose does not resolve either |
+| `confirmed-by` | the guards that keep it, each as the pair `(battery, guard)` | `Confirmation` in prose does not resolve either |
+
+**A guard is named by the pair, never by the identifier alone**, and that is not a flourish. A guard
+identifier is unique within the suite a battery measures, and fifteen identifier strings in this
+catalogue are held by more than one contract — so an identifier on its own is not an address.
+`packages/registry/address.ts` publishes `GuardAddress` as exactly that pair and publishes no unpaired
+form, which is the rule this field obeys rather than reinvents:
+
+```yaml
+confirmed-by:
+  - battery: registry-storage
+    guard: the-absorbed-state-is-constructible
+```
 
 ### One section beyond MADR's own
 
-`## What would reopen this` is required. `DeferredNeed.until` in `packages/site/needs.ts` is the
+`## What would reopen this` is required. `DeferredNeed.until` in `packages/site/source.ts` is the
 precedent and carries the argument: a deferral aimed at the wrong event is one nobody revisits, and a
 reason ages into a description of the past where a trigger stays checkable. A decision with no stated
 trigger is frozen by accident rather than on purpose.

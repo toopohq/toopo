@@ -6,9 +6,12 @@ governs:
   - packages/registry/contract-record.ts
   - packages/registry/serialise.ts
 confirmed-by:
-  - a-grouping-that-is-not-a-partition-is-refused
-  - a-group-that-takes-a-case-address-is-refused
-  - every-group-is-a-heading-and-its-cases-follow-it
+  - battery: registry-storage
+    guard: a-grouping-that-is-not-a-partition-is-refused
+  - battery: registry-storage
+    guard: a-group-that-takes-a-case-address-is-refused
+  - battery: site
+    guard: every-group-is-a-heading-and-its-cases-follow-it
 ---
 
 # Block 4.4 is several tables, and every case belongs to a declared group

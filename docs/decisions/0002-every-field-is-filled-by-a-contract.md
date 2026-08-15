@@ -5,8 +5,10 @@ decision-makers: Mathis Perron
 governs:
   - packages/registry/contract-record.ts
 confirmed-by:
-  - needs-no-field-the-schema-does-not-have
-  - fills-the-fields-none-of-the-five-fills
+  - battery: registry-storage
+    guard: needs-no-field-the-schema-does-not-have
+  - battery: registry-storage
+    guard: fills-the-fields-none-of-the-five-fills
 ---
 
 # Every field of the record is filled by a contract, and the two that are not name their authority

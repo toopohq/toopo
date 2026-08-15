@@ -5,8 +5,10 @@ decision-makers: Mathis Perron
 governs:
   - packages/registry/contract-record.ts
 confirmed-by:
-  - the-absorbed-state-is-constructible
-  - fills-the-fields-none-of-the-five-fills
+  - battery: registry-storage
+    guard: the-absorbed-state-is-constructible
+  - battery: registry-storage
+    guard: fills-the-fields-none-of-the-five-fills
 ---
 
 # Four lifecycle states, and two retirements that are not one

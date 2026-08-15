@@ -47,7 +47,7 @@ exactly one error.
 ## Confirmation
 
 Nothing guards this, and there is nothing here to guard: it is a statement about where a frontier
-falls, not a rule a value could break. What is guarded is the address — `packages/registry/address.ts`
+falls, not a rule a value could break. What is guarded is the address — `packages/registry/address.test.ts`
 carries `COORDINATE`, keyed by `keyof ContractAddress`, so a coordinate added to an address does not
 compile until somebody says what it looks like rendered.
 
