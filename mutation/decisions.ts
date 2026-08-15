@@ -40,6 +40,16 @@
  * were each found by a replay, thirty-five minutes at a time, and each would have reddened here in
  * seconds.
  *
+ * **The direction that looks like a fifth is refused, and it is refused on a measurement.** *Every file
+ * citing a decision is governed by it* reads as the symmetric rule and is false: measured over the
+ * thirty-three (file, decision) pairs this repository holds, **ten are a file pointing at a decision
+ * that rules its neighbour** - `every-contract.ts` naming the record that carries the register it
+ * obeys, `signature.ts` naming the one that says what the schema does not interpret, and this module
+ * naming three records as examples of what its own guards found. Requiring the reverse would make a
+ * scope declaration grow with every reference to it, which is the trap `identity.searchAliases` is
+ * already argued against: *a phrase relates to a thing whenever anybody can explain the connection.*
+ * So a citation is asked to name a record that exists, and never to be governed by it.
+ *
  * A fifth family arrived with the reading. A record links another as `[ADR-0007](0007-....md)`, which
  * carries the address *and* a path, and nothing made the two agree - so a rename or a copied line
  * gives `[ADR-0007](0009-....md)`, which resolves perfectly while pointing at a decision it does not
