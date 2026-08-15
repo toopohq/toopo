@@ -1,5 +1,7 @@
 /**
  * This working tree, answering the whole read API, so that the tree a host serves can be written from
+ * ADR-0052 is why this third reader of the-five.ts exists beside the two clients' stand-ins.
+ *
  * it.
  *
  * ---------------------------------------------------------------------------

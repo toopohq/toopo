@@ -1,5 +1,7 @@
 /**
  * The registry as a published `toopo` sees it: an artefact that travelled in the archive, and nothing
+ * ADR-0044 is why the archive carries a frozen artefact rather than serialising what it finds.
+ *
  * else.
  *
  * It was the second implementation of `RegistrySource` to be written and the first that is not a

@@ -1,5 +1,7 @@
 /**
  * Which licence covers what, and the two lines that say so on the one kind of file that leaves.
+ * ADR-0047 is which licence covers what, and why the perimeter is derived rather than listed.
+ *
  *
  * ---------------------------------------------------------------------------
  * Two licences, and the asymmetry that produces them

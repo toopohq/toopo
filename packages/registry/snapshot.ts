@@ -1,5 +1,7 @@
 /**
  * What a published version *is*, and what makes it the same thing everywhere.
+ * ADR-0050 is why a frozen edge carries the digest of what it names.
+ *
  *
  * A published version is frozen for life, hashed, served for ever, and no installation ever fetches
  * from anywhere else. That is permanent rule 3 and it is the whole security argument of this project,

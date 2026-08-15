@@ -1,6 +1,9 @@
 /**
  * Where an installation gets what it installs, and the frontier nobody may cross.
  *
+ * ADR-0044 is why the archive carries a frozen artefact rather than this working tree; ADR-0051 is why
+ * every implementation of this port is asynchronous, including the three that need no network.
+ *
  * ---------------------------------------------------------------------------
  * There is no server, and this file is what keeps that from becoming a habit
  * ---------------------------------------------------------------------------

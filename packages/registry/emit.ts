@@ -1,5 +1,7 @@
 /**
  * Every answer this registry can give, written down at the address it is asked at.
+ * ADR-0052 is why this walks the questions rather than the catalogue.
+ *
  *
  * ---------------------------------------------------------------------------
  * A walk of the questions, and not a walk of the catalogue

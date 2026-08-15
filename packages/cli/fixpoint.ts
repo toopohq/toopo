@@ -1,5 +1,7 @@
 /**
  * How a synchronous decision is taken in front of a registry that answers over a network.
+ * ADR-0051 is why this loop exists and what its acceptance criterion is.
+ *
  *
  * ---------------------------------------------------------------------------
  * The property this exists to keep

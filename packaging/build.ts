@@ -1,5 +1,7 @@
 /**
  * The file you run to build the archive.
+ * ADR-0044 is what an archive is, and what may not be in it.
+ *
  *
  *   node packaging/build.ts
  *

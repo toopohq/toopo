@@ -1,5 +1,7 @@
 /**
  * The battery over the archive: what somebody receives, and what must never be in it.
+ * ADR-0045 is what this battery can reach, and the third of the suite it cannot.
+ *
  *
  * It is the nineteenth, and it is the only one whose guards measure something that does not exist in
  * the working tree. Every other battery injects a defect and asks what the suite says about the files

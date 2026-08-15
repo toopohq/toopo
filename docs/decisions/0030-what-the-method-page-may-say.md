@@ -126,6 +126,38 @@ survivors with the guard green. It is now a second walk over the batteries. And 
 a three-line trigger and survived, correctly, because two lines of trigger were left; the battery
 reported it, which is what a pinned verdict is for.
 
+### The second collision on that literal, and the limit it exposed
+
+**And the replay found what no reading had, in a guard three folders away and about this unit's own
+arithmetic.** W-47 writes a literal into a sentence the method page derives, and it is pinned killed by
+the guard requiring every figure a reader can see to occur in the data it was built from. It survived —
+because `measured.unprobed.length` **became exactly 41**, the literal it wrote, when three batteries
+declared the transport they cannot reach.
+
+**It is the second collision on that literal and the two are different classes.** The first was an
+address, `THE_REPLAY.measuredAt` stamped `0d8e41d`, and the repair was the rule that an address leaves
+the data by both sides or by neither. This one is a real derived count, which no rule about addresses
+reaches.
+
+**What it exposes is a limit of that guard, wider than the one declared beside it.** The declared limit is
+that a literal equal to *today's value of the figure it replaces* passes today. The true limit is larger:
+the guard asks whether a figure occurs **somewhere** in the data and cannot ask whether it is the figure
+*that sentence* derives — so a page reading *41 such readings* passes while the lenses number 24, and the
+pool of excusable literals grows with the catalogue. Closing it means every rendered figure carrying its
+provenance and the guard comparing the pair, which is a change to how that page emits every number it
+has. **Priced and not bought**; what stands instead is a literal chosen to be underivable rather than
+merely absent.
+
+**And the rule about addresses was itself being kept by one name where the data carried two.**
+`THE_REPLAY.spread` quotes the commit of every reading it compares, and only `measuredAt` was ever
+stripped; the others leaked into both sides and cancelled — which is the mechanism that paragraph
+describes, happening to the guard that describes it. They went unnoticed because their digit runs occur
+elsewhere in the data, which is luck. `THE_COMMITS_QUOTED` is the repair and the prose interpolates it,
+so a commit cannot be quoted without being in it. **What the stripping is load-bearing for is the pool
+and not the honest page**, measured both ways: removing it entirely leaves the guard green, because a
+rendered address is in the pool *and* in the reading and the two cancel; on a page publishing `9269`, a
+run occurring nowhere but inside a stamp, it is green without the stripping and red with it.
+
 ## What would reopen this
 
 A second address rendered on this page. The repair to the figure guard names the one address the data

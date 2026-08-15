@@ -1,5 +1,7 @@
 /**
  * The registry reached over HTTP, and the one line of it that decides a supply chain.
+ * ADR-0051 is the port this implements, and the addressing that decides a supply chain.
+ *
  *
  * It is the implementation `source.ts` has been claiming since it was written - *the day a server
  * exists it implements this same type and nothing above it changes*. Nothing above it did: the

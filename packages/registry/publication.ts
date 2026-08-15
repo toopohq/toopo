@@ -1,5 +1,7 @@
 /**
  * What this repository states about itself in its manifest, declared where a guard can resolve it.
+ * ADR-0048 is what the manifest states, and the order a publication takes.
+ *
  *
  * `package.json` is JSON and cannot import, so every fact npm shows on a package page is a
  * transcription of something declared here or in `licence.ts` and `address.ts`, and

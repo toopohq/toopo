@@ -1,5 +1,7 @@
 /**
  * The endpoints, derived from `needs.ts`, and the indicative list of §6.2 checked against the result.
+ * ADR-0052 is why an endpoint says what its answer is about, and the collision that decided it.
+ *
  *
  * The order is the point. The specification gives five endpoints and calls them indicative; this file
  * was written by starting from what the consumers have to do, and only then reading the five back. Had

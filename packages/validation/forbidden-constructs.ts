@@ -1,5 +1,7 @@
 /**
  * The security filter, and the thesis it rests on.
+ * ADR-0046 is why this list is what is permitted rather than what is forbidden.
+ *
  *
  * The project specification states it in one sentence: *in a pure function, malicious code has
  * nowhere to hide.* The catalogue's perimeter - pure functions, zero dependencies - is not an

@@ -1,5 +1,7 @@
 /**
  * From a name to the bytes, with every answer checked on arrival. Shared by `add` and by `update`.
+ * ADR-0050 is the edge this walks, and what is compared when one arrives.
+ *
  *
  * It is one module rather than two because the two commands ask a registry for exactly the same
  * things: which contract a name is, which implementation is bound to it, what that implementation's

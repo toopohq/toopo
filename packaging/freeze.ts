@@ -1,5 +1,7 @@
 /**
  * The artefact an archive carries, built by walking the registry exactly as an installation walks it.
+ * ADR-0044 is why this is a transcript of the installer's own walk rather than a second description.
+ *
  *
  * ---------------------------------------------------------------------------
  * It is a transcript, not a second description of the catalogue

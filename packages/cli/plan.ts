@@ -1,6 +1,7 @@
 /**
  * Where every file lands, decided before a single byte is written.
- * ADR-0032 is where a feature lands and what its entry file is called.
+ * ADR-0032 is where a feature lands and what its entry file is called; ADR-0049 is why the disk path is
+ * the one rendered thing that carries no language, and what refuses the collision instead.
  *
  *
  * Nothing here touches a disk, a network or a clock. An install that discovered a collision after
