@@ -94,7 +94,7 @@ const A_LIST_IS_WRITTEN_IN_ITS_OWN_ORDER = `  [...entries].sort((a, b) => (keyOf
 
 const THE_OUTPUT_IS_WALKED_TO_THE_BOTTOM = `    return statSync(full).isDirectory() ? every(full) : [full]`
 
-const THE_WALK_STARTS_AT_THE_COMPILED_ENTRY_POINT = `const reachable = reachableFrom(join(DIST, 'cli', 'published.js'))`
+const THE_WALK_STARTS_AT_THE_COMPILED_ENTRY_POINT = `const reachable = reachableFrom(join(DIST, 'packages', 'cli', 'published.js'))`
 
 const WHAT_THE_ENTRY_POINT_CANNOT_REACH_IS_DROPPED = `const dropped = every(DIST).filter((file) => !reachable.has(file))`
 

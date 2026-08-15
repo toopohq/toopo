@@ -77,7 +77,7 @@ const every = (folder: string): readonly string[] =>
     return statSync(full).isDirectory() ? every(full) : [full]
   })
 
-const reachable = reachableFrom(join(DIST, 'cli', 'published.js'))
+const reachable = reachableFrom(join(DIST, 'packages', 'cli', 'published.js'))
 const dropped = every(DIST).filter((file) => !reachable.has(file))
 
 for (const file of dropped) rmSync(file)

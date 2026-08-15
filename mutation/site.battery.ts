@@ -943,7 +943,7 @@ const mutants: readonly Mutant[] = [
     [
       cataloguePageFile(
         NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED,
-        `import type { Battery } from '../mutation/run.js'\n` +
+        `import type { Battery } from '../../mutation/run.js'\n` +
           `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`,
       ),
     ],

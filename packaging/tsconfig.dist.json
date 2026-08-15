@@ -3,7 +3,7 @@
   "compilerOptions": {
     "noEmit": false,
     "allowImportingTsExtensions": false,
-    "rootDir": "../packages",
+    "rootDir": "..",
     "outDir": "../dist",
     "types": ["node"]
   },

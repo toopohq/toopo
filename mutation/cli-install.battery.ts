@@ -187,7 +187,7 @@ const A_REFUSED_CONTRACT_IS_REFUSED = `      ledger = refuseContract(ledger, {
 
 const THE_VERSION_IS_VISIBLY_FALSE = `export const THE_UNPUBLISHED_VERSION = '0.0.0-local'`
 
-const THE_LAST_IMPORT_OF_THE_PLAN = `import type { FrozenImplementation } from '../packages/registry/snapshot.js'`
+const THE_LAST_IMPORT_OF_THE_PLAN = `import type { FrozenImplementation } from '../registry/snapshot.js'`
 
 const AN_UNKNOWN_SETTING_IS_REFUSED = `    ...Object.keys(held)
       .filter((key) => key !== 'version' && key !== 'directory')`
@@ -516,8 +516,8 @@ const mutants: readonly Mutant[] = [
     [
       planFile(
         THE_LAST_IMPORT_OF_THE_PLAN,
-        `import type { FrozenImplementation } from '../packages/registry/snapshot.js'
-import { theFive } from '../packages/registry/the-five.js'
+        `import type { FrozenImplementation } from '../registry/snapshot.js'
+import { theFive } from '../registry/the-five.js'
 
 void theFive`,
       ),
@@ -1170,7 +1170,7 @@ void theFive`,
     [
       httpSourceFile(
         WHAT_THIS_MODULE_MAY_HASH,
-        `import { digestOfBytes, servedBytes } from '../packages/registry/canonical.js'
+        `import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type {
   ServedImplementationBinding,`,
       ),

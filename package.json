@@ -26,7 +26,7 @@
   },
   "packageManager": "pnpm@10.24.0",
   "bin": {
-    "toopo": "dist/cli/published.js"
+    "toopo": "dist/packages/cli/published.js"
   },
   "files": [
     "dist"
