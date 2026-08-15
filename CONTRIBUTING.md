@@ -147,6 +147,16 @@ pnpm run packaging   # builds the archive, installs it, runs toopo out of it
 pnpm run meta        # the mutation instrument's own guards
 ```
 
+**`pnpm -r` is not the entry point, and it is worth knowing why rather than being told.** This
+repository is a pnpm workspace, so the command exists and it answers `exit=0` having run nothing —
+which is the one shape everything here is written against, a green that checked nothing. The seven
+suites above are seven *perimeters of verification*, and only four of them are packages: `pnpm test`
+is `contracts/`, `pnpm run meta` is `mutation/`, and `pnpm run packaging` is `packaging/`, none of
+which is a package, each for a reason recorded where it lives. Making the scripts follow the packages
+would make two divisions coincide that do not, and on the day they diverge further it is the packaging
+division that would win against the verification one. One root script per suite is one statement per
+suite, which is already the right shape.
+
 A test that cannot fail is not a test. Before claiming a suite is green, break the code on its real
 failure condition and watch it go red — that is the acceptance criterion for every change here, and it
 is the reason the mutation batteries exist.

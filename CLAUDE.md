@@ -1883,6 +1883,20 @@ while the list does not. The remedy costs two sentences, and this section is its
   thirteen files judging prose, at the price the alias rule above was refused at. What would close
   *that* is a validation stage reading this repository's own strings the way stage 1 reads a
   submission's — named so it can be recognised, and not built.
+- **What files a contract's declaration may name**, which is narrower than it first looked and is
+  recorded with the measurement that closed the wider reading. *A contract is the folder and not a
+  file* is kept, in both directions: `harnessOf` refuses any disagreement between a contract's
+  declared `files` and what is on disk, and a stray file dropped into `contracts/typescript/date/add`
+  reddens **50 guards** under `UndeclaredHarness: … present and not served: stray.ts`. The five are
+  not the same list — four carry seven files and `array/group-by@1` carries nine — and that is
+  declared rather than drifted: `THE_SEVEN_FILES` is spread into all five, the two extras are written
+  beside it as `[...THE_SEVEN_FILES, 'language.test.ts', 'outcome.ts']`, and the constant's own comment
+  says they are its own. What nothing keeps is one level up: **the declaration is checked against the
+  folder, and nothing checks the declaration.** A sixth contract may name a tenth file and put it
+  there, and both halves will agree. Closed by the same thing the entry above it closes by — a
+  validation stage reading a submission's folder against what `contractAnatomy` requires of one —
+  because the judgement is whether an extra file is a contract's own or somebody's leftover, and that
+  is not a shape.
 - **The rule that a pin names what is red on every run**, stated on L-05 in `mutants.ts`, whose
   *instance* closed and whose *class* stays open. The instance was `G-14` of `string-slugify` pinning
   `p1-two-spellings-one-slug`; that pin is gone and the section below says on what argument. What no
@@ -3064,6 +3078,39 @@ new guard files built their subject at the top of the module, so `I-01` made one
 tests where the unmutated arm reports 314: a file that collects nothing is read as a run that measured
 part of the suite. It is the lesson `site/pages.test.ts` records against W-20, relearned in three folders
 at once.
+
+## A root computed by walking up a fixed number of levels — settled, repository-wide
+
+**It is a class and not a list of sites, and it is invisible to every search a move is planned with.**
+A repository root written `join(import.meta.dirname, '..')` or `dirname(import.meta.dirname)` contains
+no path literal, so a folder that gains a level breaks it and nothing that greps for paths, imports or
+globs can see it coming. It was found by `packages/validation`'s two guards failing on a
+`tsconfig.json` one directory out of reach — seven reds, after the same class had already been
+foreseen and repaired one commit earlier in `serialise.ts`, which is what made it a class rather than
+a repair.
+
+**Ten sites, with the verdict each one got**, because a swept class is worth what its enumeration is
+worth. Correct untouched, the folder having stayed at the root: `packaging/the-archive.ts`,
+`packaging/build.ts`, `packaging/archive.test.ts`, and `mutation/paths.ts`. Repaired to two levels:
+`packages/registry/serialise.ts`, `packages/validation/source.test.ts`,
+`packages/validation/the-five.test.ts`, `packages/site/build.ts`, `packages/site/playground.test.ts`.
+And one that is correct *because it is not about the source tree at all*:
+`packages/cli/published.ts` resolves the artefact at `join(import.meta.dirname, '..', ARTEFACT_FILE)`,
+which is a fact about the compiled layout under `dist/` — it survived because
+`packaging/tsconfig.dist.json` moved its `rootDir` to `../packages` and kept `dist/cli/published.js`
+where it was.
+
+**The rule the eleventh needs: a computed root states how far up it is going, and what it is going up
+from.** The distinction `published.ts` embodies is the one that matters — a walk over the *source*
+tree and a walk over the *emitted* tree are two different facts that look identical, and only one of
+them moves when a folder does.
+
+**Two neighbouring forms were found in the same sweep and neither is this one.** A path held as
+segments — `join(REPOSITORY_ROOT, 'contracts', 'date', 'add', 'reference.ts')` — is invisible to a
+path-shaped search for the same reason and is repaired the same way. And a dynamic
+`await import('../registry/emit.ts')` is not a `from` clause, so a rule anchored on `from '` walks
+past it; `packaging/build.ts` holds three and `site/build.ts` held two, all written dynamically
+because the hook that translates a `.js` specifier cannot be used before it is registered.
 
 ## Rules for this stage
 
