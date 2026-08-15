@@ -1,5 +1,7 @@
 /**
  * The replay: every battery this repository declares, then the total.
+ * ADR-0061 is why this is one committed command rather than a loop each of us wrote by hand.
+ *
  *
  *   npm run mutation
  *

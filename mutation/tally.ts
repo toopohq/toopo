@@ -1,5 +1,7 @@
 /**
  * The entry point that turns a completed replay into the one figure.
+ * ADR-0061 is why the refusal below is only reachable from this command.
+ *
  *
  *   npm run tally
  *

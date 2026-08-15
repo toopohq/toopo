@@ -1,5 +1,8 @@
 /**
  * What happens to a real project, sorted into what is refused cleanly and what breaks badly.
+ * ADR-0060 is why every clean refusal here is resolved by a guard of this suite rather than by the
+ * pre-flight, and where that line is drawn.
+ *
  *
  * This list is the answer to a question a test suite does not ask: *not what breaks in a guard, what
  * breaks for somebody*. It is written down here rather than left in a report because the founder will
