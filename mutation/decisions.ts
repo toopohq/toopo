@@ -1,7 +1,8 @@
 /**
  * Every reference a decision record and the code make to each other, read as data rather than as prose.
  *
- * ADR-0001.
+ * ADR-0001. ADR-0062 is why `CLAUDE.md` is a state rather than a journal, and it is kept by the one
+ * guard below that reads that file at all: an `ADR-NNNN` written in it names a record or reddens.
  *
  * ---------------------------------------------------------------------------
  * What this closes, and the measurement that is the whole argument for it

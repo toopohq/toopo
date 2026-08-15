@@ -3,7 +3,7 @@
  *
  * ADR-0018 is the rule every figure here obeys: a count carries the commit it was measured at and the
  * population counted, or the sentence is written so that it needs no count at all. ADR-0030 is what
- * the page built from this may say.
+ * the page built from this may say, and ADR-0061 is the command `THE_REPLAY` below is a reading of.
  *
  * ---------------------------------------------------------------------------
  * Why the derivation is over the pins and not over a run
