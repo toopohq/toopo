@@ -109,6 +109,20 @@ a rule whose first offender is its own author, in the act of writing it, says so
 rule's difficulty that a flat statement of it cannot. An hour of work on this exact class did not stop
 the class. Four more figures published in this project were wrong in the same way.
 
+### The sixth, and it is a unit of measure rather than a stamp
+
+**The archive was briefed as *121,6 kB empaquetés dont 30,4 kB de catalogue*.** Measured at `4a3bce5`,
+the packed archive was 128 527 B and the catalogue inside it was 30 438 B **unpacked** — 12 652 B of
+the packed total. The sentence put a compressed whole beside an uncompressed part and read as one
+figure with a share of itself; the share it implied, 25 per cent, is neither of the two true ones,
+9.8 and 7.4.
+
+**It is the sixth instance of this rule produced by the author of the project**, and that is why it is
+recorded rather than quietly corrected in the brief it came from. The other five are about a figure
+going stale. This one never was true: no commit would have made it right, because the two numbers were
+never of the same kind. So the rule gains a clause it did not have — **a count carries the unit it was
+counted in**, and a ratio of two counts is only a ratio when both were.
+
 ## Consequences
 
 `mutation/published.ts` is where this decision is paid rather than argued: `THE_REPLAY` carries a
