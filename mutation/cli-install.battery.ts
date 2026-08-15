@@ -149,6 +149,23 @@ const TWO_EDGES_ON_ONE_ADDRESS_AGREE = `      if (already.digest !== edge.digest
 
 const A_FAILURE_IS_NOT_AN_ABSENCE = `    if (!response.ok) throw new TheRegistryDidNotAnswer(url, \`it answered \${response.status}\`)`
 
+// --- The revision a lockfile records, and the registry that does not answer ---
+
+const BOTH_NAMED_ANSWERS_ARE_COMPARED = `  const revision = oneRevisionBehind([
+    { what: 'the catalogue index', servedFrom: chosen.found.servedFrom },`
+
+const THE_LOCKFILE_KEEPS_WHAT_THE_REGISTRY_ANSWERED = `      servedFrom: revision.found,`
+
+const A_TRANSPORT_FAILURE_IS_A_REFUSAL_OF_OURS = `    let response: Response
+    try {
+      response = await fetch(url)
+    } catch (error) {
+      throw new TheRegistryDidNotAnswer(
+        url,
+        error instanceof Error ? error.message : String(error),
+      )
+    }`
+
 const A_BLOB_IS_ADDRESSED_BY_THE_QUESTION = `      return { addressing: 'content-addressed', addressedBy: sha256, bytes }`
 
 const AN_ADDRESS_IS_ASKED_FOR_AS_IT_IS_RENDERED =
@@ -1215,6 +1232,63 @@ import type {
       'the-same-decision-against-a-warm-cache-and-no-network-is-the-same-plan',
       'the-walk-costs-one-round-trip-per-level-and-fetches-each-frontier-at-once',
     ]),
+  ),
+
+  // -------------------------------------------------------------------------
+  // The revision an installation records, and the registry that does not answer
+  // -------------------------------------------------------------------------
+
+  /**
+   * The index dropped from the comparison, so one named answer decides for two.
+   *
+   * An installation reads exactly two: the index that turns a name into an address, and the bindings
+   * that turn that address into a digest. Everything below is arithmetic. Dropping one leaves a
+   * lockfile stamped with a state that served half of what it records - which is a publication landing
+   * between two requests going unnoticed rather than refused. ADR-0091.
+   */
+  sameOnEveryLens(
+    'C-70',
+    'compares the revision of one named answer against itself, so an index from one deployment and a ' +
+      'binding from the next are recorded as though one registry state had served both',
+    [installFile(BOTH_NAMED_ANSWERS_ARE_COMPARED, `  const revision = oneRevisionBehind([`)],
+    killed(['two-named-answers-from-two-revisions-refuse-the-install']),
+  ),
+
+  /**
+   * A lockfile stamped with a revision the registry never answered with.
+   *
+   * The field is still there, still typed and still written - it is simply not the one the answers
+   * carried. That is the shape a durability anchor fails in: well formed, present, and about nothing.
+   */
+  sameOnEveryLens(
+    'C-71',
+    'records the unpublished revision on every feature it installs rather than the one the registry ' +
+      'answered from, so a lockfile written against a real publication says nothing was published',
+    [installFile(THE_LOCKFILE_KEEPS_WHAT_THE_REGISTRY_ANSWERED, `      servedFrom: '0'.repeat(40),`)],
+    killed(['an-install-records-the-revision-the-registry-answered-from']),
+  ),
+
+  /**
+   * A registry that cannot be reached, arriving as whatever undici threw.
+   *
+   * **It is the screen `source.ts` declared and refused to half-build**, on the grounds that nothing
+   * constructed an `httpSource` and a sentence written for a screen nobody could reach could not be
+   * seen red. The entry point that names an origin made it reachable, and this is the cell that keeps
+   * it: offline, behind a proxy, or at a host that does not resolve, `fetch` rejects rather than
+   * answering a status, and a person meets a stack trace where every other refusal of this tool is a
+   * sentence. ADR-0092.
+   */
+  sameOnEveryLens(
+    'C-72',
+    'lets a transport failure out as undici threw it, so the first person to type `toopo add` on a ' +
+      'train meets a stack trace instead of the address that did not answer',
+    [
+      httpSourceFile(
+        A_TRANSPORT_FAILURE_IS_A_REFUSAL_OF_OURS,
+        `    const response = await fetch(url)`,
+      ),
+    ],
+    killed(['a-registry-that-does-not-answer-is-a-sentence-a-person-can-read']),
   ),
 ]
 
