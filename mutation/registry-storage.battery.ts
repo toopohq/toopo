@@ -977,6 +977,9 @@ const mutants: readonly Mutant[] = [
     killed([
       'a-named-answer-moves-when-the-revision-does-and-the-policy-says-so',
       'every-named-answer-names-the-revision-it-was-served-from',
+      // The control of the content-addressed guard, and it is the assertion that keeps that guard from
+      // passing on a registry where the revision reaches nothing: the named half *must* differ.
+      'a-content-addressed-answer-is-the-same-bytes-at-every-revision',
     ]),
   ),
 
@@ -1044,7 +1047,12 @@ const mutants: readonly Mutant[] = [
     'publishes the identifier of the tree rather than of the commit, so the revision is well formed, ' +
       'passes its own shape check, and names an object nobody can check out',
     [revisionFile(THE_REVISION_IS_THE_COMMIT, `  const head = git(root, 'rev-parse', 'HEAD^{tree}')`)],
-    killed(['the-revision-of-a-clean-tree-is-the-commit-git-names']),
+    killed([
+      'the-revision-of-a-clean-tree-is-the-commit-git-names',
+      // The dirty-tree guard asks for the commit again after restoring the file, so it reads the same
+      // wrong answer. Named because the pin is under five and ADR-0076 asks for all of them.
+      'a-tree-that-does-not-agree-with-its-commit-names-no-revision',
+    ]),
   ),
 ]
 
