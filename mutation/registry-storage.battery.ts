@@ -219,6 +219,16 @@ const A_DIRTY_TREE_NAMES_NO_REVISION = `  if (dirty !== '') {`
 
 const THE_UNPUBLISHED_REVISION_IS_THE_NULL_OID = `export const THE_UNPUBLISHED_REVISION = '0'.repeat(40)`
 
+const GIT_REFUSING_IS_A_REFUSAL_OF_OURS = `  } catch (error) {
+    throw new TheRevisionCannotBeNamed(
+      \`git could not answer \\\`\${arguments_.join(' ')}\\\` here (\${
+        error instanceof Error ? error.message.split('\\n')[0] : String(error)
+      })\`,
+    )
+  }`
+
+const THE_REVISION_IS_THE_COMMIT = `  const head = git(root, 'rev-parse', 'HEAD')`
+
 // ---------------------------------------------------------------------------
 // The defects
 // ---------------------------------------------------------------------------
@@ -961,7 +971,7 @@ const mutants: readonly Mutant[] = [
         THE_INDEX_CARRIES_THE_REVISION_IT_WAS_BUILT_WITH,
         `  return {
     addressing: 'named',
-    servedFrom: 'f'.repeat(40),`,
+    servedFrom: 'e'.repeat(40),`,
       ),
     ],
     killed([
@@ -1000,6 +1010,41 @@ const mutants: readonly Mutant[] = [
       'publication that never happened is indistinguishable from one written against a registry',
     [revisionFile(THE_UNPUBLISHED_REVISION_IS_THE_NULL_OID, `export const THE_UNPUBLISHED_REVISION = '1'.repeat(40)`)],
     killed(['the-unpublished-revision-is-shaped-like-one-and-names-nothing']),
+  ),
+
+  /**
+   * A refusal from git arriving as whatever git threw.
+   *
+   * The screen is the point: a folder that is no repository is a state somebody meets - a checkout
+   * from a tarball, a `git init` that never happened - and `execFileSync`'s own error names a command
+   * line rather than what it means. It is the same rule `command.ts` keeps for a lockfile and an
+   * unreachable registry.
+   */
+  sameOnEveryLens(
+    'I-47',
+    'lets git\'s own failure out rather than saying what it means for a publication, so a folder ' +
+      'that is no repository ends in a spawn error instead of a sentence',
+    [revisionFile(GIT_REFUSING_IS_A_REFUSAL_OF_OURS, `  } catch (error) {
+    throw error
+  }`)],
+    killed(['a-folder-that-is-no-repository-names-no-revision']),
+  ),
+
+  /**
+   * A well-formed object identifier that is not the commit, which is the failure a shape check cannot
+   * see.
+   *
+   * `HEAD^{tree}` is forty lower-case hexadecimal digits and passes every test `revision.ts` makes of
+   * its own answer. It names the tree rather than the commit, so a reader handed it could not check
+   * out what was published - which is the whole of what the field is for, failing while looking
+   * exactly right.
+   */
+  sameOnEveryLens(
+    'I-48',
+    'publishes the identifier of the tree rather than of the commit, so the revision is well formed, ' +
+      'passes its own shape check, and names an object nobody can check out',
+    [revisionFile(THE_REVISION_IS_THE_COMMIT, `  const head = git(root, 'rev-parse', 'HEAD^{tree}')`)],
+    killed(['the-revision-of-a-clean-tree-is-the-commit-git-names']),
   ),
 ]
 
