@@ -54,6 +54,21 @@ representable.
 `packages/registry/the-sixth-contract.test.ts` keeps the half that can be kept — a new anatomy entry
 with no verdict is refused.
 
+## What this closed in the list of declarations nothing keeps
+
+**Closed by stage 1 of the validation pipeline.**
+
+- `staticAnalysisRequirements` of `date/add@1` — stage 1 reads the twenty forbidden local-time methods
+  off the contract itself and refuses a submission that calls one. The record classifies the field
+  `executable` and **carries the address of the guard**, which serialisation refuses if it does not
+  resolve — the treatment `found-by-mutation` already had, applied to the other claim a record makes
+  about its own verification.
+- `referenceImplementationRules` — its first rule is what `states-its-own-signature` refuses, and the
+  refusal a submitter reads is **that declaration's own sentence** rather than a retelling of it. It
+  moved to `packages/catalogue/reference-implementation.ts` for a mechanical reason worth recording: production
+  code cannot import a file that imports vitest, and `every-contract.ts` does because three of its
+  exports *are* guards. Its second rule stays a reader's and `contractAnatomy` says why.
+
 ## What would reopen this
 
 The conformance controller. `CLAUDE.md` triages `contractAnatomy` as three entries settled by the

@@ -84,6 +84,30 @@ configuration an **install** runs under, and that is the battery about installin
 would have been the data arranged to suit the tool. C-48, C-49 and C-50 exist because the instrument
 asked for them, and two of the three produce a load-bearing guard.
 
+### What the two-phase write closed
+
+**Closed by the two-phase write, which is where they said they would close.** `packages/cli/write.ts` stages every
+file beside its destination and renames, so the three situations the installer left throwing whatever
+the operating system threw are refusals with a sentence. A folder that cannot be written to fails during
+staging, where nothing has been committed — not a pre-flight writability check contradicted afterwards
+by the write, which is the shape this repository refuses, but the write itself taken in a phase whose
+whole property is that abandoning it costs nothing. A directory where a file must go is asked about by
+*kind* before staging, because renaming onto one is `EPERM` on Windows and says nothing a caller can
+act on. And a process killed between the first file and the lockfile resolves backwards, because a file
+is renamed or it is not and the lockfile is renamed last — `already-written` finishes the job on the
+next run, without a journal.
+
+**What the guard for the first one measures is a file sitting where one of our folders must go**, and
+that is said rather than glossed: a permission denial is the same catch on the same line, and is not
+something a guard can arrange on every platform this runs on. Claiming it was measured would be claiming
+more than was.
+
+**Two remain, and both are declared rather than closed.** A rename that fails after staging succeeded —
+a file held open by another process on Windows — throws, and closing it would mean every rename being
+reversible, which is a journal. And node's own TypeScript runtime meeting a feature of more than one
+file, which [ADR-0033](0033-one-import-spelling-and-it-is-not-the-users-to-choose.md) measures and
+which is not ours to close.
+
 ## Confirmation
 
 The three `add` guards are the three states a project can be in — nothing at all, a configuration

@@ -116,7 +116,10 @@ pnpm run meta        # the mutation instrument's own guards
 implementation, an input where ours is wrong, a correction to a search alias, and never a contract.
 The reason is arithmetic rather than a policy, and it is counted there so you can check it.
 
-`CLAUDE.md` is this project's working journal: every decision that has been settled, the measurement
-it rests on, and what the repository declares that nothing yet enforces. It is long, it is written in
-the order things were learned, and it is the honest record of how this was built. **It is not a
-specification**, and it is not what to read before contributing.
+`CLAUDE.md` is where the project stands: what exists, what does not, what is still open with what each
+entry costs, and the rules a session works under. **It is not a specification**, and it is not what to
+read before contributing.
+
+Every decision that has been settled is a record in [docs/decisions/](docs/decisions), one file each,
+addressed by number and cited as `ADR-0007`. Each carries the measurement it rests on, the alternatives
+that were refused, the guards that keep it, and what would reopen it. The filenames are the index.

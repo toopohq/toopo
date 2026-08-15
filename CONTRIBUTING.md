@@ -187,11 +187,16 @@ written by that derivation and not by hand.
 
 ## Where the reasoning lives
 
-`CLAUDE.md` is this project's working journal: every decision that has been settled, the measurement
-it rests on, and what the repository declares that nothing yet enforces. It is long, it is written in
-the order things were learned, and it is the honest record of how this was built.
+`CLAUDE.md` is where the project stands: what exists, what does not, what is still open with what each
+entry costs, and the rules a session works under.
 
-**It is not a specification, and it is not the document to read before contributing.** This file is.
+**Every decision that has been settled is a record in [docs/decisions/](docs/decisions)**, one file
+each, addressed by number and cited as `ADR-0007`. Each carries the measurement it rests on, the
+alternatives that were refused, the guards that keep it, and what would reopen it. That is where to
+look when you want to know *why* something is the way it is — and nine guards resolve what a record
+names, in both directions, so a path or a guard it cites is one you can open.
+
+**Neither is a specification, and neither is the document to read before contributing.** This file is.
 Where a decision here has a longer argument behind it, the argument is in the module that owns the
 decision — `packages/catalogue/every-contract.ts` for what every contract shares,
 `packages/catalogue/reference-implementation.ts` for how an implementation is written,

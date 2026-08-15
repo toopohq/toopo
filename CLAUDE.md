@@ -12,172 +12,49 @@ The product of this project is the contract, not the utility code. **If the veri
 decorative, the project has no reason to exist.** That sentence is the acceptance criterion for
 every change made here.
 
-## Current stage
+## Where the project is
 
-**The five hand-written prototype contracts are done, and with them the stage that produced the
-format.** They were written with no shared abstraction so that the format would emerge from
-repetition instead of being designed up front; what they turned out to repeat identically now lives
-in `packages/catalogue/`, and the checklist a sixth contract is measured against is `contractAnatomy` in that
-same file. The uncertainty of this project was in the contract format, and it has been spent.
+**What exists.** The registry's data schema, its immutable storage and its read API. Stage 1 of the
+validation pipeline, and the conformance controller beside it. The client, finished at six commands —
+`init`, `add`, `update`, `remove`, `search`, `list` — with a two-phase write, a lockfile carrying two
+digests per file, and a port whose four implementations are asynchronous. The generator, seven static
+pages, four of them with a playground that runs this repository's own modules with their types
+removed. The archive: compiled JavaScript and one frozen artefact, proved by packing it and installing
+it into an empty project. The emitted tree, which is every answer the read API can give, written as
+files at the addresses a client asks. The instrument: nineteen batteries, their pinned verdicts, and
+one command that replays them.
 
-The registry's first three pieces are written — data schema, immutable storage, read API — and beside
-them the validation pipeline's first stage. Next to them now stands `toopo init` and `toopo add`, which
-came **before** the rest of the pipeline and before the publishing tool, and the reason is recorded in
-rule 1 below rather than left to look like impatience. Beside all of it the conformance controller,
-which does **not** make `contractAnatomy` executable: the triage below says why — three of its eleven
-entries are settled by a syntax tree, four need a module a stage has already vetted, and four are a
-reader's for ever. Beside them now `toopo update`, the command permanent rule 4 is about, and with it
-the two-phase write that closes three of the four situations `packages/cli/breakage.ts` declared as breaking
-badly. Then `toopo search`, the only command that reads no project at all and the one that finally
-makes `identity.searchAliases` executable — a field declared in the first session of this project and
-validated by nothing until now. **The CLI is finished at six commands with `toopo remove`, and with it
-the way out the client did not have**: before it, the only way to uninstall was to edit `toopo.lock` by
-hand, and the tool put a deleted folder straight back. Beside it `toopo list`, the only command that
-reads no *registry*, and the pair is the shape of the whole client — one question answered without a
-project, one answered without a server. **And now `site/`, the generator, which is the half of the
-product nobody had seen**: four contract pages, the catalogue, and the page that publishes what the
-catalogue refused. No server exists and none is needed — what it writes is static HTML, and a contract
-page that needs a line of JavaScript to be read is a page a crawler and a screen reader read
-differently from a person. **And beside it the playground, which is the one thing on a contract page
-that is computed rather than rendered**: four pages have one, the field holds a literal, and what a
-browser runs is this repository's own modules with their types removed. **And now the playground calls
-both halves of the surface** — the answer and the diagnostic beside it — which is what makes the two
-spellings of `1 000` tell themselves apart on the page whose contract settles them; and beside it the
-pre-flight refusal that had been set aside three times, which turns an address that has stopped
-resolving from a silence into an error, and found one the day it existed. **And now the method page,
-the only page that argues the thesis rather than demonstrating it** — the page where a project like this
-one destroys itself, which publishes what the measurements did not catch beside what they did, and
-whose figures are derived from the batteries rather than from a run nobody can replay from a clone. **And
-beside it the sitemap and `robots.txt`**, which are small, are read by nobody, and are the difference
-between a site that exists and a site that is found. **And now `packaging/`, the first thing here that
-measures the product rather than the working tree**: every contract page told a reader to run
-`toopo add`, and three independent things stopped them — no archive at all, a published `.ts` node
-refuses to run, and a CLI whose runtime graph reached vitest. What ships is compiled JavaScript and one
-frozen artefact, proved by packing it, installing it into an empty project, and running the six commands
-out of somebody else's `node_modules`. **And now the nineteenth battery, which is the first to measure
-guards over something that is not in the working tree**: `packaging/` had fifteen of them and nothing
-replayable pinning their verdicts, and closing that found two sentences this repository had published
-about its own build that are wider than what anything measures. **And now the first contact, which is
-the first unit here aimed at somebody who has read nothing**: `toopo add` stops needing `toopo init`,
-the project that friction was covering by accident is refused on purpose, and git is asked whether the
-folder about to receive somebody's code will ever be committed — a question this repository had recorded
-a decision against, reversed on a measurement that falsified its premise. **And now the folder that
-moves, which is that same unit's advice followed to the hole it opened**: `toopo init --dir` changed the
-setting and left the installed copy behind, claimed by nobody, inside the very folder git ignores — so
-`toopo list` called it missing and `toopo update` wrote a second one. `init` is the only command that can
-ever see both folders, so it moves the tree itself, and the two designs that would have refused or merely
-reported are refuted below by measurement rather than by preference. **And now the sweep of what this
-tool tells people, which is the first unit here aimed at a sentence rather than at a behaviour**: two
-screens were known to name a cause nothing had measured, reading every string the CLI can print found
-seven more, and one of the nine turned out to be a single word — *you*, on a comparison that establishes
-that bytes moved and nothing about the hand that moved them. The worst of them was reproduced rather
-than reasoned about: `toopo remove --apply` said *held back, nothing changed* while the lockfile went to
-`askedFor: false`, and the invariant it broke was already written three lines away in the module that
-broke it. **And now the control that was red with nothing injected, which is the first unit here whose
-defect was in the apparatus and not in anything the apparatus measures**: the guard was reddening in its
-teardown rather than in its assertion, and the reading it had been filed under — state leaking between
-batteries — was refuted by reproducing it in isolation, where the thirty clean runs that had established
-that reading turn out to happen half the time at the rate actually measured. The same defect was then
-found one floor down on the install path, where a `finally` that throws replaces a rewrite that worked
-with an install that failed. **And now the fourth door into a run that collects nothing, which is the
-first one a guard of this repository found rather than a reader stumbled into**: a lower-case Windows
-drive letter in the path the instrument hands vitest collapses every runtime file, and the two figures
-that had stopped anybody naming it — 28 assertions and 0 — are that one door read through two
-configurations. It looked like a rate because it is a predicate on the invocation, so the spelling is
-now pinned rather than inherited, on the argument `Battery.timeZone` has been making since the first
-battery. **And now the coordinate that was in the record and in none of the strings, which is the last
-irreversible thing this repository can still fix for free**: `ContractAddress` has carried a language
-since the day it was written, `sameContract` compares it, the lockfile writes it — and `renderContract`
-dropped it, so the URL, the page path, the case anchor and the licence header frozen into every
-installed file were built without it. What made it survivable is what made it invisible: each consumer
-sees one rendering, and no consumer of one rendering can notice a coordinate missing from all of them.
-The module that owns every address this project has had never been guarded directly. **And now the
-first unit here that makes the instrument cheaper instead of stricter, and the first whose whole value
-is in a slope**: every cell of a contract battery ran the entire contracts' suite, so the cost of a
-replay grew with the product of the catalogue's cells and the catalogue's suite — seven minutes at
-five contracts, eighteen hours at a hundred, and the page that hands `npm run mutation` to a stranger
-stops being an invitation somewhere in between. **And now the answer to the question every visitor
-arrives with, which is the last thing before the launch that is design work rather than a decision to
-publish**: there was no `CONTRIBUTING.md` at all, and the README sent a stranger to *this file* and
-called it the project specification — which is the one of its three jobs it does worst. What settles
-the answer is arithmetic rather than a preference, and the arithmetic said something the first reading
-of it did not. **And now the first screen, which is the third appearance of one class and the first
-where the repair was in the page rather than in the projection**: the contract list read
-`typescript/number/parse@1Convert a string to a finite number` five times, because an anchor is
-phrasing content and the summary after it began mid-line. What decided where to repair it is a census
-rather than a preference — of fourteen visible anchors on seven pages, not one is written inside a
-sentence — and what fixed its shape is that this site already contained the right rendering of the
-same pair on another page. Re-reading the other six afterwards found the page arguing for rigour
-publishing its own asterisks, and a guard three lines from the new one undoing those marks by hand.
-**And now the fourth appearance of that class, which is the first where the existing guard was measured
-and found structurally blind rather than merely absent**: two defects filed as *a value written to be
-embedded, rendered as though it stood alone*, both sitting in a paragraph whose only child is a text
-node — so the guard that asks whether two elements run together has no pair to look at, 595 of them over
-the seven pages and none colliding. Its subject is the boundary between two elements and these are
-boundaries inside one string. What settles them is a register decided by census rather than by
-preference, written beside the field, and two derived guards that partition the class: a value stands
-alone or it is embedded. The predicate found a third instance nobody had filed, three lines from the
-first in the same file; the mandated re-reading of the seven pages found two more on the method page,
-one of which was not a fragment but a sentence denying the claim printed two lines above it. **And the
-third guard was nearly excused by a price and refused by a required field of one word** — `nature`,
-whose value would have been *claims detection*, which `run.ts` says is decorative until a mutant reaches
-it, with no nuance. The cell exists, the nineteen batteries were replayed behind it, and the third
-reading of the narrowed regime broke an ordering that two readings could only fail to establish. **And
-now the edge that carries its own digest, which is the last irreversible thing this repository can still
-do for free — and the first unit here whose own saving removed the only check it had.** A client walking
-a dependency graph asked the registry which digest each edge resolved to, one named answer per contract
-in the closure; carrying the digest inside the frozen snapshot takes `toopo add number/round` from eight
-round trips to six and from five believed answers to one. That same lookup was what established that
-what arrived was what the edge named, so the field and the hole are the same call, and the guard is the
-unit rather than the field. Measured over the six substitutions the imagined graph can express, five
-were already refused — under sentences naming causes no measurement establishes, which is this
-repository's own worst class — and **the sixth installed the right artefact for the wrong reason: an edge naming an
-address another edge had already resolved was skipped, digest and all, so the walk's order decided which
-of two published combinations a project got.** The replay then found what no reading had: a fixture that
-swapped an artefact's content under a fixed version stopped being expressible, because that is the
-rebinding permanent rule 6 refuses and an edge now pins the snapshot rather than the name. **And now the
-port that speaks over a wire, which is the first half of taking the catalogue out of this repository and
-the first unit here whose acceptance criterion is a property rather than a behaviour.** A maquette had
-measured that the property `command.ts` declares — everything this tool decides is reachable from a guard,
-with no process, no working directory and no clock — survives a remote registry; it was reverted, so
-nothing of it remained, and a measurement does not survive the session. The port is asynchronous now and
-**all four** implementations are, because two shapes would have made `command.ts` branch and left the
-fixpoint exercised by HTTP alone — so the day the local source leaves, the surviving path would be the
-least tested one. What every decision holds is a second projection of the same declaration, and the
-compiler priced it: making the port asynchronous and leaving the decisions reading it directly raises 25
-product-side errors, **every one of them a missing `await`**, and under the projection all 25 are a type
-name with no body changed. The guard is that the same decision, against the cache a networked run left
-warm, with no network and no process, produces byte for byte the plan the network produced. **And the
-addressing is the half that decides a supply chain**: with the spelling a client falls into, a registry
-answering one blob address with another file's bytes installs them and nothing objects. The loop then made
-two ambient inputs visible that nothing had to notice while a decision ran once — a clock inside the thing
-being replayed, and a transcript that would have frozen the misses of a first round as an empty catalogue.
-**And the replay found the sharpest thing in the unit, which was the unit's own arithmetic**: a cell three
-folders away stopped being a defect because the count it wrote a literal for became that literal, and
-following it found the rule about addresses being kept by one name where the data carried two. **And now
-the tree a host serves, which is the first thing here that *is* the registry rather than a stand-in for
-one**: a remote source existed and nothing served it, so the guards raised a server in their own process
-out of the local catalogue. What is emitted is every answer the read API can give, at the address it is
-asked at, deposited with the site — and the totality is a walk of the **questions** rather than of the
-catalogue, because a walk of the catalogue is a list of what somebody remembered and an answer a client
-can ask for that the emission did not write is a 404 in somebody else's project. The property that needs
-no list at all is that the tree is **closed**, read back out of the served bytes rather than out of the
-walk. The collision that decided every address was found before it could be shipped: under the prefix the
-specification suggested, a contract's binding is a *file* at exactly the path its implementation list
-needs to be a *directory*, and no filesystem holds both — so an answer about a contract lives inside that
-contract's own folder, beside its page, and the address a reader opens is the address a client asks.
-**And the arithmetic said something the brief did not**: eleven files per published contract rather than
-two, which puts a twenty-thousand-file limit at 1 817 contracts instead of ten thousand.
+**What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A server —
+nothing constructs an `httpSource`, and both entry points name a local registry. A second language.
+And nothing is published: `private: true` holds, the package is not on npm, and every path on
+`toopo.dev` answered 403 when it was last measured. A reader who meets `toopo add number/parse` on a
+contract page has no way to get `toopo`.
 
-- The five are written: `number/parse@1`, `date/add@1`, `array/group-by@1`, `string/levenshtein@1`,
-  `string/slugify@1`. The third is a format prototype that will not be published, because ES2024
-  shipped `Map.groupBy` and it answers what the contract specifies. The project specification records
-  that refusal and the rule it establishes. The fourth is the first whose properties are strong by
-  nature — the axioms of a metric — and its table is a third the size of the first's as a result. The
-  fifth is the first with no oracle of any kind: measured over fifty-seven samples, the four most used
-  slug libraries agree on seven, so nothing about its answers is true and every one of them has to be
-  argued for.
-- Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
+**The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
+`string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
+because ES2024 shipped `Map.groupBy` and it answers what the contract specifies; the refusal and the
+rule it establishes are recorded. The fourth is the first whose properties are strong by nature — the
+axioms of a metric — and its table is a third the size of the first's as a result. The fifth is the
+first with no oracle of any kind: measured over fifty-seven samples, the four most used slug libraries
+agree on seven, so nothing about its answers is true and every one of them has to be argued for.
+
+**Project name: Toopo.** CLI command `toopo`, lockfile `toopo.lock`.
+
+**What decides the next unit** is the list of what is still open, below, with what each entry costs.
+
+## Where the reasoning lives
+
+**A decision that has been taken is a record in `docs/decisions/`**, in MADR format, addressed by
+number and cited as `ADR-0007` — never as a path. ADR-0001 settles the format, the two fields it adds
+and the one section, and nine guards resolve what a record names in both directions. There is no index
+here: the directory listing is the index, because the filenames carry the titles, and a second
+statement of what the folder already says is one that drifts.
+
+**What happened and when is `git log`.** The commit messages carry the measurements at length. This
+file carried a second, shorter copy of them for a year; ADR-0062 is why it no longer does.
+
+**What is below is what a session needs before it writes a line**: what is still open, the rules of
+this stage, the permanent rules, the conventions, and the verification discipline.
 
 ## What the repository declares and nothing keeps — closes before the launch
 
@@ -200,18 +77,10 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
    them in the same commit.** The mechanism and the entry are one event; separating them is what
    leaves the false half of a true sentence lying where somebody will read it.
 
-**Closed by stage 1 of the validation pipeline.**
-
-- `staticAnalysisRequirements` of `date/add@1` — stage 1 reads the twenty forbidden local-time methods
-  off the contract itself and refuses a submission that calls one. The record classifies the field
-  `executable` and **carries the address of the guard**, which serialisation refuses if it does not
-  resolve — the treatment `found-by-mutation` already had, applied to the other claim a record makes
-  about its own verification.
-- `referenceImplementationRules` — its first rule is what `states-its-own-signature` refuses, and the
-  refusal a submitter reads is **that declaration's own sentence** rather than a retelling of it. It
-  moved to `packages/catalogue/reference-implementation.ts` for a mechanical reason worth recording: production
-  code cannot import a file that imports vitest, and `every-contract.ts` does because three of its
-  exports *are* guards. Its second rule stays a reader's and `contractAnatomy` says why.
+**Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
+decision record.** Two closed by stage 1 of the validation pipeline and are in ADR-0005; three closed by
+the two-phase write and are in ADR-0039; the class of a declared address nobody resolved closed in
+ADR-0060.
 
 **Still open, and what each one now costs.**
 
@@ -338,190 +207,6 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
   none, because every candidate repair cleared both readings by orders of magnitude. It will enter one
   the day a pin's repair is close enough that the factor decides between two of them.
 
-**Closed by the two-phase write, which is where they said they would close.** `packages/cli/write.ts` stages every
-file beside its destination and renames, so the three situations the installer left throwing whatever
-the operating system threw are refusals with a sentence. A folder that cannot be written to fails during
-staging, where nothing has been committed — not a pre-flight writability check contradicted afterwards
-by the write, which is the shape this repository refuses, but the write itself taken in a phase whose
-whole property is that abandoning it costs nothing. A directory where a file must go is asked about by
-*kind* before staging, because renaming onto one is `EPERM` on Windows and says nothing a caller can
-act on. And a process killed between the first file and the lockfile resolves backwards, because a file
-is renamed or it is not and the lockfile is renamed last — `already-written` finishes the job on the
-next run, without a journal.
-
-**What the guard for the first one measures is a file sitting where one of our folders must go**, and
-that is said rather than glossed: a permission denial is the same catch on the same line, and is not
-something a guard can arrange on every platform this runs on. Claiming it was measured would be claiming
-more than was.
-
-**Two remain, and both are declared rather than closed.** A rename that fails after staging succeeded —
-a file held open by another process on Windows — throws, and closing it would mean every rename being
-reversible, which is a journal. And node's own TypeScript runtime meeting a feature of more than one
-file, which the section above measures and which is not ours to close.
-
-**Four more instances were found by building the address rather than by looking for them, and that is
-the argument for building mechanisms rather than lists.** Ten entries of `TYPESCRIPT_SURFACE` were
-guarded and read by nothing, so the guard covered a dependency the analyser did not have.
-`GuardAddress`, `renderGuard` and `guardAddressFaults` were declared in `address.ts` and used by
-nothing — the address this unit needed already existed, unused. Four `ownDeclarations` claimed
-`executable` and named no guard; one of them, `keyFunctionRules`, turned out to be `structural` — no
-guard runs an implementation against it. And M-08 of `array/group-by@1` pinned one of the four guards
-it reddens where the repository's own rule says name all of a set of five or fewer, which is how
-`profileKeyFunctions` had no citable guard to point at.
-
-**The class is closed. An address a battery names is resolved in `calibrate()`, against the guards the
-run really collected, before a single verdict exists.** It costs the seconds a control run costs rather
-than the twenty-odd minutes a battery does.
-
-**And it closed a listed entry, which is the first application of the rule at the head of this
-section — applied late, which is how the rule was found.** `benchmarks.profiles[].name` sat in the
-list reading *frozen by the section above, enforced by nothing* while this paragraph, two screens
-down, said the class was closed: two statements of one fact in one file, and it is always the list
-that lies. Measured at `277a637`: the five contracts declare **27** profiles, the suite collects **27**
-guard titles `profile-<name>`, and **27 of 27** are named by a battery — so the address half resolves
-for every one of them. The content half stayed in the list and now says what it is.
-
-**Nothing was built on top of it, and the measurement is what refused it rather than a preference.**
-The obvious guard — resolve a record's profile names against the guard titles the suite carries — is
-structurally incapable of failing, because all five `profiles.test.ts` build the title in a loop over
-`benchmarkProfiles`: renaming `long-inputs` in the record produced `profile-long-inputs-RENAMED` and
-six green tests, with nothing left behind to catch. A second guard resolving what the **batteries**
-name, at the suite's cadence instead of the pre-flight's, genuinely would fail — and it would catch
-the same fault twenty-three minutes earlier, which is the one costume this repository cannot argue
-with: two guards over one fault have no answer to *which of us is right* on the day they disagree. It
-is the class this file spent months removing from its prose, and putting it into executable code would
-be worse, because a comment that contradicts another is read by a person and two guards that
-contradict each other are read by nobody until one goes red.
-
-**Both halves were measured before the mechanism was written**, at `82d09a7`, by putting back the two
-mistakes this repository had already made and corrected before measuring — and neither outcome is the
-one the debt was filed expecting. A **pin** naming a guard no guard carries does redden, and the red
-says the wrong thing:
-
-```
-1 cell(s) disagree with the battery:
-  W-41 on W/as-committed: expected killed, measured killed
-    no longer caught by: an-invisible-character-is-read-back-as-the-character-it-names
-```
-
-`expected killed, measured killed` is two verdicts agreeing on a line announcing that they do not, and
-`no longer caught by` sends its reader into `read-literal.test.ts` after a guard that stopped catching
-a defect it never caught. **A red that manufactures a regression costs more than a silence, because
-somebody goes and looks for it.** A **guard declared silent** under a name nothing carries was not
-reported at all: the name occurred zero times in that run's output, and the run finished on *every
-guard of this contract is either witnessed or accounted for*.
-
-**It found one the moment it existed.** `cli-search` declared
-`a-feature-already-installed-is-not-installed-again` unprobed — a string occurring nowhere else in this
-repository, sitting in the same list as `reinstalling-what-is-already-there-changes-nothing`, which is
-the guard it was once the name of. Nothing had ever said so. Checked against the guards all six
-configurations really collect: no other battery names an address that resolves to nothing.
-
-**Each half resolves against the universe its own mechanism reads, which is why neither can refuse
-wrongly.** `agreesWith` looks a pin up among every guard that reddened anywhere in the run;
-`attributeColumn` only ever sees the guards of the contract under measurement. There are three guards
-in `instrument.test.ts` and not one, because a declared *suite* is a third universe — a describe title
-is prose and gets reworded, where a guard identifier is frozen, which makes it the half most likely to
-break. All three were seen red together on one meta-mutant, each under its own claim.
-
-**What it did not close was `Breakage.guard`, and the reason turned out to be the rule rather than the
-gap.** This section used to say that entry closed "with the same mechanism as the others". That sentence
-was written before anybody looked at what names `WHAT_BREAKS`, and the answer is *no battery*: the
-pre-flight resolves the addresses a **battery** declares, against the guards a run really collected, and
-the four batteries that collect the `cli` suite declare none of these twenty. Closing it here would have
-meant picking one of the four arbitrarily to name them, or repeating the list in all four — a battery
-declaring something it does not declare, in order to fit a mechanism. That is arranging the data to suit
-the tool, which is the shape this repository refuses everywhere else.
-
-**So the line is drawn instead, and it is a rule about where a resolution lives: the pre-flight resolves
-what a battery names; a suite guard resolves what a module declares.** Two universes, two mechanisms,
-each beside the declaration it keeps. `every-clean-refusal-resolves-to-the-guard-it-names` in
-`packages/cli/breakage.test.ts` is the second one's first instance — it reads this folder's test sources, resolves
-all twenty addresses, and **publishes the file each one is in** rather than asserting anything about
-where they are.
-
-What it reads is the source rather than what vitest collected, so a guard inside a skipped block would
-still resolve — and that hole is already closed at another cadence, by `mutation/census.ts` declaring how
-many guards each file of this suite collects. The division is deliberate: the suite guard catches the
-frequent fault in seconds, an address renamed by somebody refactoring; the census catches the rare one, a
-file that stops running. Neither repeats the other, which is what makes both affordable.
-
-Both reds were seen. An address left behind by a rename resolves to `null` under its own name; and an
-identifier carried by two files reads as `"list.test.ts, write.test.ts"`, which is a defect the first
-draft of that guard could not see — written as a plain record it kept whichever file sorted last, so a
-duplicate looked exactly like a resolution. A mechanism that silently picks one of two answers, inside
-the guard written to refuse exactly that.
-
-**And the sentence it replaced is gone rather than corrected.** `breakage.test.ts` opened by saying every
-clean refusal was guarded *in that file*; eleven of the twenty were in five other files by the time
-anybody checked. A sentence claiming they are all here and a guard publishing where each one is are two
-statements of one fact, and it is always the sentence that ends up lying. The eleven did not move: a
-refusal about the lockfile is tested where the lockfile is written, and gathering them to make a sentence
-true would be the same error in the other direction.
-
-**A published name belongs to a committed thing, and `npm run mutation` was not one.** The method page
-hands that command to a stranger as *the* thing that turns an assertion into something they have
-watched happen — and it ran `measure.ts` with no argument and exited on `usage: measure.ts <battery>`.
-Replaying everything was a loop each of us wrote by hand and nobody committed, which is the defect
-underneath the broken command: **two definitions of *a replay*, either free to drift, and nothing that
-would have said so.** That is also why it stayed invisible — everybody had their own. `mutation/replay.ts`
-is now the command, and it composes the two entry points a reader could type rather than implementing a
-third: `measure.ts` once per battery, then `tally.ts`. The by-name usage moved to `npm run battery`,
-because that is the narrower question and it is asked by somebody already inside the work. **The two
-lists of the batteries check each other**: the replay runs `THE_BATTERIES`, the total requires
-`mutation/*.battery.ts`, so a battery written and left off the list writes no result and the total
-refuses.
-
-**The repository-wide figure has a derivation, and that closes the second half of this.** The replay
-ends by running the total itself, because the artefacts it has just written are newer than the commit
-they describe and a reader is owed one command and one answer. `npm run tally` keeps the half that is
-not a measurement — printing that total again without re-running anything, and refusing a set that is
-not one replay of the commit it would describe. **That refusal is only reachable from the second
-command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `57958fd`, one run of the nineteen took
-**27 min 8 s** and gave **612 defect cells, 576 killed, 36 surviving, beside 26 probe cells of which 4
-survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
-`cli-install` at 367 s. **A duration is published beside its
-spread**, because a stamp stops a figure being stale and does not stop it being read as a period — and
-**that reading was the first under a changed regime**, which the spread has to name rather than merely
-signal: a cell of a contract battery now collects its own contract's suite instead of all five. Under
-the whole-suite regime the same 612 cells ran at 31 min 25 s, the 610 before them at 29 min 13 s, the
-606 before those from 28 min 19 s to 35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s,
-and the 592 before those from 25 min 8 s to 28 min 59 s — so a single number to ten seconds is a
-precision the measurement has not got. **The count is what has always told these populations apart, and
-here it did not move**: 612 either way, so nothing but the clause could have said that comparing the two
-series is wrong. The old readings stay, labelled, because they are what makes the change visible. **And that regime now
-carries a reading that needs no population at all, which is what every count of readings here was
-standing in for.** Measured at `06e264b`: **618 cells in 27 min 22 s**, and the same 618 cells in
-28 min 42 s on the run before it — identical work, on one machine, eighty seconds apart. Every earlier
-reading compared populations and could always be answered with *the cells moved*; this one cannot,
-because nothing moved. The cross-population readings agree with it and no longer have to carry the
-claim alone: 615 in 27 min 34 s, 614 in 34 min 6 s, 612 in 27 min 8 s, so the smallest population is
-the fastest run and the second smallest is the slowest by seven minutes. **The tally of readings is
-gone from this sentence rather than incremented** — it read *three readings now*, a fourth was taken,
-and this paragraph had already caught itself doing exactly that one sentence earlier. **The count in
-that sentence was dropped rather than incremented**: it read *one of three
-runs*, a fourth was taken and a tally that has to be edited on every replay is one that will be wrong
-between two of them. The range only ever widens and needs no counting — which is why the runs of each
-population are no longer counted at all, only bounded. **No share of that step is
-attributed to anything, and this repository published an attribution once before withdrawing it**: six
-minutes were once credited to `cli-install` gaining thirteen cells, and that same battery has since run
-anywhere from 364 s to 459 s on identical work. **A quarter of its own duration between runs of
-identical work is a machine too variable to support the account**, so the account went rather than being
-qualified — and the list of its individual runs went with it, on the rule the sentence above states: a
-range widens, a list of readings is a tally somebody has to edit.
-`THE_REPLAY` carries both and the page renders both. The two populations
-are printed together because they
-collided once: *556 cells, 34 surviving* was published here while the artefacts behind it held *582 and
-38*, and both were true — 556 is the defects, 582 is every cell including the probes. Each figure was
-held by somebody who did not know the other population was there, and **no committed code produced
-either**.
-
-**The cost of the refusal is stated rather than discovered: committing anything after a replay makes
-the tally refuse**, because the boundary is `HEAD`'s own timestamp and a docs commit moves it. The way
-back is to replay. It is the conservative direction on purpose — the alternative is a definition of
-which commits could have changed what a battery measures, which is a second statement that can be
-wrong.
 
 ## Rules for this stage
 
