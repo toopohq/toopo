@@ -43,12 +43,14 @@
  * What this battery cannot reach, and it is more of the suite than before
  * ---------------------------------------------------------------------------
  *
- * A battery edits one folder. Four of the eight guards here are about files in three other places -
- * the repository's own `package.json`, the compiled bytes of `packages/cli/published.ts`, and the one
- * module that opens a socket - so no edit to `packaging/` can redden them whatever it does. That share
- * grew when the folder shrank, and it is a fact about the folder rather than about these guards: what
- * they are written against lives upstream of everything `packaging/` still holds. Each is named below
- * with the file its failure condition sits in.
+ * A battery edits one folder, and **one guard of the eight is out of reach** - the one that reads the
+ * repository's own `package.json`. Everything else is reddened by some cell here.
+ *
+ * **Three of those were declared out of reach and are not, which the measurement said and the author
+ * did not.** The pins above were written from what each edit looked like it would do; running the
+ * battery named two red guards they had missed and one guard declared silent that a mutant reddens
+ * anyway. It is the shape ADR-0076 asks for on a pin of five or fewer - name all of them - working as
+ * a correction rather than as a rule somebody remembered.
  */
 
 import type { Battery, Mutant } from './run.ts'
@@ -99,6 +101,9 @@ const mutants: readonly Mutant[] = [
       'nothing-the-archive-carries-is-produced-by-the-catalogue',
       'every-file-in-the-archive-is-loaded-by-a-command',
       'no-part-of-the-instrument-or-of-the-suite-is-in-the-archive',
+      // Measured rather than predicted: shipping the contracts puts a second module carrying an
+      // `https://` into the tarball, which is the origin guard's other half.
+      'the-published-entry-point-names-one-origin-and-offers-no-way-to-change-it',
     ]),
   ),
 
@@ -126,6 +131,9 @@ const mutants: readonly Mutant[] = [
       'an-installed-toopo-runs-reads-a-project-and-writes-one',
       'the-published-entry-point-names-one-origin-and-offers-no-way-to-change-it',
       'npm-writes-a-shim-for-the-command-the-site-tells-people-to-run',
+      // An archive with no code in it has no module opening a socket either, which is how a battery
+      // that edits only `packaging/` reaches a guard about what `packages/cli/` imports.
+      'the-archive-reaches-the-network-from-exactly-one-module',
     ]),
   ),
 
@@ -229,13 +237,13 @@ export const battery: Battery = {
   mutants,
 
   /**
-   * Four guards of this folder are about files in three others, so no edit here can redden them.
+   * One guard of this folder is about a file in another, so no edit here can redden it.
    *
-   * It is half the suite, which is more than any other battery declares out of reach, and the reason
-   * is structural rather than a gap in these mutants: `packaging/` is two modules and a compiler
-   * configuration, and what this suite is written to catch happens upstream of all three. A guard is
-   * filed here only when the *file its failure condition lives in* is outside `packaging/` - never
-   * because a mutant for it was hard to write.
+   * **It was three until the battery was run, and the two that left are the entry it is worth reading
+   * this list for.** Both were declared out of reach on an argument about what an edit to `packaging/`
+   * can and cannot do, and both were wrong: an archive with no code in it has no module opening a
+   * socket, and one compiled with the contracts in it carries a second `https://`. A declaration of
+   * unreachability is a claim about a measurement, and this list now holds the one that survived it.
    */
   unreachableGuards: [
     {
@@ -243,13 +251,6 @@ export const battery: Battery = {
       reason:
         'it reads the repository\'s own `package.json` against `THE_UNPUBLISHED_VERSION` in ' +
         '`packages/cli/local-source.ts`, and a battery may edit only the folder under measurement',
-    },
-    {
-      guards: ['the-archive-reaches-the-network-from-exactly-one-module'],
-      reason:
-        'a second module opening a socket is an import `packages/cli/` would have to gain, and this ' +
-        'folder decides which compiled files travel rather than what any of them does. Widening what ' +
-        'the build compiles cannot add a `fetch` to a module that has none',
     },
   ],
 
