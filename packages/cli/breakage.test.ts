@@ -314,21 +314,31 @@ describe('what breaks for somebody', () => {
 
   /**
    * An installation records the revision the registry answered from, and it is the one the named
-   * answers agreed on rather than a value the installer invented.
+   * answers carried rather than a value the installer invented.
    *
-   * The stand-in serves `THE_UNPUBLISHED_REVISION`, so what this establishes is the wiring: the field
-   * arrives from the port and lands on every feature the install writes. What the value *means* is
-   * measured one folder along, where a registry is built at a chosen revision.
+   * **It asked a registry serving `THE_UNPUBLISHED_REVISION` until the instrument said so.** C-71
+   * replaces the field this writes with the null object identifier - which is what the stand-in serves
+   * - so the mutant and the expectation agreed and the cell came back a survivor. The guard could not
+   * tell a field that arrived from the port from one written into the installer, which is the whole of
+   * what it is named for.
+   *
+   * So the registry is built at a revision no stand-in mints. `localSource` takes one, and the value
+   * on disk has to be that value and no other.
    */
   it('an-install-records-the-revision-the-registry-answered-from', async () => {
+    const A_REVISION = 'd'.repeat(40)
     const project = aProject()
     try {
-      const lockfile = await alreadyInstalled(project)
-
-      expect(lockfile.features.map((feature) => feature.servedFrom)).toEqual(
-        lockfile.features.map(() => THE_UNPUBLISHED_REVISION),
+      const installation = mustInstall(
+        await installing(localSource(A_REVISION), project, 'string/slugify'),
       )
+      const lockfile = committing(project, installation)
+
       expect(lockfile.features.length).toBeGreaterThan(0)
+      expect(lockfile.features.map((feature) => feature.servedFrom)).toEqual(
+        lockfile.features.map(() => A_REVISION),
+      )
+      expect(A_REVISION).not.toBe(THE_UNPUBLISHED_REVISION)
     } finally {
       project.remove()
     }
