@@ -49,9 +49,9 @@
  * why it refused, never an absence* is a step a loop can re-enter for nothing.
  */
 
-import type { ContractAddress } from '../registry/address.js'
-import { renderContract } from '../registry/address.js'
-import type { ServedIndex, ServedRefusals } from '../registry/response.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { renderContract } from '../packages/registry/address.js'
+import type { ServedIndex, ServedRefusals } from '../packages/registry/response.js'
 import type { HeldRegistry, RegistrySource } from './source.js'
 
 /**

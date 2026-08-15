@@ -28,9 +28,9 @@
  * room for the number, and the number is the argument. `readableBytes` stays where it is.
  */
 
-import { renderContract } from '../registry/address.js'
+import { renderContract } from '../packages/registry/address.js'
 import type { CaseGroup } from '../packages/catalogue/identifier.js'
-import type { CaseRecord, CaseTableRecord, ExportRecord } from '../registry/contract-record.js'
+import type { CaseRecord, CaseTableRecord, ExportRecord } from '../packages/registry/contract-record.js'
 import type { Document, Node } from './document.js'
 import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
@@ -67,7 +67,7 @@ const grouped = (value: number): string => value.toLocaleString('en-US').replace
  * One case, as the call it is.
  *
  * The fields of a case begin with the arguments of the contract's own signature, in the signature's
- * order - `registry/signature.ts` reads that call and `registry/serialise.ts` refuses a contract where
+ * order - `packages/registry/signature.ts` reads that call and `packages/registry/serialise.ts` refuses a contract where
  * it stops being true - so what is left after them is the answer. A single answer field is written
  * bare, because there is nothing to tell it apart from; two or more are named.
  */

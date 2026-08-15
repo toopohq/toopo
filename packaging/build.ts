@@ -43,7 +43,7 @@ const { join, relative } = await import('node:path')
 
 const { ARTEFACT_FILE } = await import('../cli/artefact.ts')
 const { localSource } = await import('../cli/local-source.ts')
-const { canonical } = await import('../registry/canonical.ts')
+const { canonical } = await import('../packages/registry/canonical.ts')
 const { frozenArtefact } = await import('./freeze.ts')
 const { reachableFrom } = await import('./reachable.ts')
 

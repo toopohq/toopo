@@ -37,7 +37,7 @@
     "battery": "node mutation/measure.ts",
     "tally": "node mutation/tally.ts",
     "meta": "node run-vitest.ts run --config mutation/vitest.config.ts",
-    "registry": "tsc -p registry/tsconfig.json && node run-vitest.ts run --config registry/vitest.config.ts",
+    "registry": "tsc -p packages/registry/tsconfig.json && node run-vitest.ts run --config packages/registry/vitest.config.ts",
     "validation": "tsc -p validation/tsconfig.json && node run-vitest.ts run --config validation/vitest.config.ts",
     "cli": "tsc -p cli/tsconfig.json && node run-vitest.ts run --config cli/vitest.config.ts",
     "site": "tsc -p site/tsconfig.json && node run-vitest.ts run --config site/vitest.config.ts",

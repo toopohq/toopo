@@ -59,7 +59,7 @@
  * `number/parse/parse.ts`, `placedByPath` finds two digests at one path, and the install is refused by
  * name with nothing written. That refusal is only *true* because the address carries the language -
  * keyed on a language-less rendering the two collide one step earlier, in `seenContracts`, and the
- * sentence that comes out names two versions that do not exist. `registry/address.ts` quotes both.
+ * sentence that comes out names two versions that do not exist. `packages/registry/address.ts` quotes both.
  *
  * So the protection is in the refusal rather than in the path. Putting it in both would be two
  * mechanisms over one fault, with nothing to say for themselves on the day they disagree.
@@ -72,7 +72,7 @@
  * that is the same in two folders and would be equally the same if the two files differed. It is
  * written once, in the folder of whichever carrier the resolution reaches first, and the other
  * carrier's imports are pointed at it. Recognised by digest and never by path, which is the guard
- * `registry/` already carries: `reference.ts` is carried by every implementation of the graph and is
+ * `packages/registry/` already carries: `reference.ts` is carried by every implementation of the graph and is
  * four different files.
  *
  * **An entry file is never deduplicated**, even if two features happened to be byte-identical. A
@@ -81,10 +81,10 @@
  * else's folder.
  */
 
-import type { ImplementationAddress } from '../registry/address.js'
-import { renderContract, renderImplementation } from '../registry/address.js'
-import type { HarnessFile } from '../registry/implementation-record.js'
-import type { FrozenImplementation } from '../registry/snapshot.js'
+import type { ImplementationAddress } from '../packages/registry/address.js'
+import { renderContract, renderImplementation } from '../packages/registry/address.js'
+import type { HarnessFile } from '../packages/registry/implementation-record.js'
+import type { FrozenImplementation } from '../packages/registry/snapshot.js'
 
 /** The name the catalogue gives an implementation's entry file, required of every contract folder. */
 export const THE_ENTRY_FILE = 'reference.ts'

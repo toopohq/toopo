@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { isFrozenIdentifier } from '../packages/catalogue/identifier.js'
+import { isFrozenIdentifier } from '../catalogue/identifier.js'
 import {
   ENDPOINTS,
   MISSING_FROM_THE_INDICATIVE_LIST,

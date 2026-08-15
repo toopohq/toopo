@@ -1,7 +1,7 @@
 /**
  * Where a page lives, and the one rule that fixes it: **a page's address is the contract's address.**
  *
- * `registry/address.ts` was written on the promise that the site would make a case identifier a URL
+ * `packages/registry/address.ts` was written on the promise that the site would make a case identifier a URL
  * anchor - it says so in its own first paragraph - and `renderCase` has sat there unread ever since,
  * rendering `number/parse@1#ordinary-integer`. That string is now literally the URL of a case, which
  * is what turns the freeze of those identifiers from a discipline into a payment.
@@ -11,13 +11,13 @@
  * thing that already has one, and the first time the two disagreed a link would break in silence.
  */
 
-import type { ContractAddress } from '../registry/address.js'
-import { THE_ORIGIN, renderContract } from '../registry/address.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { THE_ORIGIN, renderContract } from '../packages/registry/address.js'
 
 /**
  * Where this site is published, re-exported rather than declared.
  *
- * It used to be declared here, and it moved to `registry/address.ts` the day a second consumer
+ * It used to be declared here, and it moved to `packages/registry/address.ts` the day a second consumer
  * appeared: the licence header of an installed file carries the origin too, and a header is frozen
  * into somebody else's repository for ever. `the-origin-is-declared-once` grew with it — it used to
  * require the literal in this file and now requires it in no file of this folder at all, because the

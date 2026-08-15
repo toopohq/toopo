@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../registry/address.js'
-import type { CaseRecord } from '../registry/contract-record.js'
-import type { EncodedValue } from '../registry/value.js'
-import { decode, encode } from '../registry/value.js'
+import { renderContract } from '../packages/registry/address.js'
+import type { CaseRecord } from '../packages/registry/contract-record.js'
+import type { EncodedValue } from '../packages/registry/value.js'
+import { decode, encode } from '../packages/registry/value.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { WITHOUT_A_SPELLING, literal } from './literal.js'
 import { localSource } from './local-source.js'

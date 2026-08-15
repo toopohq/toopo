@@ -5,7 +5,7 @@ import { join } from 'node:path'
 
 import { afterAll, describe, it, expect } from 'vitest'
 
-import { digestOfBytes, servedBytes } from '../registry/canonical.js'
+import { digestOfBytes, servedBytes } from '../packages/registry/canonical.js'
 import { CONFIGURATION_FILE } from './configuration.js'
 import { CHECK_IGNORE, gitIgnores } from './ignored.js'
 import { LOCKFILE } from './lockfile.js'

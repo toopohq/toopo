@@ -12,7 +12,7 @@
  * the registry's rules.** It carries a licence marking and the address of the contract this file was
  * verified against, for a reader who has met neither - which is the opposite of the sentence above
  * rather than a breach of it, because that reader has the file and nothing else.
- * `registry/licence.ts` owns its text and `publication.test.ts` resolves what is written here against
+ * `packages/registry/licence.ts` owns its text and `publication.test.ts` resolves what is written here against
  * it, in both directions. Do not edit those two lines in place: the perimeter is derived from what the
  * installer copies, so a header corrected by hand and not in the declaration reddens the guard rather
  * than the file.

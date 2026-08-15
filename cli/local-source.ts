@@ -46,10 +46,10 @@
  * are three readers of it. It was written here first, when this was the only stand-in that served bytes.
  */
 
-import type { ContractAddress } from '../registry/address.js'
-import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
-import type { ImplementationRecord } from '../registry/implementation-record.js'
-import type { ServedExport } from '../registry/response.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { renderContract, renderImplementation, sameContract } from '../packages/registry/address.js'
+import type { ImplementationRecord } from '../packages/registry/implementation-record.js'
+import type { ServedExport } from '../packages/registry/response.js'
 import {
   servedBlob,
   servedExportsOf,
@@ -57,8 +57,8 @@ import {
   servedIndex,
   servedRefusals,
   servedSnapshot,
-} from '../registry/response.js'
-import type { Ledger } from '../registry/snapshot.js'
+} from '../packages/registry/response.js'
+import type { Ledger } from '../packages/registry/snapshot.js'
 import {
   EMPTY_LEDGER,
   contractSnapshot,
@@ -67,14 +67,14 @@ import {
   publishContract,
   publishImplementation,
   refuseContract,
-} from '../registry/snapshot.js'
+} from '../packages/registry/snapshot.js'
 import {
   REPOSITORY_ROOT,
   referenceImplementationOf,
   serialiseContract,
   servedFileOf,
-} from '../registry/serialise.js'
-import { theFive } from '../registry/the-five.js'
+} from '../packages/registry/serialise.js'
+import { theFive } from '../packages/registry/the-five.js'
 import type { RegistrySource } from './source.js'
 
 /**

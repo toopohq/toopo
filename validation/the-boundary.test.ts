@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { analyseImplementation, requirementsOf } from './analyse.js'
 import { readSources } from './source.js'
-import { theFive } from '../registry/the-five.js'
+import { theFive } from '../packages/registry/the-five.js'
 
 /**
  * Where the filter stops.

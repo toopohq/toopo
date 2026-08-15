@@ -17,7 +17,7 @@
  * writes down every answer - and the closure proves that only if the thing being closed over holds
  * everything. The three are readers of one source: `the-five.ts` is the only statement of what the
  * catalogue is, `serialiseContract` the only statement of how a folder becomes a record, and
- * `registry/snapshot.ts` the only statement of what freezing one means. What differs between the three
+ * `packages/registry/snapshot.ts` the only statement of what freezing one means. What differs between the three
  * is which questions they will be asked.
  *
  * ---------------------------------------------------------------------------

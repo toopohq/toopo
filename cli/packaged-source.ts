@@ -20,9 +20,9 @@
  * called.
  */
 
-import { renderContract } from '../registry/address.js'
-import type { ContractAddress } from '../registry/address.js'
-import type { ServedBlob, ServedSnapshot } from '../registry/response.js'
+import { renderContract } from '../packages/registry/address.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import type { ServedBlob, ServedSnapshot } from '../packages/registry/response.js'
 import type { ServedArtefact } from './artefact.js'
 import { decodedBlob } from './artefact.js'
 import type { RegistrySource } from './source.js'

@@ -3,8 +3,8 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { ENDPOINTS, portFaults } from '../registry/endpoints.js'
-import { NEEDS } from '../registry/needs.js'
+import { ENDPOINTS, portFaults } from '../packages/registry/endpoints.js'
+import { NEEDS } from '../packages/registry/needs.js'
 import { imaginedSource } from './imagined-source.js'
 import { THE_UNPUBLISHED_VERSION, localSource } from './local-source.js'
 import { THE_ENDPOINT_BEHIND } from './source.js'
@@ -21,7 +21,7 @@ import { THE_ENDPOINT_BEHIND } from './source.js'
 
 const HERE = import.meta.dirname
 
-const THE_SERIALISATION = ['registry/the-five', 'registry/serialise']
+const THE_SERIALISATION = ['packages/registry/the-five', 'packages/registry/serialise']
 
 describe('where an installer gets what it installs', () => {
   it('every-method-of-the-port-answers-an-endpoint-that-exists', () => {

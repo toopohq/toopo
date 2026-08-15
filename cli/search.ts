@@ -65,9 +65,9 @@
  * what a symmetric prefix admitted and why it is gone.
  */
 
-import type { ContractAddress, Language } from '../registry/address.js'
-import { renderContract, sameContract } from '../registry/address.js'
-import type { ServedIndexEntry, ServedRefusal } from '../registry/response.js'
+import type { ContractAddress, Language } from '../packages/registry/address.js'
+import { renderContract, sameContract } from '../packages/registry/address.js'
+import type { ServedIndexEntry, ServedRefusal } from '../packages/registry/response.js'
 import type { HeldRegistry } from './source.js'
 
 /**

@@ -42,7 +42,7 @@ describe('the public/private frontier', () => {
       expect(
         unclassified,
         `${name} is served with fields nothing classifies. A field with no visibility is how a ` +
-          `private one escapes: decide it in registry/field-map.ts.`,
+          `private one escapes: decide it in packages/registry/field-map.ts.`,
       ).toEqual([])
     },
   )

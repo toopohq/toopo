@@ -5,7 +5,7 @@
  * anything. Recursive resolution and deduplication are the two mechanisms the whole distribution model
  * is for, and the catalogue offers them no case at all - so shipping them measured only against the
  * five would be shipping two decorative guards in the unit that proves the model. The graph is
- * `registry/imagined-graph.ts`, it is the one `toopo add` was written from, and a second consumer for
+ * `packages/registry/imagined-graph.ts`, it is the one `toopo add` was written from, and a second consumer for
  * it is why it is no longer inside a test file.
  *
  * Everything the installer touches here is real arithmetic over real bytes: the snapshots are built by
@@ -20,8 +20,8 @@
  * to obtain a value whose whole nature is that it is asserted.
  */
 
-import type { ContractAddress } from '../registry/address.js'
-import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { renderContract, renderImplementation, sameContract } from '../packages/registry/address.js'
 import {
   HOLDINGS,
   IMAGINED_BLOBS,
@@ -33,11 +33,11 @@ import {
   pad,
   round,
   sign,
-} from '../registry/imagined-graph.js'
-import type { ImplementationRecord } from '../registry/implementation-record.js'
-import type { ServedImplementationBinding, ServedIndex } from '../registry/response.js'
-import { servedBlob, servedSnapshot } from '../registry/response.js'
-import { digestOfSnapshot, edgeTo, implementationSnapshot } from '../registry/snapshot.js'
+} from '../packages/registry/imagined-graph.js'
+import type { ImplementationRecord } from '../packages/registry/implementation-record.js'
+import type { ServedImplementationBinding, ServedIndex } from '../packages/registry/response.js'
+import { servedBlob, servedSnapshot } from '../packages/registry/response.js'
+import { digestOfSnapshot, edgeTo, implementationSnapshot } from '../packages/registry/snapshot.js'
 import type { RegistrySource } from './source.js'
 
 /**

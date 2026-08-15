@@ -64,8 +64,8 @@
  */
 
 import { parseArguments, USAGE } from './arguments.js'
-import type { Lockfile } from '../registry/implementation-record.js'
-import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../packages/registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import {
   CONFIGURATION_FILE,
@@ -101,7 +101,7 @@ import { displayed, search } from './search.js'
 import type { RegistrySource } from './source.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
-import { renderContract } from '../registry/address.js'
+import { renderContract } from '../packages/registry/address.js'
 
 const out = (text: string): void => {
   process.stdout.write(`${text}\n`)

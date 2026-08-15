@@ -8,8 +8,8 @@ import {
   survivorsByKind,
   theMeasurement,
 } from '../mutation/published.js'
-import { renderCase, renderContract } from '../registry/address.js'
-import { isASentence, stringsIn } from '../registry/contract-record.js'
+import { renderCase, renderContract } from '../packages/registry/address.js'
+import { isASentence, stringsIn } from '../packages/registry/contract-record.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { readingOf, toHtml, toText, wordsOf } from './document.js'
@@ -75,7 +75,7 @@ describe('the site', () => {
   /**
    * **The payment of a decision taken ten units ago.** A case identifier was frozen with the major
    * version so that a URL could anchor on it, and `renderCase` has rendered
-   * `number/parse@1#ordinary-integer` since `registry/address.ts` was written, read by nothing. That
+   * `number/parse@1#ordinary-integer` since `packages/registry/address.ts` was written, read by nothing. That
    * string is now the address of a case on the web: the page is the part before the `#` and the anchor
    * is the part after it.
    *
@@ -486,7 +486,7 @@ describe('the site', () => {
    * `identity.relationToTheLanguage`, and `NO_AMBIENT_OUTPUT_FINDING` opening a reason on four pages.
    *
    * The other half of the class is `a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands`
-   * in `registry/against-the-five.test.ts`. A value is standing alone or it is embedded; this guard
+   * in `packages/registry/against-the-five.test.ts`. A value is standing alone or it is embedded; this guard
    * cannot see an embedded one, because the string it lands in is a sentence whatever the seam does.
    */
   it('a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence', () => {

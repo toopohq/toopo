@@ -29,7 +29,7 @@
  * language never has to rename the first one's addresses.
  */
 
-import type { CaseGroup } from '../packages/catalogue/identifier.js'
+import type { CaseGroup } from '../catalogue/identifier.js'
 import type { ContractAddress, GuardAddress } from './address.js'
 import type { EncodedValue } from './value.js'
 import type { CaseProvenance } from './evidence.js'
@@ -123,7 +123,7 @@ export type Lifecycle =
  * whole reading of a paragraph - 212 of them today, derived from the page and the record, so a prose
  * field added tomorrow is covered with nothing edited here.
  * `a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands` in
- * `registry/against-the-five.test.ts` takes the other half: a value the catalogue shares between
+ * `packages/registry/against-the-five.test.ts` takes the other half: a value the catalogue shares between
  * contracts is composed into a longer string, so no field-shaped guard can see its seam.
  *
  * The limit is declared rather than discovered: **a contract the catalogue refused has no page**, so
@@ -219,7 +219,7 @@ export type ExportRecord = {
   /**
    * What a caller writes between the parentheses, in order.
    *
-   * **Read off `text` rather than declared beside it**, by `registry/signature.ts`, which says why the
+   * **Read off `text` rather than declared beside it**, by `packages/registry/signature.ts`, which says why the
    * derivation is what makes the field affordable. It is here because a case of block 4.4 is a *call*
    * and nothing in this record could say so: `data` holds the fields of a case and the schema
    * deliberately does not interpret them, so a contract page could list `input`, `expected` and
@@ -244,7 +244,7 @@ export type ExportRecord = {
  * **What the type is for, and the refusal that keeps it honest.** The site builds an argument out of
  * what a reader types, and what it builds depends on this: `string` is the text itself, `Date` is
  * constructed from it. A type the builder does not know stops the build and names itself, the shape
- * `registry/value.ts` already takes for a value it does not model - no fallback, no empty field, no
+ * `packages/registry/value.ts` already takes for a value it does not model - no fallback, no empty field, no
  * page rendered with a playground quietly missing.
  */
 export type ParameterRecord = {

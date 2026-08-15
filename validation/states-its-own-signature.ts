@@ -15,7 +15,7 @@
  * the obvious thing to write.
  *
  * **A second reason, independent of the first, and it bites even for a value import.** An
- * implementation is installed alone - `registry/implementations.test.ts` requires the reference of
+ * implementation is installed alone - `packages/registry/implementations.test.ts` requires the reference of
  * each of the five to be exactly one file - so an import of `./contract.js` resolves in this
  * repository and dangles in the user's codebase. The catalogue is distributed as source copied into
  * somebody else's project; a feature that reached back into the folder it was published from would

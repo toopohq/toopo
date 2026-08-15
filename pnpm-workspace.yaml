@@ -35,6 +35,30 @@
 # declaration nothing keeps is decoration - including this one, about itself.
 #
 # ---------------------------------------------------------------------------
+# One version string, and why it is not `catalog:`
+# ---------------------------------------------------------------------------
+#
+# No package below declares a dev tool. The version of vitest is written **once**, in the root
+# manifest, because that is the only declaration that can be honoured: `THE_VITEST_ENTRY_POINT` is
+# `<root>/node_modules/vitest/vitest.mjs`, so the vitest that *runs* is the root's whatever a package
+# says. A second declaration would change neither what resolves - node walks up, measured above - nor
+# what runs; it would only be the second statement of a version, and two packages resolving two
+# vitests are two suites nobody can compare, with nothing to say so.
+#
+# `catalog:` was measured rather than assumed, because it looks like the answer. It works on pnpm
+# 10.24.0 and it is the wrong tool here, for a reason that is about npm and not about pnpm: **this
+# repository packs with `npm pack`**, which does not rewrite the protocol the way `pnpm pack` does.
+# Measured, root `dependencies` -> `npm pack` -> `npm install` of the tarball:
+#
+#     npm error code EUNSUPPORTEDPROTOCOL
+#     npm error Unsupported URL Type "catalog:": catalog:
+#
+# In `devDependencies` it installs, because npm ignores a dependency's dev tree - but it still ships
+# verbatim into the published manifest, naming this file, which `files: ["dist"]` does not carry. So
+# `catalog:` is fatal where the version is real and dangling where it is not, and it would in any case
+# leave two strings: its own entry, and the root's, which cannot use it.
+#
+# ---------------------------------------------------------------------------
 # Why every manifest here carries `"type": "module"`
 # ---------------------------------------------------------------------------
 #

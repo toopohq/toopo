@@ -106,7 +106,7 @@ export type WhySurviving = SurvivalNature | 'only-where-a-lens-blinded-the-suite
  * What each kind means to somebody deciding whether it is a hole.
  *
  * Total over the union, so a kind added does not compile until it has been translated for a reader -
- * the shape `WHAT_A_STRATUM_MEANS_TO_A_READER` already takes in `registry/verifiability.ts`, and for
+ * the shape `WHAT_A_STRATUM_MEANS_TO_A_READER` already takes in `packages/registry/verifiability.ts`, and for
  * the same reason: the page must never be the place where a vocabulary is first explained.
  */
 export const WHAT_A_SURVIVOR_MEANS_TO_A_READER: Readonly<Record<WhySurviving, string>> = {

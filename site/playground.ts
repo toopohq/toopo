@@ -30,21 +30,21 @@
  *
  * Reading a literal gives the *declared* value, which is what the registry models. Turning that into an
  * argument is a second step, and exactly one type of this catalogue needs it: `date/add@1` declares
- * `Date` and writes its instants as ISO strings, because `registry/value.ts` refuses to model a Date at
+ * `Date` and writes its instants as ISO strings, because `packages/registry/value.ts` refuses to model a Date at
  * all. So `new Date(...)` here is the one place in this whole site where a Date comes into existence,
  * and it is written on the line beside the field for whoever is reading.
  *
  * The table is closed. A parameter declared as something not in it stops the site being built and names
  * the type - no fallback, no empty field, no page rendered with a playground quietly missing. That is
- * the shape `registry/value.ts` already takes one floor down for a value it does not model, and the
+ * the shape `packages/registry/value.ts` already takes one floor down for a value it does not model, and the
  * reason is the same: a page that silently drops half of what it promised is worse than a build that
  * refuses.
  */
 
-import type { CaseRecord, ExportRecord, ParameterRecord } from '../registry/contract-record.js'
-import type { EncodedField } from '../registry/value.js'
-import type { FrozenContract } from '../registry/snapshot.js'
-import { encode } from '../registry/value.js'
+import type { CaseRecord, ExportRecord, ParameterRecord } from '../packages/registry/contract-record.js'
+import type { EncodedField } from '../packages/registry/value.js'
+import type { FrozenContract } from '../packages/registry/snapshot.js'
+import { encode } from '../packages/registry/value.js'
 import { literal } from './literal.js'
 import { read } from './read-literal.js'
 
@@ -135,7 +135,7 @@ const asADeclaredValue = (answer: unknown): unknown =>
 /**
  * The fields of a case, parted where the signature stops.
  *
- * `registry/signature.ts` reads the call and `registry/serialise.ts` refuses a contract whose cases do
+ * `packages/registry/signature.ts` reads the call and `packages/registry/serialise.ts` refuses a contract whose cases do
  * not begin with it, so what is left after the parameters is the answer. Written once and used twice -
  * by the page that renders a case and by the playground that opens on one - because two slices at one
  * boundary are one statement that would come apart.
@@ -276,7 +276,7 @@ const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string |
       what,
       `its parameter \`${parameter.name}\` is declared \`${parameter.type}\`, which no field of this ` +
         `site knows how to build. Extend AS_AN_ARGUMENT in site/playground.ts deliberately, the way ` +
-        `registry/value.ts is extended for a value it does not model`,
+        `packages/registry/value.ts is extended for a value it does not model`,
     )
   }
 

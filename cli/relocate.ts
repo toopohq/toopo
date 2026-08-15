@@ -80,7 +80,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { Lockfile } from '../registry/implementation-record.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import { digestOnDisk } from './lockfile.js'
 import type { FileToWrite } from './write.js'

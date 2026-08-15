@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
 
-import { HOLDINGS, IMAGINED_VERSION, clamp, pad, round, sign } from '../registry/imagined-graph.js'
-import type { ImplementationRecord } from '../registry/implementation-record.js'
-import { resolveDependencies } from '../registry/implementation-record.js'
-import type { FrozenImplementation } from '../registry/snapshot.js'
-import { implementationSnapshot } from '../registry/snapshot.js'
+import { HOLDINGS, IMAGINED_VERSION, clamp, pad, round, sign } from '../packages/registry/imagined-graph.js'
+import type { ImplementationRecord } from '../packages/registry/implementation-record.js'
+import { resolveDependencies } from '../packages/registry/implementation-record.js'
+import type { FrozenImplementation } from '../packages/registry/snapshot.js'
+import { implementationSnapshot } from '../packages/registry/snapshot.js'
 import { planInstall } from './plan.js'
 
 /**

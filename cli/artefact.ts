@@ -70,7 +70,7 @@ import type {
   ServedIndex,
   ServedRefusals,
   ServedSnapshot,
-} from '../registry/response.js'
+} from '../packages/registry/response.js'
 
 /** The file, beside the compiled entry point that reads it. */
 export const ARTEFACT_FILE = 'registry.json'

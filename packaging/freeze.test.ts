@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { canonical } from '../registry/canonical.js'
-import type { Snapshot } from '../registry/snapshot.js'
+import { canonical } from '../packages/registry/canonical.js'
+import type { Snapshot } from '../packages/registry/snapshot.js'
 import { ARTEFACT_FORMAT, artefactFaults, readArtefact } from '../cli/artefact.js'
 import { localSource } from '../cli/local-source.js'
 import { packagedSource } from '../cli/packaged-source.js'

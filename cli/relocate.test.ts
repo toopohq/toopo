@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import type { Lockfile } from '../registry/implementation-record.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
 import { readConfiguration, writeConfiguration } from './configuration.js'
 import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'

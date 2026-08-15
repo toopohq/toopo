@@ -22,13 +22,13 @@ import { defineConfig } from 'vitest/config'
  * **A second door had to be closed, and it was found by measuring rather than by reasoning.** Test
  * collection is not the only way this folder can reach a battery: `npm test` runs `--typecheck`, and
  * a type error anywhere in the root `tsconfig.json`'s `include` makes it exit non-zero. Measured,
- * with one bad line in a file under `registry/`: the suite reports "467 passed, Type Errors no
+ * with one bad line in a file under `packages/registry/`: the suite reports "467 passed, Type Errors no
  * errors" and exits 1. The instrument reads the exit status as its verdict and finds no failed
  * guard, so every cell of every battery would read `killed (typecheck)` - and `testsSeen` would still
  * be 467, so the guard that catches a truncated run would see nothing wrong. It is the same family as
  * the defect `run.ts` records about the json reporter, arriving by a different door.
  *
- * So `registry/` is not in the root `tsconfig.json`. It has its own, and `npm run registry` runs it
+ * So `packages/registry/` is not in the root `tsconfig.json`. It has its own, and `npm run registry` runs it
  * before the suite, because an unchecked `.ts` file would claim a guarantee this repository does not
  * give it.
  */

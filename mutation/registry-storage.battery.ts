@@ -6,7 +6,7 @@
  * fetches from anywhere else - so a storage whose immutability were asserted and never contradicted
  * would be the decorative guard this repository exists to refuse, on the property that matters most.
  *
- * It injects into `registry/`, not into a contract folder, and it collects under the registry's own
+ * It injects into `packages/registry/`, not into a contract folder, and it collects under the registry's own
  * vitest configuration. That is the same door `mutation/fixture` already uses and it is closed for
  * the same reason: a registry guard collected by `npm test` would redden under a specification mutant
  * and be counted as a contract catching it. Nothing here can reach a contract battery, and no contract
@@ -441,7 +441,7 @@ const mutants: readonly Mutant[] = [
    * contract that does not serialise reddens everything: measured, taking the type where the name is
    * turned eighty guards of this folder red at once, across every suite here. That is a true verdict
    * and a useless attribution - what caught the defect is not a guard anybody wrote about signatures,
-   * it is the whole of `registry/` failing to start - and this repository already counts a kill of
+   * it is the whole of `packages/registry/` failing to start - and this repository already counts a kill of
    * that kind apart, under `killedByTypecheck`, for the same reason.
    *
    * So what stays is the three whose shape none of the five writes: a comma inside a generic type, a
@@ -898,8 +898,8 @@ const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'registry-storage',
-  contractPath: 'registry',
-  vitestConfig: 'registry/vitest.config.ts',
+  contractPath: 'packages/registry',
+  vitestConfig: 'packages/registry/vitest.config.ts',
   timeZone: 'UTC',
   calibrationMutant: 'I-05',
 
@@ -951,14 +951,14 @@ export const battery: Battery = {
     {
       guards: onEach('a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands'),
       reason:
-        'the seam it reads is composed in a contract folder, and this battery edits `registry/` only ' +
+        'the seam it reads is composed in a contract folder, and this battery edits `packages/registry/` only ' +
         '- measured, emptying the reason in `serialise.ts` removes the occurrence rather than ' +
         'misplacing it, and the whole suite stays green',
     },
   ],
 
   /**
-   * The guards of `registry/` that no mutant of this battery reddens, declared as regions it does not
+   * The guards of `packages/registry/` that no mutant of this battery reddens, declared as regions it does not
    * probe rather than as guards out of its reach.
    *
    * The difference is a claim about what is possible, and for the first two lists it has not been
@@ -983,7 +983,7 @@ export const battery: Battery = {
      * Every one of these was seen red while `signature.ts` was being written - dropping the
      * trailing-comma filter reddens three of them and thirty-two guards across nine files of this
      * folder - and none of the mutants is promoted here, because each one stops a real contract
-     * serialising and therefore reddens most of `registry/` at once. A cell that reddens eighty guards
+     * serialising and therefore reddens most of `packages/registry/` at once. A cell that reddens eighty guards
      * establishes that serialisation is load-bearing, which nobody doubted, and says nothing about the
      * reader.
      *

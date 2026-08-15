@@ -1200,7 +1200,7 @@ export const battery: Battery = {
    *
    * `EVERY_ARM` claims to hold a value the registry encodes to each arm of `EncodedValue`, and this
    * checks the claim. Both halves of it live outside what this battery may edit: the samples are in
-   * the test file, and `encode` is in `registry/`. An edit anywhere in `site/` leaves it green by
+   * the test file, and `encode` is in `packages/registry/`. An edit anywhere in `site/` leaves it green by
    * construction, so it is unreachable here rather than unprobed - the distinction the instrument
    * insists on, because *cannot be reached* and *nothing reaches it yet* look identical from outside.
    */

@@ -15,7 +15,7 @@
  *
  * Every other page here is a rendering of what the port answers. The method page is half that - what a
  * reader can check and what they must believe is `servedMethodology()`, straight through the port -
- * and half something the registry cannot serve at all: `registry/verifiability.ts` says in as many
+ * and half something the registry cannot serve at all: `packages/registry/verifiability.ts` says in as many
  * words that *the instrument measures the catalogue and is not part of it*, so no endpoint can carry
  * how this catalogue's own tests are measured.
  *

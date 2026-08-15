@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../registry/address.js'
+import { renderContract } from '../packages/registry/address.js'
 import { deciding, withoutAsking } from './fixpoint.js'
 import { localSource } from './local-source.js'
 import { renderCatalogue, renderSearch } from './report.js'

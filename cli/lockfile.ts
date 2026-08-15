@@ -33,10 +33,10 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { renderContract } from '../registry/address.js'
-import { digestOfBytes, servedBytes } from '../registry/canonical.js'
-import type { InstalledFile, LockedFeature, Lockfile } from '../registry/implementation-record.js'
-import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import { renderContract } from '../packages/registry/address.js'
+import { digestOfBytes, servedBytes } from '../packages/registry/canonical.js'
+import type { InstalledFile, LockedFeature, Lockfile } from '../packages/registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../packages/registry/implementation-record.js'
 
 export const LOCKFILE = 'toopo.lock'
 

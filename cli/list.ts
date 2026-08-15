@@ -30,8 +30,8 @@
  * project and a report about our own bookkeeping.
  */
 
-import type { ContractAddress } from '../registry/address.js'
-import type { LockedFeature, Lockfile } from '../registry/implementation-record.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import type { LockedFeature, Lockfile } from '../packages/registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import { digestOnDisk } from './lockfile.js'
 

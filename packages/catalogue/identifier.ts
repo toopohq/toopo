@@ -99,7 +99,7 @@ export type CaseGroup = {
  * Every way a table's grouping fails to be a partition of its cases, in one list.
  *
  * It answers rather than throws because it has two callers that need it differently, and the whole
- * point of writing it here is that they share one implementation: `registry/serialise.ts` refuses a
+ * point of writing it here is that they share one implementation: `packages/registry/serialise.ts` refuses a
  * contract at the boundary and cannot import vitest, and the contracts' own `edge-cases.test.ts`
  * asserts the same thing under `npm test` - which collects `contracts/` and nothing else, so a
  * specification mutant that moved a case between groups would otherwise be a defect nothing probes.

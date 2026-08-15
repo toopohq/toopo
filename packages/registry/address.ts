@@ -16,7 +16,7 @@
  * unpaired form unrepresentable is what turns it into something the compiler keeps.
  */
 
-import { isFrozenIdentifier } from '../packages/catalogue/identifier.js'
+import { isFrozenIdentifier } from '../catalogue/identifier.js'
 
 /**
  * The language a contract is written in.

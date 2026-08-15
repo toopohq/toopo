@@ -22,13 +22,13 @@
  * answered an absence would be a step whose failure looks exactly like an empty result.
  */
 
-import type { ContractAddress, ImplementationAddress } from '../registry/address.js'
-import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
-import type { DependencyEdge } from '../registry/implementation-record.js'
-import { declarationFaults } from '../registry/implementation-record.js'
-import type { ServedExport, ServedIndexEntry } from '../registry/response.js'
-import { servedBlobFaults, servedSnapshotFaults } from '../registry/response.js'
-import type { FrozenImplementation, Snapshot } from '../registry/snapshot.js'
+import type { ContractAddress, ImplementationAddress } from '../packages/registry/address.js'
+import { renderContract, renderImplementation, sameContract } from '../packages/registry/address.js'
+import type { DependencyEdge } from '../packages/registry/implementation-record.js'
+import { declarationFaults } from '../packages/registry/implementation-record.js'
+import type { ServedExport, ServedIndexEntry } from '../packages/registry/response.js'
+import { servedBlobFaults, servedSnapshotFaults } from '../packages/registry/response.js'
+import type { FrozenImplementation, Snapshot } from '../packages/registry/snapshot.js'
 import type { InstallPlan } from './plan.js'
 import type { SourceToRewrite } from './rewrite.js'
 import type { HeldRegistry } from './source.js'

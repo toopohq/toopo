@@ -30,7 +30,7 @@
  * applies to `outputsAreEqual`.
  *
  * What is genuinely one thing is one thing: the serialisation, the snapshots, the ledger and the
- * projections all live in `registry/` and both stand-ins call them.
+ * projections all live in `packages/registry/` and both stand-ins call them.
  *
  * ---------------------------------------------------------------------------
  * A refused contract has no binding, and that is the design rather than a hole
@@ -47,10 +47,10 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import type { ContractAddress } from '../registry/address.js'
-import { renderContract, sameContract } from '../registry/address.js'
-import type { ImplementationRecord } from '../registry/implementation-record.js'
-import type { ServedBlob, ServedSnapshot } from '../registry/response.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { renderContract, sameContract } from '../packages/registry/address.js'
+import type { ImplementationRecord } from '../packages/registry/implementation-record.js'
+import type { ServedBlob, ServedSnapshot } from '../packages/registry/response.js'
 import {
   servedBlob,
   servedContractBinding,
@@ -59,8 +59,8 @@ import {
   servedIndex,
   servedRefusals,
   servedSnapshot,
-} from '../registry/response.js'
-import type { Ledger } from '../registry/snapshot.js'
+} from '../packages/registry/response.js'
+import type { Ledger } from '../packages/registry/snapshot.js'
 import {
   EMPTY_LEDGER,
   contractSnapshot,
@@ -69,10 +69,10 @@ import {
   publishContract,
   publishImplementation,
   refuseContract,
-} from '../registry/snapshot.js'
-import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
-import { theFive } from '../registry/the-five.js'
-import { servedMethodology } from '../registry/verifiability.js'
+} from '../packages/registry/snapshot.js'
+import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../packages/registry/serialise.js'
+import { theFive } from '../packages/registry/the-five.js'
+import { servedMethodology } from '../packages/registry/verifiability.js'
 import type { RegistrySource } from './source.js'
 
 /**
@@ -227,7 +227,7 @@ export const localSource = (): RegistrySource => {
     /**
      * The one answer of this port that is not about the five contracts at all.
      *
-     * It is served straight from `registry/verifiability.ts` because there is nothing here to stand
+     * It is served straight from `packages/registry/verifiability.ts` because there is nothing here to stand
      * in for: the two columns, the strata and the seeding policy are the registry's own opinion about
      * its own guarantees, and a stand-in mints nothing about them. A published server answers the
      * same value.

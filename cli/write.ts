@@ -69,7 +69,7 @@
 import { existsSync, mkdirSync, renameSync, rmSync, rmdirSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 
-import type { Lockfile } from '../registry/implementation-record.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import { CONFIGURATION_FILE, writeConfiguration } from './configuration.js'
 import { LOCKFILE, writeLockfile } from './lockfile.js'

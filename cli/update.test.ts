@@ -3,10 +3,10 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../registry/address.js'
-import { digestOfBytes, servedBytes } from '../registry/canonical.js'
-import type { Lockfile } from '../registry/implementation-record.js'
-import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import { renderContract } from '../packages/registry/address.js'
+import { digestOfBytes, servedBytes } from '../packages/registry/canonical.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../packages/registry/implementation-record.js'
 import { deciding } from './fixpoint.js'
 import { GIT_WAS_NOT_ASKED } from './ignored.js'
 import {

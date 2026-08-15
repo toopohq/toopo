@@ -31,8 +31,8 @@ import '../typescript-imports.ts'
 const { mkdirSync, readFileSync, rmSync, writeFileSync } = await import('node:fs')
 const { dirname, join } = await import('node:path')
 
-const { emitted } = await import('../registry/emit.ts')
-const { localReadApi } = await import('../registry/local-read-api.ts')
+const { emitted } = await import('../packages/registry/emit.ts')
+const { localReadApi } = await import('../packages/registry/local-read-api.ts')
 const { THE_BROWSER_GRAPH, asABrowserModule, theReferenceModules } = await import('./browser.ts')
 const { heldByTheRegistry } = await import('./catalogue.ts')
 const { localSource } = await import('./local-source.ts')
@@ -64,7 +64,7 @@ const modules = new Map<string, string>([
  *
  * It is written here because this is the file that owns the output directory, and because the two are
  * one deployment: a contract's page and the answers about that contract live in the same folder, which
- * is what lets a reader open by hand the exact URL the client asked. `registry/emit.ts` decides all of
+ * is what lets a reader open by hand the exact URL the client asked. `packages/registry/emit.ts` decides all of
  * it and touches no disk, exactly as `site.ts` decides every page and touches none.
  */
 const answers = emitted(localReadApi())

@@ -117,7 +117,7 @@
  * produced by being caught out.
  *
  * A fifth on `toopo update`, and it is the largest yet: three new files under the fifth configuration
- * and five existing counts moved, plus one in `registry/`. That is what a unit costs when it adds a
+ * and five existing counts moved, plus one in `packages/registry/`. That is what a unit costs when it adds a
  * command rather than a contract, and it is the number the paragraph above predicted at "a unit that
  * only changes behaviour touches none" - this one changed behaviour *and* added guards, so it paid for
  * both.
@@ -159,7 +159,7 @@
  *
  * A twelfth on the licence, and it is the first spread over two configurations for a reason other than
  * scale: one new file under the registry's, one count moved under the site's. What is guarded is a
- * single origin and a single licence perimeter, whose declaration is in `registry/` and whose consumer
+ * single origin and a single licence perimeter, whose declaration is in `packages/registry/` and whose consumer
  * is in `site/` - and neither folder may hold the other's guard, so the entries land where the reach
  * falls rather than where the subject is.
  *
@@ -231,24 +231,24 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'contracts/typescript/string/slugify/signature.test-d.ts': 5,
   },
 
-  'registry/vitest.config.ts': {
-    'registry/address.test.ts': 3,
-    'registry/against-the-five.test.ts': 50,
-    'registry/attestation.test.ts': 3,
-    'registry/coverage.test.ts': 20,
-    'registry/determinism.test.ts': 20,
-    'registry/emit.test.ts': 11,
-    'registry/endpoints.test.ts': 12,
-    'registry/implementations.test.ts': 18,
-    'registry/response.test.ts': 46,
-    'registry/round-trip.test.ts': 19,
-    'registry/served-files.test.ts': 10,
-    'registry/signature.test.ts': 14,
-    'registry/snapshot.test.ts': 45,
-    'registry/publication.test.ts': 5,
-    'registry/the-sixth-contract.test.ts': 15,
-    'registry/verifiability.test.ts': 13,
-    'registry/visibility.test.ts': 10,
+  'packages/registry/vitest.config.ts': {
+    'packages/registry/address.test.ts': 3,
+    'packages/registry/against-the-five.test.ts': 50,
+    'packages/registry/attestation.test.ts': 3,
+    'packages/registry/coverage.test.ts': 20,
+    'packages/registry/determinism.test.ts': 20,
+    'packages/registry/emit.test.ts': 11,
+    'packages/registry/endpoints.test.ts': 12,
+    'packages/registry/implementations.test.ts': 18,
+    'packages/registry/response.test.ts': 46,
+    'packages/registry/round-trip.test.ts': 19,
+    'packages/registry/served-files.test.ts': 10,
+    'packages/registry/signature.test.ts': 14,
+    'packages/registry/snapshot.test.ts': 45,
+    'packages/registry/publication.test.ts': 5,
+    'packages/registry/the-sixth-contract.test.ts': 15,
+    'packages/registry/verifiability.test.ts': 13,
+    'packages/registry/visibility.test.ts': 10,
   },
 
   'validation/vitest.config.ts': {

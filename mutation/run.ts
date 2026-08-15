@@ -490,8 +490,8 @@ const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
  * folder, so a filter naming that folder resolves under it and names nothing. Measured on vitest
  * 4.1.10:
  *
- *     --config registry/vitest.config.ts   registry/                 0 files, exit 1
- *     --config registry/vitest.config.ts   registry                 16 files - a no-op
+ *     --config packages/registry/vitest.config.ts   packages/registry/                 0 files, exit 1
+ *     --config packages/registry/vitest.config.ts   registry                 16 files - a no-op
  *     (the contracts' configuration)       contracts/typescript/number/parse/   4 files, 122 assertions
  *
  * So the narrowing is expressible under the contracts' configuration, whose root is the repository,

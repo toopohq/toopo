@@ -4,10 +4,10 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { THE_REPOSITORY } from './paths.ts'
-import { FIELD_MAP } from '../registry/field-map.ts'
-import type { ContractRecord } from '../registry/contract-record.ts'
-import { REPOSITORY_ROOT, serialiseContract } from '../registry/serialise.ts'
-import { theFive } from '../registry/the-five.ts'
+import { FIELD_MAP } from '../packages/registry/field-map.ts'
+import type { ContractRecord } from '../packages/registry/contract-record.ts'
+import { REPOSITORY_ROOT, serialiseContract } from '../packages/registry/serialise.ts'
+import { theFive } from '../packages/registry/the-five.ts'
 import {
   CONTRACT_METHOD_RULE,
   EVALUATION_RULE,
@@ -25,7 +25,7 @@ import { OWN_SIGNATURE_RULE } from '../validation/states-its-own-signature.ts'
  * README's figures come from the instrument; these come from the five contract records and from the
  * rule identifiers stage 1 refuses under.
  *
- * **It lives here rather than in `registry/` or `validation/`, and the placement is an argument
+ * **It lives here rather than in `packages/registry/` or `validation/`, and the placement is an argument
  * rather than a convenience.** Both of those folders are injected into by a battery, and a battery
  * measures whether the catalogue's own tests catch defects in the catalogue. A guard over a Markdown
  * file is not that, so putting it there would force `registry-storage` to declare a document as an

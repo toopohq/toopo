@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { isFrozenIdentifier } from '../packages/catalogue/identifier.js'
+import { isFrozenIdentifier } from '../catalogue/identifier.js'
 import { WHAT_A_SIGNATURE_DOES_NOT_PROVE } from './attestation.js'
 import { ENDPOINTS } from './endpoints.js'
 import { FIELD_MAP } from './field-map.js'

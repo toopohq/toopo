@@ -3,8 +3,8 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../registry/address.js'
-import type { LockedFeature, Lockfile } from '../registry/implementation-record.js'
+import { renderContract } from '../packages/registry/address.js'
+import type { LockedFeature, Lockfile } from '../packages/registry/implementation-record.js'
 import { deciding } from './fixpoint.js'
 import {
   imaginedSource,

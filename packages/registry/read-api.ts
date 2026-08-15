@@ -21,7 +21,7 @@
  * What is not answered, and the trigger that would close it
  * ---------------------------------------------------------------------------
  *
- * `attestations` is the one endpoint no method below carries. `registry/attestation.ts` models the
+ * `attestations` is the one endpoint no method below carries. `packages/registry/attestation.ts` models the
  * bundle, the policy and what a signature does not prove; nothing anywhere holds one, so the honest
  * answers are *an empty set at every digest*, which publishes a claim about completeness that
  * `endpoints.ts` says in as many words cannot be made - *a registry withholding an attestation is
@@ -29,7 +29,7 @@
  *
  * So it is nothing at all, declared with what would change that. A reason alone ages into a
  * description of the past; the field is the shape `DeferredNeed` already takes one folder along, and
- * it is written a second time rather than shared because `registry/` may not import a client and a
+ * it is written a second time rather than shared because `packages/registry/` may not import a client and a
  * published registry has no notion of a deferral - it either serves an endpoint or it does not.
  */
 

@@ -9,7 +9,7 @@
  * `verbatimModuleSyntax` asks of TypeScript. A browser resolves exactly that spelling, natively, with
  * no bundler and no rewriting - so a module graph written for a typechecker turns out to be a module
  * graph a browser can load, and the whole of the work is stripping the types. Measured: after
- * stripping, `playground.js` still names `../registry/value.js`, `./literal.js` and `./read-literal.js`
+ * stripping, `playground.js` still names `../packages/registry/value.js`, `./literal.js` and `./read-literal.js`
  * and nothing else, because `import type` erases.
  *
  * ---------------------------------------------------------------------------
@@ -39,8 +39,8 @@
 
 import { stripTypeScriptTypes } from 'node:module'
 
-import { renderContract } from '../registry/address.js'
-import { servedBlobFaults } from '../registry/response.js'
+import { renderContract } from '../packages/registry/address.js'
+import { servedBlobFaults } from '../packages/registry/response.js'
 import type { Held } from './catalogue.js'
 import { ThePageCannotBeBuilt } from './catalogue.js'
 import { THE_REFERENCE_MODULE } from './paths.js'
@@ -62,7 +62,7 @@ export const THE_BROWSER_GRAPH: readonly string[] = [
   'site/playground.ts',
   'site/read-literal.ts',
   'site/literal.ts',
-  'registry/value.ts',
+  'packages/registry/value.ts',
 ]
 
 /**

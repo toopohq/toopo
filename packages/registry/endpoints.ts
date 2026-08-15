@@ -250,7 +250,7 @@ export const endpointOf = (id: string): Endpoint => {
  * of routes, and the three arms below are the only statement of an address this repository has.
  *
  * `address` is a rendered address - `renderContract` for a contract, a digest for content - and it is
- * interpolated rather than encoded, because every character `registry/address.ts` can produce is legal
+ * interpolated rather than encoded, because every character `packages/registry/address.ts` can produce is legal
  * in a path segment and percent-encoding one would make a name no filesystem can hold. That is asserted
  * rather than assumed, in `endpoints.test.ts`, over every address this catalogue has.
  */

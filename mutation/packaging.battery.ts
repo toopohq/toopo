@@ -225,7 +225,7 @@ const mutants: readonly Mutant[] = [
   sameOnEveryLens(
     'A-07',
     'sees a specifier that stays in its folder and not one that leaves it, so everything under ' +
-      '`registry/` is pruned as unreachable and the first command a user runs ends in ' +
+      '`packages/registry/` is pruned as unreachable and the first command a user runs ends in ' +
       '`ERR_MODULE_NOT_FOUND` - which is the failure this folder was built to stop',
     [
       reachableFile(

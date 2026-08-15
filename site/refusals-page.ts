@@ -35,8 +35,8 @@
  * is kept as.
  */
 
-import { renderContract, sameContract } from '../registry/address.js'
-import type { ServedIndex, ServedRefusals } from '../registry/response.js'
+import { renderContract, sameContract } from '../packages/registry/address.js'
+import type { ServedIndex, ServedRefusals } from '../packages/registry/response.js'
 import type { Document, Node } from './document.js'
 import { el, text } from './document.js'
 import { REFUSALS_PAGE, rootFrom } from './paths.js'

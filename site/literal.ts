@@ -5,7 +5,7 @@
  * What the registry hands over, and why nothing rendered it until now
  * ---------------------------------------------------------------------------
  *
- * `registry/value.ts` encodes the declarative half of a contract so that nothing is lost on the way to
+ * `packages/registry/value.ts` encodes the declarative half of a contract so that nothing is lost on the way to
  * JSON: a negative zero, a NaN, a hole in an array, a lone surrogate, a symbol, two fields that hold
  * the *same* object. It was written for a reader who would decode it. This is the first consumer that
  * has to *show* it, and showing is not decoding: `decode` gives back a value whose `String()` is `0`
@@ -32,7 +32,7 @@
  * because they are visible and because `string/slugify@1`'s table is *about* them.
  */
 
-import type { EncodedValue, JsonPrimitive } from '../registry/value.js'
+import type { EncodedValue, JsonPrimitive } from '../packages/registry/value.js'
 
 /**
  * A character that carries meaning and shows nothing, or shows on top of its neighbour.

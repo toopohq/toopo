@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { contractUrl } from '../registry/address.js'
+import { contractUrl } from '../packages/registry/address.js'
 import { robotsOf, sitemapOf } from './indexing.js'
 import { localSource } from './local-source.js'
 import { ROBOTS, SITEMAP, THE_ORIGIN, linkTo, pageOf, urlOf } from './paths.js'
@@ -131,7 +131,7 @@ describe('what a crawler reads', () => {
    * written twice, and the copy in prose is the one nobody edits.
    *
    * **It was `the-origin-is-declared-once` and admitted `paths.ts`.** The declaration moved to
-   * `registry/address.ts` when a second consumer appeared - a licence header, frozen into somebody
+   * `packages/registry/address.ts` when a second consumer appeared - a licence header, frozen into somebody
    * else's repository - and this guard now expects the literal in no file here at all. The name moved
    * with the assertion rather than surviving it: a name that renders a count outlives the data it
    * counted, and *declared once* is exactly that name once the count is zero.
@@ -151,7 +151,7 @@ describe('what a crawler reads', () => {
    * address out of a file path and a trailing-slash rule, `contractUrl` builds it out of an address for
    * the two lines at the top of an installed file. A redirect fixes the first for everybody at once and
    * fixes the second for nobody, because the second is already in somebody's repository and frozen
-   * there. This is the only place both are reachable: `registry/` may not import a client of itself.
+   * there. This is the only place both are reachable: `packages/registry/` may not import a client of itself.
    */
   it('the-url-a-licence-header-freezes-is-the-page-this-site-publishes', () => {
     const addresses = source.contractIndex().entries.map((entry) => entry.address)

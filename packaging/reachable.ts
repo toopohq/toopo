@@ -7,7 +7,7 @@
  *
  * `tsc` emits every file in the program, and a file enters the program by being *typed* against, not
  * by being loaded. Six modules of this repository reach the archive that way and nothing imports them
- * at run time: `cli/source.ts` is where `RegistrySource` is declared, `registry/field-map.ts` is where
+ * at run time: `cli/source.ts` is where `RegistrySource` is declared, `packages/registry/field-map.ts` is where
  * `VerificationStratum` is, and four more arrive behind them. Measured: 44 kB of 362 kB unpacked, all
  * of it modules with real exports that no command ever loads.
  *

@@ -55,10 +55,10 @@
  * transcript cannot survive.
  */
 
-import { renderContract, renderImplementation } from '../registry/address.js'
-import type { ContractAddress } from '../registry/address.js'
-import type { ServedBlob, ServedSnapshot } from '../registry/response.js'
-import type { FrozenImplementation } from '../registry/snapshot.js'
+import { renderContract, renderImplementation } from '../packages/registry/address.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import type { ServedBlob, ServedSnapshot } from '../packages/registry/response.js'
+import type { FrozenImplementation } from '../packages/registry/snapshot.js'
 import type { ArtefactBindings, ArtefactBlob, ServedArtefact } from '../cli/artefact.js'
 import { ARTEFACT_FORMAT } from '../cli/artefact.js'
 import { deciding, withoutAsking } from '../cli/fixpoint.js'

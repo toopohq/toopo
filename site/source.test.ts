@@ -3,8 +3,8 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { ENDPOINTS, portFaults } from '../registry/endpoints.js'
-import { NEEDS } from '../registry/needs.js'
+import { ENDPOINTS, portFaults } from '../packages/registry/endpoints.js'
+import { NEEDS } from '../packages/registry/needs.js'
 import { THE_UNPUBLISHED_VERSION as THE_INSTALLERS_VERSION } from '../cli/local-source.js'
 import { THE_UNPUBLISHED_VERSION, localSource } from './local-source.js'
 import { NOT_THIS_UNIT, THE_ENDPOINT_BEHIND } from './source.js'
@@ -21,7 +21,7 @@ import { NOT_THIS_UNIT, THE_ENDPOINT_BEHIND } from './source.js'
 
 const HERE = import.meta.dirname
 
-const THE_SERIALISATION = ['registry/the-five', 'registry/serialise']
+const THE_SERIALISATION = ['packages/registry/the-five', 'packages/registry/serialise']
 
 describe('where the generator gets what it publishes', () => {
   it('every-method-of-the-port-answers-an-endpoint-that-exists', () => {
@@ -114,7 +114,7 @@ describe('where the generator gets what it publishes', () => {
   /**
    * The instrument reaches this folder through one named module and no other.
    *
-   * The method page has an upstream the registry cannot serve - `registry/verifiability.ts` says the
+   * The method page has an upstream the registry cannot serve - `packages/registry/verifiability.ts` says the
    * instrument measures the catalogue and is not part of it - so `mutation/published.ts` is a second
    * door beside the port. A door is a decision; a folder reaching into another folder wherever it
    * finds something useful is not, and the difference between the two is exactly one guard.

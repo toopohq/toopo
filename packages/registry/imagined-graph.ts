@@ -4,7 +4,7 @@
  * **None of these four contracts exists, and none of these bodies is an implementation of anything.**
  * They are addresses and digests over real bytes, shaped like a graph a registry will one day hold.
  * Nothing about rounding, padding, clamping or signs is claimed here, and no part of this file should
- * ever be copied into a contract folder. It lives under `registry/` for the reason the instrument's
+ * ever be copied into a contract folder. It lives under `packages/registry/` for the reason the instrument's
  * fixture lives under `mutation/`: `contracts/` is the catalogue and nothing else.
  *
  * ---------------------------------------------------------------------------

@@ -99,7 +99,7 @@ describe('what this repository publishes about itself', () => {
    * ever carried it.
    */
   it('the-origin-is-spelled-only-where-a-guard-resolves-it', () => {
-    const allowed = new Set(['registry/address.ts', ...copiedFiles().map((file) => file.path)])
+    const allowed = new Set(['packages/registry/address.ts', ...copiedFiles().map((file) => file.path)])
     const production = trackedFiles().filter(
       (path) =>
         path.endsWith('.ts') &&

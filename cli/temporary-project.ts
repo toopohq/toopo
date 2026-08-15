@@ -13,8 +13,8 @@ import { dirname, join } from 'node:path'
 
 import { removeDirectory } from './remove-directory.js'
 
-import type { Lockfile } from '../registry/implementation-record.js'
-import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../packages/registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import type { Installation } from './install.js'
 import { filesToWrite, lockfileAfter } from './install.js'

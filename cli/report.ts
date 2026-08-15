@@ -34,10 +34,10 @@
  * three lines above needs it to work.
  */
 
-import type { ContractAddress } from '../registry/address.js'
-import { renderContract, sameContract } from '../registry/address.js'
-import type { Lockfile } from '../registry/implementation-record.js'
-import type { ServedIndexEntry, ServedRefusals } from '../registry/response.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { renderContract, sameContract } from '../packages/registry/address.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
+import type { ServedIndexEntry, ServedRefusals } from '../packages/registry/response.js'
 import type { Configuration } from './configuration.js'
 import { CONFIGURATION_FILE } from './configuration.js'
 import type { CommitStanding } from './ignored.js'

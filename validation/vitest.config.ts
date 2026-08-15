@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config'
 /**
  * `npm run validation` means the validation pipeline's own guards, and nothing else.
  *
- * The third configuration in this repository, for the two reasons `registry/vitest.config.ts`
+ * The third configuration in this repository, for the two reasons `packages/registry/vitest.config.ts`
  * already records and measured rather than assumed. A guard collected by `npm test` enters every cell
  * of every contract battery, and a type error anywhere in the root `tsconfig.json`'s `include` makes
  * `npm test` exit non-zero with no failed guard - which the instrument reads as every cell killed by

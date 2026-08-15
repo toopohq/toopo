@@ -51,9 +51,9 @@
  * and answering "done" to that is answering a question nobody asked.
  */
 
-import type { ContractAddress } from '../registry/address.js'
-import { renderContract } from '../registry/address.js'
-import type { LockedFeature, Lockfile } from '../registry/implementation-record.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { renderContract } from '../packages/registry/address.js'
+import type { LockedFeature, Lockfile } from '../packages/registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import type { Reconciliation } from './reconcile.js'
 import { reconcileProject } from './reconcile.js'

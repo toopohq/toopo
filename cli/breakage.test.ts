@@ -20,8 +20,8 @@ import {
   committing,
 } from './temporary-project.js'
 import type { Installation, InstallOutcome } from './install.js'
-import type { Lockfile } from '../registry/implementation-record.js'
-import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
+import { LOCKFILE_VERSION } from '../packages/registry/implementation-record.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 

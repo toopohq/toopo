@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { analyseImplementation, requirementsOf } from './analyse.js'
 import { renderFinding } from './finding.js'
 import { readSources } from './source.js'
-import { eachContract, theFive } from '../registry/the-five.js'
+import { eachContract, theFive } from '../packages/registry/the-five.js'
 
 /**
  * The catalogue, put through its own filter.
@@ -14,7 +14,7 @@ import { eachContract, theFive } from '../registry/the-five.js'
  * are the only submissions this repository has, they were written by hand over five units with no
  * static analysis in existence, and none of them was written to satisfy this.
  *
- * The list of five is imported from `registry/the-five.ts` rather than restated. It is the one place
+ * The list of five is imported from `packages/registry/the-five.ts` rather than restated. It is the one place
  * the catalogue's membership is declared, and a second list here would be a second statement that can
  * drift - which is the failure this repository has now found in a count, in a stratum and in a guard
  * identifier.

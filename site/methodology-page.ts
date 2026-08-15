@@ -63,8 +63,8 @@ import {
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
   survivorsByKind,
 } from '../mutation/published.js'
-import type { VerificationStratum } from '../registry/field-map.js'
-import type { ServedMethodology } from '../registry/verifiability.js'
+import type { VerificationStratum } from '../packages/registry/field-map.js'
+import type { ServedMethodology } from '../packages/registry/verifiability.js'
 import type { Document, Node } from './document.js'
 import { el, text } from './document.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, linkTo, rootFrom } from './paths.js'

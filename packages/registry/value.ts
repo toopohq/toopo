@@ -134,7 +134,7 @@ export class UnencodableValue extends Error {
   constructor(path: string, nature: string) {
     super(
       `${path} holds ${nature}, which the registry does not model. Encoding it as anything else ` +
-        `would publish a value the contract does not declare; extend registry/value.ts deliberately ` +
+        `would publish a value the contract does not declare; extend packages/registry/value.ts deliberately ` +
         `instead.`,
     )
     this.name = 'UnencodableValue'

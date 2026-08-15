@@ -56,7 +56,7 @@ export class UnreadableSignature extends Error {
     super(
       `the declared signature \`${text}\` cannot be read as a function type, and ${detail}. A ` +
         `contract's cases are calls, so the registry has to know what the call's arguments are ` +
-        `called; extend registry/signature.ts deliberately rather than leaving a page to render ` +
+        `called; extend packages/registry/signature.ts deliberately rather than leaving a page to render ` +
         `fields it cannot name.`,
     )
     this.name = 'UnreadableSignature'

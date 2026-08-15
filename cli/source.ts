@@ -5,7 +5,7 @@
  * There is no server, and this file is what keeps that from becoming a habit
  * ---------------------------------------------------------------------------
  *
- * `registry/` designs a read API and deliberately builds no service: `response.ts` and `endpoints.ts`
+ * `packages/registry/` designs a read API and deliberately builds no service: `response.ts` and `endpoints.ts`
  * model what an answer contains, what it may not contain, and what a reader can do with it alone, and
  * they name no transport at all. So the installer talks to an *interface*, and what implements it is
  * this working tree serialised, the frozen artefact an archive carries, a graph that exists to be
@@ -106,14 +106,14 @@
  * to be wrong.
  */
 
-import type { ContractAddress } from '../registry/address.js'
+import type { ContractAddress } from '../packages/registry/address.js'
 import type {
   ServedBlob,
   ServedImplementationBinding,
   ServedIndex,
   ServedRefusals,
   ServedSnapshot,
-} from '../registry/response.js'
+} from '../packages/registry/response.js'
 
 /**
  * Everything `toopo` may ask of a registry, as a transport answers it.
@@ -190,7 +190,7 @@ export type HeldRegistry = {
  * Total over the port by construction: adding a method without deciding which endpoint answers it does
  * not compile. What it cannot decide by itself is whether the identifier names an endpoint that
  * exists, which is what `portFaults` is for - the two halves of the same discipline `FIELD_MAP` and
- * `publicContract` already run on. That check lives in `registry/endpoints.ts` because it is a
+ * `publicContract` already run on. That check lives in `packages/registry/endpoints.ts` because it is a
  * question about the read API rather than about an installer, and the site's port asks it too.
  */
 export const THE_ENDPOINT_BEHIND: Readonly<Record<keyof RegistrySource, string>> = {

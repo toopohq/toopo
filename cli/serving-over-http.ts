@@ -28,7 +28,7 @@
  * Both sides of the route derive from one declaration
  * ---------------------------------------------------------------------------
  *
- * `pathOf` asks `registry/endpoints.ts` where an endpoint's answers live, `askedAt` is that function's
+ * `pathOf` asks `packages/registry/endpoints.ts` where an endpoint's answers live, `askedAt` is that function's
  * own inverse, and `WHERE` below turns the endpoint it names back into a method of this port. Nothing
  * here is a table of paths, so a method whose endpoint moves moves on both sides at once. A list of
  * routes written beside it would be the copy of a parser this repository refuses.
@@ -40,8 +40,8 @@
 
 import { createServer } from 'node:http'
 
-import type { ContractAddress } from '../registry/address.js'
-import { askedAt, contentTypeOf } from '../registry/endpoints.js'
+import type { ContractAddress } from '../packages/registry/address.js'
+import { askedAt, contentTypeOf } from '../packages/registry/endpoints.js'
 import type { RegistrySource } from './source.js'
 import { THE_ENDPOINT_BEHIND } from './source.js'
 

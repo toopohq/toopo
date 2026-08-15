@@ -43,7 +43,7 @@
  * the correct answer to what was asked rather than a state nobody can act on.
  */
 
-import type { Lockfile } from '../registry/implementation-record.js'
+import type { Lockfile } from '../packages/registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import type { ReconcileOutcome } from './reconcile.js'
 import { reconcileProject } from './reconcile.js'

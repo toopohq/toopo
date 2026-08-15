@@ -10,13 +10,13 @@
  * because the two commands ask for exactly the same things and differ only in where they start.
  */
 
-import type { ContractAddress, ImplementationAddress } from '../registry/address.js'
-import { renderContract, sameContract } from '../registry/address.js'
-import { digestOfBytes } from '../registry/canonical.js'
-import type { InstalledFile, LockedFeature, Lockfile } from '../registry/implementation-record.js'
-import { dependencyDepthOf, resolveDependencies } from '../registry/implementation-record.js'
-import type { ServedExport } from '../registry/response.js'
-import type { FrozenImplementation } from '../registry/snapshot.js'
+import type { ContractAddress, ImplementationAddress } from '../packages/registry/address.js'
+import { renderContract, sameContract } from '../packages/registry/address.js'
+import { digestOfBytes } from '../packages/registry/canonical.js'
+import type { InstalledFile, LockedFeature, Lockfile } from '../packages/registry/implementation-record.js'
+import { dependencyDepthOf, resolveDependencies } from '../packages/registry/implementation-record.js'
+import type { ServedExport } from '../packages/registry/response.js'
+import type { FrozenImplementation } from '../packages/registry/snapshot.js'
 import type { Configuration } from './configuration.js'
 import { digestOnDisk, withFeature } from './lockfile.js'
 import type { InstallPlan } from './plan.js'

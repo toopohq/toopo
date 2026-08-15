@@ -24,7 +24,7 @@ import {
 } from './implementation-record.js'
 import { digestOfSnapshot, edgeTo, implementationSnapshot } from './snapshot.js'
 import { decode, encode } from './value.js'
-import { contractAnatomy } from '../packages/catalogue/every-contract.js'
+import { contractAnatomy } from '../catalogue/every-contract.js'
 
 /**
  * A sixth contract enters this schema without a migration, measured rather than asserted.
@@ -39,7 +39,7 @@ import { contractAnatomy } from '../packages/catalogue/every-contract.js'
  * property, no battery and no admission decision - and writing one would be about ninety-seven
  * decisions this unit has no business taking. Nothing here has been verified about rounding, the
  * answers below are plausible rather than settled, and no part of it should ever be copied into a
- * contract folder. It lives under `registry/` for the same reason the instrument's fixture lives
+ * contract folder. It lives under `packages/registry/` for the same reason the instrument's fixture lives
  * under `mutation/`: `contracts/` is the catalogue and nothing else.
  *
  * **What it is chosen to stress.** Everything the five could not stress at once: a reason set no

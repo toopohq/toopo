@@ -64,7 +64,7 @@
  * The route is not this client's to decide, and there is no table of paths
  * ---------------------------------------------------------------------------
  *
- * `THE_ENDPOINT_BEHIND` states which endpoint answers each method, and `registry/endpoints.ts` states
+ * `THE_ENDPOINT_BEHIND` states which endpoint answers each method, and `packages/registry/endpoints.ts` states
  * where that endpoint's answers live. A table of URL paths here would be a second statement of an
  * address the registry already owns - and it was one: this function used to build `/<endpoint>/<the
  * address, percent-encoded>` out of its own head, which no filesystem can hold and which named
@@ -72,13 +72,13 @@
  * inverse rather than through a copy of anything.
  */
 
-import { endpointOf, pathTo } from '../registry/endpoints.js'
+import { endpointOf, pathTo } from '../packages/registry/endpoints.js'
 import type {
   ServedImplementationBinding,
   ServedIndex,
   ServedRefusals,
   ServedSnapshot,
-} from '../registry/response.js'
+} from '../packages/registry/response.js'
 import type { Question } from './fixpoint.js'
 import { addressAsked } from './fixpoint.js'
 import type { RegistrySource } from './source.js'
