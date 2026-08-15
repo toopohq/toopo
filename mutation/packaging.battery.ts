@@ -333,13 +333,14 @@ const mutants: readonly Mutant[] = [
    */
   sameOnEveryLens(
     'A-14',
-    'compiles the generator into the archive and ships what the compiler emitted, so `packages/site/` travels ' +
-      "into somebody's `node_modules` as `dist/site/document.js` - a folder that guard names, in the " +
-      'spelling it could not read until it was anchored at a path segment rather than at the start',
+    'compiles the generator into the archive and ships what the compiler emitted, so `packages/site/` ' +
+      "travels into somebody's `node_modules` as `dist/packages/site/document.js` - a folder that " +
+      'guard names, in the spelling it could not read until it was anchored at a path segment rather ' +
+      'than at the start',
     [
       distConfig(
         ONLY_THE_ENTRY_POINT_IS_COMPILED,
-        `  "include": ["../site/document.ts", "../site/paths.ts"],`,
+        `  "include": ["../packages/site/document.ts", "../packages/site/paths.ts"],`,
       ),
       NOTHING_IS_DROPPED,
     ],
