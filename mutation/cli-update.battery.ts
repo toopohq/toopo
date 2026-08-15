@@ -615,15 +615,20 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
-        'the port over HTTP, which `cli-install` carries with C-67 and C-68. Nothing this battery ' +
-        'injects into reaches `http-source.ts` or `fixpoint.ts`: an update is decided against a held ' +
-        'view, and how those answers arrived is settled a floor below anything it can break.',
+        'the port over HTTP, which `cli-install` carries with C-67, C-68, C-69 and C-72. Nothing this ' +
+        'battery injects into reaches `http-source.ts` or `fixpoint.ts`: an update is decided against ' +
+        'a held view, and how those answers arrived is settled a floor below anything it can break. ' +
+        'The revisions two named answers agree on is in the same list on a narrower reading: an ' +
+        'update compares them in `reconcile.ts`, which this battery does inject into, but the refusal ' +
+        'itself is `oneRevisionBehind` in `resolve.ts` and `cli-install` carries it with C-70.',
       guards: [
+        'a-registry-that-does-not-answer-is-a-sentence-a-person-can-read',
         'a-status-that-is-neither-the-answer-nor-a-404-is-an-error-and-not-an-absence',
         'an-install-over-http-plans-exactly-what-the-same-registry-plans-in-process',
         'bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that',
         'the-same-decision-against-a-warm-cache-and-no-network-is-the-same-plan',
         'the-walk-costs-one-round-trip-per-level-and-fetches-each-frontier-at-once',
+        'two-named-answers-from-two-revisions-refuse-the-install',
       ],
     },
     {
