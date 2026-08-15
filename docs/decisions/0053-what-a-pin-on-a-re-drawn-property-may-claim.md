@@ -11,9 +11,9 @@ confirmed-by: []
 
 ## Context and Problem Statement
 
-`mutants.ts` states that a pin names what is red on every run. A property-based guard re-draws its
-generations, so it has no determinism to offer — only a miss rate. A pin on one is therefore
-unreachable as written, and pretending otherwise is what produced `G-14`.
+[ADR-0076](0076-how-many-guards-a-pin-names.md) states that a pin names what is red on every run. A
+property-based guard re-draws its generations, so it has no determinism to offer — only a miss rate. A
+pin on one is therefore unreachable as written, and pretending otherwise is what produced `G-14`.
 
 ## Considered Options
 
@@ -23,8 +23,8 @@ unreachable as written, and pretending otherwise is what produced `G-14`.
 ## Decision Outcome
 
 **A property that re-draws its generations has no determinism to offer, only a miss rate.** So the
-rule `mutants.ts` states — *a pin names what is red on every run* — is unreachable as written for such
-a guard, and pretending it is met is what produced `G-14`. The usable form: **a pin on a
+rule [ADR-0076](0076-how-many-guards-a-pin-names.md) states — *a pin names what is red on every run* —
+is unreachable as written for such a guard, and pretending it is met is what produced `G-14`. The usable form: **a pin on a
 property-based guard carries its measured miss rate, and is legitimate only when that rate is
 unobservable over the lifetime of the project.** One green in 110 runs is met every fortnight, and a
 pin met by a green every fortnight teaches its reader to ignore the red — the one known way to destroy
@@ -52,8 +52,8 @@ and about half an hour before anybody looked for a predicate instead of a probab
 
 The check is the same one either way and it is cheap: **vary one input at a time and look for a cell
 that is 0 of *n* or *n* of *n*.** A stochastic phenomenon has no such cell; a hidden predicate is
-nothing but such cells, and one of them ends the question without a confidence interval. `mutants.ts`
-carries it as the third of a series, and they read together: a rate is worth measuring only if the
+nothing but such cells, and one of them ends the question without a confidence interval. It is the
+third of a series, and they read together: a rate is worth measuring only if the
 guard polices the step, only if the phenomenon is stochastic, and only against a trial count put
 beside the rate being looked for. The third of those is the *0 in 30* lesson from the teardown, and
 this is the first time all three are stated as one thing.
@@ -80,15 +80,15 @@ own argument, arriving on an arbitrary.
 anything. Inject the mutant, reproduce the generator beside it, **check the reproduction against a
 series of real runs before believing it**, then read the rate. On `G-14` the reproduction predicted
 0.89% and 60 real runs gave 1 green — agreeing, which is what earned the 200 000-draw figure the right
-to be quoted. Three minutes for any pair of mutant and pin, and it is written in `mutants.ts` where
-whoever is about to pin something will be reading.
+to be quoted. Three minutes for any pair of mutant and pin, and what the rate it produces is then worth
+is [ADR-0077](0077-what-a-reproduced-rate-is-worth.md).
 
 ## Confirmation
 
 Nothing guards this, and there is nothing a guard could hold: it is a rule about what a *pin* may
 claim, and a pin is checked by the battery it belongs to rather than by a suite. What keeps it is
-`calibrate()` refusing a pin that names no guard, plus the method written in `mutants.ts` beside the
-pins themselves.
+`calibrate()` refusing a pin that names no guard, plus the method this record and
+[ADR-0077](0077-what-a-reproduced-rate-is-worth.md) carry between them.
 
 The rule's own instance closed: `G-14` pinned `p1-two-spellings-one-slug`, that pin is gone, and
 `G-02`'s repair was chosen for its margin rather than its precision — a second astral letter widening

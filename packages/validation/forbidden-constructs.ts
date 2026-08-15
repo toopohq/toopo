@@ -184,7 +184,7 @@ export const GLOBAL_RULE = 'reaches-no-ambient-state'
  * refused, and neither does the one nobody has thought of.
  *
  * The catalogue's own vocabulary is what this serves: `no ambient input` and `no ambient output` are
- * two of the four universal properties every contract answers, and `every-contract.ts` records that
+ * two of the four universal properties every contract answers, and ADR-0088 records that
  * the second is not reachable by any property - *the guarantee is obtained by static analysis in the
  * validation pipeline, which forbids a feature from reaching global state at all*. This is that
  * sentence, made executable.

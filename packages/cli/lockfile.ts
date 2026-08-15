@@ -161,7 +161,7 @@ const featureNamesIn = (value: Readonly<Record<string, unknown>>): readonly stri
  * Why a lockfile written under an older version cannot be read, and what to do about it.
  *
  * **Version 1 is refused rather than migrated, and the reason is that the field it lacks is not
- * derivable.** `askedFor` says which features the user typed, and `implementation-record.ts` records
+ * derivable.** `askedFor` says which features the user typed, and ADR-0073 records
  * that both ways of guessing it are wrong: treating every entry as a root climbs a dependency to
  * whatever its own binding names today, which is a combination nobody published, and deriving the
  * roots from the edges reads precisely what an update is trying to find out has moved. A migration

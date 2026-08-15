@@ -4,8 +4,8 @@
  * An address is not a field among others. The site will make a case identifier a URL anchor, the API
  * will cite one in a response, and a validation report will put one in front of a submitter to name
  * the case their submission failed. An address that changes breaks links, so every address here is
- * frozen with the contract's major version, under the discipline `packages/catalogue/every-contract.ts`
- * already states for a case and `mutation/run.ts` for a guard.
+ * frozen with the contract's major version, under the discipline ADR-0017 already states for a case
+ * and `mutation/run.ts` for a guard.
  *
  * Nothing below is a string. That is the whole content of this file: a `ContractAddress` is a value
  * with three parts, and a guard is addressed by the *pair* `(contract, guard)` and by no other shape,

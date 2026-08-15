@@ -75,8 +75,8 @@ export type Edit = {
 export type Verdict = 'killed' | 'killed-by-typecheck' | 'survived' | 'not-applicable'
 
 /**
- * Why a cell is expected to survive. `mutants.ts` owns the vocabulary and the argument for it; the
- * type is here because `Expectation` is here.
+ * Why a cell is expected to survive. `mutants.ts` owns the vocabulary and ADR-0078 the argument for
+ * it; the type is here because `Expectation` is here.
  *
  * Absent on a killed cell, and absent on the one survivor the structure explains for itself - a cell
  * blinded by its lens, whose own mutant dies on the column that reads the contract as committed.

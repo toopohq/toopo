@@ -105,9 +105,8 @@ ADR-0060.
 - `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
   `one-directional` fields the schema already carried, with GS-11 as the measurement. Closed by the
   validation pipeline, for the reason the entry above closes there.
-- **The rule that an alias must not name what its contract refuses to be**, argued in ADR-0023. The
-  eight liars are gone and the criterion is in `packages/catalogue/every-contract.ts`, but nothing
-  keeps it: the executable form
+- **The rule that an alias must not name what its contract refuses to be**, argued in ADR-0023, which
+  also carries the criterion. The eight liars are gone, but nothing keeps it: the executable form
   needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
   to buy a check that would still be matching words against prose. Looked for, priced, and declared
   rather than dressed as a mechanism — which is the treatment this list exists to give.
@@ -135,78 +134,24 @@ ADR-0060.
   validation stage reading a submission's folder against what `contractAnatomy` requires of one —
   because the judgement is whether an extra file is a contract's own or somebody's leftover, and that
   is not a shape.
-- **The rule that a pin names what is red on every run**, stated on L-05 in `mutants.ts`, whose
-  *instance* closed and whose *class* stays open. The instance was `G-14` of `string-slugify` pinning
-  `p1-two-spellings-one-slug`; that pin is gone and the section below says on what argument. What no
-  mechanism keeps is the general case: a battery sees one draw, so any pin is still checked against
-  the run that wrote it, and closing that would mean four runs of every cell — the 23-minute replay
-  taken four times. Priced, declared, and not built.
-
-  **And now observed, which it had not been before — and that observation settles the pin without any
-  number.** A replay at `e6acff9` reported `G-02 on S/table-blind: expected killed, measured killed —
-  no longer caught by: p6-a-letter-or-a-digit-answers`: two verdicts agreeing on a line announcing that
-  they do not, which is the shape the pre-flight section below describes and the reason it costs more
-  than a silence. **The rule says a pin on a property-based guard is legitimate only when its miss rate
-  is unobservable over the lifetime of the project. It was observed, in the first months. That question
-  is answered by the observation and not by a confidence interval**, so what the measurements below
-  decide is *how* the pin changes — widen the alphabet on this class, raise the draw count, or take the
-  property out of the pin — and never whether it does. Written down because a later reader would
-  otherwise think a number was being waited for.
-
-  Step 1 of the method is passed and was checked rather than assumed: `POLICED` declares
-  `keep: ['P4', 'P6']` and G-02 replaces the `keep` loop, so the guard does police the step the mutant
-  breaks. This is not `G-14`.
-
-  **What the measurements say, and they do not agree with each other.** Real runs: **1 silent in 500**,
-  and 573 controlled passes in all hold that single silence — about **0.18 %**. The model says
-  otherwise, and both of its cheap failure modes were checked and eliminated *in situ*, by instrumenting
-  the real predicate: the draw count is **exactly 1000**, and the catching count per run is binomial at
-  **0.96 times** the binomial spread over 150 runs, at **0.87 %** per draw — slightly *higher* than the
-  0.8226 % reproduced beside the mutant, which makes a silence rarer still. So the model is confirmed by
-  the instrument and predicts **one silent run in about 6 100**, while direct observation says one in
-  500. Pooled — two silences over roughly 1 093 trials — the model carries a likelihood of about
-  **1.3 %**: unlikely, not excluded, and a single event cannot pin a rate whichever way it falls.
-  Separating one-in-6 100 from one-in-500 needs some 5 000 real passes, about an hour and a half, and
-  that is priced rather than spent.
-
-  What the exercise did settle is bigger than the cell and lives in `mutants.ts` beside the method: the
-  miss rate is a probability raised to the draw count, so a 25 % error on the input is a factor of seven
-  on the answer, and **no rate obtained by reproducing a generator is trustworthy to better than an
-  order of magnitude.**
-
-  **Repaired, by widening the alphabet rather than by raising the draw count.** `propertyRuns` is shared
-  by all eight properties of the contract, so raising it pays on the whole file to fix one pin; and
-  taking P6 out of the pin would leave P7, re-drawn in the same way with a rate nobody has measured —
-  moving the problem under a name that stops announcing it. A second astral letter, Old Italic beside
-  the Gothic one, carries the same kinds and so adds probability without adding a region: measured in
-  situ, catching draws go from 0.87 % to 1.686 %, still binomial at 1.08 times the binomial spread, and
-  **the smallest count over a hundred runs goes from 2 to 8** — which is the margin visible without a
-  rate at all. `support-the-texts-reach-every-region` reddened on the two counts it holds, which is that
-  guard doing its job on a foreseen change; the partition was updated and nothing else moved.
-
-  **The new rate is published as an order and not as a figure, which is this repository's own limit
-  applied at its first use.** Better than **one silent run in 100 000 under both readings** — the model
-  in situ gives one in tens of millions, the least favourable reading the measurements permit gives one
-  in hundreds of thousands, and the two are a factor of seventy apart. Quoting six significant figures
-  from a method good to one would be the fault this file records one paragraph up. Measured at the
-  commit that carries this change; `mutants.ts` holds the method and the rule that a repair is chosen
-  for its margin rather than its precision.
-
+- **The rule that a pin names what is red on every run**, argued in ADR-0076, whose *instance* closed
+  and whose *class* stays open. The instance was `G-14` of `string-slugify` pinning
+  `p1-two-spellings-one-slug`; that pin is gone, and `G-02`’s was repaired by widening an alphabet
+  rather than raising a draw count, with the new rate published as an order and not as a figure — both
+  arguments are in ADR-0053. What no mechanism keeps is the general case: a battery sees one draw, so
+  any pin is still checked against the run that wrote it, and closing that would mean four runs of
+  every cell — the 23-minute replay taken four times. Priced, declared, and not built.
 - **A reproduced miss rate that disagrees with what the runs show, by a factor nothing accounts for.**
-  It is a fact about the *method* rather than about `G-02`, which is why it does not close with the pin
-  that revealed it: the same reproduce-and-predict method justifies every other pin on a property-based
-  guard, and `mutants.ts` prescribes it. Measured on the cell that raised it, both of the cheap
-  explanations were eliminated **in situ** by instrumenting the real predicate — the draw count is
-  exactly the 1000 the model raises to, and the catching count per run is binomial at 0.96 times the
-  binomial spread over 150 runs. The model was thereby *confirmed* and predicts one silent run in about
-  6 200; direct observation gave one in 500, and pooled over roughly 1 093 trials the model carries a
-  likelihood near 1.3 %. **Unlikely, not excluded, and unexplained.** What would settle it is about
-  5 000 real passes of the one cell — a factor of twelve is a ten-event question, and 500 passes buy
-  one — costing roughly an hour and a half of machine time. **Priced and not spent, on the rule this
-  gap itself produced: a measurement that enters no decision is not bought at any price.** It entered
-  none, because every candidate repair cleared both readings by orders of magnitude. It will enter one
-  the day a pin's repair is close enough that the factor decides between two of them.
-
+  It is a fact about the *method* rather than about the cell that revealed it, which is why it does not
+  close with that cell’s pin: the same reproduce-and-predict method justifies every pin on a
+  property-based guard. Both cheap explanations were eliminated in situ and the model was thereby
+  *confirmed*, predicting one silent run in about 6 200 where direct observation gave one in 500;
+  pooled over roughly 1 093 trials the model carries a likelihood near 1.3 %. **Unlikely, not excluded,
+  and unexplained.** Settling it needs about 5 000 real passes of one cell, roughly an hour and a half.
+  **Priced and not spent, on the rule this gap itself produced: a measurement that enters no decision
+  is not bought at any price.** ADR-0077 carries the method’s limit and the rule that a repair is
+  chosen for its margin rather than its precision; it will enter a decision the day a repair is close
+  enough that the factor decides between two candidates.
 
 ## Rules for this stage
 
@@ -334,6 +279,9 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
   written in prose *and* recorded below among what nothing keeps. ADR-0054.
 - A computed root states how far up it is going, and what it is going up from. A walk over the source
   tree and a walk over the emitted tree look identical and only one moves when a folder does. ADR-0059.
+- A pin naming five or fewer red guards names all of them; above five it names only the guards the
+  mutant was written to exercise. **Five is a convention and reads as though it were derived**, so the
+  distribution it was cut from is published beside it and remeasured when a contract moves it. ADR-0076.
 
 ## Verification discipline
 
@@ -346,6 +294,11 @@ of the thesis.
   reason — never written as a passing test that proves nothing.
 - Every universal property carries a status — applicable or not applicable — together with its
   reason. One declared applicable must have been seen red on at least one plausible mutant.
+- **A guard perturbs the claim, never the object derived from it.** Perturbing the derived object
+  establishes that the derivation is self-consistent, which is true of a derivation with a hole in it —
+  measured twice, ten units apart, on subjects sharing nothing. It is the cheapest test for a guard
+  that cannot fail: ask whether what the guard perturbs is the claim or something computed from it.
+  ADR-0087.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
 - Report what you left out. Never narrow the scope silently.
@@ -381,6 +334,13 @@ the record beside it.
   *n*.** ADR-0053.
 - **A run of zero over *n* trials bounds nothing until *n* is put beside the rate being looked for.**
   ADR-0056.
+- **No rate obtained by reproducing a generator is trustworthy to better than an order of magnitude.**
+  The miss rate is a per-draw probability raised to the draw count, so a 25 % error on the input is a
+  factor of seven on the answer. Quote the order, name the draw count it was raised to, and let real
+  runs decide anything finer. ADR-0077.
+- **A repair is chosen for its margin, never for its precision**: take the one whose margin swallows
+  the known uncertainty of the method. A repair improving a rate by the factor that method may be wrong
+  by has bought nothing that survives its own error bar. ADR-0077.
 
 ## Asking questions
 

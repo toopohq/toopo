@@ -67,7 +67,7 @@ export const WHAT_BREAKS: readonly Breakage[] = [
     guard: 'a-lockfile-from-before-asked-for-is-refused-with-the-command-to-run',
     detail:
       'refused rather than migrated, because the missing field is not derivable from anything on ' +
-      'disk - both ways of guessing it are recorded as wrong in `implementation-record.ts`. The ' +
+      'disk - both ways of guessing it are recorded as wrong in ADR-0073. The ' +
       'refusal names every feature the file holds and the `toopo add` line for each, and the entry ' +
       'above is what makes those lines cost nothing: no file is rewritten and no edit is at risk. ' +
       'Both shapes shipped under `"version": 1`, which is what made the number worth nothing.',

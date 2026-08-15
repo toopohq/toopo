@@ -70,8 +70,8 @@ no decision is not bought at any price.
 ## Confirmation
 
 Nothing guards this, and there is nothing a guard could hold: it is a rule about what a *published
-number* may claim, and no assertion can read the sentence a rate is quoted in. What keeps it is the
-method written in `mutation/mutants.ts` beside the pins themselves, and the fact that the rule's first
+number* may claim, and no assertion can read the sentence a rate is quoted in. What keeps it is that
+`mutation/mutants.ts` sends whoever is about to pin something here, and that the rule's first
 application is recorded with its own limits rather than with a figure.
 
 ## What would reopen this

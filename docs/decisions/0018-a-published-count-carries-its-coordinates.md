@@ -70,6 +70,25 @@ in one sentence, and it is the lie the reader believes, because it is the one wr
 So: the clause carries the stamp, or it is stated at the commit, or it is not written. Nothing else is
 available, and the middle one is what the paragraph above now does.
 
+### The fifth instance, and what it measures is this rule's own difficulty
+
+**ADR-0001 published a table of five unstamped counts, and its first row was false one commit later —
+in the commit that published it.** The table names the four files with the worst prose-to-code ratio,
+and the whole point of the record that carries it is that those four were about to be moved. Every row
+reproduces exactly at `0ca0b3a^`; at `0ca0b3a`, `contract-record.ts` had gone from 434 lines of prose to
+30, and the row saying 434 was published in that same commit. The repository-wide figure beside it —
+19 761 against 34 902 — reproduces at no commit: its ratio was right, its two counts are each 126 away
+from what a classifier reproducing all four rows gives, no single tracked file accounts for the gap, and
+the cause is not established. Both are stamped now.
+
+**Two of the five instances are in the documents that carry this rule, and they are two units apart.**
+The third above is this record's own remeasurement, which did not survive its own paragraph; the fifth
+is ADR-0001's table. Neither was written by somebody who had not read the rule — both were written by
+somebody who had just written it. That is a better measurement of how hard the rule is to keep than any
+argument for it, and it is the reason the rule is stated as a *shape a sentence must take* rather than
+as a thing to remember: **a count is written with its coordinates in the same keystroke, or the next
+reader of that sentence is being lied to on a schedule nobody controls.**
+
 ### The cheapest form is no number at all
 
 **And the cheapest of the three is to need no number at all.** *Twenty-eight guards were left alone*

@@ -10,7 +10,7 @@
  * The project specification describes a contract page for a mature catalogue: the implementations
  * competing under the contract, each with its benchmark figures, its size and its tags. Today there is
  * one implementation per contract and **no reference machine**, so every benchmark list is empty -
- * `implementation-record.ts` says so and says why a figure from a developer laptop would be dishonest.
+ * ADR-0063 says so and says why a figure from a developer laptop would be dishonest.
  *
  * A third of the described page is therefore a table of nothing, and rendering an empty section is
  * worse than not rendering it: it tells a reader something is missing without telling them what. So

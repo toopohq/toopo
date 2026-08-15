@@ -31,8 +31,8 @@ The prose of this repository is not filler. It carries measurements, it names wh
 each decision, and it is what has stopped the same mistake being made three times. It is also in the
 same file as the code, and it does not have the same reader.
 
-Measured over the whole repository: 19 761 lines of prose against 34 902 of code, a ratio of 0.57.
-Four files carry it worst:
+Measured at `0ca0b3a^`, over the 227 tracked `.ts` files: 19 887 lines of prose against 35 028 of code,
+a ratio of 0.568. Four files carried it worst, at that same commit:
 
 ```
 packages/registry/contract-record.ts        prose 434 / code 123   3.53
@@ -44,6 +44,36 @@ packages/registry/implementation-record.ts  prose 271 / code 150   1.81
 Somebody opening `contract-record.ts` to read a type reads 434 lines of essay before reaching one.
 Nothing is to be deleted; the question is only where it lives, and under what address it can still be
 found from the line it explains.
+
+**Every row is stamped `0ca0b3a^` because this record first published them unstamped, and the first row
+was false one commit later — in the commit that published it.** That is the fault ADR-0018 exists
+against, committed by a record that cites it; [ADR-0018](0018-a-published-count-carries-its-coordinates.md)
+now carries it as its second measurement of how hard its own rule is to keep.
+
+The repository-wide figure first published here — 19 761 against 34 902 — is replaced rather than
+corrected in place. Its *ratio* was right, and its two counts are each 126 away from what the
+classifier that reproduces all four rows above gives at that commit. No single tracked file accounts for
+the gap and the cause is not established, so none is named.
+
+### The threshold, and why it subtracts an address
+
+A line carrying an `ADR-NNNN` is an address, not an essay, and counting it as prose punishes exactly the
+behaviour this format rewards. Measured at `032cb94`: `contract-record.ts` stood at a raw 0.276 and read
+as a regression against the 0.24 it reached in `0ca0b3a`, when twenty-six of its thirty-four prose lines
+are citations and its residual argument is eight lines over one hundred and twenty-three. So the
+threshold a file is held to is
+
+```
+(prose - lines carrying a record address) / code  <=  0.25
+```
+
+which is invariant to the growth of this folder: each new record adds one line to the raw numerator and
+one to the subtrahend, so a file cannot drift over the line by being well cited.
+
+**One limit, declared with the measurement rather than discovered later.** A line can carry both an
+address and an argument, and it will be subtracted. The hole is bounded — a line is a line, so a
+forty-line essay cannot hide behind a number — but it exists, and what closes it is the convention that
+a citation is one to three lines, not the counter.
 
 ## Considered Options
 
@@ -151,7 +181,11 @@ does with a template anyway.
 ## Consequences
 
 - A decision is one file, at a stable address, citable from the line it explains.
-- The four worst files can be brought down to a readable ratio with nothing deleted.
+- The four worst files came down to a readable ratio with nothing deleted. Measured at `c4f0426`:
+  `contract-record.ts` 0.065, `mutants.ts` 0.140, `implementation-record.ts` 0.147,
+  `every-contract.ts` 0.159, against the threshold of 0.25 stated above. The repository stands at
+  19 104 lines of prose against 35 249 of code, a raw ratio of 0.542, with the code unchanged from
+  `032cb94` — nothing was deleted, 850 lines of prose moved.
 - Somebody looking for *why* now has one place to look, rather than one place per file.
 - A `docs/` folder now exists in a repository whose rules enumerate what may be here. That enumeration
   gains decision records in the same change, because a rule broken knowingly while waiting for a future

@@ -25,9 +25,9 @@ done with them, and inventing a vocabulary is the obvious move.
 
 ### A case
 
-One case. Three fields are the catalogue's and are the only three the five tables share - measured by
-`every-contract.ts`, which says so in as many words - and the fourth is everything else the case
-holds, encoded rather than modelled.
+One case. Three fields are the catalogue's and are the only three the five tables share - measured, and
+[ADR-0081](0081-a-contract-is-the-folder-and-its-executable-halves-agree.md) says so in as many words -
+and the fourth is everything else the case holds, encoded rather than modelled.
 
 `data` is where this schema stops understanding a contract, and saying so is more useful than
 inventing a vocabulary that fits none of the five. The registry renders it; it does not interpret it.

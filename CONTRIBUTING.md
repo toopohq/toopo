@@ -103,7 +103,7 @@ What makes it worth a contribution is that the rule is easy to state and the tra
 **An alias is a query whose best answer is this contract, never a phrase that relates to it.** The
 property that every alias retrieves its own contract first is satisfied by a lying alias, because the
 alias is in the index and therefore matches the contract that declares it by construction. Eight were
-removed on that reading; the whole argument is in `packages/catalogue/every-contract.ts`.
+removed on that reading; the whole argument is ADR-0023.
 
 ## What exists of the validation pipeline, and what does not
 
