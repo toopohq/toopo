@@ -94,12 +94,14 @@ the class `coverage.test.ts` already refuses on the record.
 
 ## Consequences
 
-**A group and a case share one space of addresses**, because a page renders both as `#id` and a
-duplicate is a link that silently lands on the wrong element. `expectEveryCaseIsAddressed` widened to
-cover both rather than gaining a sibling — it always asked whether these strings can address something,
-and the grouping only added strings. It found two collisions the day it was widened: `exponent` on
-`number/parse@1` and `normalisation-is-not-applied` on `string/levenshtein@1`, each a group named after
-a case of its own table. The group is what moved, because the case identifier is the older statement.
+**The space it is asked over is the contract's cases *and* its groups**, because a page renders both as
+`#id` and a duplicate is a link that silently lands on the wrong element. Widening the question was the
+repair rather than writing a second guard: it was always *can these strings address something*, and the
+grouping only added strings. It found two the day it was widened - `exponent` on `number/parse@1` and
+`normalisation-is-not-applied` on `string/levenshtein@1`, each a group named after a case of its own
+table.
+
+The group is what moved, because the case identifier is the older statement.
 
 **`every-case-is-grouped` is the fourth guard the catalogue owns.** `groupingFaults` has one
 implementation and two callers, and the reason is not symmetry: `npm test` collects `contracts/` and

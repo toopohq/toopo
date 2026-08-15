@@ -35,21 +35,32 @@ Every case of block 4.4 carries an `id`: a **name**, in kebab-case, unique withi
 [ADR-0019](0019-a-guard-is-addressed-by-a-pair-and-its-title-is-a-sentence.md) generalised this rule to
 every guard in the catalogue.
 
-A name, and not a rendering of the case's own data. `"1e400" -> overflow` restates the row it
-addresses, so it can be wrong about it, and §4.4 makes every case one line of public documentation —
-where false documentation is worse than none. The published line goes on being rendered from the
-data; the identifier only addresses the case.
+How a case is addressed: a name, in kebab-case, unique within the contract, frozen with its major.
 
-The measurement that forced it: the two fallible contracts titled their guards out of the very data a
-specification battery injects into, so a mutant that changed an expectation reddened a guard under a
-title the unmutated contract does not contain, and left the calibrated one silent — a hundred guards
-of `number/parse@1` and eighty-six of `date/add@1` declared silent as an artefact of the apparatus.
-`array/group-by@1` carried an explicit name and did not have the problem.
+A **name**, and not a rendering of the case's own data - that distinction is the whole content of this
+decision. `"1e400" -> overflow` restates the row it addresses, so it can be wrong about it, and block
+4.4 makes every case one line of public documentation, where false documentation is worse than none.
+`overflow-past-the-largest-double` claims nothing about the data, so there is nothing for it to drift
+from. The published line goes on being rendered from the data; an identifier addresses a case, it does
+not describe it.
 
-The reason that outlives the instrument is the registry's: an API response citing a case, a URL
-anchor on a contract's page, a validation report naming the case a submission failed — each needs an
-address, and an address that changes breaks links. Renaming one therefore costs `name@2`, exactly as
-reshaping a reason set does.
+A name is also stable under mutation, which is what the instrument needs and what two of the three
+prototypes did not give it. They titled their guards by rendering the very data a specification battery
+injects into, so a mutant that changed an expectation reddened a guard under a title the unmutated
+contract does not contain and left the calibrated one silent. Measured: a hundred guards of
+`number/parse@1` and eighty-six of `date/add@1` stood declared silent in a block, as an artefact of the
+apparatus rather than a fact about either contract, because attribution identifies a guard by its title
+and could not see the one that spoke. `array/group-by@1` carried an explicit title and did not have the
+problem, which is the exemplar this generalises.
+
+The reason that outlives the instrument belongs to the registry rather than to any one contract. An API
+response that cites a case, a URL anchor on a contract's page, a validation report naming the case a
+submission failed - each of them needs an address, and an address that changes breaks links. So it is
+frozen with the major version, under the discipline a reason set already carries: the name is chosen
+once, and renaming one costs `name@2`.
+
+The shape itself is `identifier.ts`, because the registry addresses a case, a guard and a mutant by the
+same one and cannot import a test framework to find out what it looks like.
 
 ### The rule reapplied to a guard, where it had not been
 
