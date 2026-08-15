@@ -1,5 +1,8 @@
 /**
  * What every entry point runs, once it has said which registry it is talking to.
+ * ADR-0034 carries the property this file exists to keep: everything decided here is reachable from a
+ * guard, with no process, no working directory and no clock.
+ *
  *
  *   node packages/cli/toopo.ts init
  *   node packages/cli/toopo.ts add string/slugify

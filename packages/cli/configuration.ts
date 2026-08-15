@@ -1,5 +1,7 @@
 /**
  * `toopo.json` - what the user told us once, and the only setting `add` consults about their project.
+ * ADR-0039 is why this file can be written by an install rather than only by init.
+ *
  *
  * ---------------------------------------------------------------------------
  * One settable field, and the version that carries the next one

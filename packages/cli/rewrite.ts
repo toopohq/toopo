@@ -1,5 +1,7 @@
 /**
  * Pointing an import at where the file it names actually landed.
+ * ADR-0033 is the one spelling every specifier here is repointed to.
+ *
  *
  * This is the half of `toopo add` the registry can never help with, and `needs.ts` says so in as many
  * words: an import lives *inside* a file, the inside of a file is the executable half the registry

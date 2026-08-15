@@ -1,5 +1,7 @@
 /**
  * `toopo remove` - the way out, and the reason a tool needs one.
+ * ADR-0038 is what a removal is; ADR-0037 is why it needs a registry at all.
+ *
  *
  * Before this existed the only way to uninstall a feature was to edit `toopo.lock` by hand: the folder
  * could be deleted, and the next `toopo update --apply` put it straight back under the verdict

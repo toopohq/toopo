@@ -1,5 +1,7 @@
 /**
  * From what somebody typed to the contracts that answer it.
+ * ADR-0035 is what a search may answer, and the one rule under which it answers nothing.
+ *
  *
  * ---------------------------------------------------------------------------
  * Every word has to be answered, and that is what makes silence reachable

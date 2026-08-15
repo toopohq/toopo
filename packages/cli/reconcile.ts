@@ -1,5 +1,8 @@
 /**
  * What a project should hold, and what getting there costs the files already in it.
+ * ADR-0034 is the six answers below; ADR-0043 is why the held-back reasons are read rather than
+ * guessed.
+ *
  *
  * This is the middle both `update` and `remove` are built on, and it is one module because the two
  * commands differ in exactly two things: which features they call roots, and at which version those

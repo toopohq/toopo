@@ -1,5 +1,7 @@
 /**
  * Whether the folder this tool just wrote into is one the user's git will refuse to commit.
+ * ADR-0040 is what git is asked, and the two conventions pinned here rather than assumed.
+ *
  *
  * ---------------------------------------------------------------------------
  * A decision this repository had recorded, reversed on a measurement

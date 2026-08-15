@@ -1,5 +1,7 @@
 /**
  * What moves when the configured folder does, decided before a single byte does.
+ * ADR-0041 is what a folder change moves, and the one part it leaves.
+ *
  *
  * ---------------------------------------------------------------------------
  * The hole this closes, and why only `init` can close it

@@ -1,5 +1,7 @@
 /**
  * `toopo.lock` - what was installed, and the one check that needs nothing from us.
+ * ADR-0037 is what this file supports and what it cannot describe.
+ *
  *
  * The shape is the registry's `Lockfile`, imported rather than restated. Every part of it is already an
  * address or a digest the registry holds, which is what stops the installer from inventing a second

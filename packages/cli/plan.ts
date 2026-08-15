@@ -1,5 +1,7 @@
 /**
  * Where every file lands, decided before a single byte is written.
+ * ADR-0032 is where a feature lands and what its entry file is called.
+ *
  *
  * Nothing here touches a disk, a network or a clock. An install that discovered a collision after
  * writing four files would have already changed the user's project, so the whole of the arithmetic -

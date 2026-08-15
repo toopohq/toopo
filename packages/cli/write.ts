@@ -1,5 +1,7 @@
 /**
  * The only thing in this repository that changes somebody else's project, and the two phases that
+ * ADR-0039 is why the configuration goes through the two phases rather than beside them.
+ *
  * make a failure survivable.
  *
  * ---------------------------------------------------------------------------

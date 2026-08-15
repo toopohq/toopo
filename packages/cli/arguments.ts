@@ -1,5 +1,6 @@
 /**
  * What the user typed, read without a parser library.
+ * ADR-0036 is `THE_WRITE_DISCIPLINE` below, and why no command here gains a --dry-run.
  *
  * The repository is limited to four dev dependencies and a feature takes none at all, so an argument
  * parser is not available and is not wanted: the grammar below is two commands and two flags, and a

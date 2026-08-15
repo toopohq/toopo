@@ -1,5 +1,8 @@
 /**
  * What the user reads. The first surface of this product anybody will ever see.
+ * ADR-0033 is the import line this prints; ADR-0042 is what a sentence here may assert, and ADR-0043
+ * is how one is computed rather than written.
+ *
  *
  * Three rules, and they are the whole file.
  *

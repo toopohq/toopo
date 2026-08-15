@@ -1,5 +1,7 @@
 /**
  * `toopo add`, from a name the user typed to the bytes that will be written.
+ * ADR-0039 is the first contact, and the one project this refuses.
+ *
  *
  * **Nothing here writes.** Every fetch, every verification, every refusal and the whole cost happen
  * before `commit` is called, and that function's first phase can only abandon. An install that

@@ -1,5 +1,7 @@
 /**
  * `toopo update` - the command permanent rule 4 is about.
+ * ADR-0034 is what an update is and what it will not do.
+ *
  *
  * *Never update user code silently. Notification, readable diff, explicit acceptance.* The arithmetic
  * that answers it is `reconcile.ts`, shared with `remove`; what is here is the two things that make an
