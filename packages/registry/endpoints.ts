@@ -463,7 +463,7 @@ export const ANSWERED_NEEDS = new Set(ENDPOINTS.flatMap((endpoint) => endpoint.a
  * Why a client's port is not a port of this read API. Empty when it is, exactly and no more.
  *
  * A port belongs to its consumer - the installer's carries no `contract-binding` and the site's does,
- * and `cli/source.ts` argues at length that this is a design and not an accident. What does *not*
+ * and `packages/cli/source.ts` argues at length that this is a design and not an accident. What does *not*
  * belong to a consumer is the question of whether a port answers endpoints that exist, so it is asked
  * here rather than once per client. Two clients asking it identically is the catalogue's own bar for
  * sharing something; two clients holding different methods is why the ports themselves stay apart.

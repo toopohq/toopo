@@ -1,7 +1,7 @@
 /**
  * The battery over the generator: what a page says, and what it must never say.
  *
- * It is the eighteenth, and the first to inject into `site/`. The three that measure `cli/` ask what
+ * It is the eighteenth, and the first to inject into `site/`. The three that measure `packages/cli/` ask what
  * happens to somebody's files; this one asks what happens to somebody's *understanding*, which fails
  * differently: a wrong page does not break a build, it is believed.
  *

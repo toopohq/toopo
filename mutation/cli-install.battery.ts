@@ -7,7 +7,7 @@
  * files onto a disk and edits a lockfile, and a defect here is a defect in the one part of the product
  * a user cannot inspect before it runs.
  *
- * It injects into `cli/` and collects under that folder's own configuration, for the reasons
+ * It injects into `packages/cli/` and collects under that folder's own configuration, for the reasons
  * `registry-storage` and `validation-stage-1` already record and one of its own: every guard here
  * writes files, and a suite that writes at all, collected by the suite the instrument runs a hundred
  * times, would be a hundred rounds of file system activity attached to measurements about parsing
@@ -1220,8 +1220,8 @@ import type {
 
 export const battery: Battery = {
   name: 'cli-install',
-  contractPath: 'cli',
-  vitestConfig: 'cli/vitest.config.ts',
+  contractPath: 'packages/cli',
+  vitestConfig: 'packages/cli/vitest.config.ts',
   timeZone: 'UTC',
   calibrationMutant: 'C-01',
 
@@ -1241,7 +1241,7 @@ export const battery: Battery = {
   unreachableGuards: [],
 
   /**
-   * `cli/` is one folder measured by two batteries, and this is the half the other one holds.
+   * `packages/cli/` is one folder measured by two batteries, and this is the half the other one holds.
    *
    * Everything else `toopo update` added is silent here only in the sense that nothing was written for
    * it: measured, every guard of `update.test.ts` reddens under defects injected into the plan, the

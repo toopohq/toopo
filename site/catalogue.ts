@@ -8,7 +8,7 @@
  * The whole claim of this registry is that a frozen artefact travels as the canonical text its digest
  * was taken over, so a reader hashes what arrived and compares. `servedSnapshotFaults` exists because
  * *verify the digest* is the step a consumer skips when it is described instead of provided -
- * `response.ts` says so - and `cli/resolve.ts` is the consumer that already does it.
+ * `response.ts` says so - and `packages/cli/resolve.ts` is the consumer that already does it.
  *
  * A site is the consumer with the most to lose by skipping it. It publishes the definition to
  * everybody, so a snapshot that did not hash to its own address would become the catalogue in every

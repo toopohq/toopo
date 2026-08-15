@@ -32,7 +32,7 @@ export const isFrozenIdentifier = (candidate: string): boolean => FROZEN_IDENTIF
  * point in any title in the repository.
  *
  * **It lives here because two folders now read a guard title and neither owns the rule.** The
- * instrument reads one to address a cell; `cli/breakage.test.ts` reads one to resolve the guard a
+ * instrument reads one to address a cell; `packages/cli/breakage.test.ts` reads one to resolve the guard a
  * declared refusal names. A rule stated in two places is a rule that comes to disagree with itself,
  * and the header of this module already describes this exact shape in prose for `CaseGroup` - so
  * holding it as code is the smaller change, not the larger one. The debt this module recorded against

@@ -235,7 +235,7 @@ describe('the closure', () => {
 
   /**
    * The blobs are the *contract's* harness and not the implementation's file list, which is where this
-   * walk and the installer's part company: no command of `cli/` fetches a test file, a contract page
+   * walk and the installer's part company: no command of `packages/cli/` fetches a test file, a contract page
    * publishes every one of their digests, and permanent rule 5 says the suite is public in full.
    */
   it('every-file-a-published-contract-freezes-is-served', () => {

@@ -39,10 +39,10 @@
     "meta": "node run-vitest.ts run --config mutation/vitest.config.ts",
     "registry": "tsc -p packages/registry/tsconfig.json && node run-vitest.ts run --config packages/registry/vitest.config.ts",
     "validation": "tsc -p packages/validation/tsconfig.json && node run-vitest.ts run --config packages/validation/vitest.config.ts",
-    "cli": "tsc -p cli/tsconfig.json && node run-vitest.ts run --config cli/vitest.config.ts",
+    "cli": "tsc -p packages/cli/tsconfig.json && node run-vitest.ts run --config packages/cli/vitest.config.ts",
     "site": "tsc -p site/tsconfig.json && node run-vitest.ts run --config site/vitest.config.ts",
     "packaging": "tsc -p packaging/tsconfig.json && node run-vitest.ts run --config packaging/vitest.config.ts",
-    "toopo": "node cli/toopo.ts",
+    "toopo": "node packages/cli/toopo.ts",
     "site:build": "node site/build.ts",
     "build": "node packaging/build.ts",
     "prepack": "npm run build"

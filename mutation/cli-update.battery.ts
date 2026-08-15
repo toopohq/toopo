@@ -1,7 +1,7 @@
 /**
  * The battery over `toopo update`, the diff it shows and the two-phase write underneath it.
  *
- * It is the fourteenth, and the second to inject into `cli/`. `cli-install` measures what happens when
+ * It is the fourteenth, and the second to inject into `packages/cli/`. `cli-install` measures what happens when
  * files arrive in a project that has none; this measures what happens when they arrive on top of files
  * that are already there, some of which the user has edited - which is the command permanent rule 4 is
  * about and the only one where getting it wrong destroys work rather than refusing to do any.
@@ -551,8 +551,8 @@ const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'cli-update',
-  contractPath: 'cli',
-  vitestConfig: 'cli/vitest.config.ts',
+  contractPath: 'packages/cli',
+  vitestConfig: 'packages/cli/vitest.config.ts',
   timeZone: 'UTC',
   calibrationMutant: 'U-01',
 
@@ -573,7 +573,7 @@ export const battery: Battery = {
   unreachableGuards: [],
 
   /**
-   * The guards of `cli/` this battery leaves silent, and they are one folder measured by two batteries
+   * The guards of `packages/cli/` this battery leaves silent, and they are one folder measured by two batteries
    * rather than a coverage hole.
    *
    * `cli-install` injects into the plan, the rewrite, the port, the local adapter, the argument

@@ -336,7 +336,7 @@ export type ServedExport = {
  * exports off the installed source would have the installer publish an opinion drawn from code rather
  * than from the contract - it would print whatever the file happens to export, declared or not. Adding
  * `contract-binding` to the port would cost two round trips per install to obtain one string, and
- * would contradict the argument `cli/source.ts` records about why that endpoint is not there. This
+ * would contradict the argument `packages/cli/source.ts` records about why that endpoint is not there. This
  * costs no request at all: the index is already built from each contract's identity, and an export
  * name *is* identity - it is what somebody types into a search box.
  *

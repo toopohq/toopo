@@ -435,7 +435,7 @@ export type LockedFeature = {
  * was noticed - on the only file this project writes into somebody else's repository, whose whole
  * value is that it can be checked against a published fact.
  *
- * What stops it happening again is not this comment. `cli/lockfile.ts` validates through a record
+ * What stops it happening again is not this comment. `packages/cli/lockfile.ts` validates through a record
  * keyed by `keyof LockedFeature`, so a field added here does not compile until a check for it is
  * written - and the compiler asks the question at the moment the shape changes rather than leaving
  * it to be remembered.

@@ -6,7 +6,7 @@
  * The third reader of one source, and why it is not either client's
  * ---------------------------------------------------------------------------
  *
- * `cli/local-source.ts` serves the harness of every contract and mints a version that lands in
+ * `packages/cli/local-source.ts` serves the harness of every contract and mints a version that lands in
  * somebody's `toopo.lock`; it carries no `contract-binding`, because an installer turns a name into an
  * address through the index and never needs the digest. `site/local-source.ts` carries that binding and
  * the methodology, and serves one file per contract - the implementation a playground runs. **Neither
@@ -24,7 +24,7 @@
  * The frontier is unchanged, and this is the side of it the frontier is about
  * ---------------------------------------------------------------------------
  *
- * `cli/source.ts` says serialising this working tree stands in for a publication that has not happened
+ * `packages/cli/source.ts` says serialising this working tree stands in for a publication that has not happened
  * and is never a source an installation may be served from, because a checkout of this repository is a
  * third-party repository to everyone who is not the founder. That is a rule about **clients**, and both
  * client guards keep it: one module of each folder may reach the serialisation.

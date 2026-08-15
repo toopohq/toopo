@@ -20,7 +20,7 @@
  *
  * `npm install` of the archive resolves its one dependency, so this needs a populated npm cache or a
  * network. That is the same thing a user needs and it is why the dependency is worth naming: `toopo`
- * depends on `typescript` because `cli/rewrite.ts` repoints an import by parsing it, and parsing
+ * depends on `typescript` because `packages/cli/rewrite.ts` repoints an import by parsing it, and parsing
  * TypeScript with anything other than a TypeScript parser is what `packages/validation/` exists to refuse.
  * Nothing about *installing a feature* reaches a network - the catalogue travels in the archive - and
  * `the-archive-reaches-no-network` is the guard that says so.
@@ -44,8 +44,8 @@ import { existsSync, readFileSync, rmSync } from 'node:fs'
 import { basename, dirname, join, relative } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-import { aProject } from '../cli/temporary-project.js'
-import type { TemporaryProject } from '../cli/temporary-project.js'
+import { aProject } from '../packages/cli/temporary-project.js'
+import type { TemporaryProject } from '../packages/cli/temporary-project.js'
 
 const REPOSITORY = join(import.meta.dirname, '..')
 

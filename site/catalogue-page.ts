@@ -1,7 +1,7 @@
 /**
  * The page the whole catalogue fits on, which at five contracts is the whole site's navigation.
  *
- * It is deliberately not a search. Search is a unit of its own and `cli/search.ts` already holds the
+ * It is deliberately not a search. Search is a unit of its own and `packages/cli/search.ts` already holds the
  * matching rule it will be built on; what a catalogue of five needs is to be *read*, and a list a
  * reader can take in at once beats a box they have to guess a word for.
  *

@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { digestOfBytes, servedBytes } from '../packages/registry/canonical.js'
-import { THE_UNPUBLISHED_VERSION } from '../cli/local-source.js'
+import { THE_UNPUBLISHED_VERSION } from '../packages/cli/local-source.js'
 import { anInstalledArchive } from './the-archive.js'
 import type { InstalledArchive } from './the-archive.js'
 
@@ -182,7 +182,7 @@ describe('the archive somebody installs', () => {
    * files read by path are named because neither is ever imported: `registry.json` is opened by
    * `published.ts`, which is the one module that knows where it sits, and `package.json` is npm's.
    *
-   * **It found six the day it was written.** `cli/source.js`, `packages/registry/field-map.js` and four more
+   * **It found six the day it was written.** `packages/cli/source.js`, `packages/registry/field-map.js` and four more
    * were emitted because something is *typed* against them, shipped because `files` said `dist`, and
    * loaded by nothing - 44 kB of 362 kB. `build.ts` now drops them, and this is what says so.
    *

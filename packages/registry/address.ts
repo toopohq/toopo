@@ -32,7 +32,7 @@ import { isFrozenIdentifier } from '../catalogue/identifier.js'
  * pretending otherwise would be an abstraction no contract fills.
  *
  * **The insurance was measured rather than trusted.** Widening this union to `'typescript' | 'python'`
- * and typechecking all six projects gives exactly one error - `THE_WORDS_FOR` in `cli/search.ts`,
+ * and typechecking all six projects gives exactly one error - `THE_WORDS_FOR` in `packages/cli/search.ts`,
  * which is total over it by construction and says so. One site, in a repository of fifty-odd modules
  * that pass an address around, is what a coordinate written before it had a second value buys.
  */
@@ -149,7 +149,7 @@ export type MutantAddress = {
  * day it is worth taking, is a *layout* - a column states a value once for a whole screen and is still
  * one spelling - and never a second string.
  *
- * **The disk path is the one rendered thing that does not carry it.** That is argued in `cli/plan.ts`
+ * **The disk path is the one rendered thing that does not carry it.** That is argued in `packages/cli/plan.ts`
  * where the path is built, because that is where somebody would go to make the two agree.
  */
 export const renderContract = (address: ContractAddress): string =>

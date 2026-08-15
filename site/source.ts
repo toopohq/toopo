@@ -5,7 +5,7 @@
  * A second port, and why it is not the first one widened
  * ---------------------------------------------------------------------------
  *
- * `cli/source.ts` states the frontier once and for all: serialising this working tree stands in for a
+ * `packages/cli/source.ts` states the frontier once and for all: serialising this working tree stands in for a
  * publication that has not happened, and it is never a source of distribution. Everything it says holds
  * here unchanged, and `local-source.ts` beside this file is the one thing on the far side of it.
  *
@@ -60,7 +60,7 @@ import type { ServedMethodology } from '../packages/registry/verifiability.js'
  * Everything the generator may ask of a registry.
  *
  * Every method answers with what the endpoint answers or with `null`, and `null` means *this registry
- * holds no such thing* rather than *something went wrong* - the reading `cli/source.ts` fixes and this
+ * holds no such thing* rather than *something went wrong* - the reading `packages/cli/source.ts` fixes and this
  * port inherits.
  */
 export type RegistrySource = {
@@ -147,7 +147,7 @@ export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {
     because:
       'search is a unit of its own, and at five contracts the catalogue page answers the same ' +
       'question better: a box asks somebody to guess a word for a list they could have read. A ' +
-      'ranking here would also be a second implementation of the one `cli/search.ts` holds, for five ' +
+      'ranking here would also be a second implementation of the one `packages/cli/search.ts` holds, for five ' +
       'lines that fit on a screen',
     until:
       'the catalogue stops fitting on one screen - measured as the front page listing more contracts ' +
@@ -161,7 +161,7 @@ export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {
  * nobody imports.
  *
  * A guard requires the local adapter to be the only module of this folder that reaches the
- * serialisation. It is the same guard `cli/` carries and it is written a second time rather than
+ * serialisation. It is the same guard `packages/cli/` carries and it is written a second time rather than
  * shared, because what it keeps is a property of *this folder* - that one module here knows about the
  * working tree - and a shared guard would be one statement about two folders, green whenever either
  * one of them happened to be clean.

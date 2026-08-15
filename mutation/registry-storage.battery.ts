@@ -777,7 +777,7 @@ const mutants: readonly Mutant[] = [
    * It is the mutant the whole shape of `emit.ts` exists against, and it is the plausible one rather
    * than a wrong one: `packaging/freeze.ts` records the installer's walk and is right to, so somebody
    * reading both writes the same rule here. Under it every implementation snapshot still names its own
-   * file, so `toopo add` installs correctly and the whole of `cli/` stays green - what disappears is
+   * file, so `toopo add` installs correctly and the whole of `packages/cli/` stays green - what disappears is
    * the harness, twenty-four blobs whose digests a contract page publishes and whose absence permanent
    * rule 5 is about.
    *

@@ -1,7 +1,7 @@
 /**
  * The battery over `toopo search`: what a query matches, what it must not, and the order.
  *
- * It is the fifteenth, and the third to inject into `cli/`. The other two measure what happens to
+ * It is the fifteenth, and the third to inject into `packages/cli/`. The other two measure what happens to
  * files; this one measures the only command that touches none - and the one whose failure mode is not
  * a broken project but a lost reader.
  *
@@ -377,8 +377,8 @@ export const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'cli-search',
-  contractPath: 'cli',
-  vitestConfig: 'cli/vitest.config.ts',
+  contractPath: 'packages/cli',
+  vitestConfig: 'packages/cli/vitest.config.ts',
   timeZone: 'UTC',
   calibrationMutant: 'S-01',
 
@@ -401,7 +401,7 @@ export const battery: Battery = {
   unreachableGuards: [],
 
   /**
-   * `cli/` is now one folder measured by four batteries, and this is the three quarters the other
+   * `packages/cli/` is now one folder measured by four batteries, and this is the three quarters the other
    * three hold.
    *
    * `toopo remove` and `toopo list` added twenty-five guards and **all twenty-four that touch a

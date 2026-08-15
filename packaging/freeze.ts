@@ -25,7 +25,7 @@
  * installable, and appears in the refusals answer instead - which is the registry's own shape rather
  * than a special case here.
  *
- * The harness is not fetched, and `artefact.ts` says why in full: no command of `cli/` ever asks for
+ * The harness is not fetched, and `artefact.ts` says why in full: no command of `packages/cli/` ever asks for
  * it, and carrying it would be shipping bytes nothing reads.
  *
  * ---------------------------------------------------------------------------
@@ -59,12 +59,12 @@ import { renderContract, renderImplementation } from '../packages/registry/addre
 import type { ContractAddress } from '../packages/registry/address.js'
 import type { ServedBlob, ServedSnapshot } from '../packages/registry/response.js'
 import type { FrozenImplementation } from '../packages/registry/snapshot.js'
-import type { ArtefactBindings, ArtefactBlob, ServedArtefact } from '../cli/artefact.js'
-import { ARTEFACT_FORMAT } from '../cli/artefact.js'
-import { deciding, withoutAsking } from '../cli/fixpoint.js'
-import { gatherHoldings, heldAt, refused } from '../cli/resolve.js'
-import type { Found, RootAt } from '../cli/resolve.js'
-import type { HeldRegistry, RegistrySource } from '../cli/source.js'
+import type { ArtefactBindings, ArtefactBlob, ServedArtefact } from '../packages/cli/artefact.js'
+import { ARTEFACT_FORMAT } from '../packages/cli/artefact.js'
+import { deciding, withoutAsking } from '../packages/cli/fixpoint.js'
+import { gatherHoldings, heldAt, refused } from '../packages/cli/resolve.js'
+import type { Found, RootAt } from '../packages/cli/resolve.js'
+import type { HeldRegistry, RegistrySource } from '../packages/cli/source.js'
 
 export class TheRegistryContradictsItself extends Error {
   constructor(faults: readonly string[]) {

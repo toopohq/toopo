@@ -41,7 +41,7 @@ const textOf = (path: string): string =>
  * What `toopo add` copies, taken from the installer's own answer rather than from a list.
  *
  * `referenceImplementationOf` is what the registry serves as an implementation's files, and it is what
- * `cli/plan.ts` turns into destinations. Reading it here is what makes the perimeter below a derivation
+ * `packages/cli/plan.ts` turns into destinations. Reading it here is what makes the perimeter below a derivation
  * instead of a declaration nothing keeps - and the day a contract gains a second file, that file is in
  * this list before anybody has decided anything about it.
  */

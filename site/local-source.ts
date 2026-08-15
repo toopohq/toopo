@@ -2,7 +2,7 @@
  * The only implementation of this folder's `RegistrySource`, and the only module allowed to reach the
  * serialisation of this working tree.
  *
- * `source.ts` states the frontier and `cli/local-source.ts` states it once more from the installer's
+ * `source.ts` states the frontier and `packages/cli/local-source.ts` states it once more from the installer's
  * side; neither is weakened here. What this file does is stand in for a publication that has not
  * happened, so that pages can be built against real contracts before a server exists to build them
  * against.
@@ -78,7 +78,7 @@ import type { RegistrySource } from './source.js'
 /**
  * The version this stand-in binds its implementations at, visibly not a published one.
  *
- * **Written here and also in `cli/local-source.ts`, deliberately.** A client may not import another
+ * **Written here and also in `packages/cli/local-source.ts`, deliberately.** A client may not import another
  * client, and the registry has no notion of a stand-in - a published registry mints real versions - so
  * there is no home that would make it one constant. What keeps the two in step is a guard rather than
  * a comment: `source.test.ts` reads the installer's and requires it to be this.

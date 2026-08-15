@@ -34,7 +34,7 @@
  * `packaging/freeze.ts` records what an *installation* asks for, by running the installer's own walk;
  * that is the right shape for an archive, which carries what `toopo` needs. This answers a different
  * question - what a *client* can ask - and the two part company at the harness: a contract snapshot
- * names every file of its test suite, no command of `cli/` ever fetches one, and permanent rule 5 says
+ * names every file of its test suite, no command of `packages/cli/` ever fetches one, and permanent rule 5 says
  * they are public in full. A tree built from the installer's walk would serve a contract page's own
  * digests as 404s.
  *

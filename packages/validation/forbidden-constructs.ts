@@ -143,7 +143,7 @@ export type ImportSpecifier = { readonly text: string; readonly at: Node }
  *
  * The parameter is the syntax tree and not a whole `ParsedSource`, because the syntax tree is all this
  * reads - it never asks where a name is bound. A second consumer is what made the difference visible:
- * `cli/rewrite.ts` has a file and no submission, since repointing an import at a shared copy is a
+ * `packages/cli/rewrite.ts` has a file and no submission, since repointing an import at a shared copy is a
  * question about text rather than about scope, and requiring the wider type would have meant handing it
  * a `bindingOf` it has nothing to answer with. A `ParsedSource` still satisfies this.
  */

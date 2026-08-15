@@ -37,8 +37,8 @@
  * ---------------------------------------------------------------------------
  *
  * A battery edits one folder. Five of the fifteen guards here are about files in three other places -
- * the repository's own `package.json`, `cli/artefact.ts`, and the compiled closure of
- * `cli/published.ts` - so no edit to `packaging/` can redden them whatever it does. That is a larger
+ * the repository's own `package.json`, `packages/cli/artefact.ts`, and the compiled closure of
+ * `packages/cli/published.ts` - so no edit to `packaging/` can redden them whatever it does. That is a larger
  * share than any other battery declares, and it is a fact about this folder rather than about these
  * guards: `packaging/` is four modules, and what they are guarded against lives upstream of all four.
  * Each one is named below with the file its failure condition sits in.
@@ -212,7 +212,7 @@ const mutants: readonly Mutant[] = [
     [
       buildFile(
         THE_WALK_STARTS_AT_THE_COMPILED_ENTRY_POINT,
-        `const reachable = reachableFrom(join(REPOSITORY, 'cli', 'published.ts'))`,
+        `const reachable = reachableFrom(join(REPOSITORY, 'packages', 'cli', 'published.ts'))`,
       ),
     ],
     killed([
@@ -426,7 +426,7 @@ export const battery: Battery = {
       guards: ['the-archive-is-visibly-unpublished'],
       reason:
         'it reads the repository\'s own `package.json` against `THE_UNPUBLISHED_VERSION` in ' +
-        '`cli/local-source.ts`, and a battery may edit only the folder under measurement',
+        '`packages/cli/local-source.ts`, and a battery may edit only the folder under measurement',
     },
     {
       guards: [
@@ -435,18 +435,18 @@ export const battery: Battery = {
         'an-artefact-that-is-not-there-is-refused-with-the-sentence-a-user-can-act-on',
       ],
       reason:
-        'each asks what `cli/artefact.ts` refuses, and that file is what a published `toopo` reads ' +
+        'each asks what `packages/cli/artefact.ts` refuses, and that file is what a published `toopo` reads ' +
         'the catalogue with rather than anything this folder writes it with',
     },
     {
       guards: ['the-archive-reaches-no-network'],
       reason:
-        'the archive\'s JavaScript is the compiled closure of `cli/published.ts`, and no module of ' +
+        'the archive\'s JavaScript is the compiled closure of `packages/cli/published.ts`, and no module of ' +
         'this repository that any program compiles reaches a socket - measured, the one `fetch(` ' +
         'here is in `packages/validation/fixtures/refused.ts`, which is excluded from every program because ' +
         'most of what it does is a type error as well as a refusal. So widening what the build ' +
         'compiles cannot put a networked module in the archive, and what would redden this is an ' +
-        'import `cli/` would have to gain',
+        'import `packages/cli/` would have to gain',
     },
   ],
 

@@ -463,7 +463,7 @@ export type ProfileRecord = {
  * not say which. The commit, because a record grows, and without it a reader who re-measures and gets
  * something else cannot tell *this figure was wrong* from *the tree has moved*. So what follows is
  * **the canonical text of a whole record in bytes, divided by 1000, measured at `da0c3ca`** - the
- * canonical text because that is the form a digest is taken over, and 1000 because `cli/report.ts`
+ * canonical text because that is the form a digest is taken over, and 1000 because `packages/cli/report.ts`
  * prints a kilobyte that way and one repository holds one kilobyte.
  *
  * The five records are 35.7, 53.7, 47.5, 34.6 and 45.0 kB, in the order `theFive` holds them, and
@@ -493,7 +493,7 @@ export type ProfileRecord = {
  * records come to 32.9, 50.8, 45.7, 32.9 and 42.7 kB against a published 32.1, 49.6, 44.6, 32.1 and
  * 41.7, and the omissions to 1772.2 kB against a published 1730.6. The ratio is 1.024 throughout,
  * and the *share* reproduced exactly - a ratio cancels the divisor, which is how the error survived
- * beside a figure that checked out. `cli/report.ts` divides by 1000 and C-44 of `cli-install` exists
+ * beside a figure that checked out. `packages/cli/report.ts` divides by 1000 and C-44 of `cli-install` exists
  * to kill an implementation that does not, so the repository already executed the decimal kilobyte
  * one folder from a comment publishing the binary one.
  *

@@ -6,7 +6,7 @@
  * A port belongs to its consumer, and this consumer is the registry itself
  * ---------------------------------------------------------------------------
  *
- * `cli/source.ts` carries four endpoints and refuses `contract-binding` by argument; `site/source.ts`
+ * `packages/cli/source.ts` carries four endpoints and refuses `contract-binding` by argument; `site/source.ts`
  * carries six and refuses nothing it needs. Both are narrow because a port derived from a consumer
  * grows exactly when that consumer needs something. The consumer here is the thing that writes down
  * every answer a client could ever ask for, so its port is not narrow at all - it is `ENDPOINTS`, and
@@ -14,7 +14,7 @@
  * only ever be checked for naming endpoints that exist; this one is checked for naming all of them.
  *
  * It is synchronous, and that is the same reasoning `site/source.ts` runs on rather than a departure
- * from `cli/source.ts`: what makes a port asynchronous is a transport under it, and there is none
+ * from `packages/cli/source.ts`: what makes a port asynchronous is a transport under it, and there is none
  * under a build that reads the working tree it is standing in.
  *
  * ---------------------------------------------------------------------------
@@ -49,7 +49,7 @@ import type { ServedMethodology } from './verifiability.js'
  * Everything this registry can be asked, as a build asks it.
  *
  * `null` means *this registry holds no such thing*, which an emitted tree spells by having no file at
- * that address - the reading `cli/source.ts` fixed for a transport, arriving where there is none.
+ * that address - the reading `packages/cli/source.ts` fixed for a transport, arriving where there is none.
  */
 export type ReadApi = {
   /** Every contract the registry knows, installable or refused. */
@@ -111,7 +111,7 @@ export const NOT_ANSWERED: Readonly<Record<string, DeferredEndpoint>> = {
 /**
  * One question a client asks, carrying the arguments it was asked with.
  *
- * A union rather than a method and a string, for the reason `cli/fixpoint.ts` gives: the alternative
+ * A union rather than a method and a string, for the reason `packages/cli/fixpoint.ts` gives: the alternative
  * is a key that has to be parsed back into an address before the port can be asked, which is a second
  * parser of `renderContract`.
  */

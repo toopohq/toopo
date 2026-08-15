@@ -14,7 +14,7 @@
  * produce an archive whose artefact is older than its code, or whose code is older than its sources.
  *
  * **The only thing in this folder that touches a disk**, which is the line `site/build.ts` already
- * draws for the generator and `cli/command.ts` for the installer. `freeze.ts` builds the artefact as a
+ * draws for the generator and `packages/cli/command.ts` for the installer. `freeze.ts` builds the artefact as a
  * value, so the guard that checks it needs no working directory and no build.
  *
  * The output is not committed. A built artefact in the history would be a second copy of the catalogue
@@ -41,8 +41,8 @@ const { spawnSync } = await import('node:child_process')
 const { mkdirSync, readdirSync, rmSync, statSync, writeFileSync } = await import('node:fs')
 const { join, relative } = await import('node:path')
 
-const { ARTEFACT_FILE } = await import('../cli/artefact.ts')
-const { localSource } = await import('../cli/local-source.ts')
+const { ARTEFACT_FILE } = await import('../packages/cli/artefact.ts')
+const { localSource } = await import('../packages/cli/local-source.ts')
 const { canonical } = await import('../packages/registry/canonical.ts')
 const { frozenArtefact } = await import('./freeze.ts')
 const { reachableFrom } = await import('./reachable.ts')

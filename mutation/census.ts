@@ -49,7 +49,7 @@
  * `TypeError: Cannot read properties of undefined (reading 'config')` - deterministically, over
  * twenty runs of each spelling: **28 assertions** under the contracts' configuration, which are the
  * five `.test-d.ts` files tsc collects in the parent process where no worker is involved, and **none
- * at all** under `cli/`, which declares no typecheck files for that process to collect.
+ * at all** under `packages/cli/`, which declares no typecheck files for that process to collect.
  * `mutation/paths.ts` carries the measurement and closes it by pinning the spelling.
  *
  * Those two figures used to be written *of 472* and *of 170*, and the second went false the day this
@@ -260,27 +260,27 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/validation/typescript-api.test.ts': 2,
   },
 
-  'cli/vitest.config.ts': {
-    'cli/arguments.test.ts': 12,
-    'cli/breakage.test.ts': 12,
-    'cli/command.test.ts': 1,
-    'cli/configuration.test.ts': 9,
-    'cli/diff.test.ts': 10,
-    'cli/emitted-registry.test.ts': 6,
-    'cli/http-source.test.ts': 5,
-    'cli/ignored.test.ts': 3,
-    'cli/install.test.ts': 21,
-    'cli/list.test.ts': 4,
-    'cli/plan.test.ts': 6,
-    'cli/relocate.test.ts': 10,
-    'cli/remove.test.ts': 13,
-    'cli/report.test.ts': 12,
-    'cli/rewrite.test.ts': 7,
-    'cli/search.test.ts': 12,
-    'cli/source.test.ts': 6,
-    'cli/remove-directory.test.ts': 1,
-    'cli/update.test.ts': 25,
-    'cli/write.test.ts': 8,
+  'packages/cli/vitest.config.ts': {
+    'packages/cli/arguments.test.ts': 12,
+    'packages/cli/breakage.test.ts': 12,
+    'packages/cli/command.test.ts': 1,
+    'packages/cli/configuration.test.ts': 9,
+    'packages/cli/diff.test.ts': 10,
+    'packages/cli/emitted-registry.test.ts': 6,
+    'packages/cli/http-source.test.ts': 5,
+    'packages/cli/ignored.test.ts': 3,
+    'packages/cli/install.test.ts': 21,
+    'packages/cli/list.test.ts': 4,
+    'packages/cli/plan.test.ts': 6,
+    'packages/cli/relocate.test.ts': 10,
+    'packages/cli/remove.test.ts': 13,
+    'packages/cli/report.test.ts': 12,
+    'packages/cli/rewrite.test.ts': 7,
+    'packages/cli/search.test.ts': 12,
+    'packages/cli/source.test.ts': 6,
+    'packages/cli/remove-directory.test.ts': 1,
+    'packages/cli/update.test.ts': 25,
+    'packages/cli/write.test.ts': 8,
   },
 
   'site/vitest.config.ts': {

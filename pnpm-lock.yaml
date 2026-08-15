@@ -24,6 +24,8 @@ importers:
 
   packages/catalogue: {}
 
+  packages/cli: {}
+
   packages/registry: {}
 
   packages/validation: {}

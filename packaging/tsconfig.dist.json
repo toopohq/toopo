@@ -3,10 +3,10 @@
   "compilerOptions": {
     "noEmit": false,
     "allowImportingTsExtensions": false,
-    "rootDir": "..",
+    "rootDir": "../packages",
     "outDir": "../dist",
     "types": ["node"]
   },
   "include": [],
-  "files": ["../cli/published.ts"]
+  "files": ["../packages/cli/published.ts"]
 }

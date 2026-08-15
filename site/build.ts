@@ -8,7 +8,7 @@
  * ---------------------------------------------------------------------------
  *
  * Every page is a value and every guard builds one in memory. That is not an economy: it is the
- * property `cli/command.ts` already keeps for the installer - *everything this tool decides is
+ * property `packages/cli/command.ts` already keeps for the installer - *everything this tool decides is
  * reachable from a guard, with no process, no working directory and no clock* - and this file is where
  * it stops, deliberately and in one place.
  *

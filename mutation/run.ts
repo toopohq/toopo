@@ -264,7 +264,7 @@ export type RunResult = {
  *
  * **The shape and the separator are imported rather than restated**, which closes the debt
  * `packages/catalogue/identifier.ts` recorded against this file. What forced it is that a second folder began
- * reading a guard title: `cli/breakage.test.ts` resolves the guard each declared refusal names, and a
+ * reading a guard title: `packages/cli/breakage.test.ts` resolves the guard each declared refusal names, and a
  * third copy of one rule is how the three come to disagree.
  */
 /* The identifier shape and the separator are `packages/catalogue/identifier.ts`'s, imported above. */

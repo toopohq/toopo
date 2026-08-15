@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest'
 
 import { ENDPOINTS, portFaults } from '../packages/registry/endpoints.js'
 import { NEEDS } from '../packages/registry/needs.js'
-import { THE_UNPUBLISHED_VERSION as THE_INSTALLERS_VERSION } from '../cli/local-source.js'
+import { THE_UNPUBLISHED_VERSION as THE_INSTALLERS_VERSION } from '../packages/cli/local-source.js'
 import { THE_UNPUBLISHED_VERSION, localSource } from './local-source.js'
 import { NOT_THIS_UNIT, THE_ENDPOINT_BEHIND } from './source.js'
 

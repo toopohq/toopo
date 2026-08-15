@@ -2,7 +2,7 @@
  * The battery over `toopo remove`, the listing beside it, and the two holes a removal found in
  * `update`.
  *
- * It is the sixteenth, and the fourth to inject into `cli/`. **It is also the only one over a command
+ * It is the sixteenth, and the fourth to inject into `packages/cli/`. **It is also the only one over a command
  * that deletes somebody's files**, which changes what a green suite is worth here: every other command
  * in this folder fails by refusing to do something, and this one can fail by doing too much, silently,
  * to a project that then looks exactly as it should.
@@ -398,8 +398,8 @@ export const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'cli-remove',
-  contractPath: 'cli',
-  vitestConfig: 'cli/vitest.config.ts',
+  contractPath: 'packages/cli',
+  vitestConfig: 'packages/cli/vitest.config.ts',
   timeZone: 'UTC',
   calibrationMutant: 'R-01',
 
@@ -422,7 +422,7 @@ export const battery: Battery = {
   unreachableGuards: [],
 
   /**
-   * `cli/` is now one folder measured by four batteries, and this is the three quarters the other
+   * `packages/cli/` is now one folder measured by four batteries, and this is the three quarters the other
    * three hold.
    *
    * The division follows the commands rather than the files: `cli-install` holds what happens when

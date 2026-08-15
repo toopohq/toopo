@@ -61,7 +61,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
 /**
  * The runtimes the published command runs on, derived from what it calls rather than chosen.
  *
- * Two APIs set it and they agree. `cli/diff.ts` imports `diff` from `node:util`, which
+ * Two APIs set it and they agree. `packages/cli/diff.ts` imports `diff` from `node:util`, which
  * `@types/node@26.1.2` declares `@since v22.15.0`; `typescript-imports.ts` calls `registerHooks` from
  * `node:module`, declared `@since v22.15.0` by the same types. Neither is in the range's gift: they are
  * read off the types this repository installs, and a module needing more is what moves this line.
@@ -74,7 +74,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * **What this range does not cover, stated because the field is one and the populations are two.** A
  * consumer installs compiled JavaScript and 22.15 is enough for them. A contributor runs
  * `node run-vitest.ts`, which needs a runtime that strips types with no flag - a later version than
- * this, as `cli/diff.ts` says, and one no source in this repository names. It is not named here either,
+ * this, as `packages/cli/diff.ts` says, and one no source in this repository names. It is not named here either,
  * because the only machine that could measure it runs v24.15.0 and a number nobody measured is the
  * class this project spends its length removing. What would close it is a run on a 22.x runtime.
  */

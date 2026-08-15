@@ -43,7 +43,7 @@
  *
  * `../../string/pad/reference.js` is written by `clamp` and by `sign`, which is how a published feature
  * names another one: relative to the folder every contract of the catalogue sits in. What the installer
- * does to that specifier is the measurement `cli/` exists to make.
+ * does to that specifier is the measurement `packages/cli/` exists to make.
  */
 
 import type { ContractAddress } from './address.js'

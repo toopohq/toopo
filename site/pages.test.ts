@@ -22,7 +22,7 @@ import { theSite } from './site.js'
  * The pages themselves, built from the five contracts of this working tree.
  *
  * They are built in memory. Nothing here writes a file, which is what keeps everything the generator
- * decides reachable from a guard - the property `cli/command.ts` states for the installer, and the one
+ * decides reachable from a guard - the property `packages/cli/command.ts` states for the installer, and the one
  * `build.ts` is the single exception to.
  */
 

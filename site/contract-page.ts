@@ -24,7 +24,7 @@
  * Bytes exactly, not rounded
  * ---------------------------------------------------------------------------
  *
- * `cli/report.ts` renders `4.2 kB`, and it is right to: a terminal line is read in passing. A page has
+ * `packages/cli/report.ts` renders `4.2 kB`, and it is right to: a terminal line is read in passing. A page has
  * room for the number, and the number is the argument. `readableBytes` stays where it is.
  */
 

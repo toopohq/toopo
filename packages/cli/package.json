@@ -1,0 +1,5 @@
+{
+  "name": "@toopo/cli",
+  "private": true,
+  "type": "module"
+}

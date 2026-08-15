@@ -25,7 +25,7 @@ import { eachContract, theFive } from './the-five.js'
  * way in - which is true of all five, none of which depends on anything.
  *
  * `path` and `served.path` coincide here and are two fields for a reason: an installer that renames a
- * file or points an import at a shared copy makes them differ, and `cli/` is where that happens.
+ * file or points an import at a shared copy makes them differ, and `packages/cli/` is where that happens.
  */
 const lockedFeatureOf = (
   implementation: ReturnType<typeof referenceImplementationOf>,
