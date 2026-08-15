@@ -32,6 +32,11 @@ therefore could not render `parseNumber('  42  ')` at all — it could only list
 
 What a caller writes between the parentheses, in order.
 
+**The fields of a case begin with the parameter names of the answer's signature, in the signature's
+order, and what remains is the answer.** Measured over the five, on all seven of their case tables:
+seven of seven, in order, no exception — and the imagined sixth contract, written before the rule
+existed, already obeys it. `serialise.ts` refuses a contract where it stops being true.
+
 **Read off `text` rather than declared beside it**, by `packages/registry/signature.ts`, which says why
 the derivation is what makes the field affordable. It is here because a case of block 4.4 is a *call*
 and nothing in this record could say so: `data` holds the fields of a case and the schema deliberately
@@ -63,6 +68,12 @@ no page rendered with a playground quietly missing.
 A value read off what it describes has no second statement to disagree with, which is the reason
 `implementation-record.ts` refuses a declared depth and `serialise.ts` refuses a declared sample count.
 What checks the reading is not a copy of it but a hundred and eighty-seven cases.
+
+It is the first defect the site found in this schema, and the list of all of them is under rule 1
+of `CLAUDE.md`. A second arrived in the same unit and is smaller: **no need in `needs.ts` covered listing the
+catalogue.** Every `the-site` entry described rendering *one* contract, one refusal, one methodology,
+or answering a query; the front page — the whole of the site's navigation at five contracts — had
+nothing behind it, while the generator consumed `contract-index` anyway.
 
 ## Confirmation
 

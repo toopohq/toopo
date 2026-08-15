@@ -8,6 +8,9 @@
  * are stated where the rule was settled: `every-contract.ts` for a case, `mutation/run.ts` for a
  * guard, `CaseGroup` below for a group.
  *
+ * ADR-0017 is why an address is a name and never a rendering of the data it addresses; ADR-0019 is why
+ * a guard needs an address and a sentence, and why the separator below is the one it is.
+ *
  * It lives in a module of its own for one reason, and it is the reason `every-contract.ts` gives for
  * what belongs to the catalogue at all: *what it says belongs to the registry rather than to any one
  * feature*. `every-contract.ts` imports `expect` at its top level, because most of what it holds is a

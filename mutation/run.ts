@@ -1,6 +1,10 @@
 /**
  * The mutation instrument.
  *
+ * ADR-0019 is why a guard carries an identifier at all, and it is the record `calibrate()` below
+ * enforces: a title with no well-formed address, or two guards of one contract answering to one, are
+ * refused there because no suite can see either.
+ *
  * It exists because a verdict that cannot be replayed is an opinion. Two sessions were spent
  * rebuilding an instrument that should have been a file, and the batteries it produced lived only
  * in a conversation. This folder is the correction: the defects, the command that injects them, and

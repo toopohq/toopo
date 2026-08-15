@@ -3,6 +3,11 @@
  *
  * Read this before adding anything here.
  *
+ * Four decisions rule what is below, each with its measurements and its refused alternatives:
+ * ADR-0017 for how a case is addressed, ADR-0020 for the shape a fallible contract answers in,
+ * ADR-0021 for what a universal property settles and what it leaves to a named case, and ADR-0023 for
+ * what `SEARCH_ALIAS_RULE` refuses.
+ *
  * Whatever lives in this file is part of the public surface of every contract that imports it, and
  * inherits their discipline of freezing. A published major is frozen for life, so a field added here,
  * a literal removed here or a name changed here is not one edit: it is a breaking change to the whole

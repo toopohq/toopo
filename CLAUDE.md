@@ -17,7 +17,7 @@ every change made here.
 **The five hand-written prototype contracts are done, and with them the stage that produced the
 format.** They were written with no shared abstraction so that the format would emerge from
 repetition instead of being designed up front; what they turned out to repeat identically now lives
-in `catalogue/`, and the checklist a sixth contract is measured against is `contractAnatomy` in that
+in `packages/catalogue/`, and the checklist a sixth contract is measured against is `contractAnatomy` in that
 same file. The uncertainty of this project was in the contract format, and it has been spent.
 
 The registry's first three pieces are written — data schema, immutable storage, read API — and beside
@@ -178,241 +178,6 @@ two, which puts a twenty-thousand-file limit at 1 817 contracts instead of ten t
   slug libraries agree on seven, so nothing about its answers is true and every one of them has to be
   argued for.
 - Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
-
-## Error convention — settled, catalogue-wide
-
-A fallible function returns `T | null` and publishes a diagnostic export **beside** it:
-`describe<X>Failure(...)`, returning a reason literal owned by that contract, or `null`. No type is
-shared between features — each contract declares its own literals.
-
-Every contract that publishes a diagnostic carries a **coupling property**: a call fails exactly
-when it has a description. Without it the two exports can drift, and an implementation that
-optimises the answering path while leaving the diagnostic one alone will diverge on any input the
-named cases do not cover.
-
-Three forms were built and measured across both prototype contracts. The union
-`{ ok, value } | { ok, reason }` ties this one on detection, so the error convention is not a
-verification question. Read that tie at the strength it was actually measured: on `date/add@1` it is
-a full-battery tie, every mutant under both lenses; on `number/parse@1` it rests on four mutants
-under one lens. What decided it is that this form is **additive**: a contract can ship
-`name@1` with no diagnostic and gain one later without breaking anyone, whereas putting the reason
-in the return type freezes it into the major version on day one. Known costs are recorded in the
-project specification, together with what would invalidate the decision.
-
-Those measurements are replayable, at three annotated tags whose messages say what each one proves:
-`evidence/error-convention-round-1` (two forms, six call sites), `evidence/error-convention-round-2`
-(three forms on both contracts, and the batteries the detection tie comes from) and
-`evidence/error-convention-round-3` (the callers that need the value and the reason at once). They
-are tags rather than branches because the conclusion is on `main` and nobody should be reading three
-dead working states — but a published sentence with no replayable measurement behind it is an
-opinion, which is the one thing this repository sells against.
-
-**The reason set of a contract is frozen with its major version.** Adding a literal, removing one,
-or splitting one all break a caller that switches exhaustively — so the partition is chosen once,
-deliberately, and a later change costs `name@2`. The additivity that decided this convention covers
-gaining a diagnostic, not reshaping one.
-
-## Case identifiers — settled, catalogue-wide
-
-Every case of block 4.4 carries an `id`: a **name**, in kebab-case, unique within the contract and
-**frozen with its major version**. The guards that assert a case are addressed by it — see
-*Guard identifiers* below, which generalised this rule to every guard in the catalogue.
-
-A name, and not a rendering of the case's own data. `"1e400" -> overflow` restates the row it
-addresses, so it can be wrong about it, and §4.4 makes every case one line of public documentation —
-where false documentation is worse than none. The published line goes on being rendered from the
-data; the identifier only addresses the case.
-
-The measurement that forced it: the two fallible contracts titled their guards out of the very data a
-specification battery injects into, so a mutant that changed an expectation reddened a guard under a
-title the unmutated contract does not contain, and left the calibrated one silent — a hundred guards
-of `number/parse@1` and eighty-six of `date/add@1` declared silent as an artefact of the apparatus.
-`array/group-by@1` carried an explicit name and did not have the problem.
-
-The reason that outlives the instrument is the registry's: an API response citing a case, a URL
-anchor on a contract's page, a validation report naming the case a submission failed — each needs an
-address, and an address that changes breaks links. Renaming one therefore costs `name@2`, exactly as
-reshaping a reason set does.
-
-## Guard identifiers — settled, catalogue-wide
-
-Every guard carries an **identifier**: a name, in kebab-case, unique within its contract and **frozen
-with its major version**. A guard's title is that identifier, then ` :: `, then a sentence for
-whoever reads the runner's output — or the identifier alone, when it says everything. Batteries pin
-identifiers, attribution reports identifiers, and `calibrate()` refuses a guard whose title carries
-no well-formed one, or two guards of one contract answering to one.
-
-A guard needs two things and they are not the same object. It needs an **address** — a battery pins
-it, an attribution cites it, and a validation report will one day put it in front of a submitter. And
-it needs a **sentence**, because test output is read by people. One string doing both means every
-reword breaks a pin, and it means a title rendered from the contract's own data renames the guard a
-specification mutant reddens.
-
-That second failure was measured rather than argued. LS-13 of `string-levenshtein-spec` relabels the
-`identical` benchmark profile as `far` — a profile that claims to time the fast path, published as
-timing the worst case. Before this rule its guard reddened under `identical - every sample is far`, a
-title the unmutated contract does not contain, so calibration never saw it and attribution had
-nothing to attribute. The battery passed, reported thirteen of thirteen defects killed, and went on
-calling that region one no mutant probes — while a mutant probed it. The refusal the instrument is
-built around, *a declaration a mutant contradicts is stale*, could not fire. After the change it
-fires, the declaration had to go, and `identical` left the unprobed list. **That is the one class of
-defect these identifiers make detectable.** The other 466 guards are a tidying for the registry, and
-it is recorded as one rather than dressed up.
-
-**A name, never a rendering of the data the guard asserts over** — the rule block 4.4 already carries
-for a case identifier, restated here because guard identifiers were created without it being reapplied
-to them, and nine of them had drifted. The test is mechanical: *the identifier and the assertion carry
-the same number, so the two can be edited apart.* `three-needs-are-answered-without-the-api` listed
-four, and its own comment said that a fourth appearing silently would mean something had moved off the
-API without anyone saying so. A fourth appeared, the list was updated, the name was not, and the guard
-written to detect a silent change was blinded by its own name. Renaming is the repair rather than
-correcting the number, because a name that has to be edited whenever the data moves is not an address.
-
-**A count and a state are not the same thing, and this is what separates them: falsifying the name and
-reddening the guard are the same event, or they are not.** An identifier that renders a *state*
-disappears with the claim it carries — `nothing-is-measured-yet` asserts `toEqual([])` three times and
-holds no number to drift from, so the day a figure is measured the guard is retired rather than
-renumbered. An identifier that renders a *count* survives the data: the list grows, the assertion is
-edited, the name stays, and it has become a lie. That is the rule to apply to the next case, and it
-decides it without a second opinion.
-
-What this does *not* forbid is a number that names the subject of a case rather than tallying a
-collection — `two-decimal-points`, `p4-triangle-inequality`, `signature-accepts-two-strings`. An
-identifier derived from a *frozen* address stays an address, which is what `${id}-described` and the
-`eachContract` slug are.
-
-**A benchmark profile's name is frozen with the major version**, for the reason a case identifier and
-a guard identifier already are: the registry will cite it in a benchmark figure, the site will make it
-a URL anchor, and a validation report will name the profile a submission failed. It was already an
-address in fact — the five specification batteries pin `profile-<name>` identifiers and one of them
-documents `profile-identical` as *the address* in as many words — and it was the only derived
-identifier in the catalogue that nothing declared frozen. No guard was touched: the gap was the
-missing declaration, not the names. That sentence used to publish a count of the guards left alone,
-and the count was wrong by one before anybody read it back — a state does not drift where a tally
-does, which is the rule this file already carries and had not applied to itself here.
-
-**The freeze was a policy rather than a mechanism when this was written, and the pre-flight made it
-one.** A mutant that renames a profile still renames the guard built from it: all five
-`profiles.test.ts` construct the title in a loop over `benchmarkProfiles`, so no title is ever left
-behind and **a guard resolving the record against those titles could not fail** — which is what
-disqualifies the obvious mechanism rather than any argument about its worth. What is resolved instead
-is what a *battery* names, and both spellings this paragraph once called unguarded — a pin that stops
-matching, a silence declaration naming nothing — are refused in `calibrate()` before a verdict exists.
-Measured at `277a637`: the five declare **27** profiles, the suite collects **27** guard titles
-`profile-<name>`, and **27 of 27** are named by a battery, so every one resolves.
-`benchmarks.profiles[].name` stays `one-directional` in `field-map.ts` for its **other** half — a name
-makes a claim about its own samples that no guard reads — and that half is in the launch debts below.
-
-**Uniqueness is per contract.** The instrument can only break inside a contract — a battery injects
-into one folder, and attribution already filters guards to the contract under measurement — and the
-registry will address a guard by the pair `(contract identity, guard identifier)`, exactly as it
-addresses a case. A globally unique identifier would encode the contract into the name, duplicating
-what the pair already carries and making a contract rename a rename of every guard. The cost is
-stated so it is not discovered later: **the registry schema must always carry the pair, never the
-identifier alone.** Fifteen identifier strings are held by more than one contract today.
-
-**Four identifiers belong to the catalogue rather than to a contract**, and only four:
-`every-case-is-addressed`, `every-case-is-justified`, `every-case-is-grouped` and
-`universal-properties-answered`. Those are not five guards that resemble each other — the helper *is*
-the guard, one function applied five times — so each is a constant exported from
-`catalogue/every-contract.ts` and a contract cannot rename it locally. Renaming one costs a major on
-the whole catalogue, the discipline everything in that file already carries. The other twelve shared
-strings are five contracts asking the same question about different data: *resemblance is not
-duplication*, the rule the catalogue already applies to `outputsAreEqual`, so each contract owns its
-own and two may coincide.
-
-**The separator is ` :: `, and it is ASCII on purpose.** It cannot occur inside an identifier,
-because an identifier has no spaces, so the split cannot be wrong. An em dash reads better and would
-have been the first non-ASCII code point in any title in the repository: measured over every `it(...)`
-in every test file, none carries one, and `number/parse@1` is where the cost of a stray non-ASCII
-character in a source file was paid once already.
-
-**Three published counts of guards were dropped rather than corrected, and the reason generalises.**
-This sentence, `run.ts` and `every-contract.ts` all read *467*, and 467 had stopped being the number
-of guard titles some time before anybody noticed. Which of the three things 467 once counted is not
-recoverable, so nothing was patched: a count in prose survives the data it counted and becomes the one
-part of a true sentence that is false. What each claim is actually about — *none carries a non-ASCII
-code point*, *no identifier is duplicated inside a contract* — does not drift, and `calibrate()` is
-what holds the second. It is the rule about identifiers rendering a count, arriving on comments.
-
-**And the remeasurement that replaced 467 did not survive its own paragraph, which is the third
-instance and the one that settles the treatment.** This sentence went on to publish *501 `it(...)` call
-sites* and *974 collected assertions*, and neither reproduces under any counting I can construct.
-Measured at `2b90f96`, over every tracked `.test.ts` and `.test-d.ts`: **514 call sites — 479 written
-`it(` and 35 arriving through `it.each` — and the census declared 998**, which was 472 + 288 + 27 +
-146 + 62 + 3 across the six configurations and was what the six suites reported at that commit.
-Restricting to `.test.ts` gave 486, and to `contracts/` gave 94; nothing gave 501, and nothing gave
-974. A bare count replacing a bare count buys one cycle of being right.
-
-So the pair is not dropped this time, it is **given its coordinates** — the commit and the population
-counted — by the rule `registry/contract-record.ts` carries for a published size. A count with a commit
-beside it is re-derivable and stops being a claim about today; a count without one is the part of a
-true sentence that goes false while nobody is looking, three times now in this file alone.
-
-**A stamp does not travel to the sentence beside it, and that is the fourth instance — the one that
-cost a clause rather than a number.** *the census declared 998* carries its commit and is true of it
-for ever. *and is exactly what the six suites report when they run* sat immediately after, in the
-present tense, over the same quantity — and it went false at `277a637`, one commit later, when the
-`cli` configuration went from 146 guards to 147 and the census total from 998 to **999**, measured at
-`9bb3025`. The commit that falsified it is the one that added
-`every-clean-refusal-resolves-to-the-guard-it-names` — so the sentence was broken by the very unit
-that was closing this same class elsewhere in this file.
-
-**A dated number followed by a present-tense claim about the same quantity publishes a truth and a lie
-in one sentence, and it is the lie the reader believes, because it is the one written in the present.**
-So: the clause carries the stamp, or it is stated at the commit, or it is not written. Nothing else is
-available, and the middle one is what the paragraph above now does.
-
-**And the cheapest of the three is to need no number at all.** *Twenty-eight guards were left alone*
-became *No guard was touched* in the profile-name section for exactly this reason: a state does not
-drift where a tally does, and both sentences make the same claim. **When a sentence can be true without
-counting, it does not count.** That is the rule to reach for first; the coordinates are what the
-remaining counts get.
-
-**What this does not cover, and it is not an oversight.** `npm test` will never see a duplicate
-identifier: a guard cannot enumerate the tests vitest collected, so the refusal lives in
-`calibrate()`, where the identities are already gathered. A contributor who writes a duplicate learns
-it from the first battery they run, not from the suite.
-
-## What a property settles — settled, catalogue-wide
-
-A property that pins an exact answer on a generated family settles **exactly the decisions its
-alphabet represents, and no others**. So for every decision a contract publishes about what its
-answer should *be* — rather than about the shape of that answer — a reviewer can check that one of
-two things is true: a representative of the decision is in the arbitrary, or a named case of block
-4.4 settles it. The battery has to carry a mutant that says which, because the two look identical
-from the outside.
-
-Measured on `string/slugify@1`, whose battery reads the whole of block 4.4 blind on a second lens.
-Twenty-one of its twenty-two behaviour defects still die on that column: shape properties turn out to
-carry far more of the content than the table was written expecting. The twenty-second transliterates
-Cyrillic, and it answers a well-formed, lower-case, idempotent slug that retains a subsequence — so
-every property is satisfied, every benchmark profile keeps its class, and one guard in the whole
-suite kills it: a named case. The control is a mutant folding the sharp s, the same kind of curation
-decision from the same table the ecosystem writes, which dies on both columns — because the arbitrary
-that draws well-formed slugs carries a sharp s and carries no Cyrillic.
-
-What this forbids is the reading that a property is strong and a case is bookkeeping. A property is
-as wide as its alphabet. Widening that alphabet is how a decision becomes property-checkable, and it
-is a deliberate act with a cost — every symbol added is a decision the contract can no longer change
-without the property going red, which is exactly what freezing means.
-
-## Replaying a divergence — settled, catalogue-wide
-
-A contract that answers differently from what the ecosystem or the language answers carries a guard
-that **replays** the divergence on the rows where it happens, rather than asserting it in prose. The
-guard names the exact set of cases that diverge, so a specification drifting back towards the common
-answer takes the measurement refusing that answer with it, and the drift is red instead of silent.
-
-Three contracts carry one, in three shapes: `array/group-by@1` in a file of its own against
-`Object.groupBy`, `string/levenshtein@1` by recoding its table into UTF-16 code units,
-`string/slugify@1` by narrowing its alphabet to ASCII. The shapes differ because what is being
-diverged from differs; what is identical is that the divergence is measured on the contract's own
-table rather than described.
-
-`number/parse@1` and `date/add@1` both diverge — from `Number` and from every library's fractional
-month — and neither carries such a guard. That is recorded here as a debt against this rule rather
-than as an exception to it.
 
 ## What separates two elements in a reading — settled
 
@@ -863,7 +628,7 @@ node refuses to strip types under `node_modules` — `ERR_UNSUPPORTED_NODE_MODUL
 v24.15.0, for a `bin` entry point exactly as for an import. And the CLI's runtime graph reached
 **vitest**: `toopo search slugify`, a command that installs nothing, loaded 147 modules including
 vitest, the TypeScript compiler API and twelve of `mutation/`, through
-`the-five.ts` → a contract module → `catalogue/every-contract.ts`. Cutting `local-source.ts` out drops
+`the-five.ts` → a contract module → `packages/catalogue/every-contract.ts`. Cutting `local-source.ts` out drops
 it from 55 repository modules to 26 and removes vitest entirely.
 
 **The archive carries a frozen artefact, and that was forced rather than chosen.** `the-five.ts` must
@@ -1254,103 +1019,6 @@ list of allowed verbs. It is the price the alias rule was refused at, and it is 
 argument. **What is affordable is the per-sentence derivation above, and the discipline of sweeping a
 whole surface at once rather than repairing what somebody tripped over.** Recorded in the list below.
 
-## A case of block 4.4 is a call — settled, catalogue-wide
-
-**The fields of a case begin with the parameter names of the answer's signature, in the signature's
-order, and what remains is the answer.** Measured over the five, on all seven of their case tables:
-seven of seven, in order, no exception — and the imagined sixth contract, written before the rule
-existed, already obeys it. `serialise.ts` refuses a contract where it stops being true.
-
-The parameter names are **read off the declared type rather than declared beside it**, for the reason
-`implementation-record.ts` refuses a declared depth and `serialise.ts` refuses a declared sample count:
-a value read off what it describes has no second statement to disagree with. What checks the reading is
-not a copy of it but a hundred and eighty-seven cases.
-
-It is the first defect the site found in this schema, and the list of all of them is under rule 1
-below. A second arrived in the same unit and is smaller: **no need in `needs.ts` covered listing the
-catalogue.** Every `the-site` entry described rendering *one* contract, one refusal, one methodology,
-or answering a query; the front page — the whole of the site's navigation at five contracts — had
-nothing behind it, while the generator consumed `contract-index` anyway.
-
-## A case of block 4.4 belongs to a group — settled, catalogue-wide
-
-**A table declares its groups, every case names one, and the comment banners are gone.** Forty-eight
-groups over seven tables and 187 cases: twelve on `number/parse@1`, twelve on `date/add@1`, ten on
-`string/slugify@1`, eight on `array/group-by@1`, six on `string/levenshtein@1`. It is another of the
-defects a consumer found in this schema — the judgement existed in the source and its shape as data did
-not, which is the same failure as the parameter names one unit earlier.
-
-**The partition was derived from the banners while they were still there, and read back before they
-went.** Two of the seven tables carried no banner, and their groups were read off what their cases
-already hold rather than invented: `reason` on `date/add@1`'s untyped table, `outcome.kind` on
-`array/group-by@1`'s. The second corrected a guess — the distinction is *not iterable* against
-*iterable but not an array*, not anything about the key function.
-
-**The banners are gone with the field, and that is not tidying.** Two statements of one grouping drift,
-and it is always the second that lies: one of the four banners carrying prose already read *these five
-rows* over six cases. That prose now sits on the group declaration it describes.
-
-**`id` is frozen, `title` is prose and corrigible** — the separation a guard's identifier and sentence
-already carry, for the same reason, which is why `CaseGroup` lives in `catalogue/identifier.ts` beside
-the shape of an address. Splitting a group, merging two or renaming an `id` costs `name@2`; adding a
-case to an existing group costs nothing, and that is the common gesture.
-
-**A group and a case share one space of addresses**, because a page renders both as `#id` and a
-duplicate is a link that silently lands on the wrong element. `expectEveryCaseIsAddressed` widened to
-cover both rather than gaining a sibling — it always asked whether these strings can address something,
-and the grouping only added strings. It found two collisions the day it was widened: `exponent` on
-`number/parse@1` and `normalisation-is-not-applied` on `string/levenshtein@1`, each a group named after
-a case of its own table. The group is what moved, because the case identifier is the older statement.
-
-**`every-case-is-grouped` is the fourth guard the catalogue owns.** `groupingFaults` has one
-implementation and two callers, and the reason is not symmetry: `npm test` collects `contracts/` and
-nothing else, so the serialiser's refusal is never reached by what a specification battery runs, and a
-mutant moving a case between groups would have been a defect nothing probes. Five cells now probe it.
-
-**What the partition check cannot see, and it is declared rather than closed.** A case moved into the
-group *next to* it leaves a partition that is still well formed — contiguous, nothing empty, nothing
-undeclared — so nothing objects and the page publishes the row under its neighbour's heading. LS-14 was
-written that way by accident and survived; it now moves a case to a group that is not its neighbour.
-Closing the class would need a guard claiming to check that a case *belongs* where it is filed, which
-is a judgement about prose.
-
-**A group carries a `note`, required and `string | null`.** Having nothing to add is written rather
-than omitted — the shape `ImplementationRecord.version` already takes — and 44 of the 48 are `null`.
-The split is what the sentence is addressed to: prose for whoever reads the page goes in the field,
-prose for whoever maintains the table stays a comment. Four exist, and one of them says in as many
-words that its rows are there so a declaration has *a demonstration on the contract's own page* — a
-sentence that had been moved into a comment, which was a loss of content and not a tidying.
-
-**The order of two cases inside one group is not an address either, and it is the cheapest thing on a
-contract page to get right.** The order of the *groups* is frozen and declared; an `id` is an address
-and a group membership is a partition; what is left — which of a group's rows comes first — is neither,
-and moving one costs nothing. It matters because the playground opens on the first case of the first
-table: `string/levenshtein@1` opened on two empty fields answering `0`, where a reader has nothing to
-edit and has watched nothing happen. `identical-text` is the same claim with something in it, one
-keystroke from moving the answer, and it is now first. Checked before moving rather than after: nothing
-in this repository pins which case comes first, and the two cases whose own rationales are about being
-a pair stayed adjacent.
-
-**`note` is not frozen, and it is the only field of a group that is not.** `id` is the address and
-freezes with the major; a title and a note are prose, corrected the day they read badly, exactly as a
-`rationale` is. And a declared note is rendered: there is no state between carried and shown, which is
-the class `coverage.test.ts` already refuses on the record.
-
-**A table's purpose is a heading only when it separates two tables.** On the three contracts carrying
-one, the purpose is a sentence in the lower case a sentence is written in, and a heading that is not a
-title is a defect rather than an untidiness — it enters the document outline and a screen reader
-announces it as a section, with nothing on the other side of it. So it is a paragraph there and the
-groups take `h3`; where two tables separate typed callers from callers no type reaches, it keeps its
-heading and the groups sit at `h4`. **The tag is the outline and the class is the look**, so a group
-reads the same at either depth — `.group` and `.table`, never `h3` and `h4`.
-
-**The page cost 8.2 per cent, in two steps.** Measured over the six pages: 120 181 bytes before the
-grouping, 127 289 after it, 130 042 after the notes and the heading change. The 159 bytes the front
-page and the refusals page each gained at the first step are the stylesheet, which is the whole of
-their share. `h4` was added to the text projection's separator map in the same change — without it a
-group title runs into the case beneath it, which is the exact shape of `not applicableThe signature
-takes a single string`, caught before it existed.
-
 ## The security filter fails closed — settled
 
 **A name a submission has not declared is refused unless it is permitted.** The rule that replaced a
@@ -1584,40 +1252,6 @@ a full-query bonus that could not change an order because no full query has one.
 cannot change an answer at any value is not a rule**, and speculative insurance no guard can reach is
 what `field-map.ts` calls a speculative field and deletes.
 
-## What an alias is, and the trap that hides a wrong one — settled, catalogue-wide
-
-**An alias is a query whose best answer is this contract — never a phrase that relates to it.** The
-second reading admits everything, because a phrase relates to a contract whenever anybody can explain
-the connection and an explanation is always available.
-
-**The property that every alias retrieves its own contract first is satisfied by a lying alias**, and
-that is the whole reason this is written down. The alias is in the index, so it matches the contract
-that declares it by construction — which is what retrieval *means*. The trial establishes that the
-ranking works and says nothing about whether the phrase should have been declared, and it looks exactly
-like the opposite. It was green before and after eight aliases were removed.
-
-Two filters, and they are not the same filter. **Mechanical:** read the contract's own exclusions —
-every *it is not X* of the input domain, every *that is a different function* of the description — and
-refuse any alias that names one. It found five. **A judgement, one alias at a time:** an alias nobody
-would type costs weight, an alias promising what we do not do costs trust, and those are different
-categories. It found three. The criterion that decides the next case without a second opinion is
-**could a better answer exist in this catalogue** — for `string similarity` yes, and it is a different
-function with a different output shape, so the alias is a lie whether or not that contract is ever
-written; for `how similar are two strings` no, and vagueness is not the fault. *Naming something we are
-not* is.
-
-**Naming the built-in a contract is positioned against is deliberate, and the line is that the contract
-names it too.** `parseFloat`, `parseInt`, `Object.groupBy`, `Map.groupBy` and `lodash groupBy` are all
-argued against by name in their own contract's published prose, which is what lets `toopo search
-Map.groupBy` answer *the language ships this now*. `atoi` went out under the same line, because no
-contract names it.
-
-**An alias is not frozen with the major**, and it is the only field of `identity` that is not. A case
-identifier, a guard identifier, a reason literal and a benchmark profile name are addresses — an API
-response cites one, a URL anchors on one — and an address that changes breaks a link. Nobody links to
-an alias, no answer cites one, and correcting one breaks nobody's code. It is curation, so it is
-repaired the day it is found and does not cost `name@2`.
-
 ## What a pin on a re-drawn property may claim — settled
 
 **A property that re-draws its generations has no determinism to offer, only a miss rate.** So the
@@ -1823,7 +1457,7 @@ decorative for ever.
 sentence of this repository was false — twice with the true sentence and the false one in the same
 file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
 while the list does not. The remedy costs two sentences, and this section is its own demonstration:
-*Guard identifiers* above named the pre-flight as the thing that would close
+the record now at ADR-0017 named the pre-flight as the thing that would close
 `benchmarks.profiles[].name`, the pre-flight was built, and nobody came back here.
 
 1. **An entry names what would close it.** One that names no closing mechanism cannot be recognised on
@@ -1868,8 +1502,9 @@ while the list does not. The remedy costs two sentences, and this section is its
 - `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
   `one-directional` fields the schema already carried, with GS-11 as the measurement. Closed by the
   validation pipeline, for the reason the entry above closes there.
-- **The rule that an alias must not name what its contract refuses to be.** The eight liars are gone
-  and the criterion is in `catalogue/every-contract.ts`, but nothing keeps it: the executable form
+- **The rule that an alias must not name what its contract refuses to be**, argued in ADR-0023. The
+  eight liars are gone and the criterion is in `packages/catalogue/every-contract.ts`, but nothing
+  keeps it: the executable form
   needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
   to buy a check that would still be matching words against prose. Looked for, priced, and declared
   rather than dressed as a mechanism — which is the treatment this list exists to give.
@@ -3162,7 +2797,7 @@ because the hook that translates a `.js` specifier cannot be used before it is r
    launch, not after.
 2. **The no-abstraction suspension has ended**, having done its job: three contracts were written by
    hand with no shared code, and what they turned out to repeat *identically* now lives in
-   `catalogue/`, under the freeze discipline stated at the top of that file. The bar for adding
+   `packages/catalogue/`, under the freeze discipline stated at the top of that file. The bar for adding
    anything there is not "the contracts repeat it" but "the contracts repeat it identically, and
    what it says belongs to the registry rather than to any one feature". Resemblance is not
    duplication: three functions that answer the same question about different data stay apart.
@@ -3211,6 +2846,22 @@ These outlive the current stage and are not open to trade-off.
 - Conventional commits, atomic. Never push and never create a remote.
 - TypeScript `strict: true`.
 
+**How the catalogue is written.** Each rule below is stated once here and argued once in the record
+beside it. Where the two ever disagree, the record holds the measurement and this line holds nothing.
+
+- An address — a case, a guard, a group, a reason literal, a benchmark profile — is a name in
+  kebab-case, unique within its contract, frozen with the contract's major, and **never a rendering of
+  the data it addresses**. The test that decides the next one: falsifying the name and reddening the
+  guard are the same event, or they are not. ADR-0017.
+- A guard's title is that address, then ` :: `, then a sentence. The registry addresses a guard by the
+  pair `(contract, identifier)` and never by the identifier alone. ADR-0019.
+- A fallible function answers `T | null` and publishes `describe<X>Failure(...)` beside it, with a
+  coupling property tying the two. The reason set is frozen with the major. ADR-0020.
+- A contract that answers differently from the language or the ecosystem carries a guard that
+  **replays** the divergence on the rows where it happens. ADR-0022.
+- An alias is a query whose best answer is this contract, never a phrase that relates to it. It is the
+  one field of `identity` that is not frozen. ADR-0023.
+
 ## Verification discipline
 
 This project sells verification. A decorative guard here is not a technical defect, it is a defect
@@ -3225,6 +2876,20 @@ of the thesis.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
 - Report what you left out. Never narrow the scope silently.
+
+**How a figure is published.** The same discipline, on prose rather than on guards. Each is argued in
+the record beside it.
+
+- When a sentence can be true without counting, it does not count. That is the form to reach for
+  first. ADR-0018.
+- A count that survives carries its coordinates: the commit it was measured at, and the population
+  counted. ADR-0018.
+- A dated number followed by a present-tense claim about the same quantity publishes a truth and a lie
+  in one sentence, and it is the lie the reader believes. The clause carries the stamp, or it is
+  stated at the commit, or it is not written. ADR-0018.
+- A property settles exactly the decisions its alphabet represents, and no others. A named case is not
+  bookkeeping beside it, and a battery mutant is what says which of the two settles a decision.
+  ADR-0021.
 
 ## Asking questions
 

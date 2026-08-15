@@ -9,7 +9,7 @@
  *
  * Nothing below is a string. That is the whole content of this file: a `ContractAddress` is a value
  * with three parts, and a guard is addressed by the *pair* `(contract, guard)` and by no other shape,
- * because there is no type here that carries a guard identifier on its own. `CLAUDE.md` names that
+ * because there is no type here that carries a guard identifier on its own. ADR-0019 names that
  * cost in advance - "the registry schema must always carry the pair, never the identifier alone" -
  * and fifteen identifier strings are held by more than one contract today, so the cost is already
  * due. A rule that lives in a sentence is a rule the sixth contract's author never reads; making the

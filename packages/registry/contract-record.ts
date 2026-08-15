@@ -48,7 +48,9 @@ export type IdentityRecord = {
   readonly summary: string
   readonly description: string
   readonly inputDomain: string
+  /** A query whose best answer is this contract, and the one field here that is not frozen. ADR-0023. */
   readonly searchAliases: readonly string[]
+  /** Where a contract diverges, a guard replays the divergence rather than asserting it. ADR-0022. */
   readonly relationToTheLanguage?: string
 }
 
@@ -82,7 +84,7 @@ export type SurfaceRecord = {
   readonly supportingTypes: readonly SupportingTypeRecord[]
   /** Absent on a total contract: an empty set declares a literal nobody can receive. ADR-0016. */
   readonly failureReasons?: readonly string[]
-  /** Present exactly when a diagnostic is. ADR-0016. */
+  /** Present exactly when a diagnostic is, and it is what stops the two exports drifting. ADR-0016, ADR-0020. */
   readonly couplingRule?: string
 }
 
@@ -103,6 +105,7 @@ export type PropertiesRecord = {
 // --- Block 4.4 - the named and settled edge cases ---
 
 export type CaseRecord = {
+  /** A name, frozen with the major, never a rendering of the row it addresses. ADR-0017. */
   readonly id: string
   /** Required, because a case with no group would be a silence about where it belongs. ADR-0012. */
   readonly group: string
