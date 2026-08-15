@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { encode } from '../packages/registry/value.js'
+import { encode } from '../registry/value.js'
 import { literal, quoted } from './literal.js'
 
 /**

@@ -319,7 +319,7 @@ const mutants: readonly Mutant[] = [
    * replayable rather than remembered.
    *
    * That guard reads six conditions, and until this unit two of them were anchored at the start of the
-   * path. `files` is `["dist"]`, so npm reports everything as `dist/...`, and `startsWith('site/')`
+   * path. `files` is `["dist"]`, so npm reports everything as `dist/...`, and `startsWith('packages/site/')`
    * could only see the generator shipping as *source* - while the route the build can take is the
    * compiled one. Measured before the repair: these same two edits reddened
    * `every-file-in-the-archive-is-loaded-by-a-command` and left the guard named for the instrument and
@@ -333,7 +333,7 @@ const mutants: readonly Mutant[] = [
    */
   sameOnEveryLens(
     'A-14',
-    'compiles the generator into the archive and ships what the compiler emitted, so `site/` travels ' +
+    'compiles the generator into the archive and ships what the compiler emitted, so `packages/site/` travels ' +
       "into somebody's `node_modules` as `dist/site/document.js` - a folder that guard names, in the " +
       'spelling it could not read until it was anchored at a path segment rather than at the start',
     [

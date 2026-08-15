@@ -25,10 +25,10 @@
  * that the page can then tell its reader which parts of it are checkable.
  */
 
-import { renderContract } from '../packages/registry/address.js'
-import type { ServedContractBinding } from '../packages/registry/response.js'
-import { servedSnapshotFaults } from '../packages/registry/response.js'
-import type { FrozenContract, FrozenImplementation, Snapshot } from '../packages/registry/snapshot.js'
+import { renderContract } from '../registry/address.js'
+import type { ServedContractBinding } from '../registry/response.js'
+import { servedSnapshotFaults } from '../registry/response.js'
+import type { FrozenContract, FrozenImplementation, Snapshot } from '../registry/snapshot.js'
 import type { RegistrySource } from './source.js'
 
 export class ThePageCannotBeBuilt extends Error {

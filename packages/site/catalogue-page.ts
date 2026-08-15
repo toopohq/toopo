@@ -10,8 +10,8 @@
  * of it deserves to be told the catalogue considered it and why, and it must never be offered.
  */
 
-import { renderContract } from '../packages/registry/address.js'
-import type { ServedIndex, ServedRefusals } from '../packages/registry/response.js'
+import { renderContract } from '../registry/address.js'
+import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node } from './document.js'
 import { el, text } from './document.js'
 import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'

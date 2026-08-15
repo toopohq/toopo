@@ -27,7 +27,7 @@ import { theFive } from './the-five.js'
  * **Nothing is built at the top of this file, and that is the apparatus talking rather than taste.** A
  * mutant that makes the serialisation throw would otherwise stop the whole file collecting, and the
  * instrument reads a file that collected nothing as a run that measured part of the suite - the lesson
- * `site/pages.test.ts` records against W-20, met here by I-01 reporting 303 tests where the unmutated
+ * `packages/site/pages.test.ts` records against W-20, met here by I-01 reporting 303 tests where the unmutated
  * arm reports 314. It is built once and lazily instead, so a throw reddens the guards rather than
  * hiding them.
  */

@@ -6,14 +6,14 @@
  * A port belongs to its consumer, and this consumer is the registry itself
  * ---------------------------------------------------------------------------
  *
- * `packages/cli/source.ts` carries four endpoints and refuses `contract-binding` by argument; `site/source.ts`
+ * `packages/cli/source.ts` carries four endpoints and refuses `contract-binding` by argument; `packages/site/source.ts`
  * carries six and refuses nothing it needs. Both are narrow because a port derived from a consumer
  * grows exactly when that consumer needs something. The consumer here is the thing that writes down
  * every answer a client could ever ask for, so its port is not narrow at all - it is `ENDPOINTS`, and
  * that is what makes the totality checkable as an **equality** for the first time. A client's port can
  * only ever be checked for naming endpoints that exist; this one is checked for naming all of them.
  *
- * It is synchronous, and that is the same reasoning `site/source.ts` runs on rather than a departure
+ * It is synchronous, and that is the same reasoning `packages/site/source.ts` runs on rather than a departure
  * from `packages/cli/source.ts`: what makes a port asynchronous is a transport under it, and there is none
  * under a build that reads the working tree it is standing in.
  *

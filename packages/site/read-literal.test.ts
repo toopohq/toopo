@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../packages/registry/address.js'
-import type { CaseRecord } from '../packages/registry/contract-record.js'
-import type { EncodedValue } from '../packages/registry/value.js'
-import { decode, encode } from '../packages/registry/value.js'
+import { renderContract } from '../registry/address.js'
+import type { CaseRecord } from '../registry/contract-record.js'
+import type { EncodedValue } from '../registry/value.js'
+import { decode, encode } from '../registry/value.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { WITHOUT_A_SPELLING, literal } from './literal.js'
 import { localSource } from './local-source.js'
@@ -29,7 +29,7 @@ import { UnreadableLiteral, read } from './read-literal.js'
  * What this file cannot see, measured rather than left implicit
  * ---------------------------------------------------------------------------
  *
- * `site/source.test.ts` refuses every module of this folder but one - tests included, and its own
+ * `packages/site/source.test.ts` refuses every module of this folder but one - tests included, and its own
  * comment says *every other module of this folder* - the right to reach `the-five` or `serialise`. So
  * a guard here sees exactly what the port serves, and the port resolves no binding for a contract the
  * catalogue refused. Measured over the five: **157 of the 187 cases sit on contracts that have a page,

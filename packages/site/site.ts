@@ -25,7 +25,7 @@
  * `mutation/` - for the reason the serialisation frontier one paragraph along exists.
  */
 
-import { theMeasurement } from '../mutation/published.js'
+import { theMeasurement } from '../../mutation/published.js'
 import type { Document } from './document.js'
 import { toHtml } from './document.js'
 import { cataloguePage } from './catalogue-page.js'

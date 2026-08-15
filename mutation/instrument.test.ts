@@ -811,7 +811,7 @@ describe('what is pinned rather than inherited', () => {
  *
  * `published.ts` is imported by a generator that must not touch a disk, so it lists the batteries
  * instead of reading the directory - a second statement of what `mutation/*.battery.ts` already says.
- * These guards are the first statement's answer to it, and they are here rather than in `site/`
+ * These guards are the first statement's answer to it, and they are here rather than in `packages/site/`
  * because what they keep is a property of this folder.
  */
 describe('what this repository publishes about its own defect detection', () => {

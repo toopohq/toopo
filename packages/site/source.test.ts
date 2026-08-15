@@ -3,9 +3,9 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { ENDPOINTS, portFaults } from '../packages/registry/endpoints.js'
-import { NEEDS } from '../packages/registry/needs.js'
-import { THE_UNPUBLISHED_VERSION as THE_INSTALLERS_VERSION } from '../packages/cli/local-source.js'
+import { ENDPOINTS, portFaults } from '../registry/endpoints.js'
+import { NEEDS } from '../registry/needs.js'
+import { THE_UNPUBLISHED_VERSION as THE_INSTALLERS_VERSION } from '../cli/local-source.js'
 import { THE_UNPUBLISHED_VERSION, localSource } from './local-source.js'
 import { NOT_THIS_UNIT, THE_ENDPOINT_BEHIND } from './source.js'
 
@@ -21,7 +21,7 @@ import { NOT_THIS_UNIT, THE_ENDPOINT_BEHIND } from './source.js'
 
 const HERE = import.meta.dirname
 
-const THE_SERIALISATION = ['packages/registry/the-five', 'packages/registry/serialise']
+const THE_SERIALISATION = ['registry/the-five', 'registry/serialise']
 
 describe('where the generator gets what it publishes', () => {
   it('every-method-of-the-port-answers-an-endpoint-that-exists', () => {
@@ -126,10 +126,10 @@ describe('where the generator gets what it publishes', () => {
     const reaching = readdirSync(HERE)
       .filter((name) => name.endsWith('.ts'))
       .flatMap((name) =>
-        [...readFileSync(join(HERE, name), 'utf8').matchAll(/from '\.\.\/mutation\/([\w.-]+)\.js'/g)]
+        [...readFileSync(join(HERE, name), 'utf8').matchAll(/from '\.\.\/\.\.\/mutation\/([\w.-]+)\.js'/g)]
           .map((match) => match[1])
           .filter((module) => module !== 'published')
-          .map((module) => `${name} reaches ../mutation/${module}`),
+          .map((module) => `${name} reaches ../../mutation/${module}`),
       )
 
     expect(reaching).toEqual([])

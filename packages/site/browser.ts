@@ -39,8 +39,8 @@
 
 import { stripTypeScriptTypes } from 'node:module'
 
-import { renderContract } from '../packages/registry/address.js'
-import { servedBlobFaults } from '../packages/registry/response.js'
+import { renderContract } from '../registry/address.js'
+import { servedBlobFaults } from '../registry/response.js'
 import type { Held } from './catalogue.js'
 import { ThePageCannotBeBuilt } from './catalogue.js'
 import { THE_REFERENCE_MODULE } from './paths.js'
@@ -58,10 +58,10 @@ export const asABrowserModule = (typescript: string): string =>
  * it is the guard that would catch a fifth module arriving through an import nobody listed.
  */
 export const THE_BROWSER_GRAPH: readonly string[] = [
-  'site/start.ts',
-  'site/playground.ts',
-  'site/read-literal.ts',
-  'site/literal.ts',
+  'packages/site/start.ts',
+  'packages/site/playground.ts',
+  'packages/site/read-literal.ts',
+  'packages/site/literal.ts',
   'packages/registry/value.ts',
 ]
 

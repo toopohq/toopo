@@ -84,7 +84,7 @@ const THE_DIRECTORY = 'src/lib/toopo'
  * route the build can actually take is the other one: compile more than the entry point, ship what the
  * compiler emitted, and the generator arrives as `dist/site/document.js`.
  *
- * Measured, on the tarball rather than on the argument: shipping two modules of `site/` that way
+ * Measured, on the tarball rather than on the argument: shipping two modules of `packages/site/` that way
  * reddens `every-file-in-the-archive-is-loaded-by-a-command` and left the guard below **green** as it
  * was written. The condition it is named for was live in one spelling and blind in the other, and the
  * blind one is the reachable one.

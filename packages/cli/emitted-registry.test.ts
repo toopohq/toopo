@@ -40,7 +40,7 @@ import { prepareUpdate } from './update.js'
  * Built once and lazily: emitting serialises five contracts and reads thirty-seven files, and doing it
  * at the top of the file would let a mutant that makes the serialisation throw stop the whole file
  * collecting - which the instrument reads as a run that measured part of the suite rather than as a
- * defect. It is `site/pages.test.ts`'s lesson from W-20, met here by I-01.
+ * defect. It is `packages/site/pages.test.ts`'s lesson from W-20, met here by I-01.
  */
 let emittedTree: ReadonlyMap<string, Buffer> | null = null
 

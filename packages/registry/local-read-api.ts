@@ -8,7 +8,7 @@
  *
  * `packages/cli/local-source.ts` serves the harness of every contract and mints a version that lands in
  * somebody's `toopo.lock`; it carries no `contract-binding`, because an installer turns a name into an
- * address through the index and never needs the digest. `site/local-source.ts` carries that binding and
+ * address through the index and never needs the digest. `packages/site/local-source.ts` carries that binding and
  * the methodology, and serves one file per contract - the implementation a playground runs. **Neither
  * is the union, and neither should be**: a port belongs to its consumer, and those two consumers ask
  * for what they ask for.

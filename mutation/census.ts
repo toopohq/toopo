@@ -160,7 +160,7 @@
  * A twelfth on the licence, and it is the first spread over two configurations for a reason other than
  * scale: one new file under the registry's, one count moved under the site's. What is guarded is a
  * single origin and a single licence perimeter, whose declaration is in `packages/registry/` and whose consumer
- * is in `site/` - and neither folder may hold the other's guard, so the entries land where the reach
+ * is in `packages/site/` - and neither folder may hold the other's guard, so the entries land where the reach
  * falls rather than where the subject is.
  *
  * A thirteenth on the narrowing, and it is the first that moved no number at all: a contract battery
@@ -283,15 +283,15 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/cli/write.test.ts': 8,
   },
 
-  'site/vitest.config.ts': {
-    'site/document.test.ts': 8,
-    'site/indexing.test.ts': 9,
-    'site/literal.test.ts': 11,
-    'site/pages.test.ts': 26,
-    'site/playground.test.ts': 10,
-    'site/published-tree.test.ts': 3,
-    'site/read-literal.test.ts': 10,
-    'site/source.test.ts': 8,
+  'packages/site/vitest.config.ts': {
+    'packages/site/document.test.ts': 8,
+    'packages/site/indexing.test.ts': 9,
+    'packages/site/literal.test.ts': 11,
+    'packages/site/pages.test.ts': 26,
+    'packages/site/playground.test.ts': 10,
+    'packages/site/published-tree.test.ts': 3,
+    'packages/site/read-literal.test.ts': 10,
+    'packages/site/source.test.ts': 8,
   },
 
   'packaging/vitest.config.ts': {

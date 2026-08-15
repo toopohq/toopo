@@ -7,9 +7,9 @@ import {
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
   survivorsByKind,
   theMeasurement,
-} from '../mutation/published.js'
-import { renderCase, renderContract } from '../packages/registry/address.js'
-import { isASentence, stringsIn } from '../packages/registry/contract-record.js'
+} from '../../mutation/published.js'
+import { renderCase, renderContract } from '../registry/address.js'
+import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { readingOf, toHtml, toText, wordsOf } from './document.js'

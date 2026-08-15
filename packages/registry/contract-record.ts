@@ -119,7 +119,7 @@ export type Lifecycle =
  *
  * **What keeps it is two guards, and they are a partition rather than a pair.** A value is standing
  * alone or it is embedded, and nothing else. `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence`
- * in `site/pages.test.ts` takes every string this record carries and asks it of each one that is the
+ * in `packages/site/pages.test.ts` takes every string this record carries and asks it of each one that is the
  * whole reading of a paragraph - 212 of them today, derived from the page and the record, so a prose
  * field added tomorrow is covered with nothing edited here.
  * `a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands` in

@@ -11,8 +11,8 @@ import { contractUrl, renderContract } from './address.js'
  * renders the identity of a case, a guard, a contract, an implementation and a mutant - the strings a
  * URL anchor, an API response, a validation report and the licence header of an installed file are all
  * built from - and until now nothing asserted anything about it. Its renderings were reached only
- * through the things that use them: `site/pages.test.ts` resolves `pageOf` against `renderContract`,
- * `site/indexing.test.ts` resolves `contractUrl` against the sitemap, `publication.test.ts` compares
+ * through the things that use them: `packages/site/pages.test.ts` resolves `pageOf` against `renderContract`,
+ * `packages/site/indexing.test.ts` resolves `contractUrl` against the sitemap, `publication.test.ts` compares
  * `licenceHeaderOf` byte for byte with five real files. Each of those is a guard over its own consumer
  * that happens to travel through here, so the module was covered the way a road is covered by the
  * traffic on it.
@@ -46,7 +46,7 @@ const PROBE: ContractAddress = { language: 'typescript', name: 'number/parse', m
  *
  * A pass over real addresses would not do it. Every address in this catalogue carries one language, so
  * a pass would confirm that the renderings agree with each other about a coordinate none of them
- * prints - which is the accidental coverage `site/read-literal.test.ts` records the general form of.
+ * prints - which is the accidental coverage `packages/site/read-literal.test.ts` records the general form of.
  */
 const COORDINATE: Readonly<Record<keyof ContractAddress, string>> = {
   language: PROBE.language,

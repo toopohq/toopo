@@ -11,8 +11,8 @@
  * thing that already has one, and the first time the two disagreed a link would break in silence.
  */
 
-import type { ContractAddress } from '../packages/registry/address.js'
-import { THE_ORIGIN, renderContract } from '../packages/registry/address.js'
+import type { ContractAddress } from '../registry/address.js'
+import { THE_ORIGIN, renderContract } from '../registry/address.js'
 
 /**
  * Where this site is published, re-exported rather than declared.
@@ -52,12 +52,34 @@ export const METHOD_PAGE = 'method/index.html'
  * `contract-page.ts` needs the two strings and nothing else, and importing the stripper for them would
  * tie a rendering module to `node:module` to read two constants.
  *
- * `site/start.js` keeps the repository's own folder in the URL on purpose. The graph a browser loads
- * is this repository's modules with their types removed, resolved by the very `.js` specifiers the
- * source already writes - so the site's layout *is* the source's layout, and a reader who opens it
- * sees the file it came from rather than a bundle that corresponds to nothing.
+ * `packages/site/start.js` keeps the repository's own folder in the URL on purpose. The graph a
+ * browser loads is this repository's modules with their types removed, resolved by the very `.js`
+ * specifiers the source already writes - so the site's layout *is* the source's layout, and a reader
+ * who opens it sees the file it came from rather than a bundle that corresponds to nothing.
+ *
+ * ---------------------------------------------------------------------------
+ * An open question, recorded rather than answered
+ * ---------------------------------------------------------------------------
+ *
+ * That paragraph was written when this folder was `site/`, and the move to `packages/` is what made
+ * it worth re-reading: the served address became `/packages/site/start.js`, and `packages` is a word
+ * about how this repository is organised that means nothing to a visitor. Beside it, on the same
+ * site, `/typescript/number/parse@1/` is an address that was *designed* - the language is a
+ * coordinate of a contract's identity, and `registry/address.ts` renders it.
+ *
+ * So the two halves of this site are addressed on two different principles, and only one of them was
+ * ever chosen. **Is the served layout the source's layout because that is right, or because it was
+ * free?** The sentence above gives a real reason - a reader who opens a module sees the file it came
+ * from - and that reason survives the move intact. What it does not establish is that an internal
+ * organisation word belongs in a public URL.
+ *
+ * It is not settled here because nothing in this unit changed a behaviour, and because the deadline
+ * is not this move: it is the first publication. Every path on this origin answers 403 today, so the
+ * whole of this is still free; the day something is served, it is frozen by the same argument that
+ * freezes a case identifier. Whoever designs the public surface of this site decides it, and this is
+ * the note that stops them finding the question by accident.
  */
-export const THE_ENTRY_POINT = 'site/start.js'
+export const THE_ENTRY_POINT = 'packages/site/start.js'
 
 export const THE_REFERENCE_MODULE = 'reference.js'
 

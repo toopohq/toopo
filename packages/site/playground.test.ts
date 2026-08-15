@@ -3,9 +3,9 @@ import { dirname, join, posix } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../packages/registry/address.js'
-import type { CaseRecord, ExportRecord } from '../packages/registry/contract-record.js'
-import type { FrozenContract } from '../packages/registry/snapshot.js'
+import { renderContract } from '../registry/address.js'
+import type { CaseRecord, ExportRecord } from '../registry/contract-record.js'
+import type { FrozenContract } from '../registry/snapshot.js'
 import { THE_BROWSER_GRAPH, asABrowserModule, theReferenceModules } from './browser.js'
 import type { Held } from './catalogue.js'
 import { heldByTheRegistry } from './catalogue.js'
@@ -55,7 +55,7 @@ import {
  * playground that disagrees with its own table.
  */
 
-const ROOT = join(import.meta.dirname, '..')
+const ROOT = join(import.meta.dirname, '..', '..')
 
 const source = localSource()
 

@@ -1,7 +1,7 @@
 /**
  * The file you run to build the site.
  *
- *   node site/build.ts
+ *   node packages/site/build.ts
  *
  * ---------------------------------------------------------------------------
  * The only thing in this folder that touches a disk
@@ -26,20 +26,20 @@
  * cannot be used before it has been registered.
  */
 
-import '../typescript-imports.ts'
+import '../../typescript-imports.ts'
 
 const { mkdirSync, readFileSync, rmSync, writeFileSync } = await import('node:fs')
 const { dirname, join } = await import('node:path')
 
-const { emitted } = await import('../packages/registry/emit.ts')
-const { localReadApi } = await import('../packages/registry/local-read-api.ts')
+const { emitted } = await import('../registry/emit.ts')
+const { localReadApi } = await import('../registry/local-read-api.ts')
 const { THE_BROWSER_GRAPH, asABrowserModule, theReferenceModules } = await import('./browser.ts')
 const { heldByTheRegistry } = await import('./catalogue.ts')
 const { localSource } = await import('./local-source.ts')
 const { thePublishedTree, theSite } = await import('./site.ts')
 
 const OUT = join(import.meta.dirname, 'out')
-const ROOT = join(import.meta.dirname, '..')
+const ROOT = join(import.meta.dirname, '..', '..')
 
 const source = localSource()
 const pages = theSite(source)

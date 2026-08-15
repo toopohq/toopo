@@ -13,7 +13,7 @@
  * Then the compiler, then the catalogue it serves. `prepack` is this file, so `npm pack` cannot
  * produce an archive whose artefact is older than its code, or whose code is older than its sources.
  *
- * **The only thing in this folder that touches a disk**, which is the line `site/build.ts` already
+ * **The only thing in this folder that touches a disk**, which is the line `packages/site/build.ts` already
  * draws for the generator and `packages/cli/command.ts` for the installer. `freeze.ts` builds the artefact as a
  * value, so the guard that checks it needs no working directory and no build.
  *

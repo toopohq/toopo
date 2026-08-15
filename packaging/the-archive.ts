@@ -11,7 +11,7 @@
  * left out of the whitelist, a path that only exists in development, or an import that stops resolving
  * once the file sits under `node_modules` is caught here and nowhere else in this repository. Reading
  * `dist/` directly would measure something adjacent to what ships, which is the mistake
- * `site/playground.test.ts` already refuses by importing the stripped artefact rather than the module
+ * `packages/site/playground.test.ts` already refuses by importing the stripped artefact rather than the module
  * it came from.
  *
  * ---------------------------------------------------------------------------

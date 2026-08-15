@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { contractUrl } from '../packages/registry/address.js'
+import { contractUrl } from '../registry/address.js'
 import { robotsOf, sitemapOf } from './indexing.js'
 import { localSource } from './local-source.js'
 import { ROBOTS, SITEMAP, THE_ORIGIN, linkTo, pageOf, urlOf } from './paths.js'

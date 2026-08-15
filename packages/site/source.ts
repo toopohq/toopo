@@ -45,7 +45,7 @@
  * fetching nothing and publishing the harness size would be a wrong number.
  */
 
-import type { ContractAddress } from '../packages/registry/address.js'
+import type { ContractAddress } from '../registry/address.js'
 import type {
   ServedBlob,
   ServedContractBinding,
@@ -53,8 +53,8 @@ import type {
   ServedIndex,
   ServedRefusals,
   ServedSnapshot,
-} from '../packages/registry/response.js'
-import type { ServedMethodology } from '../packages/registry/verifiability.js'
+} from '../registry/response.js'
+import type { ServedMethodology } from '../registry/verifiability.js'
 
 /**
  * Everything the generator may ask of a registry.

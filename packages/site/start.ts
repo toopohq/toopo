@@ -26,7 +26,7 @@
  * `signature.ts` and `implementation-record.ts` are both built on, and it decides this too.
  */
 
-import type { ParameterRecord } from '../packages/registry/contract-record.js'
+import type { ParameterRecord } from '../registry/contract-record.js'
 import { answerWritten, argumentsOf } from './playground.js'
 
 /** What the page hands over in `data-playground`, written by `contract-page.ts`. */

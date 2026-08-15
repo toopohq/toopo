@@ -41,10 +41,10 @@
  * refuses.
  */
 
-import type { CaseRecord, ExportRecord, ParameterRecord } from '../packages/registry/contract-record.js'
-import type { EncodedField } from '../packages/registry/value.js'
-import type { FrozenContract } from '../packages/registry/snapshot.js'
-import { encode } from '../packages/registry/value.js'
+import type { CaseRecord, ExportRecord, ParameterRecord } from '../registry/contract-record.js'
+import type { EncodedField } from '../registry/value.js'
+import type { FrozenContract } from '../registry/snapshot.js'
+import { encode } from '../registry/value.js'
 import { literal } from './literal.js'
 import { read } from './read-literal.js'
 
@@ -275,7 +275,7 @@ const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string |
     throw new ThePlaygroundCannotBeBuilt(
       what,
       `its parameter \`${parameter.name}\` is declared \`${parameter.type}\`, which no field of this ` +
-        `site knows how to build. Extend AS_AN_ARGUMENT in site/playground.ts deliberately, the way ` +
+        `site knows how to build. Extend AS_AN_ARGUMENT in packages/site/playground.ts deliberately, the way ` +
         `packages/registry/value.ts is extended for a value it does not model`,
     )
   }

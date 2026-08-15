@@ -179,7 +179,7 @@ export const sameContract = (a: ContractAddress, b: ContractAddress): boolean =>
  * every anchor a case identifier was frozen to make possible. A case identifier moving breaks the
  * links into one page; this moving breaks all of them at once.
  *
- * **It lived in `site/paths.ts` and moved here when a second consumer appeared**, which is the shape
+ * **It lived in `packages/site/paths.ts` and moved here when a second consumer appeared**, which is the shape
  * this repository keeps arriving at: one declaration, N transcriptions, a guard resolving them. The
  * generator was the only consumer while the site was the only thing publishing a URL, and
  * `the-origin-is-declared-once` held it inside that folder. The licence header of an installed file
@@ -195,7 +195,7 @@ export const THE_ORIGIN = 'https://toopo.dev'
 /**
  * The page a contract is published at, absolute, and the one spelling of it anything may write.
  *
- * `site/paths.ts` builds the same string out of a file path and a trailing-slash rule, and
+ * `packages/site/paths.ts` builds the same string out of a file path and a trailing-slash rule, and
  * `the-contract-url-is-the-page-the-site-publishes` holds the two together. Two derivations of one URL
  * would be the defect this whole family exists to prevent, and this one is the copy that cannot be
  * corrected: it is frozen into the header of every file the installer has ever written.

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
-import { emitted } from '../packages/registry/emit.js'
-import { localReadApi } from '../packages/registry/local-read-api.js'
+import { emitted } from '../registry/emit.js'
+import { localReadApi } from '../registry/local-read-api.js'
 import { THE_BROWSER_GRAPH, theReferenceModules } from './browser.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { localSource } from './local-source.js'

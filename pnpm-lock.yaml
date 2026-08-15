@@ -28,6 +28,8 @@ importers:
 
   packages/registry: {}
 
+  packages/site: {}
+
   packages/validation: {}
 
 packages:

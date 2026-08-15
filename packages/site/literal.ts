@@ -32,7 +32,7 @@
  * because they are visible and because `string/slugify@1`'s table is *about* them.
  */
 
-import type { EncodedValue, JsonPrimitive } from '../packages/registry/value.js'
+import type { EncodedValue, JsonPrimitive } from '../registry/value.js'
 
 /**
  * A character that carries meaning and shows nothing, or shows on top of its neighbour.

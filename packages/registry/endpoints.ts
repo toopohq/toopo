@@ -51,7 +51,7 @@
  *
  * The leaf is the endpoint's `id`, and not a name chosen to read well. That field is already declared
  * *the address a report or a deployment cites this endpoint by*, so a second spelling here would be
- * one thing with two names - the slug `site/paths.ts` refuses for a page, arriving on an endpoint. The
+ * one thing with two names - the slug `packages/site/paths.ts` refuses for a page, arriving on an endpoint. The
  * price is `/snapshot/{digest}` where English would write the plural, and the return is that no table
  * of routes exists anywhere in this repository to drift from these identifiers.
  *

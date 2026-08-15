@@ -1,7 +1,7 @@
 /**
  * The battery over the generator: what a page says, and what it must never say.
  *
- * It is the eighteenth, and the first to inject into `site/`. The three that measure `packages/cli/` ask what
+ * It is the eighteenth, and the first to inject into `packages/site/`. The three that measure `packages/cli/` ask what
  * happens to somebody's files; this one asks what happens to somebody's *understanding*, which fails
  * differently: a wrong page does not break a build, it is believed.
  *
@@ -260,7 +260,7 @@ const A_FIELD_SPELLS_ITS_DECLARED_TYPE = `  string: {
 
 const WHAT_RUNS_IN_YOUR_BROWSER_IS_SAID = `      line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),`
 
-const THE_GRAPH_LISTS_EVERY_MODULE = `  'site/literal.ts',
+const THE_GRAPH_LISTS_EVERY_MODULE = `  'packages/site/literal.ts',
 `
 
 const A_CODE_POINT_IS_HEXADECIMAL = `  const code = Number.parseInt(digits, 16)`
@@ -1173,8 +1173,8 @@ const mutants: readonly Mutant[] = [
 
 export const battery: Battery = {
   name: 'site',
-  contractPath: 'site',
-  vitestConfig: 'site/vitest.config.ts',
+  contractPath: 'packages/site',
+  vitestConfig: 'packages/site/vitest.config.ts',
   timeZone: 'UTC',
   calibrationMutant: 'W-01',
 
@@ -1200,7 +1200,7 @@ export const battery: Battery = {
    *
    * `EVERY_ARM` claims to hold a value the registry encodes to each arm of `EncodedValue`, and this
    * checks the claim. Both halves of it live outside what this battery may edit: the samples are in
-   * the test file, and `encode` is in `packages/registry/`. An edit anywhere in `site/` leaves it green by
+   * the test file, and `encode` is in `packages/registry/`. An edit anywhere in `packages/site/` leaves it green by
    * construction, so it is unreachable here rather than unprobed - the distinction the instrument
    * insists on, because *cannot be reached* and *nothing reaches it yet* look identical from outside.
    */
