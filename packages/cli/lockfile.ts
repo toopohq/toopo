@@ -1,6 +1,7 @@
 /**
  * `toopo.lock` - what was installed, and the one check that needs nothing from us.
- * ADR-0037 is what this file supports and what it cannot describe.
+ * ADR-0037 is what this file supports and what it cannot describe; ADR-0054 is why the version below
+ * cannot go stale, which is the shape rather than a sentence asking somebody to remember.
  *
  *
  * The shape is the registry's `Lockfile`, imported rather than restated. Every part of it is already an
