@@ -66,6 +66,7 @@ const publicationFile = (find: string, replace: string) => ({ file: 'publication
 const emitFile = (find: string, replace: string) => ({ file: 'emit.ts', find, replace })
 const endpointsFile = (find: string, replace: string) => ({ file: 'endpoints.ts', find, replace })
 const readApiFile = (find: string, replace: string) => ({ file: 'read-api.ts', find, replace })
+const revisionFile = (find: string, replace: string) => ({ file: 'revision.ts', find, replace })
 const verifiabilityFile = (find: string, replace: string) => ({
   file: 'verifiability.ts',
   find,
@@ -200,6 +201,23 @@ const WALKS_AFTER_PUSHING = `      const next = mustHold(holdings, edge.implemen
       seen.add(what)
       resolved.push(next)
       walk(next, [...open, what])`
+
+// --- The revision a named answer carries ---
+
+const THE_REVISION_IS_NOT_AN_OPINION = `  addressing: 'the-question',
+  servedFrom: 'the-registry-that-answered',
+  address: 'the-question',
+  digest: 'bound-for-life',
+  publishedAt: 'bound-for-life',
+  status: 'revisable',`
+
+const THE_INDEX_CARRIES_THE_REVISION_IT_WAS_BUILT_WITH = `  return {
+    addressing: 'named',
+    servedFrom,`
+
+const A_DIRTY_TREE_NAMES_NO_REVISION = `  if (dirty !== '') {`
+
+const THE_UNPUBLISHED_REVISION_IS_THE_NULL_OID = `export const THE_UNPUBLISHED_REVISION = '0'.repeat(40)`
 
 // ---------------------------------------------------------------------------
 // The defects
@@ -893,6 +911,95 @@ const mutants: readonly Mutant[] = [
       'is never written and the tree is smaller and still closed',
     [emitFile(EVERY_QUESTION_THAT_NEEDS_NOTHING_IS_A_ROOT, "  { method: 'refusals' },")],
     killed(['the-questions-that-need-nothing-are-the-answers-about-the-catalogue']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // The revision a named answer carries
+  // -------------------------------------------------------------------------
+
+  /**
+   * The revision filed as the registry's opinion, which is the mistake the fourth `FieldNature` exists
+   * against.
+   *
+   * `revisableFieldsOf` is rendered into what `implementation-bindings` publishes as *the registry's
+   * opinion, changeable without anything being wrong*, beside a sentence telling a reader not to take
+   * an opinion for a fact about the code. The revision is the one field of a named answer that is a
+   * fact, and the one a lockfile keeps in order to go back to it. ADR-0090.
+   */
+  sameOnEveryLens(
+    'I-43',
+    'files the revision among the fields a reader is told are the registry\'s opinion, so the one ' +
+      'thing in a named answer that is a fact is published as something changeable without anything ' +
+      'being wrong',
+    [
+      responseFile(
+        THE_REVISION_IS_NOT_AN_OPINION,
+        `  addressing: 'the-question',
+  servedFrom: 'revisable',
+  address: 'the-question',
+  digest: 'bound-for-life',
+  publishedAt: 'bound-for-life',
+  status: 'revisable',`,
+      ),
+    ],
+    killed(['the-revision-is-not-published-as-an-opinion']),
+  ),
+
+  /**
+   * The index stops carrying the revision it was built with, so every named answer of one deployment
+   * agrees on a value that came from nowhere.
+   *
+   * It is the wiring rather than the vocabulary: the field is still declared, still typed, still in the
+   * nature map, and the answer still has one - it is simply not the one the registry was asked for.
+   */
+  sameOnEveryLens(
+    'I-44',
+    'builds the contract index with a revision of its own rather than the one the registry was ' +
+      'asked for, so an index and a binding from one deployment name two states',
+    [
+      responseFile(
+        THE_INDEX_CARRIES_THE_REVISION_IT_WAS_BUILT_WITH,
+        `  return {
+    addressing: 'named',
+    servedFrom: 'f'.repeat(40),`,
+      ),
+    ],
+    killed([
+      'a-named-answer-moves-when-the-revision-does-and-the-policy-says-so',
+      'every-named-answer-names-the-revision-it-was-served-from',
+    ]),
+  ),
+
+  /**
+   * A revision stamped on a working tree that does not agree with its own commit.
+   *
+   * **It is the check that makes the field worth carrying at all.** An answer stamped with a revision
+   * it cannot be rebuilt from invites a reader to check something that will not come back, which is
+   * worse than carrying no revision. `git status --porcelain` is empty exactly when the tree agrees
+   * with its commit, and it covers untracked files - a contract added and not committed is precisely
+   * the change that would be served and then be unfindable.
+   */
+  sameOnEveryLens(
+    'I-45',
+    'names a revision for a working tree that does not agree with its commit, so a publication ' +
+      'carries a durability anchor that fails the first time somebody tries it',
+    [revisionFile(A_DIRTY_TREE_NAMES_NO_REVISION, `  if (false) {`)],
+    killed(['a-tree-that-does-not-agree-with-its-commit-names-no-revision']),
+  ),
+
+  /**
+   * The stand-in's revision made to look like one somebody could resolve.
+   *
+   * It is the argument `THE_UNPUBLISHED_VERSION` makes about `0.0.0-local`, on the other constant: a
+   * plausible value names a state that exists nowhere and leaves nobody able to tell it from one that
+   * does. Forty ones is a well-formed commit and no repository has it.
+   */
+  sameOnEveryLens(
+    'I-46',
+    'gives the stand-in a revision shaped like a real commit, so a lockfile written against a ' +
+      'publication that never happened is indistinguishable from one written against a registry',
+    [revisionFile(THE_UNPUBLISHED_REVISION_IS_THE_NULL_OID, `export const THE_UNPUBLISHED_REVISION = '1'.repeat(40)`)],
+    killed(['the-unpublished-revision-is-shaped-like-one-and-names-nothing']),
   ),
 ]
 
