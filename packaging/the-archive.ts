@@ -21,7 +21,7 @@
  * `npm install` of the archive resolves its one dependency, so this needs a populated npm cache or a
  * network. That is the same thing a user needs and it is why the dependency is worth naming: `toopo`
  * depends on `typescript` because `cli/rewrite.ts` repoints an import by parsing it, and parsing
- * TypeScript with anything other than a TypeScript parser is what `validation/` exists to refuse.
+ * TypeScript with anything other than a TypeScript parser is what `packages/validation/` exists to refuse.
  * Nothing about *installing a feature* reaches a network - the catalogue travels in the archive - and
  * `the-archive-reaches-no-network` is the guard that says so.
  *

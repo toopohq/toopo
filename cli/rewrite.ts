@@ -20,7 +20,7 @@
  * ---------------------------------------------------------------------------
  *
  * A regular expression over `from '...'` is defeated by a comment, a template literal, an `import
- * type`, an `export ... from`, an `import()` and an `import x = require()`. `validation/` already reads
+ * type`, an `export ... from`, an `import()` and an `import x = require()`. `packages/validation/` already reads
  * all six shapes with a syntax tree, for the same reason and under the same argument, so this reuses
  * `importSpecifiersIn` rather than writing a seventh reader that would be wrong differently.
  *
@@ -42,8 +42,8 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join, posix } from 'node:path'
 
-import { importSpecifiersIn } from '../validation/forbidden-constructs.js'
-import { readSources } from '../validation/source.js'
+import { importSpecifiersIn } from '../packages/validation/forbidden-constructs.js'
+import { readSources } from '../packages/validation/source.js'
 import { removeDirectory } from './remove-directory.js'
 
 /** One file to be rewritten, addressed by the path the catalogue serves it at. */

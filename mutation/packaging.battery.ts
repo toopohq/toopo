@@ -443,7 +443,7 @@ export const battery: Battery = {
       reason:
         'the archive\'s JavaScript is the compiled closure of `cli/published.ts`, and no module of ' +
         'this repository that any program compiles reaches a socket - measured, the one `fetch(` ' +
-        'here is in `validation/fixtures/refused.ts`, which is excluded from every program because ' +
+        'here is in `packages/validation/fixtures/refused.ts`, which is excluded from every program because ' +
         'most of what it does is a type error as well as a refusal. So widening what the build ' +
         'compiles cannot put a networked module in the archive, and what would redden this is an ' +
         'import `cli/` would have to gain',
@@ -457,7 +457,7 @@ export const battery: Battery = {
    * into a measurement. What it compares is two freezes of one working tree, and both take the same
    * walk in the same order whether anything sorts or not - so the comparison is blind to which order
    * that is. What would redden it is a freeze whose order depends on something outside the tree: a
-   * clock, or a random source. Those are the two names `validation/` refuses to let a submission read,
+   * clock, or a random source. Those are the two names `packages/validation/` refuses to let a submission read,
    * and writing one into `packaging/` to reach a guard would be arranging the defect to suit the
    * instrument.
    */

@@ -121,7 +121,7 @@ import type {
  * Every method answers with what the endpoint answers or with `null`, and `null` means *this registry
  * holds no such thing* rather than *something went wrong*. A transport failure is **not** an absence:
  * `http-source.ts` throws on any status that is neither the answer nor a 404, because a refusal that
- * arrives as an absence is the failure `validation/source.ts` records one folder along - a thing that
+ * arrives as an absence is the failure `packages/validation/source.ts` records one folder along - a thing that
  * was not read passes every check for the wrong reason. This paragraph used to say a transport failure
  * was not modelled *because there is no transport*, and the clause stopped being true in the commit
  * that carries this one.

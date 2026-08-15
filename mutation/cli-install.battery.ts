@@ -1138,7 +1138,7 @@ void theFive`,
    * `null` is the port's word for *this registry holds no such thing*, and an installer told it by a
    * registry that answered 500 reports the file as one nobody publishes - a diagnostic naming a cause no
    * measurement establishes, arriving through the transport rather than through a screen. It is the
-   * failure `validation/source.ts` records one folder along: a thing that was not read passes every
+   * failure `packages/validation/source.ts` records one folder along: a thing that was not read passes every
    * check for the wrong reason.
    */
   sameOnEveryLens(

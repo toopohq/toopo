@@ -7,7 +7,7 @@
  * on the one mechanism the whole supply-chain argument rests on it is the least defensible place to
  * be in.
  *
- * It injects into `validation/` and collects under that folder's own configuration, for the reason
+ * It injects into `packages/validation/` and collects under that folder's own configuration, for the reason
  * `registry-storage` already records: a pipeline guard collected by `npm test` would redden under a
  * specification mutant and be counted as a contract catching it. `census.ts` had no entry for that
  * configuration when this battery was written, and refused to run at all until one was counted -
@@ -390,8 +390,8 @@ export const TYPESCRIPT_SURFACE = {} as typeof THE_REAL_SURFACE`,
 
 export const battery: Battery = {
   name: 'validation-stage-1',
-  contractPath: 'validation',
-  vitestConfig: 'validation/vitest.config.ts',
+  contractPath: 'packages/validation',
+  vitestConfig: 'packages/validation/vitest.config.ts',
   timeZone: 'UTC',
   calibrationMutant: 'S-01',
 

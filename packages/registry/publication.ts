@@ -68,7 +68,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  *
  * **The 23 line is refused rather than assumed.** Nothing readable here establishes either API anywhere
  * in 23.x, and a range is a claim about runtimes nobody here has run. Refusing a line that cannot be
- * established is the closed direction `validation/forbidden-constructs.ts` already takes for a name it
+ * established is the closed direction `packages/validation/forbidden-constructs.ts` already takes for a name it
  * has not heard of, and 23.x is not a long-term line, so the cost is a runtime nobody should be on.
  *
  * **What this range does not cover, stated because the field is one and the populations are two.** A

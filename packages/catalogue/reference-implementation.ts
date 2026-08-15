@@ -33,7 +33,7 @@
  * read a rule.
  *
  * So the split is along the line that was already there - a declaration on one side, a guard on the
- * other - and `validation/states-its-own-signature.ts` now builds its refusal out of the first rule's
+ * other - and `packages/validation/states-its-own-signature.ts` now builds its refusal out of the first rule's
  * own sentence rather than a transcription of it. The second rule stays a reader's, and
  * `contractAnatomy` records why: nothing decides whether an implementation delegates to a built-in
  * *that does the same job*.

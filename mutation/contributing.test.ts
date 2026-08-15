@@ -13,8 +13,8 @@ import {
   EVALUATION_RULE,
   GLOBAL_RULE,
   IMPORT_RULE,
-} from '../validation/forbidden-constructs.ts'
-import { OWN_SIGNATURE_RULE } from '../validation/states-its-own-signature.ts'
+} from '../packages/validation/forbidden-constructs.ts'
+import { OWN_SIGNATURE_RULE } from '../packages/validation/states-its-own-signature.ts'
 
 /**
  * What `CONTRIBUTING.md` publishes, resolved against the catalogue and the filter it describes.
@@ -25,7 +25,7 @@ import { OWN_SIGNATURE_RULE } from '../validation/states-its-own-signature.ts'
  * README's figures come from the instrument; these come from the five contract records and from the
  * rule identifiers stage 1 refuses under.
  *
- * **It lives here rather than in `packages/registry/` or `validation/`, and the placement is an argument
+ * **It lives here rather than in `packages/registry/` or `packages/validation/`, and the placement is an argument
  * rather than a convenience.** Both of those folders are injected into by a battery, and a battery
  * measures whether the catalogue's own tests catch defects in the catalogue. A guard over a Markdown
  * file is not that, so putting it there would force `registry-storage` to declare a document as an

@@ -6,10 +6,10 @@
  * invented to match the rule that catches it. Nothing here should be copied anywhere, and nothing
  * here is a contract.
  *
- * It lives under `validation/` rather than `contracts/` for the reason the mutation instrument's own
+ * It lives under `packages/validation/` rather than `contracts/` for the reason the mutation instrument's own
  * fixture lives under `mutation/`: `contracts/` is the catalogue and nothing else.
  *
- * It is excluded from `validation/tsconfig.json` and typechecked by nothing, because most of what it
+ * It is excluded from `packages/validation/tsconfig.json` and typechecked by nothing, because most of what it
  * does is a type error as well as a refusal, and `npm run validation` would fail before a rule was
  * asked anything.
  */

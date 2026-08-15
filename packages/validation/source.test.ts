@@ -12,7 +12,7 @@ import { UnreadableSource, everyNode, positionOf, readSources } from './source.j
  * times that is not a duration assertion, and vitest's five-second default would have been one on a
  * loaded machine.
  */
-const REPOSITORY_ROOT = dirname(import.meta.dirname)
+const REPOSITORY_ROOT = dirname(dirname(import.meta.dirname))
 const PROJECT = join(REPOSITORY_ROOT, 'tsconfig.json')
 const REFERENCE = join(REPOSITORY_ROOT, 'contracts', 'typescript', 'date', 'add', 'reference.ts')
 

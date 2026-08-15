@@ -251,13 +251,13 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/visibility.test.ts': 10,
   },
 
-  'validation/vitest.config.ts': {
-    'validation/forbidden-constructs.test.ts': 9,
-    'validation/source.test.ts': 3,
-    'validation/states-its-own-signature.test.ts': 3,
-    'validation/the-boundary.test.ts': 3,
-    'validation/the-five.test.ts': 7,
-    'validation/typescript-api.test.ts': 2,
+  'packages/validation/vitest.config.ts': {
+    'packages/validation/forbidden-constructs.test.ts': 9,
+    'packages/validation/source.test.ts': 3,
+    'packages/validation/states-its-own-signature.test.ts': 3,
+    'packages/validation/the-boundary.test.ts': 3,
+    'packages/validation/the-five.test.ts': 7,
+    'packages/validation/typescript-api.test.ts': 2,
   },
 
   'cli/vitest.config.ts': {

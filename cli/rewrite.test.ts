@@ -68,7 +68,7 @@ describe('pointing an import at where the file went', () => {
 
   /**
    * Six shapes name a module and a regular expression over `from '...'` misses four of them. This is
-   * why the reader is `validation/`'s and not a seventh one written here.
+   * why the reader is `packages/validation/`'s and not a seventh one written here.
    */
   it('every-shape-of-import-is-repointed-and-not-only-the-obvious-one', () => {
     const text = rewritten(

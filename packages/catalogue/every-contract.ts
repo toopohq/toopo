@@ -101,7 +101,7 @@ import { groupingFaults, isFrozenIdentifier } from './identifier.js'
  *
  * Every entry carries `checkableFrom`, and the three values are a *measurement of where the frontier
  * falls* rather than a wish list. The criterion is stage 1's own constraint, stated in
- * `validation/source.ts`: **it never imports what it analyses**, because importing is executing and
+ * `packages/validation/source.ts`: **it never imports what it analyses**, because importing is executing and
  * stage 1 is what runs before anything executes. So a requirement is `the source alone` when a syntax
  * tree settles it, and it is `the module` when it needs the *value* of a declaration - which belongs
  * to a stage that has already decided the code is safe to evaluate.

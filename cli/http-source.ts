@@ -46,7 +46,7 @@
  * ---------------------------------------------------------------------------
  *
  * `null` means *this registry holds no such thing* and is spelled `404`. Every other status that is not
- * the answer throws, because a refusal arriving as an absence is the failure `validation/source.ts`
+ * the answer throws, because a refusal arriving as an absence is the failure `packages/validation/source.ts`
  * records - a thing that was not read passes every check for the wrong reason. So a 500 on a blob is an
  * error, where a 404 on one is `null`; and a 404 on the index is an error too, because the port makes
  * that answer non-nullable and a registry with no index is not a registry with an empty catalogue.

@@ -217,7 +217,7 @@ describe('a registry reached over a socket', () => {
    * A registry that cannot answer refuses loudly rather than answering an absence.
    *
    * `null` is *this registry holds no such thing* and is spelled `404`. Anything else that is not the
-   * answer throws - because a refusal arriving as an absence is the failure `validation/source.ts`
+   * answer throws - because a refusal arriving as an absence is the failure `packages/validation/source.ts`
    * records one folder along, a thing that was not read passing every check for the wrong reason. An
    * installer told `null` by a registry that is merely broken would report the file as one nobody
    * publishes, which is a diagnostic naming a cause no measurement establishes.

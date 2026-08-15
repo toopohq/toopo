@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config'
  * `npm run cli` means the installer's own guards, and nothing else.
  *
  * The fourth configuration in this repository, for the three reasons `packages/registry/vitest.config.ts` and
- * `validation/vitest.config.ts` already record and measured rather than assumed. A guard collected by
+ * `packages/validation/vitest.config.ts` already record and measured rather than assumed. A guard collected by
  * `npm test` enters every cell of every contract battery; a type error anywhere in the root
  * `tsconfig.json`'s `include` makes `npm test` exit non-zero with no failed guard, which the instrument
  * reads as every cell killed by typecheck; and every guard here that rewrites an import spawns a

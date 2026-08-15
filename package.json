@@ -38,7 +38,7 @@
     "tally": "node mutation/tally.ts",
     "meta": "node run-vitest.ts run --config mutation/vitest.config.ts",
     "registry": "tsc -p packages/registry/tsconfig.json && node run-vitest.ts run --config packages/registry/vitest.config.ts",
-    "validation": "tsc -p validation/tsconfig.json && node run-vitest.ts run --config validation/vitest.config.ts",
+    "validation": "tsc -p packages/validation/tsconfig.json && node run-vitest.ts run --config packages/validation/vitest.config.ts",
     "cli": "tsc -p cli/tsconfig.json && node run-vitest.ts run --config cli/vitest.config.ts",
     "site": "tsc -p site/tsconfig.json && node run-vitest.ts run --config site/vitest.config.ts",
     "packaging": "tsc -p packaging/tsconfig.json && node run-vitest.ts run --config packaging/vitest.config.ts",

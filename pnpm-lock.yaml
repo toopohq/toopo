@@ -26,6 +26,8 @@ importers:
 
   packages/registry: {}
 
+  packages/validation: {}
+
 packages:
 
   '@emnapi/core@2.0.0-alpha.3':

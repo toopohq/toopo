@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig.json",
+  "extends": "../../tsconfig.json",
   "include": ["."],
   // The fixtures are submissions, not source of this folder. They carry the constructions the rules
   // refuse - and a refused construction is frequently a type error as well, which would make

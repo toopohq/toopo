@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { analyseImplementation, requirementsOf } from './analyse.js'
 import { renderFinding } from './finding.js'
 import { readSources } from './source.js'
-import { eachContract, theFive } from '../packages/registry/the-five.js'
+import { eachContract, theFive } from '../registry/the-five.js'
 
 /**
  * The catalogue, put through its own filter.
@@ -22,7 +22,7 @@ import { eachContract, theFive } from '../packages/registry/the-five.js'
  * Every guard here spawns a compiler process, so it declares its own timeout: the catalogue's clock
  * rule, applied to the folder that will enforce the catalogue's rules.
  */
-const REPOSITORY_ROOT = dirname(import.meta.dirname)
+const REPOSITORY_ROOT = dirname(dirname(import.meta.dirname))
 const PROJECT = join(REPOSITORY_ROOT, 'tsconfig.json')
 
 const ANALYSIS_TIMEOUT_MS = 30_000

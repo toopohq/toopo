@@ -37,7 +37,7 @@
  * The limit of reading a type without a compiler, stated rather than discovered
  * ---------------------------------------------------------------------------
  *
- * `validation/typescript-api.ts` records that a hand-written lexical reading is refused where the
+ * `packages/validation/typescript-api.ts` records that a hand-written lexical reading is refused where the
  * security filter is concerned, because there an approximation is evaded. This is not that: the text
  * read here is written by this repository, pinned to the contract's own `contract.ts` by
  * `against-the-five.test.ts`, and a misreading cannot be silent - the case fields stop lining up and the
