@@ -27,7 +27,7 @@ import { isFrozenIdentifier } from '../catalogue/identifier.js'
  * settled that a guard travels as a pair. A field with one value now against a rename of the whole
  * catalogue later is the cheapest insurance in this schema.
  *
- * What it does not do is make the schema language-neutral, and `contract-record.ts` says where the
+ * What it does not do is make the schema language-neutral, and ADR-0006 says where the
  * frontier actually falls: the *shape* of a record is neutral, its *content* is TypeScript, and
  * pretending otherwise would be an abstraction no contract fills.
  *

@@ -3,7 +3,7 @@
  *
  * A contract's declarative content is data and is modelled; its executable content - `outputsAreEqual`,
  * the key functions, the bodies of the properties - is served as hashed files and is never modelled.
- * That frontier is the registry's, not this file's, and `contract-record.ts` states it. What this file
+ * That frontier is the registry's, not this file's, and ADR-0003 states it. What this file
  * answers is the question the frontier leaves: the declarative half is not JSON either.
  *
  * Measured, over the five contracts, by round-tripping every declarative export through

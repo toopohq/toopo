@@ -55,7 +55,7 @@ describe('the five, read against their own source', () => {
   /**
    * A sentence the catalogue shares is a whole sentence wherever a contract puts it.
    *
-   * **The half of the register that no guard over a field can hold.** `contract-record.ts` settles
+   * **The half of the register that no guard over a field can hold.** ADR-0008 settles
    * that a string a page prints as a paragraph is a sentence, and `packages/site/pages.test.ts` asks it of every
    * such paragraph - but a shared value is *embedded*, so the string it lands in is a sentence whatever
    * the seam does. `DETERMINISM_ORDERING_FINDING` was a clause composed as

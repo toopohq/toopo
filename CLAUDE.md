@@ -3173,8 +3173,11 @@ because the hook that translates a `.js` specifier cannot be used before it is r
    still has zero runtime dependencies of any kind.
 4. The root `package.json` carries `"private": true`, so nothing can be published by accident.
 5. Working notes, planning documents and status reports do not belong in this repository. Only
-   contracts, implementations, tests, the evidence produced by running them, and the instrument that
-   produces that evidence — including its own fixtures.
+   contracts, implementations, tests, the evidence produced by running them, the instrument that
+   produces that evidence — including its own fixtures — and the decision records under
+   `docs/decisions/`, whose format, address and required sections ADR-0001 settles. A decision record
+   is none of the three things this rule refuses: it is not a note, it carries no status, and it is
+   what a line of code cites when the reason it exists will not fit beside it.
 6. **Fixtures for the instrument live under `mutation/`, never under `contracts/`.** `contracts/` is
    the catalogue and nothing else. A fixture is a toy shaped like a contract so that the instrument
    can be mutation-tested in seconds rather than minutes; a meta-test nobody runs is a decorative

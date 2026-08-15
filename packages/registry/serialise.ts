@@ -162,7 +162,7 @@ const identityOf = (module: Readonly<Record<string, unknown>>): IdentityRecord =
     description: identity['description'] as string,
     inputDomain: identity['inputDomain'] as string,
     searchAliases: identity['searchAliases'] as readonly string[],
-    // Absent from two of the five, and `contract-record.ts` says why that is left as a debt of those
+    // Absent from two of the five, and ADR-0009 says why that is left as a debt of those
     // two rather than repaired by transcription here.
     ...(relation === undefined ? {} : { relationToTheLanguage: relation as string }),
   }

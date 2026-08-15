@@ -618,7 +618,7 @@ export type UniversalPropertyDeclaration = {
  * **A whole sentence, because it lands in prose a contract page prints.** It used to be a clause, and
  * all five contracts composed it as `` `...own first answer. ${this} - X is that mutant here.` `` - so
  * every contract page published a sentence beginning in lower case after a full stop.
- * `contract-record.ts` carries the register and names the two guards that keep it.
+ * ADR-0008 carries the register and names the two guards that keep it.
  */
 export const DETERMINISM_ORDERING_FINDING =
   'This property is ordered under `no ambient input` rather than independent of it: every mutant ' +
