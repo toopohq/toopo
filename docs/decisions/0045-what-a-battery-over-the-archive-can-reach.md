@@ -10,7 +10,7 @@ confirmed-by:
   - battery: packaging
     guard: every-file-in-the-archive-is-loaded-by-a-command
   - battery: packaging
-    guard: the-archive-reaches-no-network
+    guard: the-archive-reaches-the-network-from-exactly-one-module
 ---
 
 # What a battery over the archive can reach

@@ -5,7 +5,6 @@ decision-makers: Mathis Perron
 governs:
   - mutation/paths.ts
   - packages/registry/serialise.ts
-  - packages/cli/published.ts
 confirmed-by: []
 ---
 
@@ -40,16 +39,21 @@ worth. Correct untouched, the folder having stayed at the root: `packaging/the-a
 `packaging/build.ts`, `packaging/archive.test.ts`, and `mutation/paths.ts`. Repaired to two levels:
 `packages/registry/serialise.ts`, `packages/validation/source.test.ts`,
 `packages/validation/the-five.test.ts`, `packages/site/build.ts`, `packages/site/playground.test.ts`.
-And one that is correct *because it is not about the source tree at all*:
-`packages/cli/published.ts` resolves the artefact at `join(import.meta.dirname, '..', ARTEFACT_FILE)`,
-which is a fact about the compiled layout under `dist/` — it survived because
-`packaging/tsconfig.dist.json` moved its `rootDir` to `../packages` and kept `dist/packages/cli/published.js`
-where it was.
+And one that was correct *because it was not about the source tree at all*:
+`packages/cli/published.ts` resolved the archive's artefact at
+`join(import.meta.dirname, '..', ARTEFACT_FILE)`, which is a fact about the compiled layout under
+`dist/` — it survived because `packaging/tsconfig.dist.json` moved its `rootDir` to `../packages` and
+kept `dist/packages/cli/published.js` where it was.
 
 **The rule the eleventh needs: a computed root states how far up it is going, and what it is going up
-from.** The distinction `published.ts` embodies is the one that matters — a walk over the *source*
-tree and a walk over the *emitted* tree are two different facts that look identical, and only one of
-them moves when a folder does.
+from.** The distinction `published.ts` embodied is the one that matters — a walk over the *source* tree
+and a walk over the *emitted* tree are two different facts that look identical, and only one of them
+moves when a folder does.
+
+**That tenth site no longer exists**, and it is kept here as the clearest example the sweep produced
+rather than edited out. [ADR-0092](0092-the-catalogue-leaves-the-archive.md) took the artefact out of
+the archive, so `published.ts` computes no root at all now — it names an origin — and this record
+stopped governing it in the same change.
 
 ## Consequences
 
