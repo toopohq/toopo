@@ -1,5 +1,7 @@
 /**
  * What a browser loads, and the single translation between this repository's source and it.
+ * ADR-0029 is how this reaches a browser, and what is measured about the transformation.
+ *
  *
  * ---------------------------------------------------------------------------
  * The `.js` specifiers this repository already writes are what makes this free

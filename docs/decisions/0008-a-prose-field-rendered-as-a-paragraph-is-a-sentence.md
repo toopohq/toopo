@@ -9,6 +9,8 @@ confirmed-by:
     guard: a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence
   - battery: registry-storage
     guard: a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands
+  - battery: registry-storage
+    guard: a-sentence-rendered-whole-is-not-also-a-complement
 ---
 
 # A carried string a page prints as a paragraph is a sentence
@@ -66,6 +68,70 @@ Both guards of the register need it and neither may own it, so it is here, besid
 from are two types over one shape, and the walk is about the shape. Nothing is skipped and no field is
 named - a walk that knew which fields hold prose would be the list this rule exists without.
 
+### Why no guard about elements can see this class
+
+**It is the neighbour of [ADR-0025](0025-what-separates-two-elements-in-a-reading.md), and neither
+guard there can see it.**
+`no-element-runs-into-the-one-beside-it` asks whether two sibling *elements* run together. Both defects
+filed against this unit sit in a `<p>` whose only child is a text node, so there is no pair inside it to
+look at; one level up, the paragraph's own neighbours are a `<p>` ending `\n\n` and an `<h2>`, so the
+predicate is false there too. Measured over the seven pages: **595 sibling pairs of elements, 0
+colliding.** That guard's subject is the boundary *between two elements*; these are boundaries *inside
+one string*, and no predicate over element pairs reaches them. **A declared limit rather than a hole** —
+and the reason the class has been found three times by a reader and never by a guard.
+
+### The three instances in the catalogue
+
+**Three instances in the catalogue and not two, and the third was found by the measurement rather than by
+a reader.** `DETERMINISM_ORDERING_FINDING` is a clause all five contracts composed as `` `…own first
+answer. ${it} - X is that mutant here.` ``. `NO_AMBIENT_OUTPUT_FINDING` is the same clause at the *head*
+of a reason, opening a paragraph in lower case on four pages — three lines from the first in the same
+file, and invisible to everybody who had read that file. Both are sentences now, and the ten composition
+sites lost the joins that hid them.
+
+### Two guards, and they partition the class
+
+**Two guards, and they are a partition rather than a pair: a value stands alone or it is embedded.**
+`a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` derives its population from the two things
+that already exist — every string the record carries, and every paragraph of the page — so **no list of
+prose fields exists anywhere to drift**. Measured: 212 paragraphs are a carried string and 6 were
+fragments, which is every instance of the class and nothing else. What the derivation buys is the
+exclusions: `couplingRule` and a table's `purpose` are punctuated *by the page*, so their paragraph is
+not the carried string and they fall out on their own rather than being named.
+`a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands` takes the half no field-shaped guard
+can reach, because a shared value is embedded and the string it lands in is a sentence whatever the seam
+does. What the catalogue shares is whatever it exports; what is prose is whatever carries a space, which
+is the one thing an identifier of this repository can never do — the argument ` :: ` was already chosen
+on. Nine exported strings, five of them prose, two of the five in a record.
+
+### The third guard, and the sentence that was well formed and false
+
+**The reading of the seven pages found two more, and one is not a fragment but a false sentence.**
+`whyNotFrozen` was composed after a full stop, which is the catalogue defect verbatim on a value the page
+composes rather than a contract. And `WHAT_A_SIGNATURE_DOES_NOT_PROVE`, a whole sentence, sat in the slot
+where the page writes `This does not establish ${butNot}.` — publishing *This does not establish a
+signature attests who published this snapshot and from what build*, which **denies the claim two lines
+above it**. Every other `butNot` of that table is a complement. **No shape check could ever have caught
+it: the composed sentence is well formed and false**, which is the half of this class that register
+cannot reach, and `a-sentence-rendered-whole-is-not-also-a-complement` is what does.
+
+**A guard that claims detection is not excused by a price, and a required field of one word is what said
+so.** That third guard was first declared an unprobed region of `registry-storage`, with the cost of a
+cell written out: a cell moves the published count, which `README.md` transcribes and `THE_REPLAY.spread`
+describes as a population that has run, so it obliges a full replay to restamp. `UnprobedRegion` refused
+the entry — `nature` is required, the value would have been `claims detection`, and `run.ts` says what
+that means with no nuance: never having been red, such a guard is decorative until a mutant reaches it.
+**The type turned a price into a decision**, which is *Make the omission impossible* arriving on the
+instrument's own declarations. I-32 is the cell, and the replay behind it is what this section's figures
+are stamped on.
+
+**The five instances of the seam guard are out of reach, and the construction is the direction a damaged
+string fails in.** The seam is composed in a contract folder; `serialise.ts` is the only module of
+`registry/` the string passes through and it copies it. To redden the guard an edit would have to produce
+a *misplaced* occurrence, and every edit that damages the string removes the occurrence instead. Measured
+rather than argued: `reason: property.reason` replaced by `reason: ''` leaves the whole registry suite
+green, those five included.
+
 ## Consequences
 
 The limit is declared rather than discovered: **a contract the catalogue refused has no page**, so
@@ -76,6 +142,18 @@ paragraph.
 Two neighbours stay outside the rule and are named so they are not read as oversights. A table's
 `purpose` and `couplingRule` are punctuated *by the page*, so their paragraph is not the carried
 string and they fall out of the derivation on their own.
+
+**Two neighbours are named and left, because their register is not this one's and neither is frozen.** A
+table's `purpose` is rendered as a lower-case paragraph on the three contracts with one table — the page
+supplies its full stop and not its capital — and it cannot simply become a sentence, because it is an
+`h3` on the two contracts with two tables. The refusals page prints `decidedAgainst` and `keptAs` as bare
+lower-case paragraphs, and there the `h3` directly above each one is its label, which is the shape a
+clause is entitled to. Both are decisions about a rendering rather than about frozen prose, so the cost
+of leaving them is a regeneration and not a repository somebody else owns.
+
+**Filling the two contracts that carry no `relationToTheLanguage` is a separate decision about content
+and is still owed** — the debt [ADR-0009](0009-relation-to-the-language-is-optional.md) and
+[ADR-0022](0022-a-divergence-is-replayed-rather-than-asserted.md) both name.
 
 ## Confirmation
 

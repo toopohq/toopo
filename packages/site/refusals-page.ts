@@ -1,5 +1,7 @@
 /**
  * What the catalogue turned down, and the measurement each refusal rests on.
+ * ADR-0027 is why a refused contract is published here and has no page of its own.
+ *
  *
  * ---------------------------------------------------------------------------
  * The page this project can publish on day one and almost nobody else can

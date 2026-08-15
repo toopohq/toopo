@@ -1,5 +1,8 @@
 /**
  * The page that says what "you can check this yourself" means, and what it does not mean.
+ * ADR-0030 is what this page may say; ADR-0026 is why the marks a carried sentence holds are parsed
+ * once, by one function.
+ *
  *
  * ---------------------------------------------------------------------------
  * The page where a project like this one destroys itself

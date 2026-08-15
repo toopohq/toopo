@@ -1,5 +1,7 @@
 /**
  * The two files that exist for a crawler rather than for a reader.
+ * ADR-0031 is what a crawler is told, and what is omitted rather than fabricated.
+ *
  *
  * ---------------------------------------------------------------------------
  * Small, and without them nothing is indexed

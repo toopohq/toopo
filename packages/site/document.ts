@@ -1,5 +1,8 @@
 /**
  * A page, and the two projections of it that must never disagree.
+ * ADR-0024 is why a page is a value with two projections; ADR-0025 is what goes between two of its
+ * elements in a reading.
+ *
  *
  * ---------------------------------------------------------------------------
  * Why a page is a tree and not a string

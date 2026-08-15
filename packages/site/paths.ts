@@ -1,5 +1,7 @@
 /**
  * Where a page lives, and the one rule that fixes it: **a page's address is the contract's address.**
+ * ADR-0031 is why the origin is an address rather than a setting.
+ *
  *
  * `packages/registry/address.ts` was written on the promise that the site would make a case identifier a URL
  * anchor - it says so in its own first paragraph - and `renderCase` has sat there unread ever since,

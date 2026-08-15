@@ -179,444 +179,6 @@ two, which puts a twenty-thousand-file limit at 1 817 contracts instead of ten t
   argued for.
 - Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
 
-## What separates two elements in a reading — settled
-
-**A title is written as a title, and the separator table is about blocks.** Every entry of `SEPARATOR`
-is a block-level element; `a` is phrasing content, and giving it one would state about a phrasing
-element something false of every other phrasing element beside it. So a contract name on the front
-page is `h3.call` — **the tag is the outline and the class is the look**, the rule this file already
-carries, settling both halves at once.
-
-**Both branches of that decision were measured, and only one of them exists.** Over the seven pages
-there are 211 anchors: 197 are `aria-hidden` and leave the projection entirely, and of the 14 a reader
-can see, **nine are already the sole child of an element that separates and five had siblings — the
-five defects.** Not one anchor on this site is written inside a sentence, so the question of what an
-inline link becomes in a projection never arose. The shape came from the site rather than from taste:
-the refusals page already renders this exact pair — an address and the summary under it — as a heading
-and a paragraph, and 121 of the 126 list items open with `.call`. **Two renderings of one thing drift
-until one lies**, and the one that lied was the front page, whose outline held its four sections and
-not one contract name, on the page that *is* this site's navigation.
-
-**The guard is the class, and the guard it stands beside is two of its instances.**
-`a-label-and-the-sentence-under-it-are-two-lines` was written for the same failure on a contract page
-and enumerates the two places somebody had already found — which is exactly why the third was found by
-re-reading instead of by a red. `no-element-runs-into-the-one-beside-it` asks it of every element pair
-on every page. **Both siblings must be elements, and that is measured rather than cautious**: with text
-nodes admitted the predicate holds 53 pairs and 48 are ordinary inline markup, where the author writes
-the spacing into the prose and is right to. It is also what keeps a link written inside a sentence
-invisible to it, since its neighbours carry the spaces.
-
-**A rule that is declared, implemented and reached by hand is the shape every failure of it takes.**
-`methodology-page.ts` says the sentences from `mutation/` carry `**this**` and `` `that` ``, and that
-printed as they are *a reader of the page sees the asterisks*. `inline` parses them and two call sites
-reached for `line` instead, so the page whose whole subject is rigour published its own markup.
-`no-mark-a-sentence-carries-reaches-the-reader-as-itself` is what was missing, and it is asked of that
-page alone: a contract page publishes contract prose that writes `` `Intl` `` for a reader, which is a
-separate question about the register of the catalogue's own text.
-
-**Where a guard's cell goes is decided by where the guard is alone, not by where the defect happened.**
-Every other sentence the method page takes from `mutation/` is also required by name somewhere, so the
-same edit there reddens two guards and shows neither to be needed. At the silences it is the only red
-in the folder — and it is the more robust anchor besides, since `THE_REPLAY.spread` carries one
-asterisk pair where the page renders 64 silence reasons of which 48 carry a mark.
-
-**And three guards over one page were undoing those marks three ways**, which is what looking for that
-cell turned up: one stripped them by hand with `.replaceAll`, one compared the literal, and this unit
-added a third spelling while arguing in its own commit message against the first. `asRead` is one
-function now. **A copy of a parser is not a second opinion, it is the same statement written where
-nobody will maintain it.**
-
-**Two more the reading found, filed here as the neighbouring class and closed by the section below.**
-`identity.relationToTheLanguage` published as a bare fragment, and `DETERMINISM_ORDERING_FINDING`
-composed after a full stop on five contracts. **What that filing got wrong is worth keeping**: it said
-the backticks a contract page publishes in its own prose *close with them*, and they did not. They are
-a decision about the register of the catalogue's own text, where these two were a decision about where
-a value may be printed — one predicate settles the second and nothing mechanical settles the first. A
-prediction that two things close together is a claim like any other, and this one was made without
-measuring either.
-
-## A value written for one position, published in another — settled
-
-**It is the neighbour of the class above, and neither guard there can see it.**
-`no-element-runs-into-the-one-beside-it` asks whether two sibling *elements* run together. Both defects
-filed against this unit sit in a `<p>` whose only child is a text node, so there is no pair inside it to
-look at; one level up, the paragraph's own neighbours are a `<p>` ending `\n\n` and an `<h2>`, so the
-predicate is false there too. Measured over the seven pages: **595 sibling pairs of elements, 0
-colliding.** That guard's subject is the boundary *between two elements*; these are boundaries *inside
-one string*, and no predicate over element pairs reaches them. **A declared limit rather than a hole** —
-and the reason the class has been found three times by a reader and never by a guard.
-
-**The register of a prose field is settled, by census rather than by taste: a string this record carries
-that a page prints as a paragraph of its own opens like a sentence and ends in a full stop.**
-`identity.relationToTheLanguage` had no register — three clauses and one sentence over its four declared
-values — and the page prints it bare, so two contract pages published a fragment for as long as the
-field has existed. Its siblings decide it: `summary`, `description` and `inputDomain` are sentences
-**twelve times out of twelve** over the four contracts the registry serves, and the one value that is
-already a sentence, `array/group-by@1`'s, agrees with all twelve. The alternative — declare the field a
-clause and let the page frame it, as the page already frames `couplingRule` and a table's `purpose` — is
-refused by that same census: `array/group-by@1`'s value is *two* sentences, so no frame fits it. The rule
-is written beside the field in `contract-record.ts`. **Filling the two contracts that carry no such field
-is a separate decision about content and is still owed.**
-
-**Three instances in the catalogue and not two, and the third was found by the measurement rather than by
-a reader.** `DETERMINISM_ORDERING_FINDING` is a clause all five contracts composed as `` `…own first
-answer. ${it} - X is that mutant here.` ``. `NO_AMBIENT_OUTPUT_FINDING` is the same clause at the *head*
-of a reason, opening a paragraph in lower case on four pages — three lines from the first in the same
-file, and invisible to everybody who had read that file. Both are sentences now, and the ten composition
-sites lost the joins that hid them.
-
-**Two guards, and they are a partition rather than a pair: a value stands alone or it is embedded.**
-`a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` derives its population from the two things
-that already exist — every string the record carries, and every paragraph of the page — so **no list of
-prose fields exists anywhere to drift**. Measured: 212 paragraphs are a carried string and 6 were
-fragments, which is every instance of the class and nothing else. What the derivation buys is the
-exclusions: `couplingRule` and a table's `purpose` are punctuated *by the page*, so their paragraph is
-not the carried string and they fall out on their own rather than being named.
-`a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands` takes the half no field-shaped guard
-can reach, because a shared value is embedded and the string it lands in is a sentence whatever the seam
-does. What the catalogue shares is whatever it exports; what is prose is whatever carries a space, which
-is the one thing an identifier of this repository can never do — the argument ` :: ` was already chosen
-on. Nine exported strings, five of them prose, two of the five in a record.
-
-**The reading of the seven pages found two more, and one is not a fragment but a false sentence.**
-`whyNotFrozen` was composed after a full stop, which is the catalogue defect verbatim on a value the page
-composes rather than a contract. And `WHAT_A_SIGNATURE_DOES_NOT_PROVE`, a whole sentence, sat in the slot
-where the page writes `This does not establish ${butNot}.` — publishing *This does not establish a
-signature attests who published this snapshot and from what build*, which **denies the claim two lines
-above it**. Every other `butNot` of that table is a complement. **No shape check could ever have caught
-it: the composed sentence is well formed and false**, which is the half of this class that register
-cannot reach, and `a-sentence-rendered-whole-is-not-also-a-complement` is what does.
-
-**A guard that claims detection is not excused by a price, and a required field of one word is what said
-so.** That third guard was first declared an unprobed region of `registry-storage`, with the cost of a
-cell written out: a cell moves the published count, which `README.md` transcribes and `THE_REPLAY.spread`
-describes as a population that has run, so it obliges a full replay to restamp. `UnprobedRegion` refused
-the entry — `nature` is required, the value would have been `claims detection`, and `run.ts` says what
-that means with no nuance: never having been red, such a guard is decorative until a mutant reaches it.
-**The type turned a price into a decision**, which is *Make the omission impossible* arriving on the
-instrument's own declarations. I-32 is the cell, and the replay behind it is what this section's figures
-are stamped on.
-
-**The five instances of the seam guard are out of reach, and the construction is the direction a damaged
-string fails in.** The seam is composed in a contract folder; `serialise.ts` is the only module of
-`registry/` the string passes through and it copies it. To redden the guard an edit would have to produce
-a *misplaced* occurrence, and every edit that damages the string removes the occurrence instead. Measured
-rather than argued: `reason: property.reason` replaced by `reason: ''` leaves the whole registry suite
-green, those five included.
-
-**Two neighbours are named and left, because their register is not this one's and neither is frozen.** A
-table's `purpose` is rendered as a lower-case paragraph on the three contracts with one table — the page
-supplies its full stop and not its capital — and it cannot simply become a sentence, because it is an
-`h3` on the two contracts with two tables. The refusals page prints `decidedAgainst` and `keptAs` as bare
-lower-case paragraphs, and there the `h3` directly above each one is its label, which is the shape a
-clause is entitled to. Both are decisions about a rendering rather than about frozen prose, so the cost
-of leaving them is a regeneration and not a repository somebody else owns.
-
-## What a page is, and the two projections of it — settled
-
-**A page is a value, and `toHtml` and `toText` are two projections of it.** Everything about the site
-was decided by rendering a page in document order, stripped of markup, and reading it as a stranger —
-which is at once what a search engine indexes, what a screen reader announces, and the closest thing
-there is to *what somebody understands in ten seconds*. A generator that concatenated HTML could only
-be measured by parsing its own output back, and a bug in the reader would read as a bug in the page.
-
-So the reading stops being something somebody remembers to do and becomes something a guard holds. The
-mutant it exists for is a text projection that quietly drops what the HTML shows: it produces a
-*shorter and tidier* reading, which is exactly what somebody skimming a measurement hopes to see. It
-is the only defect in that folder that could blind the instrument the unit was steered by, and two
-guards catch it.
-
-**What the reading found that no static check could.** Three defects, all invisible to a typechecker
-and to every guard about presence. The first screen said the same sentence three times — title, meta
-description and lede all carried the summary. The anchor beside a case was read aloud as a `#` that
-means nothing, which `aria-hidden` now settles: the declaration that a screen reader skips an element
-*is* the declaration that the text projection drops it, so the two answer to one statement rather than
-to a rule about class names. And every universal property of every contract came out as
-`not applicableThe signature takes a single string` — two blocks that had become one sentence, with
-every word still present, so a projection guard was green and a person could not read it.
-
-**Nothing is escaped that a reader can see, and everything else is.** Measured over the five: 36 of
-438 string values carry a character that is invisible on its own or renders on top of its neighbour.
-`number/parse@1`'s own source says why it matters — a no-break space and an ordinary one are the same
-glyphs on screen and carry opposite answers in that table — so a page printing both as they are would
-publish two cases a reader cannot tell apart, one saying the input parses and the other that it does
-not. Cyrillic, Arabic, emoji, `é` and `€` are printed as themselves, because they are visible and
-because `string/slugify@1`'s table is about them.
-
-## What a contract page publishes, and what it leaves out — settled
-
-**A refused contract has no page.** `array/group-by@1` was decided against *before* publication, so
-`refuseContract` records an argument and binds no digest: there is no frozen definition, no snapshot,
-nothing a reader could check. A contract page with no digest behind it would be missing the only half
-that makes this registry worth anything. What the catalogue publishes about it is the refusal, on the
-page written for refusals — which is where it belongs, and which is the most distinctive page this
-project can publish on day one.
-
-The cost is named rather than left to be found: that page cannot show the contract's own prose — the
-comparison of lodash, Ramda, d3 and the two ES2024 built-ins that makes its case — because the registry
-serves a refusal and not a definition of the thing refused.
-
-**No implementation section.** The project specification describes a contract page for a mature
-catalogue: implementations, benchmark figures, sizes, tags. There is one implementation per contract
-and no reference machine, so a third of that page would be a table of nothing, and an empty section
-tells a reader something is missing without telling them what. What survives is the one figure that is
-measurable today and is the most immediate comparison against an npm package — **how many bytes land in
-their project** — stated in the first screen and in exact bytes rather than rounded. `readableBytes`
-stays in `cli/report.ts`, because a terminal line is read in passing and a page has room for the number.
-
-**A page's address is the contract's address.** `/number/parse@1/`, anchored `#ordinary-integer`, which
-is exactly what `renderCase` has rendered since `registry/address.ts` was written and nothing read.
-That is the third time a field written for a consumer that did not exist yet turned out to be right,
-after `identity.searchAliases` and `FIELD_MAP.verification`, and it is the argument for going on
-writing the address before anything fills it.
-
-## What a playground demonstrates, and what it refuses to show — settled
-
-**It is not "expected against actual".** Both halves of that comparison would be ours, and the expected
-half is already two centimetres higher, on the case's own line. What a static page cannot do is answer
-**the input the reader typed**, so that is the whole of what a playground computes, and the settled
-answer is deliberately not repeated beside it.
-
-**It calls both exports, and the reason appears exactly when the answer is `null`.** A playground
-calling only the answer shows half of any contract written to this repository's error convention — and
-worse, it takes back the measurement the field's whole design rests on. `'1 000'` with a no-break space
-and `'1 000'` with an ordinary one are the two rows that settled the literal, and against the answer
-alone **both print `null`** and the distinction a reader came to see is invisible. Measured in a
-browser, which is the only place it could be:
-
-```
-'1 000'   parseNumber(…) → null    describeParseFailure(…) → 'not-decimal'
-'1 000'   parseNumber(…) → null    describeParseFailure(…) → 'separator'
-```
-
-Only when the answer is `null`, because the coupling property of both fallible contracts is that a call
-fails exactly when it has a description — a `→ null` printed under every answered call would be a line
-that is always the same.
-
-**The diagnostic is called with the answer's own arguments, and the build refuses a contract where that
-is not possible.** The form has one field per parameter of the answer, and nothing in the schema
-requires the diagnostic to declare the same ones. Measured: they agree on two of two. A measurement is
-not a rule, so it is checked.
-
-**And the replay guard grew with it, which closed a real blindness rather than a supposed one.**
-Measured by making the reference answer `'not-decimal'` where it answers `'separator'`: the guard as it
-stood sees **0 of the 9 rows** that breaks, because every one of them still answers `null`, and the
-reason comparison sees all nine.
-
-**The order of the two refusals is written down, because leaving it implicit cost a regression.** W-37
-of the site battery neuters the parameter-type refusal, and it went from killed to survived the moment
-the diagnostic's signature was compared first: the second refusal fired in the first one's place, the
-guard was green either way, and the battery is what caught it. A contract tripping both is told about
-the parameter it declared, which is the more basic fact.
-
-**The field holds a literal, and raw text was refused on a measurement rather than on taste.**
-`contracts/number/parse/edge-cases.ts` says it in its own source: `'1 000'` with a no-break space and
-`'1 000'` with an ordinary one are the same eight glyphs on screen and carry opposite answers in that
-table — which is why that file names the character instead of pasting it. A raw text field
-reintroduces, inside the playground, exactly the ambiguity the contract refuses to have in its own
-bytes: somebody checking the no-break case types an ordinary space, gets the other reason, and has no
-way to see why. The playground would contradict the page it lives on. It is also the only field that
-covers the contract — `date/add@1` publishes four cases whose caller is untyped, `{ day: 1 }` among
-them, and a form derived from the declared type cannot express one of them. Measured in a browser:
-`'\uD83D'` is a lone surrogate a reader can type, and a raw field could not have expressed it at all.
-
-**One table of types, whose only non-identity entry is `Date`.** Reading a literal gives the *declared*
-value, which is what the registry models; turning that into an argument is a second step and exactly
-one type of this catalogue needs it, because `registry/value.ts` refuses to model a Date and
-`date/add@1` writes its instants as ISO strings. So `new Date(...)` in `site/playground.ts` is the only
-place on the whole site where a Date comes into existence, and it is written on the line beside the
-field. It falls *inside* the contract: a text that does not parse gives `invalid-date`, which is a
-published case, so the added layer is not a hidden one.
-
-**A parameter type the table does not know stops the build and names itself** — no fallback, no empty
-field, no page rendered with a playground quietly missing. The shape `registry/value.ts` already takes
-one floor down for a value it does not model.
-
-**A field says what it is declared as before anything is called, and that was found in a real browser.**
-Typing `42` into a field declared `string` used to answer `input.trim is not a function` — the
-contract's own source reporting a failure in its own words to somebody who has never seen it. Every
-type was satisfied and every guard was green; only opening the page and typing found it. It is the
-measurement behind a rule this repository already states and had never paid for: **a static check
-passing does not mean the interface works.**
-
-**The answer is written by `literal(encode(…))`, never by `String`.** `parseNumber('-0')` answers a
-negative zero and `String` prints it `0`, on the page where that contract settles a case on the two
-being different. Measured: printing with `String` reddens 69 of the 157 served cases.
-
-## What runs in a reader's browser — settled
-
-**The `.js` specifiers this repository already writes are what make the playground free.** Every
-relative import is written `./literal.js` for `literal.ts`, because `verbatimModuleSyntax` asks for it.
-A browser resolves exactly that spelling natively, so a module graph written for a typechecker turns
-out to be one a browser can load: no bundler, no rewriting, and the whole of the work is stripping the
-types. The site's layout *is* the source's layout, and a reader who opens `/site/read-literal.js` sees
-the file it came from rather than a bundle corresponding to nothing.
-
-**Node's own stripper rather than a compiler**, and it is the only one available: `typescript@7.0.2`
-ships a native compiler and no JavaScript API — `node_modules/typescript/lib/` holds `tsc.js` and a
-version string — so a compiler here would mean a subprocess, and a subprocess would put a page's
-content behind something no guard can reach. `stripTypeScriptTypes` refuses what it cannot erase rather
-than guessing, which is the direction of failure this repository asks for.
-
-**The replay guard imports the stripped artefact, not the TypeScript module it came from.** Importing
-the module would measure something adjacent to what is shipped: it would establish that the arguments
-are built correctly and leave unmeasured the one thing stripping can break — that the JavaScript
-answers what the TypeScript did. So the reference is fetched by digest through the port, stripped by
-the site's own function, and imported from a `data:` URL, which needs no disk because a reference
-imports nothing. **That is what turns `stripTypeScriptTypes` being experimental from a declared risk
-into a thing measured on every run**, which is the treatment `node:util.diff` already received.
-
-**The one sentence about the gap lives beside the playground and nowhere else.** The JavaScript that
-answers a reader is neither the file the registry serves nor the file the digest covers — both are
-TypeScript. It is said where somebody is looking at an answer that transformation produced, and saying
-it again under *What you can check yourself* would blur the section that is about the frozen
-definition, where nothing has changed.
-
-**A page is complete with no JavaScript, and the form is built by the script rather than served inert.**
-A form in the HTML that does nothing without JavaScript is a control that lies about being one, and an
-empty section tells a reader something is missing without telling them what. Without the script the
-section is two paragraphs saying what a playground would do, which is prose rather than a hole. The
-`script` node carries attributes and no children, so `document.ts`'s rule that no node holds raw markup
-survives a script on the page.
-
-**What the port had to gain, and the sentence that had to go.** `blob` was refused from the site's port
-on the argument that *the site publishes no byte of anybody's source* — true of a page that only
-renders, false of one that runs something, and a snapshot cannot stand in because it lists a file and
-hashes it and a list of hashes does not execute. `needs.ts` had no need for it either. Three more
-sentences fell in the same unit and were repaired in place rather than left to be found: *serves no
-byte at all* in `site/local-source.ts`, *no script* in `document.ts`, and
-`NOT_THIS_UNIT['pre-fill-the-playground']`, the debt this closes.
-
-## What the method page may say — settled
-
-**No figure on that page is written into a sentence.** Every one is computed at build time from the
-two answers the page is built from, and a guard collects every run of digits a reader can see and
-requires each to occur in that data. What it catches is not a wrong number but a *right* number that
-goes wrong later — the failure this file has caught in its own prose four times and never once in
-executable code. Its limit is declared rather than discovered: **a literal equal to today's value
-passes today**, and goes red the day the data moves, which is the day it would otherwise start lying.
-
-**And the set it matches against must hold figures and nothing else, which is the half that was wrong
-and which W-47 found.** `THE_REPLAY.measuredAt` was stamped `0d8e41d`, whose digit runs are `0`, `8`
-and **`41`** — and `41` occurs nowhere else in that data, so the commit stamp handed the pool a figure
-nothing had derived, and the mutant that writes the literal `41` into a derived sentence stopped being
-killed the moment the stamp landed. The guard went **quiet rather than red**, because the data moved
-*towards* a stale literal instead of away from it, and that is the one direction its declared limit
-does not cover. A commit identifier is an address, so it now comes off both sides — off the reading as
-well, since the page renders it. What that repair does not have is a mechanism: it names the one
-address this data carries, and a second would have to be named beside it.
-
-**The rule that closes it for every future guard over published figures: an address is not a figure,
-and it leaves the data by both sides or by neither.** That is what made the stamp silent rather than
-red. A rendered address leaks into the comparison from both directions at once — it joins the pool as
-though something had derived it, and it joins the reading as though the page had published it — and
-either leak alone would be caught, since a figure with no derivation reddens and a derivation nothing
-renders is unread. **It is the pair that is silent, because the two leaks cancel.** So every address
-comes off both sides before anything is compared, and **it is the rendering that decides which strings
-are addresses, never their shape**: a run of digits is not evidence of a figure. The frozen
-identifiers this file spends its length on — a case, a guard, a reason literal, a profile name — are
-the population this rule is written against, and a commit stamp is only the first of them to be
-rendered on a page.
-
-**An assertion and an observation are not one object, and the page says which it is showing.** Every
-figure is read off pins in committed code; `measure.ts` exits non-zero on any cell that disagrees, so a
-replay agrees with them or fails. The two therefore coincide — and a reader who has run nothing holds
-what this repository *asserts*, while a reader who runs `npm run mutation` holds what happened on their
-machine. The page publishes the command and what it costs beside the figures, because a page that
-presents pins as observations is doing the thing it spends its length arguing against.
-
-**The limit of the method is the second section, never a footnote.** *A high score does not say the
-code is correct; it says the tests notice the defects that were tried.* A guard holds the **order** and
-not the presence, because that sentence is worth nothing after the number: a reader who meets the
-figure first has already read it as a claim about correctness. What makes the admission affordable is
-the corollary almost nobody else can offer — the defects that were tried are committed files, each with
-the exact edit it makes and the verdict it must produce.
-
-**A survivor declares its kind, and the aggregate is never available without the split.** A count of
-surviving cells published alone reads as a count of holes. Measured at `a381860` over the nineteen
-batteries: **36 surviving defect cells — 12 equivalent, 7 outside what the contract specifies, 4
-unreachable on this catalogue, 1 a declared open class, and 12 that live only where a lens blinded the
-suite.** Exactly one is a debt. `survived` is a function requiring a `SurvivalNature`, so a survivor
-whose kind nobody stated does not compile; the twelfth kind is not declarable, because a cell blinded
-by its lens is a fact about the apparatus and `survivorFaults` establishes it structurally. Neither
-`published.ts` nor the page exports or renders the total alone.
-
-**Six survivors of `number/parse@1` carried no argument at all**, which is exactly what made them the
-ones a hostile reader counts as holes. Each is now argued and measured differentially over a corpus of
-300 067 inputs, seen once cold and once with a foreign call between, against a control that disagrees
-on `1e400`. **P-16 is the one that is not an equivalence**: every answer is the reference's and it
-leaves a counter on `globalThis`, so what the contract constrains — what the function *reads* — is
-untouched and what it writes was never specified. That is the edge of the contract rather than a defect
-the guards missed, and the two natures exist to keep them apart.
-
-**The page's second upstream is a declared door, not a reach.** `registry/verifiability.ts` says the
-instrument measures the catalogue and is not part of it, so no endpoint can carry how this catalogue's
-own tests are measured. `mutation/published.ts` is the one module `site/` may import out of `mutation/`,
-and a guard holds the folder to it — the shape the serialisation frontier already has, on a second
-upstream.
-
-**A deferral carries what would close it, in a field.** `DeferredNeed.until` is required, so an entry
-without a trigger does not compile. The argument for it is the entry that has just left the list:
-`render-the-methodology-page` said it was waiting for benchmark figures, validation reports and
-attestations, and what it was actually waiting for was somebody noticing that eighteen batteries were
-already sitting in another folder. **A deferral aimed at the wrong event is one nobody revisits**, and a
-reason ages into a description of the past where a trigger stays checkable.
-
-**Two guards of this unit could not fail as first written, and both were caught by measurement rather
-than by review.** The partition guard over published survivors asserted `killed + surviving === cells`,
-an identity every mis-classification preserves — counting only `killed` as a kill files the five
-`killed-by-typecheck` cells as survivors, the sum stays right, and the page publishes thirty-nine
-survivors with the guard green. It is now a second walk over the batteries. And W-52 emptied one line of
-a three-line trigger and survived, correctly, because two lines of trigger were left; the battery
-reported it, which is what a pinned verdict is for.
-
-## What a crawler is told — settled
-
-**The origin is an address, not a setting.** `THE_ORIGIN` is `https://toopo.dev`, declared once in
-`paths.ts` beside the other addresses, and everything derives from it. Its cost is the cost every
-frozen identifier here carries, one order of magnitude up: a case identifier moving breaks the links
-into one page, and this moving breaks every URL the site has ever published. A guard refuses a second
-spelling anywhere in the folder — including inside a comment, and including the second domain that
-redirects, which is a fact about DNS that no module here has any business knowing.
-
-**No `lastmod`, and it is omitted rather than filled.** The protocol makes it optional and it is the
-field that invites a fabricated date: a file's mtime is a fact about a checkout and a clock is a fact
-about the machine the build ran on, and **a published file carrying a machine-dependent value is the
-immutability defect this repository has already found twice**. A `lastmod` that lies is worse than
-none — a crawler told a page changed a year ago may not come back. The day a published snapshot carries
-the instant it was published, that is a real and re-derivable date and the decision is worth taking
-again.
-
-**The URL a crawler is given and the URL a reader follows are one function.** `urlOf` is `linkTo` with
-the origin in front, because a sitemap URL that differs from the served URL by one character gets a
-redirect indexed instead of the page. Two guards over it, and the second exists because the first
-cannot be independent: the set comparison rebuilds what it expects with the very function the sitemap
-is built from, so a URL is also read **back** and required to name a page in the map. W-57 is what
-separates them — `linkTo` stops stripping the file name, every reconstruction moves with the defect and
-stays green, and only the decoding finds that every published URL now names nothing.
-
-**Verified over HTTP rather than assumed**, which is the third unit running where a browser found what
-no static check could. Measured at `0d8e41d`: the XML parses with no parser error, root `urlset` in
-the sitemaps namespace, seven `loc`, zero `lastmod`, and all seven URLs answered 200 with no
-redirect — the `@` addresses included.
-
-**That sentence stood in the present tense and went false, which is the fifth instance of this file's
-own class and the first found by measuring rather than by rereading.** Measured at `8d934cb`:
-`toopo.dev` resolves to `216.24.57.7` and **every path answers 403**, with an identical 8 096-byte
-body on `/`, `/number/parse@1/`, `/method/` and `/sitemap.xml`. Nothing is served. So the verification
-above is stamped and stays true of its commit for ever, and the live state is a separate sentence with
-its own — because *what a browser answered on the day somebody looked* and *what a browser answers*
-are two claims, and only the first is ever settled. It is the rule two sections up arriving on this
-file's oldest habit: a dated number followed by a present-tense clause about the same quantity
-publishes a truth and a lie in one sentence, and it is the lie the reader believes.
-
-**And a guard that could not be the only red on anything was deleted rather than kept.**
-`every-url-a-crawler-is-given-is-absolute-and-on-the-published-origin` fired only where the set
-comparison already fires, because that one pins each location as an exact string with the origin in
-it. The attribution reported it alone on nothing, which is this repository's own criterion; its one
-genuinely unguarded half — the `Sitemap:` line, which no comparison over the sitemap can see — moved
-into the guard over the file it is about.
-
 ## What an archive is, and what it may not be — settled
 
 **Every contract page ends in `toopo add <name>`, and until this unit nobody could run that line.**
@@ -1393,7 +955,7 @@ one they cannot get past. Three instances found independently, which is what tur
 rule:
 
 - **`GuardAddress` carries no unpaired form.** Uniqueness is per contract, so a guard is addressed by
-  the pair `(contract, guard)` — and `registry/address.ts` publishes no type holding a guard identifier
+  the pair `(contract, guard)` — and `packages/registry/address.ts` publishes no type holding a guard identifier
   alone. The rule "the registry schema must always carry the pair" was written in prose first, in this
   file; making the unpaired form unrepresentable is what turned it into something the compiler keeps.
 - **`VerificationStratum` has a member for deferring and none for omitting.** `stated-per-declaration`
@@ -2060,8 +1622,8 @@ version, because `0.0.0-local` is minted by whatever serves the file and does no
 writing one would be a second declaration of it, and false. ASCII because these are the only bytes of
 this repository that land in a codebase whose encoding, editor and toolchain nobody here can see.
 
-**`THE_ORIGIN` moved to `registry/address.ts` for a reason the site alone never had.** It was declared
-in `site/paths.ts` and `the-origin-is-declared-once` held it inside that folder; a header freezes the
+**`THE_ORIGIN` moved to `packages/registry/address.ts` for a reason the site alone never had.** It was declared
+in `packages/site/paths.ts` and `the-origin-is-declared-once` held it inside that folder; a header freezes the
 origin into a repository we will never see again, so the guard had to grow past `site/` and the
 declaration had to move above both readers. The folder guard became
 `no-file-of-this-folder-spells-the-origin` — the assertion went from one file to none, and a name
@@ -2209,7 +1771,7 @@ coordinates they mean and the machine supplies the rest, because a machine canno
 covered by it is a comment making a factual claim about the value — `search.ts` saying *the name is the
 rendered address, `number/parse@1`* became false and was repaired.
 
-**The guards are the first this repository has ever pointed directly at `registry/address.ts`.** The
+**The guards are the first this repository has ever pointed directly at `packages/registry/address.ts`.** The
 module that owns every address the project has — a case, a guard, a contract, an implementation, a
 mutant — was covered the way a road is covered by the traffic on it: `site/pages.test.ts` resolved
 `pageOf` against `renderContract`, `indexing.test.ts` resolved `contractUrl` against the sitemap,
@@ -2657,7 +2219,7 @@ every answer about that contract is a leaf beside it.
 
 **The leaf is the endpoint's own identifier and not a name chosen to read well.** That field is already
 declared *the address a report or a deployment cites this endpoint by*, so a second spelling would be one
-thing with two names — the slug `site/paths.ts` refuses for a page, arriving on an endpoint. The price is
+thing with two names — the slug `packages/site/paths.ts` refuses for a page, arriving on an endpoint. The price is
 `/snapshot/{digest}` where English would write the plural, and the return is that no table of routes
 exists anywhere in this repository to drift from these identifiers. **The whole translation between a URL
 and a file is dropping the leading slash**, and that is asserted rather than left to be true.
@@ -2861,6 +2423,10 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
   **replays** the divergence on the rows where it happens. ADR-0022.
 - An alias is a query whose best answer is this contract, never a phrase that relates to it. It is the
   one field of `identity` that is not frozen. ADR-0023.
+- On a page, **the tag is the outline and the class is the look**. A separator belongs to a block; a
+  phrasing element gets none. ADR-0025.
+- A parser is written once and reached, never copied. **A copy of a parser is not a second opinion, it
+  is the same statement written where nobody will maintain it.** ADR-0026.
 
 ## Verification discipline
 
@@ -2890,6 +2456,10 @@ the record beside it.
 - A property settles exactly the decisions its alphabet represents, and no others. A named case is not
   bookkeeping beside it, and a battery mutant is what says which of the two settles a decision.
   ADR-0021.
+- **An address is not a figure**, and it leaves a comparison by both sides or by neither. A run of
+  digits is not evidence of a figure; what decides is the rendering. ADR-0030.
+- **A static check passing does not mean the interface works.** A whole class of defect is only visible
+  in a real browser, and this repository has paid for that class twice. ADR-0028.
 
 ## Asking questions
 

@@ -78,6 +78,18 @@ drift where a tally does, and both sentences make the same claim. **When a sente
 counting, it does not count.** That is the rule to reach for first; the coordinates are what the
 remaining counts get.
 
+### The first violation is this record's own commit
+
+**Measured here first, on the commit that publishes this rule.** Its message stated the size of
+`CLAUDE.md` after the change as *2 887 lines, 233 245 B*; the measured figures are **2 897 lines,
+233 471 B**, and the difference is that the message was written before the last two edits rather than
+after them. The commit had to be amended.
+
+It is kept here for the reason the six survivors of `number/parse@1` are argued rather than counted:
+a rule whose first offender is its own author, in the act of writing it, says something about the
+rule's difficulty that a flat statement of it cannot. An hour of work on this exact class did not stop
+the class. Four more figures published in this project were wrong in the same way.
+
 ## Consequences
 
 `mutation/published.ts` is where this decision is paid rather than argued: `THE_REPLAY` carries a

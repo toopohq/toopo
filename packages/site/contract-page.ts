@@ -1,5 +1,7 @@
 /**
  * The page a contract has, which is the only page of this site that carries the product.
+ * ADR-0027 is what this page publishes and what it leaves out.
+ *
  *
  * ---------------------------------------------------------------------------
  * What the launch takes out, and why an absence is stated rather than rendered

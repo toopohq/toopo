@@ -1,5 +1,7 @@
 /**
  * What a playground is made of: the call a reader edits, and the two translations around it.
+ * ADR-0028 is what a playground demonstrates and what it refuses to show.
+ *
  *
  * ---------------------------------------------------------------------------
  * What a playground demonstrates, which is not "expected against actual"
