@@ -388,17 +388,47 @@ export const restoringOnSignal = (contractPath: string): (() => void) => {
  * An earlier version of this comment said a checked-out file carries CRLF. That was measured before
  * `.gitattributes` existed and stopped being true when it was added.
  */
+export const anchoredText = (path: string): string =>
+  readFileSync(path, 'utf8').replace(/\r\n/g, '\n')
+
+/**
+ * Where an anchor lands in the file it quotes, or the fact that it does not apply.
+ *
+ * A union rather than a position beside a count, because a position that means nothing unless the
+ * count is one is a value every reader has to remember not to use.
+ */
+export type AnchorSite =
+  | { readonly applies: true; readonly from: number; readonly to: number }
+  | { readonly applies: false; readonly occurrences: number }
+
+/**
+ * An anchor applies when it matches exactly once.
+ *
+ * `anchors.ts` asks this of a whole repository before somebody moves a line; this file asks it of one
+ * edit before a run. One rule, two readers - a second statement of it would be free to disagree on
+ * the day one of them was corrected.
+ */
+export const locateAnchor = (source: string, find: string): AnchorSite => {
+  const occurrences = source.split(find).length - 1
+  if (occurrences !== 1) return { applies: false, occurrences }
+
+  const lineAt = (index: number): number => source.slice(0, index).split('\n').length
+  const at = source.indexOf(find)
+
+  return { applies: true, from: lineAt(at), to: lineAt(at + find.length - 1) }
+}
+
 const applyEdits = (contractPath: string, edits: readonly Edit[], label: string): void => {
   for (const edit of edits) {
     const path = join(THE_REPOSITORY, contractPath, edit.file)
-    const before = readFileSync(path, 'utf8').replace(/\r\n/g, '\n')
-    const occurrences = before.split(edit.find).length - 1
+    const before = anchoredText(path)
+    const site = locateAnchor(before, edit.find)
 
-    if (occurrences !== 1) {
+    if (!site.applies) {
       throw new Error(
-        `${label}: the anchor below matches ${occurrences} times in ${edit.file}, and must match ` +
-          `exactly once. An edit that does not apply would be measured as a defect the contract ` +
-          `survived, when nothing was injected at all.\n---\n${edit.find}\n---`,
+        `${label}: the anchor below matches ${site.occurrences} times in ${edit.file}, and must ` +
+          `match exactly once. An edit that does not apply would be measured as a defect the ` +
+          `contract survived, when nothing was injected at all.\n---\n${edit.find}\n---`,
       )
     }
 
