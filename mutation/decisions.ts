@@ -28,8 +28,8 @@
  * Four families, and both directions of each
  * ---------------------------------------------------------------------------
  *
- * A reference guarded in one direction is the defect moved rather than closed: an ADR naming a file
- * that has gone must redden, and an `ADR-9999` written into a module must redden too. So:
+ * A reference guarded in one direction is the defect moved rather than closed: a record naming a file
+ * that has gone must redden, and a module citing a record that does not exist must redden too. So:
  *
  *     governs        -> the path resolves to a file, and that file cites the decision back
  *     confirmed-by   -> the pair names a guard the suite of that battery collects
@@ -82,6 +82,13 @@
  * templated, and all but one interpolate at the end, so the address is the title with a trailing `-%s`
  * removed. The exception is `the-call-of-%s-is-read-from-its-own-signature`, which interpolates in the
  * middle and is therefore not addressable by any decision; no record names it.
+ *
+ * **A citation is a run of digits after `ADR-`, and nothing here judges the sentence around it.** That
+ * is deliberate - the alternative is a lint distinguishing a citation from a mention, which is a
+ * judgement about prose and is the price at which this repository has already refused two rules. The
+ * cost was paid immediately and by this file: an invented number written here as an *example* of a dead
+ * citation reddened `every-decision-a-file-cites-exists`, correctly, and the sentence is written
+ * without one. So no document of this repository can exhibit a broken citation, only describe one.
  */
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
