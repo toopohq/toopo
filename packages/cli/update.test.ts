@@ -7,6 +7,7 @@ import { renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { deciding } from './fixpoint.js'
 import { GIT_WAS_NOT_ASKED } from './ignored.js'
 import {
@@ -742,6 +743,7 @@ describe('comparing a project with what the registry serves now', () => {
             installedAt: A_PINNED_INSTANT,
             locallyModified: false,
             askedFor: false,
+            servedFrom: THE_UNPUBLISHED_REVISION,
           },
         ],
       }

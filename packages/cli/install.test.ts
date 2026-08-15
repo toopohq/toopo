@@ -623,4 +623,42 @@ export const clamp = (value: number, low: number, high: number): number =>
       project.remove()
     }
   })
+
+  /**
+   * An installation reads two named answers, and a lockfile stamped with one of them while the other
+   * came from somewhere else would record a state that never served this install.
+   *
+   * **It is an ordinary event rather than a hostile one** - a deployment publishing between two
+   * requests - which is why the refusal says to run the command again and accuses nobody. What it must
+   * not do is pick one and carry on, because the whole value of the field is that a reader can go back
+   * to it. ADR-0091.
+   *
+   * The second assertion is what stops this from being a guard about a wrapper: the same source, with
+   * its two answers agreeing, installs.
+   */
+  it('two-named-answers-from-two-revisions-refuse-the-install', async () => {
+    const project = aProject()
+    try {
+      const honest = imaginedSource()
+      const midDeployment: RegistrySource = {
+        ...honest,
+        contractIndex: async () => ({
+          ...(await honest.contractIndex()),
+          servedFrom: 'a'.repeat(40),
+        }),
+      }
+
+      const outcome = await installing(midDeployment, project, 'number/round')
+      if (!('faults' in outcome)) throw new Error('a mid-deployment install was not refused')
+
+      expect(outcome.faults.join('\n')).toContain('answered this from more than one revision')
+      expect(outcome.faults.join('\n')).toContain('Run the command again')
+      expect(existsSync(join(project.root, 'toopo.lock'))).toBe(false)
+
+      expect(mustInstall(await installing(honest, project, 'number/round')).features.length)
+        .toBeGreaterThan(0)
+    } finally {
+      project.remove()
+    }
+  })
 })

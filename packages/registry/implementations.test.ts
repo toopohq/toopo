@@ -3,6 +3,7 @@ import { describe, it, expect } from 'vitest'
 import { renderContract, sameContract } from './address.js'
 import type { LockedFeature, Lockfile } from './implementation-record.js'
 import { LOCKFILE_VERSION, dependencyDepthOf } from './implementation-record.js'
+import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
 import { eachContract, theFive } from './the-five.js'
 
@@ -43,6 +44,7 @@ const lockedFeatureOf = (
   installedAt,
   locallyModified: false,
   askedFor: true,
+  servedFrom: THE_UNPUBLISHED_REVISION,
 })
 
 describe('the implementations under the five contracts', () => {

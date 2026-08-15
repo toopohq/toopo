@@ -59,7 +59,7 @@ export type ChosenBinding = {
 }
 
 /**
- * The one revision a set of named answers agrees on, or the refusal that says they do not.
+ * The one revision a set of named answers agrees on, or the refusal that says they do not. ADR-0091.
  *
  * **An installation reads two named answers and everything under them is arithmetic**: the index turns
  * a name into an address, the bindings turn that address into a digest, and every snapshot, every edge

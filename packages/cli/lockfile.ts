@@ -114,6 +114,10 @@ const FIELDS_OF: Readonly<Record<keyof LockedFeature, Check>> = {
     holds: (value) => typeof value === 'boolean',
     missing: 'does not say whether it was asked for or pulled in',
   },
+  servedFrom: {
+    holds: (value) => typeof value === 'string',
+    missing: 'does not say which revision of the registry served it',
+  },
 }
 
 const faultsAgainst = (
@@ -158,14 +162,30 @@ const featureNamesIn = (value: Readonly<Record<string, unknown>>): readonly stri
 }
 
 /**
- * Why a lockfile written under an older version cannot be read, and what to do about it.
+ * What each shape this tool no longer reads was missing, and why it cannot be worked out.
  *
- * **Version 1 is refused rather than migrated, and the reason is that the field it lacks is not
- * derivable.** `askedFor` says which features the user typed, and ADR-0073 records
- * that both ways of guessing it are wrong: treating every entry as a root climbs a dependency to
- * whatever its own binding names today, which is a combination nobody published, and deriving the
- * roots from the edges reads precisely what an update is trying to find out has moved. A migration
- * that invented the answer would be this tool deciding something only the user knows.
+ * **Both entries are refusals rather than migrations, and both for the same reason: the missing field
+ * is not derivable from what the file holds.** ADR-0073 carries the first - `askedFor` says which
+ * features the user typed, and both ways of guessing it are wrong. ADR-0091 carries the second: the
+ * revision that served an install is a fact about a moment that has passed, and the only values
+ * available to invent are today's, which would record that an old install came from a registry state
+ * it never saw. A lockfile whose whole value is that it can be checked against a published fact must
+ * not be filled in with a plausible one.
+ *
+ * Data rather than a chain of `if`s, so that a fourth shape is a row here and the sentence around it
+ * is written once.
+ */
+const WHAT_AN_OLDER_SHAPE_LACKED: Readonly<Record<number, string>> = {
+  1: 'record which features you asked for and which arrived as dependencies, and that cannot be ' +
+    'worked out from the file - guessing it would either move a dependency to a version nothing was ' +
+    'published against, or drop something you had asked for',
+  2: 'record which revision of the registry each feature was resolved against, and that cannot be ' +
+    'worked out from the file - it is a fact about the moment the install happened, and stamping ' +
+    "today's revision on it would record that an old install came from a state it never saw",
+}
+
+/**
+ * Why a lockfile written under an older version cannot be read, and what to do about it.
  *
  * **What makes the refusal usable is that `toopo add` recognises a file whose bytes are already the
  * ones it would write.** Re-adding a feature therefore writes nothing, keeps every file exactly where
@@ -176,7 +196,9 @@ const migrationFaults = (
   version: unknown,
   value: Readonly<Record<string, unknown>>,
 ): readonly string[] => {
-  if (version !== 1) {
+  const lacked = typeof version === 'number' ? WHAT_AN_OLDER_SHAPE_LACKED[version] : undefined
+
+  if (lacked === undefined) {
     return [
       `${LOCKFILE} carries version ${JSON.stringify(version)}, and this \`toopo\` reads version ` +
         `${LOCKFILE_VERSION}`,
@@ -188,10 +210,7 @@ const migrationFaults = (
   // *Was written by an earlier `toopo`* names an author where a version number was read. The number
   // is the fact, it is what decides the refusal, and it is what the reader can check.
   return [
-    `${LOCKFILE} carries version 1. That version did not record which features you asked for and ` +
-      `which arrived as dependencies, and that cannot be worked out from the file - guessing it ` +
-      `would either move a dependency to a version nothing was published against, or drop ` +
-      `something you had asked for.`,
+    `${LOCKFILE} carries version ${version}. That version did not ${lacked}.`,
     `Delete ${LOCKFILE} and add back the features you want, by name. Nothing on disk is rewritten: ` +
       `a file whose bytes are already the ones toopo would write is recognised and recorded rather ` +
       `than replaced.` +

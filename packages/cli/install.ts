@@ -23,7 +23,15 @@ import type { Configuration } from './configuration.js'
 import { digestOnDisk, withFeature } from './lockfile.js'
 import type { InstallPlan } from './plan.js'
 import { THE_ENTRY_FILE, planInstall } from './plan.js'
-import { chooseContract, bindingFor, fetchedSources, gatherHoldings, heldAt, refused } from './resolve.js'
+import {
+  chooseContract,
+  bindingFor,
+  fetchedSources,
+  gatherHoldings,
+  heldAt,
+  oneRevisionBehind,
+  refused,
+} from './resolve.js'
 import { rewrittenSources } from './rewrite.js'
 import type { HeldRegistry } from './source.js'
 import type { FileToWrite } from './write.js'
@@ -226,6 +234,22 @@ export const prepareInstallation = (
   const binding = bindingFor(source, chosen.found.address, request.implementation)
   if (refused(binding)) return { faults: binding.faults }
 
+  /**
+   * The two named answers an installation reads, required to be one registry state.
+   *
+   * Everything below this line is arithmetic - the snapshot hashes to the digest the binding named,
+   * every edge carries the digest of what it names, and every byte is checked against a digest already
+   * in hand - so these two are the whole of what the lockfile's revision can honestly claim. ADR-0091.
+   */
+  const revision = oneRevisionBehind([
+    { what: 'the catalogue index', servedFrom: chosen.found.servedFrom },
+    {
+      what: `the implementations of ${renderContract(chosen.found.address)}`,
+      servedFrom: binding.found.servedFrom,
+    },
+  ])
+  if (refused(revision)) return { faults: revision.faults }
+
   const rootAddress: ImplementationAddress = {
     contract: chosen.found.address,
     id: binding.found.id,
@@ -304,6 +328,7 @@ export const prepareInstallation = (
       installedAt: request.at,
       locallyModified: false,
       askedFor: sameContract(planning.implementation.contract, chosen.found.address),
+      servedFrom: revision.found,
     }
 
     /**
@@ -318,9 +343,18 @@ export const prepareInstallation = (
      */
     const held = heldEntry(request, planning.implementation.contract)
 
+    /**
+     * The revision keeps still on the same condition the instant does, and for the same reason.
+     *
+     * A re-add of something already there does re-resolve it against today's registry, so this run's
+     * revision would be true of these bytes - and writing it would still make *the lockfile changed*
+     * true on a run where nothing did, which is the defect the paragraph above records. What the field
+     * records is the resolution that produced the files on disk, and that resolution has not happened
+     * again.
+     */
     features.push(
       held !== undefined && isAlreadyInstalled(request, candidate)
-        ? { ...candidate, installedAt: held.installedAt }
+        ? { ...candidate, installedAt: held.installedAt, servedFrom: held.servedFrom }
         : candidate,
     )
   }

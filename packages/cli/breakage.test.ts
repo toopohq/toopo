@@ -7,6 +7,7 @@ import { describe, it, expect } from 'vitest'
 import { guardIdOf } from '../catalogue/identifier.js'
 import { WHAT_BREAKS } from './breakage.js'
 import { CONFIGURATION_FILE, readConfiguration } from './configuration.js'
+import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
 import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
@@ -269,6 +270,65 @@ describe('what breaks for somebody', () => {
       const faults = lockfileFaults(asVersionOne).join('\n')
       expect(faults).toContain('That version did not record which features you asked for')
       expect(faults).toContain('toopo add string/slugify')
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * The same refusal one shape later, and it is the same refusal for the same reason.
+   *
+   * A version-2 lockfile does not say which revision of the registry each feature was resolved
+   * against, and that is a fact about a moment that has passed: the only values available to invent
+   * are today's, which would record that an old install came from a state it never saw. ADR-0091.
+   *
+   * **Both older shapes are asserted here rather than one**, because what carries them is now a row in
+   * a record and a row that stopped being reached would leave a version silently answered by the
+   * generic sentence - refused all the same, and with nothing telling the reader what to do.
+   */
+  it('a-lockfile-from-before-the-revision-is-refused-with-the-command-to-run', async () => {
+    const project = aProject()
+    try {
+      const lockfile = await alreadyInstalled(project)
+      const asVersionTwo = {
+        version: 2,
+        features: lockfile.features.map(({ servedFrom: _servedFrom, ...rest }) => rest),
+      }
+
+      project.write('toopo.lock', JSON.stringify(asVersionTwo))
+      expect(() => readLockfile(project.root)).toThrow(UnusableLockfile)
+
+      const faults = lockfileFaults(asVersionTwo).join('\n')
+      expect(faults).toContain('That version did not record which revision of the registry')
+      expect(faults).toContain('toopo add string/slugify')
+
+      // A version nothing was ever written under is refused too, and says so without pretending to
+      // know what it was missing.
+      expect(lockfileFaults({ ...asVersionTwo, version: 99 }).join('\n')).toContain(
+        `carries version 99, and this \`toopo\` reads version ${LOCKFILE_VERSION}`,
+      )
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
+   * An installation records the revision the registry answered from, and it is the one the named
+   * answers agreed on rather than a value the installer invented.
+   *
+   * The stand-in serves `THE_UNPUBLISHED_REVISION`, so what this establishes is the wiring: the field
+   * arrives from the port and lands on every feature the install writes. What the value *means* is
+   * measured one folder along, where a registry is built at a chosen revision.
+   */
+  it('an-install-records-the-revision-the-registry-answered-from', async () => {
+    const project = aProject()
+    try {
+      const lockfile = await alreadyInstalled(project)
+
+      expect(lockfile.features.map((feature) => feature.servedFrom)).toEqual(
+        lockfile.features.map(() => THE_UNPUBLISHED_REVISION),
+      )
+      expect(lockfile.features.length).toBeGreaterThan(0)
     } finally {
       project.remove()
     }

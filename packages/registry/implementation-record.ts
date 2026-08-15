@@ -212,10 +212,24 @@ export type LockedFeature = {
   readonly locallyModified: boolean
   /** True when the user typed this feature's name, false when it arrived through an edge. ADR-0073. */
   readonly askedFor: boolean
+  /**
+   * The revision of the registry this feature was resolved against. ADR-0091, over ADR-0090's field.
+   *
+   * **Per feature and not per file**, because an update refreshes some features and leaves others
+   * where they are: a revision on the lockfile itself would be stamped over entries the run never
+   * looked at. And per feature rather than per install, for the same reason from the other side - two
+   * `toopo add` a week apart are two revisions, and the file has to be able to say so.
+   *
+   * Every feature one install writes carries the same value, and that is the honest shape rather than
+   * a shortcut: only the root goes through a named answer, and everything under it is reached by
+   * edges that are checked by arithmetic. What this records is the state the *resolution* was made
+   * against, which is exactly what a reader would have to rebuild.
+   */
+  readonly servedFrom: string
 }
 
 /** The version of `toopo.lock` this schema describes, and it moves when the shape does. ADR-0074. */
-export const LOCKFILE_VERSION = 2
+export const LOCKFILE_VERSION = 3
 
 /** The whole of what a project holds, its version typed by the constant above. ADR-0072. */
 export type Lockfile = {

@@ -92,7 +92,7 @@ import { diffOf } from './diff.js'
 import { digestOnDisk, withFeature } from './lockfile.js'
 import type { InstallPlan, PlannedFeature } from './plan.js'
 import { planInstall } from './plan.js'
-import type { RootAt } from './resolve.js'
+import type { Found, RootAt } from './resolve.js'
 import {
   bindingAt,
   bindingFor,
@@ -100,6 +100,7 @@ import {
   fetchedSources,
   gatherHoldings,
   heldAt,
+  oneRevisionBehind,
   refused,
 } from './resolve.js'
 import { rewrittenSources } from './rewrite.js'
@@ -273,6 +274,17 @@ const installedText = (request: ReconcileRequest, path: string): string => {
 type TheGraph = {
   readonly order: readonly FrozenImplementation[]
   readonly reachedBy: ReachedBy
+  /**
+   * The one revision every named answer this walk read agreed on, or `null` where it read none.
+   * ADR-0091.
+   *
+   * **`null` is a state a removal reaches and no other command does**, and it was found by
+   * `taking-out-the-last-root-asks-the-registry-nothing` going red rather than by reading the code.
+   * Taking the last root out of a project leaves nothing to resolve, so there is no revision - and
+   * there is nothing to stamp one on either, because a feature is planned from a root and this walk
+   * has none. The two absences are the same absence, and `assemble` says so where it would matter.
+   */
+  readonly servedFrom: string | null
 }
 
 const theNewGraph = (
@@ -282,6 +294,15 @@ const theNewGraph = (
 ): TheGraph | { readonly faults: readonly string[] } => {
   const held: RootAt[] = []
   const faults: string[] = []
+  /**
+   * Every named answer this walk read, so that one revision can be required of all of them.
+   *
+   * An update reads one index and one binding per root, which is more named answers than an install
+   * reads and therefore more that a publication can land between. It is collected rather than checked
+   * per root, because *this project was reconciled against two registry states* is one fact about the
+   * run and not one per feature.
+   */
+  const named: { readonly what: string; readonly servedFrom: string }[] = []
 
   for (const feature of roots) {
     const contract = contractAt(source, feature.contract)
@@ -299,6 +320,14 @@ const theNewGraph = (
       continue
     }
 
+    named.push(
+      { what: 'the catalogue index', servedFrom: contract.found.servedFrom },
+      {
+        what: `the implementations of ${renderContract(feature.contract)}`,
+        servedFrom: binding.found.servedFrom,
+      },
+    )
+
     const snapshot = heldAt(
       source,
       { contract: feature.contract, id: binding.found.id, version: binding.found.version },
@@ -313,6 +342,10 @@ const theNewGraph = (
   }
 
   if (faults.length > 0) return { faults }
+
+  const revision: Found<string | null> =
+    named.length === 0 ? { found: null } : oneRevisionBehind(named)
+  if (refused(revision)) return { faults: revision.faults }
 
   const holdings = gatherHoldings(source, held)
   if (refused(holdings)) return { faults: holdings.faults }
@@ -342,7 +375,7 @@ const theNewGraph = (
     return { faults: [error instanceof Error ? error.message : String(error)] }
   }
 
-  return { order, reachedBy }
+  return { order, reachedBy, servedFrom: revision.found }
 }
 
 // ---------------------------------------------------------------------------
@@ -660,6 +693,7 @@ export const reconcileProject = (
       held,
       rewritten.sources,
       graph.reachedBy,
+      graph.servedFrom,
       deduplicatedAway(request, planned.plan),
     ),
   }
@@ -698,6 +732,8 @@ const assemble = (
   held: ReadonlyMap<string, string>,
   sources: ReadonlyMap<string, string>,
   reachedBy: ReachedBy,
+  /** The one revision every named answer of this walk agreed on, `null` where it read none. ADR-0091. */
+  servedFrom: string | null,
   orphans: ReadonlyMap<string, readonly FileOutcome[]>,
 ): Reconciliation => {
   const locked = new Map(request.lockfile.features.map((feature) => [keyOf(feature.contract), feature]))
@@ -709,6 +745,21 @@ const assemble = (
   for (const planning of plan.features) {
     const what = keyOf(planning.implementation.contract)
     const was = locked.get(what)
+
+    /**
+     * A feature is planned from a root, and a root is resolved through a binding, so a walk that read
+     * no named answer plans nothing and never reaches this line.
+     *
+     * Thrown rather than defaulted, on the treatment `local-source.ts` gives *a ledger entry with no
+     * record behind it*: a fallback here would write an invented revision into somebody's lockfile,
+     * which is the one file this project puts in another repository and the one thing it is for.
+     */
+    if (servedFrom === null) {
+      throw new Error(
+        `${what} is planned from a walk that asked the registry nothing, which cannot happen: a ` +
+          `feature is planned from a root, and a root is resolved through a binding.`,
+      )
+    }
     const written = planning.files.filter((file) => file.written)
     const dropped = orphans.get(what) ?? []
     const files = [...written.map((file) => outcomes.get(file.path) as FileOutcome), ...dropped]
@@ -780,6 +831,14 @@ const assemble = (
        * *nothing changed* true rather than nearly true.
        */
       askedFor: (was?.askedFor ?? false) && !isDemoted(request, planning.implementation.contract),
+      /**
+       * The revision this run resolved against, on every entry it rewrites and on no other.
+       *
+       * A held-back feature `continue`s above with its entry carried over untouched, which is what
+       * keeps its recorded revision the one that actually served the bytes on its disk. Writing this
+       * run's revision over it would claim a state the file on disk never came from.
+       */
+      servedFrom,
     })
   }
 
