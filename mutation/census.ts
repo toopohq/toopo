@@ -243,7 +243,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/emit.test.ts': 11,
     'packages/registry/endpoints.test.ts': 12,
     'packages/registry/implementations.test.ts': 18,
-    'packages/registry/response.test.ts': 46,
+    'packages/registry/response.test.ts': 50,
+    'packages/registry/revision.test.ts': 4,
     'packages/registry/round-trip.test.ts': 19,
     'packages/registry/served-files.test.ts': 10,
     'packages/registry/signature.test.ts': 14,
@@ -265,14 +266,14 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 
   'packages/cli/vitest.config.ts': {
     'packages/cli/arguments.test.ts': 12,
-    'packages/cli/breakage.test.ts': 12,
+    'packages/cli/breakage.test.ts': 14,
     'packages/cli/command.test.ts': 1,
     'packages/cli/configuration.test.ts': 9,
     'packages/cli/diff.test.ts': 10,
     'packages/cli/emitted-registry.test.ts': 6,
-    'packages/cli/http-source.test.ts': 5,
+    'packages/cli/http-source.test.ts': 6,
     'packages/cli/ignored.test.ts': 3,
-    'packages/cli/install.test.ts': 21,
+    'packages/cli/install.test.ts': 22,
     'packages/cli/list.test.ts': 4,
     'packages/cli/plan.test.ts': 6,
     'packages/cli/relocate.test.ts': 10,
@@ -292,14 +293,13 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/literal.test.ts': 11,
     'packages/site/pages.test.ts': 26,
     'packages/site/playground.test.ts': 10,
-    'packages/site/published-tree.test.ts': 3,
+    'packages/site/published-tree.test.ts': 4,
     'packages/site/read-literal.test.ts': 10,
     'packages/site/source.test.ts': 8,
   },
 
   'packaging/vitest.config.ts': {
     'packaging/archive.test.ts': 8,
-    'packaging/freeze.test.ts': 8,
   },
 
   'mutation/fixture/vitest.config.ts': {
