@@ -83,7 +83,7 @@ served as files anybody can fetch and run. So an implementation is judged by run
 wrong costs a revision rather than a major version.
 
 Two rules govern how one is written, and they are declared in
-`catalogue/reference-implementation.ts` rather than here, so that the tool enforcing them reads the
+`packages/catalogue/reference-implementation.ts` rather than here, so that the tool enforcing them reads the
 same sentence you do:
 
 - **It states its own signature and its own private types.** Annotating the export with the contract's
@@ -103,7 +103,7 @@ What makes it worth a contribution is that the rule is easy to state and the tra
 **An alias is a query whose best answer is this contract, never a phrase that relates to it.** The
 property that every alias retrieves its own contract first is satisfied by a lying alias, because the
 alias is in the index and therefore matches the contract that declares it by construction. Eight were
-removed on that reading; the whole argument is in `catalogue/every-contract.ts`.
+removed on that reading; the whole argument is in `packages/catalogue/every-contract.ts`.
 
 ## What exists of the validation pipeline, and what does not
 
@@ -129,7 +129,7 @@ compiler's binder. It has five rules, each with a frozen identifier a report can
   not call, in public, and stage 1 reads that declaration rather than a transcription of it.
 
 **The filter is lexical where it reads a method, and therefore evadable on purpose.** That is
-measured rather than admitted: `validation/the-boundary.test.ts` pins both columns — the evasions the
+measured rather than admitted: `packages/validation/the-boundary.test.ts` pins both columns — the evasions the
 reader sees and the ones it does not — so closing one is a deliberate move from one list to the other
 rather than a drift. Stage 1 is a filter, not a proof, and the stages that do not exist yet are what
 the boundary is waiting for.
@@ -193,7 +193,7 @@ the order things were learned, and it is the honest record of how this was built
 
 **It is not a specification, and it is not the document to read before contributing.** This file is.
 Where a decision here has a longer argument behind it, the argument is in the module that owns the
-decision — `catalogue/every-contract.ts` for what every contract shares,
-`catalogue/reference-implementation.ts` for how an implementation is written,
-`registry/contract-record.ts` for what the registry holds, `validation/source.ts` for what stage 1 can
+decision — `packages/catalogue/every-contract.ts` for what every contract shares,
+`packages/catalogue/reference-implementation.ts` for how an implementation is written,
+`packages/registry/contract-record.ts` for what the registry holds, `packages/validation/source.ts` for what stage 1 can
 and cannot see.
