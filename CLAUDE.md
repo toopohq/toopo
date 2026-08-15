@@ -14,21 +14,23 @@ every change made here.
 
 ## Where the project is
 
-**What exists.** The registry's data schema, its immutable storage and its read API. Stage 1 of the
-validation pipeline, and the conformance controller beside it. The client, finished at six commands —
-`init`, `add`, `update`, `remove`, `search`, `list` — with a two-phase write, a lockfile carrying two
-digests per file, and a port whose four implementations are asynchronous. The generator, seven static
-pages, four of them with a playground that runs this repository's own modules with their types
-removed. The archive: compiled JavaScript and one frozen artefact, proved by packing it and installing
-it into an empty project. The emitted tree, which is every answer the read API can give, written as
-files at the addresses a client asks. The instrument: nineteen batteries, their pinned verdicts, and
-one command that replays them.
+**What exists.** The registry's data schema, its immutable storage and its read API, where every named
+answer declares the revision that produced it. Stage 1 of the validation pipeline, and the conformance
+controller beside it. The client, finished at six commands — `init`, `add`, `update`, `remove`,
+`search`, `list` — with a two-phase write, a lockfile carrying two digests per file and the revision
+each feature was resolved against, and a port whose four implementations are asynchronous. The
+generator, seven static pages, four of them with a playground that runs this repository's own modules
+with their types removed. The archive: compiled JavaScript and nothing else, whose size is no longer a
+function of how many contracts exist. The emitted tree, which is every answer the read API can give,
+written as files at the addresses a client asks. The instrument: nineteen batteries, their pinned
+verdicts, and one command that replays them.
 
-**What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A server —
-nothing constructs an `httpSource`, and both entry points name a local registry. A second language.
-And nothing is published: `private: true` holds, the package is not on npm, and every path on
-`toopo.dev` answered 403 when it was last measured. A reader who meets `toopo add number/parse` on a
-contract page has no way to get `toopo`.
+**What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A host — the
+published entry point names `THE_ORIGIN` and every answer it would fetch is written by the emission,
+but nothing serves that tree. A second language. And nothing is published: `private: true` holds, the
+package is not on npm, and every path on `toopo.dev` answered 403 when it was last measured. A reader
+who meets `toopo add number/parse` on a contract page has no way to get `toopo`, and an installed
+`toopo` has nothing to ask.
 
 **The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
 `string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
@@ -84,6 +86,18 @@ ADR-0060.
 
 **Still open, and what each one now costs.**
 
+- **That an archive somebody installs really installs a feature**, which three guards kept until the
+  catalogue left the archive and now nothing does. They compared the bytes a real `toopo add` wrote out
+  of a real tarball against the bytes in `contracts/`, and they worked because the catalogue travelled
+  inside the archive. It does not, so an installed `toopo` asks `https://toopo.dev`, and `THE_ORIGIN`
+  is a constant with no override — deliberately, because the one thing a client cannot check by
+  arithmetic is which digest a name resolves to, and an override is exactly what would move it. What
+  `packaging/` still keeps is that the installed CLI runs, reads a project, writes one, names the
+  published origin, and carries nothing the catalogue produces. **It closes on the first deployment
+  that answers on `https://toopo.dev`**: on that day a guard there installs from the archive against
+  the real origin, and the end-to-end proof comes back. It is written here rather than only in
+  `packaging/` because this list is what a session reads, and because a regression presented as a
+  choice is one nobody returns to. ADR-0092.
 - `contractAnatomy` — triaged entry by entry against stage 1's own constraint, *readable in the source
   alone, without evaluating the module*: **three of the eleven are settled by the source alone, four
   need the module, four are a reader's and no stage will ever take them.** So the conformance

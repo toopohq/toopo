@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { deciding, withoutAsking } from './fixpoint.js'
-import { httpSource } from './http-source.js'
+import { TheRegistryDidNotAnswer, httpSource } from './http-source.js'
 import { imaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import type { InstallOutcome } from './install.js'
@@ -249,5 +249,45 @@ describe('a registry reached over a socket', () => {
     } finally {
       await breaking.close()
     }
+  })
+
+  /**
+   * A registry nothing answers at, which is the first screen anybody who is offline will meet.
+   *
+   * **`source.ts` declared this refusal and refused to half-build it**, on the grounds that nothing
+   * constructed an `httpSource` and a sentence written for a screen nobody could reach could not be
+   * seen red. The entry point that names an origin is what made it reachable, and this is the guard
+   * that says it is a sentence rather than a stack trace.
+   *
+   * The port is taken and released before the guard runs, so what is measured is a connection refused
+   * rather than a host that does not resolve - the failure a person meets behind a proxy or on a
+   * machine that is up, and the one that does not depend on what this machine's DNS happens to do.
+   *
+   * Three things are asserted and each is a separate promise to the reader: the address they can open,
+   * that their project was not touched, and that toopo does not tell them why - because it did not
+   * measure why. ADR-0042.
+   */
+  it('a-registry-that-does-not-answer-is-a-sentence-a-person-can-read', async () => {
+    const taken = await servingOverHttp(imaginedSource())
+    const { origin } = taken
+    await taken.close()
+
+    const refused = await httpSource(origin)
+      .contractIndex()
+      .then(
+        () => null,
+        (error: unknown) => error,
+      )
+
+    if (!(refused instanceof TheRegistryDidNotAnswer)) {
+      throw new Error(`a registry nothing answers at gave ${String(refused)}`)
+    }
+
+    const lines = refused.message.split('\n')
+
+    expect(lines[0]).toContain(`${origin}/contract-index`)
+    expect(lines.join('\n')).toContain('Nothing in your project was read or changed')
+    expect(lines.join('\n')).toContain('cannot tell those apart from here')
+    expect(lines.filter((line) => line.trim() === '')).toEqual([])
   })
 })

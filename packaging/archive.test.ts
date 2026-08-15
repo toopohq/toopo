@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { digestOfBytes, servedBytes } from '../packages/registry/canonical.js'
+import { THE_ORIGIN } from '../packages/registry/address.js'
 import { THE_UNPUBLISHED_VERSION } from '../packages/cli/local-source.js'
 import { anInstalledArchive } from './the-archive.js'
 import type { InstalledArchive } from './the-archive.js'
@@ -15,9 +15,9 @@ import type { InstalledArchive } from './the-archive.js'
  * Why this suite exists at all
  * ---------------------------------------------------------------------------
  *
- * Every contract page the site publishes ends in `toopo add <name>`, and until this unit nobody could
- * run that line. Three independent things stopped them, and all three were invisible to the 999 guards
- * this repository already had, because every one of them measures the working tree.
+ * Every contract page the site publishes ends in `toopo add <name>`, and until this folder existed
+ * nobody could run that line. Three independent things stopped them, and all three were invisible to
+ * the guards this repository already had, because every one of them measures the working tree.
  *
  * **`npm pack` refused.** `Invalid package, must have name and version` - there was no archive to be
  * wrong about.
@@ -28,13 +28,35 @@ import type { InstalledArchive } from './the-archive.js'
  *
  * **The CLI reached vitest.** `toopo search slugify` loaded 147 modules, among them vitest, the
  * TypeScript compiler API and twelve modules of `mutation/`, through
- * `the-five.ts` -> a contract module -> `packages/catalogue/every-contract.ts`. vitest is a dev dependency a
- * user never receives, so the first command anybody ran would have ended in `ERR_MODULE_NOT_FOUND`.
+ * `the-five.ts` -> a contract module -> `packages/catalogue/every-contract.ts`. vitest is a dev
+ * dependency a user never receives, so the first command anybody ran would have ended in
+ * `ERR_MODULE_NOT_FOUND`.
  *
- * `artefact.ts` and `freeze.ts` carry the fix. This file is the only place in the repository where the
- * fix is measured against what actually ships, and that is its whole justification: **the archive is
- * built by `npm pack`, installed by `npm install`, and run by node out of the user's `node_modules`.**
- * Everything else here could be green while this is red.
+ * This file is the only place in the repository where any of that is measured against what actually
+ * ships: **the archive is built by `npm pack`, installed by `npm install`, and run by node out of the
+ * user's `node_modules`.** Everything else here could be green while this is red.
+ *
+ * ---------------------------------------------------------------------------
+ * What this folder stopped measuring, and when it starts again
+ * ---------------------------------------------------------------------------
+ *
+ * **Three guards are gone from here, and their absence is a debt rather than a decision about what is
+ * worth checking.** They installed a real feature out of a real archive and compared the bytes on disk
+ * with the bytes in `contracts/` - `an-archive-installs-a-feature-whose-bytes-are-the-catalogues`,
+ * `an-archive-installs-into-a-project-that-was-never-configured`, and
+ * `the-lockfile-an-archive-writes-records-the-digest-the-registry-served`. They worked because the
+ * catalogue travelled inside the archive, so an install needed nothing but the tarball.
+ *
+ * It does not travel any more (ADR-0092), so an installed `toopo` asks `https://toopo.dev`, and
+ * `THE_ORIGIN` is a constant with no override - deliberately, because the one thing a client cannot
+ * check by arithmetic is which digest a name resolves to, and an override is exactly what would move
+ * it. So there is no way from here to point the installed binary at a registry this process serves.
+ *
+ * **What is left is weaker and is named as such.** The installed CLI is seen to run, to read a project,
+ * to write one, and to name the published origin - and it is *not* seen to install a feature. The day
+ * `https://toopo.dev` answers, a guard here installs from the archive against the real origin and the
+ * end-to-end proof comes back. It is on the open list in `CLAUDE.md` with that event named, because a
+ * regression nobody wrote down is one nobody returns to.
  *
  * ---------------------------------------------------------------------------
  * The two halves of a whitelist
@@ -44,8 +66,7 @@ import type { InstalledArchive } from './the-archive.js'
  * nothing keeping them. So neither half of it is taken on trust.
  *
  * *Nothing is missing* is established by running the tool: a module left out of the archive is a
- * module the entry point cannot import, and `an-archive-installs-a-feature-whose-bytes-are-the-
- * catalogues` is the failure.
+ * module the entry point cannot import, and every command below would end in `ERR_MODULE_NOT_FOUND`.
  *
  * *Nothing is extra* is established by loading: every command is run under a loader that writes down
  * what node really loads, and every JavaScript file in the tarball must appear. That is derived from
@@ -84,125 +105,165 @@ const THE_DIRECTORY = 'src/lib/toopo'
  * route the build can actually take is the other one: compile more than the entry point, ship what the
  * compiler emitted, and the generator arrives as `dist/site/document.js`.
  *
- * Measured, on the tarball rather than on the argument: shipping two modules of `packages/site/` that way
- * reddens `every-file-in-the-archive-is-loaded-by-a-command` and left the guard below **green** as it
- * was written. The condition it is named for was live in one spelling and blind in the other, and the
- * blind one is the reachable one.
+ * Measured, on the tarball rather than on the argument: shipping two modules of `packages/site/` that
+ * way reddens `every-file-in-the-archive-is-loaded-by-a-command` and left the guard below **green** as
+ * it was written. The condition it is named for was live in one spelling and blind in the other, and
+ * the blind one is the reachable one.
  */
 const inside = (path: string, folder: string): boolean =>
   path.startsWith(`${folder}/`) || path.includes(`/${folder}/`)
 
+/** The bytes of one file of the tarball, as they sit in somebody's `node_modules`. */
+const carried = (path: string): string => readFileSync(join(archive.installedAt, path), 'utf8')
+
 describe('the archive somebody installs', () => {
   /**
-   * The guard this unit is about.
+   * The tool runs out of somebody else's `node_modules`, reads their project, and writes one.
    *
-   * It asks for the one contract whose reference implementation is the largest of the five, installs
-   * it out of a package that has never seen this working tree, and compares the bytes on disk with the
-   * bytes in `contracts/`. Everything the archive has to get right is on that path: the whitelist, the
-   * compiled graph, the artefact, the bin entry, and the offline install.
+   * **It is what is left of the end-to-end proof and it is not nothing**: the whitelist, the compiled
+   * graph, the `bin` entry, node's refusal to strip types under `node_modules`, and every module the
+   * command loads are all on this path. What it does not reach is the registry, which is the debt the
+   * header names.
+   *
+   * Three commands rather than one, because they are three different things the archive could get
+   * wrong: printing a usage with no project at all, writing `toopo.json`, and refusing a `list` in a
+   * project that has one and holds nothing. None of them opens a socket.
    */
-  it('an-archive-installs-a-feature-whose-bytes-are-the-catalogues', () => {
+  it('an-installed-toopo-runs-reads-a-project-and-writes-one', () => {
+    const usage = archive.toopo()
+
+    expect(usage.stdout).toContain('toopo add')
+
     expect(archive.toopo('init', '--dir', THE_DIRECTORY).status).toBe(0)
+    expect(
+      JSON.parse(readFileSync(join(archive.project.root, 'toopo.json'), 'utf8')),
+    ).toEqual({ version: 1, directory: THE_DIRECTORY })
 
-    const added = archive.toopo('add', 'string/slugify')
+    const listed = archive.toopo('list')
 
-    expect(added.stderr).toBe('')
-    expect(added.status).toBe(0)
-    expect(added.stdout).toContain('typescript/string/slugify@1')
+    expect(listed.status).toBe(1)
+    expect(listed.stdout).toContain('nothing is installed')
+  })
 
-    const written = archive.project.installed('string/slugify/slugify.ts')
-    const catalogue = readFileSync(join(REPOSITORY, 'contracts/typescript/string/slugify/reference.ts'))
+  /**
+   * The installed entry point names the registry this project publishes, and names no other.
+   *
+   * Read off the tarball rather than run, and that is a choice with a reason: running it would ask the
+   * real `https://toopo.dev`, whose answer depends on whether this machine has a network and on what a
+   * proxy in front of it does - so the guard would be measuring somebody's connection. What the bytes
+   * establish is the whole of what a knob would break: one origin, named once, with nothing between it
+   * and `httpSource`.
+   *
+   * The absence of an override is asserted as an absence, because that is what it is: no `process.env`
+   * anywhere in the archive, and no `argv` outside the one module that parses a command line.
+   */
+  it('the-published-entry-point-names-one-origin-and-offers-no-way-to-change-it', () => {
+    const entry = carried('dist/packages/cli/published.js')
 
-    expect(digestOfBytes(servedBytes(Buffer.from(written, 'utf8')))).toBe(
-      digestOfBytes(servedBytes(catalogue)),
+    expect(entry).toContain('httpSource(THE_ORIGIN)')
+
+    const namingAnOrigin = archive.carries
+      .filter((path) => path.endsWith('.js'))
+      .filter((path) => carried(path).includes('https://'))
+
+    expect(namingAnOrigin).toEqual(['dist/packages/registry/address.js'])
+    expect(carried('dist/packages/registry/address.js')).toContain(
+      `export const THE_ORIGIN = '${THE_ORIGIN}'`,
     )
+
+    const reachingForAKnob = archive.carries
+      .filter((path) => path.endsWith('.js'))
+      .filter((path) => /process\.env|process\.argv/.test(carried(path)))
+
+    // `command.js` reads `process.argv`, which is the command line and not a registry. Nothing in the
+    // archive reads an environment variable at all, and that is the half worth pinning: a knob would
+    // arrive as one.
+    expect(reachingForAKnob).toEqual(['dist/packages/cli/command.js'])
+    expect(
+      archive.carries.filter((path) => path.endsWith('.js')).filter((path) => carried(path).includes('process.env')),
+    ).toEqual([])
   })
 
   /**
-   * The first contact, from the archive, in a project that was never configured.
+   * **The claim this unit is about: nothing the archive carries is produced by the catalogue.**
    *
-   * **Everything else in this file runs `toopo init --dir` first, so the state a stranger actually
-   * arrives in was the one state no guard here could reach.** Every contract page ends in
-   * `toopo add <name>`; this is that line, typed once, by somebody who has read nothing else - and the
-   * whole repository can be green while it fails, which is the argument this folder exists for.
+   * The archive used to hold `registry.json`, every contract the registry serves with its files base64
+   * inside it - 30 438 bytes at five contracts, of which 23 217 was source. Its size was therefore a
+   * function of how many contracts existed, which is the one property that does not survive a
+   * catalogue of any size.
    *
-   * The folder is `lib/toopo` and nothing asked for it: the project has no `src`, so `proposeDirectory`
-   * is what decides, out of somebody else's `node_modules`.
+   * It is asserted over the tarball and over the one door the catalogue could come back through. Every
+   * carried path is a compiled module of the tool, its manifest, or a file npm adds; and no carried
+   * module reaches the serialisation, which is what `the-five.js` and `packages/catalogue/` are. A
+   * contract added to `contracts/` changes neither, which is the sentence *the archive does not grow
+   * with the catalogue* said in a form something can fail.
    */
-  it('an-archive-installs-into-a-project-that-was-never-configured', () => {
-    const fresh = archive.intoAFreshProject()
-    try {
-      const added = fresh.toopo('add', 'string/slugify')
+  it('nothing-the-archive-carries-is-produced-by-the-catalogue', () => {
+    const fromTheCatalogue = archive.carries.filter(
+      (path) =>
+        path.endsWith('.json') && path !== 'package.json' && !path.endsWith('/package.json'),
+    )
 
-      expect(added.stderr).toBe('')
-      expect(added.status).toBe(0)
-      expect(added.stdout).toContain('toopo.json  written')
-      expect(added.stdout).toContain('features    lib/toopo')
+    expect(fromTheCatalogue).toEqual([])
 
-      expect(
-        JSON.parse(readFileSync(join(fresh.project.root, 'toopo.json'), 'utf8')),
-      ).toEqual({ version: 1, directory: 'lib/toopo' })
+    /**
+     * The door is an import and not a word, so the specifiers are read rather than the text.
+     *
+     * A grep over the bytes matches a comment - measured: `address.js` mentions the catalogue in prose
+     * and came back as a module reaching the serialisation, which is the lint-over-prose this
+     * repository refuses everywhere else.
+     */
+    const importsOf = (path: string): readonly string[] =>
+      [...carried(path).matchAll(/from\s*['"]([^'"]+)['"]/g)].map((match) => match[1] as string)
 
-      const written = readFileSync(join(fresh.project.root, 'lib/toopo/string/slugify/slugify.ts'))
-      const catalogue = readFileSync(join(REPOSITORY, 'contracts/typescript/string/slugify/reference.ts'))
+    /**
+     * The three modules that turn `contracts/` into records, and not the folder they half live in.
+     *
+     * `packages/catalogue/identifier.js` ships and always has: it is the vocabulary a frozen identifier
+     * is checked against, imported by `address.js`, and it holds no contract. `every-contract.js` is
+     * the one beside it that does - it imports vitest, which is how the whole catalogue used to come
+     * into the archive behind `the-five.js`.
+     */
+    const theSerialisation = /(^|\/)(the-five|serialise|every-contract)\.js$/
 
-      expect(digestOfBytes(servedBytes(written))).toBe(digestOfBytes(servedBytes(catalogue)))
-    } finally {
-      fresh.remove()
-    }
-  })
+    const reachingIt = archive.carries
+      .filter((path) => path.endsWith('.js'))
+      .filter((path) => importsOf(path).some((specifier) => theSerialisation.test(specifier)))
 
-  /**
-   * The lockfile is the supply-chain claim of the whole project, so an installation that produced one
-   * nobody could check would be the product's own argument failing where it is made.
-   */
-  it('the-lockfile-an-archive-writes-records-the-digest-the-registry-served', () => {
-    const lockfile = JSON.parse(readFileSync(join(archive.project.root, 'toopo.lock'), 'utf8')) as {
-      readonly features: readonly {
-        readonly implementation: { readonly version: string }
-        readonly files: readonly { readonly sha256: string; readonly served: { readonly sha256: string } }[]
-      }[]
-    }
-
-    const catalogue = readFileSync(join(REPOSITORY, 'contracts/typescript/string/slugify/reference.ts'))
-    const feature = lockfile.features[0]
-
-    expect(feature?.implementation.version).toBe(THE_UNPUBLISHED_VERSION)
-    expect(feature?.files.map((file) => file.served.sha256)).toEqual([
-      digestOfBytes(servedBytes(catalogue)),
-    ])
+    expect(reachingIt).toEqual([])
+    expect(archive.carries.filter((path) => inside(path, 'contracts'))).toEqual([])
   })
 
   /**
    * The half of the whitelist that running one command cannot establish, measured by running all of
-   * them.
+   * them that need no registry.
    *
    * Every command is loaded under a recording loader and the union is what the archive is compared
-   * against, so the set is derived from what node does rather than from a list beside it. The two
-   * files read by path are named because neither is ever imported: `registry.json` is opened by
-   * `published.ts`, which is the one module that knows where it sits, and `package.json` is npm's.
+   * against, so the set is derived from what node does rather than from a list beside it. `command.ts`
+   * imports the whole graph at module load, so a command that refuses for want of a project still
+   * loads every module a command that succeeds would - which is what lets this stay complete without
+   * opening a socket.
    *
-   * **It found six the day it was written.** `packages/cli/source.js`, `packages/registry/field-map.js` and four more
-   * were emitted because something is *typed* against them, shipped because `files` said `dist`, and
-   * loaded by nothing - 44 kB of 362 kB. `build.ts` now drops them, and this is what says so.
+   * **It found six the day it was written.** `packages/cli/source.js`, `packages/registry/field-map.js`
+   * and four more were emitted because something is *typed* against them, shipped because `files` said
+   * `dist`, and loaded by nothing - 44 kB of 362 kB. `build.ts` now drops them, and this is what says
+   * so.
    *
    * **And it found `LICENSE` the day that file existed**, which is the guard working and not a false
    * refusal. npm adds the licence, the readme and the changelog to every tarball whatever `files`
    * says, so they arrive without anybody choosing them - and no program will ever load a licence. They
-   * are a third category rather than a widening of `readByPath`: that set is *read by this program at
-   * a path it knows*, and these are read by a person, by npm's own web page, and by every licence
-   * scanner a company runs before allowing an install. Naming them here is what stops the next
-   * addition from being waved through under a set whose sentence it does not fit.
+   * are a third category rather than a widening of `readByPath`: that set is *read by this program at a
+   * path it knows*, and these are read by a person, by npm's own web page, and by every licence scanner
+   * a company runs before allowing an install.
    */
   it('every-file-in-the-archive-is-loaded-by-a-command', () => {
     const loaded = new Set([
+      ...archive.loadedBy(),
       ...archive.loadedBy('list'),
-      ...archive.loadedBy('search', 'slugify'),
-      ...archive.loadedBy('add', 'string/levenshtein'),
-      ...archive.loadedBy('update'),
+      ...archive.loadedBy('init'),
       ...archive.loadedBy('remove', 'string/levenshtein'),
     ])
-    const readByPath = new Set(['package.json', 'dist/registry.json'])
+    const readByPath = new Set(['package.json'])
     const readByAPerson = new Set(['LICENSE', 'README.md'])
 
     expect(
@@ -236,21 +297,28 @@ describe('the archive somebody installs', () => {
   })
 
   /**
-   * Permanent rule 3 says an installation is served only from the registry's immutable snapshot.
-   * In an archive that snapshot is a file inside it, so nothing an installation does may reach a
-   * socket - and the one place a network name occurs in the whole archive is the security filter's
-   * own list of names it refuses, which is data.
+   * **This guard used to say the opposite, and the inversion is the unit.**
+   *
+   * It read `the-archive-reaches-no-network`: permanent rule 3 says an installation is served only from
+   * the registry's immutable snapshot, and while that snapshot travelled *inside* the archive nothing
+   * an installation did could reach a socket. The snapshot is now at `https://toopo.dev`, so the
+   * archive reaches the network by design - and permanent rule 3 is unchanged, because what it forbids
+   * is being served from somewhere else.
+   *
+   * So what is checked is the narrower thing that is still true: **exactly one module opens a socket**,
+   * and it is the one whose whole subject is the wire. A second would be a second place a request could
+   * be made from, which is how a client comes to talk to something nobody decided it should.
    */
-  it('the-archive-reaches-no-network', () => {
+  it('the-archive-reaches-the-network-from-exactly-one-module', () => {
     const reaching = archive.carries
       .filter((path) => path.endsWith('.js'))
       .filter((path) => {
-        const text = readFileSync(join(archive.installedAt, path), 'utf8')
+        const text = carried(path)
 
         return /from\s*['"]node:(http|https|net|tls|dgram)['"]/.test(text) || /\bfetch\s*\(/.test(text)
       })
 
-    expect(reaching).toEqual([])
+    expect(reaching).toEqual(['dist/packages/cli/http-source.js'])
   })
 
   /**

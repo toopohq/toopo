@@ -96,11 +96,32 @@ type SnapshotBody = {
   readonly formatVersion: number
 }
 
-class TheRegistryDidNotAnswer extends Error {
-  constructor(origin: string, question: Question, said: string) {
+/**
+ * The registry could not be reached, or answered something that is not an answer.
+ *
+ * **Exported, and that is the whole of what makes it a screen rather than a stack trace.**
+ * `command.ts` turns three refusals into something a person can read and lets everything else through
+ * as a crash; this was the fourth, and it was unreachable until an entry point named an origin - which
+ * is why `source.ts` declared the screen instead of half-building one nothing could see red.
+ *
+ * **What it says is what this machine observed, and it stops there.** A failed `fetch` gives one
+ * sentence and that sentence does not decide between a registry that is down, a machine with no
+ * network, and something between the two that refused - so the message says so rather than naming a
+ * cause no measurement establishes. ADR-0042.
+ *
+ * The URL is the whole URL, because it is the one thing here a reader can act on without us: they can
+ * open it.
+ */
+export class TheRegistryDidNotAnswer extends Error {
+  constructor(url: string, said: string) {
     super(
-      `${origin} answered ${said} for \`${question.method}\`` +
-        `${addressAsked(question) === '' ? '' : ` at ${addressAsked(question)}`}`,
+      [
+        `${url} did not answer: ${said}`,
+        `Nothing in your project was read or changed.`,
+        `That is what this machine saw. It does not say whether the registry is down, whether this ` +
+          `machine can reach the network, or whether something between the two refused - and toopo ` +
+          `cannot tell those apart from here. Open the address above to find out which it is.`,
+      ].join('\n'),
     )
     this.name = 'TheRegistryDidNotAnswer'
   }
@@ -115,11 +136,30 @@ class TheRegistryDidNotAnswer extends Error {
  * reason a probe never decides it.
  */
 export const httpSource = (origin: string): RegistrySource => {
-  /** The response, or `null` where the registry says it holds no such thing. */
+  /**
+   * The response, or `null` where the registry says it holds no such thing.
+   *
+   * **A `fetch` that throws is the common failure and used to be the unhandled one.** Offline, behind a
+   * proxy, or at a host that does not resolve, undici rejects rather than answering a status - so the
+   * first person to type `toopo add` on a train would have met a stack trace where every other refusal
+   * of this tool is a sentence. It is caught here and nowhere else, because here is where the one thing
+   * worth telling them is still in hand: the address that did not answer.
+   */
   const answering = async (question: Question): Promise<Response | null> => {
-    const response = await fetch(`${origin}${pathOf(question)}`)
+    const url = `${origin}${pathOf(question)}`
+
+    let response: Response
+    try {
+      response = await fetch(url)
+    } catch (error) {
+      throw new TheRegistryDidNotAnswer(
+        url,
+        error instanceof Error ? error.message : String(error),
+      )
+    }
+
     if (response.status === 404) return null
-    if (!response.ok) throw new TheRegistryDidNotAnswer(origin, question, String(response.status))
+    if (!response.ok) throw new TheRegistryDidNotAnswer(url, `it answered ${response.status}`)
 
     return response
   }
@@ -127,7 +167,12 @@ export const httpSource = (origin: string): RegistrySource => {
   /** An answer the port makes non-nullable, so that a registry holding none of it is an error. */
   const insisted = async <T>(question: Question): Promise<T> => {
     const response = await answering(question)
-    if (response === null) throw new TheRegistryDidNotAnswer(origin, question, '404')
+    if (response === null) {
+      throw new TheRegistryDidNotAnswer(
+        `${origin}${pathOf(question)}`,
+        `it answered 404, and this is an answer every registry has`,
+      )
+    }
 
     return (await response.json()) as T
   }

@@ -4,25 +4,24 @@ date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
   - packaging/build.ts
-  - packaging/freeze.ts
-  - packages/cli/artefact.ts
-  - packages/cli/packaged-source.ts
 confirmed-by:
-  - battery: packaging
-    guard: an-archive-installs-a-feature-whose-bytes-are-the-catalogues
-  - battery: packaging
-    guard: every-file-an-installation-needs-is-served-as-the-bytes-it-was-frozen-from
   - battery: packaging
     guard: no-part-of-the-instrument-or-of-the-suite-is-in-the-archive
   - battery: packaging
     guard: every-file-in-the-archive-is-loaded-by-a-command
   - battery: packaging
     guard: the-archive-is-visibly-unpublished
-  - battery: packaging
-    guard: two-freezes-of-one-working-tree-are-one-byte-string
 ---
 
 # What an archive is, and what it may not be
+
+> **Half of this record has been superseded by
+> [ADR-0092](0092-the-catalogue-leaves-the-archive.md), on the trigger this one named.** *What would
+> reopen this* said: a server, because `packaged-source.ts` and a future `httpSource` are two
+> implementations of one port. The entry point now names an origin, so the frozen artefact, its source
+> and the walk that built it are gone, and with them three of the six guards below. What is kept is
+> what is still true and still ruled here: the compilation, the whitelist and its two mechanisms, the
+> `typescript` dependency, and the order in which a site and a package may be published.
 
 ## Context and Problem Statement
 
@@ -124,18 +123,32 @@ later.
 
 ## Confirmation
 
-The six guards are the six things an archive can get wrong: the bytes it installs are not the
-catalogue's, a file an installation needs is missing, something of the instrument is in it, something
-in it is loaded by nothing, the version reads as published, and two builds of one tree differ.
+**Three guards, where there were six, and the three that went are named rather than dropped quietly.**
+`an-archive-installs-a-feature-whose-bytes-are-the-catalogues`,
+`every-file-an-installation-needs-is-served-as-the-bytes-it-was-frozen-from` and
+`two-freezes-of-one-working-tree-are-one-byte-string` were about a frozen artefact, and there is none.
+[ADR-0092](0092-the-catalogue-leaves-the-archive.md) carries what replaced them and what it does not
+replace.
+
+What is left is three of the things an archive can still get wrong: something of the instrument is in
+it, something in it is loaded by nothing, and the version reads as published.
 
 ## What would reopen this
 
-A server, which is what the artefact stands in for. `packaged-source.ts` and a future `httpSource` are
-two implementations of one port, so the archive stops being the registry's snapshot on the day
-something else is.
+**It was reopened, on this trigger, and this is what that looks like from inside a record.** The
+trigger read *a server, which is what the artefact stands in for* — and it fired at the entry point
+naming an origin rather than at a server existing, which is one step earlier than it was aimed. That is
+the trigger being useful anyway: it named the right event class, and the event that came was a member
+of it.
+
+What would reopen the half that is left: `files` becoming something other than `["dist"]`, which is the
+one declaration both whitelist mechanisms are about; or a runtime dependency beyond `typescript`, which
+is priced in the consequences above and has never been paid twice.
 
 ## More Information
 
+- [ADR-0092](0092-the-catalogue-leaves-the-archive.md) — what the archive stopped carrying, and what
+  `packaging/` stopped measuring.
 - [ADR-0045](0045-what-a-battery-over-the-archive-can-reach.md) — what a battery over this can and
   cannot measure.
 - Moved out of `CLAUDE.md` by [ADR-0001](0001-record-decisions-in-madr-format.md).

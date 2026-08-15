@@ -12,21 +12,18 @@
  * something no source produces any more - so the removal is not tidiness and it is not left to a
  * separate command somebody might not run.
  *
- * Then the compiler, then the catalogue it serves. `prepack` is this file, so `npm pack` cannot
- * produce an archive whose artefact is older than its code, or whose code is older than its sources.
+ * Then the compiler, and then nothing. `prepack` is this file, so `npm pack` cannot produce an archive
+ * whose code is older than its sources.
  *
- * **The only thing in this folder that touches a disk**, which is the line `packages/site/build.ts` already
- * draws for the generator and `packages/cli/command.ts` for the installer. `freeze.ts` builds the artefact as a
- * value, so the guard that checks it needs no working directory and no build.
+ * **It used to write the catalogue beside the code, and ADR-0092 is why it no longer does.** The
+ * archive carried every contract the registry serves, base64 and all, so its size was a function of
+ * how many contracts existed; a published `toopo` asks the registry instead.
  *
- * The output is not committed. A built artefact in the history would be a second copy of the catalogue
- * ageing beside the first, and the first is the one this repository is about; `.gitignore` keeps it
- * out and this sentence is why, rather than leaving the entry to look like an oversight.
+ * **The only thing in this folder that touches a disk**, which is the line `packages/site/build.ts`
+ * already draws for the generator and `packages/cli/command.ts` for the installer.
  *
- * The artefact is written as its canonical text and nothing else - no trailing newline, no
- * indentation - so that two builds of one working tree produce one byte string, and so that the digest
- * of this file is the digest of the value it holds. `canonical.ts` owns that form and every other
- * digest in the registry is taken under it.
+ * The output is not committed: `.gitignore` keeps it out and this sentence is why, rather than leaving
+ * the entry to look like an oversight.
  *
  * The compiler is reached at `typescript/lib/tsc.js` and run by this same node, rather than through
  * `node_modules/.bin/tsc`. The shim in `.bin` is three files - a shell script, a `.cmd` and a
@@ -40,13 +37,9 @@
 import '../typescript-imports.ts'
 
 const { spawnSync } = await import('node:child_process')
-const { mkdirSync, readdirSync, rmSync, statSync, writeFileSync } = await import('node:fs')
+const { readdirSync, rmSync, statSync } = await import('node:fs')
 const { join, relative } = await import('node:path')
 
-const { ARTEFACT_FILE } = await import('../packages/cli/artefact.ts')
-const { localSource } = await import('../packages/cli/local-source.ts')
-const { canonical } = await import('../packages/registry/canonical.ts')
-const { frozenArtefact } = await import('./freeze.ts')
 const { reachableFrom } = await import('./reachable.ts')
 
 const HERE = import.meta.dirname
@@ -84,13 +77,6 @@ const dropped = every(DIST).filter((file) => !reachable.has(file))
 
 for (const file of dropped) rmSync(file)
 
-mkdirSync(DIST, { recursive: true })
-
-const artefact = await frozenArtefact(localSource())
-const text = canonical(artefact, 'artefact')
-
-writeFileSync(join(DIST, ARTEFACT_FILE), text, 'utf8')
-
 /**
  * On stderr, because this runs as `prepack` and `npm pack --json` answers on stdout.
  *
@@ -99,8 +85,7 @@ writeFileSync(join(DIST, ARTEFACT_FILE), text, 'utf8')
  * in `archive.test.ts` failed on `Unexpected token 'r', "registry.j"... is not valid JSON`.
  */
 process.stderr.write(
-  `${reachable.size} modules, ${dropped.length} dropped as unreachable` +
-    `${dropped.length === 0 ? '' : ` (${dropped.map((file) => relative(DIST, file)).join(', ')})`}\n` +
-    `${ARTEFACT_FILE}: ${artefact.index.entries.length} contracts, ` +
-    `${artefact.blobs.length} files, ${text.length} bytes\n`,
+  `${reachable.size} modules, ${[...reachable].reduce((total, file) => total + statSync(file).size, 0)} ` +
+    `bytes, ${dropped.length} dropped as unreachable` +
+    `${dropped.length === 0 ? '' : ` (${dropped.map((file) => relative(DIST, file)).join(', ')})`}\n`,
 )

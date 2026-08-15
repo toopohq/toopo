@@ -51,14 +51,14 @@
  *
  * **The registry is a parameter, and that is what makes one build of this file installable.** It used
  * to call `localSource()`, which serialises this working tree - and a published `toopo` has no working
- * tree, cannot reach the modules that serialisation imports, and must be served from a frozen artefact
- * instead. `artefact.ts` carries the three measurements. What matters here is the shape: two entry
- * points, `toopo.ts` and `published.ts`, each naming one registry, and *which registry an installation
- * came from is a static fact about which file was run* rather than something this file probes for. A
- * probe would be the second source of truth `source.ts` exists to prevent.
+ * tree and cannot reach the modules that serialisation imports. What matters here is the shape: two
+ * entry points, `toopo.ts` and `published.ts`, each naming one registry, and *which registry an
+ * installation came from is a static fact about which file was run* rather than something this file
+ * probes for. A probe would be the second source of truth `source.ts` exists to prevent.
  *
- * It is a thunk rather than a source, because building one serialises five contracts and reads
- * thirty-seven files, and that is not worth paying to print a usage line.
+ * It is a thunk rather than a source, because a source is not free to build - the local one serialises
+ * five contracts and reads thirty-seven files, the published one opens a socket - and neither is worth
+ * paying to print a usage line.
  *
  * The project root is the working directory, and `toopo.json` is the marker of a project rather than a
  * `package.json`. Nothing this tool does needs a package manager to have been used: it copies source
@@ -79,10 +79,10 @@ import {
   writeConfiguration,
 } from './configuration.js'
 import { deciding } from './fixpoint.js'
+import { TheRegistryDidNotAnswer } from './http-source.js'
 import { GIT_WAS_NOT_ASKED, whatGitIgnores } from './ignored.js'
 import { filesToWrite, lockfileAfter, prepareInstallation } from './install.js'
 import { listProject } from './list.js'
-import { UnusableArtefact } from './artefact.js'
 import { UnusableLockfile, readLockfile } from './lockfile.js'
 import { nothingMoved } from './reconcile.js'
 import type { Moving } from './relocate.js'
@@ -392,7 +392,7 @@ export const run = async (theRegistry: () => RegistrySource): Promise<void> => {
     if (
       error instanceof UnusableConfiguration ||
       error instanceof UnusableLockfile ||
-      error instanceof UnusableArtefact
+      error instanceof TheRegistryDidNotAnswer
     ) {
       refuse(error.message.split('\n'))
     }

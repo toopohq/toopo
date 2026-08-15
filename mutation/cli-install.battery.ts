@@ -147,7 +147,7 @@ const A_SNAPSHOT_DECLARES_WHAT_WAS_ASKED_FOR = `  const misdeclared = declaratio
 
 const TWO_EDGES_ON_ONE_ADDRESS_AGREE = `      if (already.digest !== edge.digest && !disagreed.has(what)) {`
 
-const A_FAILURE_IS_NOT_AN_ABSENCE = `    if (!response.ok) throw new TheRegistryDidNotAnswer(origin, question, String(response.status))`
+const A_FAILURE_IS_NOT_AN_ABSENCE = `    if (!response.ok) throw new TheRegistryDidNotAnswer(url, \`it answered \${response.status}\`)`
 
 const A_BLOB_IS_ADDRESSED_BY_THE_QUESTION = `      return { addressing: 'content-addressed', addressedBy: sha256, bytes }`
 
