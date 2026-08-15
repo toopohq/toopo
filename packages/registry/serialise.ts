@@ -1,5 +1,7 @@
 /**
  * How a contract folder becomes a registry record.
+ * ADR-0059 is why the root here is two levels up rather than one.
+ *
  *
  * There is one builder rather than five, and the bar is the catalogue's own: what the five repeat
  * *identically* is shared, and what they merely resemble stays apart. Identically shared, measured:

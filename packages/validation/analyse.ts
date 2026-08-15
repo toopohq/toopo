@@ -1,5 +1,7 @@
 /**
  * Stage 1, composed.
+ * ADR-0058 is what a contribution can be, and why the five rules are named in CONTRIBUTING.md.
+ *
  *
  * The rules are written apart because they read different surfaces; they are applied together because
  * a submission is refused or it is not. What this module adds to the four rule functions is the one

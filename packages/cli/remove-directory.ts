@@ -1,5 +1,7 @@
 /**
  * Removing a directory that something else is still holding.
+ * ADR-0056 is the EPERM this retry exists for, and the two readings that were refuted first.
+ *
  *
  * **It is here rather than beside either caller because there are two, and they are on opposite sides
  * of the product.** `rewrite.ts` removes the folder it parsed a submission's imports in, on the path

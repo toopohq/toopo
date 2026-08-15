@@ -2,6 +2,9 @@
 /**
  * The file somebody runs when they installed `toopo`.
  *
+ * ADR-0059 is why the root computed below is correct while looking identical to one that was not: it
+ * walks the emitted tree, not the source tree.
+ *
  *   npx toopo add string/slugify
  *
  * It names the registry that travelled in the archive and hands it to `command.ts`, which is the same

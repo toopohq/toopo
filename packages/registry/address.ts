@@ -12,7 +12,8 @@
  * because there is no type here that carries a guard identifier on its own. ADR-0019 names that
  * cost in advance - "the registry schema must always carry the pair, never the identifier alone" -
  * and ADR-0031 is why `THE_ORIGIN` below is declared here rather than in the folder that renders it,
- * and ADR-0049 is why every rendering carries the language -
+ * ADR-0049 is why every rendering carries the language, and ADR-0054 is the shape this file is the
+ * first instance of -
  * and fifteen identifier strings are held by more than one contract today, so the cost is already
  * due. A rule that lives in a sentence is a rule the sixth contract's author never reads; making the
  * unpaired form unrepresentable is what turns it into something the compiler keeps.

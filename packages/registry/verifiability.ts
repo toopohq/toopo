@@ -1,5 +1,7 @@
 /**
  * What a client can establish alone, and what it has to take from us.
+ * ADR-0054 is why a rule is looked for as a shape before it is written as a sentence.
+ *
  *
  * This is the product of the unit. Every guarantee this project sells rests on an installation never
  * trusting a source but checking it, so the exact extent of "check it" is the sentence the methodology

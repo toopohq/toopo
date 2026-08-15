@@ -1,5 +1,7 @@
 /**
  * The text somebody typed, as the value it spells - the inverse of `literal`.
+ * ADR-0055 is why the arm table is a record keyed by the union rather than a pass over real cases.
+ *
  * ADR-0029 is why the replay imports the stripped artefact rather than this module.
  *
  *

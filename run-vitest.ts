@@ -1,5 +1,7 @@
 /**
  * The file every npm script of this repository starts vitest through.
+ * ADR-0056 is why every script that starts vitest goes through this entry point.
+ *
  *
  *   node run-vitest.ts run --config site/vitest.config.ts
  *

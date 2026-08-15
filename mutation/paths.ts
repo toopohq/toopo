@@ -1,5 +1,7 @@
 /**
  * Where the instrument is, spelled one way rather than however it happened to be invoked.
+ * ADR-0059 is why a computed root states how far up it goes, and what it goes up from.
+ *
  *
  * ---------------------------------------------------------------------------
  * What this closes, and where the measurement lives

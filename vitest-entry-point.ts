@@ -1,5 +1,7 @@
 /**
  * Where vitest's entry point is, spelled one way rather than however node happened to be invoked.
+ * ADR-0056 is why the drive letter is pinned here rather than inherited from whatever launched a run.
+ *
  *
  * ---------------------------------------------------------------------------
  * The door, measured rather than argued

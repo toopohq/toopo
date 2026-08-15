@@ -1,5 +1,8 @@
 /**
  * How many guards each suite of this repository collects, file by file, declared rather than counted.
+ * ADR-0057 is why a run is selected from this table rather than declared per battery; ADR-0056 is why
+ * a fault line quotes what the run said.
+ *
  *
  * ---------------------------------------------------------------------------
  * The blind spot this closes, measured rather than argued

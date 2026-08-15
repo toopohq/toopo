@@ -27,7 +27,7 @@ rule 1 below rather than left to look like impatience. Beside all of it the conf
 which does **not** make `contractAnatomy` executable: the triage below says why — three of its eleven
 entries are settled by a syntax tree, four need a module a stage has already vetted, and four are a
 reader's for ever. Beside them now `toopo update`, the command permanent rule 4 is about, and with it
-the two-phase write that closes three of the four situations `cli/breakage.ts` declared as breaking
+the two-phase write that closes three of the four situations `packages/cli/breakage.ts` declared as breaking
 badly. Then `toopo search`, the only command that reads no project at all and the one that finally
 makes `identity.searchAliases` executable — a field declared in the first session of this project and
 validated by nothing until now. **The CLI is finished at six commands with `toopo remove`, and with it
@@ -179,127 +179,6 @@ two, which puts a twenty-thousand-file limit at 1 817 contracts instead of ten t
   argued for.
 - Project name: Toopo. CLI command `toopo`, lockfile `toopo.lock`.
 
-## What a pin on a re-drawn property may claim — settled
-
-**A property that re-draws its generations has no determinism to offer, only a miss rate.** So the
-rule `mutants.ts` states — *a pin names what is red on every run* — is unreachable as written for such
-a guard, and pretending it is met is what produced `G-14`. The usable form: **a pin on a
-property-based guard carries its measured miss rate, and is legitimate only when that rate is
-unobservable over the lifetime of the project.** One green in 110 runs is met every fortnight, and a
-pin met by a green every fortnight teaches its reader to ignore the red — the one known way to destroy
-this instrument. A named figure beats an asserted determinism that does not exist.
-
-**And the first step is not the rate. It is whether the guard polices the step the mutant breaks.**
-`G-14` stops `keep` keeping marks, and it pinned P1, which `POLICED` declares for `unify` and `fold`.
-P1's table of equivalent spellings is blind to it at **0 of 200 000 draws** and cannot stop being:
-`unify` is NFKC, so a bare mark is composed onto its base before `keep` runs, and a mark that survives
-composition is one the rule *keeps* rather than a second spelling of anything. Its 0.470% of catching
-draws was the general-purpose alphabet having an accident. **Without this step, a rate is optimised for
-an accident; with it, there is no rate to measure and only a pin to drop.** The pin is dropped on that
-argument rather than on its 59-in-60.
-
-**And before either: check that the thing is stochastic at all.** This is the sister of the rule above
-and it was paid for outside this section. The drive-letter door presented itself as a rate — eight
-invocations from mixed launchers gave two collapses, twenty from one shell gave none, and *two in
-eight* was written down as though it were a frequency. Nothing about it was random. It is a predicate
-on the invocation, **20 of 20 under one spelling of the entry point and 0 of 20 under the other**, and
-what *two in eight* measured was how often the sampling happened to include the deciding input. **A
-frequency measured over trials that differ in a hidden deterministic input is a number about the
-sampling and not about the system** — and it is worse than no number, because it cannot be reproduced,
-so every failure to reproduce it reads as evidence that the rate is low. That reading cost two replays
-and about half an hour before anybody looked for a predicate instead of a probability.
-
-The check is the same one either way and it is cheap: **vary one input at a time and look for a cell
-that is 0 of *n* or *n* of *n*.** A stochastic phenomenon has no such cell; a hidden predicate is
-nothing but such cells, and one of them ends the question without a confidence interval. `mutants.ts`
-carries it as the third of a series, and they read together: a rate is worth measuring only if the
-guard polices the step, only if the phenomenon is stochastic, and only against a trial count put
-beside the rate being looked for. The third of those is the *0 in 30* lesson from the teardown, and
-this is the first time all three are stated as one thing.
-
-**The detour is recorded because it was expensive and it looked right.** Widening the spelling table
-with a decomposed entry was proposed, built, and measured: 0 of 100 000 against `G-14`, unchanged, and
-*fewer* catches on the two mutants P1 does police — 35 487 against 38 142, 80 700 against 83 995 —
-because a tenth entry dilutes the nine. A symbol added to a frozen alphabet with no red in front of it
-is decorative in this repository's exact sense. It was reverted, and the refusal now lives in the
-table's own comment so the next reader does not repeat it.
-
-**What separates a guard worth keeping from a symbol worth reverting, and it is measurable rather than
-doctrinal: a guard whose failure has been observed on its real condition is kept, even when no battery
-mutant can produce that condition; a guard with no red at all is not.** The partition of
-`support-the-texts-reach-every-region` is the first case — it replaced a `.length` with the three kinds
-the table holds, and it was seen red twice, on an entry silently changing kind and on a kind nobody
-foresaw. No mutant produces either, and none can: a battery injects into `reference.ts` and cannot
-reach a generator's coverage. A person editing that table produces both in one line. It is the census's
-own argument, arriving on an arbitrary.
-
-**The method survives and the script does not**, because the validation is what made it worth
-anything. Inject the mutant, reproduce the generator beside it, **check the reproduction against a
-series of real runs before believing it**, then read the rate. On `G-14` the reproduction predicted
-0.89% and 60 real runs gave 1 green — agreeing, which is what earned the 200 000-draw figure the right
-to be quoted. Three minutes for any pair of mutant and pin, and it is written in `mutants.ts` where
-whoever is about to pin something will be reading.
-
-## Make the omission impossible rather than forbidding it — settled, repository-wide
-
-**Before writing a rule in prose, look for the shape that makes breaking it not compile.** A sentence
-in a header is a rule the next contributor never reads; a type that cannot be written the wrong way is
-one they cannot get past. Three instances found independently, which is what turned a habit into a
-rule:
-
-- **`GuardAddress` carries no unpaired form.** Uniqueness is per contract, so a guard is addressed by
-  the pair `(contract, guard)` — and `packages/registry/address.ts` publishes no type holding a guard identifier
-  alone. The rule "the registry schema must always carry the pair" was written in prose first, in this
-  file; making the unpaired form unrepresentable is what turned it into something the compiler keeps.
-- **`VerificationStratum` has a member for deferring and none for omitting.** `stated-per-declaration`
-  exists because the visibility guard found a path with no entry at all and a comment explaining why —
-  and a comment is not a classification. *Deferring is a decision, omitting is a silence*, and the
-  union is what makes the second one impossible to write.
-- **`toopo.lock`'s version cannot go stale.** `cli/lockfile.ts` validates through records keyed by
-  `keyof LockedFeature` and `keyof InstalledFile`, so a field added to either does not compile until a
-  check for it is written — beside the number that has to move. Both shapes had already shipped under
-  `"version": 1` before this existed, which is the measurement that motivated it.
-
-The three have one form: **a total map over a type, or a union with no way to spell the absence.** The
-question to ask of any new rule is whether that form exists for it. Where it does not, the rule is
-written in prose *and* recorded in the list below, so that a declaration nothing keeps is at least
-counted.
-
-**It is not free, and the cost is stated so it is not discovered later.** Totality forces a decision at
-the moment a type changes, which is the whole value, and it also means a field nobody has an opinion
-about must still be given one. `FIELDS_OF` carries `files: Array.isArray` and delegates the elements
-elsewhere — the totality guarantees no field goes *unconsidered*, never that every check is one
-expression. Claiming more than that would be the decorative form of the same idea.
-
-## Totality by the compiler beats a pass over the data — settled, repository-wide
-
-**A pass over real data is accidental coverage; a total map over a union cannot fail to be complete.**
-The instance that established it: `read` inverts `literal`, and the obvious guard was the round trip
-over every case of block 4.4. Measured, that guard cannot exist in `site/` — `site/source.test.ts`
-refuses every module of the folder but one, tests included and its own comment says *every other module
-of this folder*, the right to reach `the-five` or `serialise`, so a guard there sees exactly what the
-port serves. **157 of the 187 cases sit on contracts that have a page, and all 30 that print a word
-with no JavaScript spelling sit on `array/group-by@1`, which has none.** One half of that partition
-would have been empty by construction, which is the shape of a guard that quietly stops asking
-anything.
-
-What replaced it is stronger where it matters: `EVERY_ARM` is a record keyed by `EncodedValue['kind']`,
-so an arm added to that union does not compile until a sample is written. Seen red by adding one — the
-record *and* `literal`'s own switch both stop compiling, and a `killed-by-typecheck` is a death in
-full. Real cases reach the arms they reach, nobody has ever checked which, and nothing reddens when one
-is never touched.
-
-The pass over the served cases stays, for what the table cannot say: that the literals this catalogue
-actually publishes are among the ones that read back. And it carries the invariant a playground rests
-on — *no case the registry serves is printed as a word with no spelling* — which reddens the day a
-higher-order contract gains a page, which is the day somebody has to decide what its playground does
-with a case whose input is a function. **A guard that fires at the right future moment is worth more
-than one that covers the past.**
-
-Both reds were seen, and which guard caught which is the argument for keeping the pair: a reader
-answering `0` for `-0` reddens the arm table *and three real cases*, and a reader answering `undefined`
-for `<hole>` reddens the arm table alone.
-
 ## What the repository declares and nothing keeps — closes before the launch
 
 One form, found four times in a single sweep and certain to be found again: **a thing that behaves
@@ -330,7 +209,7 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
   about its own verification.
 - `referenceImplementationRules` — its first rule is what `states-its-own-signature` refuses, and the
   refusal a submitter reads is **that declaration's own sentence** rather than a retelling of it. It
-  moved to `catalogue/reference-implementation.ts` for a mechanical reason worth recording: production
+  moved to `packages/catalogue/reference-implementation.ts` for a mechanical reason worth recording: production
   code cannot import a file that imports vitest, and `every-contract.ts` does because three of its
   exports *are* guards. Its second rule stays a reader's and `contractAnatomy` says why.
 
@@ -459,7 +338,7 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
   none, because every candidate repair cleared both readings by orders of magnitude. It will enter one
   the day a pin's repair is close enough that the factor decides between two of them.
 
-**Closed by the two-phase write, which is where they said they would close.** `cli/write.ts` stages every
+**Closed by the two-phase write, which is where they said they would close.** `packages/cli/write.ts` stages every
 file beside its destination and renames, so the three situations the installer left throwing whatever
 the operating system threw are refusals with a sentence. A folder that cannot be written to fails during
 staging, where nothing has been committed — not a pre-flight writability check contradicted afterwards
@@ -557,7 +436,7 @@ the tool, which is the shape this repository refuses everywhere else.
 **So the line is drawn instead, and it is a rule about where a resolution lives: the pre-flight resolves
 what a battery names; a suite guard resolves what a module declares.** Two universes, two mechanisms,
 each beside the declaration it keeps. `every-clean-refusal-resolves-to-the-guard-it-names` in
-`cli/breakage.test.ts` is the second one's first instance — it reads this folder's test sources, resolves
+`packages/cli/breakage.test.ts` is the second one's first instance — it reads this folder's test sources, resolves
 all twenty addresses, and **publishes the file each one is in** rather than asserting anything about
 where they are.
 
@@ -643,416 +522,6 @@ the tally refuse**, because the boundary is `HEAD`'s own timestamp and a docs co
 back is to replay. It is the conservative direction on purpose — the alternative is a definition of
 which commits could have changed what a battery measures, which is a second statement that can be
 wrong.
-
-## A control that is red with nothing injected — settled, and filed under the wrong cause
-
-**A replay refused itself, and the refusal is the instrument working.** `cli-install`'s calibration
-answered *the unmutated `C/as-committed` is red, so every verdict from this battery would be noise*,
-naming `the-commands-that-reach-the-registry-are-these-and-no-others`. Sixty-three verdicts built on a
-red control would have looked exactly like verdicts.
-
-**One intermittent guard produced two failures that named anything but itself.** In another replay the
-same guard reddened while a `cli-search` mutant was injected, and the attribution concluded *declared
-silent and a mutant reddened it* — a stale declaration reported against a mutant with nothing to do
-with it. Neither report can say *this guard is intermittent*, because neither is looking at that.
-
-**It was never that guard's assertion.** All 169 assertions were collected and its seven booleans were
-right. The failure was in its `finally`: `rmSync` answering `EPERM` on the temporary project it had
-installed into. A teardown that throws reddens whichever guard happens to be running, and this
-instrument reads a red guard as a verdict — so a removal failing in a `finally` produces a cell that
-looks exactly like a kill. **That is the third member of the family `run.ts` names twice**, arriving
-from the apparatus rather than from the contract, and none of the three guards written for that family
-can see it: an edit that does not apply and a suite that half ran are both about what the *run*
-collected, and this run collected everything.
-
-**The reading this was filed under was wrong, and the arithmetic is what says so.** It was recorded as
-state leaking between batteries on the strength of *0 red in 30 runs of the unmutated `cli` suite
-alone*. Measured at `d0ee718`, over that same suite, alone, sequential, with nothing injected and no
-battery anywhere: **3 reds in 139 runs — 2.16 per cent**, 95 per cent Clopper-Pearson [0.45, 6.18],
-every one of them the same exception at the same line. At that rate thirty clean runs happen **52 per
-cent** of the time. *Clean in isolation, faulty in sequence* was the sample size and not a signature.
-**Nothing leaks between batteries, and the parallelisation this was said to stand in front of is not
-blocked by it.**
-
-**So the rule this produces is about the shape of the evidence, not about this defect.** A run of zero
-over *n* trials bounds nothing until *n* is put beside the rate being looked for. Thirty was about a
-thirtieth of what this question needed, and *0 red in 30* was true, was measured, and carried a
-conclusion it could not support — which is this file's own diagnostics rule arriving on a measurement
-instead of on a screen: an inference offered with its premise is argument, a conclusion offered alone
-is assertion, and the premise here was a number nobody had compared with anything. It is `G-14`'s
-lesson met from the other side. There a pin claimed a determinism the draws did not have; here a
-silence claimed an absence the trials could not establish.
-
-**Two readings were built and refuted rather than argued**, which is the whole reason the third one
-could be believed. The working directory on its own — **0 failures in 400 rounds**. The `git`
-subprocess an install spawns, which is the one thing this guard does that its forty-two neighbours do
-not — **0 in 200, across four arms**. What *is* established is that a directory held as a process's
-working directory answers exactly `EPERM` on exactly `rmSync`, and that `command.test.ts` is the only
-one of this folder's 43 teardowns that ever makes a project the working directory. **What holds it
-during the natural failures is not established**: 600 rounds outside vitest reproduced none, so nothing
-here names one. The previous version of this section refused to name a cause for the same reason, and
-that refusal is what left the question in a state somebody could still measure.
-
-**`maxRetries` is not the mechanism, because it does not work.** Measured on node v24.15.0, three runs
-alike, against a directory held as another process's working directory:
-
-```
-rmSync(root, { recursive: true, force: true })                        EPERM after 0ms
-rmSync(root, { recursive: true, force: true, maxRetries: 10, ... })   EPERM after 0ms
-await rm(root, { recursive: true, force: true, maxRetries: 10, ... }) removed after 634ms
-```
-
-Node documents that option as retrying exactly `EPERM` when `recursive` is true. The synchronous form
-answers in zero milliseconds, which is the shape of an option read and dropped. Reaching the
-asynchronous one would turn this folder's 43 teardowns, every helper above them, and `rewrite.ts`
-through to `command.ts` into promises — and `command.ts` is the file whose whole property is that
-everything it decides is reachable from a guard with no process. So the retry is written in
-`remove-directory.ts` with the measurement beside it, which is the treatment `ignored.ts` already gives
-`git check-ignore`'s exit codes.
-
-**The sweep found the same defect on the install path, and there it is worse.** `rewrite.ts` removes
-the folder it parsed a submission's imports in from a `finally`, and a `finally` that throws replaces
-what was being returned — so an `EPERM` there turns a rewrite that worked into an install that failed,
-on the one path that writes into somebody else's project. One module answers for both callers, because
-there is one rule about an operating system and a copy in each would be two.
-
-**The guard is seen red on the real condition rather than on a reconstitution.** A child process holds
-the project as its working directory and writes a sentinel before anything is removed, so the guard
-cannot pass by winning a race against a holder that never started. With the retry taken away it answers
-the identical `EPERM` on the identical call; with it restored the directory goes.
-
-**Before and after, over the same loop at two commits.** 3 in 149 at `d0ee718`; **0 in 700** at
-`0813211`. If the repair had changed nothing, P(0 in 700) = 6.6 × 10⁻⁷, and 0 in 700 bounds that class
-under **0.427 per cent** against 2.01 — a margin of about five, which is what a repair is chosen on
-rather than on the second decimal of either figure.
-
-**And the after arm found a second cause of the same symptom, which is the whole argument for measuring
-a repair instead of declaring one.** One run in 700 reddened
-`only-what-the-removed-feature-alone-pulled-in-goes-with-it`, and it was not `EPERM` but
-*Test timed out in 5000ms* — on a run that took **62.4 s against a 6.0 s median**, a stall of ten.
-Measured over ten idle runs, the slowest guard of this folder is 2 688 ms, which is **1.9 times** that
-default and 1.4 under load: a threshold that gives way at a stall of two, in the one folder whose guards
-wait on a compiler, on `git` and on a disk. It was nobody's decision — no contract says an install
-finishes in five seconds — so `cli/vitest.config.ts` now declares 60 000, twenty-two times the slowest
-guard, and the sentence in `packaging/vitest.config.ts` claiming everything else here decides in memory
-is narrowed, because it was already false of `cli/` when it was written.
-
-**The third cause is closed, and it was the drive letter after all — the correlation the last unit was
-right not to promote on the evidence it had.** Twice in eight battery invocations a run collected
-**nothing at all**, and both times `assertTheCensusHolds` refused before a verdict existed, naming each
-file and its declared count. What stopped a cause being named was arithmetic: 28 collected assertions
-is not the 0 a lower-case drive had been separately measured to give. **Both figures are that one door,
-read through two configurations.** The contracts' own declares five `.test-d.ts`, which tsc collects in
-the parent process where no worker is involved, and 9 + 5 + 4 + 5 + 5 is 28; `cli/vitest.config.ts`
-declares no typecheck files at all, so nothing survives and the run collects 0 of 170. Under the
-lower-case spelling all sixteen runtime files fail with `TypeError: Cannot read properties of undefined
-(reading 'config')`.
-
-**It is not a rate, which is why nobody could reproduce it.** Measured over twenty runs of each
-spelling: `c:\...\toopo` collapses **20 of 20**, `C:\...\toopo` collects 472 **20 of 20**. The spelling
-is carried rather than produced — `realpath` does not normalise a Windows drive letter,
-`import.meta.url` keeps whatever resolved the entry point, `join` carries it on — and both shells
-measured normalise a typed `cd`, which is exactly why fifty invocations through npm and through node
-had reproduced nothing. What does not normalise is a script named by a lower-case absolute path:
-`node c:\...\mutation\measure.ts fixture` refuses at calibration from a shell whose own directory is
-`C:`. Eight invocations from mixed launchers giving two collapses was never a probability — it was a
-predicate on the invocation, counted as though it were one, which is this section's own lesson
-arriving on the defect that closes it.
-
-**And the two paths a run is given were separated rather than moved together.** `runSuite` hands the
-child a working directory and an entry point, and the twenty-run measurement above varied both at
-once. Split, on the same suite: `cwd C: entry c:` collects **28**, `cwd c: entry C:` collects **472**.
-**The working directory is irrelevant; the path node is given for `vitest.mjs` decides.** A
-configuration cannot defend itself either — canonicalising `root` inside `site/vitest.config.ts` and
-running from a lower-case entry point still collects 0 of 78 — so the only place the spelling can be
-fixed is where the path is built, which is why `vitest-entry-point.ts` is one constant and not one
-per caller.
-
-**The half of this that was not ours is closed, and what closed it is a reframing rather than a
-measurement.** Every script that starts vitest reached it through `node_modules/.bin`, whose shim
-derives `vitest.mjs` from wherever PATH found it — and an ordinary `npm run site` collapsed exactly
-this way: seven files, no test, root `c:/...`, while node in that same shell answered `C:` for its
-working directory moments later and the next `npm run site` collected all 78. What produced that
-spelling was not isolated and is still not guessed at. It was priced and refused once, on the reading
-that it is loud rather than dangerous — the run exits non-zero having collected nothing, so no verdict
-is ever built on it. **That reading is true of the instrument and false of a stranger**: somebody who
-clones this on the day it is published and types `npm run site` gets `TypeError: Cannot read
-properties of undefined (reading 'config')` with no explanation and no relation to what they just did,
-on the first project whose front page sells verifiability. `run-vitest.ts` is the entry point every
-script now goes through, and `vitest-entry-point.ts` owns the rule both routes share.
-
-**The count in that paragraph was wrong before anybody read it back, and it is dropped rather than
-corrected.** It said *the five `npm run <suite>` scripts*; seven start vitest — `test`, `meta`,
-`registry`, `validation`, `cli`, `site`, `packaging` — and `npm test` was the one missing from a
-sentence about what a stranger types. It is the fourth count retired in this file, on the rule the
-others established: a state does not drift where a tally does, so the sentence now says *every script
-that starts vitest* and has no number to go stale.
-
-**What the repair costs, measured rather than asserted, because a cost paid on every commit by every
-contributor for ever is a design question and not a footnote.** One node process per suite: median
-**134 ms** through the launcher against **76 ms** direct, over ten invocations of `--version` each.
-Bare `node -e ""` is **54 ms** on the same machine, so the 58 ms is the process itself and about 4 ms
-is stripping the two modules — irreducible short of not having the process, and a plain `.mjs`
-launcher would buy those 4 ms at the price of a file the typechecker never sees. Across the seven
-suites that is **0.41 s**. Against a full pass — **34 s** on the machine this repair was asked from,
-**38 s and 49 s** on two runs of the machine it was built on, which are two machines and are said to be
-two — it is below the noise rather than a share of it: those two runs of identical work differed by
-**11 s**, and `packaging` alone moved **7.7 s** between them, nineteen times the whole cost of the
-change.
-
-**What is shared is the rule and not the launching**, and that is written in `run-vitest.ts` because
-it is what somebody will undo. `mutation/run.ts` goes on building its own child command — it needs
-pipes to read a report back, a pinned `TZ`, a json reporter named beside the default one and an output
-file it chooses, none of which a forwarded command line can express. Both import
-`THE_VITEST_ENTRY_POINT`; neither restates it.
-
-**Three guards, and the third was measured on its own.** `mutation/instrument.test.ts` holds them
-together because there is one door and two routes into it. On the edit that makes
-`withCanonicalDriveLetter` the identity all three redden — 3 failed, 29 passed. On an edit that leaves
-the rule alone and has `run-vitest.ts` build its own path, **only the third reddens** — 1 failed, 31
-passed — and its assertion prints the door verbatim under both of the fixture's files. No edit was
-found that reddens the second alone, and that is recorded rather than left to be assumed from the
-symmetry.
-
-**And it is the drive letter and nothing else.** `C:\users\...`, `C:\...\toopo\toopo` and both mistakes
-at once each collect 472 — so the repair upper-cases the drive letter and touches no other segment,
-because the rest of a path is a claim about spellings that live on the disk rather than in a function.
-The elisions are a redaction of one machine's home directory, taken when this repository was swept for
-publication; the case of every segment shown is the spelling that was really run, which is what this
-measurement is about.
-
-**Pinned rather than refused, on the argument `Battery.timeZone` already makes.** That field pins the
-process time zone because a verdict measured under whatever zone the operator's machine carries is not
-one anybody else can reproduce; a drive letter is the same ambient input reaching the same apparatus,
-so `vitest-entry-point.ts` chooses one spelling and every child process started here is given it.
-Refusing would have cost a replay and taught an operator to relaunch, and the two spellings name one
-directory. **The census stays the backstop, and it is why this was ever a door rather than a mystery**:
-the red-control refusal prints `control.failedGuards`, and no guard failed — *a red control with no
-failed guard says only that something did*. What said which sixteen files, twice, is the census.
-
-**And the census now quotes the run instead of only counting it**, which is the filed remedy built
-rather than dropped once the door was named. It listed the empty files and threw away the one sentence
-saying why they were empty: vitest reports it per file in `testResults[].message`, `runSuite` read past
-it, and that silence is what cost two replays. A fault line now carries `the run said: <what it said>`,
-and the refusal names the entry point it ran — the spelling the isolation above shows is the deciding
-input. Under this door the two lines read `Cannot read properties of undefined (reading 'config')` and
-a path beginning `c:`, which is the whole diagnosis on one screen.
-
-**Seen red on the real condition rather than on a reconstitution**, by a guard that invokes the
-instrument exactly as a launcher that does not normalise invokes it. With the rule made the identity
-the child answers `control RED (0 tests)` and calibration refuses on the census; with it restored the
-fixture battery agrees with every verdict pinned for it. A second guard beside it pins that only the
-drive letter moves — a function upper-casing the whole path would keep every replay green, since
-`C:\users\...` collects all 472. `paths.ts` also ends four copies of the same two lines: `run.ts`,
-`replay.ts`, `tally.ts` and `instrument.test.ts` each derived the folder and the root from their own
-module URL, and a rule about one of them held in four places is held in none.
-
-**And a leak the sweep found beside it.** `withNoGit` made an empty directory per call and removed
-none — one per run of this suite, 1 933 of them under the operating system's temporary directory on the
-machine where this was found. It is now made once and removed with the file, and what is checked is the
-delta per run rather than a total anybody would have to trust: `1, 2, 3` before, **0 on every one of
-700 runs** after.
-
-**A fourth event of this family is recorded and not diagnosed, which is the whole of what one event
-supports.** The first of the two replays taken at `06e264b` reported *`cli-search`:
-`every-shape-of-import-is-repointed-and-not-only-the-obvious-one` is declared silent and a mutant
-reddened it*. Rerun alone, immediately afterwards, that battery agreed on all twenty of its cells and
-the guard was silent again; the second full replay was clean throughout. So the event is not
-deterministic, and the two things it is not are worth writing down: it is not that battery's cells,
-which reproduce, and it is not the unit that was running, which edits nothing under `cli/`.
-
-The guard reaches `rewrite.ts`, which is one of the two callers of `removeDirectory` — the module this
-section exists for, whose retry gives up after 2 750 ms. That is a *candidate* and it is left as one.
-**Nothing here establishes it, because the instrument cannot say why a guard failed**: a reddened
-silence declaration is reported as a stale declaration and the exception behind it is not carried, which
-is the limit this section already names — neither report is looking at whether a guard is intermittent.
-
-**What forbids going further is this section's own lesson rather than a shortage of time.** *0 red in
-30* was true, was measured, and carried a conclusion it could not support; *1 red in 2* is the same
-shape with the sign reversed. A rate needs a trial count put beside the rate being looked for, and two
-replays is not that at any price — the cheap form is the isolated loop that settled the `EPERM` case,
-and it is not this unit's to run. What is owed is that the observation exists with its date, so the
-next occurrence is a second event rather than a first one.
-
-## What one cell of a battery collects — settled
-
-**A contract battery's cell now collects its own contract's suite, and the whole of the value is a
-slope.** Measured over one to five contracts, three runs of each, a suite run costs `705 + 78·N` ms;
-the 74 cells a contract carries turn that into `52·N + 5.8·N²` seconds, which is the quadratic the
-method page's invitation dies of. Narrowed, a run costs 743 ms whatever N is and the same cells cost
-`55·N`.
-
-**At five contracts it is worth two minutes nineteen, and that figure invites the wrong conclusion.**
-Measured on the ten contract batteries alone, before and after: **10 min 9 s → 7 min 50 s**. The
-comparison is deliberately those ten and not two full replays, because two replays of identical work on
-this machine differ by more than this change does — `cli-install` alone has moved 95 s between runs of
-the same cells. There is no saving to sell today; there is a term that grew and is now flat.
-
-**Which configuration can be narrowed is a measurement, not a choice, and that is what makes the design
-unarguable.** A vitest filter ending in `/` is resolved against the configuration's own root; a filter
-without one is a substring of the whole path. Six of the seven configurations set `root` to their own
-folder, so a filter naming that folder resolves *under* it and names nothing. Measured on vitest 4.1.10:
-
-```
---config registry/vitest.config.ts   registry/                 0 files, exit 1
---config registry/vitest.config.ts   registry                 16 files - a no-op
-(the contracts' configuration)       contracts/number/parse/   4 files, 122 assertions
-```
-
-So the narrowing is expressible under the contracts' configuration, whose root is the repository, and
-under no other — nobody can generalise it to the six, because vitest does not permit it. The six need
-none: their own `root` and `include` already collect exactly the folder their battery injects into. The
-trailing slash is also what makes the filter precise, since `contracts/number/parse` without it would
-match a future `contracts/number/parse-int`.
-
-**The census is selected, never redeclared, and that is the premise this unit removed rather than
-paid.** A narrowed run collects a fraction of its configuration, so it cannot be compared against the
-whole table — and the obvious repair, *a census per battery*, multiplies every integer in a file that
-already grows with the catalogue. What a run collects is instead selected from the same table by the
-folder the battery injects into: a field it already holds, and already the predicate `run.ts` used to
-decide which guards were its own. **No integer is new and none moved.** For the six own-root
-configurations the selection is the whole table, so it is one rule with no branch — which is what makes
-its refusal cover every battery rather than only the narrowed ones.
-
-**The wall this does not move, said rather than left to look addressed.** Four to five hand-written
-counts per contract, twenty-one for the five, ~2 100 at five hundred. Deriving them was measured and
-refused: over the five, an `edge-cases.test.ts` collects `cases + 1`, `cases + 4`, `2 × cases + 1`,
-`2 × cases + 6` and `cases + 4` — the constant differs per contract, so a derivation needs a
-hand-written integer *and* a formula, where the formula is a second statement about the shape of a test
-file. The counting is its own demonstration: reading `id:` off the five case tables gives 194 where the
-catalogue publishes 187 cases, because a group carries one too.
-
-**`ownGuards` went with the difference it expressed.** A pin resolved against every guard the run
-collected and a declared silence against the guards of this contract, because the run collected all
-five and the two sets differed. A narrowed run makes them one set, so the parameter that expressed the
-difference is gone — two mechanisms over one scope have nothing to say on the day they disagree, which
-is the argument that already refused a second guard over profile names. The cost is that a pin may no
-longer name a guard outside its own contract, which is a tightening: measured over the ten contract
-batteries before any of this was written, **220 pins, 409 declared silent guards and 8 declared silent
-suites, and not one needed the wider universe.**
-
-**The acceptance criterion was the 370 verdicts, and what it bought was the eight cells it did not
-excuse.** Every contract-owned cell was measured under both regimes and compared on its verdict *and*
-on `failedGuards`: **0 verdicts differ, 0 cells absent on either side.** Eight cells moved a guard, so
-the question was settled by a control rather than by the structural argument — two runs under the *same*
-regime move **ten**, and every guard that moves in either comparison lives in `properties.test.ts`,
-none in a case table, a profile or a signature. **The re-drawing is louder than the change**, which is
-the only form in which that comparison could have been believed.
-
-**Two refusals, each seen red alone.** A configuration nobody has counted was already refused; a folder
-no counted file lies under is the new half, and it fails on the opposite condition — an empty census
-agrees with a run that collected nothing. What it buys was measured by removing it: calibration walks
-on and dies on `Command failed: git checkout HEAD -- mutation/fixture-renamed`, naming no census, no
-configuration and no count, in front of somebody who has just renamed a folder.
-
-**And the mechanism that saves the time carries no guard of its own, deliberately.** A filter dropped
-makes the run collect the whole configuration and the census refuses it by naming every file it did not
-declare; a filter added to one of the six collapses the run and the same refusal names every file that
-collected nothing. Both directions were already held by the mechanism that was there.
-
-## What contribution this project invites — settled
-
-**An implementation, a counter-example, an alias correction — and never a contract.** It is not a
-policy about who is trusted. Counted over the five, the values a contract freezes for the life of its
-major outnumber the ones that can be put right by more than three to one, so reviewing a contract means
-being right once and for ever about several hundred addresses a later correction cannot reach.
-Nobody can do that at the speed a queue arrives at, and a queue reviewed at that speed would freeze its
-mistakes into the one thing this registry sells. An implementation freezes nothing: it competes under a
-contract that already exists, is judged by running it, and being wrong costs a revision.
-
-**No figure from that census is restated here, and that is this file's own rule applied at its first
-opportunity.** `mutation/contributing.test.ts` derives every one of them from the five records and
-requires `CONTRIBUTING.md` to publish it, so a case added tomorrow reddens the document rather than
-ageing it. A count copied into this file would be the part of a true sentence that goes false while
-nobody is looking, which is the failure recorded four times above. **When the figure is held by a
-guard, the journal names the guard.**
-
-**The corrigible column was right for the wrong reason, and that is the finding.** The obvious split is
-the aliases and the twenty universal-property answers — and an *answer* is not corrigible. Declaring an
-applicable property inapplicable narrows what the contract claims and breaks nobody; the other
-direction turns a conformant implementation into a non-conformant one, which is exactly what permanent
-rule 6 forbids. What is corrigible is the **reason** beside each verdict, which is prose. There are as
-many reasons as verdicts, so the total never moved — **an error that leaves the arithmetic intact is one
-nothing but reading the column can catch**, and the verdict now sits in neither column with the
-asymmetry stated.
-
-**The cheapest contribution is the one nobody has ever made.** Adding a case to a group that already
-exists costs nothing — no address moves, no caller breaks — and the schema has carried
-`found-in-the-wild` beside `specified` and `found-by-mutation` since the day it was written. Measured
-over the whole of block 4.4: **183 `specified`, 4 `found-by-mutation`, 0 `found-in-the-wild`.** Every
-edge case here was found by writing a contract or by mutating an implementation, and not one came from
-somebody using the thing. That is why the counter-example leads the document rather than the
-implementation.
-
-**What the document may not do is promise a pipeline that is not there**, on the page that invites
-people in. Stage 1 exists and stages 2 to 7 do not; `analyseImplementation` has no caller outside its
-own folder's tests, measured rather than assumed. So the five rules are named by their frozen
-identifiers and resolved **in both directions** — every rule the modules export occurs in the document,
-and every rule-shaped identifier the document's own stage-1 section quotes is one of them. The second
-is the dangerous direction: a document naming a filter nobody wrote sends a contributor looking for it,
-which is *a diagnostic that names a cause no measurement establishes* arriving on a Markdown file.
-**What no mechanism keeps is a sixth rule**, added to that composition and named nowhere — enumerating
-them would be a second statement of what `analyseImplementation` composes. It is declared, and it fails
-in the safe direction.
-
-**The guard lives in `mutation/` and the placement is an argument rather than a convenience.** Both
-folders that own its upstreams are injected into by a battery, and a battery measures whether the
-catalogue's own tests catch defects in the catalogue. A guard over a Markdown file is not that, so
-putting it in `registry/` would have made `registry-storage` declare a document as an unprobed region
-of the registry — the data arranged to suit the tool. `mutation/` is the one folder no battery injects
-into, which is `verifiability.ts`'s line and not an escape from a cost.
-
-**The site's section carries no link, and the page's own guard is what makes that structural.**
-`every-page-is-reachable-from-the-front-page` compares every `href` on the front page against the set
-of pages, so an address outside the site cannot be written there at all — and there is none to write,
-because this repository has no public remote and inventing a URL to fill the gap is the class this
-project spends its length removing. The file is named and not linked. It carries no figure either: the
-ratio is held by a guard one folder away, and restating it would be a second statement of one
-measurement on the surface that cannot compute it. **The heading is *What a contribution can be* and
-not *What we accept*,** because the front page already carries *What we refuse* two screens up and that
-one is about contracts the catalogue turned down.
-
-**And a defect was found by reading the front page in document order and deliberately not repaired.**
-The contract list reads `typescript/number/parse@1Convert a string to a finite number…` — the anchor and
-the summary under it are one sentence with every word present, which is `not applicableThe signature
-takes a single string` on a second page. It is **not** a one-line repair: `a` has no entry in
-`document.ts`'s `SEPARATOR`, and giving it one changes the text projection of every anchor on six pages
-including the ones inside a sentence. What would close it is a decision about which anchors are labels
-and which are inline, and the site battery replayed after it. That is a unit; folding it into a
-documentation change would have been the silent widening this file refuses in the other direction.
-
-## A root computed by walking up a fixed number of levels — settled, repository-wide
-
-**It is a class and not a list of sites, and it is invisible to every search a move is planned with.**
-A repository root written `join(import.meta.dirname, '..')` or `dirname(import.meta.dirname)` contains
-no path literal, so a folder that gains a level breaks it and nothing that greps for paths, imports or
-globs can see it coming. It was found by `packages/validation`'s two guards failing on a
-`tsconfig.json` one directory out of reach — seven reds, after the same class had already been
-foreseen and repaired one commit earlier in `serialise.ts`, which is what made it a class rather than
-a repair.
-
-**Ten sites, with the verdict each one got**, because a swept class is worth what its enumeration is
-worth. Correct untouched, the folder having stayed at the root: `packaging/the-archive.ts`,
-`packaging/build.ts`, `packaging/archive.test.ts`, and `mutation/paths.ts`. Repaired to two levels:
-`packages/registry/serialise.ts`, `packages/validation/source.test.ts`,
-`packages/validation/the-five.test.ts`, `packages/site/build.ts`, `packages/site/playground.test.ts`.
-And one that is correct *because it is not about the source tree at all*:
-`packages/cli/published.ts` resolves the artefact at `join(import.meta.dirname, '..', ARTEFACT_FILE)`,
-which is a fact about the compiled layout under `dist/` — it survived because
-`packaging/tsconfig.dist.json` moved its `rootDir` to `../packages` and kept `dist/cli/published.js`
-where it was.
-
-**The rule the eleventh needs: a computed root states how far up it is going, and what it is going up
-from.** The distinction `published.ts` embodies is the one that matters — a walk over the *source*
-tree and a walk over the *emitted* tree are two different facts that look identical, and only one of
-them moves when a folder does.
-
-**Two neighbouring forms were found in the same sweep and neither is this one.** A path held as
-segments — `join(REPOSITORY_ROOT, 'contracts', 'date', 'add', 'reference.ts')` — is invisible to a
-path-shaped search for the same reason and is repaired the same way. And a dynamic
-`await import('../registry/emit.ts')` is not a `from` clause, so a rule anchored on `from '` walks
-past it; `packaging/build.ts` holds three and `site/build.ts` held two, all written dynamically
-because the hook that translates a `.js` specifier cannot be used before it is registered.
 
 ## Rules for this stage
 
@@ -1175,6 +644,11 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
 - A command that can destroy or overwrite shows first and writes on a second word; a command that can
   only refuse writes at once. `THE_WRITE_DISCIPLINE`. ADR-0036.
 - **A refusal that explains is a door, one that reports is a wall.** ADR-0039.
+- Before writing a rule in prose, look for the shape that makes breaking it not compile — a total map
+  over a type, or a union with no way to spell the absence. Where no such shape exists, the rule is
+  written in prose *and* recorded below among what nothing keeps. ADR-0054.
+- A computed root states how far up it is going, and what it is going up from. A walk over the source
+  tree and a walk over the emitted tree look identical and only one moves when a folder does. ADR-0059.
 
 ## Verification discipline
 
@@ -1214,6 +688,14 @@ the record beside it.
 - Where a sentence claims something happened, compute it from the thing that happened rather than
   asserting it beside. **A sentence that cannot be false is worth more than a sentence somebody
   checked.** ADR-0043.
+- A total map over a union beats a pass over real data: the first cannot fail to be complete, the
+  second covers what the data happens to reach. **A guard that fires at the right future moment is
+  worth more than one that covers the past.** ADR-0055.
+- Before measuring a rate, ask whether the guard polices the step the mutant breaks, and whether the
+  thing is stochastic at all. **Vary one input at a time and look for a cell that is 0 of *n* or *n* of
+  *n*.** ADR-0053.
+- **A run of zero over *n* trials bounds nothing until *n* is put beside the rate being looked for.**
+  ADR-0056.
 
 ## Asking questions
 

@@ -1,5 +1,7 @@
 /**
  * How a battery declares a mutant.
+ * ADR-0053 is what a pin on a re-drawn property may claim, and the three checks before a rate.
+ *
  *
  * `mutation/` is not a contract folder, so the suspension of the no-duplication rule that lets three
  * contracts repeat themselves never covered it. These helpers were copied into three batteries
