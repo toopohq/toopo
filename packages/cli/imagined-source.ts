@@ -37,6 +37,7 @@ import {
 import type { ImplementationRecord } from '../registry/implementation-record.js'
 import type { ServedImplementationBinding, ServedIndex } from '../registry/response.js'
 import { servedBlob, servedSnapshot } from '../registry/response.js'
+import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { digestOfSnapshot, edgeTo, implementationSnapshot } from '../registry/snapshot.js'
 import type { RegistrySource } from './source.js'
 
@@ -79,6 +80,7 @@ const snapshotOf = (record: ImplementationRecord) => implementationSnapshot(reco
 
 const bindingOf = (record: ImplementationRecord): ServedImplementationBinding => ({
   addressing: 'named',
+  servedFrom: THE_UNPUBLISHED_REVISION,
   address: { contract: record.contract, id: record.id, version: record.version ?? IMAGINED_VERSION },
   digest: digestOfSnapshot(snapshotOf(record)),
   publishedAt: '1970-01-01T00:00:00.000Z',
@@ -110,7 +112,11 @@ const sourceOver = (
   const snapshots = new Map(
     held.map((record) => [digestOfSnapshot(snapshotOf(record)), servedSnapshot(snapshotOf(record))]),
   )
-  const index: ServedIndex = { addressing: 'named', entries: indexed.map(indexEntryOf) }
+  const index: ServedIndex = {
+    addressing: 'named',
+    servedFrom: THE_UNPUBLISHED_REVISION,
+    entries: indexed.map(indexEntryOf),
+  }
 
   return {
     contractIndex: async () => index,
@@ -121,7 +127,12 @@ const sourceOver = (
     // The imagined graph is four features nobody decided against, so this is empty rather than
     // fabricated: a fixture that invented a refusal would let a guard pass on a shape the catalogue
     // does not produce.
-    refusals: async () => ({ addressing: 'named', refusals: [], absorbed: [] }),
+    refusals: async () => ({
+      addressing: 'named',
+      servedFrom: THE_UNPUBLISHED_REVISION,
+      refusals: [],
+      absorbed: [],
+    }),
 
     snapshot: async (digest) => snapshots.get(digest) ?? null,
 

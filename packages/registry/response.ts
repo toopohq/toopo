@@ -108,10 +108,18 @@ export const cachePolicyFor = (addressing: AddressingClass): CachePolicy =>
         immutable: false,
         maxAgeSeconds: 0,
         mustRevalidate: true,
+        /**
+         * **This used to end at *on ledger writes and on nothing else*, and carrying `servedFrom` is
+         * what made that false.** Every named answer now says which state of the registry produced it,
+         * so a commit that touches no ledger entry at all still changes these bodies. Left as it was,
+         * the field would have published a true sentence about what makes an answer *wrong* and a
+         * false one about what makes it *stale*, in one string, and a deployment reading it would purge
+         * too rarely.
+         */
         staleWhen:
-          'a publication binds a new address, a standing changes, or a measurement arrives. All ' +
-          'three are writes to the ledger, so a deployment purges on ledger writes and on nothing ' +
-          'else.',
+          'a publication binds a new address, a standing changes, a measurement arrives, or the ' +
+          'registry moves to a new revision. The first three are writes to the ledger; the fourth is ' +
+          'every commit, because a named answer names the revision it was produced from.',
       }
 
 // ---------------------------------------------------------------------------
@@ -173,6 +181,37 @@ export const servedBlob = (contents: Buffer): ServedBlob => {
 // ---------------------------------------------------------------------------
 
 /**
+ * What every named answer carries whatever it is about: that it is named, and which state of the
+ * registry produced it.
+ *
+ * **`servedFrom` is here and in no content-addressed answer, and the second half of that is the one
+ * worth reading.** A snapshot's digest is taken over its canonical text, so nothing in `ServedSnapshot`
+ * or `ServedBlob` outside that text moves a digest - a revision in either envelope would pass every
+ * check in this file and every guard behind it. What refuses it is `cachePolicyFor`, one screen up:
+ * a content-addressed answer is `immutable` for a year on the grounds that *different bytes are a
+ * different address, so this entry is never wrong*, and a revision in the envelope makes the bytes at a
+ * fixed address move on every commit. A cache honouring that promise would serve a year-old revision
+ * under a sentence saying it cannot be stale. ADR-0090 carries the argument in full, because a trap
+ * that trips no digest guard is the one the next reader falls into.
+ *
+ * One type rather than a field written five times, so that a sixth named answer cannot be added
+ * without it - the shape `THE_ENDPOINT_BEHIND` and `FIELD_MAP` already take, on the field that decides
+ * what a lockfile can be checked against.
+ */
+export type NamedAnswer = {
+  readonly addressing: 'named'
+  /**
+   * The revision of the registry that produced this answer.
+   *
+   * A reader records it because everything else in a named answer is believed: which digest a name
+   * resolves to is the registry's single load-bearing assertion, and this is the only thing that says
+   * *which registry, when*. `THE_UNPUBLISHED_REVISION` is what a stand-in serves, and it is visibly not
+   * a publication for the reason `0.0.0-local` is.
+   */
+  readonly servedFrom: string
+}
+
+/**
  * What a contract name resolves to today.
  *
  * It carries no part of the definition, and the guard in `response.test.ts` requires that in as many
@@ -180,8 +219,7 @@ export const servedBlob = (contents: Buffer): ServedBlob => {
  * else here is a fact about *this moment* - which digest the name points at, when that was bound, and
  * what the registry currently says about it.
  */
-export type ServedContractBinding = {
-  readonly addressing: 'named'
+export type ServedContractBinding = NamedAnswer & {
   readonly address: ContractAddress
   readonly digest: string
   readonly publishedAt: string
@@ -210,6 +248,18 @@ export type FieldNature =
   | 'bound-for-life'
   /** The registry's opinion today, which it may change without anything being wrong. */
   | 'revisable'
+  /**
+   * Which state of the registry produced this answer. A later answer legitimately names another, and
+   * nothing is wrong.
+   *
+   * **A fourth member rather than a fourth `revisable` field**, and the difference is not decorative.
+   * The three above answer *what may a reader do with this fact about the artefact*; this one is not
+   * about the artefact at all. `revisableFieldsOf` is rendered into what `implementation-bindings`
+   * publishes as the registry's opinion, and a reader is told in as many words not to take an opinion
+   * for a fact about the code - which is exactly the wrong thing to say about a revision, the one
+   * field of a named answer that *is* a fact and the one a lockfile is meant to keep.
+   */
+  | 'the-registry-that-answered'
 
 /**
  * Every field of a contract binding, and what a reader may do with it.
@@ -221,6 +271,7 @@ export type FieldNature =
  */
 export const CONTRACT_BINDING_NATURES: Readonly<Record<keyof ServedContractBinding, FieldNature>> = {
   addressing: 'the-question',
+  servedFrom: 'the-registry-that-answered',
   address: 'the-question',
   digest: 'bound-for-life',
   publishedAt: 'bound-for-life',
@@ -231,6 +282,7 @@ export const IMPLEMENTATION_BINDING_NATURES: Readonly<
   Record<keyof ServedImplementationBinding, FieldNature>
 > = {
   addressing: 'the-question',
+  servedFrom: 'the-registry-that-answered',
   address: 'the-question',
   digest: 'bound-for-life',
   publishedAt: 'bound-for-life',
@@ -248,8 +300,12 @@ export const revisableFieldsOf = (
     .filter(([, nature]) => nature === 'revisable')
     .map(([field]) => field)
 
-export const servedContractBinding = (entry: PublishedContract): ServedContractBinding => ({
+export const servedContractBinding = (
+  servedFrom: string,
+  entry: PublishedContract,
+): ServedContractBinding => ({
   addressing: 'named',
+  servedFrom,
   address: entry.address,
   digest: entry.digest,
   publishedAt: entry.publishedAt,
@@ -263,8 +319,7 @@ export const servedContractBinding = (entry: PublishedContract): ServedContractB
  * that was published without them - there is no reference machine, so every one of these lists is
  * empty on all five, and the emptiness is the honest answer rather than a missing field.
  */
-export type ServedImplementationBinding = {
-  readonly addressing: 'named'
+export type ServedImplementationBinding = NamedAnswer & {
   readonly address: ImplementationAddress
   readonly digest: string
   readonly publishedAt: string
@@ -282,6 +337,7 @@ export type ServedImplementationBinding = {
  * the default one.
  */
 export const servedImplementationBinding = (
+  servedFrom: string,
   entry: PublishedImplementation,
   standing: {
     readonly benchmarks: readonly BenchmarkFigure[]
@@ -290,6 +346,7 @@ export const servedImplementationBinding = (
   },
 ): ServedImplementationBinding => ({
   addressing: 'named',
+  servedFrom,
   address: entry.address,
   digest: entry.digest,
   publishedAt: entry.publishedAt,
@@ -358,8 +415,7 @@ export type ServedIndexEntry = {
   readonly exports: readonly ServedExport[]
 }
 
-export type ServedIndex = {
-  readonly addressing: 'named'
+export type ServedIndex = NamedAnswer & {
   readonly entries: readonly ServedIndexEntry[]
 }
 
@@ -380,8 +436,7 @@ export type ServedRefusal = {
   readonly decidedOn: string
 }
 
-export type ServedRefusals = {
-  readonly addressing: 'named'
+export type ServedRefusals = NamedAnswer & {
   readonly refusals: readonly ServedRefusal[]
   /**
    * Contracts that were published and later answered by the language. A different retirement from the
@@ -392,8 +447,7 @@ export type ServedRefusals = {
   readonly absorbed: readonly ServedContractBinding[]
 }
 
-export type ServedAttestations = {
-  readonly addressing: 'named'
+export type ServedAttestations = NamedAnswer & {
   /** The snapshot these are about. Named here so the answer is self-describing when cached. */
   readonly subject: string
   readonly attestations: readonly Attestation[]
@@ -412,6 +466,7 @@ const domainOf = (name: string): string => name.slice(0, name.indexOf('/'))
  * installable. Everything else is.
  */
 export const servedIndex = (
+  servedFrom: string,
   ledger: Ledger,
   identities: readonly {
     readonly address: ContractAddress
@@ -424,6 +479,7 @@ export const servedIndex = (
 
   return {
     addressing: 'named',
+    servedFrom,
     entries: identities.map((identity) => ({
       address: identity.address,
       summary: identity.summary,
@@ -449,8 +505,9 @@ export const servedExportsOf = (
   ...exports.filter((entry) => entry.role !== 'the-answer'),
 ].map((entry) => ({ name: entry.name, role: entry.role }))
 
-export const servedRefusals = (ledger: Ledger): ServedRefusals => ({
+export const servedRefusals = (servedFrom: string, ledger: Ledger): ServedRefusals => ({
   addressing: 'named',
+  servedFrom,
   refusals: ledger.refusals.map((entry: RefusedContract) => ({
     address: entry.address,
     decidedAgainst: entry.decidedAgainst,
@@ -460,7 +517,7 @@ export const servedRefusals = (ledger: Ledger): ServedRefusals => ({
   })),
   absorbed: ledger.contracts
     .filter((entry) => entry.standing.lifecycle.state === 'absorbed-by-the-language')
-    .map(servedContractBinding),
+    .map((entry) => servedContractBinding(servedFrom, entry)),
 })
 
 // ---------------------------------------------------------------------------

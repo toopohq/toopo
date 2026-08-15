@@ -73,6 +73,7 @@ import {
   publishImplementation,
   refuseContract,
 } from './snapshot.js'
+import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { theFive } from './the-five.js'
 import { servedMethodology } from './verifiability.js'
 
@@ -167,8 +168,17 @@ const gather = (): {
   return { ledger, holdings, snapshots, blobs }
 }
 
-/** This working tree, as the registry that serves it. Built lazily and once. */
-export const localReadApi = (): ReadApi => {
+/**
+ * This working tree, as the registry that serves it. Built lazily and once.
+ *
+ * **`servedFrom` defaults to the unpublished revision rather than being required, and the omission it
+ * leaves open is closed where it would happen.** A stand-in stands in for a publication that has not
+ * taken place, so forty zeros is its honest answer and every guard here wants exactly that. The one
+ * caller for which the default would be a lie is the emission, which is a single file - and
+ * `the-emitted-tree-names-the-revision-it-was-built-from` reddens there rather than asking fifty guards
+ * to pass a constant they have no opinion about.
+ */
+export const localReadApi = (servedFrom: string = THE_UNPUBLISHED_REVISION): ReadApi => {
   const held = gather()
 
   const holdingFor = (address: ContractAddress): Holding => {
@@ -181,12 +191,12 @@ export const localReadApi = (): ReadApi => {
   }
 
   return {
-    contractIndex: () => servedIndex(held.ledger, held.holdings),
+    contractIndex: () => servedIndex(servedFrom, held.ledger, held.holdings),
 
     contractBinding: (address) => {
       const entry = held.ledger.contracts.find((candidate) => sameContract(candidate.address, address))
 
-      return entry === undefined ? null : servedContractBinding(entry)
+      return entry === undefined ? null : servedContractBinding(servedFrom, entry)
     },
 
     implementationBindings: (address) =>
@@ -195,16 +205,16 @@ export const localReadApi = (): ReadApi => {
         .map((entry) => {
           const { implementation } = holdingFor(entry.address.contract)
 
-          return servedImplementationBinding(entry, {
+          return servedImplementationBinding(servedFrom, entry, {
             benchmarks: implementation.benchmarks,
             minifiedBytes: implementation.minifiedBytes,
             tags: implementation.tags,
           })
         }),
 
-    refusals: () => servedRefusals(held.ledger),
+    refusals: () => servedRefusals(servedFrom, held.ledger),
 
-    methodology: () => servedMethodology(),
+    methodology: () => servedMethodology(servedFrom),
 
     snapshot: (digest) => held.snapshots.get(digest) ?? null,
 

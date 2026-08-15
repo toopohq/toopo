@@ -4,6 +4,7 @@ import { isFrozenIdentifier } from '../catalogue/identifier.js'
 import { WHAT_A_SIGNATURE_DOES_NOT_PROVE } from './attestation.js'
 import { ENDPOINTS } from './endpoints.js'
 import { FIELD_MAP } from './field-map.js'
+import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { theFive } from './the-five.js'
 import {
   MUST_BE_BELIEVED,
@@ -172,7 +173,7 @@ describe('the methodology answer', () => {
    * field, and what nothing served before this unit.
    */
   it('the-methodology-answer-carries-every-field-of-a-record', () => {
-    const methodology = servedMethodology()
+    const methodology = servedMethodology(THE_UNPUBLISHED_REVISION)
 
     expect(Object.keys(methodology.fields).sort()).toEqual(Object.keys(FIELD_MAP).sort())
     expect(methodology.fields['caseTables[].cases[].data']).toBe('executable')
@@ -180,7 +181,7 @@ describe('the methodology answer', () => {
   })
 
   it('the-methodology-answer-carries-both-columns-and-the-seeding-policy', () => {
-    const methodology = servedMethodology()
+    const methodology = servedMethodology(THE_UNPUBLISHED_REVISION)
 
     expect(methodology.verifiable).toHaveLength(VERIFIABLE.length)
     expect(methodology.mustBeBelieved).toHaveLength(MUST_BE_BELIEVED.length)
@@ -190,6 +191,7 @@ describe('the methodology answer', () => {
   })
 
   it('the-methodology-answer-is-named-and-therefore-revalidated', () => {
-    expect(servedMethodology().addressing).toBe('named')
+    expect(servedMethodology(THE_UNPUBLISHED_REVISION).addressing).toBe('named')
+    expect(servedMethodology(THE_UNPUBLISHED_REVISION).servedFrom).toBe(THE_UNPUBLISHED_REVISION)
   })
 })

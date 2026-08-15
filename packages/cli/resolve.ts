@@ -46,12 +46,48 @@ export type Chosen = {
   readonly address: ContractAddress
   readonly summary: string
   readonly exports: readonly ServedExport[]
+  /** The revision of the registry whose index this name was resolved through. */
+  readonly servedFrom: string
 }
 
 export type ChosenBinding = {
   readonly id: string
   readonly version: string
   readonly digest: string
+  /** The revision of the registry that bound this address to that digest. */
+  readonly servedFrom: string
+}
+
+/**
+ * The one revision a set of named answers agrees on, or the refusal that says they do not.
+ *
+ * **An installation reads two named answers and everything under them is arithmetic**: the index turns
+ * a name into an address, the bindings turn that address into a digest, and every snapshot, every edge
+ * and every byte below is checked against a digest that was already in hand. So the two are the whole
+ * of what a lockfile's revision can honestly claim, and a lockfile stamped with one of them while the
+ * other came from somewhere else would record a state that never served this install.
+ *
+ * It happens for an ordinary reason rather than a hostile one - a deployment publishing between two
+ * requests - which is why the refusal says *ask again* rather than accusing anybody. What it must not
+ * do is choose one and carry on: the whole value of the field is that a reader can go back to it.
+ */
+export const oneRevisionBehind = (
+  answers: readonly { readonly what: string; readonly servedFrom: string }[],
+): Found<string> => {
+  const first = answers[0]
+  if (first === undefined) return { faults: ['nothing was asked of the registry'] }
+
+  const disagreeing = answers.filter((answer) => answer.servedFrom !== first.servedFrom)
+  if (disagreeing.length === 0) return { found: first.servedFrom }
+
+  return {
+    faults: [
+      `the registry answered this from more than one revision - ${answers
+        .map((answer) => `${answer.what} from ${answer.servedFrom}`)
+        .join(', ')}. That is a registry publishing between two requests rather than anything ` +
+        `wrong with your project, and nothing was changed. Run the command again.`,
+    ],
+  }
 }
 
 /**
@@ -103,9 +139,16 @@ export const contractTyped = (
  * second copy of it is a second thing that can come to disagree - the shape this folder already
  * refuses for a missing edge.
  */
-const installable = (entry: ServedIndexEntry): Found<Chosen> =>
+const installable = (servedFrom: string, entry: ServedIndexEntry): Found<Chosen> =>
   entry.installable
-    ? { found: { address: entry.address, summary: entry.summary, exports: entry.exports } }
+    ? {
+        found: {
+          address: entry.address,
+          summary: entry.summary,
+          exports: entry.exports,
+          servedFrom,
+        },
+      }
     : {
         /**
          * What the field says, and not the decision that is the usual way of arriving at it.
@@ -130,13 +173,12 @@ export const chooseContract = (source: HeldRegistry, typed: string): Found<Chose
     return { faults: [`\`${typed}\` does not name a major version, which is a whole number from 1 upwards`] }
   }
 
-  const entries = source
-    .contractIndex()
-    .entries.filter(
-      (entry) =>
-        entry.address.name === wanted.name &&
-        (wanted.major === null || entry.address.major === wanted.major),
-    )
+  const index = source.contractIndex()
+  const entries = index.entries.filter(
+    (entry) =>
+      entry.address.name === wanted.name &&
+      (wanted.major === null || entry.address.major === wanted.major),
+  )
 
   const first = entries[0]
   if (first === undefined) return { faults: [`the registry holds no contract called \`${typed}\``] }
@@ -150,7 +192,7 @@ export const chooseContract = (source: HeldRegistry, typed: string): Found<Chose
     }
   }
 
-  return installable(first)
+  return installable(index.servedFrom, first)
 }
 
 /**
@@ -161,9 +203,8 @@ export const chooseContract = (source: HeldRegistry, typed: string): Found<Chose
  * ignored it would be an update that stopped maintaining a feature without saying so.
  */
 export const contractAt = (source: HeldRegistry, address: ContractAddress): Found<Chosen> => {
-  const entry = source
-    .contractIndex()
-    .entries.find((candidate) => sameContract(candidate.address, address))
+  const index = source.contractIndex()
+  const entry = index.entries.find((candidate) => sameContract(candidate.address, address))
 
   if (entry === undefined) {
     return {
@@ -174,7 +215,7 @@ export const contractAt = (source: HeldRegistry, address: ContractAddress): Foun
     }
   }
 
-  return installable(entry)
+  return installable(index.servedFrom, entry)
 }
 
 // ---------------------------------------------------------------------------
@@ -223,7 +264,14 @@ export const bindingFor = (
     }
   }
 
-  return { found: { id: wanted.address.id, version: wanted.address.version, digest: wanted.digest } }
+  return {
+    found: {
+      id: wanted.address.id,
+      version: wanted.address.version,
+      digest: wanted.digest,
+      servedFrom: wanted.servedFrom,
+    },
+  }
 }
 
 /**
@@ -266,7 +314,14 @@ export const bindingAt = (
     }
   }
 
-  return { found: { id: wanted.address.id, version: wanted.address.version, digest: wanted.digest } }
+  return {
+    found: {
+      id: wanted.address.id,
+      version: wanted.address.version,
+      digest: wanted.digest,
+      servedFrom: wanted.servedFrom,
+    },
+  }
 }
 
 /**

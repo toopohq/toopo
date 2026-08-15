@@ -107,9 +107,26 @@ export const asked = (question: Question): string => `${question.method} ${addre
  */
 export type WhatArrived = ReadonlyMap<string, unknown>
 
-/** What the port answers where a registry holds nothing, so that a miss is not a fabricated answer. */
-const NOTHING_HELD: ServedIndex = { addressing: 'named', entries: [] }
-const NOTHING_REFUSED: ServedRefusals = { addressing: 'named', refusals: [], absorbed: [] }
+/**
+ * What the port answers where a registry holds nothing, so that a miss is not a fabricated answer.
+ *
+ * `servedFrom` is the empty string and deliberately not `THE_UNPUBLISHED_REVISION`: a stand-in serves
+ * that constant, so the two would be indistinguishable, and *no registry has answered this yet* would
+ * read as *a registry answered, from an unpublished tree*. It is a value no registry can serve, which
+ * is the only thing a placeholder here may be.
+ */
+const NO_REGISTRY_ANSWERED = ''
+const NOTHING_HELD: ServedIndex = {
+  addressing: 'named',
+  servedFrom: NO_REGISTRY_ANSWERED,
+  entries: [],
+}
+const NOTHING_REFUSED: ServedRefusals = {
+  addressing: 'named',
+  servedFrom: NO_REGISTRY_ANSWERED,
+  refusals: [],
+  absorbed: [],
+}
 
 /**
  * A synchronous view over what has arrived, writing down every question it could not answer.

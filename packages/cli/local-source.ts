@@ -68,6 +68,7 @@ import {
   publishImplementation,
   refuseContract,
 } from '../registry/snapshot.js'
+import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import {
   REPOSITORY_ROOT,
   referenceImplementationOf,
@@ -191,11 +192,11 @@ const gather = (): {
  * Built lazily and once, because building it serialises five contracts and reads thirty-seven files -
  * a cost worth paying when something is installed and not worth paying to print a usage line.
  */
-export const localSource = (): RegistrySource => {
+export const localSource = (servedFrom: string = THE_UNPUBLISHED_REVISION): RegistrySource => {
   const held = gather()
 
   return {
-    contractIndex: async () => servedIndex(held.ledger, held.holdings),
+    contractIndex: async () => servedIndex(servedFrom, held.ledger, held.holdings),
 
     implementationBindings: async (address) =>
       held.ledger.implementations
@@ -216,14 +217,14 @@ export const localSource = (): RegistrySource => {
             )
           }
 
-          return servedImplementationBinding(entry, {
+          return servedImplementationBinding(servedFrom, entry, {
             benchmarks: holding.implementation.benchmarks,
             minifiedBytes: holding.implementation.minifiedBytes,
             tags: holding.implementation.tags,
           })
         }),
 
-    refusals: async () => servedRefusals(held.ledger),
+    refusals: async () => servedRefusals(servedFrom, held.ledger),
 
     snapshot: async (digest) => held.snapshots.get(digest) ?? null,
 

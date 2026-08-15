@@ -1,5 +1,6 @@
 /**
  * Every page there is, and the path each one lives at.
+ * ADR-0090 is why `thePublication` takes a revision and why it is one arrangement rather than two.
  *
  * It is a value rather than a script, so that what the site *is* can be asked in a guard: how many
  * pages, at which addresses, saying what. `build.ts` writes this map to a disk and does nothing else,
@@ -26,12 +27,16 @@
  */
 
 import { theMeasurement } from '../../mutation/published.js'
+import { emitted } from '../registry/emit.js'
+import { localReadApi } from '../registry/local-read-api.js'
+import { theReferenceModules } from './browser.js'
 import type { Document } from './document.js'
 import { toHtml } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
 import { contractPage } from './contract-page.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { theCrawlerFiles } from './indexing.js'
+import { localSource } from './local-source.js'
 import { methodologyPage } from './methodology-page.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, pageOf } from './paths.js'
 import { refusalsPage } from './refusals-page.js'
@@ -78,6 +83,35 @@ export const thePublishedTree = (
     ...theCrawlerFilesOf(pages),
     ...answers,
   ])
+
+/**
+ * Everything a deployment holds, composed once, from one revision.
+ *
+ * **It exists because the composition was written twice and one of the copies decided a supply chain.**
+ * `build.ts` built the pages, the reference modules and the answers, and `published-tree.test.ts` built
+ * them again to ask a question about paths - two statements of one arrangement, which is the shape this
+ * repository refuses everywhere else. It became load-bearing when a named answer started carrying the
+ * revision it was served from: the two stand-ins take a revision and default it to the unpublished one,
+ * so a `localReadApi()` written here and not there would publish a whole site of answers claiming to
+ * come from a tree of forty zeros, and every guard would stay green.
+ *
+ * So there is one arrangement, `servedFrom` is a parameter of it with no default, and the omission
+ * cannot be written down. The browser modules are supplied rather than read, because reading this
+ * repository's own files off a disk is `build.ts`'s single exception and a composition has no business
+ * reopening it.
+ */
+export const thePublication = (
+  servedFrom: string,
+  browserModules: ReadonlyMap<string, string>,
+): ReadonlyMap<string, string | Buffer> => {
+  const source = localSource(servedFrom)
+  const modules = new Map<string, string>([
+    ...browserModules,
+    ...theReferenceModules(source, heldByTheRegistry(source)),
+  ])
+
+  return thePublishedTree(theSite(source), modules, emitted(localReadApi(servedFrom)))
+}
 
 /**
  * What a crawler reads, derived from what the site *is* rather than listed beside it.

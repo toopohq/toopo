@@ -49,6 +49,7 @@ import { WHAT_A_SIGNATURE_DOES_NOT_PROVE } from './attestation.js'
 import { SEEDING_POLICY } from './evidence.js'
 import type { VerificationStratum } from './field-map.js'
 import { FIELD_MAP } from './field-map.js'
+import type { NamedAnswer } from './response.js'
 
 // ---------------------------------------------------------------------------
 // The verified column
@@ -302,8 +303,7 @@ export const WHAT_A_STRATUM_MEANS_TO_A_READER: Readonly<Record<VerificationStrat
 // The methodology answer
 // ---------------------------------------------------------------------------
 
-export type ServedMethodology = {
-  readonly addressing: 'named'
+export type ServedMethodology = NamedAnswer & {
   readonly verifiable: readonly VerifiableClaim[]
   readonly mustBeBelieved: readonly BelievedClaim[]
   readonly strata: Readonly<Record<VerificationStratum, string>>
@@ -313,8 +313,9 @@ export type ServedMethodology = {
   readonly whatASignatureDoesNotProve: string
 }
 
-export const servedMethodology = (): ServedMethodology => ({
+export const servedMethodology = (servedFrom: string): ServedMethodology => ({
   addressing: 'named',
+  servedFrom,
   verifiable: VERIFIABLE,
   mustBeBelieved: MUST_BE_BELIEVED,
   strata: WHAT_A_STRATUM_MEANS_TO_A_READER,

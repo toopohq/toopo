@@ -9,6 +9,7 @@ import { NOT_ANSWERED, THE_ENDPOINT_BEHIND } from './read-api.js'
 import { renderContract } from './address.js'
 import type { ContractRecord } from './contract-record.js'
 import { servedBlob, servedSnapshot } from './response.js'
+import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { contractSnapshot, digestOfSnapshot, implementationSnapshot } from './snapshot.js'
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
 import { theFive } from './the-five.js'
@@ -298,6 +299,7 @@ const overTheImaginedGraph = (): ReadApi => {
   return {
     contractIndex: () => ({
       addressing: 'named',
+      servedFrom: THE_UNPUBLISHED_REVISION,
       entries: [
         {
           address: ROUND,
@@ -314,6 +316,7 @@ const overTheImaginedGraph = (): ReadApi => {
       HOLDINGS.filter((record) => renderContract(record.contract) === renderContract(address)).map(
         (record) => ({
           addressing: 'named',
+          servedFrom: THE_UNPUBLISHED_REVISION,
           address: { contract: record.contract, id: record.id, version: IMAGINED_VERSION },
           digest: digestOf(record),
           publishedAt: '1970-01-01T00:00:00.000Z',
@@ -323,7 +326,12 @@ const overTheImaginedGraph = (): ReadApi => {
           tags: [],
         }),
       ),
-    refusals: () => ({ addressing: 'named', refusals: [], absorbed: [] }),
+    refusals: () => ({
+      addressing: 'named',
+      servedFrom: THE_UNPUBLISHED_REVISION,
+      refusals: [],
+      absorbed: [],
+    }),
     methodology: () => holding().registry.methodology(),
     snapshot: (digest) => snapshots.get(digest) ?? null,
     blob: (sha256) => {

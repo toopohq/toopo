@@ -1,11 +1,8 @@
 import { describe, it, expect } from 'vitest'
 
-import { emitted } from '../registry/emit.js'
-import { localReadApi } from '../registry/local-read-api.js'
-import { THE_BROWSER_GRAPH, theReferenceModules } from './browser.js'
-import { heldByTheRegistry } from './catalogue.js'
-import { localSource } from './local-source.js'
-import { thePublishedTree, theSite } from './site.js'
+import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
+import { THE_BROWSER_GRAPH } from './browser.js'
+import { thePublication } from './site.js'
 
 /**
  * The tree that is deployed, as one set of paths.
@@ -27,21 +24,16 @@ import { thePublishedTree, theSite } from './site.js'
  * collected nothing as a run that measured part of the suite. It is the lesson `pages.test.ts` records
  * against W-20, and I-01 is where it was met again.
  */
+let built: ReadonlyMap<string, string | Buffer> | null = null
 let published: readonly string[] | null = null
 
-const paths = (): readonly string[] => {
-  if (published !== null) return published
+const theTree = (): ReadonlyMap<string, string | Buffer> =>
+  (built ??= thePublication(
+    THE_UNPUBLISHED_REVISION,
+    new Map(THE_BROWSER_GRAPH.map((relative) => [relative.replace(/\.ts$/, '.js'), ''])),
+  ))
 
-  const source = localSource()
-  const modules = new Map<string, string>([
-    ...THE_BROWSER_GRAPH.map((relative) => [relative.replace(/\.ts$/, '.js'), ''] as const),
-    ...theReferenceModules(source, heldByTheRegistry(source)),
-  ])
-
-  published = [...thePublishedTree(theSite(source), modules, emitted(localReadApi())).keys()]
-
-  return published
-}
+const paths = (): readonly string[] => (published ??= [...theTree().keys()])
 
 /** The characters no Windows filesystem will open a file with, and the separator of the other one. */
 const FORBIDDEN = new RegExp('[<>:"|?*\\\\]')
@@ -88,6 +80,59 @@ describe('what a host is given', () => {
    * cannot resolve. The count is not asserted - it moves with the catalogue - but the presence of each
    * kind is.
    */
+  /**
+   * Every named answer a deployment carries says which revision produced it, and it is the revision the
+   * publication was asked for.
+   *
+   * **It is the guard the two stand-ins' defaults are safe because of.** `localSource` and
+   * `localReadApi` fall back to the unpublished revision, which is the honest answer for every guard in
+   * this repository and a lie in exactly one place - a deployment. `thePublication` is now the single
+   * arrangement and takes the revision with no default, so the omission cannot be written; this is what
+   * says the parameter actually reaches the answers rather than being carried and dropped.
+   *
+   * The bodies are read back out of the tree rather than off the port, which is the same discipline
+   * `the-emitted-tree-is-closed` runs on: a guard that asked the read API what it answered would be
+   * green for exactly the path where the composition dropped it.
+   */
+  it('every-named-answer-in-the-tree-names-the-revision-it-was-built-from', () => {
+    const A_REVISION = 'c'.repeat(40)
+    const tree = thePublication(
+      A_REVISION,
+      new Map(THE_BROWSER_GRAPH.map((relative) => [relative.replace(/\.ts$/, '.js'), ''])),
+    )
+
+    const named: { readonly addressing: string; readonly servedFrom?: unknown }[] = []
+
+    for (const contents of tree.values()) {
+      if (!Buffer.isBuffer(contents)) continue
+
+      let body: unknown
+      try {
+        body = JSON.parse(contents.toString('utf8'))
+      } catch {
+        continue
+      }
+
+      for (const one of Array.isArray(body) ? body : [body]) {
+        if (one !== null && typeof one === 'object' && 'addressing' in one) {
+          named.push(one as { readonly addressing: string })
+        }
+      }
+    }
+
+    const answers = named.filter((one) => one.addressing === 'named')
+
+    expect(answers.length).toBeGreaterThan(0)
+    expect(answers.filter((one) => one.servedFrom !== A_REVISION)).toEqual([])
+    // The control: a content-addressed answer says which revision produced it nowhere at all, which is
+    // what lets a host cache it for a year under an address that is the digest of its own body.
+    expect(
+      named
+        .filter((one) => one.addressing === 'content-addressed')
+        .filter((one) => 'servedFrom' in one),
+    ).toEqual([])
+  })
+
   it('the-tree-carries-pages-modules-crawler-files-and-answers', () => {
     const written = paths()
 

@@ -4,10 +4,18 @@ import { join } from 'node:path'
 
 import * as groupBy from '../../contracts/typescript/array/group-by/contract.js'
 import { canonical, digestOfBytes } from './canonical.js'
+import { endpointOf } from './endpoints.js'
 import { FIELD_MAP, pathsIn } from './field-map.js'
+import { localReadApi } from './local-read-api.js'
+import type { ReadApi } from './read-api.js'
+import { THE_ENDPOINT_BEHIND } from './read-api.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
 import {
+  CONTRACT_BINDING_NATURES,
+  IMPLEMENTATION_BINDING_NATURES,
   bindingHasMoved,
+  cachePolicyFor,
+  revisableFieldsOf,
   servedBlob,
   servedBlobFaults,
   servedContractBinding,
@@ -39,6 +47,9 @@ import { eachContract, theFive } from './the-five.js'
  */
 
 const PUBLISHED_AT = '2026-08-03T00:00:00.000Z'
+
+/** A revision these answers are pretended to have been served from. Not this repository's. */
+const SERVED_FROM = 'f'.repeat(40)
 
 /**
  * A ledger holding the catalogue as it would be published: the four that are not yet published, and
@@ -85,6 +96,7 @@ const theCatalogue = (): Ledger => {
 /** The index over the whole catalogue, built the way the local source builds it. */
 const theServedIndex = () =>
   servedIndex(
+    SERVED_FROM,
     theCatalogue(),
     theFive.map((source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
@@ -220,7 +232,7 @@ describe('a named answer carries no part of the frozen half', () => {
   it.each(eachContract)('a-contract-binding-carries-only-the-address-%s', (_name, source) => {
     const record = serialiseContract(REPOSITORY_ROOT, source)
     const snapshot = contractSnapshot(record)
-    const binding = servedContractBinding({
+    const binding = servedContractBinding(SERVED_FROM, {
       address: source.address,
       digest: digestOfSnapshot(snapshot),
       publishedAt: PUBLISHED_AT,
@@ -236,6 +248,7 @@ describe('a named answer carries no part of the frozen half', () => {
     const implementation = referenceImplementationOf(REPOSITORY_ROOT, source)
     const snapshot = implementationSnapshot(implementation)
     const binding = servedImplementationBinding(
+      SERVED_FROM,
       {
         address: { contract: source.address, id: implementation.id, version: '1.0.0' },
         digest: digestOfSnapshot(snapshot),
@@ -250,6 +263,115 @@ describe('a named answer carries no part of the frozen half', () => {
     // definition arriving through a door with no digest on it.
     expect('files' in binding).toBe(false)
     expect('dependsOn' in binding).toBe(false)
+  })
+})
+
+describe('which registry answered, and where that may be written down', () => {
+  /**
+   * Every named answer says which revision produced it, and the list is read off the endpoints rather
+   * than written here.
+   *
+   * A sixth named answer added without a revision is what this refuses, and the two statements it
+   * compares are independent: `ENDPOINTS` says which answers are named, and the port says what each one
+   * returns. A list of five method names would have been the third statement, green for exactly the one
+   * nobody added it to.
+   */
+  it('every-named-answer-names-the-revision-it-was-served-from', () => {
+    const registry = localReadApi(SERVED_FROM)
+    const named = Object.entries(THE_ENDPOINT_BEHIND).filter(
+      ([, endpoint]) => endpointOf(endpoint).addressing === 'named',
+    )
+
+    const answers = named.flatMap(([method]) => {
+      const answer = registry[method as keyof ReadApi](theFive[0]?.address as never)
+
+      return (Array.isArray(answer) ? answer : [answer])
+        .filter((one): one is { readonly servedFrom?: unknown } => one !== null)
+        .map((one) => [method, one.servedFrom] as const)
+    })
+
+    expect([...new Set(answers.map(([method]) => method))].sort()).toEqual(
+      named.map(([method]) => method).sort(),
+    )
+    expect(answers.filter(([, servedFrom]) => servedFrom !== SERVED_FROM)).toEqual([])
+  })
+
+  /**
+   * **The trap this unit is about, made executable.**
+   *
+   * `ServedSnapshot` and `ServedBlob` are envelopes: the digest is taken over `canonicalText`, not over
+   * the body that carries it, so a revision added to either would move no digest and every guard in
+   * the file above would stay green. What forbids it is the cache policy - a content-addressed answer
+   * promises `immutable` for a year on the grounds that different bytes are a different address - and a
+   * promise is not a guard.
+   *
+   * So the claim is measured as the promise itself: **the bytes of a content-addressed answer are a
+   * function of its address and of nothing else.** Two registries over one working tree at two
+   * revisions answer one digest, and the two answers have to be the same byte string. A revision
+   * dropped into either envelope makes them differ, and reddens here.
+   *
+   * The last assertion is the control, and without it this guard would pass on a registry where the
+   * revision reached nothing at all. ADR-0090 is the argument.
+   */
+  it('a-content-addressed-answer-is-the-same-bytes-at-every-revision', () => {
+    const one = localReadApi('a'.repeat(40))
+    const other = localReadApi('b'.repeat(40))
+
+    const binding = one.implementationBindings(theFive[0]?.address as never)[0]
+    if (binding === undefined) throw new Error('the first of the five publishes no implementation')
+
+    const snapshot = one.snapshot(binding.digest)
+    const file = JSON.parse(snapshot?.canonicalText ?? '{}').frozen.files[0] as {
+      readonly sha256: string
+    }
+
+    expect(JSON.stringify(other.snapshot(binding.digest))).toBe(JSON.stringify(snapshot))
+    expect(other.blob(file.sha256)?.bytes.equals(one.blob(file.sha256)?.bytes as Buffer)).toBe(true)
+
+    expect(JSON.stringify(other.contractIndex())).not.toBe(JSON.stringify(one.contractIndex()))
+  })
+
+  /**
+   * The revision is not the registry's opinion, and `revisableFieldsOf` is where saying so would go
+   * wrong.
+   *
+   * That list is rendered into what `implementation-bindings` publishes as *the registry's opinion,
+   * changeable without anything being wrong* - beside a sentence telling a reader not to take it for a
+   * fact about the code. The revision is the one field of a named answer that is a fact, and the one a
+   * lockfile keeps in order to go back to it.
+   */
+  it('the-revision-is-not-published-as-an-opinion', () => {
+    expect(revisableFieldsOf(IMPLEMENTATION_BINDING_NATURES)).not.toContain('servedFrom')
+    expect(IMPLEMENTATION_BINDING_NATURES.servedFrom).toBe('the-registry-that-answered')
+    expect(CONTRACT_BINDING_NATURES.servedFrom).toBe('the-registry-that-answered')
+  })
+
+  /**
+   * The cache policy said the named half goes stale on ledger writes *and on nothing else*, which
+   * carrying a revision made false: a commit touching no ledger entry changes every named body. A
+   * deployment reading the old sentence would purge too rarely.
+   *
+   * Derived from what moves rather than asserted about the wording: two indices over one ledger, at two
+   * revisions, are two documents - so *a write to the ledger* cannot be the whole of what makes one
+   * stale.
+   */
+  it('a-named-answer-moves-when-the-revision-does-and-the-policy-says-so', () => {
+    const ledger = theCatalogue()
+    const identities = theFive.map((source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+
+      return {
+        address: record.address,
+        summary: record.identity.summary,
+        searchAliases: record.identity.searchAliases,
+        exports: servedExportsOf(record.surface.exports),
+      }
+    })
+
+    expect(canonical(servedIndex(SERVED_FROM, ledger, identities), 'index')).not.toBe(
+      canonical(servedIndex('a'.repeat(40), ledger, identities), 'index'),
+    )
+    expect(cachePolicyFor('named').staleWhen).toContain('revision')
   })
 })
 
@@ -327,9 +449,11 @@ describe('the index, the refusals, and what update compares', () => {
    * becomes a sentence rather than a constraint.
    *
    * The figures moved from 2 731 and 3 106 when the alias review took eight phrases out of the five
-   * contracts, which is 137 bytes off the one document every search pays for. `added` did not move,
-   * and that is the number this guard is actually about: what carrying the export names costs is a
-   * property of the names and not of how much else the entry happens to hold.
+   * contracts, which is 137 bytes off the one document every search pays for. They moved again by 56
+   * when a named answer began naming the revision it was served from - a field of the document rather
+   * than of an entry, so it is paid once whatever the catalogue grows to. `added` did not move either
+   * time, and that is the number this guard is actually about: what carrying the export names costs is
+   * a property of the names and not of how much else the entry happens to hold.
    */
   it('the-index-stays-the-smallest-thing-the-registry-serves', () => {
     const index = theServedIndex()
@@ -342,8 +466,8 @@ describe('the index, the refusals, and what update compares', () => {
     const before = canonical(withoutExports, 'index').length
 
     expect({ before, grown, added: grown - before }).toEqual({
-      before: 2594,
-      grown: 2969,
+      before: 2650,
+      grown: 3025,
       added: 375,
     })
   })
@@ -354,7 +478,7 @@ describe('the index, the refusals, and what update compares', () => {
    * catalogue's most-cited act of honesty was the one thing it could not serve.
    */
   it('the-refusals-page-has-a-source :: and it is the contract own admission', () => {
-    const refusals = servedRefusals(theCatalogue())
+    const refusals = servedRefusals(SERVED_FROM, theCatalogue())
 
     expect(refusals.refusals.map((entry) => entry.address.name)).toEqual(['array/group-by'])
     expect(refusals.refusals[0]?.measurement).toBe(groupBy.catalogueAdmission.measurement)
@@ -399,6 +523,7 @@ describe('the index, the refusals, and what update compares', () => {
     const address = { contract: source.address, id: implementation.id, version: '1.0.0' }
     const digest = digestOfSnapshot(implementationSnapshot(implementation))
     const binding = servedImplementationBinding(
+      SERVED_FROM,
       { address, digest, publishedAt: PUBLISHED_AT, standing: { status: 'default' } },
       implementation,
     )

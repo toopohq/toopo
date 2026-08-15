@@ -70,6 +70,7 @@ import {
   publishImplementation,
   refuseContract,
 } from '../registry/snapshot.js'
+import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
 import { theFive } from '../registry/the-five.js'
 import { servedMethodology } from '../registry/verifiability.js'
@@ -187,16 +188,16 @@ const gather = (): {
  * Built lazily and once. Building it serialises five contracts and hashes thirty-seven files, and a
  * generator that rebuilt it per page would pay that five times to publish one catalogue.
  */
-export const localSource = (): RegistrySource => {
+export const localSource = (servedFrom: string = THE_UNPUBLISHED_REVISION): RegistrySource => {
   const held = gather()
 
   return {
-    contractIndex: () => servedIndex(held.ledger, held.holdings),
+    contractIndex: () => servedIndex(servedFrom, held.ledger, held.holdings),
 
     contractBinding: (address) => {
       const entry = held.ledger.contracts.find((held) => sameContract(held.address, address))
 
-      return entry === undefined ? null : servedContractBinding(entry)
+      return entry === undefined ? null : servedContractBinding(servedFrom, entry)
     },
 
     implementationBindings: (address) =>
@@ -213,14 +214,14 @@ export const localSource = (): RegistrySource => {
             )
           }
 
-          return servedImplementationBinding(entry, {
+          return servedImplementationBinding(servedFrom, entry, {
             benchmarks: holding.implementation.benchmarks,
             minifiedBytes: holding.implementation.minifiedBytes,
             tags: holding.implementation.tags,
           })
         }),
 
-    refusals: () => servedRefusals(held.ledger),
+    refusals: () => servedRefusals(servedFrom, held.ledger),
 
     snapshot: (digest) => held.snapshots.get(digest) ?? null,
 
@@ -232,7 +233,7 @@ export const localSource = (): RegistrySource => {
      * its own guarantees, and a stand-in mints nothing about them. A published server answers the
      * same value.
      */
-    methodology: () => servedMethodology(),
+    methodology: () => servedMethodology(servedFrom),
 
     blob: (sha256) => held.blobs.get(sha256) ?? null,
   }
