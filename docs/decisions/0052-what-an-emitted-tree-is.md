@@ -11,7 +11,7 @@ confirmed-by:
     guard: the-tree-carries-pages-modules-crawler-files-and-answers
   - battery: site
     guard: no-path-is-both-a-file-and-a-directory
-  - battery: site
+  - battery: registry-storage
     guard: a-page-and-the-answers-about-that-contract-share-one-address
   - battery: cli-install
     guard: add-decides-the-same-thing-against-the-emitted-tree

@@ -2,6 +2,9 @@
  * Every answer the registry gives, frozen into one file, so that an installed `toopo` needs no
  * working tree.
  *
+ * ADR-0044 is why the digests here are fixed when the archive is built rather than recomputed from
+ * whatever is on disk.
+ *
  * ---------------------------------------------------------------------------
  * Why this exists, measured rather than argued
  * ---------------------------------------------------------------------------
