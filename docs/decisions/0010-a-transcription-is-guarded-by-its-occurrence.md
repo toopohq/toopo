@@ -4,8 +4,9 @@ date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
   - packages/registry/contract-record.ts
-  - packages/registry/against-the-five.test.ts
-confirmed-by: []
+confirmed-by:
+  - battery: registry-storage
+    guard: every-declared-type-occurs-in-the-contract
 ---
 
 # A transcribed declaration is guarded by its occurrence in the contract's own source
@@ -43,8 +44,13 @@ publishes one export under one name.
 
 ## Confirmation
 
-`packages/registry/against-the-five.test.ts` resolves the declaration against the contract's own
-`contract.ts`, whitespace normalised, for all five contracts.
+`every-declared-type-occurs-in-the-contract` resolves the declaration against the contract's own
+`contract.ts`, whitespace normalised, once per contract.
+
+That pair is what this record used to say in prose while `confirmed-by` was empty — and the file was
+named under `governs` besides, which is a guard addressed as a path. Both halves are one repair: the
+guard is named where a guard is named, and `no-decision-governs-a-guard-file` is what stops the other
+spelling coming back.
 
 ## What would reopen this
 

@@ -31,8 +31,24 @@
  * The census stays the backstop rather than being replaced by this. It is what caught the defect
  * both times it happened, before a single verdict existed, and it is what would catch the next door
  * in this family - which will not be a drive letter.
+ *
+ * ---------------------------------------------------------------------------
+ * What the repository holds, asked of git rather than of a walk
+ * ---------------------------------------------------------------------------
+ *
+ * `trackedFiles` is here because two guards in two folders ask one question about one set of bytes,
+ * and neither folder owns it: `packages/registry/publication.test.ts` asks which files carry a licence
+ * header, and `decisions.ts` asks which files cite a decision. *Two functions answering two questions
+ * about different data are not a duplication; two answering one question about one set are.*
+ *
+ * git is asked rather than a walk written, for the reason `packages/cli/ignored.ts` gives about
+ * `.gitignore`: a second statement of what this repository contains drifts from the first, and the
+ * derived trees are exactly where a stale answer would hide. `dist/` holds a compiled copy of every
+ * module of `packages/`, comments included - so a walk that reached it would let a citation in a build
+ * output stand in for one in the source it was built from.
  */
 
+import { execFileSync } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -45,3 +61,9 @@ export const THE_INSTRUMENT_FOLDER = withCanonicalDriveLetter(
 
 /** The repository root, in the spelling every child process of this folder is given. */
 export const THE_REPOSITORY = join(THE_INSTRUMENT_FOLDER, '..')
+
+/** Every file this repository tracks, repository-relative and forward-slashed, as git spells them. */
+export const trackedFiles = (): readonly string[] =>
+  execFileSync('git', ['ls-files'], { cwd: THE_REPOSITORY, encoding: 'utf8', maxBuffer: 1 << 26 })
+    .split('\n')
+    .filter((path) => path !== '')

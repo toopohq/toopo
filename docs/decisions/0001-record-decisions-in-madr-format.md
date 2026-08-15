@@ -3,8 +3,24 @@ status: accepted
 date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
-  - docs/decisions/
-confirmed-by: []
+  - mutation/decisions.ts
+confirmed-by:
+  - battery: meta
+    guard: every-decision-declares-what-it-governs-and-what-keeps-it
+  - battery: meta
+    guard: no-decision-governs-a-guard-file
+  - battery: meta
+    guard: every-decision-says-what-would-reopen-it
+  - battery: meta
+    guard: every-path-a-decision-governs-exists
+  - battery: meta
+    guard: every-file-a-decision-governs-cites-it-back
+  - battery: meta
+    guard: every-guard-a-decision-names-is-one-its-suite-collects
+  - battery: meta
+    guard: every-decision-a-file-cites-exists
+  - battery: meta
+    guard: every-decision-a-record-links-to-is-the-one-it-names
 ---
 
 # Record decisions in MADR format, addressed by number
@@ -70,8 +86,24 @@ slug would make a reworded title a broken link, which is the failure the whole r
 
 | Field | What it holds | Argued by |
 | --- | --- | --- |
-| `governs` | the code this decision rules, as repository-relative paths | a back-link that is data can be resolved; one that is prose cannot |
-| `confirmed-by` | the guards that keep it, each as the pair `(battery, guard)` | `Confirmation` in prose does not resolve either |
+| `governs` | the code this decision rules, as repository-relative paths to files | a back-link that is data can be resolved; one that is prose cannot |
+| `confirmed-by` | the guards that keep it, each as the pair `(suite, guard)` | `Confirmation` in prose does not resolve either |
+
+**`governs` names code and never a guard, and the division is kept rather than described.** A test file
+under `governs` states, as a path, what `confirmed-by` states as a resolvable pair — and two statements
+of one fact drift. This one already had: ADR-0010 named `against-the-five.test.ts` under `governs` while
+declaring `confirmed-by: []`, so the record said in an unresolvable form that a guard kept it and in a
+resolvable one that none did. `no-decision-governs-a-guard-file` is what refuses it now.
+
+**It names files rather than paths of any kind**, which is what makes the back-link something a reader
+opens. The one entry that was not a file was this record naming `docs/decisions/` — the folder holding
+this record, so ADR-0001 governed itself. It names the module that reads this format instead.
+
+**Required, and never empty.** After the sweep that built the guards, no decision here governs nothing,
+so a member for declaring that absence would be a shape with no instance — which is what `field-map.ts`
+calls a speculative field and deletes. The day a decision genuinely rules no code, what it takes is an
+absence declared with its reason, on the treatment `OwnDeclaration.executableBy` already receives: never
+a field left out, which reads exactly like a field forgotten.
 
 **A guard is named by the pair, never by the identifier alone**, and that is not a flourish. A guard
 identifier is unique within the suite a battery measures, and fifteen identifier strings in this
@@ -84,6 +116,20 @@ confirmed-by:
   - battery: registry-storage
     guard: the-absorbed-state-is-constructible
 ```
+
+**The first coordinate names a suite, and nineteen of the twenty names are batteries.** The twentieth
+is `meta`, and it is a coordinate completed rather than widened: `readme.test.ts` and
+`contributing.test.ts` have been guards for as long as `mutation/` has existed, no battery injects
+there, and a coordinate with nineteen values made two existing guards unaddressable — it described part
+of the repository as though it were the whole.
+
+**The two are not of equal strength, and reading them as equals is the mistake this paragraph exists to
+prevent.** A guard addressed under a battery has its detection power measured: mutants say what it
+catches, and a cell that stops catching is a red. A guard addressed under `meta` has nothing measuring
+what it is worth, because no battery injects into `mutation/` — which is
+`packages/registry/verifiability.ts`'s line, that the instrument measures the catalogue and is not part
+of it. *A decision confirmed by a battery is kept by a guard shown to catch something; a decision
+confirmed by `meta` is kept by a guard that runs.* This record is one of the second kind.
 
 ### One section beyond MADR's own
 
@@ -113,27 +159,36 @@ does with a template anyway.
 
 ## Confirmation
 
-**Nothing resolves `governs` or `confirmed-by` today.** They are `one-directional` in this
-repository's own vocabulary: they look like verified references and no mechanism checks that the paths
-exist, that the guards exist, or that the code they name cites the ADR back. A reader who does not find
-this paragraph will trust them.
+`mutation/decisions.ts` reads every record and `mutation/decisions.test.ts` resolves what it finds, in
+both directions of each family. The eight guards are named in `confirmed-by` above, and between them
+they establish that both fields are declared and well formed, that `governs` names files and not
+guards, that every path resolves and every file it names cites the decision back, that every pair names
+a guard its suite collects, that no `ADR-NNNN` written anywhere in this repository names a record that
+does not exist, that a link between two records is about the record it names, and that every record
+says what would reopen it.
 
-What would close it is a guard resolving both fields in both directions — the shape
-`every-clean-refusal-resolves-to-the-guard-it-names` already has in `packages/cli/breakage.test.ts`. It
-is not built here because a guard moves one of the seven suite totals this unit is required to hold at
-472 / 314 / 27 / 183 / 85 / 42 / 16, and paying that is the next unit's to do.
+**They were written because the fields were `one-directional`, and the measurement is what makes that
+worth recording rather than the word.** On the sixteen records of the first batch — written and
+reviewed in one sitting — **7 of the 25 files a decision governed never cited it back, and the
+twenty-sixth entry was a directory: 28 per cent of one link family broken in reviewed work.** Two of
+those were a record contradicting itself rather than merely pointing nowhere. ADR-0010 declared
+`confirmed-by: []` while naming its own guard's file under `governs`, and ADR-0008 named a guard
+identifier that is the title of no `it(...)` anywhere, because the guard is an `it.each` whose written
+title ends `-%s`.
 
-Until then the link is kept by hand in one direction only: the code cites `ADR-NNNN`, and the ADR lists
-what it governs.
+**What the guards do not establish** is that a decision is *right*, or that the code named is all the
+code ruled: a file a decision governs and nobody listed is invisible here, exactly as a sixth stage-1
+rule is invisible to `contributing.test.ts`. It fails in the safe direction — the record understates its
+own scope rather than promising a reach it has not got.
 
 ## What would reopen this
 
-- A guard resolving `governs` and `confirmed-by`, which closes the paragraph above and is the one thing
-  this format is currently missing.
 - A second language in the catalogue, if it turned out that decisions needed to be scoped by language
   the way contract addresses are.
 - MADR itself moving. The format is pinned at 4.0.0 here; a 5.0 renaming sections would be adopted or
   refused deliberately, not inherited.
+- A decision that genuinely rules no code, which is what the `governs` paragraph above prices: it is
+  refused today, and the shape it would take is an absence declared with its reason.
 
 ## More Information
 

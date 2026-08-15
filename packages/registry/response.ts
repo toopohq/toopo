@@ -306,6 +306,8 @@ export const servedImplementationBinding = (
  * and a reader who wants them fetches the snapshot. What is here is the pair a caller writes - the
  * name, and what it is for - because the error convention ships a diagnostic *beside* the answer and a
  * client that knew only the answer would leave every caller writing their own error message.
+ *
+ * The role is named once, here, and the union it is drawn from is the record's own: ADR-0016.
  */
 export type ServedExport = {
   readonly name: string

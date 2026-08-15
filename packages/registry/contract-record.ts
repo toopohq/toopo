@@ -149,6 +149,7 @@ export type ProfileRecord = {
   readonly data: EncodedValue
 }
 
+/** A vocabulary and its profiles, and no list of timings: a figure needs a machine. ADR-0014. */
 export type BenchmarksRecord = {
   readonly vocabulary: readonly ProfileClassRecord[]
   readonly profiles: readonly ProfileRecord[]

@@ -6,7 +6,8 @@
  * What was missing, and how a consumer found it
  * ---------------------------------------------------------------------------
  *
- * A case of block 4.4 is a *call*, and until this file existed the registry could not say so. It held
+ * A case of block 4.4 is a *call* - ADR-0011 - and until this file existed the registry could not say
+ * so. It held
  * the fields of a case as `data` it deliberately does not interpret, and ADR-0004 names the
  * consequence in as many words: no query can ask which field is the answer. A contract page inherits
  * that and cannot render `parseNumber('  42  ')` at all - it can only list `input`, `expected`, `reason`

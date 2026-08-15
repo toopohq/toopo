@@ -222,6 +222,8 @@ export const playgroundOf = (contract: FrozenContract, what: string): Playground
    * looked up first, because the second refusal fired in the first one's place and the guard could no
    * longer tell them apart.
    */
+  // One field per parameter of the answer, in the signature's own order, opening on the values the
+  // first case writes: the form is the call a case already is. ADR-0011.
   const fields = answer.parameters.map((parameter, index) => ({
     name: parameter.name,
     type: parameter.type,

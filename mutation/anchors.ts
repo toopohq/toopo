@@ -25,9 +25,12 @@
  * a test file exactly as a mutant quotes an implementation, and a lens whose quotation has moved
  * breaks every cell of its column rather than one. They are walked here for that reason.
  *
- * It is a diagnostic and not a guard. Promoting it costs one of the seven suite totals, which is the
- * unit that promotes it and not this one; until then it is run by hand, by whoever is about to move a
- * line.
+ * **It is both a guard and a command, and the two ask the same question at different moments.**
+ * `anchors.test.ts` asks whether any quotation has stopped applying, at the cadence of the suite, so
+ * that the answer arrives before a commit rather than at a replay. The command answers *which lines of
+ * this file may I move*, which is a question no assertion has a shape for, and it is asked by somebody
+ * who has not broken anything yet. One reading, imported by both - which is why this module prints
+ * nothing and `check-anchors.ts` exists.
  */
 
 import { join } from 'node:path'

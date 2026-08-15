@@ -4,8 +4,6 @@ date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
   - packages/registry/contract-record.ts
-  - packages/site/pages.test.ts
-  - packages/registry/against-the-five.test.ts
 confirmed-by:
   - battery: site
     guard: a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence

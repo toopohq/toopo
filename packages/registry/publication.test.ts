@@ -1,9 +1,9 @@
-import { execFileSync } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
+import { trackedFiles } from '../../mutation/paths.js'
 import { THE_ORIGIN, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
 import { THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
@@ -28,11 +28,6 @@ import { theFive } from './the-five.js'
  * repaired by a redirect. A wrong licence marking publishes a legal claim into somebody else's
  * repository, where it is frozen, silent, and ours to have caused.
  */
-
-const trackedFiles = (): readonly string[] =>
-  execFileSync('git', ['ls-files'], { cwd: REPOSITORY_ROOT, encoding: 'utf8', maxBuffer: 1 << 26 })
-    .split('\n')
-    .filter((path) => path !== '')
 
 const textOf = (path: string): string =>
   servedBytes(readFileSync(join(REPOSITORY_ROOT, path))).toString('utf8')

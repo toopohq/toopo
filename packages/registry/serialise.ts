@@ -265,6 +265,8 @@ const caseOf = (
  * Four ways it can fail and one error for all four, because they are one question - whether every
  * heading the page renders has cases under it and every case has a heading over it - and a caller
  * needs to know which way it gave way rather than which class it belongs to.
+ *
+ * A case belongs to a group and a table declares its groups: ADR-0012.
  */
 export class GroupingIsNotAPartition extends Error {
   constructor(where: string, fault: string) {
