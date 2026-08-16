@@ -43,9 +43,14 @@
  * `NOT_THE_DECLARED_ORIGIN` names a host, and a host is not something this repository can derive: the
  * registry declares `THE_ORIGIN` one floor up, and every other address this tree is reachable at is
  * somebody else's fact. What can be said is why the rule exists - a deployment that is not the declared
- * origin still publishes pages whose canonical links, sitemap and `robots.txt` all name that origin, so
- * a search engine that indexed one would hold an address whose every link answers 403. Indexing does
- * not come back on request.
+ * origin serves the same catalogue at a second address, under pages whose canonical links, sitemap and
+ * `robots.txt` all name the first. A search engine that indexed it would hold this catalogue twice,
+ * once at an address nothing here publishes, and indexing does not come back on request.
+ *
+ * **The harm changed when the domain was connected and the rule did not.** While the declared origin
+ * answered 403, indexing the temporary address bought a set of dead links; now it buys a duplicate of
+ * a live site. The second is the milder failure and it is the one that lasts, because dead links get
+ * dropped and a duplicate competes.
  *
  * It matches on the host, so it **cannot** apply at the declared origin, and that is the whole reason
  * it is written this way rather than as a flag somebody turns off on the day the domain is connected.
@@ -56,14 +61,23 @@
  * request against the real deployment, reading the header back - the same measurement that settles
  * whether Cloudflare's splat spans a slash, which nothing in this repository can answer either.
  *
+ * That request has been made for one of the two shapes. Measured at `994374d`, on one address of each
+ * class the tree writes: `toopo.pages.dev` answers `X-Robots-Tag: noindex` and `toopo.dev` answers no
+ * such header, **read in one sweep because either half alone proves nothing** - an absent header at the
+ * origin is equally what a rule matching nothing produces. The two-label shape has no live instance to
+ * ask, so whether that pattern matches is unmeasured and stays so; ADR-0103 carries both.
+ *
  * ---------------------------------------------------------------------------
  * A trap this file escapes by the shape of a splat and not by intention
  * ---------------------------------------------------------------------------
  *
- * Measured on a throwaway deployment: this host answers a path carrying `@` with a redirect to the
- * percent-encoded form, and **a rule whose pattern spells `@` applies to the redirect and not to its
- * destination** - so the address that serves the bytes falls through to whatever the platform sends.
- * On that mechanism an address loses its address and its headers together.
+ * Measured on a throwaway deployment of Workers static assets, the mechanism ADR-0100 refused: it
+ * answers a path carrying `@` with a redirect to the percent-encoded form, and **a rule whose pattern
+ * spells `@` applies to the redirect and not to its destination** - so the address that serves the
+ * bytes falls through to whatever the platform sends. On that mechanism an address loses its address
+ * and its headers together. Pages, which is what serves this tree, answers `@` directly - measured at
+ * `994374d` over every contract address - so the trap is not armed here today and the shape below is
+ * what would keep it disarmed on a host that armed it again.
  *
  * Every rule here is `pathTo(endpoint, EVERY_ADDRESS)`, and none of the three arms puts a rendered
  * address in a pattern: the splat stands where `number/parse@1` would go, and it covers both spellings.

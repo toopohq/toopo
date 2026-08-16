@@ -16,9 +16,11 @@ One file lands in `src/lib/toopo/string/slugify/slugify.ts`, with its digest rec
 install, nothing of ours runs in your program.
 
 > **Nothing is published yet.** The command above is what a contract page tells you to type, and
-> `toopo` is not on npm, `toopo.dev` serves nothing, and `package.json` carries `"private": true` on
-> purpose. What works today is cloning this repository and running the suites below. Publication is
-> a decision, not a missing feature.
+> there is nothing to type it with: `toopo` is not on npm, and `package.json` carries
+> `"private": true` on purpose. The catalogue itself is served — every page, every answer and every
+> byte a client would fetch is at `toopo.dev` today — so what is missing is the client and not the
+> registry. What works meanwhile is cloning this repository and running the suites below. Publication
+> is a decision, not a missing feature.
 
 ## Why you can believe any of it
 
@@ -41,9 +43,12 @@ pnpm run tally       # prints it again from what the replay left, measuring noth
 A high score does not say the code is correct. It says the tests notice the defects that were
 tried — and here the defects that were tried are files you can read.
 
-The figures above are read off committed code and checked by a guard, so this page cannot drift from
-what the instrument declares. What you get by running the command is different in kind: it is what
-happened on your machine.
+Which leaves one thing worth being plain about: **every figure here is read off the batteries in this
+repository, where each cell carries the verdict it must produce. That is what this project asserts
+about its own tests. It is not yet something you have seen happen.** A guard resolves each figure
+against those batteries, so this page cannot drift from what the instrument declares — and drift is
+the only thing it protects you from. The command above is what turns the claim into an observation,
+and what it prints happened on your machine rather than on ours.
 
 ## What is in the catalogue
 

@@ -108,11 +108,14 @@ export const METHOD_PAGE = 'method/index.html'
  * from - and that reason survives the move intact. What it does not establish is that an internal
  * organisation word belongs in a public URL.
  *
- * It is not settled here because nothing in this unit changed a behaviour, and because the deadline
- * is not this move: it is the first publication. Every path on this origin answers 403 today, so the
- * whole of this is still free; the day something is served, it is frozen by the same argument that
- * freezes a case identifier. Whoever designs the public surface of this site decides it, and this is
- * the note that stops them finding the question by accident.
+ * It is not settled here because nothing in that unit changed a behaviour, and the deadline it named
+ * has passed. **`/packages/site/start.js` has been served at the declared origin since `994374d`**,
+ * measured, and the argument that freezes a case identifier applies to it now: an address a reader
+ * can have linked is an address that moving costs something. It is no longer free and it is not yet
+ * expensive - nothing installed cites it, no sitemap carries it, and the nine modules are the one
+ * class of this tree that no published document points at - so what it costs today is whatever a
+ * browser cache and somebody's bookmark hold. Whoever designs the public surface of this site decides
+ * it, on that price rather than on none.
  */
 export const THE_ENTRY_POINT = 'packages/site/start.js'
 

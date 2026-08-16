@@ -6,30 +6,30 @@
 // It is here because there is nowhere else to put it
 // ---------------------------------------------------------------------------
 //
-// This is not a Pages project serving a folder; it is a Worker serving static assets, and the
-// difference is visible from the dashboard: it offers "Cron Triggers" and "Queues", which are concepts
-// of a program, and it offers **no output directory field at all**. `assets.directory` below is that
-// field. The first build failed with the Cloudflare application detection logic having "been run in
-// the root of a workspace instead of targeting a specific project", which is what a monorepo with no
-// configuration file looks like from outside.
+// The first build failed with the Cloudflare application detection logic having "been run in the root
+// of a workspace instead of targeting a specific project", which is what a monorepo with no
+// configuration file looks like from outside. `pages_build_output_dir` below is what answers it.
 //
-// So the two halves of a deployment now live in two places and only one of them can drift. The build
+// So the two halves of a deployment live in two places and only one of them can drift. The build
 // command and the deploy command are fields of a dashboard - `pnpm run site:build` and
-// `npx wrangler deploy`, both of them constants carrying no version and no path - and everything that
-// is a decision is here.
+// `wrangler pages deploy`, both of them constants carrying no version and no path - and everything
+// that is a decision is here.
 //
 // ---------------------------------------------------------------------------
 // What is deliberately not here
 // ---------------------------------------------------------------------------
 //
-// **No route and no custom domain.** The origin this catalogue declares is frozen into the licence
-// header of every file the installer has ever written, and connecting it to a deployment that has not
-// been measured would freeze whatever that deployment happens to be. It answers 403 today, and a 403
-// is better than a site that is half right at the one address every installed file cites for life.
+// **No custom domain, although one is connected.** `https://toopo.dev` serves this tree as of
+// `994374d` and it is attached in the dashboard, not here - because a custom domain is a fact about
+// which names point at a project and wrangler's Pages configuration has no field for it. That is a
+// gap in this file's own claim to hold every decision, and it is written down rather than left to be
+// discovered: what was decided here is what is deployed, and where it answers from is decided next
+// door. ADR-0103 carries the measurement of what that address serves.
 //
-// **No `main`.** Nothing here runs code: an assets-only Worker needs no script, and permanent rule 1
-// refuses runtime indirection in any case. What decides how a response is served is `_headers`, which
-// `packages/site/served-headers.ts` derives from the endpoints and the build writes into the tree.
+// **No `main`.** Nothing here runs code: a Pages project serving a folder needs no script, and
+// permanent rule 1 refuses runtime indirection in any case. What decides how a response is served is
+// `_headers`, which `packages/site/served-headers.ts` derives from the endpoints and the build writes
+// into the tree.
 //
 // **No `html_handling`.** Its default, `auto-trailing-slash`, serves `<contract>/index.html` at
 // `<contract>/` - which is the address `linkTo` publishes, the address the sitemap carries, and the

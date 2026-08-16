@@ -46,6 +46,12 @@ like from outside.
 So the configuration has to live here. That is no longer a preference about where settings belong; it
 is the only place with a field for it.
 
+**The mechanism in that diagnosis is not the one serving this tree.**
+[ADR-0100](0100-the-site-moves-to-the-mechanism-that-serves-the-address.md) moved it to Cloudflare
+Pages, which does offer an output directory field — so the paragraph above reads as the state at this
+record's own date and not as today's. What survives the move intact is the decision: the configuration
+lives in this repository, and it does so in `wrangler.jsonc` under a different field.
+
 **And underneath the deployment sat a declaration that had never been served.** `cachePolicyFor` has
 said since the storage unit that a content-addressed answer may be cached for a year and a named one
 must be revalidated before every use. Every guard behind it asked whether the function returned the
@@ -106,9 +112,15 @@ the one that sweeps the emitted tree names all **28** blobs that would have been
 ### Nothing is deployed until the deployment is closed to robots
 
 A Cloudflare deployment is publicly reachable, and this one publishes pages whose canonical links,
-sitemap and `robots.txt` all name the declared origin — which answers 403. A search engine that found
-the temporary address would index an address whose every link is dead, and indexing does not come back
-on request.
+sitemap and `robots.txt` all name the declared origin — which answered 403 when this was decided. A
+search engine that found the temporary address would index an address whose every link is dead, and
+indexing does not come back on request.
+
+**That clause is dated because the origin has since been connected**, and the rule outlived its own
+premise: as of `994374d` those links resolve, so indexing the temporary address would publish a
+duplicate of a live catalogue rather than a set of dead ones. The decision does not move — the harm is
+milder and more durable — and [ADR-0103](0103-the-declared-origin-serves-this-catalogue.md) carries the
+measurement that the pattern still matches, which is the half this record could only ask for.
 
 The generated `robots.txt` is not weakened, and that is the distinction the repair turns on: it tells
 the truth about the origin this site declares. It is the *deployment* that is closed, by the rule

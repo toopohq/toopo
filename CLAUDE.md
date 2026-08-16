@@ -31,27 +31,20 @@ this graph, no object of it carries an address the project refuses to publish, a
 registered here is its root.
 
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
-language. And nothing is published: `private: true` holds, the package is not on npm, and every path on
-`toopo.dev` answered 403 when it was last measured. A reader who meets `toopo add number/parse` on a
-contract page has no way to get `toopo`, and an installed `toopo` has nothing to ask.
+language. And nothing is published: `private: true` holds and the package is not on npm, so a reader
+who meets `toopo add number/parse` on a contract page still has no way to get `toopo`.
 
-**A host exists and it is not the declared origin.** `main` builds the tree in CI and `wrangler` uploads
-it to a Worker serving assets. Measured at `c764867` over thirty-four addresses: the seven pages, their
-Markdown twins, the three files found by convention, the twelve named answers and both halves of the
-content-addressed space all answer, each carrying the `Cache-Control` `cachePolicyFor` declares and an
-`X-Robots-Tag: noindex` that closes the deployment to indexing. `_headers` answers 404, which is what
-says it is read by the host and served to nobody. It is deliberately not `THE_ORIGIN`: the published
-entry point still names that, every installed licence header still cites it, and connecting it would
-freeze whatever the deployment happens to be. **So an installed `toopo` still has nothing to ask, and
-that half is unchanged.**
-
-**And that deployment measured the thing nothing here predicted: a contract address is served behind a
-redirect.** Cloudflare percent-encodes `@`, so `/typescript/number/parse@1/` answers 307 to
-`/typescript/number/parse%401/`, which answers 200 with every header right. `endpoints.ts` asserts — and
-`endpoints.test.ts` keeps — that every character an address can produce is legal in a path segment; that
-is true and it was the wrong question, because a host may normalise a legal character and this one does.
-It is on the list below, because the sitemap, every canonical link, `contractUrl` and every frozen
-licence header write the unencoded form.
+**The declared origin serves this catalogue, and that is the half that changed.** `main` builds the
+tree in CI and `wrangler` uploads it to Cloudflare Pages. Measured at `994374d` over **all 76 addresses
+the tree writes** — not a sample of them: every one answers, the 36 addressed by content carry the
+year-long `Cache-Control` `cachePolicyFor` declares, `_headers` answers 404, and an address nothing was
+ever served at answers 404 with the page that says exactly that. **`@` is served directly, with no
+redirect**, which is what the move to Pages bought and what settles the question the previous host
+opened. `X-Robots-Tag: noindex` is absent here and present on `toopo.pages.dev`: the host rule retires
+itself as designed, and both halves were read in one sweep because either alone proves nothing.
+ADR-0103 carries the table, the two headers on served addresses that this repository does not decide,
+and the one shape the sweep could not reach. **So an installed `toopo` now has something to ask, and
+what is missing is the client rather than the registry.**
 
 **The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
 `string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
@@ -106,8 +99,17 @@ the two-phase write and are in ADR-0039; the class of a declared address nobody 
 ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list; the three about what git
 holds — a citation that resolves, an address no commit carries, a checkout nothing leaves behind —
 closed together in ADR-0095, because all three are one walk over the same graph; the playground
-reading what a reader types closed in ADR-0096; and a replay that could not finish closed in ADR-0102,
-which found a second entry for this list on its way out and put it there.
+reading what a reader types closed in ADR-0096; a replay that could not finish closed in ADR-0102,
+which found a second entry for this list on its way out and put it there; and the address a host
+serves closed in ADR-0103.
+
+**That last one is where rule 2 above was broken, by the commit that built the mechanism.** The entry
+was closed in fact by `e4eca00`, the move to Pages, which changed eight files and none of them this
+one — so for three commits this list carried a live entry about a redirect that no longer happened,
+and the paragraph above it described the host that had been left behind. Nobody was misled only
+because nobody read it in that window. **A mechanism and its entry are one event and the rule already
+said so**; what this instance adds is that the sweep is owed even when the mechanism looks like a
+one-field configuration change, because it is the *entry* that names the fact, not the diff.
 
 **That last one is the only entry this list ever carried that no guard could have caught**, because it
 was a decision taken in conversation and written nowhere — the repository held no half for the code to
@@ -159,6 +161,15 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   the real origin, and the end-to-end proof comes back. It is written here rather than only in
   `packaging/` because this list is what a session reads, and because a regression presented as a
   choice is one nobody returns to. ADR-0092.
+
+  **That day is `994374d`, and the entry woke itself.** Nobody remembered this debt; the sweep of
+  ADR-0103 walked the list, met the event the entry had named, and the entry was due — which is the
+  whole of what rule 1 above buys and the clearest demonstration this list has produced. **A debt that
+  names its event closes on the day it arrives; a debt written *later* is one nobody dates and nobody
+  returns to.** It is deliberately not closed in the same unit: a guard reaching a live host would sit
+  in a suite whose other 350 assertions read a disk, and one network-dependent guard makes every red in
+  that suite ambiguous. It is the last proof taken before a package is published, and it is the unit
+  that comes immediately before that.
 - **That no file of the tracked tree names the machine it was written on.** The sweep before the first
   push established it and nothing keeps it. **The population is the tracked tree and never the graph**,
   and that is the whole shape of this entry rather than a detail of it: measured at `2640b5d` over
@@ -196,40 +207,26 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   still among them — and what is **not** closed is the general case: nothing in this repository requires
   a deletion to be proved by a listing, and the next one written will be as free to ask a question that
   cannot answer.
-- **That the address this repository publishes is the address a host serves.** Measured at `c764867` on
-  a real deployment: Cloudflare answers 307 on every path carrying `@` and redirects to the
-  percent-encoded form, which answers 200. Nothing in this repository is wrong and nothing detected it —
-  `endpoints.test.ts` asks whether a character is *legal* in a path segment, which it is, and a host
-  normalising a legal character is a different question that no guard here asks. **What it costs is
-  written in `paths.ts` already, in its own words**: *a sitemap URL that differs from the served URL by
-  one character gets a redirect indexed instead of the page*, and that sentence is now describing this
-  catalogue. The frozen half is worse than the sitemap: `contractUrl` is written into the licence header
-  of every file the installer has ever written, it writes `@1`, and a header is frozen into somebody
-  else's repository for ever.
-
-  **Measured at `c764867`, and it narrows the question rather than answering it.** Four hosts that serve
-  `@` in a path segment at scale — jsDelivr, unpkg, esm.sh and the npm registry — all answer **200 with
-  no redirect**, and three of the four report `Server: cloudflare` with a `CF-Ray`. So Cloudflare's edge
-  does not normalise `@`; something in Workers static assets does. Two further readings place it: a path
-  carrying `@` that resolves to nothing answers a plain **404**, not a redirect, so this is not a blanket
-  rewrite before lookup; and the `%40` form answers **200 directly**, never redirecting back. **The
-  stored key is the encoded one**, which puts the encoding at upload rather than at request. It is
-  documented nowhere — the URL-normalization pages describe a zone feature that does not apply on
-  `workers.dev`, and no page describes this.
-
-  So the question is now *whether the encoding belongs to the address or to one tool's upload*, and it
-  is still not answered: nothing measured says what a second host would store. Choosing wrong freezes the
-  wrong one, and it is frozen the day something is served at `THE_ORIGIN`.
-- **`contentTypeOf` — declared in `endpoints.ts`, read by the local server and by no deployment.** It is
-  the second `one-directional` field of that file and the same shape the cache policy had until this
-  unit: measured on the deployment at `c764867`, every named answer and every content-addressed answer
-  arrives with **no `Content-Type` header at all**, because they are files with no extension and nothing
-  tells the host what they are. It costs nothing today — a client reading JSON does not consult it — and
-  that is exactly why it survived. **It closes where the cache policy closed**, in
+- **`contentTypeOf` — declared in `endpoints.ts`, read by the local server and by no deployment**, and
+  the two readings of it are worth keeping side by side because between them the defect **changed
+  nature rather than improved**. Measured at `c764867` on Workers static assets: every named and every
+  content-addressed answer arrived with **no `Content-Type` at all**, because they are files with no
+  extension and nothing told the host what they are. Measured at `994374d` on Pages, over all 76
+  addresses: the pages, the twins and the modules now carry a right one, and the same **48 answers** —
+  12 named and 36 addressed by content — carry `application/octet-stream`. From no header to a wrong
+  header is more visible and no better: a header that is absent is a host with no opinion, and one that
+  says *these are arbitrary bytes* about a JSON document is this repository's declaration contradicted
+  by its own deployment. **It closes where the cache policy closed**, in
   `packages/site/served-headers.ts`, by the same derivation from `ENDPOINTS`: one more header per rule,
-  read from `contentTypeOf` instead of `cacheControlOf`. It is not done here because two repairs to one
-  headers file read better together than apart, and because this unit's argument was about the thirty-six
-  answers a cache would have revalidated, not about a header nothing reads yet.
+  read from `contentTypeOf` instead of `cacheControlOf`.
+
+  **And the same sweep found the cache half of it, which no entry here had ever named.** Ten of the 76
+  addresses — the nine modules and `robots.txt` — answer `public, max-age=14400, must-revalidate`, a
+  policy written in no file of this repository, because `_headers` derives its rules from `ENDPOINTS`
+  and a module is not an endpoint. It is stable over three passes and it is **not** explained here: the
+  ten do not share an extension, a content type or a depth, and `llms.txt` beside `robots.txt` answers
+  `max-age=0`. What is established is that ten served addresses carry a cache policy nobody here chose;
+  why those ten is unmeasured, so no cause is named. ADR-0103.
 - **That the emitted tree never loses an address it once served**, which the 404 page now promises to
   every reader and which nothing keeps. ADR-0101 publishes *nothing has ever been served at this
   address*, derived from permanent rule 6 — and **rule 6 freezes a published version, not the emission**.
@@ -240,7 +237,10 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   says nothing about the tree before it. **The population is the set of addresses of the emitted tree**,
   and what would close it is a comparison against the same set at the commit each address was first
   served from — which is the shape `packages/registry/rebuild.ts` already has for a binding, applied to
-  a tree instead of an artefact. Not urgent while nothing is published; a broken promise the day after.
+  a tree instead of an artefact. **The clause that dated this entry has expired**: it read *not urgent
+  while nothing is published, a broken promise the day after*, and 76 addresses are served at the
+  declared origin as of `994374d`. The promise is live now — a reader who follows a link that stops
+  being written is told nothing was ever there — and what has not changed is the price.
 - **That a declared absence carries the date it was true**, which nothing keeps and which was found on
   this repository's own prose one day after it was written. ADR-0098 published *whether a runner's
   checkout satisfies that has not been measured* in the present tense; the job ran on the next commit

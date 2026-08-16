@@ -128,10 +128,18 @@ mechanism that meets the criterion answers the question this record was blocked 
 
 ## Consequences
 
-**The deployment serves a redirect at the published address, and that is now a hosting problem rather
-than an address problem.** It is on the open list of `CLAUDE.md` with what it costs: the sitemap
+**The deployment served a redirect at the published address, and that was a hosting problem rather
+than an address problem.** It went on the open list of `CLAUDE.md` with what it cost: the sitemap
 publishes the unencoded form, so a crawler indexes a redirect rather than a page — which is
 `paths.ts`'s own sentence, arriving on this catalogue.
+
+**That paragraph stood in the present tense for three commits after it stopped being true**, and it is
+the same fault this repository keeps paying for. [ADR-0100](0100-the-site-moves-to-the-mechanism-that-serves-the-address.md)
+moved the site one commit later, on the criterion this record set; measured at `994374d`, every
+contract address at the declared origin answers 200 with no redirect, and
+[ADR-0103](0103-the-declared-origin-serves-this-catalogue.md) carries the sweep and the entry it
+closed. **The decision this record took is untouched by that** — the address never moved, which was the
+whole point.
 
 **Nothing is repaired by this record.** The address stays, the deployment stays as it is, and where the
 site lives is the next question. Its criterion is single and measurable: the published address answers

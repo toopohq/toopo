@@ -121,6 +121,11 @@ waiting does not, and costs a dead link in every artefact written in between, pe
 free while nothing is published, which is exactly why it is written down now rather than met by luck
 later.
 
+**The first half of that order has been met.** Measured at `994374d`, all 76 addresses the tree writes
+answer at `https://toopo.dev`, and nothing is on npm; the order held, and it held because it was
+written down while it was still free rather than recalled on the day it mattered.
+[ADR-0103](0103-the-declared-origin-serves-this-catalogue.md) carries the sweep.
+
 ## Confirmation
 
 **Three guards, where there were six, and the three that went are named rather than dropped quietly.**
