@@ -178,6 +178,12 @@
  * have been the expected cost. Both guards ask one question about one fact, so both land beside the
  * fixture and the installer that already ask everything else about it.
  *
+ * A fifteenth on the freeze, and it is the second time the refusal fired on a real unit: two new files
+ * under the registry's and no count moved, and the battery named both at once before it measured
+ * anything. It is the shape the tenth took - a module of its own gets a file of its own - arriving
+ * twice in one unit because the rule and the reader are deliberately two modules, so that the
+ * comparison and the rebuilding of a past commit fail apart. ADR-0093.
+ *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
  * ---------------------------------------------------------------------------
@@ -250,6 +256,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/signature.test.ts': 14,
     'packages/registry/snapshot.test.ts': 45,
     'packages/registry/publication.test.ts': 5,
+    'packages/registry/rebinding.test.ts': 13,
+    'packages/registry/rebuild.test.ts': 9,
     'packages/registry/the-sixth-contract.test.ts': 15,
     'packages/registry/verifiability.test.ts': 13,
     'packages/registry/visibility.test.ts': 10,
