@@ -37,26 +37,30 @@ import type { InstalledArchive } from './the-archive.js'
  * user's `node_modules`.** Everything else here could be green while this is red.
  *
  * ---------------------------------------------------------------------------
- * What this folder stopped measuring, and when it starts again
+ * What this file stopped measuring, and where it started again
  * ---------------------------------------------------------------------------
  *
- * **Three guards are gone from here, and their absence is a debt rather than a decision about what is
- * worth checking.** They installed a real feature out of a real archive and compared the bytes on disk
- * with the bytes in `contracts/` - `an-archive-installs-a-feature-whose-bytes-are-the-catalogues`,
+ * **Three guards left here when the catalogue left the archive (ADR-0092).** They installed a real
+ * feature out of a real archive and compared the bytes on disk with the bytes in `contracts/` -
+ * `an-archive-installs-a-feature-whose-bytes-are-the-catalogues`,
  * `an-archive-installs-into-a-project-that-was-never-configured`, and
  * `the-lockfile-an-archive-writes-records-the-digest-the-registry-served`. They worked because the
  * catalogue travelled inside the archive, so an install needed nothing but the tarball.
  *
- * It does not travel any more (ADR-0092), so an installed `toopo` asks `https://toopo.dev`, and
- * `THE_ORIGIN` is a constant with no override - deliberately, because the one thing a client cannot
- * check by arithmetic is which digest a name resolves to, and an override is exactly what would move
- * it. So there is no way from here to point the installed binary at a registry this process serves.
+ * It does not travel any more, so an installed `toopo` asks `https://toopo.dev`, and `THE_ORIGIN` is a
+ * constant with no override - deliberately, because the one thing a client cannot check by arithmetic
+ * is which digest a name resolves to, and an override is exactly what would move it. So there is no
+ * way from *this suite* to point the installed binary at a registry this process serves.
  *
- * **What is left is weaker and is named as such.** The installed CLI is seen to run, to read a project,
- * to write one, and to name the published origin - and it is *not* seen to install a feature. The day
- * `https://toopo.dev` answers, a guard here installs from the archive against the real origin and the
- * end-to-end proof comes back. It is on the open list in `CLAUDE.md` with that event named, because a
- * regression nobody wrote down is one nobody returns to.
+ * **The debt closed on the event it named, and it closed one folder down rather than in this file.**
+ * `packaging/against-the-origin/` installs from the archive against the real origin, and ADR-0104 is
+ * why it is a suite of its own: the `packaging` battery replays this configuration once per cell, and
+ * a guard over a live host inside it would make the instrument depend on one. Two of the three guards
+ * come back there and the third does not, which that file states and `CLAUDE.md` prices.
+ *
+ * **What stays here is what needs no socket**, and it is the half that can be mutation-tested: the
+ * installed CLI runs, reads a project, writes one, names the published origin, and carries nothing the
+ * catalogue produces.
  *
  * ---------------------------------------------------------------------------
  * The two halves of a whitelist
@@ -120,10 +124,10 @@ describe('the archive somebody installs', () => {
   /**
    * The tool runs out of somebody else's `node_modules`, reads their project, and writes one.
    *
-   * **It is what is left of the end-to-end proof and it is not nothing**: the whitelist, the compiled
+   * **It is the half of the end-to-end proof that needs no socket**: the whitelist, the compiled
    * graph, the `bin` entry, node's refusal to strip types under `node_modules`, and every module the
-   * command loads are all on this path. What it does not reach is the registry, which is the debt the
-   * header names.
+   * command loads are all on this path. What it does not reach is the registry, and what does is
+   * `packaging/against-the-origin/`, kept apart for the reason the header gives.
    *
    * Three commands rather than one, because they are three different things the archive could get
    * wrong: printing a usage with no project at all, writing `toopo.json`, and refusing a `list` in a

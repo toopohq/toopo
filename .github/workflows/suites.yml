@@ -1,6 +1,8 @@
-# The seven suites, on every push of a branch and on every pull request, and the site built beside them.
+# The seven suites, on every push of a branch and on every pull request, then the site built and
+# deployed beside them, and last the one proof that reaches the deployed origin.
 # ADR-0098 is why this side builds rather than the deployment service, what that gives up, and why every
-# action here is a digest.
+# action here is a digest. ADR-0104 is why the eighth suite is a step of the second job and of neither
+# the first job nor a battery.
 #
 # ---------------------------------------------------------------------------
 # What the checkout must be, measured rather than chosen
@@ -247,3 +249,25 @@ jobs:
             pnpm exec wrangler pages project create toopo --production-branch=main
           fi
           pnpm exec wrangler pages deploy --branch=main --commit-dirty=true
+
+      # ---------------------------------------------------------------------
+      # The last proof before anything is published, and the only one that
+      # reaches a live host
+      # ---------------------------------------------------------------------
+      #
+      # ADR-0104 is why it is a step of this job rather than an eighth suite or a job of its own. It
+      # must not gate the deployment - `suites` already does, and an origin that is down would
+      # otherwise stop us shipping the fix for it - so it runs *after* `deploy`, where it also
+      # measures what this commit has just published rather than what the previous one did.
+      #
+      # `npm run` and not `pnpm run`, for the reason the header gives: `packaging/the-archive.ts`
+      # finds npm through `npm_execpath` and this is what sets it to npm's own entry point.
+      #
+      # **A deployment returns before it has propagated**, so the revision answering may still be the
+      # previous one. That is a valid proof of the chain and not of this commit, which is why the
+      # suite reports the revision it measured against and never asserts it.
+      #
+      # On a branch, `deploy` is skipped and this measures the branch's own archive against the
+      # published registry - the more useful of the two questions, and the reason it carries no `if`.
+      - name: the archive against the origin
+        run: npm run origin

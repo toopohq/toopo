@@ -147,19 +147,23 @@ confirmed-by:
     guard: the-absorbed-state-is-constructible
 ```
 
-**The first coordinate names a suite, and nineteen of the twenty names are batteries.** The twentieth
-is `meta`, and it is a coordinate completed rather than widened: `readme.test.ts` and
-`contributing.test.ts` have been guards for as long as `mutation/` has existed, no battery injects
-there, and a coordinate with nineteen values made two existing guards unaddressable — it described part
-of the repository as though it were the whole.
+**The first coordinate names a suite, and nineteen of the twenty-one names are batteries.** The other
+two are coordinates completed rather than widened, each added on the day a real guard turned out to be
+uncitable. `meta` came first: `readme.test.ts` and `contributing.test.ts` have been guards for as long
+as `mutation/` has existed, no battery injects there, and a coordinate with nineteen values made two
+existing guards unaddressable — it described part of the repository as though it were the whole.
+[ADR-0104](0104-the-proof-against-the-origin-lives-where-nothing-replays-it.md) added `origin` for the
+same reason on a second folder, and there the unaddressability is *designed*: that suite is kept out of
+every battery on purpose, which is exactly what leaves its guards with no first coordinate.
 
-**The two are not of equal strength, and reading them as equals is the mistake this paragraph exists to
-prevent.** A guard addressed under a battery has its detection power measured: mutants say what it
-catches, and a cell that stops catching is a red. A guard addressed under `meta` has nothing measuring
-what it is worth, because no battery injects into `mutation/` — which is
-`packages/registry/verifiability.ts`'s line, that the instrument measures the catalogue and is not part
-of it. *A decision confirmed by a battery is kept by a guard shown to catch something; a decision
-confirmed by `meta` is kept by a guard that runs.* This record is one of the second kind.
+**The three are not of equal strength, and reading them as equals is the mistake this paragraph exists
+to prevent.** A guard addressed under a battery has its detection power measured: mutants say what it
+catches, and a cell that stops catching is a red. A guard addressed under `meta` or `origin` has
+nothing measuring what it is worth, because no battery injects into `mutation/` or into
+`packaging/against-the-origin/` — which is `packages/registry/verifiability.ts`'s line, that the
+instrument measures the catalogue and is not part of it. *A decision confirmed by a battery is kept by
+a guard shown to catch something; a decision confirmed by `meta` or by `origin` is kept by a guard that
+runs.* This record is one of the second kind.
 
 ### One section beyond MADR's own
 

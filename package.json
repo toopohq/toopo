@@ -43,6 +43,7 @@
     "cli": "tsc -p packages/cli/tsconfig.json && node run-vitest.ts run --config packages/cli/vitest.config.ts",
     "site": "tsc -p packages/site/tsconfig.json && node run-vitest.ts run --config packages/site/vitest.config.ts",
     "packaging": "tsc -p packaging/tsconfig.json && node run-vitest.ts run --config packaging/vitest.config.ts",
+    "origin": "tsc -p packaging/tsconfig.json && node run-vitest.ts run --config packaging/against-the-origin/vitest.config.ts",
     "ledger": "node packages/registry/print-ledger.ts",
     "toopo": "node packages/cli/toopo.ts",
     "site:build": "node packages/site/build.ts",

@@ -43,8 +43,13 @@ redirect**, which is what the move to Pages bought and what settles the question
 opened. `X-Robots-Tag: noindex` is absent here and present on `toopo.pages.dev`: the host rule retires
 itself as designed, and both halves were read in one sweep because either alone proves nothing.
 ADR-0103 carries the table, the two headers on served addresses that this repository does not decide,
-and the one shape the sweep could not reach. **So an installed `toopo` now has something to ask, and
-what is missing is the client rather than the registry.**
+and the one shape the sweep could not reach.
+
+**And an installed `toopo` has now been seen asking it.** A tarball built here, installed into a project
+holding nothing, downloads a feature from the declared origin, and the bytes that land hash to the
+digest the registry announced — measured end to end, in the one suite of this repository that reaches a
+live host, kept out of every battery so that nothing which replays depends on one. It is the eighth
+suite and the last proof before a package is published. ADR-0104.
 
 **The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
 `string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
@@ -100,8 +105,10 @@ ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list; th
 holds — a citation that resolves, an address no commit carries, a checkout nothing leaves behind —
 closed together in ADR-0095, because all three are one walk over the same graph; the playground
 reading what a reader types closed in ADR-0096; a replay that could not finish closed in ADR-0102,
-which found a second entry for this list on its way out and put it there; and the address a host
-serves closed in ADR-0103.
+which found a second entry for this list on its way out and put it there; the address a host serves
+closed in ADR-0103; and an archive that really installs a feature closed in ADR-0104, on the event it
+had named, leaving two entries behind it — one for the third guard it did not bring back, one for the
+revision it reports without resolving.
 
 **That last one is where rule 2 above was broken, by the commit that built the mechanism.** The entry
 was closed in fact by `e4eca00`, the move to Pages, which changed eight files and none of them this
@@ -149,27 +156,33 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
 
 **Still open, and what each one now costs.**
 
-- **That an archive somebody installs really installs a feature**, which three guards kept until the
-  catalogue left the archive and now nothing does. They compared the bytes a real `toopo add` wrote out
-  of a real tarball against the bytes in `contracts/`, and they worked because the catalogue travelled
-  inside the archive. It does not, so an installed `toopo` asks `https://toopo.dev`, and `THE_ORIGIN`
-  is a constant with no override — deliberately, because the one thing a client cannot check by
-  arithmetic is which digest a name resolves to, and an override is exactly what would move it. What
-  `packaging/` still keeps is that the installed CLI runs, reads a project, writes one, names the
-  published origin, and carries nothing the catalogue produces. **It closes on the first deployment
-  that answers on `https://toopo.dev`**: on that day a guard there installs from the archive against
-  the real origin, and the end-to-end proof comes back. It is written here rather than only in
-  `packaging/` because this list is what a session reads, and because a regression presented as a
-  choice is one nobody returns to. ADR-0092.
-
-  **That day is `994374d`, and the entry woke itself.** Nobody remembered this debt; the sweep of
-  ADR-0103 walked the list, met the event the entry had named, and the entry was due — which is the
-  whole of what rule 1 above buys and the clearest demonstration this list has produced. **A debt that
-  names its event closes on the day it arrives; a debt written *later* is one nobody dates and nobody
-  returns to.** It is deliberately not closed in the same unit: a guard reaching a live host would sit
-  in a suite whose other 350 assertions read a disk, and one network-dependent guard makes every red in
-  that suite ambiguous. It is the last proof taken before a package is published, and it is the unit
-  that comes immediately before that.
+- **That the revision an installed client records is a commit this repository holds.** A lockfile
+  carries `servedFrom`, and the proof against the origin asserts its *shape* — forty hexadecimal
+  digits — and reports its value without resolving it. That is deliberate and it is the cheaper half of
+  a real trade: a clone legitimately behind the deployment does not hold a commit the origin already
+  serves, so resolving against the local graph would be red on an ordinary state. **What it leaves open
+  is that an invented revision passes** — an origin serving `0000…0000`, or a commit of somebody else's
+  repository, is indistinguishable here from one serving the truth. The population is every revision a
+  served answer declares. **What would close it is a resolution against the remote rather than against
+  the clone** — `git ls-remote`, or the forge's API — and the price is named rather than waved at: one
+  more network dependency inside the single guard whose whole difficulty is already that it has one, and
+  a private repository, which means a credential on a runner for a question that stops being private the
+  day the repository is public. That is the event to write it against, and it is why it is not written
+  now. ADR-0104.
+- **That the bytes an archive installs are the catalogue's own bytes**, which is the third of the three
+  guards ADR-0092 lost and the one ADR-0104 did not bring back. The other two returned, one of them
+  stronger; this one was refused rather than approximated, because comparing what a real install wrote
+  against `contracts/` on disk would be red with nothing wrong — the origin serves the last *deployed*
+  commit and the working tree is HEAD, and the two differ on every unit that touches a contract. What
+  stands in its place is the arithmetic half: the installed bytes are compared against the digest the
+  registry announces, read independently of the client that installed them. **So what nothing keeps is
+  that the digest names the catalogue's own bytes**, which is the registry's single believed step
+  arriving one floor down. **It closes by rebuilding `contracts/` at the commit `servedFrom` declares**
+  and hashing the file the announcement names — the shape `packages/registry/rebuild.ts` already has for
+  a binding, applied to one file instead of a ledger. **Priced as an order and not as a figure**, which
+  is all the method supports: that module checks a commit out under `.rebuilt/` and runs that commit's
+  own `ledger` script, so it is minutes where the whole proof beside it is seconds. It is the one entry
+  here whose closure would cost more than everything it sits next to, and it is not built.
 - **That no file of the tracked tree names the machine it was written on.** The sweep before the first
   push established it and nothing keeps it. **The population is the tracked tree and never the graph**,
   and that is the whole shape of this entry rather than a detail of it: measured at `2640b5d` over
@@ -486,8 +499,9 @@ These outlive the current stage and are not open to trade-off.
 
 - English everywhere: code, identifiers, comments, tests, commit messages, documentation.
 - Conventional commits, atomic. **`main` is pushed at the end of a unit, and a unit is not finished
-  until the run it triggers is green** — the seven suites on two runtimes, and the deployment behind
-  them. Nothing else: no force, no tag, no rewriting of history, and nothing to npm ever. This line read
+  until the run it triggers is green** — the seven suites on two runtimes, the deployment behind them,
+  and the one proof that reaches it. Nothing else: no force, no tag, no rewriting of history, and
+  nothing to npm ever. This line read
   *never push and never create a remote* until the CI existed, at which point holding the two apart
   stopped protecting anything and only delayed the reading that says the unit worked.
 - TypeScript `strict: true`.

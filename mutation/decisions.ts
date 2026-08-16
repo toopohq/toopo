@@ -239,28 +239,37 @@ export const readDecisions = (): readonly Decision[] =>
 /**
  * The suites of this repository, each as the folder whose test files it collects.
  *
- * **The first coordinate of a guard address names a suite, and nineteen of the twenty names are
- * batteries.** The twentieth is `meta`, and it is not a widening of the vocabulary but the correction
- * of one that was short: `readme.test.ts` and `contributing.test.ts` have been guards for as long as
- * this folder has existed, no battery injects here, and a coordinate with nineteen values therefore
- * made two existing guards unaddressable.
+ * **The first coordinate of a guard address names a suite, and nineteen of the twenty-one names are
+ * batteries.** The other two are suites no battery measures, and each was added when a real guard
+ * turned out to be unaddressable rather than to widen the vocabulary for its own sake.
  *
- * **What it costs is a difference in strength, and it is written here so that nobody reads the twenty
- * as equals.** A guard addressed under a battery has its detection power measured - mutants say what
- * it catches, and a cell that stops catching is a red. A guard addressed under `meta` has nothing that
- * measures what it is worth, because no battery injects into `mutation/` - which is
- * `packages/registry/verifiability.ts`'s line, that the instrument measures the catalogue and is not
- * part of it. A decision confirmed by `meta` is confirmed by a guard that runs; a decision confirmed
- * by a battery is confirmed by a guard that has been shown to catch something.
+ * `meta` came first: `readme.test.ts` and `contributing.test.ts` have been guards for as long as this
+ * folder has existed, no battery injects here, and a coordinate with nineteen values made two
+ * existing guards impossible to cite.
  *
- * A folder is read without descending into it, and that is measured rather than assumed: of the twenty
- * suites, `mutation` is the only one holding a folder with test files under it, and that folder is
- * `mutation/fixture`, which is a suite of its own with its own configuration. Every other suite's
- * files are flat.
+ * `origin` is the same correction on a second folder, and ADR-0104 is why that folder exists at all:
+ * the one suite of this repository that reaches a live host is kept out of `packaging/vitest.config.ts`
+ * precisely so that no battery replays it, which is exactly what makes its guards unaddressable
+ * without an entry here.
+ *
+ * **What it costs is a difference in strength, and it is written here so that nobody reads the
+ * twenty-one as equals.** A guard addressed under a battery has its detection power measured -
+ * mutants say what it catches, and a cell that stops catching is a red. A guard addressed under
+ * `meta` or `origin` has nothing that measures what it is worth, because no battery injects into
+ * either folder - which is `packages/registry/verifiability.ts`'s line, that the instrument measures
+ * the catalogue and is not part of it. A decision confirmed by one of those two is confirmed by a
+ * guard that runs; a decision confirmed by a battery is confirmed by a guard that has been shown to
+ * catch something.
+ *
+ * A folder is read without descending into it, and that is measured rather than assumed: of the
+ * twenty-one suites, `mutation` and `packaging` are the only ones holding a folder with test files
+ * under them, and both of those folders - `mutation/fixture` and `packaging/against-the-origin` - are
+ * suites of their own with their own configurations. Every other suite's files are flat.
  */
 export const THE_SUITES: Readonly<Record<string, string>> = {
   ...Object.fromEntries(THE_BATTERIES.map((battery) => [battery.name, battery.contractPath])),
   meta: 'mutation',
+  origin: 'packaging/against-the-origin',
 }
 
 /**
