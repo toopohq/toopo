@@ -63,7 +63,7 @@ import { THE_VITEST_ENTRY_POINT } from '../vitest-entry-point.ts'
 
 import type { CollectedFile, SuiteCensus } from './census.ts'
 import { censusFaults, censusFor } from './census.ts'
-import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
+import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY, git, strayWorktrees } from './paths.ts'
 
 export type Edit = {
   /** Path relative to the contract folder, e.g. `reference.ts`. */
@@ -303,14 +303,28 @@ export type Calibration = {
 
 const REPORT = join(THE_INSTRUMENT_FOLDER, '.vitest-report.json')
 
-const git = (...args: readonly string[]): string =>
-  execFileSync('git', args, { cwd: THE_REPOSITORY, encoding: 'utf8' })
-
 const assertCleanTree = (): void => {
   const dirty = git('status', '--porcelain', '--untracked-files=no').trim()
   if (dirty !== '') {
     throw new Error(
       `the working tree carries uncommitted changes, so a restore would destroy them:\n${dirty}`,
+    )
+  }
+}
+
+/**
+ * The state the refusal above cannot see, because a leftover checkout leaves the tree clean. ADR-0095.
+ *
+ * It is refused here rather than only reported by `history.test.ts` for the reason `assertCleanTree`
+ * is: a run that starts from a repository in this state produces verdicts nobody can attribute, and
+ * the cause would be a checkout some earlier run never finished putting away.
+ */
+const assertNoStrayWorktree = (): void => {
+  const stray = strayWorktrees()
+  if (stray.length > 0) {
+    throw new Error(
+      `a checkout of this repository is registered besides its root, so git answers for a tree no ` +
+        `run here put there:\n${stray.join('\n')}`,
     )
   }
 }
@@ -862,6 +876,7 @@ const cellsOf = (battery: Battery): readonly { arm: Arm; lens: Lens }[] =>
  */
 export const calibrate = (battery: Battery): Calibration => {
   assertCleanTree()
+  assertNoStrayWorktree()
 
   const obvious = battery.mutants.find((m) => m.id === battery.calibrationMutant)
   if (obvious === undefined) {
@@ -930,6 +945,7 @@ export const runBattery = (
   onlyArms?: readonly string[],
 ): readonly RunResult[] => {
   assertCleanTree()
+  assertNoStrayWorktree()
 
   const results: RunResult[] = []
   const selected = battery.mutants.filter((m) => only === undefined || only.includes(m.id))

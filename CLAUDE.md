@@ -25,7 +25,10 @@ function of how many contracts exist. The emitted tree, which is every answer th
 written as files at the addresses a client asks. The instrument: nineteen batteries, their pinned
 verdicts, and one command that replays them. And permanent rule 6, executable: a binding records the
 commit it was published from, and the frozen half is rebuilt at that commit and compared rather than
-transcribed anywhere.
+transcribed anywhere. What this repository says about its own history now resolves against what git
+holds rather than against what somebody checked: a commit identifier in the prose names a commit of
+this graph, no object of it carries an address the project refuses to publish, and the only checkout
+registered here is its root.
 
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A host — the
 published entry point names `THE_ORIGIN` and every answer it would fetch is written by the emission,
@@ -84,7 +87,9 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
 decision record.** Two closed by stage 1 of the validation pipeline and are in ADR-0005; three closed by
 the two-phase write and are in ADR-0039; the class of a declared address nobody resolved closed in
-ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list.
+ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list; the three about what git
+holds — a citation that resolves, an address no commit carries, a checkout nothing leaves behind —
+closed together in ADR-0095, because all three are one walk over the same graph.
 
 **That last one is the finding this section has to keep, because it is about the section rather than
 about the entry.** *A published version is frozen for life* is the biggest `one-directional`
@@ -113,40 +118,17 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
 
 **Still open, and what each one now costs.**
 
-- **That a commit identifier written in this repository's prose resolves to a commit of it.** Measured
-  at `c0d2ec6`, over the tracked files: **34 identifiers, 68 occurrences, 30 files** — seventeen of
-  prose and thirteen of TypeScript, five of them data in `THE_COMMITS_QUOTED`. All 68 were translated
-  from `filter-repo`'s table when the history was reissued, and each new identifier was verified
-  resolving; **nothing in the repository would have noticed had they not been.** `THE_COMMITS_QUOTED`
-  looks like the guard and is not: it strips those strings out of a comparison and never asks git
-  whether any of them names anything. The mechanism is `mutation/anchors.ts`'s, aimed at a different
-  quotation — a module walking the tracked files, resolving every identifier it finds, and reddening on
-  a dead one — **about a hundred lines and its test**. It is not built here on purpose: a rewrite of the
-  history is the riskiest operation this project has, its criterion is that the tree did not move and
-  the verdicts did not move, and a new guard under `meta` blurs the one diff that has to stay readable.
-  **It is the first act of the next unit**, named as an event rather than as *later*, because this class
-  moves faster than a reread — ADR-0001 records a row of its own that was false one commit after it was
-  published, in the commit that published it.
-- **That no commit of this repository carries the personal address of whoever wrote it.** The rule is
-  written that way round rather than *every commit carries the project address*, which is the form that
-  first suggested itself and which cannot hold: an outside contributor legitimately commits under their
-  own address, and a rule refusing that refuses contribution. What must never appear is a *named*
-  address, so the closable form is a declaration — the addresses this repository refuses to publish —
-  and a sweep of `git log --all --format='%ae%n%ce'` against it. **`--all` and never `HEAD`**, which is
-  the whole lesson of the paragraph above. What keeps it today is `user.email` in a local `.git/config`
-  that no clone carries and no guard reads, on a graph where every commit answers `hello@toopo.dev` and
-  none answers anything else. It is smaller than the entry above — a declaration and one guard under
-  `meta` — and it closes with it, in the same unit, because both are one walk over what git holds.
-- **That a rebuild leaves no worktree registered.** `bindingsAtRevision` removes its checkout in a
-  `finally` and that path is sound: measured, `git worktree remove --force` deregisters even when the
-  directory it names has already gone. What nothing keeps is the state after a run that did not reach
-  its `finally`, and **nothing detects the leftover either** — a registration whose directory is gone
-  leaves `git status --porcelain` empty, so it walks straight past `theRevision`, which is the guard
-  that exists for its neighbour. Observed twice in one session, once from a run older than the history
-  it named. **What it cost is not measured and is not claimed**: `git filter-repo` was reproduced
-  against a repository carrying one and completed normally, so the reason for tidying it is the state
-  and not a failure anybody has seen. It closes on a check that the only worktree this repository has
-  registered is its root, which is one line beside the dirty-tree refusal that already runs.
+- **That the playground reads what a reader types rather than what a contract author writes.** The
+  field holds a TypeScript literal today — `read-literal.ts` is that reader, and it is right for a
+  pre-filled case, which is what it was written for. It is wrong for the thing beside it: somebody
+  answering a string types `hello` and is refused for not writing `'hello'`, which teaches a notation
+  where the page meant to ask a question. The decision taken is that the field becomes ordinary text,
+  and that the invisible code points in an answer are rendered in the output rather than left to look
+  like nothing. **It is here because it was decided and never written down**, which is the form this
+  section exists against and which no guard could have caught — a decision nobody recorded leaves the
+  repository with no half to disagree with. It closes on the record that argues which of the two
+  readings each field gets, because *a value is typed* and *a value is spelled* are different
+  questions and `read-literal.ts` answers only the second.
 - **That an archive somebody installs really installs a feature**, which three guards kept until the
   catalogue left the archive and now nothing does. They compared the bytes a real `toopo add` wrote out
   of a real tarball against the bytes in `contracts/`, and they worked because the catalogue travelled

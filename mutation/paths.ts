@@ -38,16 +38,31 @@
  * What the repository holds, asked of git rather than of a walk
  * ---------------------------------------------------------------------------
  *
- * `trackedFiles` is here because two guards in two folders ask one question about one set of bytes,
- * and neither folder owns it: `packages/registry/publication.test.ts` asks which files carry a licence
- * header, and `decisions.ts` asks which files cite a decision. *Two functions answering two questions
- * about different data are not a duplication; two answering one question about one set are.*
+ * `trackedFiles` is here because guards in three folders ask one question about one set of bytes, and
+ * none of them owns it: `packages/registry/publication.test.ts` asks which files carry a licence
+ * header, and `trackedSources` below narrows the same answer for the two guards that resolve a
+ * citation. *Two functions answering two questions about different data are not a duplication; two
+ * answering one question about one set are.*
  *
  * git is asked rather than a walk written, for the reason `packages/cli/ignored.ts` gives about
  * `.gitignore`: a second statement of what this repository contains drifts from the first, and the
  * derived trees are exactly where a stale answer would hide. `dist/` holds a compiled copy of every
  * module of `packages/`, comments included - so a walk that reached it would let a citation in a build
  * output stand in for one in the source it was built from.
+ *
+ * `strayWorktrees` answers a second question of that kind - which checkouts this repository has
+ * registered - and it is here rather than beside its caller because it has two. ADR-0095.
+ * `bindingsAtRevision` adds a worktree and removes it in a `finally`, and that path is sound:
+ * `git worktree remove --force` deregisters one even when the directory it names has already gone.
+ * What nothing detected is the state after a run that never reached its `finally`. The registration
+ * survives its directory, `git status --porcelain` stays empty, and it therefore walks straight past
+ * `theRevision` - the refusal written for its neighbour. One was found registered here with its
+ * directory gone, naming a commit that was no longer the head.
+ *
+ * **Both sides of that comparison are asked of git.** A path this module spells and a path git spells
+ * differ in the separator and in the case of the drive letter, which is the family
+ * `withCanonicalDriveLetter` above exists for - and reconciling them by inventing a third spelling is
+ * how that family got its first two members.
  */
 
 import { execFileSync } from 'node:child_process'
@@ -64,8 +79,36 @@ export const THE_INSTRUMENT_FOLDER = withCanonicalDriveLetter(
 /** The repository root, in the spelling every child process of this folder is given. */
 export const THE_REPOSITORY = join(THE_INSTRUMENT_FOLDER, '..')
 
+/** git, asked from the repository root and answering its own text. */
+export const git = (...arguments_: readonly string[]): string =>
+  execFileSync('git', [...arguments_], { cwd: THE_REPOSITORY, encoding: 'utf8', maxBuffer: 1 << 26 })
+
+/** git answers one thing per line and ends on a newline, which is one empty line nobody wants. */
+export const answered = (text: string): readonly string[] =>
+  text.split('\n').filter((line) => line !== '')
+
 /** Every file this repository tracks, repository-relative and forward-slashed, as git spells them. */
-export const trackedFiles = (): readonly string[] =>
-  execFileSync('git', ['ls-files'], { cwd: THE_REPOSITORY, encoding: 'utf8', maxBuffer: 1 << 26 })
-    .split('\n')
-    .filter((path) => path !== '')
+export const trackedFiles = (): readonly string[] => answered(git('ls-files'))
+
+/**
+ * The tracked files this repository reads as text of its own, which is its TypeScript and its prose.
+ *
+ * Both citation guards ask for exactly this set and for the same reason, so it is stated once:
+ * `decisions.ts` resolves an `ADR-NNNN` written anywhere, `history.ts` resolves a commit identifier,
+ * and neither may reach `dist/` - a compiled copy of every comment in `packages/`, where a citation
+ * surviving a build would stand in for one in the source it was built from.
+ */
+export const trackedSources = (): readonly string[] =>
+  trackedFiles().filter((path) => path.endsWith('.ts') || path.endsWith('.md'))
+
+const A_REGISTERED_WORKTREE = 'worktree '
+
+/** Every worktree registered against this repository other than its own root, as git spells them. */
+export const strayWorktrees = (): readonly string[] => {
+  const root = git('rev-parse', '--show-toplevel').trim()
+
+  return answered(git('worktree', 'list', '--porcelain'))
+    .filter((line) => line.startsWith(A_REGISTERED_WORKTREE))
+    .map((line) => line.slice(A_REGISTERED_WORKTREE.length))
+    .filter((path) => path !== root)
+}
