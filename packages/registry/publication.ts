@@ -85,8 +85,20 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * **What this range does not cover, stated because the field is one and the populations are two.** A
  * consumer installs compiled JavaScript and 22.15 is enough for them. A contributor runs
  * `node run-vitest.ts`, which needs a runtime that strips types with no flag - a later version than
- * this, as `packages/cli/diff.ts` says, and one no source in this repository names. It is not named here either,
- * because the only machine that could measure it runs v24.15.0 and a number nobody measured is the
- * class this project spends its length removing. What would close it is a run on a 22.x runtime.
+ * this one, and for a year this comment said that number was not named here because the only machine
+ * that could measure it ran v24.15.0. **It is named now, and the run this asked for is what named it:
+ * the contributor floor is 22.18.0.**
+ *
+ * Measured at `2b7aa5c`, which is the tree the suites ran from - the run that produced this widened
+ * the matrix and changed nothing else, and a matrix list is in no suite. Every 22.x release from this
+ * range's own floor upward was a leg: 22.15.0, 22.15.1, 22.16.0, 22.17.0 and 22.17.1 all fail at the
+ * first suite with `ERR_UNKNOWN_FILE_EXTENSION` on `run-vitest.ts` - one cause, fifteen occurrences -
+ * and 22.18.0 is the first that runs all seven green.
+ *
+ * **That number is not written into this range, and the reason is the sentence above it.** These two
+ * floors are about two populations: raising `engines` to the contributor's floor would refuse an
+ * install to consumers whose runtime is enough for the compiled archive, which is a claim about them
+ * that no measurement here supports. What keeps 22.18.0 honest is the matrix leg that runs on it, which
+ * reddens the day it stops being enough.
  */
 export const THE_MINIMUM_RUNTIME = '^22.15.0 || >=24.0.0'

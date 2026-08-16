@@ -80,27 +80,36 @@ jobs:
       # whether one does.
       fail-fast: false
       matrix:
-        # `engines` declares `^22.15.0 || >=24.0.0`, and that is the *consumer* floor - derived in
-        # `packages/registry/publication.ts` from two APIs that `@types/node` marks `@since v22.15.0`,
-        # for somebody who installs the compiled archive.
+        # Two floors, because the field is one and the populations are two.
         #
-        # The floor for a *contributor*, who runs `node run-vitest.ts` and therefore needs a runtime
-        # that strips types with no flag, is higher and is named nowhere in this repository. That file
-        # says why: the only machine that could measure it runs v24.15.0, and a number nobody measured
-        # is the class this project spends its length removing. It also says what would close it - a run
-        # on a 22.x runtime - which is what these legs are.
-        node: ['22.15.0', '22.18.0', '22', '24']
+        # `engines` declares `^22.15.0 || >=24.0.0`, which is the *consumer* floor: it is derived in
+        # `packages/registry/publication.ts` from two APIs `@types/node` marks `@since v22.15.0`, and it
+        # is about somebody installing the compiled archive.
+        #
+        # **22.18.0 is the *contributor* floor, and it was measured here rather than read off a
+        # changelog.** Every 22.x release from the consumer floor up was run as a leg of this matrix:
+        # 22.15.0, 22.15.1, 22.16.0, 22.17.0 and 22.17.1 all fail at the first suite with
+        # `ERR_UNKNOWN_FILE_EXTENSION` on `run-vitest.ts` - one cause, fifteen occurrences - and 22.18.0
+        # is the first that runs all seven. Every script here is `node <file>.ts`, so a runtime that
+        # does not strip types with no flag cannot start any of them.
+        #
+        # **The 22.18.0 leg is what keeps that number honest**, and it is a mechanism rather than a
+        # declaration: the day the floor rises, this leg reddens. What it does not keep is the other
+        # half - that nothing lower works - and buying that would mean carrying the five failing legs
+        # for ever to hold a negative. Priced and refused, and said here rather than left for a reader
+        # to assume covered.
+        node: ['22.18.0', '24']
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # 54 citations resolve against `git rev-list --all`; a depth-1 clone makes all 54 dead. The
           # header above carries the measurement.
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
