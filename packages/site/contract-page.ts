@@ -245,6 +245,7 @@ export const contractPage = (held: Held): Document => {
      * `programmingLanguage` is the language coordinate of the address rather than a prettier spelling
      * of it, because a rendering of an address is a second name for it.
      */
+    servedBesideItsMarkdown: true,
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'SoftwareSourceCode',

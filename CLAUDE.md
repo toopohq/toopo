@@ -229,6 +229,17 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   read from `contentTypeOf` instead of `cacheControlOf`. It is not done here because two repairs to one
   headers file read better together than apart, and because this unit's argument was about the thirty-six
   answers a cache would have revalidated, not about a header nothing reads yet.
+- **That the emitted tree never loses an address it once served**, which the 404 page now promises to
+  every reader and which nothing keeps. ADR-0101 publishes *nothing has ever been served at this
+  address*, derived from permanent rule 6 — and **rule 6 freezes a published version, not the emission**.
+  Nothing stops somebody changing the walk tomorrow so that an address served yesterday stops being
+  written; the 404 would then tell a reader that nothing was ever served there, which would be false, on
+  the page whose whole content is that claim. The closure guard is not it: `the-emitted-tree-is-closed`
+  asks that every address the tree *names* is one it *holds*, which is a statement about one tree and
+  says nothing about the tree before it. **The population is the set of addresses of the emitted tree**,
+  and what would close it is a comparison against the same set at the commit each address was first
+  served from — which is the shape `packages/registry/rebuild.ts` already has for a binding, applied to
+  a tree instead of an artefact. Not urgent while nothing is published; a broken promise the day after.
 - **That a declared absence carries the date it was true**, which nothing keeps and which was found on
   this repository's own prose one day after it was written. ADR-0098 published *whether a runner's
   checkout satisfies that has not been measured* in the present tense; the job ran on the next commit

@@ -21,6 +21,7 @@ import { THE_MARKDOWN_FILE } from './paths.js'
 const page = (...body: Parameters<typeof el>[2][]): Document => ({
   title: 'a title',
   description: 'a description',
+  servedBesideItsMarkdown: true,
   structuredData: null,
   body,
 })
@@ -28,6 +29,7 @@ const page = (...body: Parameters<typeof el>[2][]): Document => ({
 /** A page that does say something about itself to a machine, for the two guards that ask what. */
 const describing = (data: Partial<StructuredData>, ...body: Parameters<typeof el>[2][]): Document => ({
   ...page(...body),
+  servedBesideItsMarkdown: true,
   structuredData: {
     '@context': 'https://schema.org',
     '@type': 'SoftwareSourceCode',

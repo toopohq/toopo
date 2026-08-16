@@ -43,9 +43,11 @@ import {
   METHOD_PAGE,
   REFUSALS_PAGE,
   THE_HEADERS_FILE,
+  THE_NOT_FOUND_FILE,
   markdownOf,
   pageOf,
 } from './paths.js'
+import { notFoundPage } from './not-found-page.js'
 import { refusalsPage } from './refusals-page.js'
 import { renderHeaders, theHeaderRules } from './served-headers.js'
 import type { RegistrySource } from './source.js'
@@ -96,6 +98,7 @@ export const thePublishedTree = (
     ...modules,
     ...theCrawlerFilesOf(pages),
     [THE_HEADERS_FILE, renderHeaders(theHeaderRules())],
+    [THE_NOT_FOUND_FILE, toHtml(notFoundPage())],
     ...answers,
   ])
 

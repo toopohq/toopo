@@ -158,3 +158,13 @@ export const ROBOTS = 'robots.txt'
  * inside the module that happens to write it.
  */
 export const THE_HEADERS_FILE = '_headers'
+
+/**
+ * What a reader is given at an address nothing is served at, at the name the host looks for.
+ *
+ * The fifth found by convention, and the second nobody navigates to. Its presence is a *statement to
+ * the host* as much as a document: a top-level `404.html` is how a static host is told that this tree
+ * is not a single-page application, and without it the deployment answered 200 and the front page at
+ * every address holding nothing. ADR-0101.
+ */
+export const THE_NOT_FOUND_FILE = '404.html'

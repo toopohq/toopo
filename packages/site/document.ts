@@ -2,7 +2,8 @@
  * A page, and the projections of it that must never disagree.
  * ADR-0024 is why a page is a value with projections rather than a string; ADR-0025 is what goes
  * between two of its elements in a reading; ADR-0094 is what the third projection is for and what it
- * was measured to be worth.
+ * was measured to be worth; ADR-0101 is why a document declares whether it has a Markdown twin rather
+ * than every one being assumed to.
  *
  *
  * ---------------------------------------------------------------------------
@@ -129,6 +130,19 @@ export type StructuredData = {
 export type Document = {
   readonly title: string
   readonly description: string
+  /**
+   * Whether this document is served beside its Markdown twin, which is what decides the
+   * `rel="alternate"` in its head.
+   *
+   * A field rather than an assumption, because `toHtml` used to emit that link for every document it
+   * rendered - true of every page, and false of the one document this site serves that is not a page.
+   * **The 404 file is served at whatever address a reader mistyped**, so a relative `index.md` beside
+   * it would resolve to a different place on every error and to nothing on all of them.
+   *
+   * Required rather than optional, so that a document added without an opinion does not compile: the
+   * shape ADR-0054 asks for, on the one declaration a reader's tooling follows.
+   */
+  readonly servedBesideItsMarkdown: boolean
   /** `null` where a page has nothing true to say about itself in schema.org's vocabulary. */
   readonly structuredData: StructuredData | null
   readonly body: readonly Node[]
@@ -373,7 +387,7 @@ export const toHtml = (document: Document): string =>
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${escapeText(document.title)}</title>`,
     `<meta name="description" content="${escapeAttribute(document.description)}">`,
-    THE_ALTERNATE_LINK,
+    ...(document.servedBesideItsMarkdown ? [THE_ALTERNATE_LINK] : []),
     ...(document.structuredData === null ? [] : [asJsonLd(document.structuredData)]),
     `<style>${STYLE}</style>`,
     '</head>',

@@ -3,7 +3,8 @@ import { describe, it, expect } from 'vitest'
 import { askedAt } from '../registry/endpoints.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { THE_BROWSER_GRAPH } from './browser.js'
-import { THE_HEADERS_FILE, markdownOf } from './paths.js'
+import { notFoundPage } from './not-found-page.js'
+import { THE_HEADERS_FILE, THE_NOT_FOUND_FILE, markdownOf } from './paths.js'
 import { theHeaderRules } from './served-headers.js'
 import { thePublication } from './site.js'
 
@@ -182,6 +183,32 @@ describe('what a host is given', () => {
         )
       }),
     ).toEqual([])
+  })
+
+  /**
+   * The file a host reads when it holds nothing at an address, and the three things it must not be.
+   *
+   * **Measured before it existed**: without a top-level `404.html` the deployment answered 200 and the
+   * front page, byte for byte, at every address holding nothing - including
+   * `/typescript/array/group-by@1/contract-binding`, which a client reaches by following the index. So
+   * `emit.ts`'s *a static host answers 404 for a file that is not there, so the absence is the answer*
+   * was false for as long as this file was missing.
+   *
+   * It is not a page and the three assertions say so in the three ways it could accidentally become
+   * one: a twin would be written beside it, the sitemap would list it, and its head would declare a
+   * Markdown alternate that resolves differently at every address it is served at. ADR-0101.
+   */
+  it('the-file-for-an-address-nothing-is-served-at-is-not-a-page', () => {
+    const written = new Set(paths())
+    const rendered = theTree().get(THE_NOT_FOUND_FILE)
+
+    expect(written.has(THE_NOT_FOUND_FILE)).toBe(true)
+    // `markdownOf` is the identity on anything that is not a page - it swaps `index.html` alone - so
+    // asking it for this file's twin asks whether this file exists. The stem is swapped here instead,
+    // and that difference is why the first spelling of this guard passed for the wrong reason.
+    expect(written.has(THE_NOT_FOUND_FILE.replace(/\.html$/, '.md'))).toBe(false)
+    expect(notFoundPage().servedBesideItsMarkdown).toBe(false)
+    expect(typeof rendered === 'string' && rendered.includes('rel="alternate"')).toBe(false)
   })
 
   it('the-tree-carries-pages-modules-crawler-files-and-answers', () => {

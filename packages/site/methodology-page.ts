@@ -255,6 +255,7 @@ export const methodologyPage = (
 ): Document => ({
   title: 'How Toopo verifies, and what that does not prove',
   /** An argument about how this catalogue is measured is not source code, and points at no one file. */
+  servedBesideItsMarkdown: true,
   structuredData: null,
   description:
     `Every contract here is measured by breaking the code on purpose and requiring the tests to go ` +

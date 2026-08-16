@@ -24,6 +24,7 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
 export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Document => ({
   title: 'Toopo — utility functions with a public, executable contract',
   /** A list of contracts is not source code, and the only `@type` this site publishes is. */
+  servedBesideItsMarkdown: true,
   structuredData: null,
   /**
    * Counted over the installable entries rather than over the index, because a refused contract has

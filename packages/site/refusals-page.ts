@@ -55,6 +55,7 @@ export const refusalsPage = (index: ServedIndex, refusals: ServedRefusals): Docu
   return {
     title: 'What Toopo refuses, and why',
     /** A judgement about contracts is not source code, and a refused contract has none to point at. */
+    servedBesideItsMarkdown: true,
     structuredData: null,
     description:
       `${refusals.refusals.length} contract${refusals.refusals.length === 1 ? ' was' : 's were'} ` +
