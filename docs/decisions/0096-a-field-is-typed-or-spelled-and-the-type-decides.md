@@ -137,14 +137,19 @@ its own question, and would then be silent exactly where it was needed.
 `tabs-and-newlines` of `number/parse@1` is the one case of the catalogue a text field cannot carry. Its
 own row says so, and names the code points that would be lost.
 
-**A control on every field was refused, and the price is what refused it.** Five fields would have
-carried a control, on every page, for one case in a hundred and eighty — and a reader arriving to try
-`1,5` would have had to understand a choice of mode before asking their question. A case carries a
-sentence where it is relevant; five fields carry a control where it is not.
+**What decides it is that the note is computed from the case, and a control would not have been.** A
+case gaining a line break says so on the day it gains one, and a case losing one stops saying it: the
+sentence cannot go stale, because there is no state in which it is written and wrong. A control on a
+field knows nothing about the cases it sits under — it would have been correct on the day it was added
+and correct-looking for ever after, whatever the catalogue did underneath. A sentence somebody wrote on
+one row is a remark; one derived from the row is a rule.
 
-**It is computed from the case rather than authored on it.** A case gaining a line break says so on
-the day it does, and a case losing one stops saying it. A sentence somebody wrote on one row would be
-a remark; one derived from the row is a rule.
+**The price is the second argument and not the first.** Five fields would have carried a control, on
+every page, for one case in a hundred and eighty — and a reader arriving to try `1,5` would have had to
+understand a choice of mode before asking their question. That is a real cost and it is not what
+settles the question, because a cheap mechanism that goes stale is worse than an expensive one that
+does not. Both point the same way here, which is why the order matters: the cost is what a reader of
+this record would have reached for, and it is the weaker half.
 
 The case stays rendered and its answer stays published. What a reader loses is the ability to retype
 that one input, and they are told so where they would ask.

@@ -133,8 +133,8 @@ const renderedCase = (
     ...whatATextFieldCannotCarry(entry, answer, fields).map((field) =>
       line(
         'p',
-        `A text field drops ${spelledOut(field.lost)}, so ${field.name} cannot be retyped in the ` +
-          `playground below. The answer above is what this contract settles for it.`,
+        `A text field drops ${spelledOut(field.lost)}, so the ${field.name} field cannot be retyped ` +
+          `in the playground below. The answer above is what this contract settles for it.`,
         { class: 'meta' },
       ),
     ),
