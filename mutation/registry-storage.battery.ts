@@ -1284,6 +1284,25 @@ export const battery: Battery = {
      * leaves the whole registry suite green, these five included. That is the strongest edit available
      * here and it reddens nothing, which is what separates this from a region awaiting a mutant.
      */
+    /**
+     * Out of reach because both of its answers are computed somewhere this battery cannot edit.
+     *
+     * `the-decision-to-publish-moves-no-digest` compares the subject's publication commit against this
+     * repository's head, and *both* digests come back from `print-ledger.ts` running in a child process
+     * over a checkout of a commit. This battery edits the working tree, and a working tree is the one
+     * thing neither of those two processes reads - so a mutant would have to reach into a checkout of
+     * a commit it did not make.
+     *
+     * The three guards beside it in that file are reddened, and the difference is where the comparison
+     * happens rather than where the subject does: those compare through `rebinding.ts`, which is
+     * today's code and is exactly what I-49 and I-50 edit.
+     */
+    {
+      guards: ['the-decision-to-publish-moves-no-digest'],
+      reason:
+        'both digests it compares are answered by a child process over a checkout of a commit, and ' +
+        'this battery edits the working tree - which is the one thing neither process reads',
+    },
     {
       guards: onEach('a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands'),
       reason:

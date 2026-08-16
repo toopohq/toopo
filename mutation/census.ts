@@ -178,11 +178,13 @@
  * have been the expected cost. Both guards ask one question about one fact, so both land beside the
  * fixture and the installer that already ask everything else about it.
  *
- * A fifteenth on the freeze, and it is the second time the refusal fired on a real unit: two new files
- * under the registry's and no count moved, and the battery named both at once before it measured
- * anything. It is the shape the tenth took - a module of its own gets a file of its own - arriving
- * twice in one unit because the rule and the reader are deliberately two modules, so that the
- * comparison and the rebuilding of a past commit fail apart. ADR-0093.
+ * A fifteenth on the freeze: **three** new files under the registry's and no count moved, and the
+ * refusal fired on the first two before the battery measured anything. Two of them are the shape the
+ * tenth took - a module of its own gets a file of its own - arriving twice because the rule and the
+ * reader are deliberately two modules, so that the comparison and the rebuilding of a past commit fail
+ * apart. The third is a file with no module of its own at all, and it is the first here: what it holds
+ * is a *subject* rather than a unit, built because nothing in this catalogue is published and a check
+ * over an empty set goes green for ever. ADR-0093.
  *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
@@ -255,6 +257,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/served-files.test.ts': 10,
     'packages/registry/signature.test.ts': 14,
     'packages/registry/snapshot.test.ts': 45,
+    'packages/registry/frozen-for-life.test.ts': 4,
     'packages/registry/publication.test.ts': 5,
     'packages/registry/rebinding.test.ts': 13,
     'packages/registry/rebuild.test.ts': 9,
