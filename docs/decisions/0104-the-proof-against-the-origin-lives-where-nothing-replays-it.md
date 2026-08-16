@@ -163,7 +163,9 @@ an invented revision passes — is on the open list with the resolution that wou
 ## Consequences
 
 - The seven suites become the seven suites and one proof against the origin. `CLAUDE.md` and the
-  workflow header say so.
+  workflow header say so. Measured at `dbcbdeb`, in the order the workflow runs them: **472, 65, 351,
+  27, 187, 111, 8**, and **4** against the origin. Only the last is new — no count above it moved, which
+  is the whole of what keeping this suite out of `packaging/vitest.config.ts` was for.
 - **Cost, measured on this machine at `16e04f7`:** ~3.5 s of work and **5 requests, ~11.3 kB** to the
   origin per run — the probe, the two that read what is announced, and the four the install makes; six
   requests when it fails and re-probes. In continuous integration it is one step in a job that already
