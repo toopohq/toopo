@@ -141,6 +141,7 @@ const gather = (): {
           address: record.address,
           digest: digestOfSnapshot(contractShot),
           publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { lifecycle: record.lifecycle },
         }),
         {
@@ -151,6 +152,7 @@ const gather = (): {
           },
           digest: digestOfSnapshot(implementationShot),
           publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { status: implementation.status },
         },
       )
@@ -167,6 +169,16 @@ const gather = (): {
 
   return { ledger, holdings, snapshots, blobs }
 }
+
+/**
+ * What this working tree binds, as the ledger rather than as answers about it.
+ *
+ * The read API serves a binding's digest and not the commit it was published from, which is the field
+ * ADR-0093 adds and deliberately leaves unserved - two revision-shaped fields on one named answer is
+ * one a reader would confuse. So the freeze check asks the ledger directly, and this is the one thing
+ * of `gather()` that leaves this module.
+ */
+export const theLocalLedger = (): Ledger => gather().ledger
 
 /**
  * This working tree, as the registry that serves it. Built lazily and once.

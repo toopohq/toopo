@@ -14,3 +14,10 @@ packages/site/out/
 # catalogue ageing beside the first.
 dist/
 toopo-*.tgz
+
+# Where the freeze check puts the past. `packages/registry/rebuild.ts` checks out the commit a binding
+# was published from, and it does so *inside* this repository so that node resolves its one dependency
+# by walking up to `node_modules/` - the alternative was a symbolic link whose removal is a different
+# operation on every platform. It is ignored rather than tidied afterwards, because a checkout left
+# behind by a crashed run would otherwise be untracked, and `theRevision` refuses a tree carrying one.
+.rebuilt/

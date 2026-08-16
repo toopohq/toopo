@@ -96,6 +96,9 @@ const anAddress = (name: string, major: number): ContractAddress => ({
 
 const PUBLISHED_AT = '2026-08-03T00:00:00.000Z'
 
+/** The commit these bindings are pretended to have been published from. Not this repository's. */
+const PUBLISHED_FROM = 'a'.repeat(40)
+
 describe('what a snapshot freezes, and what it may not', () => {
   /**
    * The whole finding of this unit, as a guard. Every field a record carries is either inside the
@@ -272,6 +275,7 @@ describe('the ledger, where a name is bound to a digest', () => {
     address: source.address,
     digest,
     publishedAt: PUBLISHED_AT,
+    publishedFrom: PUBLISHED_FROM,
     standing: { lifecycle: { state: 'published' as const } },
   })
 
@@ -334,12 +338,14 @@ describe('the ledger, where a name is bound to a digest', () => {
       address: anAddress('number/parse', 1),
       digest: 'a'.repeat(64),
       publishedAt: PUBLISHED_AT,
+      publishedFrom: PUBLISHED_FROM,
       standing: { lifecycle: { state: 'published' } },
     })
     const both = publishContract(first, {
       address: anAddress('number/parse', 2),
       digest: 'b'.repeat(64),
       publishedAt: PUBLISHED_AT,
+      publishedFrom: PUBLISHED_FROM,
       standing: { lifecycle: { state: 'published' } },
     })
 
@@ -359,12 +365,14 @@ describe('the ledger, where a name is bound to a digest', () => {
       address,
       digest,
       publishedAt: PUBLISHED_AT,
+      publishedFrom: PUBLISHED_FROM,
       standing: { status: 'default' },
     })
     const both = publishImplementation(first, {
       address: { ...address, version: '1.0.1' },
       digest: 'c'.repeat(64),
       publishedAt: PUBLISHED_AT,
+      publishedFrom: PUBLISHED_FROM,
       standing: { status: 'default' },
     })
 
@@ -374,6 +382,7 @@ describe('the ledger, where a name is bound to a digest', () => {
         address,
         digest: 'd'.repeat(64),
         publishedAt: PUBLISHED_AT,
+      publishedFrom: PUBLISHED_FROM,
         standing: { status: 'demoted' },
       }),
     ).toThrow(AlreadyPublished)

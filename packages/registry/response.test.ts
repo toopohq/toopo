@@ -52,6 +52,13 @@ const PUBLISHED_AT = '2026-08-03T00:00:00.000Z'
 const SERVED_FROM = 'f'.repeat(40)
 
 /**
+ * The commit these bindings are pretended to have been published from, and deliberately not
+ * `SERVED_FROM`. Two revision-shaped fields travel through this file - one about the answer, one
+ * about the artefact - and giving them one value would let a projection that confused them pass.
+ */
+const PUBLISHED_FROM = 'a'.repeat(40)
+
+/**
  * A ledger holding the catalogue as it would be published: the four that are not yet published, and
  * the one that was refused, from its own `catalogueAdmission` rather than from a sentence written
  * here.
@@ -81,12 +88,14 @@ const theCatalogue = (): Ledger => {
         address: source.address,
         digest: digestOfSnapshot(contractSnapshot(record)),
         publishedAt: PUBLISHED_AT,
+        publishedFrom: PUBLISHED_FROM,
         standing: { lifecycle: { state: 'published' } },
       }),
       {
         address: { contract: source.address, id: implementation.id, version: '1.0.0' },
         digest: digestOfSnapshot(implementationSnapshot(implementation)),
         publishedAt: PUBLISHED_AT,
+        publishedFrom: PUBLISHED_FROM,
         standing: { status: 'default' },
       },
     )
@@ -236,6 +245,7 @@ describe('a named answer carries no part of the frozen half', () => {
       address: source.address,
       digest: digestOfSnapshot(snapshot),
       publishedAt: PUBLISHED_AT,
+      publishedFrom: PUBLISHED_FROM,
       standing: { lifecycle: { state: 'published' } },
     })
 
@@ -253,6 +263,7 @@ describe('a named answer carries no part of the frozen half', () => {
         address: { contract: source.address, id: implementation.id, version: '1.0.0' },
         digest: digestOfSnapshot(snapshot),
         publishedAt: PUBLISHED_AT,
+        publishedFrom: PUBLISHED_FROM,
         standing: { status: 'default' },
       },
       implementation,
@@ -506,6 +517,7 @@ describe('the index, the refusals, and what update compares', () => {
         address: { language: 'typescript', name: 'array/group-by', major: 1 },
         digest: 'a'.repeat(64),
         publishedAt: PUBLISHED_AT,
+        publishedFrom: PUBLISHED_FROM,
         standing: { lifecycle: { state: 'published' } },
       }),
     ).not.toThrow()
@@ -524,7 +536,13 @@ describe('the index, the refusals, and what update compares', () => {
     const digest = digestOfSnapshot(implementationSnapshot(implementation))
     const binding = servedImplementationBinding(
       SERVED_FROM,
-      { address, digest, publishedAt: PUBLISHED_AT, standing: { status: 'default' } },
+      {
+        address,
+        digest,
+        publishedAt: PUBLISHED_AT,
+        publishedFrom: PUBLISHED_FROM,
+        standing: { status: 'default' },
+      },
       implementation,
     )
 

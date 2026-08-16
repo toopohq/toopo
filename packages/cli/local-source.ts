@@ -157,6 +157,7 @@ const gather = (): {
           address: record.address,
           digest: contractDigest,
           publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { lifecycle: record.lifecycle },
         }),
         {
@@ -167,6 +168,7 @@ const gather = (): {
           },
           digest: implementationDigest,
           publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { status: implementation.status },
         },
       )

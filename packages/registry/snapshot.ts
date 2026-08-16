@@ -292,10 +292,28 @@ export type ImplementationStanding = { readonly status: ImplementationStatus }
 // The ledger - the binding, and the refusal that makes immutability real
 // ---------------------------------------------------------------------------
 
+/**
+ * When a binding was made, and from which state of this repository. ADR-0093 is the second field.
+ *
+ * `publishedAt` is a clock and `publishedFrom` is a commit, and they answer two different questions
+ * about one event. The clock says when somebody decided; the commit says what they decided *about*,
+ * and it is the only one of the two a later reader can act on: the frozen half at that commit is
+ * recomputable, so the digest below is checkable rather than merely recorded.
+ *
+ * Neither may enter a snapshot, and the module header above says why in the clock's words: a digest
+ * that moved with either would make "the same content produces the same digest" false by
+ * construction. A commit is a clock with better resolution, which is the argument
+ * [ADR-0090] makes about the revision a named answer carries.
+ *
+ * It is required rather than optional, and that is the whole reason it lives here rather than on
+ * `Lifecycle`. These two types exist only for what is published, so there is no shape in which a
+ * binding can omit the coordinate that makes its own freeze checkable.
+ */
 export type PublishedContract = {
   readonly address: ContractAddress
   readonly digest: string
   readonly publishedAt: string
+  readonly publishedFrom: string
   readonly standing: ContractStanding
 }
 
@@ -303,6 +321,7 @@ export type PublishedImplementation = {
   readonly address: ImplementationAddress
   readonly digest: string
   readonly publishedAt: string
+  readonly publishedFrom: string
   readonly standing: ImplementationStanding
 }
 
@@ -404,6 +423,25 @@ const refuseRebinding = (
   if (held !== undefined) throw new AlreadyPublished(what, held.digest, offered)
 }
 
+/**
+ * Bind an address to a digest, once and for ever. **Read this before calling it.**
+ *
+ * What is frozen by this call is **every byte of every file the contract declares** - all seven of
+ * them, `reference.ts` and the four test files included, comments and blank lines included. `harness`
+ * carries each file's sha-256 and the snapshot digest covers it, so a typo repaired in a comment of
+ * `properties.test.ts` is a different artefact under the same name. Measured: one citation reworded in
+ * one comment moved `string/slugify@1` from `8bea4012…` to `8753bb97…`, in a commit whose whole subject
+ * was documentation.
+ *
+ * That is deliberate rather than an over-reach. A comment in a contract folder is not inert: thirteen
+ * `@ts-expect-error` directives sit in the five contracts' `signature.test-d.ts`, and a freeze that
+ * skipped comments would let a signature guard be weakened on a published contract with the digest
+ * standing still.
+ *
+ * **So a contract is published when it is finished, and never before.** Afterwards the only repair is
+ * `name@2` beside it - permanent rule 6 - and `rebinding.ts` is what refuses the alternative: it
+ * rebuilds this contract at `entry.publishedFrom` and compares. ADR-0093.
+ */
 export const publishContract = (ledger: Ledger, entry: PublishedContract): Ledger => {
   const what = renderContract(entry.address)
   refuseRebinding(
