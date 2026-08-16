@@ -174,6 +174,27 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in
   `mutation/history.ts`, whose halves are already this shape: a declaration of what is refused, a sweep
   over a named population, and a fault that reports where without reprinting what.
+- **That nothing this repository publishes names the machine or the account it was built on — on the
+  fourth surface, which no sweep has ever covered.** The sweep before the first push, and the one
+  ADR-0095 built, read the tracked tree, the reachable objects, the commit messages and the tags. **A
+  run log is none of those.** It is written by a workflow, kept by the forge, and published with the
+  repository the day it becomes public — measured: a failed `wrangler delete` printed the account
+  identifier into an Actions log, in an error message nobody wrote. That run was deleted by hand; the
+  class stays open, and its population is *every log of every run ever kept*, which is the one
+  population none of the existing sweeps can reach because it is not in git. What would close it is not
+  a sweep at all — a log cannot be edited, only deleted — but a rule about what a step may print, and
+  the mechanism for that is the same validation stage over this repository's own strings that three
+  entries here already name.
+- **That a deletion that reports failure has failed.** Measured on the throwaway of ADR-0099:
+  `wrangler delete` removed the Worker's script, then asked for a KV namespace list its token had no
+  permission for, and exited non-zero. **A partial deletion that exits non-zero is indistinguishable
+  from one that did nothing, for anybody reading the exit code** — and the check written to tell them
+  apart could not either: it asked the deployment for a page, read 404, and concluded absence. The
+  Worker was still there. *A request answers about content; only a listing answers about existence.*
+  The repair is in the probe that followed — it ends by listing what exists and fails if the name is
+  still among them — and what is **not** closed is the general case: nothing in this repository requires
+  a deletion to be proved by a listing, and the next one written will be as free to ask a question that
+  cannot answer.
 - **That the address this repository publishes is the address a host serves.** Measured at `c764867` on
   a real deployment: Cloudflare answers 307 on every path carrying `@` and redirects to the
   percent-encoded form, which answers 200. Nothing in this repository is wrong and nothing detected it —

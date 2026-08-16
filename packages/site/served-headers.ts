@@ -54,6 +54,22 @@
  * nothing is a file that looks correct and a deployment that is indexable. What settles it is a
  * request against the real deployment, reading the header back - the same measurement that settles
  * whether Cloudflare's splat spans a slash, which nothing in this repository can answer either.
+ *
+ * ---------------------------------------------------------------------------
+ * A trap this file escapes by the shape of a splat and not by intention
+ * ---------------------------------------------------------------------------
+ *
+ * Measured on a throwaway deployment: this host answers a path carrying `@` with a redirect to the
+ * percent-encoded form, and **a rule whose pattern spells `@` applies to the redirect and not to its
+ * destination** - so the address that serves the bytes falls through to whatever the platform sends.
+ * On that mechanism an address loses its address and its headers together.
+ *
+ * Every rule here is `pathTo(endpoint, EVERY_ADDRESS)`, and none of the three arms puts a rendered
+ * address in a pattern: the splat stands where `number/parse@1` would go, and it covers both spellings.
+ * **So this file escapes the trap by the shape of the splat and not by intention, and nothing protects
+ * it the day somebody writes a rule that names an address.** That is recorded here rather than guarded,
+ * because the guard would have to know what a host normalises, which is a fact about somebody else's
+ * software; ADR-0099 carries the measurement.
  */
 
 import { ENDPOINTS, pathTo } from '../registry/endpoints.js'
