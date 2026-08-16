@@ -1315,9 +1315,9 @@ export const battery: Battery = {
    *
    * `every-export-that-renders-no-contract-says-why` reads the classification `address.test.ts`
    * declares about its own module - a record of literal reasons written in the test file. This battery
-   * edits production sources and nothing else, as every one of its thirty-one cells does, so no edit it
-   * can make reaches a string that guard looks at. Calling it unprobed would be asking for a mutant
-   * that cannot exist.
+   * edits production sources and nothing else, as every cell of it does, so no edit it can make
+   * reaches a string that guard looks at. Calling it unprobed would be asking for a mutant that
+   * cannot exist.
    *
    * What *is* kept about that record is kept by the compiler and not by a cell: it is total over the
    * module's exports, so an export added to `address.ts` fails to typecheck until it is classified -

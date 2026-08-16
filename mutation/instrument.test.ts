@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import { execFileSync, spawnSync } from 'node:child_process'
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
 import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } from './run.ts'
-import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY } from './paths.ts'
+import { THE_REBUILD_FOLDER } from '../packages/registry/rebuild.ts'
+import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY, strayWorktrees } from './paths.ts'
 import { withCanonicalDriveLetter } from '../vitest-entry-point.ts'
 import { CENSUS, censusFor, THE_CONTRACTS_SUITE } from './census.ts'
 import { attributionOf, disagreementsIn } from './attribution.ts'
@@ -635,6 +636,55 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
         expect(readFileSync(path, 'utf8')).toBe(before)
       } finally {
         execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: THE_REPOSITORY })
+      }
+    },
+    META_TIMEOUT_MS,
+  )
+
+  /**
+   * The same restore, on the half of this repository's state that is not a file. ADR-0102.
+   *
+   * **A registration is invisible to every refusal the instrument had.** `git status --porcelain` stays
+   * empty, `.rebuilt/` is ignored, and `git checkout HEAD -- <contract>` puts back no part of
+   * `.git/worktrees/` - so a cell that left one walked past `assertCleanTree` and reddened
+   * `assertNoStrayWorktree` on the *next* battery, where the cause was six batteries behind.
+   *
+   * Both spellings of it are exercised, because they arrive by different routes and only the first is
+   * what a mutant of this repository really produces: `I-56` of `registry-storage` removes the
+   * deregistration and leaves the `rmSync` beside it, so the directory goes and the entry survives;
+   * a run killed between the two leaves the directory as well. What is perturbed is a checkout really
+   * registered against this repository, never a list of them handed to the teardown.
+   */
+  it(
+    'a-checkout-a-cell-left-behind-is-deregistered :: git is put back beside the files',
+    () => {
+      const registered: string[] = []
+
+      const register = (name: string): string => {
+        const at = join(THE_REPOSITORY, THE_REBUILD_FOLDER, name)
+
+        mkdirSync(join(THE_REPOSITORY, THE_REBUILD_FOLDER), { recursive: true })
+        execFileSync('git', ['worktree', 'add', '--detach', '--quiet', at, 'HEAD'], {
+          cwd: THE_REPOSITORY,
+        })
+        registered.push(at)
+
+        return at
+      }
+
+      try {
+        rmSync(register('a-cell-that-did-not-deregister'), { recursive: true, force: true })
+        register('a-cell-that-never-reached-its-finally')
+
+        expect(strayWorktrees()).toHaveLength(2)
+
+        restoreAfterAnInterruption('mutation/fixture')
+
+        expect(strayWorktrees()).toEqual([])
+      } finally {
+        // Only what this guard registered, never the folder holding it: `rebuild.ts` says why.
+        for (const at of registered) rmSync(at, { recursive: true, force: true })
+        execFileSync('git', ['worktree', 'prune'], { cwd: THE_REPOSITORY })
       }
     },
     META_TIMEOUT_MS,

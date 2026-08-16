@@ -105,8 +105,9 @@ decision record.** Two closed by stage 1 of the validation pipeline and are in A
 the two-phase write and are in ADR-0039; the class of a declared address nobody resolved closed in
 ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list; the three about what git
 holds — a citation that resolves, an address no commit carries, a checkout nothing leaves behind —
-closed together in ADR-0095, because all three are one walk over the same graph; and the playground
-reading what a reader types closed in ADR-0096.
+closed together in ADR-0095, because all three are one walk over the same graph; the playground
+reading what a reader types closed in ADR-0096; and a replay that could not finish closed in ADR-0102,
+which found a second entry for this list on its way out and put it there.
 
 **That last one is the only entry this list ever carried that no guard could have caught**, because it
 was a decision taken in conversation and written nowhere — the repository held no half for the code to
@@ -265,22 +266,20 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   a declared absence carries the commit at which it was true, exactly as a count does. The executable
   form is the validation stage reading this repository's own strings, which is already on this list,
   already priced, and already refused as a lint over prose.
-- **That a full replay can finish at all**, which two guards detect and nothing prevents. Measured three
-  times out of three: a completed `registry-storage` leaves `.rebuilt/<HEAD>` registered as a worktree —
-  the directory is gone, only the administrative entry survives, so `git worktree list` reads
-  `prunable`. Inside `npm run mutation` the six batteries that follow it alphabetically then die at
-  `assertNoStrayWorktree`, each in 0.1 s, on `a checkout of this repository is registered besides its
-  root`. **So the one command that replays the nineteen cannot complete, `npm run tally` can never
-  produce a total, and the figures the README and the method page publish cannot be re-derived by the
-  route those pages document.** The detection is not the gap: `run.ts` refuses to start on it and
-  `no-worktree-is-registered-beside-this-repository` reports it at the cadence of the suite. What is
-  missing is anything that stops a battery leaving one. **What is not measured, and is therefore not
-  named here, is which cell leaves it** — the residue sits at HEAD, which implicates `I-54`, whose
-  mutant checks out HEAD, at least as much as `I-56`, whose mutant leaves the checkout registered. That
-  guard's own comment records the state as *found here twice by hand*, and three of three says it is not
-  episodic. It closes on a teardown that restores git's state beside the files, and it closes before
-  `toopo.dev` is connected: the method page publishes what this instrument produces, and an
-  irreproducible figure on the shop window is the class this project exists to remove.
+- **That a control which counts a suite has seen the suite it counted.** `assertWholeSuiteRan` compares
+  a total against a total and never looks at the composition, so a guard that stops answering is
+  invisible to it as long as something else answers in its place. Measured at `0671e6e`, on the state
+  ADR-0102 was closing: with a checkout left registered, `packages/registry/frozen-for-life.test.ts`
+  cannot start, and the report reads **351 assertions, 347 passed, 4 skipped, 0 failed** — 351 against
+  the control's 351, so the check is silent while four guards of the contract under measurement have
+  quietly left the suite. **What makes it possible is that ignored is not failed**, and the two are
+  indistinguishable to anything that counts. The class is not that cell and not that mutant: it is
+  anything that makes a test file unstartable — a `beforeAll` that throws, an import that dies, a
+  fixture that cannot be built — and every one of them leaves a cell that reads exactly like a result.
+  **The population is the files one cell's run reports**, and what would close it is the comparison
+  `assertTheCensusHolds` already makes, read where `assertWholeSuiteRan` runs instead of only during
+  calibration. It is not built with ADR-0102 because two controls over one reading have nothing to say
+  on the day they disagree, and which of them owns the question is undecided.
 - **That the manifest declares no dependency the product could reach**, which stage rule 3 now states
   as a criterion and nothing reads. The two mechanisms that rule names are real and are about *files*:
   `no-part-of-the-instrument-or-of-the-suite-is-in-the-archive` and

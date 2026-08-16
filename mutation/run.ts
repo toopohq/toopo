@@ -334,8 +334,54 @@ const checkoutArm = (contractPath: string, ref: string): void => {
   git('checkout', ref, '--', contractPath)
 }
 
+/**
+ * Deregister every checkout a cell left behind, and refuse the one it cannot remove. ADR-0102.
+ *
+ * **A cell that leaves one is not an accident of a single mutant.** This instrument injects defects
+ * into the modules that manage git's own state, so a defect whose whole content is *do not deregister*
+ * is a cell that leaves a registration by construction - and making the subject tidy up regardless
+ * would mean the subject could no longer express the defect. Measured: `I-56` of `registry-storage`
+ * replaces the `git worktree remove` of `packages/registry/rebuild.ts` with a comment, the `rmSync`
+ * below it still runs, and `.rebuilt/<HEAD>` survives as an administrative entry whose directory has
+ * gone. The removal answers that state as well as the one a hard kill leaves - measured, exit 0 on an
+ * entry git reports as `prunable`.
+ *
+ * **What is left is refused rather than reported**, because a teardown that swallows what it could not
+ * undo hands the next cell a repository nobody put in that state - which is the sentence
+ * `assertNoStrayWorktree` exists against, arriving one cell later and blamed on the wrong run.
+ *
+ * The confirmation is read only where something was removed. Every cell pays for the first reading,
+ * and a cell that left nothing has nothing to confirm.
+ */
+const deregisterStrayWorktrees = (): void => {
+  const stray = strayWorktrees()
+  if (stray.length === 0) return
+
+  for (const worktree of stray) git('worktree', 'remove', '--force', worktree)
+
+  const left = strayWorktrees()
+  if (left.length === 0) return
+
+  throw new Error(
+    `a checkout of this repository is registered besides its root and could not be removed, so the ` +
+      `next cell would measure a repository nobody put in this state:\n${left.join('\n')}`,
+  )
+}
+
+/**
+ * Put this repository back: the contract under measurement, and git's own state beside it. ADR-0102.
+ *
+ * **The two halves are here together because the two refusals above are.** This instrument asserts a
+ * clean tree *and* no stray checkout before it starts, and for as long as it restored only the first,
+ * a cell could leave the second in exactly the state its own preconditions refuse. Restoring here
+ * rather than once per battery is what keeps the cells independent: measured, a registration surviving
+ * one cell makes `packages/registry/frozen-for-life.test.ts` unstartable for every cell after it, and
+ * its four guards are then reported `skipped` rather than `failed` - a composition `assertWholeSuiteRan`
+ * cannot see, because it compares a total against a total.
+ */
 const restore = (contractPath: string): void => {
   git('checkout', 'HEAD', '--', contractPath)
+  deregisterStrayWorktrees()
 }
 
 /**
