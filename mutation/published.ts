@@ -372,6 +372,20 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * `cli-install` has been showing one floor down, arriving at the level of a whole replay. **A reader
  * who wanted to know what a cell costs still cannot be told, and the reason no longer needs a
  * population to be argued from.**
+ *
+ * **The fifth reading replaces the published one rather than joining it, because two things moved
+ * under it at once.** The population went from 631 defect cells to 660, and the instrument gained a
+ * reading of git's own state per cell - ADR-0102, without which no replay could finish at all, so
+ * there is no version of this run that could have been taken under the old apparatus. Republishing is
+ * what ADR-0018 asks for when the thing counted changes: a duration left stamped beside a population
+ * it never described is a truth and a lie in one sentence.
+ *
+ * **The arithmetic of that second change is stated and is still not an attribution.** The reading
+ * costs two `git` invocations where something was removed and two where nothing was, at 21 ms each on
+ * this machine, which is about half a minute over this population. The step from the figure it
+ * replaces is nearly seven minutes, and this machine has moved `cli-install` alone by more than three
+ * on identical work - so the arithmetic bounds what the change can have cost and says nothing about
+ * where the step went, which is the rule the paragraph below already holds every other reading to.
  */
 /**
  * Every commit this data quotes, declared once so that a guard can take all of them off both sides.
@@ -392,7 +406,8 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * addresses is not something a reader is owed.
  */
 const QUOTING = {
-  thisRun: '3949c87',
+  thisRun: '1fb1d85',
+  thePublishedRunItReplaces: '3949c87',
   theFasterOfTheClosestPair: 'b438de2',
   theSlowerOfTheClosestPair: '75d3358',
   theFasterOfTheWidestPair: '6226769',
@@ -408,23 +423,27 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '34 min 30 s',
+  duration: '41 min 24 s',
   measuredAt: QUOTING.thisRun,
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'this population has one reading, so the figure above is bounded by the readings of every other ' +
-    'population rather than by a twin of its own. The closest two of one population this machine has ' +
-    `given are the 623 cells before these: 28 min 9 s at \`${QUOTING.theFasterOfTheClosestPair}\` and ` +
-    `29 min 2 s at \`${QUOTING.theSlowerOfTheClosestPair}\`, fifty-three seconds apart on identical ` +
+    'every population here is counted in defect cells, and this reading is of 660 where the figure ' +
+    `it replaces was of 631 - so the 34 min 30 s at \`${QUOTING.thePublishedRunItReplaces}\` is a ` +
+    'real past reading of different work rather than a faster version of this one, and the ' +
+    'instrument gained a reading of its own between them. This population has one reading, so the ' +
+    'figure above is bounded by the readings of every other population rather than by a twin of its ' +
+    'own. The closest two of one population this machine has given are the 623 cells: 28 min 9 s at ' +
+    `\`${QUOTING.theFasterOfTheClosestPair}\` and 29 min 2 s at ` +
+    `\`${QUOTING.theSlowerOfTheClosestPair}\`, fifty-three seconds apart on identical ` +
     'work. The widest is four and a half minutes, over ' +
-    `the 621 cells before those: 28 min 1 s at \`${QUOTING.theFasterOfTheWidestPair}\` and ` +
+    `the 621: 28 min 1 s at \`${QUOTING.theFasterOfTheWidestPair}\` and ` +
     `32 min 28 s at \`${QUOTING.theSlowerOfTheWidestPair}\`. Every reading below can only approximate ` +
     'the same point by comparing ' +
-    'populations, and they do not order themselves by population either: the 618 before these ran ' +
-    'at 27 min 22 s and at 28 min 42 s, the 615 before those at 27 min 34 s, the 614 before those ' +
-    'at 34 min 6 s, and the 612 before those at 27 min 8 s - so the smallest population is the ' +
+    'populations, and they do not order themselves by population either: the 618 ran ' +
+    'at 27 min 22 s and at 28 min 42 s, the 615 at 27 min 34 s, the 614 ' +
+    'at 34 min 6 s, and the 612 at 27 min 8 s - so the smallest population is the ' +
     'fastest run and the second smallest is the slowest by seven minutes, and the 614 came within ' +
-    'half a minute of the run above with seventeen cells fewer. The variation is the ' +
+    'half a minute of the 631 with seventeen cells fewer. The variation is the ' +
     'machine rather than the cells. Before this regime a ' +
     "cell of a contract battery collected all five contracts rather than its own: the same 612 " +
     'cells ran there at ' +
@@ -432,8 +451,9 @@ export const THE_REPLAY = {
     '35 min 10 s, the 605 before those from 29 min 22 s to 37 min 0 s, and the 592 before those ' +
     'from 25 min 8 s to 28 min 59 s. **No share of any of those steps is attributed to anything**, ' +
     'and the reason is measurable rather than modest: `cli-install` has run from 364 s to 484 s on ' +
-    'identical work, a quarter of its own duration, so a machine this variable cannot support an ' +
-    'account of where any of it went. That is one run rather than how long it takes',
+    'identical work, a quarter of its own duration, and took 576 s in the run above - so a machine ' +
+    'this variable cannot support an account of where any of it went. That is one run rather than ' +
+    'how long it takes',
   reprintedBy: 'npm run tally',
   /**
    * What the second command is for, now that the first one prints the total itself.

@@ -34,7 +34,7 @@ a debt**.
 
 ```sh
 pnpm install
-pnpm run mutation    # about half an hour; replays all 660 cells and prints the total
+pnpm run mutation    # tens of minutes; replays all 660 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 

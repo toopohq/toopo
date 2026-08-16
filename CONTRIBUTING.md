@@ -163,7 +163,7 @@ is the reason the mutation batteries exist.
 
 ```sh
 pnpm run battery <name>  # replay one battery
-pnpm run mutation        # replay all of them; about half an hour
+pnpm run mutation        # replay all of them; tens of minutes
 ```
 
 If you touch a folder a battery injects into, that battery is what says whether your change is
