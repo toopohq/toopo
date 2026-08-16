@@ -290,7 +290,7 @@ const A_CALL_IS_WRITTEN_AS_A_LITERAL = `export const callWritten = (name: string
 
 const A_TEXT_FIELD_LOSES_A_LINE_BREAK = `const STRIPPED_BY_A_TEXT_FIELD = /[\\r\\n]/`
 
-const A_TEXT_FIELD_HANDS_OVER_WHAT_WAS_TYPED = `    if (known.readAs.kind === 'the-text-itself') return known.build(text)`
+const A_TEXT_FIELD_HANDS_OVER_WHAT_WAS_TYPED = `    if (known.readAs.kind === 'the-text-itself') return text`
 
 const WHAT_RUNS_IN_YOUR_BROWSER_IS_SAID = `      line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),`
 
