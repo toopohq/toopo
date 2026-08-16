@@ -113,6 +113,15 @@ const WHAT_IS_RE_RUN_IS_NODE_AND_ONE_PATH =
 
 const A_REBUILD_TIDIES_UP_AFTER_ITSELF = `    git(root, 'worktree', 'remove', '--force', worktree)`
 
+const A_LINE_IS_ONE_ADDRESS_AND_ONE_DIGEST = `        const [what, digest, ...rest] = line.split('\\t')
+
+        if (what === undefined || what === '' || digest === undefined || rest.length > 0) {
+          throw new BindingsAreNotReadable(
+            line,
+            'a binding is an address and a digest separated by one tab',
+          )
+        }`
+
 // --- The emission, and the three ways a walk of the questions stops being one ---
 
 const A_SNAPSHOT_NAMES_EVERY_FILE_IT_FREEZES = '        ...blobsNamedBy(frozen),'
@@ -1199,6 +1208,27 @@ const mutants: readonly Mutant[] = [
       'freeze check once can never name a revision again',
     [rebuildFile(A_REBUILD_TIDIES_UP_AFTER_ITSELF, '    // the checkout stays registered')],
     killed(['a-rebuild-leaves-no-checkout-behind-it']),
+  ),
+
+  /**
+   * The shape of a line, taken on trust. Filling the two fields in rather than refusing the line is
+   * how a boundary check usually rots: nothing throws, every line parses, and an address that arrived
+   * empty is compared against a digest that arrived from somewhere else on the line.
+   *
+   * Three of the four shape rows redden and the fourth does not, which is the division worth naming: a
+   * line with no tab at all still fails the digest test one screen down, so it is refused for the wrong
+   * reason rather than accepted. I-53 is what covers that screen.
+   */
+  sameOnEveryLens(
+    'I-57',
+    'fills in a missing address and a missing digest instead of refusing the line, so a past ' +
+      'commit\'s output is interpreted wherever it is not readable',
+    [rebindingFile(A_LINE_IS_ONE_ADDRESS_AND_ONE_DIGEST, `        const [what = '', digest = ''] = line.split('\\t')`)],
+    killed([
+      'a-line-that-is-not-a-binding-is-refused-0',
+      'a-line-that-is-not-a-binding-is-refused-2',
+      'a-line-that-is-not-a-binding-is-refused-3',
+    ]),
   ),
 ]
 
