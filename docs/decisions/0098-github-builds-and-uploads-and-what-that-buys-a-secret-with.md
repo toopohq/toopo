@@ -34,8 +34,8 @@ Two ways:
 and asks git for the head. A build is therefore either reproducible from the revision it stamps or it
 does not happen — which is the whole of what makes a durability anchor worth carrying.
 
-**Whether a runner's checkout satisfies that has not been measured, on either side, and the seven green
-suites do not measure it.** That was checked rather than assumed:
+**When this decision was taken, whether a runner's checkout satisfies that had not been measured on
+either side, and the seven green suites did not measure it.** That was checked rather than assumed:
 
 ```ts
 // packages/registry/revision.test.ts:26
@@ -118,6 +118,27 @@ committed.
 `there-is-a-workflow-to-sweep-and-it-uses-something` is what stops the other two passing over an empty
 set: a folder that stopped being read, or a pattern that stopped matching, would make both green while
 sweeping nothing.
+
+### And the unknown this decision was taken over is now measured
+
+The job ran on `b042d13`. Between the `git status --porcelain` step and the build that follows it the
+log carries **nothing at all** — the tree was clean after `actions/checkout` and
+`pnpm install --frozen-lockfile`, so `.git` reaches the runner, git answers there, and `theRevision`
+names the commit rather than refusing:
+
+```
+served from b042d130caa060ac561d9ff951aef1cdcc08db25
+1055466 B  75 files: 7 pages, 7 markdown, 9 modules, 4 found by convention, 48 answers
+```
+
+The revision stamped is the commit that was pushed, and the tree written on the runner is the tree
+written locally, `_headers` included. **The risk this decision was taken over is closed for this side
+and remains open for the other**, which is exactly the asymmetry it was taken on: the answer arrived in
+a log, on a branch, with nothing served.
+
+What it does **not** establish is anything about Cloudflare's container. That option was not tried and
+its environment is still undocumented, so nothing here says it would have failed — only that it could
+not have been asked before deploying.
 
 ## What would reopen this
 
