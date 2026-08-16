@@ -11,6 +11,7 @@
  * with three parts, and a guard is addressed by the *pair* `(contract, guard)` and by no other shape,
  * because there is no type here that carries a guard identifier on its own. ADR-0019 names that
  * cost in advance - "the registry schema must always carry the pair, never the identifier alone" -
+ * and ADR-0099 is why the `@` stays although one host serves it behind a redirect,
  * and ADR-0031 is why `THE_ORIGIN` below is declared here rather than in the folder that renders it,
  * ADR-0049 is why every rendering carries the language, and ADR-0054 is the shape this file is the
  * first instance of -

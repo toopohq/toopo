@@ -1,7 +1,8 @@
 /**
  * Where a page lives, and the one rule that fixes it: **a page's address is the contract's address.**
  * ADR-0031 is why the origin is an address rather than a setting; ADR-0094 is why a page's Markdown
- * twin is its sibling and why the index a retriever reads sits at the root.
+ * twin is its sibling and why the index a retriever reads sits at the root; ADR-0099 is why the address
+ * did not move when a host served it behind a redirect.
  *
  *
  * `packages/registry/address.ts` was written on the promise that the site would make a case identifier a URL
