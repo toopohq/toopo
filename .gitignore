@@ -15,6 +15,12 @@ packages/site/out/
 dist/
 toopo-*.tgz
 
+# What wrangler leaves behind: a build identifier and a local state directory, written beside the
+# configuration whenever it deploys. Neither is a decision - `wrangler.jsonc` holds every one of those -
+# and `theRevision` refuses a tree carrying an untracked file, so a deployment would otherwise make the
+# next build unpublishable.
+.wrangler/
+
 # Where the freeze check puts the past. `packages/registry/rebuild.ts` checks out the commit a binding
 # was published from, and it does so *inside* this repository so that node resolves its one dependency
 # by walking up to `node_modules/` - the alternative was a symbolic link whose removal is a different

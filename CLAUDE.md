@@ -158,6 +158,16 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in
   `mutation/history.ts`, whose halves are already this shape: a declaration of what is refused, a sweep
   over a named population, and a fault that reports where without reprinting what.
+- **That the manifest declares no dependency the product could reach**, which stage rule 3 now states
+  as a criterion and nothing reads. The two mechanisms that rule names are real and are about *files*:
+  `no-part-of-the-instrument-or-of-the-suite-is-in-the-archive` and
+  `every-file-in-the-archive-is-loaded-by-a-command` ask what the tarball holds. Measured at the commit
+  that added `wrangler`: no module of `packaging/` reads `dependencies` or `devDependencies` at all, so
+  **a package moved from the dev list to the runtime one would be installed by every consumer and no
+  guard would notice** — `dependencies` is the field `npm install` walks, and `files: ["dist"]` does not
+  bound it. It closes on a guard over the manifest: the runtime `dependencies` are exactly the packages
+  the published entry point imports, which `reachable.ts` already computes and nothing compares against
+  the manifest. One file, and it is the cheapest entry on this list.
 - `contractAnatomy` — triaged entry by entry against stage 1's own constraint, *readable in the source
   alone, without evaluating the module*: **three of the eleven are settled by the source alone, four
   need the module, four are a reader's and no stage will ever take them.** So the conformance
@@ -281,11 +291,19 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
    anything there is not "the contracts repeat it" but "the contracts repeat it identically, and
    what it says belongs to the registry rather than to any one feature". Resemblance is not
    duplication: three functions that answer the same question about different data stay apart.
-3. Dev dependencies are limited to `typescript`, `vitest`, `fast-check`, and `@types/node`. The last
-   one is types-only, has no runtime footprint and cannot reach distributed code; without it the
-   mutation instrument would either sit outside the typechecker or be written in plain JavaScript,
-   and an unchecked `.ts` file would claim a guarantee the repository does not give it. Feature code
-   still has zero runtime dependencies of any kind.
+3. **A dev dependency is admitted when it cannot reach the product, and when the mechanism that stops
+   it is executable.** Five today — `typescript`, `vitest`, `fast-check`, `@types/node`, `wrangler` —
+   and it is the criterion that decides the sixth, not the list: a rule written as four names plus an
+   exception grows an exception per tool, where a rule that states its test survives its first case.
+   Two mechanisms answer it and both are measured: `files: ["dist"]` decides what `npm pack` ships,
+   and `packaging/reachable.ts` prunes `dist` to what the published entry point can reach — so a tool
+   no published module imports is absent from the archive twice over, by a declaration and by a walk.
+   `@types/node` is types-only and has no runtime footprint at all; without it the mutation instrument
+   would either sit outside the typechecker or be written in plain JavaScript, and an unchecked `.ts`
+   file would claim a guarantee the repository does not give it. `wrangler` deploys and is imported by
+   nothing. ADR-0097 carries the argument, including why a floating `npx wrangler` was refused: a
+   repository whose product is that a published version is frozen for life cannot deploy with whatever
+   was newest that morning. Feature code still has zero runtime dependencies of any kind.
 4. The root `package.json` carries `"private": true`, so nothing can be published by accident.
 5. Working notes, planning documents and status reports do not belong in this repository. Only
    contracts, implementations, tests, the evidence produced by running them, the instrument that

@@ -1,0 +1,55 @@
+// How this repository is deployed, in this repository.
+// ADR-0097 is why this file exists rather than a set of dashboard fields, and why wrangler is a dev
+// dependency of a repository that allowed four.
+//
+// ---------------------------------------------------------------------------
+// It is here because there is nowhere else to put it
+// ---------------------------------------------------------------------------
+//
+// This is not a Pages project serving a folder; it is a Worker serving static assets, and the
+// difference is visible from the dashboard: it offers "Cron Triggers" and "Queues", which are concepts
+// of a program, and it offers **no output directory field at all**. `assets.directory` below is that
+// field. The first build failed with the Cloudflare application detection logic having "been run in
+// the root of a workspace instead of targeting a specific project", which is what a monorepo with no
+// configuration file looks like from outside.
+//
+// So the two halves of a deployment now live in two places and only one of them can drift. The build
+// command and the deploy command are fields of a dashboard - `pnpm run site:build` and
+// `npx wrangler deploy`, both of them constants carrying no version and no path - and everything that
+// is a decision is here.
+//
+// ---------------------------------------------------------------------------
+// What is deliberately not here
+// ---------------------------------------------------------------------------
+//
+// **No route and no custom domain.** The origin this catalogue declares is frozen into the licence
+// header of every file the installer has ever written, and connecting it to a deployment that has not
+// been measured would freeze whatever that deployment happens to be. It answers 403 today, and a 403
+// is better than a site that is half right at the one address every installed file cites for life.
+//
+// **No `main`.** Nothing here runs code: an assets-only Worker needs no script, and permanent rule 1
+// refuses runtime indirection in any case. What decides how a response is served is `_headers`, which
+// `packages/site/served-headers.ts` derives from the endpoints and the build writes into the tree.
+//
+// **No `html_handling`.** Its default, `auto-trailing-slash`, serves `<contract>/index.html` at
+// `<contract>/` - which is the address `linkTo` publishes, the address the sitemap carries, and the
+// address a contract's licence header cites. Declaring the default would be a second statement of
+// something already true.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "toopo",
+  "compatibility_date": "2026-08-16",
+
+  // Written by `pnpm run site:build`, which runs from the workspace root and is not committed: a
+  // rendering of the catalogue is not a contract, an implementation, a test or the evidence a run
+  // produced, and `.gitignore` keeps it out.
+  "assets": {
+    "directory": "./packages/site/out"
+  },
+
+  // The one address this deployment answers at, so that there is one to measure rather than one per
+  // version. Both are closed to indexing by `_headers` on the host, which is the half that survives a
+  // setting being changed here.
+  "workers_dev": true,
+  "preview_urls": false
+}

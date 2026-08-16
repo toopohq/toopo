@@ -1,6 +1,7 @@
 /**
  * What the read API answers, and the rule that decides which half of the registry an answer comes
  * from.
+ * ADR-0097 is why `cacheControlOf` is here, and what a host does with what `cachePolicyFor` declares.
  *
  * ---------------------------------------------------------------------------
  * The thesis of this unit, in one sentence
@@ -121,6 +122,34 @@ export const cachePolicyFor = (addressing: AddressingClass): CachePolicy =>
           'registry moves to a new revision. The first three are writes to the ledger; the fourth is ' +
           'every commit, because a named answer names the revision it was produced from.',
       }
+
+/**
+ * The policy as RFC 9111 spells it, so that a host can be told rather than trusted to agree.
+ *
+ * **Until this existed, `cachePolicyFor` was a declaration nothing served.** Every guard asked whether
+ * the function returned the right record, and no guard - and no host - ever turned one into the header
+ * a browser reads. Measured against the deployment this was written for: Cloudflare serves a static
+ * asset `public, max-age=0, must-revalidate` by default, which is this function's answer for a named
+ * response exactly. So the platform was already right about the twelve named answers and wrong about
+ * the thirty-six addressed by content - the two endpoints `endpoints.test.ts` singles out as the ones
+ * carrying the bulk, cached for a year by declaration and revalidated on every request in fact.
+ *
+ * Built from the three fields and never from the addressing class. A second read of `AddressingClass`
+ * here would be a second statement of the same decision, and the first time the two disagreed one of
+ * them would be serving a binding that had moved - which is the whole argument `cachePolicyFor` is
+ * written to make. Falsifying a field of the policy and moving this string are the same event.
+ *
+ * `public` is unconditional, and that is a property of this registry rather than a default: nothing it
+ * answers is addressed to a reader, there is no authorisation on any endpoint, and permanent rule 5
+ * says the catalogue is public in full. A shared cache may hold any of it.
+ */
+export const cacheControlOf = (policy: CachePolicy): string =>
+  [
+    'public',
+    `max-age=${policy.maxAgeSeconds}`,
+    ...(policy.mustRevalidate ? ['must-revalidate'] : []),
+    ...(policy.immutable ? ['immutable'] : []),
+  ].join(', ')
 
 // ---------------------------------------------------------------------------
 // The content-addressed answers

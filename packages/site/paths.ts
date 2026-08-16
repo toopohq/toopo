@@ -146,3 +146,14 @@ export const urlOf = (page: string): string => `${THE_ORIGIN}/${linkTo(page)}`
 export const SITEMAP = 'sitemap.xml'
 
 export const ROBOTS = 'robots.txt'
+
+/**
+ * What the host reads to learn how to serve the rest, at the name the host looks for.
+ *
+ * The fourth file here found by convention and the only one nobody is served: the three above are
+ * fetched by a crawler, and this one is consumed by the deployment and never leaves it. It is a name
+ * Cloudflare fixes rather than one this repository chose, which is why it sits with the others - a
+ * constant whose value is somebody else's decision belongs where the other such constants are, not
+ * inside the module that happens to write it.
+ */
+export const THE_HEADERS_FILE = '_headers'

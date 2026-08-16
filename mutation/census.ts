@@ -195,6 +195,12 @@
  * the crawler files are, the outline and the payload where the pages are, and the twin where the tree
  * is.
  *
+ * A seventeenth on the deployment: one new file under the site's and two counts moved, one under each
+ * of the two configurations. It is the eighth's shape again, and the split is the twelfth's - the
+ * policy is declared in `packages/registry/` and served from `packages/site/`, so the rendering of a
+ * header is counted where the registry is and the file a host reads is counted where the tree is.
+ * ADR-0097.
+ *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
  * ---------------------------------------------------------------------------
@@ -260,7 +266,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/emit.test.ts': 11,
     'packages/registry/endpoints.test.ts': 12,
     'packages/registry/implementations.test.ts': 18,
-    'packages/registry/response.test.ts': 50,
+    'packages/registry/response.test.ts': 53,
     'packages/registry/revision.test.ts': 4,
     'packages/registry/round-trip.test.ts': 19,
     'packages/registry/served-files.test.ts': 10,
@@ -313,8 +319,9 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/literal.test.ts': 11,
     'packages/site/pages.test.ts': 29,
     'packages/site/playground.test.ts': 14,
-    'packages/site/published-tree.test.ts': 5,
+    'packages/site/published-tree.test.ts': 7,
     'packages/site/read-literal.test.ts': 10,
+    'packages/site/served-headers.test.ts': 6,
     'packages/site/source.test.ts': 8,
   },
 

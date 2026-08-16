@@ -55,6 +55,7 @@
   "devDependencies": {
     "@types/node": "^26.1.2",
     "fast-check": "^4.9.0",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.10",
+    "wrangler": "^4.123.0"
   }
 }

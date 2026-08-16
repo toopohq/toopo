@@ -38,8 +38,16 @@ import { heldByTheRegistry } from './catalogue.js'
 import { theCrawlerFiles } from './indexing.js'
 import { localSource } from './local-source.js'
 import { methodologyPage } from './methodology-page.js'
-import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, markdownOf, pageOf } from './paths.js'
+import {
+  CATALOGUE_PAGE,
+  METHOD_PAGE,
+  REFUSALS_PAGE,
+  THE_HEADERS_FILE,
+  markdownOf,
+  pageOf,
+} from './paths.js'
 import { refusalsPage } from './refusals-page.js'
+import { renderHeaders, theHeaderRules } from './served-headers.js'
 import type { RegistrySource } from './source.js'
 
 export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> => {
@@ -71,6 +79,11 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
  * every answer about that contract is a leaf beside it, which is what lets a reader open by hand the
  * exact URL a client asked - and it is what makes *no path is both a file and a directory* a question
  * about this map rather than about two trees nobody compares.
+ *
+ * **`_headers` is in here rather than beside the deployment, and the reason is `build.ts`**: it wipes
+ * its output folder and writes this map, so a file left next to the tree by hand would be deleted on
+ * the first build or, worse, survive as a second statement of a policy that had moved. What tells the
+ * host how to serve the tree is part of the tree.
  */
 export const thePublishedTree = (
   pages: ReadonlyMap<string, Document>,
@@ -82,6 +95,7 @@ export const thePublishedTree = (
     ...[...pages].map(([path, page]) => [markdownOf(path), toMarkdown(page)] as const),
     ...modules,
     ...theCrawlerFilesOf(pages),
+    [THE_HEADERS_FILE, renderHeaders(theHeaderRules())],
     ...answers,
   ])
 

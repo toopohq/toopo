@@ -2,9 +2,13 @@
 #
 # npm's flat `node_modules` hoists every transitive dependency to the root, where any file can import
 # one without having declared it and nothing anywhere says so. pnpm links what was declared and leaves
-# the rest under `.pnpm/`. Measured on this repository: 59 packages installed, 4 linked at the root,
-# and `require.resolve('chai')` - vitest's own dependency, which npm hoisted - answers
-# `MODULE_NOT_FOUND`. That is the guarantee, and it is the whole of it.
+# the rest under `.pnpm/`. Measured on this repository at the commit that added wrangler: 92 packages
+# installed, 5 linked at the root, and `require.resolve('chai')` - vitest's own dependency, which npm
+# hoisted - answers `MODULE_NOT_FOUND`. That is the guarantee, and it is the whole of it.
+#
+# The two figures move whenever a dev dependency is added and the third does not, which is why only the
+# third is the guarantee. They read 59 and 4 until wrangler arrived; that pair was measured at a commit
+# this line can no longer name, which is the whole reason the new one carries its own.
 #
 # ---------------------------------------------------------------------------
 # What it does not buy, stated exactly rather than flatteringly

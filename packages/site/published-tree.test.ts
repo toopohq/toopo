@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest'
 
+import { askedAt } from '../registry/endpoints.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { THE_BROWSER_GRAPH } from './browser.js'
-import { markdownOf } from './paths.js'
+import { THE_HEADERS_FILE, markdownOf } from './paths.js'
+import { theHeaderRules } from './served-headers.js'
 import { thePublication } from './site.js'
 
 /**
@@ -131,6 +133,54 @@ describe('what a host is given', () => {
       named
         .filter((one) => one.addressing === 'content-addressed')
         .filter((one) => 'servedFrom' in one),
+    ).toEqual([])
+  })
+
+  /**
+   * That what tells the host how to serve the tree travels inside it, at the root where the host looks.
+   *
+   * `build.ts` wipes its output folder before writing this map, so a `_headers` produced anywhere else
+   * is either deleted on the next build or is a second statement of a policy that has moved. The
+   * coverage half - that every answer falls under the rule for its own endpoint - is one screen down;
+   * this is the half that says the file is written at all.
+   */
+  it('the-tree-carries-the-file-the-host-reads-to-serve-it', () => {
+    expect(paths().filter((path) => path === THE_HEADERS_FILE)).toEqual([THE_HEADERS_FILE])
+  })
+
+  /**
+   * Every emitted answer falls under the rule for the endpoint it answers.
+   *
+   * The check is a necessary condition of Cloudflare's matching and not a re-implementation of it: a
+   * splat matches greedily, so a path a rule covers must carry the text on either side of the splat at
+   * the ends the rule puts them. **If this is red the host certainly does not match; that it is green
+   * is not proof the host does**, and what settles that is a request against the real deployment.
+   * `endpoints.test.ts` holds `askedAt` to being `pathTo`'s inverse, which is what lets a rule and a
+   * file be resolved to the same endpoint without either being rebuilt from the other.
+   */
+  it('every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint', () => {
+    const ruleFor = new Map(
+      theHeaderRules()
+        .filter((rule) => !rule.url.includes('://'))
+        .map((rule) => [askedAt(rule.url)?.endpoint.id, rule.url]),
+    )
+    const answers = paths()
+      .map((path) => ({ path, asked: askedAt(`/${path}`) }))
+      .filter(({ asked }) => asked !== null)
+
+    expect(answers.length).toBeGreaterThan(0)
+    expect(
+      answers.filter(({ path, asked }) => {
+        const url = ruleFor.get(asked?.endpoint.id)
+        if (url === undefined) return true
+        const [before, after] = url.split('*')
+
+        return !(
+          `/${path}`.startsWith(before) &&
+          `/${path}`.endsWith(after ?? '') &&
+          path.length + 1 >= before.length + (after ?? '').length
+        )
+      }),
     ).toEqual([])
   })
 

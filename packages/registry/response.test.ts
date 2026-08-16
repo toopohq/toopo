@@ -10,10 +10,12 @@ import { localReadApi } from './local-read-api.js'
 import type { ReadApi } from './read-api.js'
 import { THE_ENDPOINT_BEHIND } from './read-api.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
+import type { CachePolicy } from './response.js'
 import {
   CONTRACT_BINDING_NATURES,
   IMPLEMENTATION_BINDING_NATURES,
   bindingHasMoved,
+  cacheControlOf,
   cachePolicyFor,
   revisableFieldsOf,
   servedBlob,
@@ -383,6 +385,63 @@ describe('which registry answered, and where that may be written down', () => {
       canonical(servedIndex('a'.repeat(40), ledger, identities), 'index'),
     )
     expect(cachePolicyFor('named').staleWhen).toContain('revision')
+  })
+})
+
+/**
+ * The policy, as the header a host actually sends.
+ *
+ * **The two strings below are written out here on purpose, and it is the one place in this file where
+ * that is right.** Everything else about a cache is derived from `cachePolicyFor`; if this guard were
+ * derived from it too, both sides would move together and nothing could ever be red - the shape
+ * ADR-0087 names, arriving where deriving would have looked tidier. So the guard states what RFC 9111
+ * spells and the implementation has to come to it.
+ */
+describe('the declared policy is the header that is served', () => {
+  it('a-content-addressed-answer-is-public-for-a-year-and-immutable', () => {
+    expect(cacheControlOf(cachePolicyFor('content-addressed'))).toBe(
+      'public, max-age=31536000, immutable',
+    )
+  })
+
+  it('a-named-answer-is-public-and-revalidated-before-every-use', () => {
+    expect(cacheControlOf(cachePolicyFor('named'))).toBe('public, max-age=0, must-revalidate')
+  })
+
+  /**
+   * Which fields of the policy reach the header, asked by perturbing each one and watching the string.
+   *
+   * It is what stops the two guards above from being satisfied by a function that switches on the
+   * addressing class and returns a literal: such a function passes both, and fails here on all three
+   * directives at once. Keyed by `keyof CachePolicy` on both sides, so a fourth directive does not
+   * compile until somebody has said whether it is served - ADR-0055's shape on the type that decides
+   * what a year-long cache entry promises.
+   *
+   * `staleWhen` is the one that must *not* move it, and that is the assertion rather than an omission:
+   * it is prose telling a deployment what to purge, and a sentence in a `Cache-Control` header is not
+   * a directive any cache reads.
+   */
+  it('every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not', () => {
+    const base = cachePolicyFor('named')
+    const perturbed: Readonly<Record<keyof CachePolicy, CachePolicy>> = {
+      maxAgeSeconds: { ...base, maxAgeSeconds: base.maxAgeSeconds + 60 },
+      mustRevalidate: { ...base, mustRevalidate: !base.mustRevalidate },
+      immutable: { ...base, immutable: !base.immutable },
+      staleWhen: { ...base, staleWhen: `${base.staleWhen} and on a blue moon` },
+    }
+    const moves = Object.fromEntries(
+      Object.entries(perturbed).map(([field, policy]) => [
+        field,
+        cacheControlOf(policy) !== cacheControlOf(base),
+      ]),
+    )
+
+    expect(moves).toEqual({
+      maxAgeSeconds: true,
+      mustRevalidate: true,
+      immutable: true,
+      staleWhen: false,
+    })
   })
 })
 
