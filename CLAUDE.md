@@ -103,9 +103,10 @@ to make, and this paragraph is the correction that stays.
 
 **And the same shape arrived one level down, in a closure criterion rather than in this list.** Taking
 the personal address out of the history was to be closed by *zero occurrences over the 374 commits* —
-374 being what `git rev-list --count HEAD` answers. This repository holds **391**: three `evidence/*`
-tags retain seventeen commits `main` does not reach, every one of them carrying the address, and every
-one of them published by the first `push --tags`. The criterion would have gone green over a branch
+374 being what `git rev-list --count HEAD` answered. The rewrite had to reach **391**: three
+`evidence/*` tags retain seventeen commits `main` does not reach, every one of them carrying the
+address, and every one of them published by the first `push --tags`. The criterion would have gone
+green over a branch
 while the defect left by another door. What made 374 wrong is not a miscount but a population read off
 whichever ref somebody was standing on, so: **a count that bounds a defect names the population it
 swept**, and `--all` is the only spelling of *this repository* that a tag cannot fall out of.
@@ -126,6 +127,26 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   **It is the first act of the next unit**, named as an event rather than as *later*, because this class
   moves faster than a reread — ADR-0001 records a row of its own that was false one commit after it was
   published, in the commit that published it.
+- **That no commit of this repository carries the personal address of whoever wrote it.** The rule is
+  written that way round rather than *every commit carries the project address*, which is the form that
+  first suggested itself and which cannot hold: an outside contributor legitimately commits under their
+  own address, and a rule refusing that refuses contribution. What must never appear is a *named*
+  address, so the closable form is a declaration — the addresses this repository refuses to publish —
+  and a sweep of `git log --all --format='%ae%n%ce'` against it. **`--all` and never `HEAD`**, which is
+  the whole lesson of the paragraph above. What keeps it today is `user.email` in a local `.git/config`
+  that no clone carries and no guard reads, on a graph where every commit answers `hello@toopo.dev` and
+  none answers anything else. It is smaller than the entry above — a declaration and one guard under
+  `meta` — and it closes with it, in the same unit, because both are one walk over what git holds.
+- **That a rebuild leaves no worktree registered.** `bindingsAtRevision` removes its checkout in a
+  `finally` and that path is sound: measured, `git worktree remove --force` deregisters even when the
+  directory it names has already gone. What nothing keeps is the state after a run that did not reach
+  its `finally`, and **nothing detects the leftover either** — a registration whose directory is gone
+  leaves `git status --porcelain` empty, so it walks straight past `theRevision`, which is the guard
+  that exists for its neighbour. Observed twice in one session, once from a run older than the history
+  it named. **What it cost is not measured and is not claimed**: `git filter-repo` was reproduced
+  against a repository carrying one and completed normally, so the reason for tidying it is the state
+  and not a failure anybody has seen. It closes on a check that the only worktree this repository has
+  registered is its root, which is one line beside the dirty-tree refusal that already runs.
 - **That an archive somebody installs really installs a feature**, which three guards kept until the
   catalogue left the archive and now nothing does. They compared the bytes a real `toopo add` wrote out
   of a real tarball against the bytes in `contracts/`, and they worked because the catalogue travelled
