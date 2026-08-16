@@ -1,4 +1,6 @@
-# The seven suites, on every push of a branch and on every pull request.
+# The seven suites, on every push of a branch and on every pull request, and the site built beside them.
+# ADR-0098 is why this side builds rather than the deployment service, what that gives up, and why every
+# action here is a digest.
 #
 # ---------------------------------------------------------------------------
 # What the checkout must be, measured rather than chosen
@@ -47,6 +49,22 @@
 #
 # **A tag push does not run this.** `branches: ['**']` is what excludes it. An `evidence/*` tag names a
 # tree from an earlier unit, and running today's suites against it measures nothing about today.
+#
+# ---------------------------------------------------------------------------
+# Why every action is a digest and not a tag
+# ---------------------------------------------------------------------------
+#
+# `actions/checkout@v7` names a tag, and a tag is a pointer whoever owns that repository can move. This
+# job would then run code nobody here has seen, on a runner holding this repository's secrets. It is the
+# defect this catalogue refuses one floor down and sells the refusal of - a name resolves to whatever
+# the other side currently says it resolves to - and the lockfile pins every npm dependency by integrity
+# hash while the workflow pinned nothing.
+#
+# It cost nothing while this runner held nothing worth taking. ADR-0097 puts a Cloudflare API token in
+# this repository's secrets, so the guard and the thing it guards arrive together:
+# `every-action-a-workflow-uses-is-pinned-to-a-digest` sweeps this folder, and the trailing `# v7` is
+# there because forty hexadecimal digits tell a reader nothing and an unreadable pin is one nobody
+# raises.
 #
 # **The nineteen batteries do not run here, and the reason is not the minutes.** A pin is calibrated
 # against runs on the machine that wrote it: ADR-0053 is why a draw count and a rate are read together,
@@ -101,15 +119,15 @@ jobs:
         node: ['22.18.0', '24']
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # 54 citations resolve against `git rev-list --all`; a depth-1 clone makes all 54 dead. The
           # header above carries the measurement.
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
@@ -139,3 +157,57 @@ jobs:
       # above does nothing for it. `packaging/the-archive.ts` names that cost.
       - name: packaging
         run: npm run packaging
+
+  # ---------------------------------------------------------------------------
+  # The site, built where the environment is declared
+  # ---------------------------------------------------------------------------
+  #
+  # **This job exists to measure one thing, and it deploys nothing.** `packages/site/build.ts` calls
+  # `theRevision`, which refuses a working tree that disagrees with its commit and asks git for the
+  # head - so a build is either reproducible from the revision it stamps or it does not happen. Whether
+  # a checkout on a runner satisfies that has never been measured here: `revision.test.ts` builds a
+  # temporary repository on purpose, precisely so it can be dirtied, so the seven green suites say
+  # nothing about the tree they ran in.
+  #
+  # ADR-0097 chose this over letting a build service clone and build, on exactly that: neither
+  # environment is proven, and only this one can be measured before anything is served. A failure here
+  # is a red branch; the same failure in a deployment pipeline is a failed deployment.
+  #
+  # A second job rather than an eighth step, because it must not run when a suite is red - `needs`
+  # is what says so - and because it needs one runtime rather than the matrix's two. The build is not a
+  # test of the runtime floor; it is what the deployment will run, and the deployment runs one.
+  site:
+    needs: suites
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # `theRevision` asks this checkout for its head, and `deadCitationFaults` resolves against
+          # `--all`. The build needs the first and the suites above need the second; both are this line.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Printed before the build rather than read out of its failure. `theRevision` names the offending
+      # paths when it refuses, but it refuses on the first one; this says what the whole checkout and
+      # the install left behind, which is the question nobody here has an answer to yet.
+      - name: what the checkout and the install left behind
+        run: git status --porcelain
+
+      - name: build the site
+        run: pnpm run site:build
+
+      # Read off the tree that was written, so the log carries what a probe would otherwise have to be
+      # run to learn - and so a build that produced a tree without its header file is visible here.
+      - name: what was built
+        run: |
+          find packages/site/out -type f | wc -l
+          cat packages/site/out/_headers
