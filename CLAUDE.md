@@ -23,7 +23,9 @@ generator, seven static pages, four of them with a playground that runs this rep
 with their types removed. The archive: compiled JavaScript and nothing else, whose size is no longer a
 function of how many contracts exist. The emitted tree, which is every answer the read API can give,
 written as files at the addresses a client asks. The instrument: nineteen batteries, their pinned
-verdicts, and one command that replays them.
+verdicts, and one command that replays them. And permanent rule 6, executable: a binding records the
+commit it was published from, and the frozen half is rebuilt at that commit and compared rather than
+transcribed anywhere.
 
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A host — the
 published entry point names `THE_ORIGIN` and every answer it would fetch is written by the emission,
@@ -82,7 +84,21 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
 decision record.** Two closed by stage 1 of the validation pipeline and are in ADR-0005; three closed by
 the two-phase write and are in ADR-0039; the class of a declared address nobody resolved closed in
-ADR-0060.
+ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list.
+
+**That last one is the finding this section has to keep, because it is about the section rather than
+about the entry.** *A published version is frozen for life* is the biggest `one-directional`
+declaration this repository has ever carried — it is the whole security argument, every lockfile in the
+world would hold the digest it moved, and it is what the product is sold on. It has been in this file
+since the first commit, 367 commits before `5d81138`. This list has existed for 271 of them, for exactly
+this class of defect, and it never named it. Ten entries, none of them the one that mattered most.
+
+So the rule the list adds to itself is not another entry. **A list that believes itself exhaustive is
+more dangerous than no list**, because it is read as coverage: every session that opened this file saw
+ten entries and a section explaining what the form is, and concluded that the form had been swept for.
+Nothing here says how many instances exist, and nothing can. What a reader may take from this section is
+that each entry it names is real; that it is complete is a claim no version of it has ever been entitled
+to make, and this paragraph is the correction that stays.
 
 **Still open, and what each one now costs.**
 
