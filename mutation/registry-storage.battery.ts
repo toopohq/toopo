@@ -113,6 +113,13 @@ const WHAT_IS_RE_RUN_IS_NODE_AND_ONE_PATH =
 
 const A_REBUILD_TIDIES_UP_AFTER_ITSELF = `    git(root, 'worktree', 'remove', '--force', worktree)`
 
+const A_YEAR_LONG_ENTRY_SAYS_IT_IS_IMMUTABLE = `    ...(policy.immutable ? ['immutable'] : []),`
+
+const A_NAMED_ANSWER_SAYS_IT_MUST_BE_REVALIDATED =
+  `    ...(policy.mustRevalidate ? ['must-revalidate'] : []),`
+
+const THE_LIFETIME_IS_READ_OFF_THE_POLICY = '    `max-age=${policy.maxAgeSeconds}`,'
+
 const A_LINE_IS_ONE_ADDRESS_AND_ONE_DIGEST = `        const [what, digest, ...rest] = line.split('\\t')
 
         if (what === undefined || what === '' || digest === undefined || rest.length > 0) {
@@ -1228,6 +1235,58 @@ const mutants: readonly Mutant[] = [
       'a-line-that-is-not-a-binding-is-refused-0',
       'a-line-that-is-not-a-binding-is-refused-2',
       'a-line-that-is-not-a-binding-is-refused-3',
+    ]),
+  ),
+
+  // --- The policy as a header, which is the half a host reads. ADR-0097 ---
+
+  /**
+   * The promise dropped from the promise. `immutable` is the whole of what a year-long entry is worth:
+   * without it a cache may still revalidate whenever it likes, and the two endpoints carrying the bulk
+   * pay a round trip each for a body whose address is the digest of itself.
+   */
+  sameOnEveryLens(
+    'I-58',
+    'serves a content-addressed answer for a year without saying it is immutable, so the entry that ' +
+      'can never be wrong is revalidated anyway',
+    [responseFile(A_YEAR_LONG_ENTRY_SAYS_IT_IS_IMMUTABLE, '    // served without `immutable`')],
+    killed([
+      'a-content-addressed-answer-is-public-for-a-year-and-immutable',
+      'every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not',
+    ]),
+  ),
+
+  /**
+   * The dangerous direction of the same edit. A named answer that is not revalidated is a CDN free to
+   * hand out a binding that has moved - which is the failure `response.ts` separates the two halves of
+   * the registry to prevent, arriving one floor down in the header nobody was sending.
+   */
+  sameOnEveryLens(
+    'I-59',
+    'serves a named answer without `must-revalidate`, so a cache may hand out a binding that has moved',
+    [responseFile(A_NAMED_ANSWER_SAYS_IT_MUST_BE_REVALIDATED, '    // served without revalidation')],
+    killed([
+      'a-named-answer-is-public-and-revalidated-before-every-use',
+      'every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not',
+    ]),
+  ),
+
+  /**
+   * A figure transcribed where one was derived, which is ADR-0018's shape arriving inside a header.
+   *
+   * **The cell worth reading, because one guard stays green by coincidence**: a year is what the
+   * content-addressed policy declares, so `a-content-addressed-answer-is-public-for-a-year-and-immutable`
+   * cannot tell a derived year from a typed one and passes. What sees it is the guard that perturbs the
+   * policy and watches the string, and this cell is why that guard exists.
+   */
+  sameOnEveryLens(
+    'I-60',
+    'writes the lifetime into the header instead of reading it off the policy, so every named answer ' +
+      'is served with the year the frozen half was promised',
+    [responseFile(THE_LIFETIME_IS_READ_OFF_THE_POLICY, "    'max-age=31536000',")],
+    killed([
+      'a-named-answer-is-public-and-revalidated-before-every-use',
+      'every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not',
     ]),
   ),
 ]
