@@ -155,10 +155,34 @@ and `npx wrangler deploy`.
 
 ## Confirmation
 
-The eleven guards in the front matter. Each was seen red on a mutant written for it: the rendering
-switched on the addressing class instead of reading the policy's fields, `immutable` and
-`must-revalidate` dropped from the rendering one at a time, a splat pattern misspelled by one letter,
-the `noindex` rule aimed at the declared origin, and the file dropped from the published tree.
+**Ten of the eleven guards in the front matter are reddened by a named cell. The eleventh has never
+been red and cannot be, and this paragraph is the correction of the sentence that said otherwise.**
+
+It first read *the eleven guards in the front matter, each seen red on a mutant written for it*, and
+that was false when it was written: `the-file-stays-inside-the-limits-the-host-parses-it-under` is in
+`unprobedRegions` with its reason, because one rule per endpoint and eight endpoints means no edit to a
+file of that folder reaches a hundred and first rule. The claim was made before the batteries had been
+asked, and the batteries are what refused it — `site` reported six of the eight new guards as guards
+nothing reddens, which is how the gap was found rather than by rereading this section.
+
+Read off `npm run battery`, at `02ebe46`:
+
+| guard | red on |
+| --- | --- |
+| `a-content-addressed-answer-is-public-for-a-year-and-immutable` | I-58 |
+| `a-named-answer-is-public-and-revalidated-before-every-use` | I-59, I-60 |
+| `every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not` | I-58, I-59, I-60 |
+| `every-endpoint-carries-a-cache-rule-at-an-address-that-names-it` | W-78 |
+| `only-the-two-content-addressed-endpoints-are-cached-for-a-year` | W-78, W-79 |
+| `every-other-answer-is-revalidated-before-it-is-used` | W-79 |
+| `the-deployment-is-closed-to-robots-and-the-declared-origin-is-not` | W-80 |
+| `the-rendering-carries-every-rule-with-its-headers-indented-beneath-it` | W-81 |
+| `the-tree-carries-the-file-the-host-reads-to-serve-it` | W-19, W-20 |
+| `every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint` | W-19, W-20, W-78 |
+| `the-file-stays-inside-the-limits-the-host-parses-it-under` | **never — declared unprobed** |
+
+The last two rows are the two that needed no new cell: an existing pair already reddens them, which is
+what says the file joined the tree rather than sitting beside it.
 
 **What no guard here reaches** is whether Cloudflare's splat spans a slash, whether an `@` in a path is
 served, and whether the host pattern matches — three facts about somebody else's matcher. A second
