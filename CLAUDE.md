@@ -30,12 +30,28 @@ holds rather than against what somebody checked: a commit identifier in the pros
 this graph, no object of it carries an address the project refuses to publish, and the only checkout
 registered here is its root.
 
-**What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A host — the
-published entry point names `THE_ORIGIN` and every answer it would fetch is written by the emission,
-but nothing serves that tree. A second language. And nothing is published: `private: true` holds, the
-package is not on npm, and every path on `toopo.dev` answered 403 when it was last measured. A reader
-who meets `toopo add number/parse` on a contract page has no way to get `toopo`, and an installed
-`toopo` has nothing to ask.
+**What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
+language. And nothing is published: `private: true` holds, the package is not on npm, and every path on
+`toopo.dev` answered 403 when it was last measured. A reader who meets `toopo add number/parse` on a
+contract page has no way to get `toopo`, and an installed `toopo` has nothing to ask.
+
+**A host exists and it is not the declared origin.** `main` builds the tree in CI and `wrangler` uploads
+it to a Worker serving assets. Measured at `c764867` over thirty-four addresses: the seven pages, their
+Markdown twins, the three files found by convention, the twelve named answers and both halves of the
+content-addressed space all answer, each carrying the `Cache-Control` `cachePolicyFor` declares and an
+`X-Robots-Tag: noindex` that closes the deployment to indexing. `_headers` answers 404, which is what
+says it is read by the host and served to nobody. It is deliberately not `THE_ORIGIN`: the published
+entry point still names that, every installed licence header still cites it, and connecting it would
+freeze whatever the deployment happens to be. **So an installed `toopo` still has nothing to ask, and
+that half is unchanged.**
+
+**And that deployment measured the thing nothing here predicted: a contract address is served behind a
+redirect.** Cloudflare percent-encodes `@`, so `/typescript/number/parse@1/` answers 307 to
+`/typescript/number/parse%401/`, which answers 200 with every header right. `endpoints.ts` asserts — and
+`endpoints.test.ts` keeps — that every character an address can produce is legal in a path segment; that
+is true and it was the wrong question, because a host may normalise a legal character and this one does.
+It is on the list below, because the sitemap, every canonical link, `contractUrl` and every frozen
+licence header write the unencoded form.
 
 **The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
 `string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
@@ -158,6 +174,19 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in
   `mutation/history.ts`, whose halves are already this shape: a declaration of what is refused, a sweep
   over a named population, and a fault that reports where without reprinting what.
+- **That the address this repository publishes is the address a host serves.** Measured at `c764867` on
+  a real deployment: Cloudflare answers 307 on every path carrying `@` and redirects to the
+  percent-encoded form, which answers 200. Nothing in this repository is wrong and nothing detected it —
+  `endpoints.test.ts` asks whether a character is *legal* in a path segment, which it is, and a host
+  normalising a legal character is a different question that no guard here asks. **What it costs is
+  written in `paths.ts` already, in its own words**: *a sitemap URL that differs from the served URL by
+  one character gets a redirect indexed instead of the page*, and that sentence is now describing this
+  catalogue. The frozen half is worse than the sitemap: `contractUrl` is written into the licence header
+  of every file the installer has ever written, it writes `@1`, and a header is frozen into somebody
+  else's repository for ever. **What is not measured is whether any other host does this**, so nothing
+  here says the encoding belongs in the address rather than in one deployment's normalisation — and
+  choosing wrong freezes the wrong one. It closes before the domain is connected, because both readings
+  are frozen the day something is served at `THE_ORIGIN`.
 - **That a declared absence carries the date it was true**, which nothing keeps and which was found on
   this repository's own prose one day after it was written. ADR-0098 published *whether a runner's
   checkout satisfies that has not been measured* in the present tense; the job ran on the next commit
