@@ -228,10 +228,22 @@ jobs:
       # folder, wrangler reported reading **92** from the same directory in the same job, and uploaded
       # **74**. The upload reconciles - 74 served plus `_headers`, which is read and never served, is the
       # 75 that were built. The 92 reconciles with nothing measured here, and no cause is named for it.
+      #
+      # **Whether the project exists is asked of a listing and never of an attempt**, which is the
+      # method ADR-0100's probes had to repair: a request answers about content, only a listing answers
+      # about existence. Deploying to find out would make a first run and a broken run look alike, and
+      # creating unconditionally would fail every run after the first.
       - name: deploy
         if: github.ref == 'refs/heads/main'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           pnpm exec wrangler --version
+          pnpm exec wrangler pages project list > projects.txt
+          if grep -qE '(^|[^a-z0-9-])toopo([^a-z0-9-]|$)' projects.txt; then
+            echo 'the project is listed'
+          else
+            echo 'the project is not listed, so it is created before anything is deployed to it'
+            pnpm exec wrangler pages project create toopo --production-branch=main
+          fi
           pnpm exec wrangler pages deploy --branch=main --commit-dirty=true
