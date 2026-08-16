@@ -1424,10 +1424,15 @@ export const battery: Battery = {
    * backslash in one string, and it is already the thing W-06 removes wholesale. It is declared here
    * rather than written as a twenty-eighth cell that measures a narrower version of an existing one.
    *
-   * `nesting-does-not-widen-the-gap-between-two-blocks` is the collapsing rule, and W-05 removes the
-   * separator it collapses rather than the collapsing. A mutant that removed the collapse would
-   * produce a reading with wider gaps and identical words, which is a formatting difference and not a
-   * defect a reader is misled by.
+   * **`nesting-does-not-widen-the-gap-between-two-blocks` was here and is not, and the instrument is
+   * what took it out.** The declaration read that W-05 removes the separator rather than the
+   * collapsing, and that a mutant removing the collapse would produce wider gaps and identical words -
+   * a formatting difference rather than a defect a reader is misled by. Both sentences are still true
+   * of the collapsing. What made the declaration stale is a mutant nobody wrote for it: W-74 widens the
+   * assembly by two entries, and that guard pins the whole reading of a nested page as one exact
+   * string, so it reddens. The attribution refused the run under *declared silent and reddened anyway*,
+   * which is the half of this field that costs nothing to get wrong and is never noticed - a region
+   * that has stopped being unprobed reads exactly like one that never was.
    */
   unprobedRegions: [
     {
@@ -1437,7 +1442,6 @@ export const battery: Battery = {
         'widely elsewhere',
       guards: [
         'a-quote-and-a-backslash-are-escaped-before-anything-else',
-        'nesting-does-not-widen-the-gap-between-two-blocks',
         'nothing-but-the-local-adapter-reaches-the-serialisation',
       ],
     },
