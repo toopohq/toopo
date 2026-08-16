@@ -68,7 +68,7 @@ const SHORT: Readonly<Record<string, string>> = {
  * A lone surrogate is unaffected and stays four digits: `codePointAt` on one answers the surrogate
  * itself, which is below the plane by construction.
  */
-const escaped = (character: string): string => {
+export const escaped = (character: string): string => {
   const short = SHORT[character]
   if (short !== undefined) return short
 

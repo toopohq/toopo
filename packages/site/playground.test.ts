@@ -17,8 +17,11 @@ import {
   UnusableArgument,
   answerWritten,
   argumentsOf,
+  callWritten,
   playgroundOf,
   theCallOf,
+  theFieldsFor,
+  whatATextFieldCannotCarry,
 } from './playground.js'
 
 /**
@@ -84,10 +87,12 @@ const replayed = (
   module: Record<string, (...args: readonly unknown[]) => unknown>,
   entry: CaseRecord,
 ): readonly string[] => {
+  const what = renderContract(one.contract.address)
   const answer = answerOf(one.contract)
   const diagnostic = diagnosticOf(one.contract)
   const { written, answered } = theCallOf(entry, answer)
-  const made = `${renderContract(one.contract.address)}#${entry.id}: ${answer.name}(${written.join(', ')})`
+  const held = theFieldsFor(entry, answer, what)
+  const made = `${what}#${entry.id}: ${answer.name}(${written.join(', ')})`
   const wanted = diagnostic === undefined ? 1 : 2
 
   if (answered.length !== wanted) {
@@ -101,7 +106,7 @@ const replayed = (
    * be found. It was seen once, which is why this is here.
    */
   try {
-    const given = argumentsOf(answer.parameters, written)
+    const given = argumentsOf(answer.parameters, held)
     const got = answerWritten((module[answer.name] as (...args: readonly unknown[]) => unknown)(...given))
     const settled = literal(answered[0].value)
 
@@ -178,9 +183,9 @@ describe('the playground, against the catalogue it opens on', () => {
     expect(alike.flatMap((entry) => replayed(one, module, entry))).toEqual([])
 
     const reasons = alike.map((entry) => {
-      const { written } = theCallOf(entry, answerOf(one.contract))
+      const held = theFieldsFor(entry, answerOf(one.contract), 'typescript/number/parse@1')
 
-      return answerWritten(described(...argumentsOf(answerOf(one.contract).parameters, written)))
+      return answerWritten(described(...argumentsOf(answerOf(one.contract).parameters, held)))
     })
 
     // Both are refused, and the whole point is that they are refused for different reasons.
@@ -328,19 +333,39 @@ describe('the playground, against the catalogue it opens on', () => {
    * answer `input.trim is not a function`, which is the implementation reporting a failure in its own
    * words to somebody who has no idea what `input` is. A static check cannot see it - every type was
    * satisfied - and only opening the page and typing did.
+   *
+   * **The subject moved to the one field that still spells a value, and the address did not.** A text
+   * field cannot receive the wrong type, because what a reader types is a string and both types read
+   * as text are spelled as strings - so the refusal now belongs to `Duration` alone, which is exactly
+   * where a literal can still spell anything at all. ADR-0096.
    */
   it('a-field-refuses-a-value-of-the-wrong-type-before-the-contract-is-called', () => {
+    const duration = [{ name: 'duration', type: 'Duration' }]
+
+    expect(() => argumentsOf(duration, ["'a'"])).toThrow(UnusableArgument)
+    expect(() => argumentsOf(duration, ["'a'"])).toThrow('duration is declared Duration')
+    expect(() => argumentsOf(duration, ["'a'"])).toThrow('a string')
+    expect(() => argumentsOf(duration, ['[1]'])).toThrow('a list')
+    expect(() => argumentsOf(duration, ['{ days: 1 }'])).not.toThrow()
+  })
+
+  /**
+   * A text field hands the contract what was typed, character for character.
+   *
+   * The three spellings that used to be a refusal are the whole of the change a reader meets: `42`,
+   * `hello` and the empty field are answers to *what string?* and none of them is a notation error.
+   * The no-break space is here because it is the pair the page rests on - the field carries it whole,
+   * measured in Chrome, and what tells it from an ordinary space is the printed call and not the field.
+   */
+  it('a-text-field-hands-over-what-was-typed', () => {
     const string = [{ name: 'input', type: 'string' }]
+    const spaced = `1${String.fromCharCode(0x00a0)}000`
 
-    expect(() => argumentsOf(string, ['42'])).toThrow(UnusableArgument)
-    expect(() => argumentsOf(string, ['42'])).toThrow('input is declared string')
-    expect(() => argumentsOf(string, ['42'])).toThrow('a number')
-    expect(() => argumentsOf(string, ["'42'"])).not.toThrow()
-
-    expect(() => argumentsOf([{ name: 'duration', type: 'Duration' }], ["'a'"])).toThrow(
-      UnusableArgument,
-    )
-    expect(() => argumentsOf([{ name: 'date', type: 'Date' }], ['{}'])).toThrow(UnusableArgument)
+    expect(argumentsOf(string, ['42'])).toEqual(['42'])
+    expect(argumentsOf(string, ['hello'])).toEqual(['hello'])
+    expect(argumentsOf(string, [''])).toEqual([''])
+    expect(argumentsOf(string, ["'42'"])).toEqual(["'42'"])
+    expect(argumentsOf(string, [spaced])).toEqual([spaced])
   })
 
   /** A Date is the one argument this site constructs, and it is constructed from the text. */
@@ -350,11 +375,65 @@ describe('the playground, against the catalogue it opens on', () => {
         { name: 'date', type: 'Date' },
         { name: 'duration', type: 'Duration' },
       ],
-      ["'2024-01-31T00:00:00.000Z'", '{ months: 1 }'],
+      ['2024-01-31T00:00:00.000Z', '{ months: 1 }'],
     )
 
     expect(built[0]).toBeInstanceOf(Date)
     expect((built[0] as Date).toISOString()).toBe('2024-01-31T00:00:00.000Z')
     expect(built[1]).toEqual({ months: 1 })
+  })
+
+  /**
+   * The line the output prints, which is where an invisible code point is named.
+   *
+   * **This is a defect being repaired and not a feature being added.** The output said
+   * `parseNumber(…) → null`, where `(…)` was three literal dots: the one computed thing on this site
+   * said nothing whatever about what it had received. Both spellings of `1 000` answer `null`, so a
+   * reader who typed either could not tell which the page had read.
+   *
+   * It is computed from the arguments and never conditioned on what they hold, which is what makes it
+   * unable to miss one - a line asking *is anything invisible here* can be wrong about its question,
+   * and a line derived from what arrived cannot. ADR-0043, ADR-0096.
+   */
+  it('an-invisible-code-point-a-reader-typed-is-named-in-the-output', () => {
+    const spaced = `1${String.fromCharCode(0x00a0)}000`
+
+    expect(callWritten('parseNumber', [spaced])).toBe("parseNumber('1\\u00A0000')")
+    expect(callWritten('parseNumber', ['1 000'])).toBe("parseNumber('1 000')")
+    expect(callWritten('parseNumber', [spaced])).not.toBe(callWritten('parseNumber', ['1 000']))
+
+    expect(callWritten('parseNumber', ['42'])).toBe("parseNumber('42')")
+    expect(callWritten('levenshtein', ['a', 'b'])).toBe("levenshtein('a', 'b')")
+    expect(callWritten('addToDate', [new Date('2024-01-31T00:00:00.000Z'), { months: 1 }])).toBe(
+      "addToDate('2024-01-31T00:00:00.000Z', { months: 1 })",
+    )
+  })
+
+  /**
+   * The cases a reader cannot retype, named on their own rows and computed from the cases themselves.
+   *
+   * Measured in Chrome: an `<input>` drops a line feed and a carriage return and keeps everything
+   * else, and a `<textarea>` still drops the carriage return - so one case of the whole catalogue
+   * cannot be typed back into the form. The bound is the point of the second half: were this to answer
+   * *every* case, or none, the page would be saying something about the form rather than about the
+   * catalogue.
+   */
+  it('a-case-a-text-field-cannot-carry-is-the-one-that-carries-a-line-break', () => {
+    const held = theHeld()
+    const named = held.flatMap((one) => {
+      const what = renderContract(one.contract.address)
+      const answer = answerOf(one.contract)
+      const { fields } = playgroundOf(one.contract, what)
+
+      return one.contract.caseTables
+        .flatMap((table) => table.cases)
+        .flatMap((entry) =>
+          whatATextFieldCannotCarry(entry, answer, fields).map(
+            (field) => `${what}#${entry.id}.${field.name}: ${field.lost.join(' ')}`,
+          ),
+        )
+    })
+
+    expect(named).toEqual(['typescript/number/parse@1#tabs-and-newlines.input: \\n \\r'])
   })
 })

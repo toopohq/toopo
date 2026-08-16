@@ -9,7 +9,8 @@
  * Why `JSON.parse` is not this function
  * ---------------------------------------------------------------------------
  *
- * A playground field holds a literal, and the literals this catalogue publishes are not JSON. Block
+ * A playground field declared `Duration` holds a literal, and the literals this catalogue publishes
+ * are not JSON. Block
  * 4.4 alone settles cases on `{ days: undefined }`, on `-0`, on `Infinity`, on `NaN`, on a lone
  * surrogate, on a hole in a sparse array, on a symbol, on a regular expression, and on two fields
  * holding the *same* object. `JSON.parse` answers a different value for five of those and refuses the

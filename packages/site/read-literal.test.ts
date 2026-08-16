@@ -268,9 +268,12 @@ describe('the text somebody typed, as the value it spells', () => {
 
   /**
    * The two inputs `number/parse@1` settles opposite answers on, which are the same eight glyphs on
-   * screen. A field holding the literal is what lets somebody type either one deliberately; a field
-   * holding the raw text could not tell them apart, which is the defect that contract's own source
-   * refuses to have in its own bytes.
+   * screen. This notation tells them apart, which is what a case row on a page rests on: the table
+   * prints `'1 000'` and `'1 000'` and a reader can see which row is which.
+   *
+   * It is no longer what the playground field rests on. Measured in Chrome, a text field carries a
+   * no-break space whole, so both spellings reach the contract intact and what distinguishes them on
+   * screen is the printed call. ADR-0096.
    */
   it('two-inputs-that-look-alike-are-read-apart', () => {
     expect(read("'1\\u00A0000'")).toBe(`1${String.fromCharCode(0x00a0)}000`)

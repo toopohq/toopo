@@ -348,7 +348,7 @@ describe('the site', () => {
       // What a reader without JavaScript meets where the form would be: a sentence, not a gap.
       expect(
         reading.slice(reading.indexOf('Try it on your own input')).split('\n\n')[1],
-      ).toContain('Each field holds a literal')
+      ).toContain('What you type into a field is the value')
     }
   })
 

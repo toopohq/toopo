@@ -1,6 +1,7 @@
 /**
  * What a playground is made of: the call a reader edits, and the two translations around it.
  * ADR-0028 is what a playground demonstrates and what it refuses to show.
+ * ADR-0096 is which of the two readings each field gets, and why the answer names its own call.
  *
  *
  * ---------------------------------------------------------------------------
@@ -13,18 +14,20 @@
  * answer is deliberately not shown beside it.
  *
  * ---------------------------------------------------------------------------
- * The field holds a literal, and that is a measurement rather than a taste
+ * How a field is read is a property of the type it is declared as
  * ---------------------------------------------------------------------------
  *
- * `contracts/typescript/number/parse/edge-cases.ts` says why in its own source: `'1 000'` with a no-break space
- * and `'1 000'` with an ordinary one are the same eight glyphs on screen and carry opposite answers in
- * that table. A field holding raw text reintroduces, in the playground, exactly the ambiguity the
- * contract refuses to have in its own bytes - a reader checking the no-break case would type an
- * ordinary space, get the other reason, and have no way to see why. The playground would contradict
- * the page it lives on.
+ * *A value is typed* and *a value is spelled* are different questions, and the table below is where
+ * each type answers the second. A `string` field takes the text itself, because somebody answering a
+ * string types `hello` and being refused for not writing `'hello'` teaches a notation where the page
+ * meant to ask a question. A `Duration` field takes a literal, because an object with named fields has
+ * no spelling as a line of text - and `read-literal.ts` is what reads it.
  *
- * It is also the only thing that covers the contract. `date/add@1` publishes four cases whose caller is
- * untyped - `{ day: 1 }` is one - and a form derived from the declared type cannot express them at all.
+ * The ambiguity that reading raw text reintroduces is real and is answered rather than avoided:
+ * `'1 000'` with a no-break space and `'1 000'` with an ordinary one are the same eight glyphs on
+ * screen and carry opposite answers in `contracts/typescript/number/parse/edge-cases.ts`. What tells
+ * them apart is that the answer names the call it made, written through `literal` - so the two spellings
+ * print differently the moment either is typed. ADR-0096.
  *
  * ---------------------------------------------------------------------------
  * One table, and a type it does not know stops the build
@@ -46,8 +49,8 @@
 import type { CaseRecord, ExportRecord, ParameterRecord } from '../registry/contract-record.js'
 import type { EncodedField } from '../registry/value.js'
 import type { FrozenContract } from '../registry/snapshot.js'
-import { encode } from '../registry/value.js'
-import { literal } from './literal.js'
+import { decode, encode } from '../registry/value.js'
+import { escaped, literal } from './literal.js'
 import { read } from './read-literal.js'
 
 export class ThePlaygroundCannotBeBuilt extends Error {
@@ -80,46 +83,65 @@ const natureOf = (value: unknown): string => {
 }
 
 /**
- * How a declared value becomes an argument, by the type the signature declares.
+ * What a reader writes in a field, in two forms with no way to spell a third.
  *
- * Measured over the five: three types, and one of them is not the identity. Nothing speculative is
- * listed - a `number` parameter is not here because no contract has one, and adding it in advance
- * would be the speculative field `field-map.ts` deletes.
+ * The refusal machinery lives *inside* the literal arm rather than beside both, and that is the shape
+ * doing the work: a field that takes the text itself cannot receive the wrong type, because the text a
+ * reader types is a string and the two types reading it are the two the catalogue spells as strings.
+ * `UnusableArgument` exists because a literal can spell anything at all, so it belongs where that is
+ * true and nowhere else.
+ */
+type Reading =
+  | { readonly kind: 'the-text-itself' }
+  | {
+      readonly kind: 'a-literal'
+      /** Whether the value the field spells is one this type can be built from. */
+      readonly spelledBy: (declared: unknown) => boolean
+      /** What to write instead, in the refusal. */
+      readonly wanted: string
+      /** Why this type has no spelling as a line of text, said beside the field. */
+      readonly because: string
+    }
+
+/**
+ * How a field becomes an argument, by the type the signature declares.
  *
- * **`spelledBy` is here because a real browser produced `input.trim is not a function`.** A reader who
- * types `42` into a field declared `string` was handed the number straight to the implementation,
- * which failed somewhere inside itself and reported it in its own words. An error from the contract's
- * source is not an answer to a reader: the field knows what it is declared as, so it is the field that
- * says so, before anything is called.
+ * Measured over the five: three types, two readings, and one `build` that is not the identity. Nothing
+ * speculative is listed - a `number` parameter is not here because no contract has one, and adding it
+ * in advance would be the speculative field `field-map.ts` deletes.
+ *
+ * **A type added here has to choose a reading, and there is no member to leave out.** That is the rule
+ * ADR-0054 asks for before a rule is written in prose: a sixth contract declaring a fourth type does
+ * not compile until somebody has decided whether that type is typed or spelled.
  */
 type Argument = {
-  /** Whether the value the field spells is one this type can be built from. */
-  readonly spelledBy: (declared: unknown) => boolean
-  readonly build: (declared: unknown) => unknown
-  /** What to write instead, in the refusal. */
-  readonly wanted: string
-  /** What the field does with the text, shown beside it when it is not simply the value spelled. */
+  readonly readAs: Reading
+  /** What the reading produced, as the argument the contract is called with. */
+  readonly build: (value: unknown) => unknown
+  /** What the field does with the text, shown beside it when it is not simply what was typed. */
   readonly note: string | null
 }
 
 const AS_AN_ARGUMENT: Readonly<Record<string, Argument>> = {
   string: {
-    spelledBy: (declared) => typeof declared === 'string',
-    build: (declared) => declared,
-    wanted: "a string between single quotes — '42' rather than 42",
+    readAs: { kind: 'the-text-itself' },
+    build: (value) => value,
     note: null,
   },
   Duration: {
-    spelledBy: (declared) => typeof declared === 'object' && declared !== null && !Array.isArray(declared),
-    build: (declared) => declared,
-    wanted: 'an object — { days: 1 }, or {} for none',
+    readAs: {
+      kind: 'a-literal',
+      spelledBy: (declared) => typeof declared === 'object' && declared !== null && !Array.isArray(declared),
+      wanted: 'an object — { days: 1 }, or {} for none',
+      because: 'an object with named fields, which a line of text cannot spell',
+    },
+    build: (value) => value,
     note: null,
   },
   Date: {
-    spelledBy: (declared) => typeof declared === 'string',
-    build: (declared) => new Date(declared as string),
-    wanted: "a string holding an instant — '2024-01-31T00:00:00.000Z'",
-    note: 'a string, then new Date(…) — the only place this site makes a Date',
+    readAs: { kind: 'the-text-itself' },
+    build: (value) => new Date(value as string),
+    note: 'the text, then new Date(…) — the only place this site makes a Date',
   },
 }
 
@@ -145,21 +167,37 @@ const asADeclaredValue = (answer: unknown): unknown =>
 export const theCallOf = (
   entry: CaseRecord,
   answer: ExportRecord,
-): { readonly written: readonly string[]; readonly answered: readonly EncodedField[] } => {
+): {
+  readonly given: readonly EncodedField[]
+  readonly written: readonly string[]
+  readonly answered: readonly EncodedField[]
+} => {
   const fields = entry.data.kind === 'record' ? entry.data.fields : []
+  const given = fields.slice(0, answer.parameters.length)
 
   return {
-    written: fields.slice(0, answer.parameters.length).map((field) => literal(field.value)),
+    given,
+    written: given.map((field) => literal(field.value)),
     answered: fields.slice(answer.parameters.length),
   }
 }
 
-/** One field of the form: what it is called, what it is declared as, and what it opens holding. */
+/**
+ * One field of the form: what it is called, what it is declared as, and what it opens holding.
+ *
+ * `reads` is the union above with its functions gone, because this crosses into a browser as JSON. It
+ * is carried rather than re-derived there: `start.ts` builds the control and `contract-page.ts` says
+ * beside a literal field why it is one, and both would otherwise hold a second copy of a table only
+ * this module owns.
+ */
 export type PlaygroundField = {
   readonly name: string
   readonly type: string
   readonly opensOn: string
-  /** How the text becomes the argument, when that is not simply the value it spells. */
+  readonly reads:
+    | { readonly kind: 'the-text-itself' }
+    | { readonly kind: 'a-literal'; readonly because: string }
+  /** How the text becomes the argument, when that is not simply what was typed. */
   readonly constructedBy: string | null
 }
 
@@ -226,12 +264,21 @@ export const playgroundOf = (contract: FrozenContract, what: string): Playground
    */
   // One field per parameter of the answer, in the signature's own order, opening on the values the
   // first case writes: the form is the call a case already is. ADR-0011.
-  const fields = answer.parameters.map((parameter, index) => ({
-    name: parameter.name,
-    type: parameter.type,
-    opensOn: written[index] as string,
-    constructedBy: refuseAnUnknownType(parameter, what),
-  }))
+  const held = theFieldsFor(opening, answer, what)
+  const fields = answer.parameters.map((parameter, index) => {
+    const known = theArgumentFor(parameter, what)
+
+    return {
+      name: parameter.name,
+      type: parameter.type,
+      opensOn: held[index] as string,
+      reads:
+        known.readAs.kind === 'a-literal'
+          ? ({ kind: 'a-literal', because: known.readAs.because } as const)
+          : ({ kind: 'the-text-itself' } as const),
+      constructedBy: known.note,
+    }
+  })
 
   return {
     calls: answer.name,
@@ -273,7 +320,7 @@ const theDiagnosticOf = (
   return diagnostic.name
 }
 
-const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string | null => {
+const theArgumentFor = (parameter: ParameterRecord, what: string): Argument => {
   const known = AS_AN_ARGUMENT[parameter.type]
   if (known === undefined) {
     throw new ThePlaygroundCannotBeBuilt(
@@ -284,7 +331,64 @@ const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string |
     )
   }
 
-  return known.note
+  return known
+}
+
+/**
+ * What one field holds for one case, which is the case's own value under one reading and its literal
+ * under the other.
+ *
+ * A text field holding a literal would publish the notation it exists to stop teaching - the field
+ * would say `'42'` and mean `42`. So the value is decoded for a text field, and a case writing
+ * something that is not a string in a position read as text stops the build rather than being coerced:
+ * a form silently opening on `[object Object]` is the same defect as a page rendered with a playground
+ * quietly missing.
+ */
+const theTextFor = (
+  reading: Reading,
+  opening: EncodedField | undefined,
+  written: string,
+  parameter: ParameterRecord,
+  what: string,
+): string => {
+  if (reading.kind === 'a-literal') return written
+
+  const value = opening === undefined ? undefined : decode(opening.value)
+  if (typeof value !== 'string') {
+    throw new ThePlaygroundCannotBeBuilt(
+      what,
+      `its parameter \`${parameter.name}\` is declared \`${parameter.type}\` and read as text, and ` +
+        `the case it opens on writes ${natureOf(value)} there - a text field can open on a string ` +
+        `and on nothing else`,
+    )
+  }
+
+  return value
+}
+
+/**
+ * What every field of the form holds for one case, in the signature's order.
+ *
+ * Written once and reached twice - by the form, which opens on a case, and by the replay, which drives
+ * every case through the same reading a reader's browser would. Two statements of *what a field holds*
+ * would be free to disagree exactly where it matters: on the notation a reader is being taught.
+ */
+export const theFieldsFor = (
+  entry: CaseRecord,
+  answer: ExportRecord,
+  what: string,
+): readonly string[] => {
+  const { given, written } = theCallOf(entry, answer)
+
+  return answer.parameters.map((parameter, index) =>
+    theTextFor(
+      theArgumentFor(parameter, what).readAs,
+      given[index],
+      written[index] as string,
+      parameter,
+      what,
+    ),
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -305,19 +409,89 @@ export const argumentsOf = (
       )
     }
 
-    const declared = read(typed[index] ?? '')
-    if (!known.spelledBy(declared)) {
-      throw new UnusableArgument(parameter.name, parameter.type, natureOf(declared), known.wanted)
+    const text = typed[index] ?? ''
+    if (known.readAs.kind === 'the-text-itself') return known.build(text)
+
+    const declared = read(text)
+    if (!known.readAs.spelledBy(declared)) {
+      throw new UnusableArgument(
+        parameter.name,
+        parameter.type,
+        natureOf(declared),
+        known.readAs.wanted,
+      )
     }
 
     return known.build(declared)
   })
 
 /**
- * The answer, written the way the case table above writes one.
+ * A live value, written the way the case table above writes one.
  *
  * `literal(encode(…))` rather than `String(…)`, and that is not tidiness: `parseNumber('-0')` answers a
  * negative zero, `String` prints it `0`, and the contract settles a case on the two being different.
  */
-export const answerWritten = (answer: unknown): string =>
-  literal(encode(asADeclaredValue(answer), 'the answer'))
+const asALiteral = (value: unknown, path: string): string =>
+  literal(encode(asADeclaredValue(value), path))
+
+export const answerWritten = (answer: unknown): string => asALiteral(answer, 'the answer')
+
+/**
+ * The call that was just made, named with the arguments it was made with.
+ *
+ * **This replaces an ellipsis rather than adding a line.** The output said `parseNumber(…) → null`,
+ * where `(…)` is a literal three dots and not a summary - so the one part of this site that is computed
+ * said nothing at all about what it had received. `'1 000'` with a no-break space and `'1 000'` with an
+ * ordinary one are the same eight glyphs on screen, both answer `null`, and a reader had no way to tell
+ * which of the two the page had read. Written through `literal`, whose escaping is exactly the class of
+ * code points that is invisible or that renders on top of its neighbour, the two print apart.
+ *
+ * It is computed from what arrived and never conditioned on what it contains: a line derived from the
+ * arguments cannot fail to name an invisible one, where a test for `is there anything invisible here`
+ * can be wrong about its own question. ADR-0043, ADR-0096.
+ */
+export const callWritten = (name: string, given: readonly unknown[]): string =>
+  `${name}(${given.map((argument, at) => asALiteral(argument, `argument ${at + 1}`)).join(', ')})`
+
+/**
+ * What an `<input>` drops, measured rather than read off the specification.
+ *
+ * Measured in Chrome: setting a field's value to `'\t\n 7 \r\n'` reads back `'\t 7 '` - both the line
+ * feed and the carriage return are gone, and the tab survives. A `<textarea>` is not the escape it
+ * looks like: it keeps the line feed and still drops the carriage return, so it cannot carry that
+ * string either. Every other invisible code point this catalogue settles a case on - a no-break space,
+ * a narrow no-break space, a byte order mark, a combining mark, a zero-width joiner, a lone surrogate -
+ * survives a text field whole.
+ */
+const STRIPPED_BY_A_TEXT_FIELD = /[\r\n]/
+
+/** One field of one case that a reader could not retype, with the code points that would be lost. */
+export type UntypeableField = {
+  readonly name: string
+  readonly lost: readonly string[]
+}
+
+/**
+ * The fields of a case a reader cannot type back into the form, computed from the case itself.
+ *
+ * The limit is declared on the case that causes it rather than paid for by a control on every field:
+ * one case of the catalogue carries a line break, and a sentence on its own row is where somebody
+ * meets the question. Computed rather than authored, so a case gaining a line break says so on the day
+ * it does and a case losing one stops saying it - which is the difference between a rule and a remark.
+ */
+export const whatATextFieldCannotCarry = (
+  entry: CaseRecord,
+  answer: ExportRecord,
+  fields: readonly PlaygroundField[],
+): readonly UntypeableField[] =>
+  theCallOf(entry, answer).given.flatMap((argument, at) => {
+    const field = fields[at]
+    if (field === undefined || field.reads.kind === 'a-literal') return []
+
+    const value = decode(argument.value)
+    if (typeof value !== 'string') return []
+
+    const lost = [...new Set([...value].filter((one) => STRIPPED_BY_A_TEXT_FIELD.test(one)))]
+
+    return lost.length === 0 ? [] : [{ name: field.name, lost: lost.map(escaped) }]
+  })

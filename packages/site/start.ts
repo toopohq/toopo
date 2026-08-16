@@ -1,5 +1,6 @@
 /**
  * The only module of this repository that runs in somebody else's browser.
+ * ADR-0096 is why a field holds text, and why the answer names the call it was made from.
  *
  * ---------------------------------------------------------------------------
  * What it is allowed to be, which is nothing the page depends on
@@ -27,19 +28,15 @@
  */
 
 import type { ParameterRecord } from '../registry/contract-record.js'
-import { answerWritten, argumentsOf } from './playground.js'
+import type { PlaygroundField } from './playground.js'
+import { answerWritten, argumentsOf, callWritten } from './playground.js'
 
 /** What the page hands over in `data-playground`, written by `contract-page.ts`. */
 type ThePlayground = {
   readonly calls: string
   readonly describes: string | null
   readonly module: string
-  readonly fields: readonly {
-    readonly name: string
-    readonly type: string
-    readonly opensOn: string
-    readonly constructedBy: string | null
-  }[]
+  readonly fields: readonly PlaygroundField[]
 }
 
 const labelled = (field: ThePlayground['fields'][number], at: number): HTMLElement => {
@@ -95,10 +92,12 @@ const start = async (): Promise<void> => {
     try {
       const given = argumentsOf(parameters, [...form.querySelectorAll('input')].map((one) => one.value))
       const answered = call(...given)
-      const lines = [`${playground.calls}(…) → ${answerWritten(answered)}`]
+      const lines = [`${callWritten(playground.calls, given)} → ${answerWritten(answered)}`]
 
-      if (answered === null && describe !== null) {
-        lines.push(`${playground.describes}(…) → ${answerWritten(describe(...given))}`)
+      if (answered === null && describe !== null && playground.describes !== null) {
+        lines.push(
+          `${callWritten(playground.describes, given)} → ${answerWritten(describe(...given))}`,
+        )
       }
 
       answer.textContent = lines.join('\n')

@@ -48,8 +48,8 @@ alone **both print `null`** and the distinction a reader came to see is invisibl
 browser, which is the only place it could be:
 
 ```
-'1 000'   parseNumber(…) → null    describeParseFailure(…) → 'not-decimal'
-'1 000'   parseNumber(…) → null    describeParseFailure(…) → 'separator'
+'1 000'        parseNumber(…) → null    describeParseFailure(…) → 'not-decimal'
+'1\u00A0000'   parseNumber(…) → null    describeParseFailure(…) → 'separator'
 ```
 
 Only when the answer is `null`, because the coupling property of both fallible contracts is that a call
@@ -73,18 +73,30 @@ the diagnostic's signature was compared first: the second refusal fired in the f
 guard was green either way, and the battery is what caught it. A contract tripping both is told about
 the parameter it declared, which is the more basic fact.
 
-### The field holds a literal
+### The field holds a literal — superseded by ADR-0096
 
-**The field holds a literal, and raw text was refused on a measurement rather than on taste.**
-`contracts/typescript/number/parse/edge-cases.ts` says it in its own source: `'1 000'` with a no-break space and
-`'1 000'` with an ordinary one are the same eight glyphs on screen and carry opposite answers in that
-table — which is why that file names the character instead of pasting it. A raw text field
-reintroduces, inside the playground, exactly the ambiguity the contract refuses to have in its own
-bytes: somebody checking the no-break case types an ordinary space, gets the other reason, and has no
-way to see why. The playground would contradict the page it lives on. It is also the only field that
-covers the contract — `date/add@1` publishes four cases whose caller is untyped, `{ day: 1 }` among
-them, and a form derived from the declared type cannot express one of them. Measured in a browser:
-`'\uD83D'` is a lone surrogate a reader can type, and a raw field could not have expressed it at all.
+**This section is kept as the argument it was, and it no longer describes the code.**
+[ADR-0096](0096-a-field-is-typed-or-spelled-and-the-type-decides.md) replaces it: how a field is read
+is a property of the type the signature declares, a `string` field takes the text itself, and
+`Duration` is the one type that still spells a value.
+
+What it argued, and what survives of it: `contracts/typescript/number/parse/edge-cases.ts` settles
+`'1\u00A0000'` and `'1 000'` to opposite answers, and the two are the same eight glyphs on screen —
+which is why that file names the character instead of pasting it. That ambiguity is real. What this
+record got wrong is where it had to be answered: it is answered in the **output**, which now names the
+call it made, and not in the input by making the reader spell it. The output this record itself
+published twice as `parseNumber(…) → null` was the defect, and nobody read those two identical lines as
+one.
+
+**One clause here was measured and is false.** It read *`'\uD83D'` is a lone surrogate a reader can
+type, and a raw field could not have expressed it at all.* Measured in Chrome, with the code point
+constructed in the page: an `<input type=text>` carries a lone surrogate whole, and so does a
+`<textarea>`. A reader cannot **type** one, which is the half that survives. The two were written as
+one sentence, and only one of them had been measured.
+
+The other argument stands unchanged and is why the type table has two readings rather than one:
+`date/add@1` publishes four cases whose caller is untyped, `{ day: 1 }` among them, and a form derived
+from the declared type cannot express one of them.
 
 **One table of types, whose only non-identity entry is `Date`.** Reading a literal gives the *declared*
 value, which is what the registry models; turning that into an argument is a second step and exactly

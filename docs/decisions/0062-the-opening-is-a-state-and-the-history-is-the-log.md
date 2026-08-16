@@ -85,7 +85,8 @@ product nobody had seen**: four contract pages, the catalogue, and the page that
 catalogue refused. No server exists and none is needed — what it writes is static HTML, and a contract
 page that needs a line of JavaScript to be read is a page a crawler and a screen reader read
 differently from a person. **And beside it the playground, which is the one thing on a contract page
-that is computed rather than rendered**: four pages have one, the field holds a literal, and what a
+that is computed rather than rendered**: four pages have one, the field held a literal until
+[ADR-0096](0096-a-field-is-typed-or-spelled-and-the-type-decides.md), and what a
 browser runs is this repository's own modules with their types removed. **And now the playground calls
 both halves of the surface** — the answer and the diagnostic beside it — which is what makes the two
 spellings of `1 000` tell themselves apart on the page whose contract settles them; and beside it the

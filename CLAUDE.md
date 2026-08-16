@@ -89,7 +89,19 @@ decision record.** Two closed by stage 1 of the validation pipeline and are in A
 the two-phase write and are in ADR-0039; the class of a declared address nobody resolved closed in
 ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list; the three about what git
 holds — a citation that resolves, an address no commit carries, a checkout nothing leaves behind —
-closed together in ADR-0095, because all three are one walk over the same graph.
+closed together in ADR-0095, because all three are one walk over the same graph; and the playground
+reading what a reader types closed in ADR-0096.
+
+**That last one is the only entry this list ever carried that no guard could have caught**, because it
+was a decision taken in conversation and written nowhere — the repository held no half for the code to
+disagree with. It is also the entry that paid for itself twice over on the way out: closing it found
+*two* published sentences of this repository false, both in the record that had argued the opposite
+position, and both of the class the entry was about. One clause asserted that a raw text field could
+not express a lone surrogate, which a browser refuted. The other was worse and was invisible to every
+reader for a year — the two rows ADR-0028 printed to *demonstrate* that a no-break space and an
+ordinary space carry opposite answers were **identical, byte for byte**, having lost the no-break space
+somewhere they were written. A block whose entire purpose was to show two things differing showed the
+same string twice, with two different reasons beside it, and nothing could have caught that either.
 
 **That last one is the finding this section has to keep, because it is about the section rather than
 about the entry.** *A published version is frozen for life* is the biggest `one-directional`
@@ -118,17 +130,6 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
 
 **Still open, and what each one now costs.**
 
-- **That the playground reads what a reader types rather than what a contract author writes.** The
-  field holds a TypeScript literal today — `read-literal.ts` is that reader, and it is right for a
-  pre-filled case, which is what it was written for. It is wrong for the thing beside it: somebody
-  answering a string types `hello` and is refused for not writing `'hello'`, which teaches a notation
-  where the page meant to ask a question. The decision taken is that the field becomes ordinary text,
-  and that the invisible code points in an answer are rendered in the output rather than left to look
-  like nothing. **It is here because it was decided and never written down**, which is the form this
-  section exists against and which no guard could have caught — a decision nobody recorded leaves the
-  repository with no half to disagree with. It closes on the record that argues which of the two
-  readings each field gets, because *a value is typed* and *a value is spelled* are different
-  questions and `read-literal.ts` answers only the second.
 - **That an archive somebody installs really installs a feature**, which three guards kept until the
   catalogue left the archive and now nothing does. They compared the bytes a real `toopo add` wrote out
   of a real tarball against the bytes in `contracts/`, and they worked because the catalogue travelled

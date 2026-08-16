@@ -144,7 +144,9 @@ const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `      return value.description === null 
 
 const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id },`
 
-const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) => renderedGroup(group, table, answer, alone ? 'h3' : 'h4')),`
+const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) =>
+    renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
+  ),`
 
 const A_HEADING_CARRIES_ITS_OWN_ADDRESS = `  addressed(heading, group.id, group.title),`
 
@@ -272,17 +274,23 @@ const A_WORD_WITH_NO_SPELLING_IS_REFUSED = `  for (const word of Object.values(W
 
 const A_CODE_POINT_ABOVE_THE_PLANE_IS_BRACED = `  return code > 0xffff`
 
-const A_DATE_IS_CONSTRUCTED = `    build: (declared) => new Date(declared as string),`
+const A_DATE_IS_CONSTRUCTED = `    build: (value) => new Date(value as string),`
 
-const AN_ANSWER_IS_WRITTEN_AS_A_LITERAL = `export const answerWritten = (answer: unknown): string =>
-  literal(encode(asADeclaredValue(answer), 'the answer'))`
+const AN_ANSWER_IS_WRITTEN_AS_A_LITERAL = `const asALiteral = (value: unknown, path: string): string =>
+  literal(encode(asADeclaredValue(value), path))`
 
-const AN_UNKNOWN_TYPE_STOPS_THE_BUILD = `const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string | null => {
+const AN_UNKNOWN_TYPE_STOPS_THE_BUILD = `const theArgumentFor = (parameter: ParameterRecord, what: string): Argument => {
   const known = AS_AN_ARGUMENT[parameter.type]
   if (known === undefined) {`
 
-const A_FIELD_SPELLS_ITS_DECLARED_TYPE = `  string: {
-    spelledBy: (declared) => typeof declared === 'string',`
+const A_FIELD_SPELLS_ITS_DECLARED_TYPE = `      spelledBy: (declared) => typeof declared === 'object' && declared !== null && !Array.isArray(declared),`
+
+const A_CALL_IS_WRITTEN_AS_A_LITERAL = `export const callWritten = (name: string, given: readonly unknown[]): string =>
+  \`\${name}(\${given.map((argument, at) => asALiteral(argument, \`argument \${at + 1}\`)).join(', ')})\``
+
+const A_TEXT_FIELD_LOSES_A_LINE_BREAK = `const STRIPPED_BY_A_TEXT_FIELD = /[\\r\\n]/`
+
+const A_TEXT_FIELD_HANDS_OVER_WHAT_WAS_TYPED = `    if (known.readAs.kind === 'the-text-itself') return known.build(text)`
 
 const WHAT_RUNS_IN_YOUR_BROWSER_IS_SAID = `      line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),`
 
@@ -643,7 +651,9 @@ const mutants: readonly Mutant[] = [
     [
       contractPageFile(
         THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER,
-        `  ...[...table.groups].reverse().flatMap((group) => renderedGroup(group, table, answer, alone ? 'h3' : 'h4')),`,
+        `  ...[...table.groups].reverse().flatMap((group) =>
+    renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
+  ),`,
       ),
     ],
     killed(['every-group-is-a-heading-and-its-cases-follow-it']),
@@ -726,7 +736,7 @@ const mutants: readonly Mutant[] = [
     'W-35',
     'hands the declared value straight to a parameter declared `Date`, so every call of `date/add@1` ' +
       'is made with a string where the contract requires an instant',
-    [playgroundFile(A_DATE_IS_CONSTRUCTED, `    build: (declared) => declared,`)],
+    [playgroundFile(A_DATE_IS_CONSTRUCTED, `    build: (value) => value,`)],
     killed([
       'every-case-replays-through-the-stripped-artefact-a-browser-runs',
       'a-date-is-the-one-argument-this-site-constructs',
@@ -745,7 +755,7 @@ const mutants: readonly Mutant[] = [
     [
       playgroundFile(
         AN_ANSWER_IS_WRITTEN_AS_A_LITERAL,
-        `export const answerWritten = (answer: unknown): string => String(asADeclaredValue(answer))`,
+        `const asALiteral = (value: unknown, path: string): string => String(asADeclaredValue(value))`,
       ),
     ],
     killed([
@@ -761,7 +771,7 @@ const mutants: readonly Mutant[] = [
     [
       playgroundFile(
         AN_UNKNOWN_TYPE_STOPS_THE_BUILD,
-        `const refuseAnUnknownType = (parameter: ParameterRecord, what: string): string | null => {
+        `const theArgumentFor = (parameter: ParameterRecord, what: string): Argument => {
   const known = AS_AN_ARGUMENT[parameter.type] ?? AS_AN_ARGUMENT['string']
   if (known === undefined) {`,
       ),
@@ -776,10 +786,49 @@ const mutants: readonly Mutant[] = [
    */
   sameOnEveryLens(
     'W-38',
-    'accepts whatever a field spells for a parameter declared `string`, so a number reaches the ' +
+    'accepts whatever a field spells for a parameter declared `Duration`, so a string reaches the ' +
       'implementation and it is the contract that reports the mistake, in its own words',
-    [playgroundFile(A_FIELD_SPELLS_ITS_DECLARED_TYPE, `  string: {\n    spelledBy: () => true,`)],
+    [playgroundFile(A_FIELD_SPELLS_ITS_DECLARED_TYPE, `      spelledBy: () => true,`)],
     killed(['a-field-refuses-a-value-of-the-wrong-type-before-the-contract-is-called']),
+  ),
+
+  /**
+   * The line that names what was received, which is the whole of the repair ADR-0096 makes.
+   *
+   * `(…)` said nothing at all, so the two spellings of `1 000` printed alike on the page whose
+   * contract settles them apart. Printing with `String` restores exactly that silence.
+   */
+  sameOnEveryLens(
+    'W-75',
+    'prints the call with `String`, so a no-break space a reader typed reads as an ordinary one and ' +
+      'the page says nothing about which of the two it received',
+    [
+      playgroundFile(
+        A_CALL_IS_WRITTEN_AS_A_LITERAL,
+        `export const callWritten = (name: string, given: readonly unknown[]): string =>
+  \`\${name}(\${given.map((argument) => String(argument)).join(', ')})\``,
+      ),
+    ],
+    killed(['an-invisible-code-point-a-reader-typed-is-named-in-the-output']),
+  ),
+
+  sameOnEveryLens(
+    'W-76',
+    'narrows what a text field is said to drop to the carriage return alone, so the one case a reader ' +
+      'cannot retype under-reports what would be lost from it',
+    [playgroundFile(A_TEXT_FIELD_LOSES_A_LINE_BREAK, `const STRIPPED_BY_A_TEXT_FIELD = /[\\r]/`)],
+    killed(['a-case-a-text-field-cannot-carry-is-the-one-that-carries-a-line-break']),
+  ),
+
+  sameOnEveryLens(
+    'W-77',
+    'reads a text field as a literal, so a reader who types `hello` is refused for not writing it in ' +
+      'quotes - the notation this site stopped teaching',
+    [playgroundFile(A_TEXT_FIELD_HANDS_OVER_WHAT_WAS_TYPED, '')],
+    killed([
+      'a-text-field-hands-over-what-was-typed',
+      'every-case-replays-through-the-stripped-artefact-a-browser-runs',
+    ]),
   ),
 
   sameOnEveryLens(

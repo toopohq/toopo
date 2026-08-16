@@ -39,7 +39,8 @@ import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
 import { literal } from './literal.js'
 import { THE_ENTRY_POINT, THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
-import { playgroundOf, theCallOf } from './playground.js'
+import type { PlaygroundField } from './playground.js'
+import { playgroundOf, theCallOf, whatATextFieldCannotCarry } from './playground.js'
 
 const NOTHING = {} as const
 
@@ -66,6 +67,43 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
 /** A number with the thousands marked, because a byte count is read as a quantity. */
 const grouped = (value: number): string => value.toLocaleString('en-US').replaceAll(',', ' ')
 
+/*
+ * What this page says about the playground below it is read off that playground rather than written
+ * beside it, and the limit a text field imposes is declared on the case that causes it. ADR-0096.
+ */
+
+/**
+ * The sentence about the fields that are not read as text, or nothing when every field is.
+ *
+ * Read off the fields rather than written per contract: three of the four pages say nothing here
+ * because all their fields take text, and `date/add@1` names its one `Duration` field. A page
+ * asserting `each field holds a literal` beside a form of text fields is the defect this whole unit
+ * exists against, and it is not repaired by writing the opposite sentence somewhere a reader can
+ * check it against nothing.
+ */
+const spelledFields = (fields: readonly PlaygroundField[]): string => {
+  const spelled = fields.filter((field) => field.reads.kind === 'a-literal')
+  if (spelled.length === 0) return ''
+
+  const named = spelledOut(spelled.map((field) => field.name))
+  const because = spelledOut([
+    ...new Set(
+      spelled.map((field) => (field.reads as { readonly because: string }).because),
+    ),
+  ])
+
+  return (
+    ` ${named} ${spelled.length === 1 ? 'is' : 'are'} written as a literal instead, exactly the way ` +
+    `the cases above are written, because what it takes is ${because}.`
+  )
+}
+
+/** A list as a sentence reads one, which is the last pair joined by a word and not by a comma. */
+const spelledOut = (parts: readonly string[]): string =>
+  parts.length < 2
+    ? (parts[0] ?? '')
+    : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1] as string}`
+
 /**
  * One case, as the call it is.
  *
@@ -74,7 +112,11 @@ const grouped = (value: number): string => value.toLocaleString('en-US').replace
  * it stops being true - so what is left after them is the answer. A single answer field is written
  * bare, because there is nothing to tell it apart from; two or more are named.
  */
-const renderedCase = (entry: CaseRecord, answer: ExportRecord): Node => {
+const renderedCase = (
+  entry: CaseRecord,
+  answer: ExportRecord,
+  fields: readonly PlaygroundField[],
+): Node => {
   const { written: call, answered } = theCallOf(entry, answer)
 
   const result =
@@ -88,6 +130,14 @@ const renderedCase = (entry: CaseRecord, answer: ExportRecord): Node => {
     anchorTo(entry.id),
     el('p', { class: 'call' }, line('code', `${answer.name}(${call.join(', ')}) → ${result}`)),
     line('p', entry.rationale, { class: 'why' }),
+    ...whatATextFieldCannotCarry(entry, answer, fields).map((field) =>
+      line(
+        'p',
+        `A text field drops ${spelledOut(field.lost)}, so ${field.name} cannot be retyped in the ` +
+          `playground below. The answer above is what this contract settles for it.`,
+        { class: 'meta' },
+      ),
+    ),
     ...(entry.provenance.kind === 'found-by-mutation'
       ? [
           line(
@@ -135,6 +185,7 @@ const renderedGroup = (
   group: CaseGroup,
   table: CaseTableRecord,
   answer: ExportRecord,
+  fields: readonly PlaygroundField[],
   heading: Tag,
 ): readonly Node[] => [
   addressed(heading, group.id, group.title),
@@ -144,7 +195,7 @@ const renderedGroup = (
     { class: 'cases' },
     ...table.cases
       .filter((entry) => entry.group === group.id)
-      .map((entry) => renderedCase(entry, answer)),
+      .map((entry) => renderedCase(entry, answer, fields)),
   ),
 ]
 
@@ -165,12 +216,15 @@ const renderedGroup = (
 const renderedTable = (
   table: CaseTableRecord,
   answer: ExportRecord,
+  fields: readonly PlaygroundField[],
   alone: boolean,
 ): readonly Node[] => [
   alone
     ? line('p', `${table.purpose}.`, { class: 'meta' })
     : line('h3', table.purpose, { class: 'table' }),
-  ...table.groups.flatMap((group) => renderedGroup(group, table, answer, alone ? 'h3' : 'h4')),
+  ...table.groups.flatMap((group) =>
+    renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
+  ),
 ]
 
 export const contractPage = (held: Held): Document => {
@@ -261,16 +315,18 @@ export const contractPage = (held: Held): Document => {
           `contract decides, one input at a time.`,
       ),
       ...contract.caseTables.flatMap((table) =>
-        renderedTable(table, answer, contract.caseTables.length === 1),
+        renderedTable(table, answer, playground.fields, contract.caseTables.length === 1),
       ),
 
       line('h2', 'Try it on your own input'),
       line(
         'p',
-        `This calls ${playground.calls} on whatever you type. Each field holds a literal, written ` +
-          `exactly the way the cases above are written, and the form opens on ${playground.opensOnCase} ` +
-          `so there is a call that works to edit. What comes back is what the function answered — the ` +
-          `settled answer is on the case's own line above, and is deliberately not repeated here.` +
+        `This calls ${playground.calls} on whatever you type. What you type into a field is the ` +
+          `value, character for character, and the form opens on ${playground.opensOnCase} so there ` +
+          `is a call that works to edit.${spelledFields(playground.fields)} What comes back is what ` +
+          `the function answered, under the call it was made from — invisible characters are named ` +
+          `there, so two inputs that look alike on screen do not print alike. The settled answer is ` +
+          `on the case's own line above, and is deliberately not repeated here.` +
           (playground.describes === null
             ? ''
             : ` When it answers nothing, ${playground.describes} is called on the same input and its ` +
