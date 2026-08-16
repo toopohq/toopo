@@ -222,6 +222,12 @@ jobs:
       # wrangler infer it, and if that turns out to be wrong the log will say so - at which point it is
       # added in the open, as the reference it is, rather than as a secret nobody can check. A setting
       # added in case is a setting nobody later knows the reason for.
+      #
+      # **An observed gap, not explained, recorded where it will be met again.** The first deployment
+      # printed three counts that do not reconcile: the step above counted **75** files in the output
+      # folder, wrangler reported reading **92** from the same directory in the same job, and uploaded
+      # **74**. The upload reconciles - 74 served plus `_headers`, which is read and never served, is the
+      # 75 that were built. The 92 reconciles with nothing measured here, and no cause is named for it.
       - name: deploy
         if: github.ref == 'refs/heads/main'
         env:

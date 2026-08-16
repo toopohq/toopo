@@ -183,10 +183,31 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   one character gets a redirect indexed instead of the page*, and that sentence is now describing this
   catalogue. The frozen half is worse than the sitemap: `contractUrl` is written into the licence header
   of every file the installer has ever written, it writes `@1`, and a header is frozen into somebody
-  else's repository for ever. **What is not measured is whether any other host does this**, so nothing
-  here says the encoding belongs in the address rather than in one deployment's normalisation — and
-  choosing wrong freezes the wrong one. It closes before the domain is connected, because both readings
-  are frozen the day something is served at `THE_ORIGIN`.
+  else's repository for ever.
+
+  **Measured at `c764867`, and it narrows the question rather than answering it.** Four hosts that serve
+  `@` in a path segment at scale — jsDelivr, unpkg, esm.sh and the npm registry — all answer **200 with
+  no redirect**, and three of the four report `Server: cloudflare` with a `CF-Ray`. So Cloudflare's edge
+  does not normalise `@`; something in Workers static assets does. Two further readings place it: a path
+  carrying `@` that resolves to nothing answers a plain **404**, not a redirect, so this is not a blanket
+  rewrite before lookup; and the `%40` form answers **200 directly**, never redirecting back. **The
+  stored key is the encoded one**, which puts the encoding at upload rather than at request. It is
+  documented nowhere — the URL-normalization pages describe a zone feature that does not apply on
+  `workers.dev`, and no page describes this.
+
+  So the question is now *whether the encoding belongs to the address or to one tool's upload*, and it
+  is still not answered: nothing measured says what a second host would store. Choosing wrong freezes the
+  wrong one, and it is frozen the day something is served at `THE_ORIGIN`.
+- **`contentTypeOf` — declared in `endpoints.ts`, read by the local server and by no deployment.** It is
+  the second `one-directional` field of that file and the same shape the cache policy had until this
+  unit: measured on the deployment at `c764867`, every named answer and every content-addressed answer
+  arrives with **no `Content-Type` header at all**, because they are files with no extension and nothing
+  tells the host what they are. It costs nothing today — a client reading JSON does not consult it — and
+  that is exactly why it survived. **It closes where the cache policy closed**, in
+  `packages/site/served-headers.ts`, by the same derivation from `ENDPOINTS`: one more header per rule,
+  read from `contentTypeOf` instead of `cacheControlOf`. It is not done here because two repairs to one
+  headers file read better together than apart, and because this unit's argument was about the thirty-six
+  answers a cache would have revalidated, not about a header nothing reads yet.
 - **That a declared absence carries the date it was true**, which nothing keeps and which was found on
   this repository's own prose one day after it was written. ADR-0098 published *whether a runner's
   checkout satisfies that has not been measured* in the present tense; the job ran on the next commit
