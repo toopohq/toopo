@@ -1,0 +1,132 @@
+# The seven suites, on every push of a branch and on every pull request.
+#
+# ---------------------------------------------------------------------------
+# What the checkout must be, measured rather than chosen
+# ---------------------------------------------------------------------------
+#
+# `fetch-depth: 0` is load-bearing and looks like a cost. Measured at `2640b5d`, by handing
+# `deadCitationFaults` the population a depth-1 clone holds:
+#
+#     citations made:            54
+#     faults at full depth:       0
+#     faults at fetch-depth: 1:  54
+#
+# Every citation this repository writes resolves against `git rev-list --all`, so a shallow clone makes
+# all fifty-four name a commit the clone does not have. `mutation/history.ts` carries why the population
+# is `--all` and not `rev-parse`.
+#
+# The same line brings the tags, and that half is kept by a guard rather than by this comment:
+# `the-address-sweep-reaches-the-commits-and-the-annotated-tags` requires `refs/tags/` to be non-empty,
+# so a checkout that stopped fetching them reddens instead of sweeping a smaller graph in silence. Three
+# `evidence/*` tags retain seventeen commits `main` does not reach.
+#
+# ---------------------------------------------------------------------------
+# Why the suites are started by npm when the repository installs with pnpm
+# ---------------------------------------------------------------------------
+#
+# `packaging/` packs and installs with npm deliberately - the repository is developed with pnpm and the
+# product is consumed with npm, and `packaging/the-archive.ts` carries that argument at length. It finds
+# npm through `npm_execpath`, trusting it only when it names `npm-cli.js`, and otherwise looks beside
+# `process.execPath` - which is where a Windows node distribution keeps it and not where a Linux one
+# does. `pnpm run` would hand it pnpm's own entry point and fall through to that lookup.
+#
+# So the suites are started by `npm run`, which sets `npm_execpath` to npm's own entry point on every
+# platform. `pnpm` is still what installs the tree.
+#
+# ---------------------------------------------------------------------------
+# One job of seven steps, and not seven jobs
+# ---------------------------------------------------------------------------
+#
+# Seven jobs would run in parallel and finish sooner in wall clock. They would also pay for seven
+# checkouts and seven installations, and this repository is private on a free plan where the minutes are
+# metered. Seven *steps* cost one checkout and name the failing suite in the log just as precisely.
+#
+# ---------------------------------------------------------------------------
+# What is deliberately not here
+# ---------------------------------------------------------------------------
+#
+# **A tag push does not run this.** `branches: ['**']` is what excludes it. An `evidence/*` tag names a
+# tree from an earlier unit, and running today's suites against it measures nothing about today.
+#
+# **The nineteen batteries do not run here, and the reason is not the minutes.** A pin is calibrated
+# against runs on the machine that wrote it: ADR-0053 is why a draw count and a rate are read together,
+# and ADR-0077 is why no rate obtained by reproducing a generator is trustworthy to better than an order
+# of magnitude. A replay on another platform therefore produces disagreements nobody can attribute to a
+# defect rather than to the platform - a red on which no action is possible. The replay stays one
+# command, run by a person who then reads the result.
+
+name: suites
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+# A superseded run measures a tree nobody will merge, and the minutes are metered.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Nothing here writes to the repository. The token is narrowed to what a checkout needs.
+permissions:
+  contents: read
+
+jobs:
+  suites:
+    runs-on: ubuntu-latest
+
+    strategy:
+      # Every leg reports, because the question this matrix answers is which runtimes pass and not
+      # whether one does.
+      fail-fast: false
+      matrix:
+        # `engines` declares `^22.15.0 || >=24.0.0`, and that is the *consumer* floor - derived in
+        # `packages/registry/publication.ts` from two APIs that `@types/node` marks `@since v22.15.0`,
+        # for somebody who installs the compiled archive.
+        #
+        # The floor for a *contributor*, who runs `node run-vitest.ts` and therefore needs a runtime
+        # that strips types with no flag, is higher and is named nowhere in this repository. That file
+        # says why: the only machine that could measure it runs v24.15.0, and a number nobody measured
+        # is the class this project spends its length removing. It also says what would close it - a run
+        # on a 22.x runtime - which is what these legs are.
+        node: ['22.15.0', '22.18.0', '22', '24']
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 54 citations resolve against `git rev-list --all`; a depth-1 clone makes all 54 dead. The
+          # header above carries the measurement.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: contracts
+        run: npm run test
+
+      - name: meta
+        run: npm run meta
+
+      - name: registry
+        run: npm run registry
+
+      - name: validation
+        run: npm run validation
+
+      - name: cli
+        run: npm run cli
+
+      - name: site
+        run: npm run site
+
+      # Packs with `npm pack` and installs the tarball, which resolves `typescript` from the registry.
+      # A fresh runner has an empty npm cache, so this step needs the network - and caching pnpm's store
+      # above does nothing for it. `packaging/the-archive.ts` names that cost.
+      - name: packaging
+        run: npm run packaging
