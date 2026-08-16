@@ -6,9 +6,9 @@ governs:
   - packages/catalogue/every-contract.ts
 confirmed-by:
   - battery: registry-storage
-    guard: the-shared-surface-is-what-the-harness-reaches-string-slugify
+    guard: the-shared-surface-is-what-the-harness-reaches
   - battery: registry-storage
-    guard: a-changed-shared-file-moves-the-digest-string-slugify
+    guard: a-changed-shared-file-moves-the-digest
 ---
 
 # What may live in the catalogue package, and why resemblance is not duplication

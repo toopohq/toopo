@@ -177,6 +177,21 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
 
 **Still open, and what each one now costs.**
 
+- **That a decision can name what confirms it, when what confirms it is a guard over the five.**
+  ADR-0001 requires `confirmed-by` present and non-empty, and a guard is addressed by the pair
+  `(suite, guard)`. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the
+  catalogue is collected as `…-%s`; `guardAddressFaults` requires a frozen identifier and `%s` is not
+  one. **So a decision whose subject is per-contract has no citable guard at all**, and nothing says
+  so — the author discovers it as nine faults from
+  `every-guard-a-decision-names-is-one-its-suite-collects`, which reports that the suite collects no
+  such identifier and not that the identifier could never have existed. Measured at `4001aa3`: zero of
+  the 105 records cite a parameterised guard, so the rule has been kept by accident rather than by
+  anything. ADR-0105 folded four guards into one apiece and that was right on its own merits, which is
+  exactly what makes this worth writing down: the collision was paid around rather than found. **The
+  population is every guard written with `it.each`**, and what would close it is `guardsCollectedIn`
+  expanding a parameterised title the way the run does — it already knows the folder, and `eachContract`
+  is the only table the catalogue parameterises over. The price is that it stops being a plain read of
+  the source and starts needing to know what a suite's rows are. Not built.
 - **That a mutant a battery injects is the defect it describes, and not a compile error.**
   `mutation/check-anchors.ts` reads a cell's `find` text and requires it to occur once in its file; it
   never reads the `replace`. Found by ADR-0105 rather than reasoned about: `hashedFile` renamed two

@@ -9,19 +9,13 @@ governs:
   - packaging/reachable.ts
 confirmed-by:
   - battery: registry-storage
-    guard: the-shared-surface-is-what-the-harness-reaches-number-parse
+    guard: the-shared-surface-is-what-the-harness-reaches
   - battery: registry-storage
-    guard: the-shared-surface-is-what-the-harness-reaches-string-slugify
+    guard: a-changed-shared-file-moves-the-digest
   - battery: registry-storage
-    guard: a-changed-shared-file-moves-the-digest-number-parse
+    guard: a-fetched-harness-resolves-every-import-it-carries
   - battery: registry-storage
-    guard: a-changed-shared-file-moves-the-digest-string-slugify
-  - battery: registry-storage
-    guard: a-fetched-harness-resolves-every-import-it-carries-number-parse
-  - battery: registry-storage
-    guard: a-fetched-harness-resolves-every-import-it-carries-string-slugify
-  - battery: registry-storage
-    guard: the-snapshot-names-no-blob-the-registry-cannot-serve-string-slugify
+    guard: the-snapshot-names-no-blob-the-registry-cannot-serve
 ---
 
 # A contract freezes what its guards call, not only the files it owns
@@ -199,21 +193,41 @@ green. It is recorded in `CLAUDE.md` among what this repository declares and not
 Four guards, each seen red on its own failure condition before being trusted:
 
 - **the registry stops serving the shared surface** — `servedFilesOf` reduced to the harness, which is
-  the state this repository was in at `9176c9e`. Ten red, naming the defect file by file:
-  `contracts/typescript/number/parse/properties.test.ts imports packages/catalogue/every-contract.ts,
-  which the registry does not serve`.
-- **the shared surface leaves the frozen projection** — 22 red, and five of them are the schema's own
-  accounting rather than this unit's: `the-frozen-half-and-the-standing-half-partition-a-contract`
+  the state this repository was in at `9176c9e`. Two red, naming the defect file by file: 26 unresolved
+  imports across the five, of the form `contracts/typescript/number/parse/properties.test.ts imports
+  packages/catalogue/every-contract.ts, which the registry does not serve`, and ten blobs named by a
+  snapshot that nothing could have handed over.
+- **the shared surface leaves the frozen projection** — 14 red across two files, and 12 of them are the
+  schema's own accounting rather than this unit's: `the-frozen-half-and-the-standing-half-partition-a-contract`
   reports `[ 'lifecycle', 'sharedHarness' ]` against `[ 'lifecycle' ]`, and
   `every-frozen-field-of-a-record-moves-the-digest` names `sharedHarness`.
-- **the walk stops refusing** — five red on `expected function to throw an error, but it didn't`.
-- **the walk refuses only one direction** — the `undeclared` half kept and the `missing` half dropped,
-  so that the second direction is shown to be reachable on its own rather than behind the first.
+- **the walk stops refusing** — one red carrying ten faults, both directions named for all five, which
+  is what folding the five into one guard bought: under five parameterised guards the first assertion
+  masked the second and only one direction was ever shown.
+- **the walk stops resolving a `.js` specifier to its source** — all four red, reporting `declared and
+  not reached: packages/catalogue/every-contract.ts, packages/catalogue/identifier.ts`. This is the one
+  that establishes the walk is not vacuous: a closure that found nothing would satisfy *reached implies
+  declared* for ever.
 
-`the-snapshot-names-no-blob-the-registry-cannot-serve` is the fourth, and it is born green in the sense
-`CLAUDE.md` requires an argument for: it fires the day the two lists come apart — a snapshot naming a
-blob no stand-in can produce is a 404 on an address a lockfile holds, and there is no other guard whose
-subject is that pair.
+### One guard over the five, where the file beside it is five guards
+
+`served-files.test.ts` writes `an-undeclared-file-is-refused` as five addresses and this file writes
+four single guards, and the difference is in the subject. A contract declares its **own** file list and
+the five do not agree — four carry seven names, `array/group-by@1` carries nine — so that guard is five
+claims. `THE_SHARED_FILES` is one list for all five and every defect these can catch is a defect in one
+shared reader, so five addresses would be one claim asserted five times: the slug would be a rendering
+of the loop variable rather than an address, which is what [ADR-0017](0017-an-address-is-a-name-never-a-rendering-of-its-data.md)
+refuses. The contract is named in the fault instead.
+
+**It also turned out to be the only shape a decision can cite, and that is a finding rather than a
+convenience.** `guardsCollectedIn` reads a guard's *written* title, so an `it.each` guard is collected
+as `…-%s`; `guardAddressFaults` requires a frozen identifier and `%s` is not one. So **no decision in
+this repository can name a per-contract guard in `confirmed-by`**, while [ADR-0001](0001-record-decisions-in-madr-format.md)
+requires that field to be present and non-empty. Measured: zero of the records cite one today, and the
+first attempt to do so here produced nine faults from
+`every-guard-a-decision-names-is-one-its-suite-collects`. It is recorded in `CLAUDE.md` among what this
+repository declares and nothing keeps, because the collision is silent — a decision whose subject is
+per-contract has no way to say what confirms it, and nothing tells its author that.
 
 ## What would reopen this
 
