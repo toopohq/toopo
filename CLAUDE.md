@@ -158,6 +158,31 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in
   `mutation/history.ts`, whose halves are already this shape: a declaration of what is refused, a sweep
   over a named population, and a fault that reports where without reprinting what.
+- **That a declared absence carries the date it was true**, which nothing keeps and which was found on
+  this repository's own prose one day after it was written. ADR-0098 published *whether a runner's
+  checkout satisfies that has not been measured* in the present tense; the job ran on the next commit
+  and the sentence was false. **The class is a sentence asserting, with no stamp, that a specific thing
+  has not been measured, where measuring it is possible and would falsify the sentence.** It is
+  ADR-0018's rule about a dated number arriving on a declared absence, and it is harder to see there
+  because there is no figure to date — nothing looks like a count, so nothing invites a coordinate.
+  Swept over the ninety-eight records at `c764867`, and **written as a list rather than as a number,
+  because a rank is checked only by rebuilding the whole list**:
+  - ADR-0001, *the cause is not established*, of a 126-line gap between two classifiers;
+  - ADR-0055, *nobody has ever checked which* arms real cases reach;
+  - ADR-0058, *the cheapest contribution is the one nobody has ever made*;
+  - ADR-0092, *a surface nobody has seen*;
+  - ADR-0094, *presents no measurements at all*, about a page somebody else can change;
+  - ADR-0095, *what it cost is not measured and is not claimed*;
+  - and ADR-0094 again, *was opened and carries no measurement of any kind* — counted as borderline
+    and not as a seventh, because its verb is past and only its claim is present.
+
+  Six become false the day somebody does the thing; the fifth can become false with nobody here acting
+  at all, which is the one worth reading twice. **What is deliberately not claimed is that the list is
+  complete** — the sweep matched thirteen phrasings and a declared absence has no fixed spelling, so
+  what a reader may take is that each entry is real. **It closes on a convention rather than a guard**:
+  a declared absence carries the commit at which it was true, exactly as a count does. The executable
+  form is the validation stage reading this repository's own strings, which is already on this list,
+  already priced, and already refused as a lint over prose.
 - **That a full replay can finish at all**, which two guards detect and nothing prevents. Measured three
   times out of three: a completed `registry-storage` leaves `.rebuilt/<HEAD>` registered as a worktree —
   the directory is gone, only the administrative entry survives, so `git worktree list` reads
