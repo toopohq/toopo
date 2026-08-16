@@ -39,8 +39,8 @@
  * it refused, never an absence* is a step a loop can re-enter for nothing.
  *
  * **Round trips are `4 + depth`, and this paragraph published `3 + 2·depth + 1` until somebody
- * measured it.** That formula was written at `0ce32d6`, against a maquette, before an edge carried the
- * digest of what it names; `9f11770` took the same install from eight round trips to six and nothing
+ * measured it.** That formula was written at `5fa4373`, against a maquette, before an edge carried the
+ * digest of what it names; `274fd09` took the same install from eight round trips to six and nothing
  * came back here. Measured at the wire by
  * `the-walk-costs-one-round-trip-per-level-and-fetches-each-frontier-at-once`: **four round trips and
  * five requests** for a contract that depends on nothing, **six and eleven** for the imagined graph at

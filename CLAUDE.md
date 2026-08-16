@@ -90,8 +90,9 @@ ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list.
 about the entry.** *A published version is frozen for life* is the biggest `one-directional`
 declaration this repository has ever carried — it is the whole security argument, every lockfile in the
 world would hold the digest it moved, and it is what the product is sold on. It has been in this file
-since the first commit, 367 commits before `5d81138`. This list has existed for 271 of them, for exactly
-this class of defect, and it never named it. Ten entries, none of them the one that mattered most.
+since the first commit, 367 commits before `74904ef`. This list has existed for 271 of them, for exactly
+this class of defect, and it never named it. Ten entries at that commit, none of them the one that
+mattered most.
 
 So the rule the list adds to itself is not another entry. **A list that believes itself exhaustive is
 more dangerous than no list**, because it is read as coverage: every session that opened this file saw
@@ -100,8 +101,31 @@ Nothing here says how many instances exist, and nothing can. What a reader may t
 that each entry it names is real; that it is complete is a claim no version of it has ever been entitled
 to make, and this paragraph is the correction that stays.
 
+**And the same shape arrived one level down, in a closure criterion rather than in this list.** Taking
+the personal address out of the history was to be closed by *zero occurrences over the 374 commits* —
+374 being what `git rev-list --count HEAD` answers. This repository holds **391**: three `evidence/*`
+tags retain seventeen commits `main` does not reach, every one of them carrying the address, and every
+one of them published by the first `push --tags`. The criterion would have gone green over a branch
+while the defect left by another door. What made 374 wrong is not a miscount but a population read off
+whichever ref somebody was standing on, so: **a count that bounds a defect names the population it
+swept**, and `--all` is the only spelling of *this repository* that a tag cannot fall out of.
+
 **Still open, and what each one now costs.**
 
+- **That a commit identifier written in this repository's prose resolves to a commit of it.** Measured
+  at `c0d2ec6`, over the tracked files: **34 identifiers, 68 occurrences, 30 files** — seventeen of
+  prose and thirteen of TypeScript, five of them data in `THE_COMMITS_QUOTED`. All 68 were translated
+  from `filter-repo`'s table when the history was reissued, and each new identifier was verified
+  resolving; **nothing in the repository would have noticed had they not been.** `THE_COMMITS_QUOTED`
+  looks like the guard and is not: it strips those strings out of a comparison and never asks git
+  whether any of them names anything. The mechanism is `mutation/anchors.ts`'s, aimed at a different
+  quotation — a module walking the tracked files, resolving every identifier it finds, and reddening on
+  a dead one — **about a hundred lines and its test**. It is not built here on purpose: a rewrite of the
+  history is the riskiest operation this project has, its criterion is that the tree did not move and
+  the verdicts did not move, and a new guard under `meta` blurs the one diff that has to stay readable.
+  **It is the first act of the next unit**, named as an event rather than as *later*, because this class
+  moves faster than a reread — ADR-0001 records a row of its own that was false one commit after it was
+  published, in the commit that published it.
 - **That an archive somebody installs really installs a feature**, which three guards kept until the
   catalogue left the archive and now nothing does. They compared the bytes a real `toopo add` wrote out
   of a real tarball against the bytes in `contracts/`, and they worked because the catalogue travelled

@@ -59,7 +59,7 @@ collected, and this run collected everything.
 
 **The reading this was filed under was wrong, and the arithmetic is what says so.** It was recorded as
 state leaking between batteries on the strength of *0 red in 30 runs of the unmutated `cli` suite
-alone*. Measured at `d0ee718`, over that same suite, alone, sequential, with nothing injected and no
+alone*. Measured at `829023b`, over that same suite, alone, sequential, with nothing injected and no
 battery anywhere: **3 reds in 139 runs — 2.16 per cent**, 95 per cent Clopper-Pearson [0.45, 6.18],
 every one of them the same exception at the same line. At that rate thirty clean runs happen **52 per
 cent** of the time. *Clean in isolation, faulty in sequence* was the sample size and not a signature.
@@ -113,8 +113,8 @@ the project as its working directory and writes a sentinel before anything is re
 cannot pass by winning a race against a holder that never started. With the retry taken away it answers
 the identical `EPERM` on the identical call; with it restored the directory goes.
 
-**Before and after, over the same loop at two commits.** 3 in 149 at `d0ee718`; **0 in 700** at
-`0813211`. If the repair had changed nothing, P(0 in 700) = 6.6 × 10⁻⁷, and 0 in 700 bounds that class
+**Before and after, over the same loop at two commits.** 3 in 149 at `829023b`; **0 in 700** at
+`cc1f4e9`. If the repair had changed nothing, P(0 in 700) = 6.6 × 10⁻⁷, and 0 in 700 bounds that class
 under **0.427 per cent** against 2.01 — a margin of about five, which is what a repair is chosen on
 rather than on the second decimal of either figure.
 
@@ -250,7 +250,7 @@ delta per run rather than a total anybody would have to trust: `1, 2, 3` before,
 700 runs** after.
 
 **A fourth event of this family is recorded and not diagnosed, which is the whole of what one event
-supports.** The first of the two replays taken at `06e264b` reported *`cli-search`:
+supports.** The first of the two replays taken at `1115ec5` reported *`cli-search`:
 `every-shape-of-import-is-repointed-and-not-only-the-obvious-one` is declared silent and a mutant
 reddened it*. Rerun alone, immediately afterwards, that battery agreed on all twenty of its cells and
 the guard was silent again; the second full replay was clean throughout. So the event is not

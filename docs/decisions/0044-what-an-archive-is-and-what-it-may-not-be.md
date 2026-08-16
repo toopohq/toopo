@@ -115,7 +115,7 @@ publication decision, not a change to this repository.
 record.** Every file the installer copies carries `https://toopo.dev/<contract>/` in its first line,
 and that line is frozen in somebody else's repository from the moment it lands: a redirect repairs a
 site's own link for everybody at once and repairs this one for nobody, because we will never see those
-files again. Measured at `8d934cb`, every path on that origin answers 403. **So the site answers 200
+files again. Measured at `baae919`, every path on that origin answers 403. **So the site answers 200
 before the package is published, and never the other way round** — publishing first buys nothing that
 waiting does not, and costs a dead link in every artefact written in between, permanently. The order is
 free while nothing is published, which is exactly why it is written down now rather than met by luck

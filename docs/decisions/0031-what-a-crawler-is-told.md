@@ -62,12 +62,12 @@ stays green, and only the decoding finds that every published URL now names noth
 ## Consequences
 
 **Verified over HTTP rather than assumed**, which is the third unit running where a browser found what
-no static check could. Measured at `0d8e41d`: the XML parses with no parser error, root `urlset` in
+no static check could. Measured at `23ce165`: the XML parses with no parser error, root `urlset` in
 the sitemaps namespace, seven `loc`, zero `lastmod`, and all seven URLs answered 200 with no
 redirect — the `@` addresses included.
 
 **That sentence stood in the present tense and went false, which is the fifth instance of this
-repository's own class and the first found by measuring rather than by rereading.** Measured at `8d934cb`:
+repository's own class and the first found by measuring rather than by rereading.** Measured at `baae919`:
 `toopo.dev` resolves to `216.24.57.7` and **every path answers 403**, with an identical 8 096-byte
 body on `/`, `/number/parse@1/`, `/method/` and `/sitemap.xml`. Nothing is served. So the verification
 above is stamped and stays true of its commit for ever, and the live state is a separate sentence with

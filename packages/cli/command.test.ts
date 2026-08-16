@@ -13,7 +13,7 @@ import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './tempor
  * Which commands reach the registry, produced by running them rather than claimed in a sentence.
  *
  * **The claim existed and was false from its first day.** `list.ts` published *this is the only one
- * that reads no registry*, and `init` has never read one either - checked at `9a5c60c`, where its
+ * that reads no registry*, and `init` has never read one either - checked at `dbd0105`, where its
  * branch of `command.ts` carries no call to the thunk, exactly as it does now. Nothing kept the
  * sentence, so nothing could notice it was wrong.
  *

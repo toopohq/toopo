@@ -107,7 +107,7 @@ behind and **a guard resolving the record against those titles could not fail** 
 disqualifies the obvious mechanism rather than any argument about its worth. What is resolved instead
 is what a *battery* names, and both spellings this paragraph once called unguarded — a pin that stops
 matching, a silence declaration naming nothing — are refused in `calibrate()` before a verdict exists.
-Measured at `277a637`: the five declare **27** profiles, the suite collects **27** guard titles
+Measured at `c651d56`: the five declare **27** profiles, the suite collects **27** guard titles
 `profile-<name>`, and **27 of 27** are named by a battery, so every one resolves.
 `benchmarks.profiles[].name` stays `one-directional` in `field-map.ts` for its **other** half — a name
 makes a claim about its own samples that no guard reads — and that half is one of the debts `CLAUDE.md`

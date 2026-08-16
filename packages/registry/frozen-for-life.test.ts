@@ -31,7 +31,7 @@ if (SLUGIFY === undefined) throw new Error('the catalogue holds no string/slugif
 
 const WHAT = renderContract(SLUGIFY.address)
 
-/** One line of one comment of a declared harness file. The whole of what `4a3bce5` did. */
+/** One line of one comment of a declared harness file. The whole of what `5965079` did. */
 const A_COMMENT = {
   path: join(SLUGIFY.folder, 'properties.test.ts'),
   find: '**The margin is the point rather than the figure**',
@@ -143,7 +143,7 @@ afterAll(() => {
 describe('a contract of this catalogue, published and then edited', () => {
   /**
    * **The claim of the unit, on a real contract.** One comment of `properties.test.ts` reworded, which
-   * is exactly what `4a3bce5` did to this very file, and the check refuses it: the address was bound to
+   * is exactly what `5965079` did to this very file, and the check refuses it: the address was bound to
    * one artefact and the tree now produces another.
    *
    * Both digests are asserted rather than the count, because a count alone is satisfied by the other

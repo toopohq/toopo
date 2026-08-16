@@ -93,7 +93,7 @@ its own requests counts its intentions. Measured over two depths so the shape is
 **four round trips and five requests** for a contract that depends on nothing, **six and eleven** for the
 imagined graph at depth two, with rounds `[1, 1, 1, 2, 1, 5]` — two edges arriving together and five
 files arriving together, which is what tells a batched frontier from a walked one. That is exactly what
-`9f11770` published when the edge gained its digest, so the product agrees with the maquette rather than
+`274fd09` published when the edge gained its digest, so the product agrees with the maquette rather than
 replacing it.
 
 **A guard of this unit was measuring something other than its own name, and the instrument is what
@@ -110,8 +110,8 @@ sentence written for it now could be seen red by nothing. It closes with the ent
 an origin, which is the change that makes the failure reachable.
 
 **What the sweep found, and it is the deliverable rather than the two sentences that raised it.**
-`command.ts` published round trips as `3 + 2·depth + 1`, eight at depth two — written at `0ce32d6`
-against a maquette, falsified by `9f11770` one commit later, and never revisited.
+`command.ts` published round trips as `3 + 2·depth + 1`, eight at depth two — written at `5fa4373`
+against a maquette, falsified by `274fd09` one commit later, and never revisited.
 `local-source.ts` called itself the only implementation of the port, false since `packaged-source.ts` was
 written. `remove-directory.ts` argued for staying synchronous because going asynchronous would reach
 `command.ts`, which is asynchronous now — the half that carried the weight is that `rewrite.ts` is

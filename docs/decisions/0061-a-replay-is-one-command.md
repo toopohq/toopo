@@ -45,7 +45,7 @@ they describe and a reader is owed one command and one answer. `npm run tally` k
 not a measurement — printing that total again without re-running anything, and refusing a set that is
 not one replay of the commit it would describe. **That refusal is only reachable from the second
 command**, by construction, since a replay's results are always fresh by the time it counts them.
-Measured at `57958fd`, one run of the nineteen took
+Measured at `c20b005`, one run of the nineteen took
 **27 min 8 s** and gave **612 defect cells, 576 killed, 36 surviving, beside 26 probe cells of which 4
 survive**, every cell agreeing with the verdict pinned for it; the largest single battery was
 `cli-install` at 367 s. **A duration is published beside its
@@ -59,7 +59,7 @@ precision the measurement has not got. **The count is what has always told these
 here it did not move**: 612 either way, so nothing but the clause could have said that comparing the two
 series is wrong. The old readings stay, labelled, because they are what makes the change visible. **And that regime now
 carries a reading that needs no population at all, which is what every count of readings here was
-standing in for.** Measured at `06e264b`: **618 cells in 27 min 22 s**, and the same 618 cells in
+standing in for.** Measured at `1115ec5`: **618 cells in 27 min 22 s**, and the same 618 cells in
 28 min 42 s on the run before it — identical work, on one machine, eighty seconds apart. Every earlier
 reading compared populations and could always be answered with *the cells moved*; this one cannot,
 because nothing moved. The cross-population readings agree with it and no longer have to carry the

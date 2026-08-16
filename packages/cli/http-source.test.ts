@@ -144,7 +144,7 @@ describe('a registry reached over a socket', () => {
    * the two edges of a frontier together and round six fetches all five files at once. A walk that asked
    * one question per round trip would answer the same total and take eleven.
    *
-   * These figures are what the edge digest bought. Before `9f11770` the same install cost **8 round
+   * These figures are what the edge digest bought. Before `274fd09` the same install cost **8 round
    * trips and 14 requests**, because the walk asked `implementation-bindings` for every edge to learn
    * which digest it resolved to; the digest is inside the snapshot now and the closure hangs off the
    * root's alone.

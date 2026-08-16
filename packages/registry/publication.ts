@@ -46,6 +46,15 @@ export const THE_SOURCE_REPOSITORY = 'git+https://github.com/toopohq/toopo.git'
  * back out of the versions that carried it. A project address survives whoever answers it; a personal
  * one is a fact about one person's inbox, published on their behalf by a build.
  *
+ * **That argument was written about the manifest and it is not about the manifest.** A git history is
+ * published the moment a remote exists, carries an author and a committer address on every commit, and
+ * is cloned rather than fetched - so the one thing that cannot be undone is exactly what a manifest
+ * cannot be undone in. The 391 commits of this repository carried a personal address and were reissued
+ * under this one before any remote existed; the reissued history runs to `c0d2ec6`, and the tree of all
+ * 391 is unchanged, which is what makes it a rename and not an edit. Nothing tracked keeps that: the
+ * identity a future commit takes is `user.email` in a local config no clone carries, so this paragraph
+ * is the whole of what a reader of a fresh checkout is told.
+ *
  * The name is declared here and nowhere else: `THE_COPYRIGHT` composes the copyright line from it, so
  * the holder of the licence and the author of the package are one string rather than two that agree
  * today. What keeps that recomposition honest is not a new guard but an old one - the five copied files

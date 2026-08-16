@@ -736,7 +736,7 @@ const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[
 /**
  * Every guard this battery names is a guard the run carries - checked before a single verdict exists.
  *
- * **Both halves of this were measured rather than argued**, on `site` at `82d09a7`, by putting back the
+ * **Both halves of this were measured rather than argued**, on `site` at `1281424`, by putting back the
  * two mistakes this repository has already made once and corrected before measuring. Neither outcome is
  * the one the debt was filed expecting.
  *

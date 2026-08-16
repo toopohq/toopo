@@ -45,8 +45,8 @@ executable code. Its limit is declared rather than discovered: **a literal equal
 passes today**, and goes red the day the data moves, which is the day it would otherwise start lying.
 
 **And the set it matches against must hold figures and nothing else, which is the half that was wrong
-and which W-47 found.** `THE_REPLAY.measuredAt` was stamped `0d8e41d`, whose digit runs are `0`, `8`
-and **`41`** — and `41` occurs nowhere else in that data, so the commit stamp handed the pool a figure
+and which W-47 found.** `THE_REPLAY.measuredAt` then held a stamp whose digit runs were `0`, `8` and
+**`41`** — and `41` occurred nowhere else in that data, so the commit stamp handed the pool a figure
 nothing had derived, and the mutant that writes the literal `41` into a derived sentence stopped being
 killed the moment the stamp landed. The guard went **quiet rather than red**, because the data moved
 *towards* a stale literal instead of away from it, and that is the one direction its declared limit
@@ -85,7 +85,7 @@ the exact edit it makes and the verdict it must produce.
 ### A survivor declares its kind
 
 **A survivor declares its kind, and the aggregate is never available without the split.** A count of
-surviving cells published alone reads as a count of holes. Measured at `a381860` over the nineteen
+surviving cells published alone reads as a count of holes. Measured at `39af7f3` over the nineteen
 batteries: **36 surviving defect cells — 12 equivalent, 7 outside what the contract specifies, 4
 unreachable on this catalogue, 1 a declared open class, and 12 that live only where a lens blinded the
 suite.** Exactly one is a debt. `survived` is a function requiring a `SurvivalNature`, so a survivor
@@ -135,7 +135,7 @@ because `measured.unprobed.length` **became exactly 41**, the literal it wrote, 
 declared the transport they cannot reach.
 
 **It is the second collision on that literal and the two are different classes.** The first was an
-address, `THE_REPLAY.measuredAt` stamped `0d8e41d`, and the repair was the rule that an address leaves
+address, the stamp `THE_REPLAY.measuredAt` then held, and the repair was the rule that an address leaves
 the data by both sides or by neither. This one is a real derived count, which no rule about addresses
 reaches.
 
@@ -155,14 +155,40 @@ describes, happening to the guard that describes it. They went unnoticed because
 elsewhere in the data, which is luck. `THE_COMMITS_QUOTED` is the repair and the prose interpolates it,
 so a commit cannot be quoted without being in it. **What the stripping is load-bearing for is the pool
 and not the honest page**, measured both ways: removing it entirely leaves the guard green, because a
-rendered address is in the pool *and* in the reading and the two cancel; on a page publishing `9269`, a
-run occurring nowhere but inside a stamp, it is green without the stripping and red with it.
+rendered address is in the pool *and* in the reading and the two cancel; on a page publishing a run
+occurring nowhere but inside a quoted stamp, it is green without the stripping and red with it.
+
+### The rule was broken six times by prose, and this record wrote four of them
+
+**An address is not a figure was stated here and then broken here**, in the sentences that state it.
+Six sentences across four files quoted a commit identifier *for its digits* — a stamp said to be the
+one whose digit runs were `0`, `8` and `41` — which makes the sentence true only while that identifier
+is spelled that way, and true by accident even then. Two of the six named no identifier at all: they
+quoted `9269`, a run belonging to a stamp four lines above, so no search for a commit could have
+found them. That is how they were found instead — by asking what a rename would falsify, and then
+asking the same of every digit run near a stamp.
+
+**The rewrite of this repository's history revealed them rather than caused them.** When the personal
+address left the history, every commit was reissued under a new identifier; the reissued history runs
+to `c0d2ec6` and the tree of all 391 commits is unchanged, so every measurement stayed true and every
+stamp was translated to the same commit's new name. These six did not survive translation, because
+the new names carry neither `41` nor `9269` — and no rule could have made them, since which digits an
+identifier happens to hold is not a property the rewrite preserves or could preserve. They were false
+in potential from the day they were written, and the dependence is what falsified them.
+
+**The form that replaces them is the one `mutation/published.ts` already used**, which is why it is not
+an invention: *on a stamp whose digit runs included `41`*. The sentence names the run, the identifier
+goes, and a future rename has nothing left to make false. Where a stamp is only an address —
+ADR-0031's measurement of the sitemap, at `23ce165` — it is translated and stays.
 
 ## What would reopen this
 
 A second address rendered on this page. The repair to the figure guard names the one address the data
 carries, and a second would have to be named beside it — which is a mechanism this record prices and
 does not build.
+
+Or prose quoting an identifier for a property of its spelling, which is the defect above and which
+nothing here catches: it was found by asking what a rewrite would falsify, not by a guard.
 
 ## More Information
 

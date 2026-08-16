@@ -7,7 +7,7 @@
  *
  * **Which commands answer with no registry is not said here, because a guard says it.** This file used
  * to claim to be the only one, and that was false from the day it was written: `init` reads no registry
- * either, checked at `9a5c60c` and true of every commit since. Nothing kept the sentence, so nothing
+ * either, checked at `dbd0105` and true of every commit since. Nothing kept the sentence, so nothing
  * could notice. `the-commands-that-reach-the-registry-are-these-and-no-others` in `command.test.ts`
  * runs every command through the thunk `run` already takes its registry by and publishes the map - a
  * list that is produced cannot disagree with itself, which is the whole reason the sentence is gone

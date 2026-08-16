@@ -36,7 +36,7 @@ import { THE_BATTERIES, survivorFaults, theMeasurement } from './published.ts'
  * exactly one test went red, and every time it was the one that covers the guard that had been
  * removed. None of them is decorative and none of them stands in for another.
  *
- * A complete pass costs 11.1 seconds of wall clock at `ee5f974`. It read 6.9 seconds before the pair
+ * A complete pass costs 11.1 seconds of wall clock at `7d08bcf`. It read 6.9 seconds before the pair
  * of drive-letter guards at the foot of this file, the second of which spawns a battery of its own.
  *
  * The cheapest contract battery took 65 seconds when this file was written, and that ratio is the

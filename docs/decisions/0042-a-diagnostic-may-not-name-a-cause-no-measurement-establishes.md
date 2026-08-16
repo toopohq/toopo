@@ -63,7 +63,7 @@ word in the sentence. `conflict` had been carrying the honest form since the day
 *what was just written will not be committed — and toopo.lock will be* is two claims about the user's
 repository, and git had been consulted about one of them while the whole warning rests on the other: the
 trap is a committed lockfile naming files that were not committed. `whatGitIgnores` asks, on the one
-branch that mentions the lockfile. Measured on two real repositories at `d78c428` — `lib/` ignored gives
+branch that mentions the lockfile. Measured on two real repositories at `573e506` — `lib/` ignored gives
 `0` for the folder and `1` for the lockfile and the trap sentence prints; `toopo.lock` ignored as well
 gives `0` for both and the screen says nothing toopo wrote will be committed at all, which is the more
 valuable sentence of the two because ignoring `toopo.lock` is the mistake this product argues against.

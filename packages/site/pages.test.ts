@@ -778,8 +778,8 @@ describe('the page that says how we verify', () => {
      * comes off both sides before the comparison, and it is the rendering that decides which strings
      * are addresses**, not their shape: a digit run is not evidence of a figure.
      *
-     * Measured: `THE_REPLAY.measuredAt` was `0d8e41d`, whose digit runs are `0`, `8` and **`41`** -
-     * and `41` occurs nowhere else in this data. So stamping that commit handed the pool a figure
+     * Measured: `THE_REPLAY.measuredAt` then held a stamp whose digit runs were `0`, `8` and **`41`**
+     * - and `41` occurred nowhere else in this data. So stamping that commit handed the pool a figure
      * nothing had derived, and W-47, which writes the literal `41` into a derived sentence, stopped
      * being killed the moment the stamp landed. Taking it off the reading as well is what keeps the
      * honest page passing, since it is rendered there.
@@ -798,8 +798,8 @@ describe('the page that says how we verify', () => {
      * **What the stripping is load-bearing for is not the honest page, and that was measured rather
      * than assumed.** Taking it away entirely leaves this guard green: a rendered address is in the
      * pool *and* in the reading, so its digit runs cancel and the honest page passes either way. What
-     * it is for is the pool - measured on a page publishing `9269`, a run that occurs nowhere but
-     * inside `measuredAt`: green with no stripping, and red naming `9269` with it.
+     * it is for is the pool - measured on a page publishing a run that occurs nowhere but inside a
+     * quoted stamp: green with no stripping, and red naming that run with it.
      *
      * ---------------------------------------------------------------------------
      * What this establishes, and the half it cannot

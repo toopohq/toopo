@@ -189,8 +189,8 @@ const A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT = `    until:
  * sentence about lenses is read by nothing else, so a literal there probes exactly one claim.
  *
  * **The literal it writes has moved twice, and the second time says something the first did not.**
- * It was `41`. The first collision was an address: `THE_REPLAY.measuredAt` was stamped `0d8e41d`,
- * whose digit runs include `41`, and the repair was to take every address off both sides. The second
+ * It was `41`. The first collision was an address: `THE_REPLAY.measuredAt` then held a stamp whose
+ * digit runs included `41`, and the repair was to take every address off both sides. The second
  * was not an address at all - `measured.unprobed.length` *became* 41, when three batteries declared
  * the transport they cannot reach - so the pool held `41` as a figure something really derived, and
  * the mutant stopped writing anything the page could not have said.
