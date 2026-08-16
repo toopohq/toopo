@@ -111,6 +111,10 @@ const THE_PAYLOAD_CANNOT_CLOSE_ITS_OWN_ELEMENT = `  \`<script type="application/
 
 const WHAT_A_READER_TAKES_IS_WHAT_IS_DECLARED = `      license: THE_COPIED_LICENCE,`
 
+const A_PROJECTION_CARRIES_WHAT_A_READER_MEETS = `    how.prose(document.description),
+    '',
+    ...document.body.map((node) => projected(node, how, false)),`
+
 const THE_PAGE_DECLARES_ITS_LANGUAGE = `    '<html lang="en">',`
 
 const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${STYLE}</style>\`,`
@@ -1328,6 +1332,38 @@ const mutants: readonly Mutant[] = [
       'sentence about this project and a false one about the file the page is offering',
     [contractPageFile(WHAT_A_READER_TAKES_IS_WHAT_IS_DECLARED, `      license: 'MIT',`)],
     killed(['the-structured-data-a-page-publishes-is-the-record-it-renders']),
+  ),
+
+  /**
+   * The payload carried into the projections, which is the shape of the repair somebody would reach
+   * for.
+   *
+   * A Markdown twin that wanted its metadata in front matter is a reasonable thing to want, and this is
+   * how it gets written: widen the assembly to carry the field the document gained. What it does is put
+   * the payload into *every* projection - so the reading, which is the instrument this whole folder is
+   * steered by, gains a JSON blob between the description and the first block, and a stranger reading
+   * the page in document order meets it.
+   *
+   * It is the defect the field's placement was chosen against, and the attribution asked for it: the
+   * guard held both halves of the measurement and nothing reddened it, which the instrument reads as a
+   * decorative guard until a mutant says otherwise.
+   */
+  sameOnEveryLens(
+    'W-74',
+    'carries the structured data into every projection, so the payload written for a machine lands in ' +
+      'the reading a stranger and a screen reader get - between the description and the first block ' +
+      'of every page on the site',
+    [
+      documentFile(
+        A_PROJECTION_CARRIES_WHAT_A_READER_MEETS,
+        `    how.prose(document.description),\n` +
+          `    '',\n` +
+          `    JSON.stringify(document.structuredData),\n` +
+          `    '',\n` +
+          `    ...document.body.map((node) => projected(node, how, false)),`,
+      ),
+    ],
+    killed(['the-structured-data-is-in-no-projection-a-reader-meets']),
   ),
 ]
 
