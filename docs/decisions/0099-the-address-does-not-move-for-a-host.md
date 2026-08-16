@@ -96,15 +96,35 @@ leaving. The file wall is at 1 427 contracts ([ADR-0052](0052-what-an-emitted-tr
 away was always coming, and it changes no URL. Paying a permanent price for a temporary mechanism is the
 wrong side of that trade.
 
-### What was not measured
+### What a second mechanism stores, measured after this record was written
 
-**What a second host would store.** The four above serve `@` from origins whose storage this measurement
-cannot see; none of them is a static-file host of the kind this tree needs, and no such host was
-deployed to. So nothing here establishes that the encoding is unique to this mechanism — only that this
-mechanism does it and that the edge in front of it does not.
+The clause here read *what a second host would store has not been measured*, in the present tense. It
+was measured two throwaway deployments later, and the sentence is replaced rather than left standing —
+which is the class this repository versed on its own prose the same day.
 
-That is the reading that would reopen this, and it is named here so a later reader can see the question
-was asked against data rather than settled by preference.
+**Two throwaway projects, one variable apart.** Both on the same account, the same token, the same edge,
+the same three files, each deleted in the run that made it.
+
+| | Workers static assets | Cloudflare Pages |
+| --- | --- | --- |
+| `/at@1/` | **307** → `/at%401/` | **200** |
+| `/at@1/answer` | **307** → `/at%401/answer` | **200** |
+| `Cache-Control` from `_headers` at the address that serves the bytes | **no** — the rule matched the redirect, the destination fell through to the platform default | **yes** — `public, max-age=31536000, immutable` |
+| `/at%401/` | 200, the canonical key | 200, a different address, default headers |
+
+**So the encoding is not a property of static hosting, of Cloudflare, or of the address. It belongs to
+one mechanism**, and the other mechanism of the same vendor, behind the same edge, answers the published
+address with 200 and the declared header. The tree carried none of this site: a directory with an `@`, a
+file with an `@`, an extensionless file, four rules.
+
+**And the probe found the half nobody had thought to ask.** On Workers assets a rule whose pattern spells
+`@` applies to the *redirect* and not to its destination, so an address there loses its address and its
+headers together. `packages/site/served-headers.ts` escapes it only because every rule is
+`pathTo(endpoint, EVERY_ADDRESS)` and the splat stands where a rendered address would go — by the shape
+of the splat and not by intention.
+
+**Still not measured**: what a host of a different vendor stores. Nothing here needed it, because one
+mechanism that meets the criterion answers the question this record was blocked on.
 
 ## Consequences
 
