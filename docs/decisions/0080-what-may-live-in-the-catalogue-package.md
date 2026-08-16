@@ -4,7 +4,11 @@ date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
   - packages/catalogue/every-contract.ts
-confirmed-by: []
+confirmed-by:
+  - battery: registry-storage
+    guard: the-shared-surface-is-what-the-harness-reaches-string-slugify
+  - battery: registry-storage
+    guard: a-changed-shared-file-moves-the-digest-string-slugify
 ---
 
 # What may live in the catalogue package, and why resemblance is not duplication
@@ -57,10 +61,28 @@ and it is stated once in `CLAUDE.md` rather than twice.
 
 ## Confirmation
 
-Nothing guards this, and nothing could: it is a rule about what may be *added*, and no assertion can
-read a future addition. What keeps it is the freeze discipline stated at the top of the file — anything
-here is frozen with every contract at once, which makes the cost of a wrong entry visible before it is
-made rather than after.
+Two guards keep the half that can be kept, and the sentence that stood here until
+[ADR-0105](0105-a-contract-freezes-what-its-guards-call.md) was wrong in a way worth leaving on the
+record rather than deleting. It read *nothing guards this, and nothing could*, on the argument that
+this is a rule about what may be **added** and no assertion can read a future addition. That argument
+is sound and it is about the wrong half.
+
+**The freeze this record invoked as what keeps it was not happening.** *Anything here is frozen with
+every contract at once* was the whole enforcement mechanism named above, and nothing computed it: a
+contract's digest covered the seven files of its folder and none of what they import. Measured at
+`9176c9e` — emptying `expectUniversalPropertiesAnswered` in the very file this record governs left all
+eight ledger digests identical to the byte, while a contract declaring `deterministic` inapplicable,
+which that guard exists to refuse, went green. So the cost of a wrong entry was **not** visible before
+it was made; there was no cost at all, which is the opposite of what this section claimed.
+
+`sharedHarness` is that sentence made executable. The two guards named above are the pair: the shared
+surface is what the harness really reaches, and a shared file that moves moves every digest that
+reaches it.
+
+**What still has no guard is the original half**, and there the deleted sentence was right: whether
+something *belongs* here is a judgement about whether five contracts repeat it identically, and no
+assertion reads a future addition. What has changed is that adding one now costs five rebound
+addresses instead of nothing, which is the visible price this record wanted and did not have.
 
 ## What would reopen this
 

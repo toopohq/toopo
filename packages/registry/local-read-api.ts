@@ -62,7 +62,13 @@ import {
   servedRefusals,
   servedSnapshot,
 } from './response.js'
-import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract, servedFileOf } from './serialise.js'
+import {
+  REPOSITORY_ROOT,
+  referenceImplementationOf,
+  serialiseContract,
+  servedFileOf,
+  servedFilesOf,
+} from './serialise.js'
 import type { Ledger } from './snapshot.js'
 import {
   EMPTY_LEDGER,
@@ -123,8 +129,8 @@ const gather = (): {
     snapshots.set(digestOfSnapshot(contractShot), servedSnapshot(contractShot))
     snapshots.set(digestOfSnapshot(implementationShot), servedSnapshot(implementationShot))
 
-    for (const file of record.harness) {
-      blobs.set(file.sha256, servedBlob(servedFileOf(REPOSITORY_ROOT, source.folder, file)))
+    for (const file of servedFilesOf(source.folder, record)) {
+      blobs.set(file.sha256, servedBlob(servedFileOf(REPOSITORY_ROOT, file.path, file.sha256)))
     }
 
     if (record.lifecycle.state === 'never-published') {

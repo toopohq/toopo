@@ -119,9 +119,12 @@ export const ENDPOINTS: readonly Endpoint[] = [
       'fetch-and-run-the-executable-harness',
     ],
     whatAReaderCanCheck:
-      'everything. The body is the canonical text the digest was taken over, so re-canonicalising it ' +
-      'and hashing reproduces the address it was fetched by, and the harness digests it names cover ' +
-      'every file transitively.',
+      'everything this repository writes. The body is the canonical text the digest was taken over, ' +
+      'so re-canonicalising it and hashing reproduces the address it was fetched by, and between ' +
+      '`harness` and `sharedHarness` the digests it names cover every file the harness imports, ' +
+      'transitively - which `sharedHarnessOf` derives from the imports rather than from a list. What ' +
+      'is outside it is the runner: `vitest` and `fast-check` are named by no digest here, so a ' +
+      'reader reproduces the verdicts of this suite and not the behaviour of the tools that run it.',
   },
   {
     id: 'blob',

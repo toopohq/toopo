@@ -132,12 +132,31 @@ const THE_SEVEN_FILES = [
   'signature.test-d.ts',
 ] as const
 
+/**
+ * What every contract's own files reach outside their folder, and what is therefore frozen with it.
+ *
+ * The same list for all five, because `packages/catalogue/` is what the contracts share and ADR-0080
+ * is the bar for putting anything there. That record already said this in prose - *whatever lives in
+ * this file is part of the public surface of every contract that imports it, and inherits their
+ * discipline of freezing* - and nothing computed it; ADR-0105 is the unit that made it executable.
+ *
+ * **Written out rather than read off the walk**, which is the whole mechanism: `sharedHarnessOf`
+ * derives the same set from what the seven files import and refuses any disagreement, and a list
+ * derived from that walk could not disagree with it. The consequence is deliberate and is the price
+ * of the freeze holding in substance - editing either file below rebinds all five addresses at once.
+ */
+const THE_SHARED_FILES = [
+  'packages/catalogue/every-contract.ts',
+  'packages/catalogue/identifier.ts',
+] as const
+
 export const theFive: readonly ContractSource[] = [
   {
     address: NUMBER_PARSE,
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/typescript/number/parse',
     files: THE_SEVEN_FILES,
+    shared: THE_SHARED_FILES,
     module: numberParse as unknown as Readonly<Record<string, unknown>>,
     declares: [numberParse, numberParseCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
@@ -190,6 +209,7 @@ export const theFive: readonly ContractSource[] = [
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/typescript/date/add',
     files: THE_SEVEN_FILES,
+    shared: THE_SHARED_FILES,
     module: dateAdd as unknown as Readonly<Record<string, unknown>>,
     declares: [dateAdd, dateAddCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
@@ -305,6 +325,7 @@ export const theFive: readonly ContractSource[] = [
     folder: 'contracts/typescript/array/group-by',
     // The nine `contractAnatomy` records: the seven, plus the two this contract invented.
     files: [...THE_SEVEN_FILES, 'language.test.ts', 'outcome.ts'],
+    shared: THE_SHARED_FILES,
     module: groupBy as unknown as Readonly<Record<string, unknown>>,
     declares: [groupBy, groupByCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [
@@ -407,6 +428,7 @@ export const theFive: readonly ContractSource[] = [
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/typescript/string/levenshtein',
     files: THE_SEVEN_FILES,
+    shared: THE_SHARED_FILES,
     module: levenshtein as unknown as Readonly<Record<string, unknown>>,
     declares: [levenshtein, levenshteinCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
@@ -459,6 +481,7 @@ export const theFive: readonly ContractSource[] = [
     lifecycle: NOT_YET_PUBLISHED,
     folder: 'contracts/typescript/string/slugify',
     files: THE_SEVEN_FILES,
+    shared: THE_SHARED_FILES,
     module: slugify as unknown as Readonly<Record<string, unknown>>,
     declares: [slugify, slugifyCases] as unknown as Readonly<Record<string, unknown>>[],
     notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],

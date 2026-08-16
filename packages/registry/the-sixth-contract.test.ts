@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+
 import { describe, it, expect } from 'vitest'
 
 import { caseAddressFaults, contractAddressFaults, renderImplementation } from './address.js'
@@ -22,6 +25,7 @@ import {
   dependencyDepthOf,
   resolveDependencies,
 } from './implementation-record.js'
+import { REPOSITORY_ROOT } from './serialise.js'
 import { digestOfSnapshot, edgeTo, implementationSnapshot } from './snapshot.js'
 import { decode, encode } from './value.js'
 import { contractAnatomy } from '../catalogue/every-contract.js'
@@ -60,6 +64,11 @@ const NOT_YET_PUBLISHED: Lifecycle = { state: 'not-yet-published' }
  * describe two different files under one name.
  */
 const REFERENCE_BYTES = servedBytes(Buffer.from(ROUND_SOURCE, 'utf8'))
+
+/** The shared surface a sixth contract would reach, read off this working tree rather than invented. */
+const SHARED_BYTES = servedBytes(
+  readFileSync(join(REPOSITORY_ROOT, 'packages/catalogue/every-contract.ts')),
+)
 
 /** The values the `produced` arm below points at, so that its count and digest are read off them. */
 const TIE_SAMPLES = [
@@ -235,6 +244,22 @@ const theSixth: ContractRecord = {
   ],
   harness: [
     { path: 'reference.ts', sha256: digestOfBytes(REFERENCE_BYTES), bytes: REFERENCE_BYTES.byteLength },
+  ],
+  /**
+   * A sixth contract shares what the five share, and the digest is the real one this working tree
+   * holds rather than a fabricated string - the treatment `REFERENCE_BYTES` already gets.
+   *
+   * It is one file and not two on purpose. The five reach `identifier.ts` through `edge-cases.ts`, and
+   * a sixth contract that carried no case table would reach only `every-contract.ts` - so the shared
+   * surface is a property of what a contract imports and never a constant of the catalogue, and a
+   * record that could only express the five's list would be the migration this file exists to refuse.
+   */
+  sharedHarness: [
+    {
+      path: 'packages/catalogue/every-contract.ts',
+      sha256: digestOfBytes(SHARED_BYTES),
+      bytes: SHARED_BYTES.byteLength,
+    },
   ],
 }
 

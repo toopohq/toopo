@@ -121,6 +121,15 @@ export type FrozenContract = {
   readonly benchmarks: BenchmarksRecord
   readonly ownDeclarations: readonly OwnDeclaration[]
   readonly harness: readonly HarnessFile[]
+  /**
+   * Frozen, because what a published contract's own guards call is part of what it is. ADR-0105.
+   *
+   * It is the same argument `FrozenImplementation.dependsOn` makes one level down - an edge outside
+   * the digest lets code under a fixed digest change what it pulls in - arriving on the half this
+   * project actually sells. Measured before it existed: emptying one shared guard left every digest
+   * here identical and made a contract that must be refused pass.
+   */
+  readonly sharedHarness: readonly HarnessFile[]
 }
 
 export type FrozenImplementation = {
@@ -224,6 +233,7 @@ export const contractSnapshot = (record: ContractRecord): Snapshot => ({
     benchmarks: record.benchmarks,
     ownDeclarations: record.ownDeclarations,
     harness: record.harness,
+    sharedHarness: record.sharedHarness,
   },
 })
 
@@ -521,7 +531,9 @@ export const withImplementationStanding = (
  * would be two places to add the third arm.
  */
 export const filesNamedBy = (snapshot: Snapshot): readonly HarnessFile[] =>
-  snapshot.unit === 'contract' ? snapshot.frozen.harness : snapshot.frozen.files
+  snapshot.unit === 'contract'
+    ? [...snapshot.frozen.harness, ...snapshot.frozen.sharedHarness]
+    : snapshot.frozen.files
 
 export const snapshotFaults = (snapshot: Snapshot, claimed: string): readonly string[] => {
   const computed = digestOfSnapshot(snapshot)

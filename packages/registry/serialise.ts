@@ -19,7 +19,9 @@
  */
 
 import { readdirSync, readFileSync, statSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, relative } from 'node:path'
+
+import { closureFrom } from '../../packaging/reachable.js'
 
 import type { ContractAddress, GuardAddress } from './address.js'
 import type {
@@ -126,6 +128,13 @@ export type ContractSource = {
    * rather than a design preference - `harnessOf` says why in full.
    */
   readonly files: readonly string[]
+  /**
+   * Every file outside the folder that the files above reach, named, as repository-relative paths.
+   *
+   * A closed list for the same reason `files` is one, one level out - `sharedHarnessOf` says why in
+   * full - and the second of the two independent statements whose disagreement is the guard.
+   */
+  readonly shared: readonly string[]
   /** `contract.ts` as a namespace, so that every value below is read rather than transcribed. */
   readonly module: Readonly<Record<string, unknown>>
   /**
@@ -443,11 +452,117 @@ export const harnessOf = (
     throw new UndeclaredHarness(folder, undeclared, missing)
   }
 
-  return served.map((name) => {
-    const bytes = servedBytes(readFileSync(join(directory, name)))
+  return served.map((name) => hashedFile(directory, name))
+}
 
-    return { path: name, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }
-  })
+/**
+ * One file, read once, as the registry addresses it.
+ *
+ * `path` is what the record carries and `base` is where this reader found it. The two are separate
+ * because a harness file is addressed inside its contract folder and a shared one from the repository
+ * root, and hashing is not where those two differ.
+ *
+ * The digest and the byte count come from one read of one buffer. Two reads would be two answers
+ * about a file that could change between them, and a record whose size and digest describe different
+ * bytes is not a record of anything.
+ */
+const hashedFile = (base: string, path: string): HarnessFile => {
+  const bytes = servedBytes(readFileSync(join(base, path)))
+
+  return { path, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }
+}
+
+export class UndeclaredSharedSurface extends Error {
+  constructor(folder: string, undeclared: readonly string[], missing: readonly string[]) {
+    super(
+      `${folder} does not reach the shared files it declares.\n` +
+        (undeclared.length === 0
+          ? ''
+          : `  reached and not declared: ${undeclared.join(', ')}\n` +
+            `    A file a contract's own files import decides what its guards verify, so it is part ` +
+            `of what the contract is. Outside the declaration it is outside the digest, which means ` +
+            `it can be changed on a published contract with no address moving - the freeze holding ` +
+            `to the letter and not in substance.\n`) +
+        (missing.length === 0
+          ? ''
+          : `  declared and not reached: ${missing.join(', ')}\n` +
+            `    A declaration wider than the walk freezes bytes this contract does not depend on, ` +
+            `so an edit somewhere it never reads would rebind its address for nothing.\n`),
+    )
+    this.name = 'UndeclaredSharedSurface'
+  }
+}
+
+/**
+ * A `.js` specifier written in a source file names the `.ts` file beside it.
+ *
+ * `verbatimModuleSyntax` is why the walk below reads sources rather than the compiler's output, which
+ * is what `packaging/reachable.ts` reads for the opposite reason. A type-only import is erased from
+ * the output and is *not* erased from what a contract's guards check: thirteen `@ts-expect-error`
+ * directives sit in the five `signature.test-d.ts`, `npm test` runs with `--typecheck`, and a type
+ * this repository could widen is one that decides those verdicts. So the closure is taken over what
+ * is written, not over what survives compilation.
+ */
+const sourceNamedBy = (from: string, specifier: string): string => {
+  const resolved = join(from, '..', specifier)
+
+  return resolved.endsWith('.js') ? `${resolved.slice(0, -3)}.ts` : resolved
+}
+
+/**
+ * Everything a contract's own files import from outside its folder, transitively, hashed - and
+ * exactly what it declares.
+ *
+ * **The freeze was letter-only without this, and it was measured rather than argued.** Emptying
+ * `expectUniversalPropertiesAnswered` in `packages/catalogue/every-contract.ts` left all eight ledger
+ * digests identical to the byte while a contract that declares `deterministic` inapplicable, which
+ * that guard exists to refuse, went green. Four of the seven declared files of every contract import
+ * that module, `harness` covers the seven, and nothing covered what the seven call. So a published
+ * contract's verification could be disarmed with no address moving, which is the one failure permanent
+ * rule 6 is sold on preventing. ADR-0105.
+ *
+ * **Shared data was already covered and shared code was not**, which is why this hashes files rather
+ * than widening some existing check: a constant interpolated into a declaration reaches the record and
+ * moves the digest - one letter changed in `NO_AMBIENT_OUTPUT_FINDING` moved all four contract digests
+ * - while the functions the test files *call* reach nothing the record carries.
+ *
+ * The declaration and the walk are two independent statements, as `files` and the folder listing are:
+ * a list derived from the walk could not disagree with the walk. The walk is what notices a contract
+ * reaching somewhere new; the declaration is what notices the walk going quiet.
+ */
+export const sharedHarnessOf = (
+  root: string,
+  folder: string,
+  files: readonly string[],
+  shared: readonly string[],
+): readonly HarnessFile[] => {
+  const directory = join(root, folder)
+  const outside = (file: string): string | null => {
+    const path = relative(root, file).replaceAll('\\', '/')
+
+    return path.startsWith(`${folder}/`) ? null : path
+  }
+
+  const reached = [
+    ...new Set(
+      files.flatMap((name) =>
+        [...closureFrom(join(directory, name), sourceNamedBy)].flatMap((file) => {
+          const path = outside(file)
+
+          return path === null ? [] : [path]
+        }),
+      ),
+    ),
+  ].sort()
+  const declared = [...shared].sort()
+
+  const undeclared = reached.filter((path) => !declared.includes(path))
+  const missing = declared.filter((path) => !reached.includes(path))
+  if (undeclared.length > 0 || missing.length > 0) {
+    throw new UndeclaredSharedSurface(folder, undeclared, missing)
+  }
+
+  return declared.map((path) => hashedFile(root, path))
 }
 
 export class ServedBytesDisagree extends Error {
@@ -470,17 +585,31 @@ export class ServedBytesDisagree extends Error {
  * first, because it is one rule about this working tree and there are three readers of it - the
  * installer's stand-in, the generator's, and the emission that writes every file the registry serves.
  */
-export const servedFileOf = (
-  root: string,
-  folder: string,
-  file: { readonly path: string; readonly sha256: string },
-): Buffer => {
-  const bytes = servedBytes(readFileSync(join(root, folder, file.path)))
+export const servedFileOf = (root: string, path: string, sha256: string): Buffer => {
+  const bytes = servedBytes(readFileSync(join(root, path)))
   const read = digestOfBytes(bytes)
-  if (read !== file.sha256) throw new ServedBytesDisagree(`${folder}/${file.path}`, file.sha256, read)
+  if (read !== sha256) throw new ServedBytesDisagree(path, sha256, read)
 
   return bytes
 }
+
+/**
+ * Every file a contract serves, addressed from the repository root.
+ *
+ * One function because two stand-ins and one emission ask it, and because the two lists it joins are
+ * addressed differently: a harness file is named inside its contract folder and a shared one from the
+ * root. A caller that joined them itself would be the place the second convention is forgotten.
+ */
+export const servedFilesOf = (
+  folder: string,
+  record: {
+    readonly harness: readonly HarnessFile[]
+    readonly sharedHarness: readonly HarnessFile[]
+  },
+): readonly HarnessFile[] => [
+  ...record.harness.map((file) => ({ ...file, path: `${folder}/${file.path}` })),
+  ...record.sharedHarness,
+]
 
 /**
  * The strongest stratum is the one that has to point at something.
@@ -638,5 +767,6 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
       source.batteries,
     ),
     harness: harnessOf(root, source.folder, source.files),
+    sharedHarness: sharedHarnessOf(root, source.folder, source.files, source.shared),
   }
 }

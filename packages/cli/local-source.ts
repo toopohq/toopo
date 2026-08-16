@@ -74,6 +74,7 @@ import {
   referenceImplementationOf,
   serialiseContract,
   servedFileOf,
+  servedFilesOf,
 } from '../registry/serialise.js'
 import { theFive } from '../registry/the-five.js'
 import type { RegistrySource } from './source.js'
@@ -130,8 +131,8 @@ const gather = (): {
     snapshots.set(contractDigest, servedSnapshot(contractShot))
     snapshots.set(implementationDigest, servedSnapshot(implementationShot))
 
-    for (const file of record.harness) {
-      blobs.set(file.sha256, servedFileOf(REPOSITORY_ROOT, source.folder, file))
+    for (const file of servedFilesOf(source.folder, record)) {
+      blobs.set(file.sha256, servedFileOf(REPOSITORY_ROOT, file.path, file.sha256))
     }
 
     /**

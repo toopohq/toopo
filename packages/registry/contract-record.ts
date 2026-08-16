@@ -183,4 +183,13 @@ export type ContractRecord = {
   readonly ownDeclarations: readonly OwnDeclaration[]
   /** The executable half, as files with their hashes: served, hashed, never modelled. ADR-0003. */
   readonly harness: readonly HarnessFile[]
+  /**
+   * What the harness imports and the contract does not own, hashed the same way. ADR-0105.
+   *
+   * Repository-relative, where `harness` is folder-relative, because these files are outside any one
+   * contract and shared by all of them. Frozen for the reason the harness is: they decide what a
+   * published contract's guards actually verify, and a check that is not in the digest is one that
+   * can be emptied under a frozen address.
+   */
+  readonly sharedHarness: readonly HarnessFile[]
 }

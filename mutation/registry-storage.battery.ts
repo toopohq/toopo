@@ -89,7 +89,13 @@ const implementationFile = (find: string, replace: string) => ({
 // Anchors - the exact source each edit rewrites
 // ---------------------------------------------------------------------------
 
-const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(directory, name)))'
+/**
+ * Both anchors below moved out of `harnessOf` and into `hashedFile`, which ADR-0105 factored so that
+ * a shared file and a harness file are hashed by one reader. What each cell does is unchanged - the
+ * two defects are still a working-tree read and a second read for the size - and the parameters they
+ * name are now the base and the path rather than the directory and the name.
+ */
+const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(base, path)))'
 
 // --- The freeze, and the seven places a check of it stops being one ---
 
@@ -196,7 +202,7 @@ const A_RECORD_IS_JSON = `  return \`{\${sortedKeys(record)
 
 const SORT_THE_FILES = '  const served = [...files].sort()'
 
-const ONE_READ = '    return { path: name, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }'
+const ONE_READ = '  return { path, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }'
 
 const A_STRING_IS_ITSELF = `  if (typeof value === 'string') return JSON.stringify(value)`
 
@@ -278,7 +284,7 @@ const mutants: readonly Mutant[] = [
     'I-01',
     'hashes the bytes in the working tree rather than the bytes the registry serves, so the digest ' +
       'depends on the reader\'s git configuration - the defect this repository had',
-    [serialiseFile(READ_A_FILE, 'const bytes = readFileSync(join(directory, name))')],
+    [serialiseFile(READ_A_FILE, 'const bytes = readFileSync(join(base, path))')],
     killed(['the-served-bytes-are-the-committed-bytes']),
   ),
 
@@ -365,11 +371,11 @@ const mutants: readonly Mutant[] = [
     [
       serialiseFile(
         ONE_READ,
-        `    return {
-      path: name,
-      sha256: digestOfBytes(bytes),
-      bytes: readFileSync(join(directory, name)).byteLength,
-    }`,
+        `  return {
+    path,
+    sha256: digestOfBytes(bytes),
+    bytes: readFileSync(join(base, path)).byteLength,
+  }`,
       ),
     ],
     killed(['the-served-bytes-are-the-committed-bytes']),

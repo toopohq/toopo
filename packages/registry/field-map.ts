@@ -250,6 +250,16 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   'harness[].path': { visibility: 'public', verification: 'structural' },
   'harness[].sha256': { visibility: 'public', verification: 'structural' },
   'harness[].bytes': { visibility: 'public', verification: 'structural' },
+
+  /**
+   * `structural` and not `documentary`, because the list is refused in both directions before a record
+   * exists: `sharedHarnessOf` walks what the harness imports and refuses any disagreement with the
+   * declaration. Public for the same reason the harness is - permanent rule 5 makes auditability the
+   * product, and a file the harness calls that a reader cannot fetch is a suite they cannot run.
+   */
+  'sharedHarness[].path': { visibility: 'public', verification: 'structural' },
+  'sharedHarness[].sha256': { visibility: 'public', verification: 'structural' },
+  'sharedHarness[].bytes': { visibility: 'public', verification: 'structural' },
 }
 
 /**
@@ -309,4 +319,5 @@ export const publicContract = (record: ContractRecord): unknown => ({
   benchmarks: record.benchmarks,
   ownDeclarations: record.ownDeclarations,
   harness: record.harness,
+  sharedHarness: record.sharedHarness,
 })

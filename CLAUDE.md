@@ -30,6 +30,16 @@ holds rather than against what somebody checked: a commit identifier in the pros
 this graph, no object of it carries an address the project refuses to publish, and the only checkout
 registered here is its root.
 
+**And that freeze now covers what a contract's guards call, which until this unit it did not.** A
+fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard
+left all eight ledger digests identical to the byte while a contract the guard exists to refuse went
+green — measured at `9176c9e`, with the same defect red once the shared file was put back. `sharedHarness`
+is the closure: the files a contract reaches outside its folder are declared, derived independently by a
+walk over what the seven really import, refused on any disagreement, frozen with the contract and served
+beside it — so a reader who fetches every file a snapshot names can now resolve every import those files
+carry, which is the auditor's half of the same hole. The bill is stated rather than discovered: editing
+either shared file rebinds all five addresses at once. ADR-0105.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language. And nothing is published: `private: true` holds and the package is not on npm, so a reader
 who meets `toopo add number/parse` on a contract page still has no way to get `toopo`.
@@ -144,6 +154,17 @@ Nothing here says how many instances exist, and nothing can. What a reader may t
 that each entry it names is real; that it is complete is a claim no version of it has ever been entitled
 to make, and this paragraph is the correction that stays.
 
+**It happened a second time, on the same declaration, and that is what makes the paragraph above a rule
+rather than an apology.** ADR-0093 closed *a published version is frozen for life* and this section
+recorded it as the biggest instance the list had ever missed. What ADR-0093 froze was the seven files a
+contract declares. Four of those seven import `packages/catalogue/every-contract.ts`, no digest covered
+it, and the verification of a frozen contract could therefore be emptied with no address moving — which
+is the same declaration, unkept, one level in. Twelve commits and one whole record after the miss was
+written up. **The list did not fail to be exhaustive here; the closure did.** A mechanism that closes an
+entry is itself a declaration, and nothing swept it — so what this instance adds is that *closing* an
+entry is the moment to ask what the closure does not reach, and to write that down beside it before the
+entry is struck off.
+
 **And the same shape arrived one level down, in a closure criterion rather than in this list.** Taking
 the personal address out of the history was to be closed by *zero occurrences over the 374 commits* —
 374 being what `git rev-list --count HEAD` answered. The rewrite had to reach **391**: three
@@ -155,6 +176,19 @@ whichever ref somebody was standing on, so: **a count that bounds a defect names
 swept**, and `--all` is the only spelling of *this repository* that a tag cannot fall out of.
 
 **Still open, and what each one now costs.**
+
+- **That a mutant a battery injects is the defect it describes, and not a compile error.**
+  `mutation/check-anchors.ts` reads a cell's `find` text and requires it to occur once in its file; it
+  never reads the `replace`. Found by ADR-0105 rather than reasoned about: `hashedFile` renamed two
+  parameters, both affected anchors were updated, `npm run anchors` went to 0 loose — and I-01's
+  replacement still read `readFileSync(join(directory, name))`, naming two identifiers that no longer
+  exist. Injected, that cell does not typecheck, so it measures nothing and the anchor check says it is
+  fine. **The population is every cell of every battery**, 586 anchors across 82 files at `9176c9e`, and
+  what makes it worth an entry rather than a note is that the failure is silent in exactly the tool
+  built to prevent it. What would close it is not a second lint over the text: it is injecting each
+  mutant and typechecking the tree, which the replay already does one cell at a time — so the cheap form
+  is `check-anchors` learning to apply the replacement and refuse a result the compiler rejects, and the
+  price is that it stops being a pure read of the working tree. Not built.
 
 - **That the revision an installed client records is a commit this repository holds.** A lockfile
   carries `servedFrom`, and the proof against the origin asserts its *shape* — forty hexadecimal
