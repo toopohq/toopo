@@ -67,6 +67,8 @@ const emitFile = (find: string, replace: string) => ({ file: 'emit.ts', find, re
 const endpointsFile = (find: string, replace: string) => ({ file: 'endpoints.ts', find, replace })
 const readApiFile = (find: string, replace: string) => ({ file: 'read-api.ts', find, replace })
 const revisionFile = (find: string, replace: string) => ({ file: 'revision.ts', find, replace })
+const rebindingFile = (find: string, replace: string) => ({ file: 'rebinding.ts', find, replace })
+const rebuildFile = (find: string, replace: string) => ({ file: 'rebuild.ts', find, replace })
 const verifiabilityFile = (find: string, replace: string) => ({
   file: 'verifiability.ts',
   find,
@@ -88,6 +90,28 @@ const implementationFile = (find: string, replace: string) => ({
 // ---------------------------------------------------------------------------
 
 const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(directory, name)))'
+
+// --- The freeze, and the seven places a check of it stops being one ---
+
+const THE_DIGEST_IS_THE_ONE_IT_WAS_PUBLISHED_AS = '  if (held === entry.digest) return null'
+
+const A_PAST_THAT_BINDS_NOTHING_IS_A_FAULT = '  if (held === undefined) {'
+
+const A_STAND_IN_ANCHORS_NOTHING =
+  '  entry.publishedFrom !== THE_UNPUBLISHED_REVISION && REVISION.test(entry.publishedFrom)'
+
+const A_RENDERING_ADDRESSES_ONE_BINDING =
+  '    if (bindings.has(what)) throw new RenderingsCollide(what)'
+
+const A_PAST_COMMIT_ANSWERS_DIGESTS = '        if (!DIGEST.test(digest)) {'
+
+const THE_COMMIT_A_BINDING_NAMES_IS_THE_ONE_CHECKED_OUT =
+  `  git(root, 'worktree', 'add', '--detach', '--quiet', worktree, revision)`
+
+const WHAT_IS_RE_RUN_IS_NODE_AND_ONE_PATH =
+  `  if (runner !== 'node' || path === undefined || rest.length > 0) {`
+
+const A_REBUILD_TIDIES_UP_AFTER_ITSELF = `    git(root, 'worktree', 'remove', '--force', worktree)`
 
 // --- The emission, and the three ways a walk of the questions stops being one ---
 
@@ -1053,6 +1077,128 @@ const mutants: readonly Mutant[] = [
       // wrong answer. Named because the pin is under five and ADR-0076 asks for all of them.
       'a-tree-that-does-not-agree-with-its-commit-names-no-revision',
     ]),
+  ),
+
+  // --- The freeze: the one claim this product is sold on, and what refuses its opposite. ADR-0093 ---
+
+  /**
+   * The comparison, inverted. It is the cheapest possible defect on the rule and the one that matters:
+   * a freeze check that accepts a moved digest is the decorative guard this repository exists to
+   * refuse, arriving on permanent rule 6.
+   */
+  sameOnEveryLens(
+    'I-49',
+    'accepts a binding whose digest moved and refuses one that did not, so a published address can ' +
+      'be rebound with the check green',
+    [rebindingFile(THE_DIGEST_IS_THE_ONE_IT_WAS_PUBLISHED_AS, '  if (held !== entry.digest) return null')],
+    killed([
+      'a-binding-whose-digest-moved-since-its-publication-is-refused',
+      'a-binding-that-still-hashes-to-what-it-was-published-as-is-accepted',
+      'a-standing-change-rebinds-nothing',
+      'the-past-is-read-once-per-commit-however-many-bindings-share-it',
+      'an-artefact-edited-after-its-publication-is-refused-end-to-end',
+    ]),
+  ),
+
+  /**
+   * A coordinate naming a commit that bound nothing under this address, passed over in silence.
+   *
+   * It is the branch that decays rather than breaks: the binding goes on being listed, no fault is
+   * ever raised about it, and the freeze it claims stops being checked with nothing on screen.
+   */
+  sameOnEveryLens(
+    'I-50',
+    'passes over a binding whose publication commit bound no such address, so a wrong coordinate ' +
+      'silently exempts an artefact from the check for ever',
+    [rebindingFile(A_PAST_THAT_BINDS_NOTHING_IS_A_FAULT, '  if (false) {')],
+    killed(['a-binding-published-from-a-commit-that-binds-no-such-address-is-refused']),
+  ),
+
+  /**
+   * Forty zeros read as a commit. The stand-ins mint it, so every binding of a working tree would be
+   * checked against a revision git cannot resolve - and the refusal would arrive on all four at once,
+   * which is a check that has to be turned off rather than one that found something.
+   */
+  sameOnEveryLens(
+    'I-51',
+    'treats the null object identifier as a commit to rebuild at, so a stand-in\'s binding is asked ' +
+      'about a revision that names nothing',
+    [rebindingFile(A_STAND_IN_ANCHORS_NOTHING, '  REVISION.test(entry.publishedFrom)')],
+    killed([
+      'a-binding-that-names-no-commit-is-not-asked-about',
+      'the-five-anchor-nothing-and-the-check-says-which',
+    ]),
+  ),
+
+  /**
+   * Two bindings under one address, the second overwriting the first. `renderImplementation` joins an
+   * id and a version with `@` and nothing refuses an id carrying one, so the collision is reachable -
+   * and the binding that is lost is the one whose freeze stops being checked.
+   */
+  sameOnEveryLens(
+    'I-52',
+    'lets a second binding overwrite the first under one rendered address, so one artefact\'s freeze ' +
+      'goes unchecked with nothing saying which',
+    [rebindingFile(A_RENDERING_ADDRESSES_ONE_BINDING, '    bindings.set(what, digest)')],
+    killed(['two-bindings-that-render-alike-are-a-corrupt-ledger']),
+  ),
+
+  /**
+   * What crosses a process boundary, believed. A past commit's output is the one input in this check
+   * that another program produced, and a reader that accepted any second field would compare a digest
+   * against a word.
+   */
+  sameOnEveryLens(
+    'I-53',
+    'accepts anything in a past commit\'s second field, so a line that is not a digest is compared ' +
+      'against one as though it were',
+    [rebindingFile(A_PAST_COMMIT_ANSWERS_DIGESTS, '        if (false) {')],
+    killed(['a-line-that-is-not-a-binding-is-refused-1']),
+  ),
+
+  /**
+   * The wrong commit, asked. It is the reader's own failure mode and the one a shape check cannot see:
+   * every answer is well formed, every digest is a real digest of real bytes, and the comparison is
+   * against the tree rather than against the past.
+   */
+  sameOnEveryLens(
+    'I-54',
+    'checks out the head of the repository rather than the commit a binding was published from, so ' +
+      'the past is compared against itself and nothing can ever have moved',
+    [rebuildFile(THE_COMMIT_A_BINDING_NAMES_IS_THE_ONE_CHECKED_OUT, `  git(root, 'worktree', 'add', '--detach', '--quiet', worktree, 'HEAD')`)],
+    killed([
+      'a-commit-is-asked-what-it-bound-rather-than-the-tree',
+      'an-artefact-edited-after-its-publication-is-refused-end-to-end',
+      'a-rebuild-leaves-no-checkout-behind-it',
+    ]),
+  ),
+
+  /**
+   * A command line half understood. The script is the one thing a past commit hands this module, and
+   * running whatever it says would be the freeze check executing something it did not read.
+   */
+  sameOnEveryLens(
+    'I-55',
+    'runs a past commit\'s `ledger` script whatever its command line says, so a runner this module ' +
+      'never read decides what gets executed',
+    [rebuildFile(WHAT_IS_RE_RUN_IS_NODE_AND_ONE_PATH, '  if (path === undefined) {')],
+    killed([
+      'a-commit-that-cannot-say-what-it-bound-is-refused-1',
+      'a-commit-that-cannot-say-what-it-bound-is-refused-2',
+    ]),
+  ),
+
+  /**
+   * A checkout that outlives its run. `theRevision` refuses a tree that does not agree with its commit,
+   * so a worktree left registered turns the next publication into a refusal - and the cause would be a
+   * check that ran a week earlier.
+   */
+  sameOnEveryLens(
+    'I-56',
+    'leaves the checkout it made registered when a rebuild refuses, so a repository that ran the ' +
+      'freeze check once can never name a revision again',
+    [rebuildFile(A_REBUILD_TIDIES_UP_AFTER_ITSELF, '    // the checkout stays registered')],
+    killed(['a-rebuild-leaves-no-checkout-behind-it']),
   ),
 ]
 
