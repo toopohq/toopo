@@ -158,6 +158,22 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in
   `mutation/history.ts`, whose halves are already this shape: a declaration of what is refused, a sweep
   over a named population, and a fault that reports where without reprinting what.
+- **That a full replay can finish at all**, which two guards detect and nothing prevents. Measured three
+  times out of three: a completed `registry-storage` leaves `.rebuilt/<HEAD>` registered as a worktree —
+  the directory is gone, only the administrative entry survives, so `git worktree list` reads
+  `prunable`. Inside `npm run mutation` the six batteries that follow it alphabetically then die at
+  `assertNoStrayWorktree`, each in 0.1 s, on `a checkout of this repository is registered besides its
+  root`. **So the one command that replays the nineteen cannot complete, `npm run tally` can never
+  produce a total, and the figures the README and the method page publish cannot be re-derived by the
+  route those pages document.** The detection is not the gap: `run.ts` refuses to start on it and
+  `no-worktree-is-registered-beside-this-repository` reports it at the cadence of the suite. What is
+  missing is anything that stops a battery leaving one. **What is not measured, and is therefore not
+  named here, is which cell leaves it** — the residue sits at HEAD, which implicates `I-54`, whose
+  mutant checks out HEAD, at least as much as `I-56`, whose mutant leaves the checkout registered. That
+  guard's own comment records the state as *found here twice by hand*, and three of three says it is not
+  episodic. It closes on a teardown that restores git's state beside the files, and it closes before
+  `toopo.dev` is connected: the method page publishes what this instrument produces, and an
+  irreproducible figure on the shop window is the class this project exists to remove.
 - **That the manifest declares no dependency the product could reach**, which stage rule 3 now states
   as a criterion and nothing reads. The two mechanisms that rule names are real and are about *files*:
   `no-part-of-the-instrument-or-of-the-suite-is-in-the-archive` and
