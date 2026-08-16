@@ -123,6 +123,30 @@ going stale. This one never was true: no commit would have made it right, becaus
 never of the same kind. So the rule gains a clause it did not have — **a count carries the unit it was
 counted in**, and a ratio of two counts is only a ratio when both were.
 
+### The seventh, and it is the first that was never taken at all
+
+**A commit was said to be *the only one of 392* carrying a `Co-Authored-By` trailer.** Measured over
+the graph as it then stood: **363 of its 393 commits carried one**, 349 of the 374 on `main`. The line
+was not an exception, it was the convention, and the sentence was wrong by the whole population.
+
+**What is new is not the error but how it survived.** It was written in a report, and the instruction
+that answered it adopted the figure and reasoned from it — *one in 392 is an inconsistency, remove it*
+— which is a sound argument from a false premise, and it removed the line from the two commits that
+were following the convention. Neither party counted. The first six instances of this rule are a
+figure that went stale or a figure whose two halves were of different kinds; every one of them was
+true when it was taken. This one was never taken.
+
+So the rule gains the clause its first six could not reach. **Coordinates answer *is this still true*;
+they do not answer *was this ever measured*, and a figure that decides something needs both.** The
+failure mode is specific and worth naming, because it is invisible from inside: agreement looks exactly
+like corroboration. A second reader who accepts a number adds confidence to it and no evidence, and the
+number is then load-bearing in a decision that neither party can trace to a measurement.
+
+**What makes it catchable is the grammar rather than the subject.** *The only*, *the first*, *the
+exception*, *none of them* — each is a count wearing the clothes of an observation, and each is
+refutable by one command. The repair is not more care; it is treating those four phrases as figures,
+which is what this record already requires of anything spelled with digits.
+
 ## Consequences
 
 `mutation/published.ts` is where this decision is paid rather than argued: `THE_REPLAY` carries a
