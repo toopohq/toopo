@@ -29,7 +29,7 @@
 
 import type { ParameterRecord } from '../registry/contract-record.js'
 import type { PlaygroundField } from './playground.js'
-import { answerWritten, argumentsOf, callWritten } from './playground.js'
+import { answerWritten, argumentsOf, callWritten, declaredBy } from './playground.js'
 
 /** What the page hands over in `data-playground`, written by `contract-page.ts`. */
 type ThePlayground = {
@@ -90,13 +90,21 @@ const start = async (): Promise<void> => {
    */
   const run = (): void => {
     try {
-      const given = argumentsOf(parameters, [...form.querySelectorAll('input')].map((one) => one.value))
+      const typed = [...form.querySelectorAll('input')].map((one) => one.value)
+
+      /**
+       * Printed from what the fields spell and called with what those spellings build, which are one
+       * step apart. A call printed from its built arguments prints `date/add@1`'s own settled case
+       * `an-input-that-is-not-a-date` as the registry refusing to model an invalid Date.
+       */
+      const spelled = declaredBy(parameters, typed)
+      const given = argumentsOf(parameters, typed)
       const answered = call(...given)
-      const lines = [`${callWritten(playground.calls, given)} → ${answerWritten(answered)}`]
+      const lines = [`${callWritten(playground.calls, spelled)} → ${answerWritten(answered)}`]
 
       if (answered === null && describe !== null && playground.describes !== null) {
         lines.push(
-          `${callWritten(playground.describes, given)} → ${answerWritten(describe(...given))}`,
+          `${callWritten(playground.describes, spelled)} → ${answerWritten(describe(...given))}`,
         )
       }
 

@@ -18,6 +18,7 @@ import {
   answerWritten,
   argumentsOf,
   callWritten,
+  declaredBy,
   playgroundOf,
   theCallOf,
   theFieldsFor,
@@ -407,6 +408,53 @@ describe('the playground, against the catalogue it opens on', () => {
     expect(callWritten('addToDate', [new Date('2024-01-31T00:00:00.000Z'), { months: 1 }])).toBe(
       "addToDate('2024-01-31T00:00:00.000Z', { months: 1 })",
     )
+  })
+
+  /**
+   * The playground writes a call exactly as the case table two centimetres above writes one.
+   *
+   * **This is the guard the browser found and the suite had not.** Printing from the built arguments
+   * rather than from what the fields spell made `date/add@1` answer `a Date, which the registry does
+   * not model` to anybody typing something that is not an instant — `encode` refusing an invalid
+   * Date, which is right for an answer and wrong for an argument the contract settles a case on. One
+   * hundred guards were green and only opening the page found it.
+   *
+   * Over every case rather than over the one that broke: the two renderings agree by construction or
+   * they do not, and a row-by-row comparison is what says which.
+   */
+  it('the-playground-writes-a-call-the-way-the-case-table-writes-one', () => {
+    const faults = theHeld().flatMap((one) => {
+      const what = renderContract(one.contract.address)
+      const answer = answerOf(one.contract)
+
+      return one.contract.caseTables
+        .flatMap((table) => table.cases)
+        .flatMap((entry) => {
+          const { written } = theCallOf(entry, answer)
+          const settled = `${answer.name}(${written.join(', ')})`
+
+          // Caught for the reason `replayed` catches, and the same one: a bad row names itself
+          // instead of stopping the sweep, which is what makes the list at the end readable.
+          try {
+            const printed = callWritten(
+              answer.name,
+              declaredBy(answer.parameters, theFieldsFor(entry, answer, what)),
+            )
+
+            return printed === settled ? [] : [`${what}#${entry.id}: ${printed} against ${settled}`]
+          } catch (thrown) {
+            const said = thrown instanceof Error ? thrown.message : String(thrown)
+
+            return [`${what}#${entry.id}: printing ${settled} throws ${said}`]
+          }
+        })
+    })
+
+    expect(faults).toEqual([])
+    // The bound, so that a run reaching no case cannot pass on an empty list.
+    expect(
+      theHeld().flatMap((one) => one.contract.caseTables.flatMap((table) => table.cases)).length,
+    ).toBeGreaterThan(100)
   })
 
   /**

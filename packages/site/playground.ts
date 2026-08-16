@@ -395,22 +395,28 @@ export const theFieldsFor = (
 // What runs in the browser
 // ---------------------------------------------------------------------------
 
-/** The arguments a call is made with, from what a reader typed into each field. */
-export const argumentsOf = (
+/**
+ * What each field spells, which is the form of a value the registry models and the case table prints.
+ *
+ * **This is the boundary `theCallOf` draws on a case, drawn on a form.** A declared value and an
+ * argument are one step apart and the step is not the identity, so the two are one reading with two
+ * projections rather than two readings - and what a page *prints* is always the declared half, because
+ * that is what a case row prints two centimetres higher.
+ *
+ * Found in a browser, and by nothing else: printing the built arguments made `date/add@1` answer
+ * `a Date, which the registry does not model` to anybody who typed something that is not an instant.
+ * That is `encode` refusing an invalid Date - correct for an *answer*, where an invalid Date would
+ * violate the contract, and wrong for an *argument*, where `an-input-that-is-not-a-date` is a case
+ * this contract settles and publishes. ADR-0096.
+ */
+export const declaredBy = (
   parameters: readonly ParameterRecord[],
   typed: readonly string[],
 ): readonly unknown[] =>
   parameters.map((parameter, index) => {
-    const known = AS_AN_ARGUMENT[parameter.type]
-    if (known === undefined) {
-      throw new ThePlaygroundCannotBeBuilt(
-        parameter.name,
-        `it is declared \`${parameter.type}\`, which no field of this site knows how to build`,
-      )
-    }
-
+    const known = theArgumentFor(parameter, parameter.name)
     const text = typed[index] ?? ''
-    if (known.readAs.kind === 'the-text-itself') return known.build(text)
+    if (known.readAs.kind === 'the-text-itself') return text
 
     const declared = read(text)
     if (!known.readAs.spelledBy(declared)) {
@@ -422,8 +428,17 @@ export const argumentsOf = (
       )
     }
 
-    return known.build(declared)
+    return declared
   })
+
+/** The arguments a call is made with, which is what each field spells put through its type. */
+export const argumentsOf = (
+  parameters: readonly ParameterRecord[],
+  typed: readonly string[],
+): readonly unknown[] =>
+  declaredBy(parameters, typed).map((declared, index) =>
+    theArgumentFor(parameters[index] as ParameterRecord, 'a call').build(declared),
+  )
 
 /**
  * A live value, written the way the case table above writes one.
