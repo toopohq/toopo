@@ -142,6 +142,22 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   the real origin, and the end-to-end proof comes back. It is written here rather than only in
   `packaging/` because this list is what a session reads, and because a regression presented as a
   choice is one nobody returns to. ADR-0092.
+- **That no file of the tracked tree names the machine it was written on.** The sweep before the first
+  push established it and nothing keeps it. **The population is the tracked tree and never the graph**,
+  and that is the whole shape of this entry rather than a detail of it: measured at `2640b5d` over
+  `git rev-list --objects --all`, seventeen blobs and one commit message carry a developer's home path —
+  fourteen of the blobs `CLAUDE.md`, two `mutation/paths.ts`, one `vitest-entry-point.ts` — while HEAD
+  carries none, every occurrence having been elided by hand as it was noticed. So a reading over the
+  graph would be red the day it was written, and **those seventeen are what this entry will never
+  cover.** Taking them out costs a second `filter-repo` over four hundred commits, and that was priced
+  and refused knowingly: a folder path is not harvestable the way the address ADR-0095 removed is, and
+  the given name it reveals is already published by the manifest, by `LICENSE`, by every installed
+  header and by the `decision-makers` of every record in `docs/decisions/`. **What is worth keeping is
+  the recurrence and not the frozen seventeen** — a stack trace pasted into a comment, a path copied out
+  of an error message — and that arrives in the working tree, where a reading is green today and red on
+  the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in
+  `mutation/history.ts`, whose halves are already this shape: a declaration of what is refused, a sweep
+  over a named population, and a fault that reports where without reprinting what.
 - `contractAnatomy` — triaged entry by entry against stage 1's own constraint, *readable in the source
   alone, without evaluating the module*: **three of the eleven are settled by the source alone, four
   need the module, four are a reader's and no stage will ever take them.** So the conformance
