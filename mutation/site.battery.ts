@@ -73,6 +73,11 @@ const methodFile = (find: string, replace: string) => ({
 })
 const indexingFile = (find: string, replace: string) => ({ file: 'indexing.ts', find, replace })
 const siteFile = (find: string, replace: string) => ({ file: 'site.ts', find, replace })
+const servedHeadersFile = (find: string, replace: string) => ({
+  file: 'served-headers.ts',
+  find,
+  replace,
+})
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -1414,6 +1419,93 @@ const mutants: readonly Mutant[] = [
     ],
     killed(['the-structured-data-is-in-no-projection-a-reader-meets']),
   ),
+
+  // --- What the host is told about the tree it serves. ADR-0097 ---
+
+  /**
+   * A pattern written by hand where one was derived, misspelled by a single letter.
+   *
+   * It is the defect the derivation exists to make impossible, so producing it takes writing the
+   * derivation out again - which is the point: a rule set assembled by hand is one letter away from an
+   * endpoint served under no policy at all. The guard that sees it asks `askedAt`, `pathTo`'s own
+   * inverse, so a pattern naming no endpoint is caught rather than compared against a twin rebuilt from
+   * the same function.
+   */
+  sameOnEveryLens(
+    'W-78',
+    'writes a rule pattern by hand instead of deriving it, so one endpoint is described at an ' +
+      'address the emission never writes and its answers are served under no rule',
+    [
+      servedHeadersFile(
+        '    url: pathTo(endpoint, EVERY_ADDRESS),',
+        "    url: endpoint.id === 'blob' ? '/blobs/*' : pathTo(endpoint, EVERY_ADDRESS),",
+      ),
+    ],
+    killed([
+      'every-endpoint-carries-a-cache-rule-at-an-address-that-names-it',
+      'only-the-two-content-addressed-endpoints-are-cached-for-a-year',
+      'every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint',
+    ]),
+  ),
+
+  /**
+   * Every answer promised for a year, which is the direction that cannot be taken back.
+   *
+   * A named answer cached immutably is a browser that will not ask again for a year about a binding
+   * that moves - and unlike a missing header, nothing on the server can repair it once the entry is in
+   * somebody's cache. It is why `cachePolicyFor` reads the addressing class and why nothing else may.
+   */
+  sameOnEveryLens(
+    'W-79',
+    'gives every rule the content-addressed policy, so a name whose binding moves is promised never ' +
+      'to go stale',
+    [
+      servedHeadersFile(
+        'cacheControlOf(cachePolicyFor(endpoint.addressing))',
+        "cacheControlOf(cachePolicyFor('content-addressed'))",
+      ),
+    ],
+    killed([
+      'only-the-two-content-addressed-endpoints-are-cached-for-a-year',
+      'every-other-answer-is-revalidated-before-it-is-used',
+    ]),
+  ),
+
+  /**
+   * The `noindex` aimed at the declared origin instead of at the deployment.
+   *
+   * The realistic spelling of it: a preview host under the real domain rather than the temporary one,
+   * which reads correctly and would publish the catalogue's own pages as unindexable for ever while
+   * leaving the address that needed closing open. It is the one mistake in that rule a guard can still
+   * see, because whether the pattern *matches* is Cloudflare's answer and not this repository's.
+   */
+  sameOnEveryLens(
+    'W-80',
+    'closes a host under the declared origin rather than the deployment, so the pages the catalogue ' +
+      'is published at are the ones told not to be indexed',
+    [
+      servedHeadersFile(
+        'const NOT_THE_DECLARED_ORIGIN = `https://:worker.:subdomain.workers.dev/${EVERY_ADDRESS}`',
+        'const NOT_THE_DECLARED_ORIGIN = `https://:worker.:subdomain.toopo.dev/${EVERY_ADDRESS}`',
+      ),
+    ],
+    killed(['the-deployment-is-closed-to-robots-and-the-declared-origin-is-not']),
+  ),
+
+  /**
+   * The indent dropped from the rendering, which is the failure that leaves every other guard green.
+   *
+   * The rules are right, the policy is right, and the file the host parses carries a header at the
+   * margin where a URL is expected - so the parser reads eight rules and applies none of them. Nothing
+   * about the declaration is wrong, and nothing is served.
+   */
+  sameOnEveryLens(
+    'W-81',
+    'renders a header at the margin rather than indented under its URL, so a host reads a rule where ' +
+      'a pattern should be and applies none of them',
+    [servedHeadersFile('`  ${name}: ${value}`', '`${name}: ${value}`')],
+    killed(['the-rendering-carries-every-rule-with-its-headers-indented-beneath-it']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -1493,6 +1585,15 @@ export const battery: Battery = {
         'a-quote-and-a-backslash-are-escaped-before-anything-else',
         'nothing-but-the-local-adapter-reaches-the-serialisation',
       ],
+    },
+    {
+      nature: 'documents a decision',
+      reason:
+        'a limit somebody else publishes, which only a catalogue growing past it can violate. The ' +
+        'rule count is one per endpoint and the endpoints are eight, so no edit to a file of this ' +
+        'folder produces a hundred and first rule or a two-thousandth character - what would is a ' +
+        'registry with ninety-three more endpoints, and that is not a mutant.',
+      guards: ['the-file-stays-inside-the-limits-the-host-parses-it-under'],
     },
   ],
 }
