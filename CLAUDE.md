@@ -220,13 +220,28 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   `packages/site/served-headers.ts`, by the same derivation from `ENDPOINTS`: one more header per rule,
   read from `contentTypeOf` instead of `cacheControlOf`.
 
-  **And the same sweep found the cache half of it, which no entry here had ever named.** Ten of the 76
-  addresses — the nine modules and `robots.txt` — answer `public, max-age=14400, must-revalidate`, a
-  policy written in no file of this repository, because `_headers` derives its rules from `ENDPOINTS`
-  and a module is not an endpoint. It is stable over three passes and it is **not** explained here: the
-  ten do not share an extension, a content type or a depth, and `llms.txt` beside `robots.txt` answers
-  `max-age=0`. What is established is that ten served addresses carry a cache policy nobody here chose;
-  why those ten is unmeasured, so no cause is named. ADR-0103.
+- **That every address this tree serves carries a cache policy this repository chose.** Measured at
+  `994374d` over the 76 addresses: **ten of them do not.** The nine modules and `robots.txt` answer
+  `public, max-age=14400, must-revalidate`, a policy written in no file here. `theHeaderRules` derives
+  one rule per endpoint from `ENDPOINTS`, and a module is not an endpoint, so those ten match nothing
+  and fall through to whatever the host does that morning.
+
+  **What the ten do not share is the whole of what makes this an entry rather than a curiosity.** Not an
+  extension — nine are `.js` and one is `.txt`. Not a content type, not a depth, not a folder. And
+  `llms.txt`, a root-level `text/plain` file beside `robots.txt`, answers `max-age=0`: two files of the
+  same format, in the same place, with different answers. **No cause is named, because none was
+  measured** — three passes say only that it is stable, and a plausible explanation written here would
+  be worth less than the gap it filled.
+
+  **It closes by declaration and not by explanation**, which is why the missing cause does not block it:
+  a second family of rules in `packages/site/served-headers.ts`, covering the addresses the emission
+  writes that no endpoint names, derived the way the first family is — from `browser.ts`'s module map
+  and the three convention constants in `paths.ts`, never from a list somebody types. The one thing that
+  repair has to answer is ordering: `_headers` is itself written into the tree it describes, so a
+  derivation reading the finished tree is circular and the rules have to come from the same declarations
+  the emission does. **Declaring it does not explain the split and does not need to** — it makes the
+  split stop deciding anything. Today those ten land on a default; the day the default moves, nothing
+  here says so, and that is the failure, not the four hours. ADR-0103.
 - **That the emitted tree never loses an address it once served**, which the 404 page now promises to
   every reader and which nothing keeps. ADR-0101 publishes *nothing has ever been served at this
   address*, derived from permanent rule 6 — and **rule 6 freezes a published version, not the emission**.
@@ -290,6 +305,13 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   bound it. It closes on a guard over the manifest: the runtime `dependencies` are exactly the packages
   the published entry point imports, which `reachable.ts` already computes and nothing compares against
   the manifest. One file, and it is the cheapest entry on this list.
+
+  **That guard would be green the day it is written, and it was measured rather than assumed.** At
+  `994374d` the manifest declares one runtime dependency, `typescript`, and
+  `dist/packages/validation/typescript-api.js` imports `typescript/unstable/sync` — so the declaration
+  and the walk already agree, and the guard finds nothing. It is written anyway on the rule below about
+  a guard born green: what it buys is not today's defect but the day somebody moves a package from one
+  list to the other, and on that day the package is installed into every consumer's project.
 - `contractAnatomy` — triaged entry by entry against stage 1's own constraint, *readable in the source
   alone, without evaluating the module*: **three of the eleven are settled by the source alone, four
   need the module, four are a reader's and no stage will ever take them.** So the conformance
@@ -508,6 +530,17 @@ of the thesis.
   reason — never written as a passing test that proves nothing.
 - Every universal property carries a status — applicable or not applicable — together with its
   reason. One declared applicable must have been seen red on at least one plausible mutant.
+- **A guard that can find no defect on the day it is written is justified by the event it would catch
+  and by what that event would cost**, never by what it finds now. Born green is not the same as
+  decorative: the decorative guard is the one that *cannot* fail, and this one fails the day a named
+  thing happens. So the entry that proposes it says which event, and what that event costs if nothing
+  is watching — and where the cost is small, that is the argument for not writing it. This is the other
+  side of *a test that cannot fail is not a test*, and it is easy to invoke as an excuse: a guard whose
+  event nobody can name is not born green, it is aimed at nothing.
+- **A check that depends on where a line wraps depends on something nobody can see.** Read the text
+  with runs of whitespace collapsed, so an expectation is the sentence rather than the sentence plus
+  its column width. The alternative is a guard about the instrument going red on a re-flow, repaired by
+  transcribing a layout into an expectation, which is one more place the layout is now declared.
 - **A guard perturbs the claim, never the object derived from it.** Perturbing the derived object
   establishes that the derivation is self-consistent, which is true of a derivation with a hole in it —
   measured twice, ten units apart, on subjects sharing nothing. It is the cheapest test for a guard
