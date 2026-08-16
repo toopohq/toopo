@@ -761,6 +761,29 @@ describe('what is pinned rather than inherited', () => {
     META_TIMEOUT_MS,
   )
 
+  /**
+   * The reporter's own decoration, removed before its summary is read.
+   *
+   * The guard below reads a count out of vitest's human output, and that output is decorated on some
+   * machines and not on others: it was green here and **red on a Linux runner**, where ANSI codes sit
+   * between `Tests` and the count and `\s+` therefore matches nothing.
+   *
+   * **What turns the decoration on is not established, and this comment does not name a cause it did
+   * not measure.** It is none of `CI`, `FORCE_COLOR`, `TERM`, `GITHUB_ACTIONS` or a `--color` argument:
+   * each was set here in turn and the captured stream carried no escape at all, so no reproduction of
+   * the runner's state exists on this platform. Configuring the child against a switch nobody has found
+   * would be a repair aimed at a guess.
+   *
+   * So the guard is made independent of the decoration instead. What it is about is how many tests the
+   * launcher collected, and that is the same number whichever colour it arrives in - which is also why
+   * this is not a weakening: nothing the assertion establishes is carried by an escape code.
+   *
+   * Its neighbour above is deliberately left alone. That one reads strings the instrument itself
+   * writes with `process.stdout.write`, it was green on the same runner, and widening a repair to a
+   * place with no defect is how a mechanism stops being about anything.
+   */
+  const undecorated = (text: string): string => text.replaceAll(/\u001b\[[0-9;]*m/g, '')
+
   it(
     'the-launcher-invoked-under-a-lower-case-drive-letter-collects-its-suite',
     () => {
@@ -797,7 +820,7 @@ describe('what is pinned rather than inherited', () => {
         cwd: THE_REPOSITORY,
         encoding: 'utf8',
       })
-      const output = `${done.stdout}${done.stderr}`
+      const output = undecorated(`${done.stdout}${done.stderr}`)
 
       expect(output).toMatch(new RegExp(`Tests\\s+${collected} passed \\(${collected}\\)`))
       expect(done.status).toBe(0)
