@@ -1116,7 +1116,7 @@ const mutants: readonly Mutant[] = [
       'looks at. Both files are found by convention and by nothing else, so moving one is the same ' +
       'as not writing it - and the robots line goes on naming it correctly, so nothing disagrees',
     [pathsFile(THE_SITEMAP_IS_WHERE_A_CRAWLER_LOOKS, `export const SITEMAP = 'sitemap/index.xml'`)],
-    killed(['the-two-crawler-files-are-at-the-addresses-a-crawler-looks-for']),
+    killed(['every-file-found-by-convention-is-at-the-address-that-convention-fixes']),
   ),
 
   /**
