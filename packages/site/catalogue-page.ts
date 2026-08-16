@@ -12,17 +12,19 @@
 
 import { renderContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
-import type { Document, Node } from './document.js'
+import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 
 const NOTHING = {} as const
 
-const line = (tag: string, value: string, attributes = NOTHING): Node =>
+const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
 export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Document => ({
   title: 'Toopo — utility functions with a public, executable contract',
+  /** A list of contracts is not source code, and the only `@type` this site publishes is. */
+  structuredData: null,
   /**
    * Counted over the installable entries rather than over the index, because a refused contract has
    * no published contract behind it: `refuseContract` records an argument and binds no digest, so

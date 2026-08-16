@@ -30,10 +30,11 @@
  * room for the number, and the number is the argument. `readableBytes` stays where it is.
  */
 
-import { renderContract } from '../registry/address.js'
+import { contractUrl, renderContract } from '../registry/address.js'
+import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import type { CaseGroup } from '../catalogue/identifier.js'
 import type { CaseRecord, CaseTableRecord, ExportRecord } from '../registry/contract-record.js'
-import type { Document, Node } from './document.js'
+import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
 import { literal } from './literal.js'
@@ -59,7 +60,7 @@ export const whatRunsInYourBrowser = (name: string): string =>
   `the file the registry serves nor the file its digest covers: both are TypeScript, and no browser ` +
   `runs TypeScript. It is also the only part of this page that needs JavaScript at all.`
 
-const line = (tag: string, value: string, attributes = NOTHING): Node =>
+const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
 /** A number with the thousands marked, because a byte count is read as a quantity. */
@@ -116,7 +117,7 @@ const anchorTo = (id: string): Node =>
  * deeply a group is nested depends on whether its contract has one table or two, and how a group
  * *looks* must not.
  */
-const addressed = (tag: string, id: string, title: string): Node =>
+const addressed = (tag: Tag, id: string, title: string): Node =>
   el(tag, { id, class: 'group' }, anchorTo(id), text(title))
 
 /**
@@ -134,7 +135,7 @@ const renderedGroup = (
   group: CaseGroup,
   table: CaseTableRecord,
   answer: ExportRecord,
-  heading: string,
+  heading: Tag,
 ): readonly Node[] => [
   addressed(heading, group.id, group.title),
   ...(group.note === null ? [] : [line('p', group.note, { class: 'why' })]),
@@ -182,6 +183,23 @@ export const contractPage = (held: Held): Document => {
 
   return {
     title: `${name} — ${contract.identity.summary}`,
+    /**
+     * Every field is the value the page already renders, read from the same record.
+     *
+     * `license` is what a reader *takes* and not what this repository is under - the asymmetry ADR-0047
+     * establishes, arriving on the one field a machine reads as a fact about the code in front of it.
+     * `programmingLanguage` is the language coordinate of the address rather than a prettier spelling
+     * of it, because a rendering of an address is a second name for it.
+     */
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareSourceCode',
+      name,
+      description: contract.identity.summary,
+      programmingLanguage: contract.address.language,
+      license: THE_COPIED_LICENCE,
+      url: contractUrl(contract.address),
+    },
     /**
      * Composed rather than borrowed from the summary, which the title already carries. A search
      * result showing one sentence twice wastes the only two lines it gets, and the differentiator -

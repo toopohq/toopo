@@ -24,9 +24,9 @@ install, nothing of ours runs in your program.
 
 Because the tests are measured, and the measurement is a command you can run.
 
-This repository carries 19 mutation batteries. They inject **641 deliberate defects** into it — each
+This repository carries 19 mutation batteries. They inject **648 deliberate defects** into it — each
 one a committed file naming the exact edit it makes and the verdict it must produce — and re-run the
-whole suite once per defect. **606 are caught.** The 35 that survive are each classified, and the
+whole suite once per defect. **613 are caught.** The 35 that survive are each classified, and the
 split is published with the total because a survivor count alone reads as a count of holes: 12 are
 equivalent mutants, 6 are behaviour the contract declines to specify, 4 are unreachable on this
 catalogue, 12 exist only where a lens deliberately took the suite's sight away, and **exactly one is
@@ -34,7 +34,7 @@ a debt**.
 
 ```sh
 pnpm install
-pnpm run mutation    # about half an hour; replays all 641 cells and prints the total
+pnpm run mutation    # about half an hour; replays all 648 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 

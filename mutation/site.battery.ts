@@ -85,9 +85,31 @@ const AN_ATTRIBUTE_IS_ESCAPED_TOO = `const escapeAttribute = (value: string): st
 
 const CHROME_IS_NOT_READ_ALOUD = `  if (isChrome(node)) return ''`
 
-const A_BLOCK_SEPARATES = `  h1: '\\n\\n',`
+const A_BLOCK_SEPARATES = `    h1: ends('\\n\\n'),`
 
-const A_PARAGRAPH_SEPARATES = `  p: '\\n\\n',`
+/**
+ * Two lines, because the reading and the Markdown decorate a paragraph identically.
+ *
+ * `p: ends('\\n\\n'),` is now written twice - once in each projection - and an edit must match exactly
+ * once, so the anchor carries the line above it, which is the one the two tables disagree on. It is the
+ * ordinary cost of a second total map over the same tags, and it is cheaper than naming the tables.
+ */
+const A_PARAGRAPH_SEPARATES = `    h4: ends('\\n\\n'),
+    p: ends('\\n\\n'),`
+
+const A_HEADING_IS_A_HEADING_IN_MARKDOWN = `    h2: wraps('## ', '\\n\\n'),`
+
+const PROSE_IS_ESCAPED = `  prose: escapedForMarkdown,`
+
+const CODE_IS_NOT_PROSE = `  verbatim: new Set(['code', 'pre']),`
+
+const A_SPAN_IS_CLOSED_BY_WHAT_THE_CODE_CANNOT_WRITE = `  const fence = '\`'.repeat(longestFence(code) + 1)`
+
+const THE_MARKDOWN_IS_A_SIBLING = `  page.replace(/index\\.html$/, THE_MARKDOWN_FILE)`
+
+const THE_PAYLOAD_CANNOT_CLOSE_ITS_OWN_ELEMENT = `  \`<script type="application/ld+json">\${JSON.stringify(data).replaceAll('<', '\\\\u003c')}</script>\``
+
+const WHAT_A_READER_TAKES_IS_WHAT_IS_DECLARED = `      license: THE_COPIED_LICENCE,`
 
 const THE_PAGE_DECLARES_ITS_LANGUAGE = `    '<html lang="en">',`
 
@@ -226,7 +248,7 @@ const THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS = `    paragraph(WHAT_A_S
 
 const EVERYTHING_IS_READABLE = `  ['User-agent: *', 'Allow: /', '', \`Sitemap: \${THE_ORIGIN}/\${SITEMAP}\`, ''].join('\\n')`
 
-const THE_SITEMAP_IS_THE_PAGES = `  theCrawlerFiles([...pages.keys()])`
+const THE_SITEMAP_IS_THE_PAGES = `  return theCrawlerFiles(listed, root ?? { path: CATALOGUE_PAGE, title: '', description: '' })`
 
 const A_LINK_IS_THE_FOLDER_AND_NOT_THE_FILE = `export const linkTo = (page: string): string => page.replace(/index\\.html$/, '')`
 
@@ -291,7 +313,7 @@ const mutants: readonly Mutant[] = [
     killed([
       'a-text-node-is-escaped-in-the-html',
       'an-attribute-value-is-escaped-including-its-quotes',
-      'every-word-of-the-page-is-in-both-projections',
+      'every-word-of-the-page-is-in-every-projection',
     ]),
   ),
 
@@ -318,8 +340,8 @@ const mutants: readonly Mutant[] = [
       'this unit measures the page with and the reading looks tidier for it',
     [documentFile(CHROME_IS_NOT_READ_ALOUD, `  if (isChrome(node) || node.tag === 'code') return ''`)],
     killed([
-      'every-word-of-the-page-is-in-both-projections',
-      'every-word-of-every-page-survives-both-projections',
+      'every-word-of-the-page-is-in-every-projection',
+      'every-word-of-every-page-survives-every-projection',
       'a-case-is-rendered-as-the-call-its-signature-declares',
     ]),
   ),
@@ -336,7 +358,7 @@ const mutants: readonly Mutant[] = [
     'W-05',
     'runs every block into the next in the reading order, so the projection is a wall and the ' +
       'structure a screen reader announces is gone',
-    [documentFile(A_BLOCK_SEPARATES, `  h1: '',`)],
+    [documentFile(A_BLOCK_SEPARATES, `    h1: ends(''),`)],
     killed(['the-text-projection-keeps-the-words-and-drops-the-markup']),
   ),
 
@@ -349,7 +371,13 @@ const mutants: readonly Mutant[] = [
     'W-29',
     'runs a label into the sentence under it, so every property and every profile of every contract ' +
       'is published as one run-on line with every word still present',
-    [documentFile(A_PARAGRAPH_SEPARATES, `  p: '',`)],
+    [
+      documentFile(
+        A_PARAGRAPH_SEPARATES,
+        `    h4: ends('\\n\\n'),
+    p: ends(''),`,
+      ),
+    ],
     killed(['a-label-and-the-sentence-under-it-are-two-lines']),
   ),
 
@@ -368,7 +396,7 @@ const mutants: readonly Mutant[] = [
       'an-invisible-character-is-written-as-its-code-point',
       'a-combining-mark-is-written-apart-from-its-base',
       'a-case-is-rendered-as-the-call-its-signature-declares',
-      'every-word-of-every-page-survives-both-projections',
+      'every-word-of-every-page-survives-every-projection',
     ]),
   ),
 
@@ -986,10 +1014,16 @@ const mutants: readonly Mutant[] = [
     [
       siteFile(
         THE_SITEMAP_IS_THE_PAGES,
-        `  theCrawlerFiles([...pages.keys()].filter((path) => !path.startsWith('method/')))`,
+        `  return theCrawlerFiles(\n` +
+          `    listed.filter((page) => !page.path.startsWith('method/')),\n` +
+          `    root ?? { path: CATALOGUE_PAGE, title: '', description: '' },\n` +
+          `  )`,
       ),
     ],
-    killed(['every-page-is-in-the-sitemap-and-nothing-else-is']),
+    killed([
+      'every-page-is-in-the-sitemap-and-nothing-else-is',
+      'every-page-is-listed-for-a-retriever-as-the-markdown-beside-it',
+    ]),
   ),
 
   sameOnEveryLens(
@@ -1168,6 +1202,132 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['no-path-is-both-a-file-and-a-directory']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-67 to W-72 - the projection a machine reads, and what a page says to one
+  // -------------------------------------------------------------------------
+  //
+  // Every defect below leaves a site that renders, reads and links exactly as it does today. What each
+  // one changes is what a retriever gets, which nobody looking at the site can see - the same shape as
+  // the two crawler files above, on a projection and on a payload rather than on two small documents.
+
+  /**
+   * The defect the third projection exists to prevent, written as the tidier of the two outputs.
+   *
+   * A Markdown page whose headings are paragraphs loses no word, reads identically, and is the same
+   * document as the reading `toText` already produces - which makes the file pure cost. It is W-05's
+   * defect on the projection whose whole subject is the structure `toText` throws away.
+   */
+  sameOnEveryLens(
+    'W-67',
+    'emits a heading as prose in the Markdown, so the projection that exists to carry a document\'s ' +
+      'outline publishes a wall of paragraphs with every word still in it',
+    [documentFile(A_HEADING_IS_A_HEADING_IN_MARKDOWN, `    h2: ends('\\n\\n'),`)],
+    killed([
+      'the-markdown-projection-keeps-the-structure-and-changes-the-markup',
+      'every-heading-of-a-page-is-a-heading-in-its-markdown',
+    ]),
+  ),
+
+  /**
+   * The escaping in the direction a page is read as syntax, and it is reachable on real data.
+   *
+   * Measured over the seven pages: 53 of 790 prose nodes carry a backtick, so a contract's own
+   * rationale opens a code span and the sentence after it is published as code. Four more open on a
+   * block marker and become list items.
+   */
+  sameOnEveryLens(
+    'W-68',
+    'writes contract prose into the Markdown without escaping it, so a rationale holding a backtick ' +
+      'opens a code span over the sentence beside it and a line opening on a dash becomes a list',
+    [documentFile(PROSE_IS_ESCAPED, `  prose: (value) => value,`)],
+    killed(['a-mark-in-prose-is-escaped-and-a-mark-in-code-is-not']),
+  ),
+
+  /**
+   * The other direction, which is not a weaker version of the first: it is what a cautious reading of
+   * the same requirement produces, and it corrupts the one thing on the page that is the contract's own
+   * answer. `slugify('a*b')` published as `slugify('a\\*b')` is a claim the contract does not make.
+   */
+  sameOnEveryLens(
+    'W-69',
+    'escapes a rendered call as though it were prose, so every answer this catalogue settles is ' +
+      'published to a machine with backslashes the contract never wrote',
+    [documentFile(CODE_IS_NOT_PROSE, `  verbatim: new Set(),`)],
+    killed([
+      'a-mark-in-prose-is-escaped-and-a-mark-in-code-is-not',
+      'a-code-span-is-delimited-by-a-run-the-code-cannot-close',
+    ]),
+  ),
+
+  /**
+   * The delimiter assumed rather than derived, which no current output can tell apart.
+   *
+   * No value in this catalogue holds a backtick, so the mutant changes not one byte of what is
+   * published today - and the day a contract settles a case on a template literal, the span closes
+   * early and the rest of the answer is published as prose. It is W-61's argument about an escape for
+   * data that does not exist yet, on a delimiter.
+   */
+  sameOnEveryLens(
+    'W-70',
+    'closes a code span with a single backtick instead of a run the code cannot write, which is ' +
+      'identical on every page today and truncates the first answer that holds one',
+    [documentFile(A_SPAN_IS_CLOSED_BY_WHAT_THE_CODE_CANNOT_WRITE, `  const fence = '\`'`)],
+    killed(['a-code-span-is-delimited-by-a-run-the-code-cannot-close']),
+  ),
+
+  /**
+   * The twin written at the address of the page it is a twin of.
+   *
+   * It is W-66 one file along and with the opposite symptom: that one puts a page where a directory has
+   * to be and the build dies, this one silently writes Markdown over every `index.html` in the tree.
+   * The site still deploys, every URL still answers, and every page a reader opens is a text file.
+   */
+  sameOnEveryLens(
+    'W-71',
+    'writes a page\'s Markdown at the page\'s own address, so the twin overwrites the page it is a ' +
+      'projection of and the `rel="alternate"` link on every page points at nothing',
+    [pathsFile(THE_MARKDOWN_IS_A_SIBLING, `  page`)],
+    killed(['every-page-has-its-markdown-beside-it-at-the-same-address']),
+  ),
+
+  /**
+   * The one escape a payload in a `script` element needs, and the reason it is a JSON escape.
+   *
+   * The content of a `script` is raw text, so nothing in it is decoded and nothing in it may spell the
+   * closing tag. A value carrying `</script>` ends the element early: the structured data is truncated
+   * and the rest of it is written into the page as markup.
+   */
+  sameOnEveryLens(
+    'W-72',
+    'serialises the structured data without escaping the one character that can close the element it ' +
+      'sits in, so a value holding `</script>` truncates the payload and spills into the document',
+    [
+      documentFile(
+        THE_PAYLOAD_CANNOT_CLOSE_ITS_OWN_ELEMENT,
+        '  `<script type="application/ld+json">${JSON.stringify(data)}</script>`',
+      ),
+    ],
+    killed(['the-structured-data-is-json-a-consumer-reads-back-as-what-the-page-shows']),
+  ),
+
+  /**
+   * The licence a machine reads, set to the one this repository is under rather than the one a reader
+   * takes.
+   *
+   * Both are true sentences about this project and only one is true of the file in front of the
+   * consumer: the repository is MIT and what `toopo add` copies is MIT-0. ADR-0047 names getting a
+   * licence wrong inside somebody else's repository as the most expensive defect this project can
+   * produce and the only one invisible from here - and this publishes it in the one field written to be
+   * believed without being read.
+   */
+  sameOnEveryLens(
+    'W-73',
+    'publishes the repository\'s licence as the licence of the source a reader takes, which is a true ' +
+      'sentence about this project and a false one about the file the page is offering',
+    [contractPageFile(WHAT_A_READER_TAKES_IS_WHAT_IS_DECLARED, `      license: 'MIT',`)],
+    killed(['the-structured-data-a-page-publishes-is-the-record-it-renders']),
   ),
 ]
 

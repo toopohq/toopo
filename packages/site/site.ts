@@ -31,14 +31,14 @@ import { emitted } from '../registry/emit.js'
 import { localReadApi } from '../registry/local-read-api.js'
 import { theReferenceModules } from './browser.js'
 import type { Document } from './document.js'
-import { toHtml } from './document.js'
+import { toHtml, toMarkdown } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
 import { contractPage } from './contract-page.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { theCrawlerFiles } from './indexing.js'
 import { localSource } from './local-source.js'
 import { methodologyPage } from './methodology-page.js'
-import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, pageOf } from './paths.js'
+import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, markdownOf, pageOf } from './paths.js'
 import { refusalsPage } from './refusals-page.js'
 import type { RegistrySource } from './source.js'
 
@@ -79,6 +79,7 @@ export const thePublishedTree = (
 ): ReadonlyMap<string, string | Buffer> =>
   new Map<string, string | Buffer>([
     ...[...pages].map(([path, page]) => [path, toHtml(page)] as const),
+    ...[...pages].map(([path, page]) => [markdownOf(path), toMarkdown(page)] as const),
     ...modules,
     ...theCrawlerFilesOf(pages),
     ...answers,
@@ -121,5 +122,20 @@ export const thePublication = (
  * publish a sitemap of a site nobody serves. Taking the map makes the sitemap a projection of exactly
  * the thing `build.ts` writes, and the two cannot be about different sets.
  */
-export const theCrawlerFilesOf = (pages: ReadonlyMap<string, Document>): ReadonlyMap<string, string> =>
-  theCrawlerFiles([...pages.keys()])
+export const theCrawlerFilesOf = (pages: ReadonlyMap<string, Document>): ReadonlyMap<string, string> => {
+  const listed = [...pages].map(([path, page]) => ({
+    path,
+    title: page.title,
+    description: page.description,
+  }))
+
+  /**
+   * The front page is the root of the index a retriever reads, and it is looked up rather than
+   * composed: what this site *is* is already written once, as the sentence a reader meets first, and a
+   * second statement of it here would be the copy that goes stale.
+   * `the-index-a-retriever-reads-opens-on-the-front-pages-own-words` is what says the lookup found it.
+   */
+  const root = listed.find((page) => page.path === CATALOGUE_PAGE)
+
+  return theCrawlerFiles(listed, root ?? { path: CATALOGUE_PAGE, title: '', description: '' })
+}

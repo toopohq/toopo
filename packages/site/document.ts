@@ -1,7 +1,8 @@
 /**
- * A page, and the two projections of it that must never disagree.
- * ADR-0024 is why a page is a value with two projections; ADR-0025 is what goes between two of its
- * elements in a reading.
+ * A page, and the projections of it that must never disagree.
+ * ADR-0024 is why a page is a value with projections rather than a string; ADR-0025 is what goes
+ * between two of its elements in a reading; ADR-0094 is what the third projection is for and what it
+ * was measured to be worth.
  *
  *
  * ---------------------------------------------------------------------------
@@ -14,12 +15,18 @@
  * parsing its own output back, which means a second implementation of HTML - and a bug in the reader
  * would read as a bug in the page.
  *
- * So a page is a value, and `toHtml` and `toText` are two projections of it. Reading the page as text
- * stops being a thing somebody remembers to do and becomes something a guard can hold: they are two
+ * So a page is a value, and `toHtml`, `toText` and `toMarkdown` are projections of it. Reading the page
+ * as text stops being a thing somebody remembers to do and becomes something a guard can hold: they are
  * statements about one tree, and their disagreement is a defect rather than a formatting difference.
- * `every-word-of-the-page-is-in-both-projections` is that guard, and the mutant it exists for is a
- * text projection that quietly drops what the HTML shows - the only defect in this folder that could
- * blind the instrument this unit is measured with.
+ * `every-word-of-the-page-is-in-every-projection` is that guard, and the mutant it exists for is a
+ * projection that quietly drops what the HTML shows - the only defect in this folder that could blind
+ * the instrument this unit is measured with.
+ *
+ * **The third projection is what makes the shape pay for itself a second time.** A Markdown rendering of
+ * a page is the obvious place for a second generator, and a second generator is two statements of one
+ * document that drift until one of them lies. Here it is a table: `THE_READING` and `THE_MARKDOWN` are
+ * two total maps over the same closed tag set, walked by one function, so what they can disagree about
+ * is decoration and never content.
  *
  * ---------------------------------------------------------------------------
  * The escaping is the security boundary, and it is total by construction
@@ -34,16 +41,56 @@
  * rather than forbidden.
  */
 
+import { THE_MARKDOWN_FILE } from './paths.js'
+
 export type Attributes = Readonly<Record<string, string>>
 
-export type Node =
-  | { readonly kind: 'text'; readonly text: string }
-  | {
-      readonly kind: 'element'
-      readonly tag: string
-      readonly attributes: Attributes
-      readonly children: readonly Node[]
-    }
+/**
+ * Every tag this repository builds a node with, closed so that a projection cannot forget one.
+ *
+ * It used to be `string`, and the separator table was a partial record falling back to *no separator* -
+ * which is the exact shape of the defect W-64 published: an element that carried no separator was put
+ * where a block belonged, and the element after it began mid-line, on the first screen of the site. A
+ * partial table cannot fail to be silent about a tag nobody entered.
+ *
+ * With the set closed, a total map over it is the shape ADR-0054 asks for: **a sixteenth tag does not
+ * compile until every projection has said what it does with it.**
+ * That is worth more here than anywhere else in this folder, because there are now three projections
+ * and the cost of forgetting one is a reading that is quietly wrong rather than a page that breaks.
+ *
+ * The set is what has a call site, measured rather than remembered: fourteen occur on the seven pages
+ * and `section` occurs in `document.test.ts`, which builds nesting no page happens to write today.
+ * Eight tags the separator table used to carry - `table`, `tr`, `ol`, `dl`, `dt`, `dd`, `header`,
+ * `footer` - had no call site at all and are gone with it, because an entry nothing exercises is an
+ * entry nothing keeps honest.
+ */
+export type Tag =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'p'
+  | 'pre'
+  | 'ul'
+  | 'li'
+  | 'div'
+  | 'section'
+  | 'nav'
+  | 'a'
+  | 'code'
+  | 'strong'
+  | 'script'
+
+export type TextNode = { readonly kind: 'text'; readonly text: string }
+
+export type Element = {
+  readonly kind: 'element'
+  readonly tag: Tag
+  readonly attributes: Attributes
+  readonly children: readonly Node[]
+}
+
+export type Node = TextNode | Element
 
 /**
  * A whole page: what it is called, what it is about, and what it says.
@@ -53,52 +100,48 @@ export type Node =
  * leaving them out of the text projection would measure the reading order of everything except its
  * opening.
  */
+/**
+ * What a page publishes about itself in the one vocabulary a search engine reads as data.
+ *
+ * **`SoftwareSourceCode` and nothing else, because it is the only type here any page can fill
+ * truthfully.** A contract page is about the source of one function; the catalogue is a list, the
+ * method page is an argument, and the refusals page is a judgement. Giving those three a
+ * `SoftwareSourceCode` because the field exists would publish a false `@type` in the one part of a page
+ * written for machines, which is the class this repository spends its length removing - so the field is
+ * total and they answer `null`, which is a statement rather than an omission.
+ *
+ * Every value is derived from what the page already renders, and the two that could have been
+ * transcribed are the two that matter most. `license` is `THE_COPIED_LICENCE` - what a reader *takes*
+ * is MIT-0, where the repository is MIT, and writing the repository's licence here would tell a machine
+ * the wrong thing about the code it is looking at. `url` is `contractUrl`, which is already the address
+ * a licence header freezes into other people's repositories.
+ */
+export type StructuredData = {
+  readonly '@context': 'https://schema.org'
+  readonly '@type': 'SoftwareSourceCode'
+  readonly name: string
+  readonly description: string
+  readonly programmingLanguage: string
+  readonly license: string
+  readonly url: string
+}
+
 export type Document = {
   readonly title: string
   readonly description: string
+  /** `null` where a page has nothing true to say about itself in schema.org's vocabulary. */
+  readonly structuredData: StructuredData | null
   readonly body: readonly Node[]
 }
 
 export const text = (value: string): Node => ({ kind: 'text', text: value })
 
-export const el = (tag: string, attributes: Attributes, ...children: readonly Node[]): Node => ({
+export const el = (tag: Tag, attributes: Attributes, ...children: readonly Node[]): Node => ({
   kind: 'element',
   tag,
   attributes,
   children,
 })
-
-/** The elements that close themselves. Only the ones this site writes. */
-const VOID_ELEMENTS = new Set(['meta', 'br', 'hr'])
-
-/**
- * How much white space an element leaves behind it in the text projection.
- *
- * It is a property of the element and not of the renderer, because it is the only thing that carries
- * *structure* into a projection that has thrown the markup away. Without it a heading runs into its
- * paragraph and the reading order is a wall - which would make the measurement this file exists for
- * unreadable, and therefore useless.
- */
-const SEPARATOR: Readonly<Record<string, string>> = {
-  h1: '\n\n',
-  h2: '\n\n',
-  h3: '\n\n',
-  h4: '\n\n',
-  p: '\n\n',
-  pre: '\n\n',
-  ul: '\n',
-  ol: '\n',
-  dl: '\n',
-  li: '\n',
-  dt: '\n',
-  dd: '\n',
-  section: '\n\n',
-  header: '\n\n',
-  footer: '\n\n',
-  nav: '\n\n',
-  table: '\n\n',
-  tr: '\n',
-}
 
 const escapeText = (value: string): string =>
   value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
@@ -111,8 +154,6 @@ const renderNode = (node: Node): string => {
   const attributes = Object.entries(node.attributes)
     .map(([name, value]) => ` ${name}="${escapeAttribute(value)}"`)
     .join('')
-
-  if (VOID_ELEMENTS.has(node.tag)) return `<${node.tag}${attributes}>`
 
   return `<${node.tag}${attributes}>${node.children.map(renderNode).join('')}</${node.tag}>`
 }
@@ -130,6 +171,92 @@ const isChrome = (node: Node): boolean =>
   node.kind === 'element' && node.attributes['aria-hidden'] === 'true'
 
 /**
+ * How one element turns the reading of what it holds into its own.
+ *
+ * It takes the element and not only its tag, because a link's destination is an attribute and a
+ * projection that carries structure has to reach it. Everything else here is a function of the tag
+ * alone, and the two helpers below say which is which at a glance.
+ */
+type Decorate = (element: Element, children: string) => string
+
+/**
+ * One way of reading a page: what a text node becomes, which tags hold content rather than prose, and
+ * what every tag writes around what it holds.
+ *
+ * **The element table is total over `Tag`, and that is the whole reason the tag set is closed.** Three
+ * projections now answer the same tree, and the failure that costs most is not a projection that
+ * breaks - it is one that quietly says nothing about a tag, which reads as a tidier page.
+ */
+type Projection = {
+  /** What a text node reads as when it is prose. */
+  readonly prose: (value: string) => string
+  /** The tags whose children are content to be reproduced rather than prose to be marked up. */
+  readonly verbatim: ReadonlySet<Tag>
+  readonly element: Readonly<Record<Tag, Decorate>>
+}
+
+/** An element that writes nothing of its own and only ends what it holds. */
+const ends =
+  (separator: string): Decorate =>
+  (_, children) =>
+    children + separator
+
+/** An element that writes itself around what it holds. */
+const wraps =
+  (before: string, after: string): Decorate =>
+  (_, children) =>
+    before + children + after
+
+/**
+ * The reading: the markup thrown away, and the structure kept as white space.
+ *
+ * The separator is a property of the element and not of the renderer, because it is the only thing
+ * that carries *structure* into a projection that has thrown the markup away. Without it a heading
+ * runs into its paragraph and the reading order is a wall - which would make the measurement this file
+ * exists for unreadable, and therefore useless.
+ */
+const THE_READING: Projection = {
+  prose: (value) => value,
+  verbatim: new Set(),
+  element: {
+    h1: ends('\n\n'),
+    h2: ends('\n\n'),
+    h3: ends('\n\n'),
+    h4: ends('\n\n'),
+    p: ends('\n\n'),
+    pre: ends('\n\n'),
+    ul: ends('\n'),
+    li: ends('\n'),
+    div: ends(''),
+    section: ends('\n\n'),
+    nav: ends('\n\n'),
+    a: ends(''),
+    code: ends(''),
+    strong: ends(''),
+    script: ends(''),
+  },
+}
+
+/**
+ * What one node reads as under one projection.
+ *
+ * The verbatim flag is carried down rather than looked up, because what decides whether a string is
+ * prose is an *ancestor* and not the string: the text inside a `code` is the contract's own answer and
+ * a backslash in it is a backslash, where the same characters in the paragraph beside it are syntax.
+ */
+const projected = (node: Node, how: Projection, verbatim: boolean): string => {
+  if (node.kind === 'text') return verbatim ? node.text : how.prose(node.text)
+  if (isChrome(node)) return ''
+
+  const inside = verbatim || how.verbatim.has(node.tag)
+
+  return how.element[node.tag](
+    node,
+    node.children.map((child) => projected(child, how, inside)).join(''),
+  )
+}
+
+/**
  * What a reader reads of one node, separator included.
  *
  * Exported because the whole-page projection cannot answer the question two elements raise about each
@@ -138,12 +265,7 @@ const isChrome = (node: Node): boolean =>
  * elements run together needs each one's reading *with its own trailing separator still on it*, which
  * is exactly this and is nothing more than the step `toText` is built out of.
  */
-export const readingOf = (node: Node): string => {
-  if (node.kind === 'text') return node.text
-  if (isChrome(node)) return ''
-
-  return node.children.map(readingOf).join('') + (SEPARATOR[node.tag] ?? '')
-}
+export const readingOf = (node: Node): string => projected(node, THE_READING, false)
 
 /**
  * The stylesheet, which is the whole of what this site loads beyond the page itself.
@@ -213,6 +335,35 @@ ul.plain > li { padding: .5rem 0; border-top: 1px solid var(--rule) }
 #playground input:focus { outline: 2px solid var(--link); outline-offset: 1px }
 `.trim()
 
+/**
+ * The structured data, as a value that becomes JSON rather than as markup a page carries.
+ *
+ * **It is in the head and not in the tree, and that was measured rather than preferred.** Written as a
+ * text node it goes through `escapeText`, and the content of a `script` is raw text in HTML - no entity
+ * in it is ever decoded - so the payload parses as JSON and every string in it carries `&amp;` and
+ * `&lt;` where the page shows `&` and `<`. Valid structured data, corrupt values, and nothing red. The
+ * second half is worse: a text node reaches `toText`, so the instrument this whole folder is measured
+ * by would be reading a JSON blob as part of the page.
+ *
+ * So it sits beside the title, which is the other thing a page says about itself and does not say to a
+ * reader, and no projection sees it. `document.ts`'s rule that no node holds raw markup is untouched -
+ * this is not a node.
+ *
+ * The one escape is `<` as its JSON code point, which is what stops a value holding `</script` from
+ * closing the element early. It is a JSON escape and not an HTML one, so a consumer reads back exactly
+ * the character the page shows.
+ */
+const asJsonLd = (data: StructuredData): string =>
+  `<script type="application/ld+json">${JSON.stringify(data).replaceAll('<', '\\u003c')}</script>`
+
+/**
+ * What every page declares about the Markdown beside it.
+ *
+ * A bare file name, because the two are siblings by construction - so this is the same string on every
+ * page of the site, whatever its depth, and there is no path arithmetic to get wrong.
+ */
+const THE_ALTERNATE_LINK = `<link rel="alternate" type="text/markdown" href="${THE_MARKDOWN_FILE}">`
+
 export const toHtml = (document: Document): string =>
   [
     '<!doctype html>',
@@ -222,6 +373,8 @@ export const toHtml = (document: Document): string =>
     '<meta name="viewport" content="width=device-width, initial-scale=1">',
     `<title>${escapeText(document.title)}</title>`,
     `<meta name="description" content="${escapeAttribute(document.description)}">`,
+    THE_ALTERNATE_LINK,
+    ...(document.structuredData === null ? [] : [asJsonLd(document.structuredData)]),
     `<style>${STYLE}</style>`,
     '</head>',
     '<body>',
@@ -231,19 +384,149 @@ export const toHtml = (document: Document): string =>
     '',
   ].join('\n')
 
+// ---------------------------------------------------------------------------
+// The third projection: the same page, with the structure kept and the markup changed
+// ---------------------------------------------------------------------------
+//
+// A retriever that opens a contract page pays for the markup around the prose. Measured over the four
+// contract pages, the reading is 59 % to 64 % of the served HTML - so what a Markdown projection saves
+// is about a third, and it is arithmetic rather than a claim about what any robot does. What it buys
+// beyond the bytes is the half `toText` throws away: a heading is still a heading, a list is still a
+// list, and a case's call is still code.
+//
+// Nothing here selects what to publish. The Markdown is the same tree as the HTML, decorated
+// differently, and the one declaration that removes anything is `aria-hidden` - which both projections
+// already obey, and which says a screen reader skips it rather than *this renderer skips it*.
+
 /**
- * The same page with the markup thrown away, in document order.
+ * The characters CommonMark reads as syntax wherever they stand in a paragraph.
+ *
+ * Escaped for the reason `escapeText` escapes markup rather than the characters today's data happens
+ * to hold: measured over the seven pages, **53 of 790 prose nodes carry a backtick**, ten an asterisk
+ * and five a bracket - so a contract's own rationale opens a code span, and the sentence after it is
+ * published as code. The set is CommonMark's, not this catalogue's, so it cannot go stale against data
+ * it has never seen.
+ */
+const INLINE_SYNTAX = /[\\`*_[\]<&]/g
+
+/**
+ * A block marker at the head of a text node, which is the other half and needs its own rule.
+ *
+ * A line opening with `- ` is a list item however the paragraph was meant, and **a line can only ever
+ * begin where a decoration ended or where a text node begins** - so escaping the head of every prose
+ * node is total, without a pass over the assembled string that could not tell a real bullet from a
+ * quoted one. Measured cost of that totality: four of 790 nodes are escaped mid-sentence, where the
+ * marker was harmless and a backslash renders as nothing.
+ *
+ * The asterisk is absent because `INLINE_SYNTAX` has already escaped it, and an alternative that can
+ * never match is one nobody can measure.
+ */
+const OPENS_A_BLOCK = /^(\s{0,3})([-+#>]|\d{1,9}[.)])/
+
+/**
+ * Exported for `every-word-of-the-page-is-in-every-projection`, which has to accept either spelling of
+ * a word and would otherwise transcribe this rule into a guard - a copy that goes stale the day the
+ * syntax set moves, in the file whose whole subject is that two statements of one thing drift.
+ */
+export const escapedForMarkdown = (value: string): string =>
+  value
+    .replace(INLINE_SYNTAX, (character) => `\\${character}`)
+    .replace(
+      OPENS_A_BLOCK,
+      (_, indent: string, marker: string) =>
+        `${indent}${/^\d/.test(marker) ? marker.replace(/.$/, '\\$&') : `\\${marker}`}`,
+    )
+
+/** The longest run of backticks in a value, which is what a fence around it has to beat. */
+const longestFence = (value: string): number =>
+  (value.match(/`+/g) ?? []).reduce((most, run) => Math.max(most, run.length), 0)
+
+/**
+ * A code span, delimited by a run derived from the code rather than assumed.
+ *
+ * No value in this catalogue holds a backtick today, and that is exactly what makes the derivation
+ * worth writing instead of a single backtick: nothing about the current output can tell whether it was
+ * dropped, and the day a contract settles a case on a template literal the span would close early and
+ * publish the rest of the answer as prose. It is `indexing.ts`'s argument for escaping an ampersand no
+ * address holds, on the delimiter of a span.
+ */
+const codeSpan = (code: string): string => {
+  const fence = '`'.repeat(longestFence(code) + 1)
+  const padding = /^`|`$/.test(code) ? ' ' : ''
+
+  return `${fence}${padding}${code}${padding}${fence}`
+}
+
+/** A fenced block, on the same derivation, and never carrying a language this projection invented. */
+const codeBlock = (code: string): string => {
+  const fence = '`'.repeat(Math.max(3, longestFence(code) + 1))
+
+  return `${fence}\n${code}\n${fence}\n\n`
+}
+
+/** A destination holding white space or a bracket is written between angle brackets. */
+const destination = (href: string): string => (/[\s()<>]/.test(href) ? `<${href}>` : href)
+
+/** Everything after the first line of a block, moved under the marker that opened it. */
+const indented = (block: string): string => block.replaceAll('\n', '\n  ')
+
+const THE_MARKDOWN: Projection = {
+  prose: escapedForMarkdown,
+  verbatim: new Set(['code', 'pre']),
+  element: {
+    h1: wraps('# ', '\n\n'),
+    h2: wraps('## ', '\n\n'),
+    h3: wraps('### ', '\n\n'),
+    h4: wraps('#### ', '\n\n'),
+    p: ends('\n\n'),
+    pre: (_, children) => codeBlock(children),
+    ul: ends('\n'),
+    li: (_, children) => `- ${indented(children.trimEnd())}\n`,
+    div: ends(''),
+    section: ends('\n\n'),
+    nav: ends('\n\n'),
+    a: (element, children) => {
+      const href = element.attributes['href']
+
+      return href === undefined ? children : `[${children}](${destination(href)})`
+    },
+    code: (_, children) => codeSpan(children),
+    strong: wraps('**', '**'),
+    script: ends(''),
+  },
+}
+
+/**
+ * A whole page under one projection: the two things a reader meets before anything else, then the body.
  *
  * Runs of blank lines are collapsed, because an element that separates and contains an element that
  * separates would otherwise leave a gap proportional to the nesting - which is a fact about the tree
  * and not about the reading.
+ *
+ * **The title takes no heading of its own, in either projection, and that is the one place a renderer
+ * would have been free to invent.** A `<title>` is not an `h1`: every page here carries both and
+ * `the-opening-of-a-page-says-three-different-things` requires them to say different things, so marking
+ * the title as `#` would publish two top-level headings where the document declares one, and the
+ * renderer would have decided which of the two is really the title.
  */
-export const toText = (document: Document): string =>
-  [document.title, '', document.description, '', ...document.body.map(readingOf)]
+const assembled = (document: Document, how: Projection): string =>
+  [
+    how.prose(document.title),
+    '',
+    how.prose(document.description),
+    '',
+    ...document.body.map((node) => projected(node, how, false)),
+  ]
     .join('\n')
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim() + '\n'
+
+/** The same page with the markup thrown away, in document order. */
+export const toText = (document: Document): string => assembled(document, THE_READING)
+
+/** The same page again, with its structure kept in the one syntax a retriever reads without a parser. */
+export const toMarkdown = (document: Document): string => assembled(document, THE_MARKDOWN)
 
 /** Every string a reader of this page can see, in document order. */
 export const wordsOf = (document: Document): readonly string[] => {

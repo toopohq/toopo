@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { THE_BROWSER_GRAPH } from './browser.js'
+import { markdownOf } from './paths.js'
 import { thePublication } from './site.js'
 
 /**
@@ -138,9 +139,36 @@ describe('what a host is given', () => {
 
     expect({
       pages: written.some((path) => path.endsWith('index.html')),
+      markdown: written.some((path) => path.endsWith('.md')),
       modules: written.some((path) => path.endsWith('.js')),
-      crawlers: written.includes('sitemap.xml') && written.includes('robots.txt'),
+      crawlers:
+        written.includes('sitemap.xml') &&
+        written.includes('robots.txt') &&
+        written.includes('llms.txt'),
       answers: written.includes('contract-index'),
-    }).toEqual({ pages: true, modules: true, crawlers: true, answers: true })
+    }).toEqual({ pages: true, markdown: true, modules: true, crawlers: true, answers: true })
+  })
+
+  /**
+   * Every page has its Markdown beside it, at the same address, and neither exists without the other.
+   *
+   * **It is what lets a page's head carry a bare file name.** `rel="alternate"` points at `index.md`
+   * with no path in front of it, which is right exactly because the two are siblings - so a page whose
+   * twin was written elsewhere, or not written at all, would publish a link to a 404 in the one tag a
+   * retriever follows. Nothing about the served HTML would look wrong.
+   *
+   * Both directions, because the failures are different: a page with no twin is a broken declaration,
+   * and a twin with no page is a file nothing points at and nothing serves as anything.
+   */
+  it('every-page-has-its-markdown-beside-it-at-the-same-address', () => {
+    const written = new Set(paths())
+    const pages = paths().filter((path) => path.endsWith('index.html'))
+    const markdown = paths().filter((path) => path.endsWith('.md'))
+
+    expect(pages.length).toBeGreaterThan(0)
+    expect(pages.map(markdownOf).filter((twin) => !written.has(twin))).toEqual([])
+    expect(markdown.sort()).toEqual(pages.map(markdownOf).sort())
+    // The twin is a different file: a projection written at its page's own address would overwrite it.
+    expect(pages.filter((path) => markdownOf(path) === path)).toEqual([])
   })
 })

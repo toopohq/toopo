@@ -103,11 +103,27 @@ registry serialising *itself* is what publishing is until a publishing tool exis
 
 **Measured at `643dce6`, over five contracts of which four are published: 48 files, 517 287 B.** Per
 published contract eleven files — one contract binding, one implementation list, two snapshots and seven
-harness blobs — and 126 kB; the fixed part is three files, the index, the refusals and the methodology.
-So the shape is `11N + 3` files, which gives **5 503 files and 63 MB at 500 contracts, 55 003 and 631 MB
-at 5 000, 220 003 and 2.5 GB at 20 000** — and a twenty-thousand-file limit at **1 817 contracts**, not
-the ten thousand that two files per contract would have given. The harness dominates and is what varies:
-seven files here, one blob per test file anywhere else.
+harness blobs — and 126 kB. The harness dominates and is what varies: seven files here, one blob per
+test file anywhere else.
+
+**The fixed part was published as three files and is four**, and the correction is worth more than the
+digit: `11 × 4 + 3` is 47 against the 48 this record measured, and what is in neither term is the
+`implementation-bindings` of the *refused* contract. So the answers are `11P + R + 3` with `P` published
+and `R` refused — the measurement was right and the shape written beside it was short by one, which is
+exactly the class [ADR-0018](0018-a-published-count-carries-its-coordinates.md) exists for, arriving on
+a formula rather than on a figure.
+
+**And the wall this published at 1 817 contracts is not the wall.** These are the emitted *answers*; a
+static host counts every file it serves, which is also the pages, the modules a browser loads and the
+files found by convention at the root. Measured at `c493e68` over the same five contracts: **66 files
+deployed, `13P + R + 13`**, and a twenty-thousand-file limit at **1 537 contracts**. The figure above
+described a subtree and was cited as a deadline, here and elsewhere, until somebody counted the tree.
+
+**Measured again after the Markdown twin, the index and the payload arrived**
+([ADR-0094](0094-what-a-machine-is-told-and-what-that-is-worth.md)): **74 files, `14P + R + 17`, and the
+limit at 1 427 contracts.** One `.md` beside every page, three of them fixed, and one `llms.txt`. The
+migration that removes this wall entirely — an object store with no directory limit — changes no URL,
+which is what makes the number a fact to state rather than a constraint to design against.
 
 **What the generator pays is a second serialisation and not the emission.** Measured over five runs each,
 808 ms with the tree against 532 ms without; split in process, `localReadApi()` is 258–287 ms, **the walk

@@ -43,7 +43,21 @@
  * re-derivable date and this decision is worth taking again.
  */
 
-import { ROBOTS, SITEMAP, THE_ORIGIN, urlOf } from './paths.js'
+import { escapedForMarkdown } from './document.js'
+import { LLMS_TXT, ROBOTS, SITEMAP, THE_ORIGIN, markdownOf, urlOf } from './paths.js'
+
+/**
+ * What the three files a machine reads need of a page: where it is, and what it says it is.
+ *
+ * The sitemap needs the first; the index a retriever reads needs all three. It is one value rather
+ * than two arguments so that all three files are projections of the same list - the argument
+ * `theCrawlerFilesOf` already makes about taking the page map, met again one level down.
+ */
+export type ListedPage = {
+  readonly path: string
+  readonly title: string
+  readonly description: string
+}
 
 /**
  * The five characters XML reserves, escaped before anything else.
@@ -72,6 +86,39 @@ export const sitemapOf = (pages: readonly string[]): string =>
   ].join('\n')
 
 /**
+ * The index a retriever is given, which points at the Markdown and never at the pages.
+ *
+ * **What this file is worth, stated as what was measured rather than as what is hoped for.** The
+ * convention is widely adopted and its effect on anything is not established: SE Ranking's study over
+ * roughly 300 000 domains found 10.13 % carrying one and *no correlation* between carrying one and
+ * being cited by a language model - removing the variable improved their model - and reports that
+ * GPTBot fetches it rarely. So this is written for its cost and not for a prediction: it is one file,
+ * derived from a list this module already holds, and it goes stale the moment a page moves unless it is
+ * derived. ADR-0094 carries the sources and what was checked in primary.
+ *
+ * The heading and the summary are the catalogue page's own title and description rather than a second
+ * statement of what this site is - the sentence a reader meets first is the sentence a retriever gets.
+ *
+ * Every link names the Markdown twin, because pointing a retriever at the HTML is pointing it at the
+ * thing the twin exists to replace.
+ */
+export const llmsTxtOf = (pages: readonly ListedPage[], root: ListedPage): string =>
+  [
+    `# ${escapedForMarkdown(root.title)}`,
+    '',
+    `> ${escapedForMarkdown(root.description)}`,
+    '',
+    '## Pages',
+    '',
+    ...pages.map(
+      (page) =>
+        `- [${escapedForMarkdown(page.title)}](${urlOf(markdownOf(page.path))}): ` +
+        `${escapedForMarkdown(page.description)}`,
+    ),
+    '',
+  ].join('\n')
+
+/**
  * Everything is readable, and the sitemap is named.
  *
  * A `robots.txt` that blocks indexing is the launch failure that costs nothing to write by accident
@@ -82,9 +129,13 @@ export const sitemapOf = (pages: readonly string[]): string =>
 export const robotsOf = (): string =>
   ['User-agent: *', 'Allow: /', '', `Sitemap: ${THE_ORIGIN}/${SITEMAP}`, ''].join('\n')
 
-/** The two of them, at the paths a crawler looks for them at, which are fixed by convention. */
-export const theCrawlerFiles = (pages: readonly string[]): ReadonlyMap<string, string> =>
+/** The three of them, at the paths they are looked for at, every one fixed by convention. */
+export const theCrawlerFiles = (
+  pages: readonly ListedPage[],
+  root: ListedPage,
+): ReadonlyMap<string, string> =>
   new Map([
-    [SITEMAP, sitemapOf(pages)],
+    [SITEMAP, sitemapOf(pages.map((page) => page.path))],
     [ROBOTS, robotsOf()],
+    [LLMS_TXT, llmsTxtOf(pages, root)],
   ])

@@ -1,6 +1,7 @@
 /**
  * Where a page lives, and the one rule that fixes it: **a page's address is the contract's address.**
- * ADR-0031 is why the origin is an address rather than a setting.
+ * ADR-0031 is why the origin is an address rather than a setting; ADR-0094 is why a page's Markdown
+ * twin is its sibling and why the index a retriever reads sits at the root.
  *
  *
  * `packages/registry/address.ts` was written on the promise that the site would make a case identifier a URL
@@ -33,6 +34,37 @@ export { THE_ORIGIN }
 
 /** The file a page is written to, relative to the root of the site. */
 export const pageOf = (address: ContractAddress): string => `${renderContract(address)}/index.html`
+
+/**
+ * The name a page's Markdown twin takes, beside it and never anywhere else.
+ *
+ * It is a constant rather than two literals because two things have to agree on it and they are in
+ * different folders: the tree writes the file, and every page's head declares it with
+ * `rel="alternate"`. **The whole reason the link on a page can be the bare name is that the two are
+ * siblings by construction** - `<contract>/index.html` and `<contract>/index.md` - so a page never has
+ * to know where it is to point at its own Markdown, and
+ * `every-page-has-its-markdown-beside-it-at-the-same-address` is what keeps that true rather than
+ * likely.
+ */
+export const THE_MARKDOWN_FILE = 'index.md'
+
+/**
+ * The Markdown twin of a page, at the same address.
+ *
+ * It is the same replacement `linkTo` makes on the same suffix, for the same reason: the page's own
+ * file name is the one part of its address that is a file rather than a place, and everything that has
+ * to name the page differently changes exactly that.
+ */
+export const markdownOf = (page: string): string =>
+  page.replace(/index\.html$/, THE_MARKDOWN_FILE)
+
+/**
+ * The index a retriever is pointed at, at the address the convention fixes.
+ *
+ * Like the two crawler files, it is found by convention and by nothing else - so it lives at the root
+ * or it does not exist, and `SITEMAP` beside it carries the same sentence.
+ */
+export const LLMS_TXT = 'llms.txt'
 
 export const REFUSALS_PAGE = 'refused/index.html'
 

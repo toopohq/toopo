@@ -39,13 +39,13 @@
 
 import { renderContract, sameContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
-import type { Document, Node } from './document.js'
+import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { REFUSALS_PAGE, rootFrom } from './paths.js'
 
 const NOTHING = {} as const
 
-const line = (tag: string, value: string, attributes = NOTHING): Node =>
+const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
 export const refusalsPage = (index: ServedIndex, refusals: ServedRefusals): Document => {
@@ -54,6 +54,8 @@ export const refusalsPage = (index: ServedIndex, refusals: ServedRefusals): Docu
 
   return {
     title: 'What Toopo refuses, and why',
+    /** A judgement about contracts is not source code, and a refused contract has none to point at. */
+    structuredData: null,
     description:
       `${refusals.refusals.length} contract${refusals.refusals.length === 1 ? ' was' : 's were'} ` +
       `written in full and then turned down. Each refusal is published with the measurement it was ` +

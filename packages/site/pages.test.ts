@@ -8,11 +8,12 @@ import {
   survivorsByKind,
   theMeasurement,
 } from '../../mutation/published.js'
-import { renderCase, renderContract } from '../registry/address.js'
+import { contractUrl, renderCase, renderContract } from '../registry/address.js'
+import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
-import { readingOf, toHtml, toText, wordsOf } from './document.js'
+import { escapedForMarkdown, readingOf, toHtml, toMarkdown, toText, wordsOf } from './document.js'
 import { localSource } from './local-source.js'
 import { inline } from './methodology-page.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
@@ -351,13 +352,31 @@ describe('the site', () => {
     }
   })
 
-  /** Every page the site holds is reachable from the front page, in one click or two. */
+  /**
+   * Every page the site holds is reachable from the front page, in one click or two.
+   *
+   * **Asked of the anchors in the body rather than of every `href` in the served string**, and the
+   * alternate link is what forced the distinction: a page's head now declares that its own Markdown
+   * exists, which is an `href` a reader can never click and which this guard duly counted as
+   * navigation. The repair is the discipline `document.ts` is built on - ask the value, not the markup -
+   * and it makes the guard say what it always meant: *what can somebody follow from here*.
+   */
   it('every-page-is-reachable-from-the-front-page', () => {
-    const front = html(CATALOGUE_PAGE)
-    const linked = [...front.matchAll(/href="([^"]+)"/g)].map((match) => match[1])
+    const followed: string[] = []
+
+    const walk = (node: Parameters<typeof readingOf>[0]): void => {
+      if (node.kind === 'text') return
+
+      const href = node.attributes['href']
+      if (node.tag === 'a' && href !== undefined) followed.push(href)
+
+      for (const child of node.children) walk(child)
+    }
+
+    for (const node of page(CATALOGUE_PAGE).body) walk(node)
 
     expect([...pages().keys()].filter((path) => path !== CATALOGUE_PAGE).map(linkTo).sort()).toEqual(
-      [...new Set(linked)].sort(),
+      [...new Set(followed)].sort(),
     )
   })
 
@@ -404,13 +423,138 @@ describe('the site', () => {
     }
   })
 
-  /** Nothing a reader can see is lost between the two projections, on every real page. */
-  it('every-word-of-every-page-survives-both-projections', () => {
+  /**
+   * What a contract page says to a machine is what it renders to a person, field by field.
+   *
+   * **The two fields that could have been transcribed are the two this guard is really about.**
+   * `license` is the one a machine reads as a fact about the code in front of it, and this repository is
+   * MIT while what a reader *takes* is MIT-0 - so a page publishing `MIT` here would tell every scanner
+   * the wrong thing about a file somebody now maintains themselves, which ADR-0047 names as the most
+   * expensive defect this project can produce and the only one invisible from here. `url` is the address
+   * a licence header freezes into repositories nobody here will see again.
+   *
+   * Nothing is compared against a literal: each side is read from the record the page was built from, so
+   * a field that stopped being derived is what reddens rather than a field that changed value.
+   */
+  it('the-structured-data-a-page-publishes-is-the-record-it-renders', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const { contract } = held
+
+      expect(page(pageOf(contract.address)).structuredData).toEqual({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareSourceCode',
+        name: renderContract(contract.address),
+        description: contract.identity.summary,
+        programmingLanguage: contract.address.language,
+        license: THE_COPIED_LICENCE,
+        url: contractUrl(contract.address),
+      })
+    }
+  })
+
+  /**
+   * Only a page about one contract says it is about source code.
+   *
+   * The catalogue is a list, the method page is an argument, and the refusals page is a judgement -
+   * none of them is a `SoftwareSourceCode`, and filling the field on all seven because the field exists
+   * would publish a false `@type` in the one part of a page written to be believed without being read.
+   * A machine has no way to tell that claim from a true one, which is what makes it worth a guard rather
+   * than care.
+   */
+  it('only-a-page-about-one-contract-says-it-is-source-code', () => {
+    const describing = [...pages()]
+      .filter(([, document]) => document.structuredData !== null)
+      .map(([path]) => path)
+
+    expect(describing.sort()).toEqual(
+      heldByTheRegistry(source)
+        .map((held) => pageOf(held.contract.address))
+        .sort(),
+    )
+  })
+
+  /** Nothing a reader can see is lost between the projections, on every real page. */
+  it('every-word-of-every-page-survives-every-projection', () => {
     for (const path of pages().keys()) {
       const held = page(path)
       const reading = toText(held)
+      const markdown = toMarkdown(held)
 
       expect(wordsOf(held).filter((word) => !reading.includes(word))).toEqual([])
+      expect(
+        wordsOf(held).filter(
+          (word) => !markdown.includes(word) && !markdown.includes(escapedForMarkdown(word)),
+        ),
+      ).toEqual([])
+    }
+  })
+
+  /**
+   * The outline of a page survives into the projection that exists to carry it.
+   *
+   * **This is the one claim `toText` cannot make**, and it is the whole reason there is a third
+   * projection rather than a served reading. Every word of a page is already in the reading, and a
+   * heading there is a line among lines: what tells a retriever that *Signature* titles the block under
+   * it and `slugify('Ελληνικά') → 'ελληνικα'` is a call rather than a sentence is the markup, and
+   * throwing it away is exactly what `toText` is for.
+   *
+   * So the assertion is over the heading *level* and not over the presence of the title. A projection
+   * emitting every heading as a paragraph loses nothing a word count can see, reads identically, and
+   * publishes a document with no structure at all - which is the mutant, and it is the tidier output of
+   * the two.
+   *
+   * The population is walked out of the tree rather than listed, so a page that gains a section is
+   * covered by this guard on the day it gains it and not on the day somebody remembers.
+   *
+   * **The two sides are counted from different things on purpose.** One is a walk of the tree, the
+   * other a scan of the produced lines, and neither is derived from the projection under test - a guard
+   * that asked `toMarkdown` what it had written would move with the very decoration a mutant edits and
+   * stay green, which is `GUARD_PERTURBATION_RULE` arriving on a projection. It is also why nothing here
+   * compares a heading's *text*: the front page writes a contract's name as a link inside its heading,
+   * so the content is the Markdown of a subtree and reconstructing it would be that same derivation.
+   *
+   * Lines inside a fenced block are dropped before counting, because a `pre` holding a shell comment
+   * would otherwise be read as a heading. No page carries one today; the day one does, this stays a
+   * statement about headings rather than a false red nobody can place.
+   */
+  it('every-heading-of-a-page-is-a-heading-in-its-markdown', () => {
+    const LEVEL: Readonly<Record<string, number>> = { h1: 1, h2: 2, h3: 3, h4: 4 }
+
+    /** A heading opens a line, allowing the indentation and the marker a list item puts in front. */
+    const OPENS_A_HEADING = /^ {0,6}(?:- )?(#{1,6}) /
+
+    for (const [path, document] of pages()) {
+      const declared = new Map<number, number>()
+      const written = new Map<number, number>()
+      const tally = (into: Map<number, number>, level: number): void =>
+        void into.set(level, (into.get(level) ?? 0) + 1)
+
+      const walk = (node: Parameters<typeof readingOf>[0]): void => {
+        if (node.kind === 'text') return
+
+        const level = LEVEL[node.tag]
+        if (level !== undefined) tally(declared, level)
+
+        for (const child of node.children) walk(child)
+      }
+
+      for (const node of document.body) walk(node)
+
+      let fenced = false
+      for (const written_line of toMarkdown(document).split('\n')) {
+        if (/^`{3,}$/.test(written_line)) {
+          fenced = !fenced
+          continue
+        }
+        if (fenced) continue
+
+        const opened = OPENS_A_HEADING.exec(written_line)
+        if (opened !== null) tally(written, (opened[1] as string).length)
+      }
+
+      expect([...written].sort(), `${path} does not publish its outline as an outline`).toEqual(
+        [...declared].sort(),
+      )
     }
   })
 
@@ -421,7 +565,7 @@ describe('the site', () => {
    * page in document order and by nothing else: `not applicableThe signature takes a single string` on
    * a contract page, and `typescript/number/parse@1Convert a string to a finite number` on the front
    * page - the second of them a year of guards later, on the first screen of the product. Every word is
-   * present in both, so `every-word-of-every-page-survives-both-projections` is green; what is wrong is
+   * present in both, so `every-word-of-every-page-survives-every-projection` is green; what is wrong is
    * that an element with no separator was put where a block belonged, and the element after it began
    * mid-line.
    *

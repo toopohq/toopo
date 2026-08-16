@@ -68,13 +68,13 @@ import {
 } from '../../mutation/published.js'
 import type { VerificationStratum } from '../registry/field-map.js'
 import type { ServedMethodology } from '../registry/verifiability.js'
-import type { Document, Node } from './document.js'
+import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, linkTo, rootFrom } from './paths.js'
 
 const NOTHING = {} as const
 
-const line = (tag: string, value: string, attributes = NOTHING): Node =>
+const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
 /**
@@ -254,6 +254,8 @@ export const methodologyPage = (
   measured: TheMeasurement,
 ): Document => ({
   title: 'How Toopo verifies, and what that does not prove',
+  /** An argument about how this catalogue is measured is not source code, and points at no one file. */
+  structuredData: null,
   description:
     `Every contract here is measured by breaking the code on purpose and requiring the tests to go ` +
     `red. ${measured.defects.cells} defects, what they caught, and every one they did not.`,

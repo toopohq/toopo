@@ -5,7 +5,17 @@ import { join } from 'node:path'
 import { contractUrl } from '../registry/address.js'
 import { robotsOf, sitemapOf } from './indexing.js'
 import { localSource } from './local-source.js'
-import { ROBOTS, SITEMAP, THE_ORIGIN, linkTo, pageOf, urlOf } from './paths.js'
+import {
+  CATALOGUE_PAGE,
+  LLMS_TXT,
+  ROBOTS,
+  SITEMAP,
+  THE_ORIGIN,
+  linkTo,
+  markdownOf,
+  pageOf,
+  urlOf,
+} from './paths.js'
 import { theCrawlerFilesOf, theSite } from './site.js'
 
 /**
@@ -24,6 +34,7 @@ const crawlerFiles = (): ReadonlyMap<string, string> => theCrawlerFilesOf(pages(
 
 const sitemap = (): string => crawlerFiles().get(SITEMAP) ?? ''
 const robots = (): string => crawlerFiles().get(ROBOTS) ?? ''
+const llms = (): string => crawlerFiles().get(LLMS_TXT) ?? ''
 
 const locations = (xml: string): readonly string[] =>
   [...xml.matchAll(/<loc>([^<]*)<\/loc>/g)].map((match) => match[1] ?? '')
@@ -161,23 +172,75 @@ describe('what a crawler reads', () => {
     )
   })
 
-  /** Nothing about a second domain reaches this repository: a name that redirects is a fact about DNS. */
+  /**
+   * Nothing about a second domain reaches this repository: a name that redirects is a fact about DNS.
+   *
+   * **Three hosts are admitted and none of them is an address of this site**, which is the distinction
+   * the guard is about rather than a list of exceptions. `toopo.dev` is where the site lives.
+   * `www.sitemaps.org` and `schema.org` are the identifiers of two vocabularies: neither is ever
+   * fetched - `a-page-loads-nothing-and-runs-nothing` refuses any absolute address in a served page -
+   * and JSON-LD requires that exact IRI as the value of `@context`, so writing a different one would
+   * publish structured data no consumer reads.
+   *
+   * What stays refused is what the guard was written for: a second name for this catalogue, in code or
+   * in a comment, which is one fact written twice with the copy in prose being the one nobody edits.
+   */
   it('the-generator-knows-of-no-domain-but-the-one-it-publishes-on', () => {
+    const VOCABULARIES = ['www.sitemaps.org', 'schema.org']
+
     const elsewhere = readdirSync(HERE)
       .filter((name) => name.endsWith('.ts'))
       .flatMap((name) =>
         [...readFileSync(join(HERE, name), 'utf8').matchAll(/https?:\/\/([\w.-]+)/g)]
           .map((match) => match[1] ?? '')
-          .filter((host) => host !== 'toopo.dev' && host !== 'www.sitemaps.org')
+          .filter((host) => host !== 'toopo.dev' && !VOCABULARIES.includes(host))
           .map((host) => `${name} names ${host}`),
       )
 
     expect(elsewhere).toEqual([])
   })
 
-  /** The two files are what `build.ts` writes beside the pages, at the paths a crawler looks for. */
-  it('the-two-crawler-files-are-at-the-addresses-a-crawler-looks-for', () => {
-    expect([...crawlerFiles().keys()].sort()).toEqual(['robots.txt', 'sitemap.xml'])
+  /**
+   * The files a machine looks for are where it looks, and every one of them is found by convention.
+   *
+   * The name used to render how many there were, which is the one thing an address must never do: a
+   * third file arrived and the name went false without the guard noticing, because a name is not
+   * checked by anything. What the guard says instead is the property - *found by convention and by
+   * nothing else* - which is as true of three as it was of two.
+   */
+  it('every-file-found-by-convention-is-at-the-address-that-convention-fixes', () => {
+    expect([...crawlerFiles().keys()].sort()).toEqual(['llms.txt', 'robots.txt', 'sitemap.xml'])
     expect(robotsOf()).toBe(robots())
+  })
+
+  /**
+   * The index a retriever reads opens on what the front page already says this site is.
+   *
+   * It is the lookup in `theCrawlerFilesOf` made checkable: that function finds the front page in the
+   * map rather than composing a heading of its own, and a lookup that found nothing would publish an
+   * empty title and an empty summary - a file that exists, parses, and says nothing at all, which is
+   * the silent shape every guard in this file is written against.
+   */
+  it('the-index-a-retriever-reads-opens-on-the-front-pages-own-words', () => {
+    const front = pages().get(CATALOGUE_PAGE) as NonNullable<ReturnType<ReturnType<typeof theSite>['get']>>
+
+    expect(llms()).toContain(`# ${front.title}`)
+    expect(llms()).toContain(`> ${front.description}`)
+  })
+
+  /**
+   * Both directions again, and the reason is the sitemap's: a page absent from the index is a page a
+   * retriever never opens, and an entry with no file behind it is a 404 published to one.
+   *
+   * Every link names the Markdown twin rather than the page, because the twin is the whole reason this
+   * file exists - an index pointing a retriever at the HTML would be a file whose only effect is to
+   * make it pay for the markup twice.
+   */
+  it('every-page-is-listed-for-a-retriever-as-the-markdown-beside-it', () => {
+    const listed = [...llms().matchAll(/^- \[[^\]]*\]\(([^)]*)\)/gm)].map((found) => found[1] ?? '')
+
+    expect(listed.sort()).toEqual(
+      [...pages().keys()].map((path) => `${THE_ORIGIN}/${markdownOf(path)}`).sort(),
+    )
   })
 })

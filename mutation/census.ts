@@ -186,6 +186,15 @@
  * is a *subject* rather than a unit, built because nothing in this catalogue is published and a check
  * over an empty set goes green for ever. ADR-0093.
  *
+ * A sixteenth on the projection a machine reads: no new file and **four counts moved**, all four under
+ * the site's, and the refusal did not fire because they were written before the battery ran. It is the
+ * shape the eighth predicted - a unit that adds guards to files that already exist touches only their
+ * entries - arriving on a unit that added a third projection of every page, an index at the root and a
+ * payload in every contract page's head. Four files rather than one because the thing added is answered
+ * where each half of it already is: the projection where the projections are checked, the index where
+ * the crawler files are, the outline and the payload where the pages are, and the twin where the tree
+ * is.
+ *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
  * ---------------------------------------------------------------------------
@@ -299,12 +308,12 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'packages/site/vitest.config.ts': {
-    'packages/site/document.test.ts': 8,
-    'packages/site/indexing.test.ts': 9,
+    'packages/site/document.test.ts': 13,
+    'packages/site/indexing.test.ts': 11,
     'packages/site/literal.test.ts': 11,
-    'packages/site/pages.test.ts': 26,
+    'packages/site/pages.test.ts': 29,
     'packages/site/playground.test.ts': 10,
-    'packages/site/published-tree.test.ts': 4,
+    'packages/site/published-tree.test.ts': 5,
     'packages/site/read-literal.test.ts': 10,
     'packages/site/source.test.ts': 8,
   },
