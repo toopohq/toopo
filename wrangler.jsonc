@@ -43,13 +43,10 @@
   // Written by `pnpm run site:build`, which runs from the workspace root and is not committed: a
   // rendering of the catalogue is not a contract, an implementation, a test or the evidence a run
   // produced, and `.gitignore` keeps it out.
-  "assets": {
-    "directory": "./packages/site/out"
-  },
-
-  // The one address this deployment answers at, so that there is one to measure rather than one per
-  // version. Both are closed to indexing by `_headers` on the host, which is the half that survives a
-  // setting being changed here.
-  "workers_dev": true,
-  "preview_urls": false
+  //
+  // `pages_build_output_dir` and not `assets.directory`, and that one field is the whole migration.
+  // ADR-0100 carries the measurement: the two mechanisms were deployed one variable apart, and this one
+  // answers the published address with 200 and serves the `Cache-Control` `_headers` declares at the
+  // address that serves the bytes. The other answered a redirect and applied the rule to the redirect.
+  "pages_build_output_dir": "./packages/site/out"
 }

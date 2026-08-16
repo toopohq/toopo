@@ -1485,11 +1485,27 @@ const mutants: readonly Mutant[] = [
       'is published at are the ones told not to be indexed',
     [
       servedHeadersFile(
-        'const NOT_THE_DECLARED_ORIGIN = `https://:worker.:subdomain.workers.dev/${EVERY_ADDRESS}`',
-        'const NOT_THE_DECLARED_ORIGIN = `https://:worker.:subdomain.toopo.dev/${EVERY_ADDRESS}`',
+        '  `https://:project.pages.dev/${EVERY_ADDRESS}`,',
+        '  `https://:project.toopo.dev/${EVERY_ADDRESS}`,',
       ),
     ],
     killed(['the-deployment-is-closed-to-robots-and-the-declared-origin-is-not']),
+  ),
+
+  /**
+   * The preview shape dropped, which is the half of a host rule nobody would notice missing.
+   *
+   * A production deployment is one label in front of the vendor's domain and a preview is two, and a
+   * placeholder in a host stops at a period - so one pattern closes one shape. The one left open would
+   * be the preview, which is the address nobody visits and therefore the one that stays open for
+   * months while the address a person checks reads correctly.
+   */
+  sameOnEveryLens(
+    'W-82',
+    'closes only the shape a person visits, leaving every preview deployment open to indexing under ' +
+      'a rule that reads correctly at the address anybody would check',
+    [servedHeadersFile('  `https://:version.:project.pages.dev/${EVERY_ADDRESS}`,\n', '')],
+    killed(['both-the-published-shape-and-the-preview-shape-are-closed']),
   ),
 
   /**

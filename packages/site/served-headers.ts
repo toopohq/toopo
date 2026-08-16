@@ -1,6 +1,7 @@
 /**
  * How the deployment must serve what the build writes, derived from the endpoints and from nothing
  * written here.
+ * ADR-0100 is why the host rule names two shapes of another mechanism.
  * ADR-0097 is why this exists, why the deployment is closed to robots, and what no guard here reaches.
  *
  * ---------------------------------------------------------------------------
@@ -90,14 +91,21 @@ export type HeaderRule = {
 const EVERY_ADDRESS = '*'
 
 /**
- * Any deployment that is not the origin the site declares.
+ * Every deployment that is not the origin the site declares.
  *
- * The two placeholders are labels rather than names of anything: a Worker answers at
- * `<worker>.<subdomain>.workers.dev` and a version preview at `<prefix>-<worker>.<subdomain>`, so both
- * are two labels in front of `workers.dev`. A placeholder in a host stops at a period, which is what
- * makes this match the deployment and nothing under the declared origin.
+ * **Two patterns and not one, because the host answers at two shapes.** A production deployment is
+ * `<project>.pages.dev` - one label - and a preview is `<branch-or-hash>.<project>.pages.dev` - two.
+ * A placeholder in a host stops at a period, so one pattern cannot cover both, and the shape left out
+ * is the one that stays indexable. Preview deployments are exactly the ones nobody looks at.
+ *
+ * Neither can match at the declared origin, which is not under `pages.dev`, and that is why this is
+ * written as a host rule rather than as a setting somebody turns off on the day the domain is
+ * connected: it retires itself.
  */
-const NOT_THE_DECLARED_ORIGIN = `https://:worker.:subdomain.workers.dev/${EVERY_ADDRESS}`
+const NOT_THE_DECLARED_ORIGIN: readonly string[] = [
+  `https://:project.pages.dev/${EVERY_ADDRESS}`,
+  `https://:version.:project.pages.dev/${EVERY_ADDRESS}`,
+]
 
 /**
  * Every rule the deployment is given, in the order a reader of the file meets them.
@@ -107,7 +115,10 @@ const NOT_THE_DECLARED_ORIGIN = `https://:worker.:subdomain.workers.dev/${EVERY_
  * before meeting eight lines of arithmetic.
  */
 export const theHeaderRules = (): readonly HeaderRule[] => [
-  { url: NOT_THE_DECLARED_ORIGIN, headers: [['X-Robots-Tag', 'noindex']] },
+  ...NOT_THE_DECLARED_ORIGIN.map((url) => ({
+    url,
+    headers: [['X-Robots-Tag', 'noindex']] as const,
+  })),
   ...ENDPOINTS.map((endpoint) => ({
     url: pathTo(endpoint, EVERY_ADDRESS),
     headers: [['Cache-Control', cacheControlOf(cachePolicyFor(endpoint.addressing))]] as const,

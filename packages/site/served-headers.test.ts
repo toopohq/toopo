@@ -86,9 +86,24 @@ describe('the host is told how to serve every answer', () => {
 
     const declared = new URL(THE_ORIGIN).hostname
 
-    expect(closed.length).toBe(1)
-    expect(closed.map((rule) => valueOf(rule, 'X-Robots-Tag'))).toEqual(['noindex'])
-    expect(closed.map((rule) => hostOf(rule.url).endsWith(declared))).toEqual([false])
+    expect(closed.length).toBeGreaterThan(0)
+    expect([...new Set(closed.map((rule) => valueOf(rule, 'X-Robots-Tag')))]).toEqual(['noindex'])
+    expect(closed.filter((rule) => hostOf(rule.url).endsWith(declared))).toEqual([])
+  })
+
+  /**
+   * Every shape the host answers at, and not only the one a person visits.
+   *
+   * A production deployment is one label in front of the vendor's domain and a preview is two, and a
+   * placeholder in a host stops at a period - so one pattern cannot close both. **The shape left out
+   * would be the preview**, which is the one nobody looks at and therefore the one that would stay
+   * open for months. Counted by depth rather than compared against the two strings, so what the guard
+   * says is *both shapes are closed* and not *these two lines are present*.
+   */
+  it('both-the-published-shape-and-the-preview-shape-are-closed', () => {
+    const depths = aboutAHost().map((rule) => hostOf(rule.url).split('.').length)
+
+    expect([...new Set(depths)].sort()).toEqual([3, 4])
   })
 
   /**
