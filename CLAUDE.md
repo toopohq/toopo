@@ -485,7 +485,11 @@ These outlive the current stage and are not open to trade-off.
 ## Conventions
 
 - English everywhere: code, identifiers, comments, tests, commit messages, documentation.
-- Conventional commits, atomic. Never push and never create a remote.
+- Conventional commits, atomic. **`main` is pushed at the end of a unit, and a unit is not finished
+  until the run it triggers is green** — the seven suites on two runtimes, and the deployment behind
+  them. Nothing else: no force, no tag, no rewriting of history, and nothing to npm ever. This line read
+  *never push and never create a remote* until the CI existed, at which point holding the two apart
+  stopped protecting anything and only delayed the reading that says the unit worked.
 - TypeScript `strict: true`.
 
 **How the catalogue is written.** Each rule below is stated once here and argued once in the record
