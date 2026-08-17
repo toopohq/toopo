@@ -367,6 +367,18 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   that from a report into a reading**, and it is recorded one paragraph up rather than restated here —
   what a successful exchange establishes is that the four strings and the policy were the ones this
   paragraph claims, on the day it was written, which is exactly as much as one reading ever establishes.
+- **That the gate on the publishing job is a conjunction.**
+  `the-job-that-publishes-to-npm-is-gated-by-a-job-that-read-the-version` resolves both ends of the
+  reference the gate makes — the `if` names a job's output, that job is waited for, and it exists — and
+  it reads the condition's *content* and never its *shape*. **An `||` added to that expression leaves
+  every guard green**, which is the plausible spelling of somebody widening the gate rather than of
+  somebody attacking it. The population is the publishing job's condition. **It is priced low and
+  refused on the price, not overlooked**: bypassing the version clause makes every push of `main` reach
+  `npm publish` and be refused on a version that already exists, so the failure announces itself on the
+  next push instead of publishing something wrong — which is the argument `CLAUDE.md` states for not
+  writing a guard whose event is cheap. What would close it is reading the structure of the expression,
+  and that means this file's YAML sweep learning what an operator is, on a repository that has no YAML
+  parser and will not gain a dependency to hold one guard. ADR-0111.
 - **That every surface renders the invocation rather than the bare command name.** This one was met by
   a visitor rather than found by a sweep: the README and the four contract pages published
   `toopo add string/slugify`, which answers `command not found` for anybody who has installed nothing —
