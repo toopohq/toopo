@@ -201,6 +201,16 @@
  * header is counted where the registry is and the file a host reads is counted where the tree is.
  * ADR-0097.
  *
+ * An eighteenth on the freeze covering what a contract calls: one new file under the registry's and no
+ * count moved, which is the tenth's shape - a module of its own gets a file of its own. What is worth a
+ * line is not the cost but *which control charged it*. Seven suites were green, `npm run anchors` was
+ * at 0 loose, and the census refused at the calibration of the nineteenth battery: `shared-surface.test.ts:
+ * collected 4, and the census does not name it`. That is 34 minutes into a replay, at the one battery
+ * whose subject the unit had rewritten - and it is exactly the composition check `CLAUDE.md` records
+ * `assertWholeSuiteRan` as lacking, doing the job the total could not. A run that collects a fraction of
+ * the suite produces verdicts that look exactly like verdicts, and nothing else in that half-hour would
+ * have said so. ADR-0105.
+ *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
  * ---------------------------------------------------------------------------
@@ -270,6 +280,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/revision.test.ts': 4,
     'packages/registry/round-trip.test.ts': 19,
     'packages/registry/served-files.test.ts': 10,
+    'packages/registry/shared-surface.test.ts': 4,
     'packages/registry/signature.test.ts': 14,
     'packages/registry/snapshot.test.ts': 45,
     'packages/registry/frozen-for-life.test.ts': 4,
