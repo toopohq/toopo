@@ -246,12 +246,18 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
 
   **What stays open is what this entry always meant, with the prediction removed.**
   `THE_PROPAGATION_BOUND` is two minutes chosen against the cost of the step and not against
-  Cloudflare. **It now has one coordinate and needs a population**: measured at `92e6acd`, attempt 1,
-  the retry fired on the real condition — the index from the old deployment, the bindings from the new
-  — and the span from the client's first refusal to a finished chain was about **10.8 seconds**. One
-  deployment. The population is every deployment this repository makes, so what would close this is the
-  same span over enough of them to say whether 120 seconds is generous or lucky, and the retry now
-  records both ends of it on every run that waits. Not built, because one run measures one deployment.
+  Cloudflare. **It has readings and it has no population**, and the two are not the same thing. Both
+  readings so far are of the retry firing on the real condition — the index from the old deployment,
+  the bindings from the new — and both are the span from the client's first refusal to a finished
+  chain: about **10.8 seconds** at `92e6acd`, and about **5.5 seconds** at `3b55309`. Neither is within
+  an order of magnitude of the 120 seconds the bound allows.
+
+  **Two readings do not become a population by being written down, which is why they are written as
+  the pair they are.** A line per deployment would be a list nobody rebuilds and a figure nobody can
+  check; what would close this is the same span over enough deployments to say whether 120 seconds is
+  generous or lucky, and the retry records both ends of it on every run that waits, so the runs hold
+  what a later reading would be built from. Not built, and the next reading is worth adding here only
+  if it approaches the bound — which is the event this entry is actually about.
 
   **The same run refuted the repair nobody wrote, which is worth more than the figure.** Five seconds
   after the first refusal the origin answered *one* revision to this suite and the client refused
