@@ -178,25 +178,37 @@ describe('a published version is frozen for life, and this is what says so', () 
 
 describe('the population this check runs over, named rather than counted', () => {
   /**
-   * **The guard that fires at the right future moment.** No contract of the five is published, so every
-   * fault list above is computed over nothing in this repository - which is the shape of a check that
-   * goes green for ever and is read by nobody until the day it was needed.
+   * **A guard that wrote down the day it would become false, and then became false on that day.**
    *
-   * So the emptiness is asserted from the other side: every binding this working tree mints is named as
-   * one the freeze check cannot reach. The day somebody publishes, this reddens - and that is the day
-   * the guards above stop being vacuous, which is exactly when a reader needs to be looking.
+   * It read `the-five-anchor-nothing-and-the-check-says-which`, and what it asserted was that every
+   * binding of this working tree lay outside the freeze check - because nothing was published, so every
+   * fault list above was computed over an empty set, which is the shape of a check that goes green for
+   * ever and is read by nobody until the day it is needed. Rather than leave that emptiness as a green
+   * tick over no rows, it was asserted from the other side, and its own comment carried the sentence:
+   * *the day somebody publishes, this reddens - and that is the day the guards above stop being
+   * vacuous, which is exactly when a reader needs to be looking.*
+   *
+   * **Somebody published, and it reddened.** The sentence is kept here in full rather than deleted with
+   * the assertion it described, because a guard that names in advance the event which will falsify it,
+   * and is then falsified by exactly that event, is the best demonstration of this discipline the
+   * repository can give - and it is worth more than the four lines it replaced.
+   *
+   * What stands here now is the inverse and it is not vacuous either: the eight bindings this tree
+   * mints are anchored, so the fault lists above are computed over all of them.
+   * `against-what-was-published/` is where they are computed against a real rebuild, and this is the
+   * cheap half - a statement about the population, in memory, that a battery may replay sixty times
+   * without spawning anything.
    */
-  it('the-five-anchor-nothing-and-the-check-says-which :: nothing is published, and it is said', () => {
+  it('the-five-anchor-a-commit-and-the-check-reaches-all-of-them :: the population is not empty', () => {
     const ledger = theLocalLedger()
-    const unanchored = unanchoredBindings(ledger)
 
-    expect(unanchored).toEqual([...bindingsOf(ledger).keys()])
-    expect(unanchored.length).toBeGreaterThan(0)
-    expect(ledger.contracts.every((held) => held.publishedFrom === THE_UNPUBLISHED_REVISION)).toBe(
+    expect(unanchoredBindings(ledger)).toEqual([])
+    expect(bindingsOf(ledger).size).toBeGreaterThan(0)
+    expect(ledger.contracts.every((held) => held.publishedFrom !== THE_UNPUBLISHED_REVISION)).toBe(
       true,
     )
     expect(
-      ledger.implementations.every((held) => held.publishedFrom === THE_UNPUBLISHED_REVISION),
+      ledger.implementations.every((held) => held.publishedFrom !== THE_UNPUBLISHED_REVISION),
     ).toBe(true)
   })
 })

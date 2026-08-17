@@ -1152,10 +1152,16 @@ const mutants: readonly Mutant[] = [
     'treats the null object identifier as a commit to rebuild at, so a stand-in\'s binding is asked ' +
       'about a revision that names nothing',
     [rebindingFile(A_STAND_IN_ANCHORS_NOTHING, '  REVISION.test(entry.publishedFrom)')],
-    killed([
-      'a-binding-that-names-no-commit-is-not-asked-about',
-      'the-five-anchor-nothing-and-the-check-says-which',
-    ]),
+    /**
+     * One guard rather than the two it used to name, and the publication is what took the second.
+     *
+     * `the-five-anchor-nothing-and-the-check-says-which` reddened here because every binding of this
+     * tree carried forty zeros, so removing that half of `isAnchored` dragged all of them into the
+     * comparison. Every binding now names a real commit, so the removed half decides nothing about
+     * this catalogue and the guard that replaced it stays green. What still reddens is the guard over
+     * a ledger built to hold a stand-in, which is the claim this mutant is actually about.
+     */
+    killed(['a-binding-that-names-no-commit-is-not-asked-about']),
   ),
 
   /**

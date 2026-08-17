@@ -50,6 +50,16 @@ anchoring is the commit after it. `contractSnapshot` omits the lifecycle - measu
 digests are identical either side of the marking - which is what makes the second commit's coordinate
 honest for the first four addresses. ADR-0106.
 
+**And something now reads that coordinate.** `packages/registry/against-what-was-published/` rebuilds
+every binding at the commit it records and compares, so permanent rule 6 stops being the biggest
+`one-directional` declaration here and becomes a red. It is a suite no battery replays, for the reason
+the origin proof is: `registry-storage` would pay for a checkout and a child process sixty times per
+replay, inside an instrument that manages worktrees of its own - and the reading that says *the verdicts
+would hold anyway* is true only while that battery has no surviving cell. **The price is the origin
+proof's and is stated in the same place**: no mutant reddens those two guards, so nothing measures what
+they are worth, and what stands in for it is that they were seen red on three real conditions with the
+reds published. ADR-0107.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language. And nothing is on npm: the manifest is publishable and no publication has been made, so a
 reader who meets `toopo add number/parse` on a contract page still has no way to get `toopo`. What
@@ -579,8 +589,10 @@ These outlive the current stage and are not open to trade-off.
 
 - English everywhere: code, identifiers, comments, tests, commit messages, documentation.
 - Conventional commits, atomic. **`main` is pushed at the end of a unit, and a unit is not finished
-  until the run it triggers is green** — the seven suites on two runtimes, the deployment behind them,
-  and the one proof that reaches it. Nothing else: no force, no tag, no rewriting of history, and
+  until the run it triggers is green** — every suite on two runtimes, the deployment behind them,
+  and the one proof that reaches it. The count this line used to carry is gone rather than raised, by
+  the rule 467 established one section up: a rank is checked only by rebuilding the whole list, and
+  what the sentence is about does not need one. Nothing else: no force, no tag, no rewriting of history, and
   nothing to npm ever. This line read
   *never push and never create a remote* until the CI existed, at which point holding the two apart
   stopped protecting anything and only delayed the reading that says the unit worked.

@@ -1,4 +1,4 @@
-# The seven suites, on every push of a branch and on every pull request, then the site built and
+# The eight suites, on every push of a branch and on every pull request, then the site built and
 # deployed beside them, and last the one proof that reaches the deployed origin.
 # ADR-0098 is why this side builds rather than the deployment service, what that gives up, and why every
 # action here is a digest. ADR-0104 is why the eighth suite is a step of the second job and of neither
@@ -159,6 +159,20 @@ jobs:
       # above does nothing for it. `packaging/the-archive.ts` names that cost.
       - name: packaging
         run: npm run packaging
+
+      # The eighth suite, and the second that no battery replays. ADR-0107 is why it is not a file of
+      # the registry's own suite: it checks a past commit of this repository out and runs that commit's
+      # `ledger` script, inside an instrument that manages worktrees of its own - and `registry-storage`
+      # would pay for it sixty times per replay.
+      #
+      # `fetch-depth: 0` above is what makes it possible at all: the commit a binding names is reached
+      # by `git worktree add`, and a shallow clone holds nothing to add.
+      #
+      # It is a step of this job rather than a job of its own because it needs nothing the seven above
+      # do not - no network, no deployment, no secret - and because a freeze that has been broken must
+      # stop the matrix rather than be reported beside it.
+      - name: the freeze
+        run: npm run freeze
 
   # ---------------------------------------------------------------------------
   # The site, built where the environment is declared

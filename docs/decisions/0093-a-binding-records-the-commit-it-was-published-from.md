@@ -20,7 +20,7 @@ confirmed-by:
   - battery: registry-storage
     guard: the-past-is-read-once-per-commit-however-many-bindings-share-it
   - battery: registry-storage
-    guard: the-five-anchor-nothing-and-the-check-says-which
+    guard: the-five-anchor-a-commit-and-the-check-reaches-all-of-them
   - battery: registry-storage
     guard: two-bindings-that-render-alike-are-a-corrupt-ledger
 ---
@@ -185,6 +185,15 @@ this repository — which is the shape of a check that goes green for ever and i
 day it was needed. So the emptiness is asserted from the other side: every binding this working tree
 mints is named as one the check cannot reach. It reddens the day somebody publishes, which is the day
 the other eight stop being vacuous and the day the sentence on `publishContract` has to be read.
+
+**That day was 2026-08-17, and the paragraph above is left exactly as it was written.**
+[ADR-0106](0106-publishing-and-anchoring-are-two-acts.md) published the catalogue, the guard reddened
+on the event its own comment had named, and the pair above now cites its successor —
+`the-five-anchor-a-commit-and-the-check-reaches-all-of-them`, which asserts the inverse over the same
+population. Nothing here is corrected, because nothing here was wrong: a guard that writes down in
+advance the event which will falsify it, and is then falsified by exactly that event, is the strongest
+thing this repository can show about its own discipline, and rewriting the prediction after the fact
+would be throwing away the only copy of it.
 
 ## What would reopen this
 

@@ -102,6 +102,26 @@ import { servedMethodology } from './verifiability.js'
  * declaration rather than restating it, and there is no second statement here left to drift.
  */
 
+/**
+ * The commit whose registry minted every binding below, and the one transcription this file carries.
+ *
+ * **A commit cannot contain its own identifier, so the commit that mints a digest can never record
+ * where it was minted.** Publishing and anchoring are two acts. `15aeb6c` marked the four contracts
+ * published and bound their implementations at `1.0.0`; this commit is the one that can name it, and
+ * it moves no digest of its own - neither snapshot carries anything from this module, so rebuilding
+ * `15aeb6c` produces exactly what this tree produces, for all eight addresses.
+ *
+ * **It is transcribed and it is not trusted.** `packages/registry/against-what-was-published/` checks
+ * this commit out, runs *its* `ledger` script and compares, so a coordinate pointing at the wrong
+ * commit is a red rather than a note - measured, and the reds are in ADR-0107. ADR-0093 is why the
+ * past is rebuilt rather than recorded, and ADR-0106 is why there are two commits rather than one.
+ *
+ * One constant for eight bindings because one publication minted all eight. A catalogue that publishes
+ * a sixth contract later anchors it at a different commit, and this becomes a map keyed by address -
+ * which is a change this file should take on the day it happens and not before.
+ */
+const PUBLISHED_FROM = '15aeb6c01b125c0c557ef5a4c5036f97db1bc22b'
+
 type Holding = {
   readonly address: ContractAddress
   readonly summary: string
@@ -160,7 +180,7 @@ const gather = (): {
           address: record.address,
           digest: digestOfSnapshot(contractShot),
           publishedAt: THE_PUBLICATION_INSTANT,
-          publishedFrom: THE_UNPUBLISHED_REVISION,
+          publishedFrom: PUBLISHED_FROM,
           standing: { lifecycle: record.lifecycle },
         }),
         {
@@ -171,7 +191,7 @@ const gather = (): {
           },
           digest: digestOfSnapshot(implementationShot),
           publishedAt: THE_PUBLICATION_INSTANT,
-          publishedFrom: THE_UNPUBLISHED_REVISION,
+          publishedFrom: PUBLISHED_FROM,
           standing: { status: implementation.status },
         },
       )
