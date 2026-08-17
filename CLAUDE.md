@@ -75,10 +75,11 @@ credential** and there is no ninety-day secret to renew. ADR-0109.
 **The manifest reads `1.0.1`, and the claim that release rests on is measured rather than argued.** What
 `1.0.1` corrects is not in the program: it is an artefact published with no attestation and a personal
 address frozen into it, which on a package sold on auditability is a defect of the artefact and not of the
-code. So the code must not move, and it does not — `dist/` was built at `bb3dd78` and again with the line
-reading `1.0.1`, and the 35 modules, the 428 161 bytes and every per-file digest are equal, under one tree
-digest either side. `publication.ts` is not among those 35, because `packaging/reachable.ts` prunes what the
-entry point cannot reach. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a version is half of an
+code. So the code must not move, and the reading that says it does not is taken against **what npm is
+serving** rather than against a rebuild: `npm pack toopo@1.0.0` unpacked, its `dist/` compared with the one
+this tree builds at `1.0.1`, and the 35 modules, the 428 161 bytes and every per-file digest are equal under
+one tree digest over both. `publication.ts` is not among those 35, because `packaging/reachable.ts` prunes
+what the entry point cannot reach. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a version is half of an
 implementation's address, nothing it addresses moved, and this release is the event ADR-0106 cut the tie
 for. **Publishing is now a push and a dispatch**, and the last thing that was still a command somebody
 typed has stopped being one.

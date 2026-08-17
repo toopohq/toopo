@@ -103,13 +103,15 @@ export const THE_PACKAGE_NAME = 'toopo'
  * check* is the defect that matters most - and an artefact is corrected only by publishing another
  * one. ADR-0109 is what makes the next one different.
  *
- * **So nothing a consumer executes changes, and that is measured rather than reasoned.** `dist/` was
- * built at `bb3dd78` and again with this line reading `1.0.1`: 35 modules, 428 161 bytes, and every
- * per-file digest equal, under one tree digest of `c1970886` either side. This module is not among
- * those 35 - `packaging/reachable.ts` prunes what the published entry point cannot reach, and nothing
- * it reaches asks what version it is. Neither MAJOR nor MINOR would be true of an archive whose code
- * is byte for byte the previous one, so PATCH is the only digit a publication may move when it
- * republishes the same program.
+ * **So nothing a consumer executes changes, and it is read off the published artefact rather than off
+ * a rebuild of it.** `npm pack toopo@1.0.0` was unpacked and its `dist/` compared against the one this
+ * tree builds at `1.0.1`: 35 modules, 428 161 bytes, every per-file digest equal, one tree digest of
+ * `c1970886` over both. That is what npm is serving today and not a reconstruction of it, which is
+ * what makes *the same program, published a different way* a reading instead of an argument. This
+ * module is not among those 35 - `packaging/reachable.ts` prunes what the published entry point cannot
+ * reach, and nothing it reaches asks what version it is. Neither MAJOR nor MINOR would be true of an
+ * archive whose code is byte for byte the previous one, so PATCH is the only digit a publication may
+ * move when it republishes the same program.
  *
  * **It is not the version an implementation is bound at, and this release is the event that
  * separation was made for.** The two were one string, tied by `the-archive-is-visibly-unpublished`,
