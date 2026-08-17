@@ -91,22 +91,37 @@ export const THE_PACKAGE_NAME = 'toopo'
 /**
  * The version npm publishes the command at, and the one field of this file that is meant to move.
  *
- * **It is 1.0.0 because the client's interface is finished, not because the catalogue is old.** Six
- * commands, one lockfile, one configuration file: a `0.x` would promise less than this repository
+ * **It reached 1.0.0 because the client's interface is finished, not because the catalogue is old.**
+ * Six commands, one lockfile, one configuration file: a `0.x` would promise less than this repository
  * already holds its contracts to, and the youth of the catalogue is a sentence the README owes a
  * reader rather than a digit nobody can read. ADR-0048 records the order a publication takes.
  *
- * **It is not the version an implementation is bound at, and that separation is load-bearing.** Until
- * this unit the two were one string, tied by `the-archive-is-visibly-unpublished`, and the tie was
- * right for exactly as long as both were stand-ins saying *nothing here was published*. Published,
- * they answer different questions: this one moves on the next patch of the client, and
- * `THE_PUBLISHED_IMPLEMENTATION_VERSION` may never move at all, because a version is half of an
- * implementation's address and rebinding one is what permanent rule 6 refuses. **A tie kept across the
- * publication would rebind four addresses on the first bug fix** - which is the correction from CI
- * that is already planned - so it is cut here, deliberately, and the freeze check is what would report
- * it if somebody tied them again.
+ * **It is 1.0.1 because what 1.0.1 corrects is not in the program.** `1.0.0` was published from a
+ * keyboard: it carries no provenance attestation at all, and the registry's record of it names a
+ * personal account. An archive that cannot be tied to the commit or to the run that built it is a
+ * defect of the artefact rather than of the code - which on a package whose whole argument is *go and
+ * check* is the defect that matters most - and an artefact is corrected only by publishing another
+ * one. ADR-0109 is what makes the next one different.
+ *
+ * **So nothing a consumer executes changes, and that is measured rather than reasoned.** `dist/` was
+ * built at `bb3dd78` and again with this line reading `1.0.1`: 35 modules, 428 161 bytes, and every
+ * per-file digest equal, under one tree digest of `c1970886` either side. This module is not among
+ * those 35 - `packaging/reachable.ts` prunes what the published entry point cannot reach, and nothing
+ * it reaches asks what version it is. Neither MAJOR nor MINOR would be true of an archive whose code
+ * is byte for byte the previous one, so PATCH is the only digit a publication may move when it
+ * republishes the same program.
+ *
+ * **It is not the version an implementation is bound at, and this release is the event that
+ * separation was made for.** The two were one string, tied by `the-archive-is-visibly-unpublished`,
+ * and the tie was right for exactly as long as both were stand-ins saying *nothing here was
+ * published*; ADR-0106 cut it at the publication, when they stopped answering the same question. This
+ * one moves on a patch of the client. `THE_PUBLISHED_IMPLEMENTATION_VERSION` may never move at all,
+ * because a version is half of an implementation's address and rebinding one is what permanent rule 6
+ * refuses - so **a tie kept across the publication would have rebound four addresses here**, on a
+ * release that moves no implementation's bytes, and the freeze check is what would report it if
+ * somebody tied them again.
  */
-export const THE_PACKAGE_VERSION = '1.0.0'
+export const THE_PACKAGE_VERSION = '1.0.1'
 
 /**
  * The version every reference implementation of this catalogue is published at, and frozen at.

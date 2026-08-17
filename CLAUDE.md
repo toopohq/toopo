@@ -63,18 +63,25 @@ reds published. ADR-0107.
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
-**`toopo@1.0.0` is on npm, and the way it got there is what this unit replaced.** It was published from a
-keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal account, and
-`dist` carries the registry's own signature and **no attestation at all** — so the archive a reader
-installs could not be tied to the commit or the run that built it, which is the tie every other proof
-here is about. A job of `suites.yml` now publishes on a dispatch of `main` carrying the word `publish`,
+**`toopo@1.0.0` is on npm, and the way it got there is what the unit before this one replaced.** It was
+published from a keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal
+account, and `dist` carries the registry's own signature and **no attestation at all** — so the archive a
+reader installs could not be tied to the commit or the run that built it, which is the tie every other proof
+here is about. A job of `suites.yml` publishes on a dispatch of `main` carrying the word `publish`,
 after `needs: site` has reached both matrix legs, the deployment and the proof against the origin; npm
 exchanges an identity token GitHub mints and writes the attestation itself, so **nothing here stores a
-credential** and there is no ninety-day secret to renew. The next publication is `1.0.1` — the same
-`dist/` and a different provenance — and `THE_PUBLISHED_IMPLEMENTATION_VERSION` does not move with it,
-which is the tie ADR-0106 cut for exactly this event. **Two things it needs are not in this repository
-and no guard can see them**: npm's trusted publisher, and a GitHub environment restricted to `main`.
-ADR-0109.
+credential** and there is no ninety-day secret to renew. ADR-0109.
+
+**The manifest reads `1.0.1`, and the claim that release rests on is measured rather than argued.** What
+`1.0.1` corrects is not in the program: it is an artefact published with no attestation and a personal
+address frozen into it, which on a package sold on auditability is a defect of the artefact and not of the
+code. So the code must not move, and it does not — `dist/` was built at `bb3dd78` and again with the line
+reading `1.0.1`, and the 35 modules, the 428 161 bytes and every per-file digest are equal, under one tree
+digest either side. `publication.ts` is not among those 35, because `packaging/reachable.ts` prunes what the
+entry point cannot reach. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a version is half of an
+implementation's address, nothing it addresses moved, and this release is the event ADR-0106 cut the tie
+for. **Publishing is now a push and a dispatch**, and the last thing that was still a command somebody
+typed has stopped being one.
 
 **The declared origin serves this catalogue, and that is the half that changed.** `main` builds the
 tree in CI and `wrangler` uploads it to Cloudflare Pages. Measured at `994374d` over **all 76 addresses
@@ -112,6 +119,14 @@ number and cited as `ADR-0007` — never as a path. ADR-0001 settles the format,
 and the one section, and nine guards resolve what a record names in both directions. There is no index
 here: the directory listing is the index, because the filenames carry the titles, and a second
 statement of what the folder already says is one that drifts.
+
+**A record exists for what will not fit beside the line.** Where the argument does fit — where the
+reason a constant holds the value it holds is a comment on that constant — a record is an address for
+something that did not need addressing, and the cost is not the file: it is that two places then carry
+one piece of reasoning, and they wait to diverge. The move to `1.0.1` is where this was applied rather
+than merely stated: the whole of it is why one string reads what it reads, ADR-0109 had already argued
+the release, and the argument now sits in `publication.ts` above the line it explains, with no record
+of its own.
 
 **What happened and when is `git log`.** The commit messages carry the measurements at length. This
 file carried a second, shorter copy of them for a year; ADR-0062 is why it no longer does.
@@ -259,6 +274,17 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   The GitHub half is cheaper and is not free either: whether a run can read its own repository's
   environment protection with the token this workflow carries has not been measured. Not built, and the
   first dispatch is what will say whether the two sides agree at all.
+
+  **Both sides were configured on 2026-08-17, and this paragraph is the entire record of it.** The
+  trusted publisher on npmjs.com names `toopohq`, `toopo`, `suites.yml` and the `npm` environment, with
+  `npm publish` as the permitted command and publishing access at its strictest setting; the GitHub
+  environment exists and is restricted to `main`. **None of that was read from here and none of it can
+  be** — it is reported by the person who typed it, which is precisely the shape of the one entry this
+  list ever carried that no guard could have caught: a decision taken in conversation, with no half in
+  the repository for the code to disagree with. So it is written down where the next session will meet
+  it, and it does not make the entry above any less open. What changes is only which sentence the first
+  dispatch will falsify: not *whether they were set up*, but *whether the four strings and the policy
+  are the ones this file just claimed*.
 - **That a decision can name what confirms it, when what confirms it is a guard over the five.**
   ADR-0001 requires `confirmed-by` present and non-empty, and a guard is addressed by the pair
   `(suite, guard)`. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the
