@@ -78,46 +78,56 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * already holds its contracts to, and the youth of the catalogue is a sentence the README owes a
  * reader rather than a digit nobody can read. ADR-0048 records the order a publication takes.
  *
- * **It is 1.0.2 because what 1.0.2 corrects is in the program, and that makes it the first release of
- * this package whose compiled content differs from its predecessor's.** The two before it did not.
- * `1.0.0` was published from a keyboard, carried no provenance attestation and named a personal
- * account; `1.0.1` corrected that artefact and nothing else, and its `dist/` was byte for byte
- * `1.0.0`'s. ADR-0109 is what made the publication itself different. This one carries out a defect a
- * reader met instead: the client's own screens sent them to a command that answers `command not found`
- * for anybody who has installed nothing, which is every reader who took the `npx` path the site now
- * prints.
+ * **It is 1.0.3 because ADR-0110 moved where a feature lands on somebody's disk**, from
+ * `lib/toopo/string/slugify/slugify.ts` to `lib/toopo/string/slugify.ts`, with a folder of the same
+ * name sitting beside the entry if a second file ever exists. That decision was taken against `tsc`
+ * under all three module resolutions and against four bundlers, and it was taken in the last unit that
+ * could take it, because an installed path lives in every user's lockfile.
  *
- * **Measured against what npm is serving rather than against a rebuild of it.** `npm pack toopo@1.0.1`
- * unpacked and its `dist/` compared against the one this tree builds: 35 modules either side, 428 161
- * bytes against 432 200, and **7 of the 35 differ** - the six client modules that render a command,
- * and `address.js`, which took 3 271 of the 4 039 bytes on its own. **That last figure is prose rather
- * than program**: comments are emitted, 145 of that module's 173 emitted lines are comment, and what
- * grew is the argument for `THE_INVOCATION` and not anything a consumer runs. This module is still not
- * among the 35 - `packaging/reachable.ts` prunes what the published entry point cannot reach, and
- * nothing it reaches asks what version it is.
+ * **Measured against what npm is serving rather than against a rebuild of it**, which is the method
+ * `1.0.2` established. `npm pack toopo@1.0.2` unpacked and its `dist/` compared against the one this
+ * tree builds: 35 modules either side, 432 200 bytes against 434 251, and **5 of the 35 differ**:
  *
- * **The comparison is by count, total and per-file digest, and publishes no tree digest.** `1.0.1`'s
- * did, and that figure occurs in this repository twice, both times in prose: nothing here computes it,
- * so no reader can rebuild it and it is evidence of nothing. Counts and a per-file table are what
- * `npm pack` and any digest tool give back.
+ *     packages/cli/ignored.js      8 396 ->  8 388   (-8)
+ *     packages/cli/plan.js         9 005 ->  9 585   (+580)
+ *     packages/cli/reconcile.js   31 947 -> 31 941   (-6)
+ *     packages/cli/report.js      47 828 -> 48 537   (+709)
+ *     packages/cli/rewrite.js      8 546 ->  9 322   (+776)
  *
- * **PATCH and not MINOR, on a release that does change the program.** Nothing gains a capability and
- * nothing changes shape - the six commands, their flags, their grammar and their answers are what they
- * were, and what moved is the text of six screens plus the constant they now read. MINOR would promise
- * a reader something to learn, and there is nothing: they get the same tool, telling the truth about
- * how to run it.
+ * **The five are exactly the five `8dab5d4` edited that reach the archive**, which is stated because it
+ * was checked and not because it was expected: that commit touched six non-test modules of
+ * `packages/cli/` - the five above and `imagined-source.ts`, which is a test double the walk prunes.
+ * `relocate.js` is byte for byte what `1.0.2` shipped, and the commit that moved the installed path
+ * changed only its test.
  *
- * **It is not the version an implementation is bound at, and this release is the event that
- * separation was made for.** The two were one string, tied by `the-archive-is-visibly-unpublished`,
- * and the tie was right for exactly as long as both were stand-ins saying *nothing here was
- * published*; ADR-0106 cut it at the publication, when they stopped answering the same question. This
- * one moves on a patch of the client. `THE_PUBLISHED_IMPLEMENTATION_VERSION` may never move at all,
- * because a version is half of an implementation's address and rebinding one is what permanent rule 6
- * refuses - so **a tie kept across the publication would have rebound four addresses here**, on a
- * release that moves no implementation's bytes, and the freeze check is what would report it if
- * somebody tied them again.
+ * **The comparison is by count, total and per-file digest, and publishes no tree digest**, for the
+ * reason `1.0.2` withdrew `1.0.1`'s: nothing here computes one, so no reader could rebuild it. Counts
+ * and a per-file table are what `npm pack` and any digest tool give back.
+ *
+ * **PATCH, and this is the first of the three releases where that is arguable rather than obvious.**
+ * `1.0.1` changed nothing in `dist/` at all and `1.0.2` changed the text of six screens; this one
+ * changes where files appear in somebody's repository, which is further than either. It is written
+ * down rather than smoothed over, because a reader who finds the tension themselves is entitled to
+ * think it was missed. What decides PATCH is that nothing gains a capability and nothing changes
+ * shape - the six commands, their flags, their grammar and their answers are what they were - and
+ * MINOR would promise a reader something to learn where there is nothing. What a user who already
+ * installed a feature meets is `toopo update` writing the new copy beside the old one and keeping
+ * anything they had edited, which is ADR-0110's one accepted cost.
+ *
+ * **It is not the version an implementation is bound at, and the separation is what makes that
+ * readable.** The two were one string, tied by `the-archive-is-visibly-unpublished`, and the tie was
+ * right for exactly as long as both were stand-ins saying *nothing here was published*; ADR-0106 cut
+ * it at the publication, when they stopped answering the same question. This one moves on a patch of
+ * the client. `THE_PUBLISHED_IMPLEMENTATION_VERSION` may never move at all, because a version is half
+ * of an implementation's address and rebinding one is what permanent rule 6 refuses - so **a tie kept
+ * across the publication would have rebound four addresses here**, on a release that moves no
+ * implementation's bytes, and the freeze check is what would report it if somebody tied them again.
+ *
+ * **This line is now the thing that asks for a publication**, and it is the last release argued for in
+ * a commit message and dispatched from a menu afterwards. ADR-0111: a push of `main` declaring a
+ * version npm does not hold is what publishes, so editing this string is the deliberate act.
  */
-export const THE_PACKAGE_VERSION = '1.0.2'
+export const THE_PACKAGE_VERSION = '1.0.3'
 
 /**
  * The version every reference implementation of this catalogue is published at, and frozen at.

@@ -72,18 +72,21 @@ after `needs: site` has reached both matrix legs, the deployment and the proof a
 exchanges an identity token GitHub mints and writes the attestation itself, so **nothing here stores a
 credential** and there is no ninety-day secret to renew. ADR-0109.
 
-**The manifest reads `1.0.2`, and it is the first release of this package whose compiled content differs
-from its predecessor's.** The two before it did not: `1.0.0` was published from a keyboard with no
-attestation and a personal address frozen into it, `1.0.1` corrected that artefact and nothing else, and
-its `dist/` was byte for byte `1.0.0`'s — the reading taken against **what npm was serving** rather than
-against a rebuild. `1.0.2` carries out a defect that is in the program, and the same method reads it:
-`npm pack toopo@1.0.1` unpacked and compared with what this tree builds gives 35 modules either side,
-428 161 bytes against 432 200, and **7 of the 35 differing** — the six client modules that render a
-command, and `address.js`, which took 3 271 of the 4 039 bytes on its own and whose growth is prose,
-because comments are emitted. `publication.ts` is not among the 35, because `packaging/reachable.ts`
-prunes what the entry point cannot reach. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a
-version is half of an implementation's address, nothing it addresses moved, and the publication is the
-event ADR-0106 cut that tie for.
+**The manifest reads `1.0.3`, and it is the first release whose change a user meets on their own disk.**
+`1.0.0` was published from a keyboard with no attestation and a personal address frozen into it; `1.0.1`
+corrected that artefact and nothing else, its `dist/` byte for byte `1.0.0`'s; `1.0.2` carried out a
+defect in the program and was the first whose compiled content differed. `1.0.3` carries ADR-0110: a
+feature lands at `lib/toopo/string/slugify.ts` and no longer at `…/slugify/slugify.ts`. Read by the
+method `1.0.2` established — `npm pack toopo@1.0.2` unpacked and compared with what this tree builds —
+35 modules either side, 432 200 bytes against 434 251, and **5 of the 35 differing**: `ignored.js`,
+`plan.js`, `reconcile.js`, `report.js` and `rewrite.js`. Those five are exactly the five modules
+`8dab5d4` edited that reach the archive, which was checked rather than assumed; `relocate.js` is
+unchanged, because that commit touched only its test. **PATCH, and the tension is written down rather
+than smoothed**: this moves where files appear in somebody's repository, which is further than either
+release before it — but nothing gains a capability and nothing changes shape, and MINOR would promise a
+reader something to learn where there is nothing. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at
+`1.0.0`: a version is half of an implementation's address, nothing it addresses moved, and the
+publication is the event ADR-0106 cut that tie for.
 
 **And the dispatch is gone: the number asks for the publication.** It was two gestures for one decision —
 a version decided in a commit, a run asked for from a menu afterwards — and between them the tree was
