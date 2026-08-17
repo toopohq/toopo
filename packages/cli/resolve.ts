@@ -71,6 +71,23 @@ export type ChosenBinding = {
  * requests - which is why the refusal says *ask again* rather than accusing anybody. What it must not
  * do is choose one and carry on: the whole value of the field is that a reader can go back to it.
  */
+/**
+ * The half of the refusal below that another program may recognise, declared rather than transcribed.
+ *
+ * **Two readers outside this module have to know this refusal by sight**, and both were quoting it.
+ * `install.test.ts` asserts it, and `packaging/against-the-origin/` retries the whole chain on it -
+ * because a client refusing for this reason is the only observation that says a deployment was
+ * publishing between two requests *at the moment the client asked*, which is the one moment that
+ * decides. A third spelling of one sentence is how the three come to disagree, and the one that would
+ * drift silently is the retry: a reworded refusal would stop matching, the retry would stop firing,
+ * and the suite would go back to failing intermittently with nothing to say why.
+ *
+ * It is the stable clause and not the whole sentence: the addresses and revisions interpolated after
+ * it are different on every occurrence. ADR-0108.
+ */
+export const A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS =
+  'the registry answered this from more than one revision'
+
 export const oneRevisionBehind = (
   answers: readonly { readonly what: string; readonly servedFrom: string }[],
 ): Found<string> => {
@@ -82,7 +99,7 @@ export const oneRevisionBehind = (
 
   return {
     faults: [
-      `the registry answered this from more than one revision - ${answers
+      `${A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS} - ${answers
         .map((answer) => `${answer.what} from ${answer.servedFrom}`)
         .join(', ')}. That is a registry publishing between two requests rather than anything ` +
         `wrong with your project, and nothing was changed. Run the command again.`,

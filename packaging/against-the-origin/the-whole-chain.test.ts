@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import type { ContractAddress } from '../../packages/registry/address.js'
 import { THE_ORIGIN, renderContract } from '../../packages/registry/address.js'
 import { digestOfBytes } from '../../packages/registry/canonical.js'
+import { A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS } from '../../packages/cli/resolve.js'
 import { endpointOf, pathTo } from '../../packages/registry/endpoints.js'
 import type { Lockfile } from '../../packages/registry/implementation-record.js'
 import type { InstalledArchive, Ran } from '../the-archive.js'
@@ -190,25 +191,28 @@ const theRevisionsAnswered = async (): Promise<readonly string[] | null> => {
 }
 
 /**
- * Wait until the origin answers one revision to both questions, or until the bound runs out.
+ * How long a deployment is allowed to be visible from some places and not others.
  *
  * **A deployment returns before it has propagated**, and the header above records the benign half of
  * that: the revision answering may be the previous one, which is a valid proof of the chain and is
- * reported rather than asserted. The other half is neither benign nor a defect. An edge part-way
- * through propagation answers the index from one commit and the bindings from another, and `toopo add`
+ * reported rather than asserted. The other half is neither benign nor a defect. Part-way through a
+ * rollout the origin answers the index from one commit and the bindings from another, and `toopo add`
  * refuses a registry that answered from more than one revision - correctly, because that is a registry
- * publishing between two requests. Measured on the run of `f5cf8f2`: the CI step ran 34 seconds after
- * `wrangler pages deploy` returned, read the index from `f5cf8f2` and the bindings from `9176c9e`, and
- * failed three guards on the client's own refusal. **The product was working and the measurement was
- * not**, which is the one thing a proof over a network must not confuse.
+ * publishing between two requests. **The product is working and the measurement is not**, which is the
+ * one thing a proof over a network must not confuse.
  *
- * So the disagreement is waited out rather than classed as an outage, and the wait is **bounded so
- * that it stays a red**: an origin still disagreeing with itself after the bound is one a client would
- * refuse for real, and this returns anyway so the chain runs and fails with that client's own message.
- * Waiting for ever, or skipping, would turn a registry that is genuinely inconsistent into a green.
+ * **The cause is the alias and not a cache, and that was measured rather than assumed.** Cloudflare
+ * Pages gives every deployment an atomic hash-based address and updates a *branch alias* to point at
+ * the newest one; `https://toopo.dev` is the alias. Measured on the three addresses this suite reads,
+ * during a rollout: `CF-Cache-Status: DYNAMIC` on all of them, so nothing was being served from an
+ * edge cache. What differs between two requests is which side of the alias update answered them.
  *
- * **What is deliberately not claimed is how long propagation takes.** It was not measured - the run
- * that found this was read two hours later, which bounds nothing - so the figure below is a bound
+ * So the disagreement is waited out, and the wait is **bounded so that it stays a red**: an origin
+ * still disagreeing with itself after the bound is one a client would refuse for real, and the chain
+ * then fails with that client's own message. Waiting for ever, or skipping, would turn a registry that
+ * is genuinely inconsistent into a green.
+ *
+ * **What is deliberately not claimed is how long propagation takes.** The figure below is a bound
  * chosen against the cost of the step and not a measurement of Cloudflare. It is the declared timeout
  * `CLOCK_DEPENDENCE_RULE` requires of a guard whose verdict can depend on elapsed time, and it is the
  * only clock this suite reads.
@@ -217,21 +221,38 @@ const THE_PROPAGATION_BOUND = 120_000
 
 const BETWEEN_ATTEMPTS = 5_000
 
-const anOriginThatAgreesWithItself = async (): Promise<void> => {
-  const until = Date.now() + THE_PROPAGATION_BOUND
-
-  for (;;) {
-    const revisions = await theRevisionsAnswered()
-    if (revisions === null || revisions.length <= 1 || Date.now() >= until) return
-
-    process.stdout.write(
-      `\n  the origin answers ${revisions.length} revisions - ${revisions.join(', ')} - so it is ` +
-        `publishing between two requests; waiting up to ${THE_PROPAGATION_BOUND / 1000}s for it to ` +
-        `agree with itself\n`,
-    )
-    await new Promise((resolve) => setTimeout(resolve, BETWEEN_ATTEMPTS))
-  }
-}
+/**
+ * Whether the chain stopped because the origin was mid-rollout **when the client asked**.
+ *
+ * ---------------------------------------------------------------------------
+ * Why the observation that decides is the client's and not this file's
+ * ---------------------------------------------------------------------------
+ *
+ * This suite used to ask the origin whether it agreed with itself *before* packing anything, and go
+ * ahead once it did. That was refuted by a run rather than argued away. At `70bb31c` the pre-flight
+ * read one revision and returned on its first attempt - the waiting line it prints appears nowhere in
+ * either log, so the bound was never consumed - and the installed client, seconds later, read the
+ * index from `70bb31c` and the implementations from `1a8e562` and refused. **An agreement observed on
+ * one reading says nothing about the next reading**, because the two are separate requests and a
+ * rollout can move between them. The pre-flight could not have been widened into a fix: the reads
+ * that matter are made by a different process, the installed `toopo`, and no observation taken here is
+ * that observation.
+ *
+ * It is the same shape as `assertWholeSuiteRan` comparing a total against a total: a condition derived
+ * from one reading, standing in for a property of another.
+ *
+ * So the retry is driven by the client's own refusal, which is the only thing that reports the state
+ * of the origin at the instant that matters. The clause is imported from the module that authors it,
+ * so a reworded refusal breaks the build rather than silently stopping the retry.
+ *
+ * **What this does not classify**, named rather than left to look covered: a rollout that makes one of
+ * the two requests *this file* makes answer 404 - a binding whose digest names a snapshot the other
+ * side of the alias does not hold - arrives as a thrown error rather than as the client's refusal, and
+ * is reported as the product. It has not been observed; if it ever is, the condition below is where it
+ * belongs.
+ */
+const theOriginWasMidRollout = (said: string): boolean =>
+  said.includes(A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS)
 
 /**
  * What the registry says about this contract, read straight off two answers.
@@ -305,8 +326,6 @@ const report = (): void => {
 }
 
 beforeAll(async () => {
-  await anOriginThatAgreesWithItself()
-
   const before = await theOriginAnswers()
 
   if (!before.reached) {
@@ -320,15 +339,35 @@ beforeAll(async () => {
   let ran: Ran | null = null
   let stopped: string | null = null
 
-  try {
-    announced = await whatTheRegistryAnnounces()
-    archive = anInstalledArchive()
-    ran = archive.toopo('add', THE_CONTRACT.name)
+  const until = Date.now() + THE_PROPAGATION_BOUND
 
-    if (ran.status !== 0) {
-      stopped =
-        `\`toopo add ${THE_CONTRACT.name}\` exited ${ran.status}\n` +
-        `${ran.stdout}${ran.stderr}`.trimEnd()
+  try {
+    // Packed and installed once. A refusal writes nothing, so what is retried below is the reading
+    // and the command - and the tens of seconds an install costs are not paid per attempt.
+    archive = anInstalledArchive()
+
+    for (;;) {
+      announced = await whatTheRegistryAnnounces()
+      ran = archive.toopo('add', THE_CONTRACT.name)
+
+      if (ran.status === 0) {
+        stopped = null
+        break
+      }
+
+      const said = `${ran.stdout}${ran.stderr}`.trimEnd()
+      stopped = `\`toopo add ${THE_CONTRACT.name}\` exited ${ran.status}\n${said}`
+
+      if (!theOriginWasMidRollout(said) || Date.now() >= until) break
+
+      const revisions = await theRevisionsAnswered()
+      process.stdout.write(
+        `\n  the client refused: the origin is publishing between two requests` +
+          `${revisions === null ? '' : ` and answers ${revisions.length} revisions - ${revisions.join(', ')}`}` +
+          `. Nothing was written; waiting up to ${THE_PROPAGATION_BOUND / 1000}s for the rollout to ` +
+          `finish, then asking again\n`,
+      )
+      await new Promise((resolve) => setTimeout(resolve, BETWEEN_ATTEMPTS))
     }
   } catch (error) {
     stopped = error instanceof Error ? error.message : String(error)

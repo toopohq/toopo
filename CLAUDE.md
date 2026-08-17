@@ -200,19 +200,32 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
 **Still open, and what each one now costs.**
 
 - **That the bound the origin proof waits is one somebody measured.** A deployment returns before it
-  has propagated, and an edge part-way through it answers the catalogue index from one commit and a
-  contract's bindings from another — at which point `toopo add` refuses, correctly, and the proof
-  against the origin reddens with the product working. Measured on the run of `f5cf8f2`: the step began
-  34 seconds after `wrangler pages deploy` returned, read `f5cf8f2` from one address and `9176c9e` from
-  the other, and three guards went red. The repair waits for the origin to agree with itself and is
-  bounded so that a registry which is genuinely inconsistent stays a red. **What is not measured is how
-  long propagation takes** — the failing run was read two hours later, which bounds nothing — so
+  has propagated, and part-way through a rollout the origin answers the catalogue index from one commit
+  and a contract's bindings from another — at which point `toopo add` refuses, correctly, and the proof
+  against the origin reddens with the product working.
+
+  **This entry predicted the wrong failure, and it was refuted by observation rather than by
+  argument.** It read *the day propagation exceeds it, CI is red with nothing wrong, which is the exact
+  failure the wait was written to remove*. Measured at `70bb31c`: the bound was **never consumed** —
+  the waiting line the pre-flight prints appears in neither of that commit's two run logs — and CI was
+  red anyway, once in two runs. The pre-flight read one revision and returned on its first attempt; the
+  installed client, seconds later, read the index from `70bb31c` and the implementations from
+  `1a8e562`. **An agreement observed on one reading says nothing about the next**, and no reading taken
+  inside the suite can be the client's, because the client is another process. The cause is the alias
+  and not a cache: Cloudflare Pages makes a hash-based deployment address atomic and updates a branch
+  alias to point at it, `toopo.dev` is that alias, and `CF-Cache-Status: DYNAMIC` on all three
+  addresses says nothing was served from an edge cache. ADR-0108 replaced the pre-flight with a bounded
+  retry of the chain, driven by the client's own refusal. **A prediction that observation refutes is
+  replaced by what was measured, never by a second prediction**, which is why nothing above says what
+  will fail next.
+
+  **What stays open is what this entry always meant, with the prediction removed.**
   `THE_PROPAGATION_BOUND` is two minutes chosen against the cost of the step and not against
-  Cloudflare. The day propagation exceeds it, CI is red with nothing wrong, which is the exact failure
-  the wait was written to remove. **The population is every deployment this repository makes**, and
-  what would close it is the cheapest measurement on this list: the proof already knows when it started
-  waiting and when the origin agreed, so recording that span over some runs turns the bound into a
-  figure with coordinates. Not built, and the reason is that one run measures one deployment.
+  Cloudflare, and how long a rollout takes is still not measured. The population is every deployment
+  this repository makes, and what would close it is the cheapest measurement on this list: the retry
+  now knows when the client first refused and when it stopped, so recording that span over some runs
+  turns the bound into a figure with coordinates. Not built, and the reason is that one run measures
+  one deployment.
 - **That a decision can name what confirms it, when what confirms it is a guard over the five.**
   ADR-0001 requires `confirmed-by` present and non-empty, and a guard is addressed by the pair
   `(suite, guard)`. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the

@@ -14,6 +14,7 @@ import { deciding } from './fixpoint.js'
 import { imaginedSource, sourceWithTwoVersionsOfPad } from './imagined-source.js'
 import type { Installation, InstallOutcome } from './install.js'
 import { lockfileAfter, prepareInstallation } from './install.js'
+import { A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS } from './resolve.js'
 import { localSource } from './local-source.js'
 import { renderUnchanged } from './report.js'
 import type { RegistrySource } from './source.js'
@@ -651,7 +652,7 @@ export const clamp = (value: number, low: number, high: number): number =>
       const outcome = await installing(midDeployment, project, 'number/round')
       if (!('faults' in outcome)) throw new Error('a mid-deployment install was not refused')
 
-      expect(outcome.faults.join('\n')).toContain('answered this from more than one revision')
+      expect(outcome.faults.join('\n')).toContain(A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS)
       expect(outcome.faults.join('\n')).toContain('Run the command again')
       expect(existsSync(join(project.root, 'toopo.lock'))).toBe(false)
 
