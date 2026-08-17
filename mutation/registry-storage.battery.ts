@@ -194,6 +194,12 @@ const REFUSE_A_DISAGREEMENT = `  if (undeclared.length > 0 || missing.length > 0
 const PROJECT_THE_TAIL = `    ownDeclarations: record.ownDeclarations,
     harness: record.harness,`
 
+const PROJECT_THE_SHARED_SURFACE = '    sharedHarness: record.sharedHarness,'
+
+const REFUSE_A_SURFACE_THAT_IS_NOT_REACHED = `  if (undeclared.length > 0 || missing.length > 0) {
+    throw new UndeclaredSharedSurface(folder, undeclared, missing)
+  }`
+
 const SORT_THE_KEYS = '  return `{${sortedKeys(record)'
 
 const A_RECORD_IS_JSON = `  return \`{\${sortedKeys(record)
@@ -1294,6 +1300,46 @@ const mutants: readonly Mutant[] = [
       'a-named-answer-is-public-and-revalidated-before-every-use',
       'every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not',
     ]),
+  ),
+
+  // -------------------------------------------------------------------------
+  // What a contract calls, and whether the freeze reaches it - ADR-0105
+  // -------------------------------------------------------------------------
+
+  /**
+   * The state this repository was in until ADR-0105, injected as a defect.
+   *
+   * It is the whole of what that unit closed: the frozen half carries the seven files a contract owns
+   * and forgets the ones its guards call, so emptying a shared check moves no address. Measured before
+   * the field existed - `expectUniversalPropertiesAnswered` emptied, all eight ledger digests identical
+   * to the byte, and a contract the guard exists to refuse green.
+   *
+   * The projection is emptied rather than dropped, and the difference decides what the cell measures.
+   * Dropping the line leaves `filesNamedBy` spreading `undefined`, so the kill arrives as a TypeError
+   * from a third module - a red, and a red about a crash rather than about a freeze.
+   */
+  sameOnEveryLens(
+    'I-61',
+    'freezes the files a contract owns and forgets the ones its guards call, so a shared check can be ' +
+      'emptied under a published address without a digest moving - the defect ADR-0105 closed',
+    [snapshotFile(PROJECT_THE_SHARED_SURFACE, '    sharedHarness: [],')],
+    killed(['a-changed-shared-file-moves-the-digest']),
+  ),
+
+  /**
+   * The declaration kept and the walk made decorative, which is the other half of the same field.
+   *
+   * A contract could then reach a module nobody declared, and the record would freeze the declared list
+   * while the guards ran on something wider. It is `I-02`'s shape one level out - a list that describes
+   * a folder against a folder that has stopped matching it - and the reason `sharedHarnessOf` refuses
+   * rather than reporting.
+   */
+  sameOnEveryLens(
+    'I-62',
+    'hashes the shared surface a contract declares without checking that it is the one the harness ' +
+      'reaches, so a module nobody declared decides a frozen contract\'s verdicts',
+    [serialiseFile(REFUSE_A_SURFACE_THAT_IS_NOT_REACHED, '  void undeclared\n  void missing')],
+    killed(['the-shared-surface-is-what-the-harness-reaches']),
   ),
 ]
 
