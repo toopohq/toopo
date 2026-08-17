@@ -578,6 +578,31 @@ const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
  * the value is that a term which grew is now flat.
  *
  * ---------------------------------------------------------------------------
+ * Where a replay's cost actually sits, measured at `7dc3b6a` and not repaired
+ * ---------------------------------------------------------------------------
+ *
+ * **It is not the number of cells.** `registry-storage` runs 59 cells in 511.6 s and `date-add` runs
+ * 66 in 66.6 s - more cells, one eighth of the time. Divided by the number of suite runs each battery
+ * makes, the whole replay is 712 runs in 42 min 16 s, an average of 3.56 s, and the spread across the
+ * nineteen is nearly tenfold:
+ *
+ *     registry-storage   60 runs   8.53 s each        number-parse      66 runs   0.88 s each
+ *     cli-search         21 runs   8.29 s each        string-levenshtein 54 runs  0.91 s each
+ *     cli-install        73 runs   8.02 s each        date-add          68 runs   0.98 s each
+ *
+ * The split is exactly the narrowing above. A contract battery hands its run a filter and pays 0.9 s;
+ * the client's and the registry's batteries collect their whole folder on every cell and pay eight.
+ * **So the term that makes a replay long is the one that does not grow with the catalogue**, which is
+ * the opposite of what the paragraph above was written about - and the batteries that already narrowed
+ * are the cheap ones, which is the same finding read from the other end.
+ *
+ * If every battery ran at the contract batteries' rate, 712 runs would cost about eleven minutes
+ * rather than forty-two. **Nothing here acts on that**: whether those five can be narrowed is a
+ * measurement nobody has taken - a cell of `cli-install` edits a file the whole client suite reaches,
+ * where a contract battery's edits reach one contract - and it is written down so that the unit which
+ * takes it starts from a figure rather than from an intuition.
+ *
+ * ---------------------------------------------------------------------------
  * Which configuration can be narrowed is a measurement, not a choice
  * ---------------------------------------------------------------------------
  *
