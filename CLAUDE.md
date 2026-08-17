@@ -299,11 +299,19 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   in all three situations — nothing installed, installed globally, installed as a project dependency —
   and the README and the emitted pages now carry a guard apiece over their own surface.
 
-  **The client's own screens carry none, and that is the open half.** A reader who installed nothing
-  runs `npx toopo list` and is told `Take one out with npx toopo remove …`, which is right today
-  because every one of those strings was converted; nothing stops the next one being written bare, and
-  the reader it would fail is the one the `npx` path just made canonical. **The population is every
-  user-facing string of `packages/cli/`.** What would close it is not a shape — no spelling of a string
+  **The client's own screens carry none, and that is the open half.** Every one of those strings is
+  converted in this tree; nothing stops the next one being written bare, and the reader it would fail
+  is the one the `npx` path just made canonical. **The population is every user-facing string of
+  `packages/cli/`.**
+
+  **And the client a reader actually runs still prints the bare form, which is a fact about the
+  artefact and not about this tree.** Measured against the live origin at `7728ec2`: `npx toopo add
+  string/slugify` installs correctly, and `npx toopo list` in the same project then answers
+  `Take one out with     toopo remove <domain>/<name>`. npm serves `1.0.1`, which predates the
+  conversion, so the site and the client disagree until the next publication - and a publication is a
+  dispatch that belongs to a person. **The two halves of this repair ship on different events**, which
+  is the same split ADR-0106 cut between publishing and anchoring, arriving on a surface rather than on
+  an address. What would close it is not a shape — no spelling of a string
   literal makes the bare form fail to compile, which is ADR-0054's other branch — but the validation
   stage reading this repository's own strings, already named twice on this list, already priced and
   already refused as a lint over prose.
