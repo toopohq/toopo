@@ -65,7 +65,7 @@
  * A shared blob is written once, in the folder of whichever carrier the resolution reached first, and
  * the other carriers are repointed at it - so the second carrier's entry does not mention the file it
  * imports. Measured on the fixture graph: `number/clamp@1`'s entry names one file, and
- * `number/clamp/clamp.ts` imports `../../string/pad/digits.js`. A removal decided from the lockfile
+ * `number/clamp.ts` imports `../../string/pad/digits.js`. A removal decided from the lockfile
  * alone would delete `string/pad/digits.ts` and three files that stay would import something that is
  * gone - not an incomplete answer, a wrong and silent one.
  *

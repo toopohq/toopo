@@ -17,6 +17,23 @@ confirmed-by:
 
 # What an installation looks like on disk
 
+> **The layout decided here has been superseded by
+> [ADR-0110](0110-a-feature-lands-as-a-file-and-its-folder-sits-beside-it.md), and not on the trigger
+> this record named.** *What would reopen this* said: a second file in any reference implementation.
+> Nothing produced one — a reader saw the name written twice in `string/slugify/slugify.ts` instead. An
+> entry file now lands at `<domain>/<name>.ts` with its folder beside it rather than around it, which
+> keeps this record's own requirement — *an entry file's path never moves* — on the day a feature gains
+> a second file, where this layout kept it by paying a level of nesting on every feature that never
+> will.
+>
+> **The reasoning below is left as it was written**, because it is the argument the replacement is
+> built on rather than one that turned out wrong: the two measured lines about `x.js` and `x/index.js`
+> are still true, and it is what they were used to conclude that moved. What is still decided here and
+> still ruled: the entry file named after its feature rather than `reference.ts`, the shared file
+> recognised by digest with the entry exempt, the two digests in the lockfile, and the refusal of a
+> setting with one possible value. The `0.0.0-local` paragraph is separately dead —
+> [ADR-0106](0106-publishing-and-anchoring-are-two-acts.md) is where that version became `1.0.0`.
+
 ## Context and Problem Statement
 
 The registry serves a contract's entry file as `reference.ts`, because `contractAnatomy` requires that

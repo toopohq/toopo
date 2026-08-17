@@ -117,17 +117,17 @@ describe('comparing a project with what the registry serves now', () => {
       const update = await updating(project, lockfile)
 
       expect(verdicts(update)).toEqual({
-        'string/pad/pad.ts': 'updated',
-        'number/round/round.ts': 'updated',
-        'number/sign/sign.ts': 'removed',
+        'string/pad.ts': 'updated',
+        'number/round.ts': 'updated',
+        'number/sign.ts': 'removed',
       })
       expect(update.writes.map((write) => write.path)).toEqual([
-        'string/pad/pad.ts',
-        'number/round/round.ts',
+        'string/pad.ts',
+        'number/round.ts',
       ])
-      expect(update.removals).toEqual(['number/sign/sign.ts'])
+      expect(update.removals).toEqual(['number/sign.ts'])
       expect(
-        update.writes.find((write) => write.path === 'number/round/round.ts')?.bytes.toString('utf8'),
+        update.writes.find((write) => write.path === 'number/round.ts')?.bytes.toString('utf8'),
       ).toContain('return clamp(value, -places, places)')
     })
   })
@@ -174,7 +174,7 @@ describe('comparing a project with what the registry serves now', () => {
     await inProject(async (project, lockfile) => {
       const update = await updating(project, lockfile)
 
-      expect(update.removals).toEqual(['number/sign/sign.ts'])
+      expect(update.removals).toEqual(['number/sign.ts'])
       expect(update.lockfile.features.map((feature) => feature.contract.name)).toEqual([
         'number/clamp',
         'number/round',
@@ -186,12 +186,12 @@ describe('comparing a project with what the registry serves now', () => {
   /** Both sides moved, which is the only case where refusing to overwrite means anything. */
   it('a-file-changed-on-both-sides-is-a-conflict', async () => {
     await inProject(async (project, lockfile) => {
-      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
 
       const update = await updating(project, lockfile)
 
-      expect(verdicts(update)['number/round/round.ts']).toBe('conflict')
-      expect(update.writes.map((write) => write.path)).toEqual(['string/pad/pad.ts'])
+      expect(verdicts(update)['number/round.ts']).toBe('conflict')
+      expect(update.writes.map((write) => write.path)).toEqual(['string/pad.ts'])
     })
   })
 
@@ -201,7 +201,7 @@ describe('comparing a project with what the registry serves now', () => {
    */
   it('a-conflicted-feature-is-held-back-whole', async () => {
     await inProject(async (project, lockfile) => {
-      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
 
       const update = await updating(project, lockfile)
       const round = update.features.find((feature) => feature.contract.name === 'number/round')
@@ -217,7 +217,7 @@ describe('comparing a project with what the registry serves now', () => {
    */
   it('a-feature-that-imports-a-held-back-one-is-held-back-too', async () => {
     await inProject(async (project, lockfile) => {
-      project.write('src/lib/toopo/string/pad/pad.ts', 'export const pad = "mine"\n')
+      project.write('src/lib/toopo/string/pad.ts', 'export const pad = "mine"\n')
 
       const update = await updating(project, lockfile)
 
@@ -241,7 +241,7 @@ describe('comparing a project with what the registry serves now', () => {
    */
   it('nothing-is-removed-while-a-feature-is-held-back', async () => {
     await inProject(async (project, lockfile) => {
-      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
 
       const update = await updating(project, lockfile)
       const sign = update.features.find((feature) => feature.contract.name === 'number/sign')
@@ -266,7 +266,7 @@ describe('comparing a project with what the registry serves now', () => {
 
       expect(verdicts(update)['string/pad/digits.ts']).toBe('kept')
       expect(heldBack(update)).toEqual([])
-      expect(update.writes.map((write) => write.path)).toContain('string/pad/pad.ts')
+      expect(update.writes.map((write) => write.path)).toContain('string/pad.ts')
       expect(update.writes.map((write) => write.path)).not.toContain('string/pad/digits.ts')
     })
   })
@@ -306,28 +306,28 @@ describe('comparing a project with what the registry serves now', () => {
   it('a-file-already-equal-to-what-we-would-write-is-not-a-conflict', async () => {
     await inProject(async (project, lockfile) => {
       const first = await updating(project, lockfile)
-      const bytes = first.writes.find((write) => write.path === 'number/round/round.ts')?.bytes
+      const bytes = first.writes.find((write) => write.path === 'number/round.ts')?.bytes
 
       writeFileSync(
-        join(project.root, project.configuration.directory, 'number/round/round.ts'),
+        join(project.root, project.configuration.directory, 'number/round.ts'),
         bytes as Buffer,
       )
 
       const again = await updating(project, lockfile)
 
-      expect(verdicts(again)['number/round/round.ts']).toBe('already-written')
+      expect(verdicts(again)['number/round.ts']).toBe('already-written')
       expect(heldBack(again)).toEqual([])
     })
   })
 
   it('a-file-that-was-deleted-is-put-back', async () => {
     await inProject(async (project, lockfile) => {
-      rmSync(join(project.root, project.configuration.directory, 'number/clamp/clamp.ts'))
+      rmSync(join(project.root, project.configuration.directory, 'number/clamp.ts'))
 
       const update = await updating(project, lockfile)
 
-      expect(verdicts(update)['number/clamp/clamp.ts']).toBe('restored')
-      expect(update.writes.map((write) => write.path)).toContain('number/clamp/clamp.ts')
+      expect(verdicts(update)['number/clamp.ts']).toBe('restored')
+      expect(update.writes.map((write) => write.path)).toContain('number/clamp.ts')
     })
   })
 
@@ -465,7 +465,7 @@ describe('comparing a project with what the registry serves now', () => {
    */
   it('the-ways-out-are-offered-only-where-the-reader-put-something', async () => {
     await inProject(async (project, lockfile) => {
-      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
 
       const rendered = renderUpdate(await updating(project, lockfile), lockfile, project.configuration, false, GIT_WAS_NOT_ASKED)
       const blocks = rendered.split(/\n(?=  \S)/)
@@ -490,7 +490,7 @@ describe('comparing a project with what the registry serves now', () => {
    */
   it('a-held-back-feature-says-so-before-it-says-anything-else', async () => {
     await inProject(async (project, lockfile) => {
-      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
 
       // A feature's header and not the tally, which also sits at this indent and also carries
       // `held back` - the count of them.
@@ -510,7 +510,7 @@ describe('comparing a project with what the registry serves now', () => {
   /** A held-back feature's entry is the one that was there, byte for byte. */
   it('a-held-back-feature-keeps-its-lockfile-entry-exactly', async () => {
     await inProject(async (project, lockfile) => {
-      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
 
       const update = await updating(project, lockfile)
 
@@ -526,8 +526,8 @@ describe('comparing a project with what the registry serves now', () => {
       const update = await updating(project, lockfile)
       const round = update.lockfile.features
         .find((feature) => feature.contract.name === 'number/round')
-        ?.files.find((file) => file.path === 'number/round/round.ts')
-      const bytes = update.writes.find((write) => write.path === 'number/round/round.ts')?.bytes
+        ?.files.find((file) => file.path === 'number/round.ts')
+      const bytes = update.writes.find((write) => write.path === 'number/round.ts')?.bytes
 
       expect(round?.sha256).toBe(digestOfBytes(bytes as Buffer))
       expect(round?.sha256).not.toBe(round?.served.sha256)
@@ -553,7 +553,7 @@ describe('comparing a project with what the registry serves now', () => {
       )
 
       expect('faults' in outcome && outcome.faults).toContain(
-        'src/lib/toopo/string/pad/pad.ts is already there and toopo.lock does not claim it, so it ' +
+        'src/lib/toopo/string/pad.ts is already there and toopo.lock does not claim it, so it ' +
           'is not ours to overwrite',
       )
     })
@@ -603,7 +603,7 @@ describe('comparing a project with what the registry serves now', () => {
           .find((feature) => feature.contract.name === 'text/right')
           ?.files.map((file) => [file.path, file.verdict]),
       ).toEqual([
-        ['text/right/right.ts', 'updated'],
+        ['text/right.ts', 'updated'],
         ['text/right/trim.ts', 'removed'],
       ])
 
@@ -617,7 +617,7 @@ describe('comparing a project with what the registry serves now', () => {
       expect('written' in written).toBe(true)
 
       expect(existsSync(join(project.root, 'src/lib/toopo/text/right/trim.ts'))).toBe(false)
-      expect(project.installed('text/right/right.ts')).toContain("from '../left/trim.js'")
+      expect(project.installed('text/right.ts')).toContain("from './left/trim.js'")
     } finally {
       project.remove()
     }

@@ -5,7 +5,7 @@ import type { ImplementationRecord } from '../registry/implementation-record.js'
 import { resolveDependencies } from '../registry/implementation-record.js'
 import type { FrozenImplementation } from '../registry/snapshot.js'
 import { implementationSnapshot } from '../registry/snapshot.js'
-import { planInstall } from './plan.js'
+import { THE_ENTRY_FILE, planInstall } from './plan.js'
 
 /**
  * Where every file lands, decided before a byte is written.
@@ -49,12 +49,12 @@ describe('where every file lands', () => {
    */
   it('an-entry-file-is-named-after-its-feature', () => {
     expect(planned().files.map((file) => file.path)).toEqual([
-      'string/pad/pad.ts',
+      'string/pad.ts',
       'string/pad/digits.ts',
-      'number/clamp/clamp.ts',
+      'number/clamp.ts',
       'string/pad/digits.ts',
-      'number/sign/sign.ts',
-      'number/round/round.ts',
+      'number/sign.ts',
+      'number/round.ts',
     ])
   })
 
@@ -91,16 +91,16 @@ describe('where every file lands', () => {
     if ('faults' in result) throw new Error(result.faults.join('\n'))
 
     expect(result.plan.files.filter((file) => file.written).map((file) => file.path)).toEqual([
-      'string/pad/pad.ts',
+      'string/pad.ts',
       'string/pad/digits.ts',
-      'number/sign/sign.ts',
+      'number/sign.ts',
     ])
   })
 
   /**
    * Two dependents published against two versions of one feature is a graph a real catalogue will
    * eventually hold, and both addresses resolve because they *are* two artefacts. What cannot happen is
-   * both landing: one feature is one folder, so the second write would overwrite the first and whichever
+   * both landing: one feature lands in one place, so the second write would overwrite the first and whichever
    * dependent asked for it would silently get the other one's code.
    */
   it('two-versions-of-one-feature-are-refused', () => {
@@ -109,31 +109,42 @@ describe('where every file lands', () => {
 
     expect('faults' in result && result.faults).toEqual([
       `typescript/string/pad@1 is asked for at two versions in one install - typescript/string/pad@1/reference@${IMAGINED_VERSION} ` +
-        `and typescript/string/pad@1/reference@1.0.1. One feature is one folder, so the second would overwrite ` +
-        `the first and whichever dependent asked for it would silently get the other one's code.`,
+        `and typescript/string/pad@1/reference@1.0.1. One feature lands in one place, so the second ` +
+        `would overwrite the first and whichever dependent asked for it would silently get the other ` +
+        `one's code.`,
     ])
   })
 
   /**
-   * The other collision, one level down: two different files of one feature that would land on one
-   * path. It is reachable the day an implementation carries a file named after its own feature beside
-   * the entry file the installer renames to that name.
+   * The other collision, and ADR-0110 changed which case reaches it. Two majors of one feature are two
+   * contracts - `seenContracts` is keyed on the rendering, which carries the major - and the path
+   * deliberately is not, so both entry files want `string/pad.ts`. `name@2` beside `name@1` is
+   * permanent rule 6's own repair, which makes this the collision the design actually admits.
+   *
+   * **The case this fixture used to carry is unreachable now and was not replaced by a contrivance.**
+   * It was one implementation carrying a file named after its own feature beside the entry file the
+   * installer renamed to that name. Under the flat entry the two can no longer meet: an entry lands at
+   * `<domain>/<name>.ts` and any other file of that feature at `<domain>/<name>/<file>.ts`, which is a
+   * segment longer whatever it is called.
    */
   it('two-different-files-on-one-destination-are-refused', () => {
-    const collides: ImplementationRecord = {
+    // Only the entry file's digest moves. A second major really would differ throughout, but a
+    // differing `digits.ts` collides on its own and would make this guard report two faults about two
+    // files - and the subject here is the entry, which is the one the layout decides the path of.
+    const asTwo: ImplementationRecord = {
       ...pad,
-      files: [
-        ...pad.files,
-        { path: 'pad.ts', sha256: 'a-digest-that-is-not-the-entry-files', bytes: 12 },
-      ],
+      contract: { ...pad.contract, major: 2 },
+      files: pad.files.map((file) =>
+        file.path === THE_ENTRY_FILE ? { ...file, sha256: `${file.sha256}-of-the-second-major` } : file,
+      ),
     }
 
-    const result = planInstall([frozen(collides)])
+    const result = planInstall([frozen(pad), frozen(asTwo)])
 
     expect('faults' in result && result.faults).toEqual([
-      'two different files would both be written to string/pad/pad.ts: the one served as ' +
-        'string/pad/pad.ts and another with a different digest. An install that overwrote one with ' +
-        'the other would leave the project holding code no lockfile describes.',
+      'two different files would both be written to string/pad.ts: the one served as ' +
+        'string/pad/reference.ts and another with a different digest. An install that overwrote one ' +
+        'with the other would leave the project holding code no lockfile describes.',
     ])
   })
 

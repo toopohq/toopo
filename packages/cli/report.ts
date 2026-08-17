@@ -95,6 +95,14 @@ const paragraph = (text: string, width = 76): readonly string[] => {
  * another. Measured under TypeScript 7.0.2 with `"type": "module"`, `./x.js` is the one spelling that
  * resolves under `bundler`, `node16` and `nodenext` alike - `./x.ts` is TS5097 under all three unless
  * `allowImportingTsExtensions` is set, and `./x` is TS2835 under two of them.
+ *
+ * **This line used to say `every bundler` and no longer does, because that is wider than anything
+ * measured.** ADR-0110 read the spelling against esbuild, vite, rollup and webpack - three distinct
+ * resolver implementations, chosen on weekly downloads - and every one resolved it. Four is not every,
+ * and a universal printed at the end of every install is a promise this repository cannot keep by
+ * measuring harder. So the sentence claims the half that is settled by a total reading - TypeScript
+ * offers three module resolutions and all three were read - and the bundler population is carried
+ * where the rest of this repository's unkept declarations are, in `CLAUDE.md`.
  */
 export const renderImportLine = (
   entry: InstalledEntry,
@@ -105,7 +113,7 @@ export const renderImportLine = (
   '',
   ...paragraph(
     'Written from the project root. The extension is .js although the file is .ts, which is the ' +
-      'one spelling TypeScript and every bundler resolve.',
+      'one spelling TypeScript resolves under every module resolution it offers.',
   ).map((line) => `${INDENT}${line}`),
 ]
 

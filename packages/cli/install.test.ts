@@ -121,11 +121,11 @@ describe('installing a feature and what it imports', () => {
   it('the-graph-lands-as-a-tree-of-features', async () => {
     await withTheGraph((_project, installation) => {
       expect(installation.writes.map((write) => write.path)).toEqual([
-        'string/pad/pad.ts',
+        'string/pad.ts',
         'string/pad/digits.ts',
-        'number/clamp/clamp.ts',
-        'number/sign/sign.ts',
-        'number/round/round.ts',
+        'number/clamp.ts',
+        'number/sign.ts',
+        'number/round.ts',
       ])
     })
   })
@@ -146,16 +146,16 @@ describe('installing a feature and what it imports', () => {
    */
   it('an-installed-file-imports-what-was-installed', async () => {
     await withTheGraph((project) => {
-      expect(project.installed('number/clamp/clamp.ts')).toBe(
-        `import { DIGITS } from '../../string/pad/digits.js'
-import { pad } from '../../string/pad/pad.js'
+      expect(project.installed('number/clamp.ts')).toBe(
+        `import { DIGITS } from '../string/pad/digits.js'
+import { pad } from '../string/pad.js'
 
 export const clamp = (value: number, low: number, high: number): number =>
   DIGITS.test(pad(String(value), 1)) ? Math.min(Math.max(value, low), high) : low
 `,
       )
-      expect(project.installed('number/round/round.ts')).toContain(
-        `import { clamp } from '../clamp/clamp.js'`,
+      expect(project.installed('number/round.ts')).toContain(
+        `import { clamp } from './clamp.js'`,
       )
     })
   })
@@ -170,13 +170,16 @@ export const clamp = (value: number, low: number, high: number): number =>
     await withTheGraph((project, installation) => {
       const files = installation.features.flatMap((feature) => feature.files)
 
+      // Four of the five, because ADR-0110 puts an entry file a level above the folder its own files
+      // land in: `string/pad.ts` is repointed at `./pad/digits.js` although it depends on nothing.
+      // What the registry served untouched is the folder's own file, and only that.
       expect(files.filter((file) => file.sha256 !== file.served.sha256).map((file) => file.path)).toEqual([
-        'number/clamp/clamp.ts',
-        'number/sign/sign.ts',
-        'number/round/round.ts',
+        'string/pad.ts',
+        'number/clamp.ts',
+        'number/sign.ts',
+        'number/round.ts',
       ])
       expect(files.filter((file) => file.sha256 === file.served.sha256).map((file) => file.path)).toEqual([
-        'string/pad/pad.ts',
         'string/pad/digits.ts',
       ])
       expect(
@@ -361,10 +364,10 @@ export const clamp = (value: number, low: number, high: number): number =>
       }
 
       expect(installed).toEqual([
-        ['number/parse/parse.ts'],
-        ['date/add/add.ts'],
-        ['string/levenshtein/levenshtein.ts'],
-        ['string/slugify/slugify.ts'],
+        ['number/parse.ts'],
+        ['date/add.ts'],
+        ['string/levenshtein.ts'],
+        ['string/slugify.ts'],
       ])
     } finally {
       project.remove()
@@ -417,7 +420,7 @@ export const clamp = (value: number, low: number, high: number): number =>
 
   /**
    * Two dependents published against two versions of one feature. Both addresses resolve because both
-   * artefacts exist; what is refused is both landing, since one feature is one folder.
+   * artefacts exist; what is refused is both landing, since one feature lands in one place.
    */
   it('two-versions-of-one-feature-are-refused-before-anything-is-written', async () => {
     const project = aProject()
@@ -611,15 +614,15 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('a-refusal-leaves-the-project-exactly-as-it-was', async () => {
     const project = aProject()
     try {
-      project.write('src/lib/toopo/string/pad/pad.ts', 'export const pad = "mine"\n')
+      project.write('src/lib/toopo/string/pad.ts', 'export const pad = "mine"\n')
 
       const outcome = await installing(imaginedSource(), project, 'number/round')
 
       expect('faults' in outcome).toBe(true)
-      expect(readdirSync(join(project.root, project.configuration.directory, 'string/pad'))).toEqual([
+      expect(readdirSync(join(project.root, project.configuration.directory, 'string'))).toEqual([
         'pad.ts',
       ])
-      expect(project.installed('string/pad/pad.ts')).toBe('export const pad = "mine"\n')
+      expect(project.installed('string/pad.ts')).toBe('export const pad = "mine"\n')
     } finally {
       project.remove()
     }

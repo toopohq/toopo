@@ -207,7 +207,7 @@ export const TWO_VERSIONS_OF_ONE_FEATURE = IMAGINED_NEXT_VERSION
  *
  * Two dependents may legitimately have been published against two versions of one feature - `sign`
  * against `1.0.0` and `clamp` against `1.0.1` - and both addresses resolve, because they *are* two
- * artefacts. What cannot happen is both landing in the project: one feature is one folder, so the
+ * artefacts. What cannot happen is both landing in the project: one feature lands in one place, so the
  * second write would overwrite the first and the dependent that asked for it would silently get the
  * other one's code.
  *

@@ -190,12 +190,12 @@ describe('what breaks for somebody', () => {
   it('a-file-we-did-not-write-is-never-overwritten', async () => {
     const project = aProject()
     try {
-      project.write('src/lib/toopo/string/slugify/slugify.ts', 'export const slugify = "mine"\n')
+      project.write('src/lib/toopo/string/slugify.ts', 'export const slugify = "mine"\n')
 
       const outcome = await installing(localSource(), project, 'string/slugify')
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'src/lib/toopo/string/slugify/slugify.ts is already there, toopo.lock does not claim it, ' +
+        'src/lib/toopo/string/slugify.ts is already there, toopo.lock does not claim it, ' +
           'and its bytes are not the ones toopo would write - so it is not ours to overwrite',
       ])
     } finally {
@@ -208,12 +208,12 @@ describe('what breaks for somebody', () => {
     const project = aProject()
     try {
       const lockfile = await alreadyInstalled(project)
-      project.write('src/lib/toopo/string/slugify/slugify.ts', 'export const slugify = "edited"\n')
+      project.write('src/lib/toopo/string/slugify.ts', 'export const slugify = "edited"\n')
 
       const outcome = await installing(localSource(), project, 'string/slugify', lockfile)
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'src/lib/toopo/string/slugify/slugify.ts is not the file toopo wrote there. Toopo never ' +
+        'src/lib/toopo/string/slugify.ts is not the file toopo wrote there. Toopo never ' +
           'replaces a change it did not make: move it aside, or keep it and skip this install.',
       ])
     } finally {
@@ -233,7 +233,7 @@ describe('what breaks for somebody', () => {
     const project = aProject()
     try {
       await alreadyInstalled(project)
-      const before = project.installed('string/slugify/slugify.ts')
+      const before = project.installed('string/slugify.ts')
 
       const installation = mustInstall(await installing(localSource(), project, 'string/slugify'))
 
@@ -241,7 +241,7 @@ describe('what breaks for somebody', () => {
         installation.writes.map((write) => [write.path, true]),
       )
       expect(filesToWrite(installation)).toEqual([])
-      expect(project.installed('string/slugify/slugify.ts')).toBe(before)
+      expect(project.installed('string/slugify.ts')).toBe(before)
     } finally {
       project.remove()
     }
@@ -380,7 +380,7 @@ describe('what breaks for somebody', () => {
       committing(project, mustInstall(await installing(localSource(), project, 'string/slugify')))
 
       expect(existsSync(join(project.root, 'package.json'))).toBe(false)
-      expect(readdirSync(join(project.root, 'src/lib/toopo/string/slugify'))).toEqual(['slugify.ts'])
+      expect(readdirSync(join(project.root, 'src/lib/toopo/string'))).toEqual(['slugify.ts'])
     } finally {
       project.remove()
     }
@@ -392,9 +392,7 @@ describe('what breaks for somebody', () => {
     try {
       committing(project, mustInstall(await installing(imaginedSource(), project, 'number/round')))
 
-      expect(project.installed('number/clamp/clamp.ts')).toContain(
-        `from '../../string/pad/pad.js'`,
-      )
+      expect(project.installed('number/clamp.ts')).toContain(`from '../string/pad.js'`)
     } finally {
       project.remove()
     }
@@ -444,7 +442,7 @@ describe('what breaks for somebody', () => {
 
       expect(readConfiguration(project.root)).toEqual({ version: 1, directory: 'lib/toopo' })
       expect(
-        existsSync(join(project.root, 'lib/toopo/string/slugify/slugify.ts')),
+        existsSync(join(project.root, 'lib/toopo/string/slugify.ts')),
       ).toBe(true)
       expect(readLockfile(project.root)?.features).toHaveLength(1)
     } finally {

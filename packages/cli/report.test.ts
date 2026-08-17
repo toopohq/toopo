@@ -44,9 +44,9 @@ const A_RELOCATION: Relocation = {
   from: 'lib/toopo',
   to: 'src/lib/toopo',
   moves: [
-    { path: 'number/round/round.ts', verdict: 'moved', bytes: Buffer.from('a', 'utf8') },
-    { path: 'string/pad/pad.ts', verdict: 'already-moved', bytes: null },
-    { path: 'number/sign/sign.ts', verdict: 'not-on-disk', bytes: null },
+    { path: 'number/round.ts', verdict: 'moved', bytes: Buffer.from('a', 'utf8') },
+    { path: 'string/pad.ts', verdict: 'already-moved', bytes: null },
+    { path: 'number/sign.ts', verdict: 'not-on-disk', bytes: null },
   ],
 }
 
@@ -82,7 +82,7 @@ describe('what the user reads', () => {
     const cost = lines.findIndex((line) => line.includes('depth'))
     const firstFile = lines.findIndex((line) => line.includes('+ src/lib/toopo/'))
 
-    expect(lines[cost]?.trim()).toBe('5 files · 820 B · depth 2')
+    expect(lines[cost]?.trim()).toBe('5 files · 794 B · depth 2')
     expect(cost).toBeLessThan(firstFile)
   })
 
@@ -96,14 +96,21 @@ describe('what the user reads', () => {
     const rendered = renderInstallation(await anInstallation(), CONFIGURATION, false, GIT_WAS_NOT_ASKED)
     const lines = rendered.split('\n').filter((line) => line.includes('+ src/lib/toopo/'))
 
-    expect(lines.map((line) => line.trim())).toEqual([
-      '+ src/lib/toopo/string/pad/pad.ts',
-      '+ src/lib/toopo/string/pad/digits.ts   shared with typescript/number/clamp@1',
-      '+ src/lib/toopo/number/clamp/clamp.ts  import repointed',
-      '+ src/lib/toopo/number/sign/sign.ts    import repointed',
-      '+ src/lib/toopo/number/round/round.ts  import repointed',
+    // Read with the runs of whitespace collapsed, because the claim is which note sits on which file
+    // and the column width is presentation. Transcribing the alignment would make this guard red on a
+    // re-flow and repair it by declaring the layout a second time.
+    expect(lines.map((line) => line.trim().replace(/\s+/g, ' '))).toEqual([
+      '+ src/lib/toopo/string/pad.ts import repointed',
+      '+ src/lib/toopo/string/pad/digits.ts shared with typescript/number/clamp@1',
+      '+ src/lib/toopo/number/clamp.ts import repointed',
+      '+ src/lib/toopo/number/sign.ts import repointed',
+      '+ src/lib/toopo/number/round.ts import repointed',
     ])
-    // A line with nothing to say carries nothing after the path, padding included.
+    // No line of the screen carries trailing whitespace, padding included. **This fixture no longer
+    // exercises the padding**: ADR-0110 put every entry file a level above its own folder, so all five
+    // lines now have a note and the one that used to have nothing after the path is gone. It is kept as
+    // an invariant over the whole screen rather than deleted, and what it was written for is recorded
+    // here so that nobody reads it as still covering that case.
     expect(rendered.split('\n').filter((line) => line !== line.trimEnd())).toEqual([])
   })
 
@@ -176,9 +183,9 @@ describe('what the user reads', () => {
     const screen = renderInit(CONFIGURATION, true, GIT_WAS_NOT_ASKED, A_RELOCATION, null)
 
     expect(screen).toContain('lib/toopo  ->  src/lib/toopo')
-    expect(screen).toContain('~ number/round/round.ts')
-    expect(screen).toContain('~ string/pad/pad.ts')
-    expect(screen).not.toContain('number/sign/sign.ts')
+    expect(screen).toContain('~ number/round.ts')
+    expect(screen).toContain('~ string/pad.ts')
+    expect(screen).not.toContain('number/sign.ts')
     expect(screen).toContain('2 files moved')
   })
 
@@ -240,9 +247,7 @@ describe('what the user reads', () => {
       .split('\n')
       .find((held) => held.includes('import {'))
 
-    expect(line?.trim()).toBe(
-      `import { round } from './src/lib/toopo/number/round/round.js'`,
-    )
+    expect(line?.trim()).toBe(`import { round } from './src/lib/toopo/number/round.js'`)
   })
 
   it('the-import-line-follows-the-configured-directory', async () => {
@@ -251,7 +256,7 @@ describe('what the user reads', () => {
       held.includes('import {'),
     )
 
-    expect(line?.trim()).toBe(`import { round } from './lib/toopo/number/round/round.js'`)
+    expect(line?.trim()).toBe(`import { round } from './lib/toopo/number/round.js'`)
   })
 
   /**
@@ -276,8 +281,7 @@ describe('what the user reads', () => {
       if (!('installation' in outcome)) throw new Error('number/parse no longer installs')
 
       expect(renderImportLine(outcome.installation.entry, CONFIGURATION)[0]?.trim()).toBe(
-        `import { parseNumber, describeParseFailure } from ` +
-          `'./src/lib/toopo/number/parse/parse.js'`,
+        `import { parseNumber, describeParseFailure } from './src/lib/toopo/number/parse.js'`,
       )
     } finally {
       project.remove()

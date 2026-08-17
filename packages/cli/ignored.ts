@@ -13,7 +13,7 @@
  * what failed. Measured, on git 2.49.0, in a project whose `.gitignore` holds `lib/`:
  *
  * ```
- * toopo add string/slugify        ->  + lib/toopo/string/slugify/slugify.ts
+ * toopo add string/slugify        ->  + lib/toopo/string/slugify.ts
  * git check-ignore -v <that file> ->  .gitignore:2:lib/  lib/toopo/.../slugify.ts
  * git add -A ; git ls-tree -r HEAD ->  .gitignore  package.json  toopo.json  toopo.lock
  * ```

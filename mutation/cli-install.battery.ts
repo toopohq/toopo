@@ -88,9 +88,7 @@ const httpSourceFile = (find: string, replace: string) => ({ file: 'http-source.
 // ---------------------------------------------------------------------------
 
 const THE_ENTRY_FILE_IS_RENAMED = `const destinationOf = (contractName: string, file: string): string =>
-  file === THE_ENTRY_FILE
-    ? \`\${contractName}/\${actionOf(contractName)}.ts\`
-    : \`\${contractName}/\${file}\``
+  file === THE_ENTRY_FILE ? \`\${contractName}.ts\` : \`\${contractName}/\${file}\``
 
 const A_SHARED_BLOB_IS_FOUND_BY_DIGEST = `      const shared = isEntry ? undefined : placedByDigest.get(served.sha256)`
 
@@ -337,8 +335,8 @@ const THE_FIVE_LAND = 'each-of-the-five-installs-one-file-named-after-itself'
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
     'C-01',
-    'leaves the entry file called `reference.ts`, so every feature a user installs opens a tab with ' +
-      'the same name and none of them says what it holds',
+    'leaves the entry file in a folder and called `reference.ts`, so every feature a user installs ' +
+      'opens a tab with the same name and none of them says what it holds',
     [
       planFile(
         THE_ENTRY_FILE_IS_RENAMED,

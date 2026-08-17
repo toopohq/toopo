@@ -11,7 +11,7 @@ argued for — and hands you an implementation that is measured against it in pu
 npx toopo add string/slugify
 ```
 
-One file lands in `src/lib/toopo/string/slugify/slugify.ts`, with its digest recorded in
+One file lands in `src/lib/toopo/string/slugify.ts`, with its digest recorded in
 `toopo.lock`. It imports nothing. There is no runtime, no wrapper, no resolution step: after the
 install, nothing of ours runs in your program.
 

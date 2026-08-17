@@ -94,11 +94,11 @@ describe('a registry reached over a socket', () => {
       expect(wanted).toEqual([])
       expect(offline).toEqual(networked)
       expect(writesOf(offline)).toEqual([
-        'string/pad/pad.ts',
+        'string/pad.ts',
         'string/pad/digits.ts',
-        'number/clamp/clamp.ts',
-        'number/sign/sign.ts',
-        'number/round/round.ts',
+        'number/clamp.ts',
+        'number/sign.ts',
+        'number/round.ts',
       ])
     } finally {
       project.remove()

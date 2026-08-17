@@ -108,6 +108,21 @@ digest the registry announced — measured end to end, in the one suite of this 
 live host, kept out of every battery so that nothing which replays depends on one. It is the eighth
 suite and the last proof before a package is published. ADR-0104.
 
+**A feature now lands as a file, and this was the last unit that could take that decision.** The
+installed path is `lib/toopo/string/slugify.ts` and no longer `…/slugify/slugify.ts`; a second file, if
+one ever exists, lands in a folder of the same name **beside** the entry rather than around it. What
+decided it is that the two layouts are identical while no feature has two files and this one is
+strictly better on the day one does — so there was no trade to make. **The folder is a door and not a
+feature**: `referenceImplementationOf` filters an implementation's files to `reference.ts`, so nothing
+can put anything in that folder until a separate unit opens that filter. The window was closing because
+an installed path lives in every user's lockfile, and today there is one. Measured against `tsc` 7.0.2
+under all three module resolutions and against four bundlers covering three resolver implementations,
+differentially — both layouts side by side, so that a failure of the probe's environment could not read
+as a failure of the shape — with *resolved* meaning the helper's value found inside the produced bundle
+rather than an exit code. Node's own standard library carries the shape 12 times in the 69 entries of
+`lib/`. **One user-visible cost, accepted rather than smoothed:** a file the user has edited is kept
+where it is and the new copy written beside it, so they hold two. ADR-0110.
+
 **The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
 `string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
 because ES2024 shipped `Map.groupBy` and it answers what the contract specifies; the refusal and the
@@ -231,6 +246,28 @@ whichever ref somebody was standing on, so: **a count that bounds a defect names
 swept**, and `--all` is the only spelling of *this repository* that a tag cannot fall out of.
 
 **Still open, and what each one now costs.**
+
+- **That the spelling this product prints resolves wherever it says it does.** `renderImportLine` ended
+  *the one spelling TypeScript and every bundler resolve* until ADR-0110, and that clause was wider
+  than anything ever measured. It now claims only the TypeScript half, which is settled by a **total**
+  reading — TypeScript offers three module resolutions and all three were read at `tsc` 7.0.2 — so the
+  surface a user meets at every install no longer over-claims. That is the cheap half and it is done.
+
+  **What stays open is the half that was taken off the surface rather than closed.** ADR-0110 read the
+  layout against four bundlers — esbuild, vite, rollup and webpack, three distinct resolver
+  implementations, chosen on weekly npm downloads rather than on convenience — and all four resolved
+  it. **Four is not every.** Unread: rspack, Parcel, Bun, Deno, and every version of the four but the
+  one measured. **The population is every bundler and every version of one**, which is unbounded, and
+  that is the whole shape of this entry: it is a claim no amount of measuring can keep, which is why
+  the repair was to stop making it rather than to measure further.
+
+  What would close the part that *can* be closed is a suite that bundles the emitted layout with each
+  resolver the way `packaging/against-the-origin/` performs a real install — a guard that reddens the
+  day a bundler changes its mind, rather than a reading somebody took once. The price is named: a
+  bundler apiece as a dev dependency, which stage rule 3 admits only where the mechanism keeping it out
+  of the product is executable, plus a ninth suite that no battery replays and that no other suite's
+  verdicts may depend on. Not built, and not urgent while nothing published says more than was
+  measured.
 
 - **That the bound the origin proof waits is one somebody measured.** A deployment returns before it
   has propagated, and part-way through a rollout the origin answers the catalogue index from one commit

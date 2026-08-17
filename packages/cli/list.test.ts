@@ -84,7 +84,7 @@ describe('what this project holds', () => {
       expect(screen).toContain('4 features · 5 files')
       expect(screen).toContain('typescript/number/round@1 · reference@1.0.0 · you asked for it')
       expect(screen).toContain('typescript/string/pad@1 · reference@1.0.0 · pulled in as a dependency')
-      expect(screen).toContain('src/lib/toopo/number/round/round.ts')
+      expect(screen).toContain('src/lib/toopo/number/round.ts')
     })
   })
 
@@ -99,7 +99,7 @@ describe('what this project holds', () => {
     await inProject((project, lockfile) => {
       expect(lockfile.features.every((feature) => !feature.locallyModified)).toBe(true)
 
-      project.write('src/lib/toopo/number/round/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
       const listing = listProject(project.root, project.configuration, lockfile)
 
       expect(
@@ -107,7 +107,7 @@ describe('what this project holds', () => {
           .flatMap((feature) => feature.files)
           .filter((file) => file.standing !== 'as-written')
           .map((file) => [file.path, file.standing]),
-      ).toEqual([['number/round/round.ts', 'edited']])
+      ).toEqual([['number/round.ts', 'edited']])
       expect(renderList(listing, project.configuration)).toContain('edited')
     })
   })

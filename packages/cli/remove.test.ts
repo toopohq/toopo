@@ -208,8 +208,8 @@ describe('taking a feature out of a project', () => {
       applying(project, removal)
 
       expect(removal.reconciliation.lockfile.features).toEqual([])
-      expect(onDisk(project, 'number/round/round.ts')).toBe(false)
-      expect(onDisk(project, 'string/pad/pad.ts')).toBe(false)
+      expect(onDisk(project, 'number/round.ts')).toBe(false)
+      expect(onDisk(project, 'string/pad.ts')).toBe(false)
       expect(onDisk(project, 'string/pad/digits.ts')).toBe(false)
     })
   })
@@ -231,10 +231,10 @@ describe('taking a feature out of a project', () => {
 
       applying(project, removal)
 
-      expect(onDisk(project, 'number/round/round.ts')).toBe(false)
-      expect(onDisk(project, 'number/clamp/clamp.ts')).toBe(false)
-      expect(onDisk(project, 'number/sign/sign.ts')).toBe(true)
-      expect(onDisk(project, 'string/pad/pad.ts')).toBe(true)
+      expect(onDisk(project, 'number/round.ts')).toBe(false)
+      expect(onDisk(project, 'number/clamp.ts')).toBe(false)
+      expect(onDisk(project, 'number/sign.ts')).toBe(true)
+      expect(onDisk(project, 'string/pad.ts')).toBe(true)
       expect(onDisk(project, 'string/pad/digits.ts')).toBe(true)
     })
   })
@@ -272,7 +272,7 @@ describe('taking a feature out of a project', () => {
       expect(screen).toContain('no longer something you asked for')
 
       applying(project, removal)
-      expect(onDisk(project, 'string/pad/pad.ts')).toBe(true)
+      expect(onDisk(project, 'string/pad.ts')).toBe(true)
     })
   })
 
@@ -347,7 +347,7 @@ describe('taking a feature out of a project', () => {
       if ('faults' in written) throw new Error(written.faults.join('\n'))
 
       const lockfile = deduplicated.reconciliation.lockfile
-      expect(project.installed('text/right/right.ts')).toContain("from '../left/trim.js'")
+      expect(project.installed('text/right.ts')).toContain("from './left/trim.js'")
       expect(onDisk(project, 'text/right/trim.ts')).toBe(false)
 
       const removal = await removing(source, project, lockfile, 'text/left')
@@ -355,7 +355,7 @@ describe('taking a feature out of a project', () => {
       expect(leaving(removal)).toEqual(['typescript/text/left@1'])
       expect(staying(removal)).toEqual(['typescript/text/right@1'])
       expect(removal.reconciliation.writes.map((write) => write.path).sort()).toEqual([
-        'text/right/right.ts',
+        'text/right.ts',
         'text/right/trim.ts',
       ])
 
@@ -363,7 +363,7 @@ describe('taking a feature out of a project', () => {
 
       expect(onDisk(project, 'text/left/trim.ts')).toBe(false)
       expect(onDisk(project, 'text/right/trim.ts')).toBe(true)
-      expect(project.installed('text/right/right.ts')).toContain("from './trim.js'")
+      expect(project.installed('text/right.ts')).toContain("from './right/trim.js'")
     })
   })
 
@@ -408,7 +408,7 @@ describe('taking a feature out of a project', () => {
   it('a-file-the-user-edited-is-not-deleted-by-a-removal', async () => {
     await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
       project.write(
-        `${project.configuration.directory}/number/round/round.ts`,
+        `${project.configuration.directory}/number/round.ts`,
         'export const round = 1\n',
       )
 
@@ -430,8 +430,8 @@ describe('taking a feature out of a project', () => {
       expect(screen).not.toContain('everything else still updates')
 
       applying(project, removal)
-      expect(onDisk(project, 'number/round/round.ts')).toBe(true)
-      expect(project.installed('number/round/round.ts')).toBe('export const round = 1\n')
+      expect(onDisk(project, 'number/round.ts')).toBe(true)
+      expect(project.installed('number/round.ts')).toBe('export const round = 1\n')
     })
   })
 
@@ -456,7 +456,7 @@ describe('taking a feature out of a project', () => {
   it('a-held-back-removal-leaves-the-lockfile-exactly-as-it-was', async () => {
     await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
       project.write(
-        `${project.configuration.directory}/number/round/round.ts`,
+        `${project.configuration.directory}/number/round.ts`,
         'export const round = 1\n',
       )
 
@@ -484,7 +484,7 @@ describe('taking a feature out of a project', () => {
   it('an-edit-that-keeps-a-leaving-feature-keeps-what-it-imports-too', async () => {
     await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
       project.write(
-        `${project.configuration.directory}/number/round/round.ts`,
+        `${project.configuration.directory}/number/round.ts`,
         'export const round = 1\n',
       )
 
@@ -505,7 +505,7 @@ describe('taking a feature out of a project', () => {
       ])
 
       applying(project, removal)
-      expect(onDisk(project, 'number/clamp/clamp.ts')).toBe(true)
+      expect(onDisk(project, 'number/clamp.ts')).toBe(true)
       expect(onDisk(project, 'string/pad/digits.ts')).toBe(true)
       expect(removal.reconciliation.lockfile.features).toHaveLength(4)
     })
@@ -524,13 +524,13 @@ describe('taking a feature out of a project', () => {
       const removal = await removing(imaginedSource(), project, lockfile, 'number/round')
 
       expect(removal.reconciliation.removals.length).toBeGreaterThan(0)
-      expect(onDisk(project, 'number/round/round.ts')).toBe(true)
+      expect(onDisk(project, 'number/round.ts')).toBe(true)
       expect(renderRemoval(removal, lockfile, project.configuration, false)).toContain(
         `Apply it with  ${THE_INVOCATION} remove number/round --apply`,
       )
 
       applying(project, removal)
-      expect(onDisk(project, 'number/round/round.ts')).toBe(false)
+      expect(onDisk(project, 'number/round.ts')).toBe(false)
     })
   })
 
@@ -555,8 +555,8 @@ describe('taking a feature out of a project', () => {
       expect(faults[0]).toContain('A published version is served for life')
       expect(faults[0]).toContain('Nothing was changed.')
 
-      expect(onDisk(project, 'number/round/round.ts')).toBe(true)
-      expect(onDisk(project, 'number/sign/sign.ts')).toBe(true)
+      expect(onDisk(project, 'number/round.ts')).toBe(true)
+      expect(onDisk(project, 'number/sign.ts')).toBe(true)
     })
   })
 

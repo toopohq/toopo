@@ -17,8 +17,8 @@ import { STAGED, commit } from './write.js'
  * finish leaves a project nobody has to repair by hand.
  */
 
-const A_FILE = (text: string) => ({ path: 'string/pad/pad.ts', bytes: Buffer.from(text, 'utf8') })
-const ANOTHER = (text: string) => ({ path: 'number/sign/sign.ts', bytes: Buffer.from(text, 'utf8') })
+const A_FILE = (text: string) => ({ path: 'string/pad.ts', bytes: Buffer.from(text, 'utf8') })
+const ANOTHER = (text: string) => ({ path: 'number/sign.ts', bytes: Buffer.from(text, 'utf8') })
 
 /** Every file under the project, so that a guard can say "and nothing else" rather than "and this". */
 const everythingUnder = (at: string): readonly string[] =>
@@ -51,10 +51,10 @@ describe('writing into somebody else project', () => {
       })
 
       expect(written).toEqual({
-        written: ['src/lib/toopo/string/pad/pad.ts', 'src/lib/toopo/number/sign/sign.ts'],
+        written: ['src/lib/toopo/string/pad.ts', 'src/lib/toopo/number/sign.ts'],
         leftBehind: null,
       })
-      expect(project.installed('string/pad/pad.ts')).toBe('export const pad = 1\n')
+      expect(project.installed('string/pad.ts')).toBe('export const pad = 1\n')
       expect(readLockfile(project.root)).toEqual(EMPTY_LOCKFILE)
     })
   })
@@ -97,7 +97,7 @@ describe('writing into somebody else project', () => {
       })
 
       expect('faults' in written && written.faults).toHaveLength(1)
-      expect('faults' in written && written.faults[0]).toContain('src/lib/toopo/string/pad/pad.ts')
+      expect('faults' in written && written.faults[0]).toContain('src/lib/toopo/string/pad.ts')
 
       // The other file of the same commit was staged and abandoned, the lockfile was never written,
       // and the project holds exactly what it held.
@@ -117,8 +117,8 @@ describe('writing into somebody else project', () => {
    */
   it('a-refused-commit-does-not-touch-the-file-it-would-replace', () => {
     inProject((project) => {
-      project.write('src/lib/toopo/string/pad/pad.ts', 'export const pad = "what was there"\n')
-      mkdirSync(join(project.root, project.configuration.directory, 'number/sign/sign.ts'), {
+      project.write('src/lib/toopo/string/pad.ts', 'export const pad = "what was there"\n')
+      mkdirSync(join(project.root, project.configuration.directory, 'number/sign.ts'), {
         recursive: true,
       })
 
@@ -131,7 +131,7 @@ describe('writing into somebody else project', () => {
       })
 
       expect('faults' in written).toBe(true)
-      expect(project.installed('string/pad/pad.ts')).toBe('export const pad = "what was there"\n')
+      expect(project.installed('string/pad.ts')).toBe('export const pad = "what was there"\n')
     })
   })
 
@@ -141,7 +141,7 @@ describe('writing into somebody else project', () => {
    */
   it('a-directory-where-a-file-goes-is-refused-by-name', () => {
     inProject((project) => {
-      mkdirSync(join(project.root, project.configuration.directory, 'string/pad/pad.ts'), {
+      mkdirSync(join(project.root, project.configuration.directory, 'string/pad.ts'), {
         recursive: true,
       })
 
@@ -154,7 +154,7 @@ describe('writing into somebody else project', () => {
       })
 
       expect('faults' in written && written.faults).toEqual([
-        'src/lib/toopo/string/pad/pad.ts is a directory in your project, and a file has to go where ' +
+        'src/lib/toopo/string/pad.ts is a directory in your project, and a file has to go where ' +
           'it is. Toopo will not remove a directory: move it aside and run this again.',
       ])
       expect(existsSync(join(project.root, LOCKFILE))).toBe(false)
@@ -164,7 +164,7 @@ describe('writing into somebody else project', () => {
   /** A refusal abandons what it staged, including the lockfile it had already written. */
   it('a-refusal-leaves-no-staged-file-behind', () => {
     inProject((project) => {
-      mkdirSync(join(project.root, project.configuration.directory, 'string/pad/pad.ts'), {
+      mkdirSync(join(project.root, project.configuration.directory, 'string/pad.ts'), {
         recursive: true,
       })
 
@@ -192,7 +192,7 @@ describe('writing into somebody else project', () => {
 
       commit(project.root, project.configuration.directory, {
         writes: [],
-        removals: ['string/pad/pad.ts'],
+        removals: ['string/pad.ts'],
         leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,
@@ -202,7 +202,7 @@ describe('writing into somebody else project', () => {
       // files alone cannot tell one that was tidied away from one that was left behind. Measured by
       // U-13, which this assertion did not see until it asked about the folder itself.
       expect(everythingUnder(join(project.root, project.configuration.directory))).toEqual([
-        'number/sign/sign.ts',
+        'number/sign.ts',
       ])
       expect(existsSync(join(project.root, project.configuration.directory, 'string/pad'))).toBe(false)
       expect(existsSync(join(project.root, project.configuration.directory, 'string'))).toBe(false)
@@ -225,7 +225,7 @@ describe('writing into somebody else project', () => {
 
       commit(project.root, project.configuration.directory, {
         writes: [],
-        removals: ['string/pad/pad.ts'],
+        removals: ['string/pad.ts'],
         leaving: null,
         lockfile: EMPTY_LOCKFILE,
         configuration: null,

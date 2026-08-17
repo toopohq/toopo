@@ -31,6 +31,15 @@
  * only way to a syntax tree is `typescript/unstable/sync`, which loads a *project*. So the bytes are
  * written into a temporary directory with a `tsconfig.json` of our own and parsed there.
  *
+ * **The same removal reaches outside this repository, and a user of this product meets it.** Measured
+ * while ADR-0110 was reading the installed layout against four bundlers: `@rollup/plugin-typescript`
+ * dies on `ts.ScriptTarget.ES2015` and `ts-loader` on `ts.sys.fileExists`, both `undefined` under
+ * 7.0.2, so neither loads at all. Their resolvers are fine - both trees resolved once the plugins were
+ * given a TypeScript 5 - which is what makes this a fact about the plugin ecosystem rather than about
+ * any layout. It is recorded here because this is where this repository already keeps what TypeScript
+ * 7 took away, and because somebody installing a feature into a rollup or webpack project on 7.0.2
+ * will meet it with nothing here to tell them what it is.
+ *
  * That is not a workaround, it is the correct place for it. The alternative is parsing inside the
  * user's project, under the user's `tsconfig.json` - which would make an install depend on options we
  * did not choose, fail on a project whose configuration excludes the folder we just wrote into, and

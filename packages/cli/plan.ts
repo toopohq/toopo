@@ -1,7 +1,8 @@
 /**
  * Where every file lands, decided before a single byte is written.
- * ADR-0032 is where a feature lands and what its entry file is called; ADR-0049 is why the disk path is
- * the one rendered thing that carries no language, and what refuses the collision instead.
+ * ADR-0110 is the layout; ADR-0032 is the layout it replaced and the requirement both are written on.
+ * ADR-0049 is why the disk path is the one rendered thing that carries no language, and what refuses
+ * the collision instead.
  *
  *
  * Nothing here touches a disk, a network or a clock. An install that discovered a collision after
@@ -10,13 +11,14 @@
  * that can only succeed.
  *
  * ---------------------------------------------------------------------------
- * The layout, and the constraint that could not be kept
+ * The layout, and the requirement it is written on
  * ---------------------------------------------------------------------------
  *
- * A feature lands in `<domain>/<name>/`, and its entry file is named after the feature:
+ * A feature's entry file is named after the feature and lands at `<domain>/<name>.ts`. A file it
+ * carries beyond that entry lands in a folder of the same name, beside it:
  *
- *     src/lib/toopo/string/slugify/slugify.ts
- *     src/lib/toopo/string/pad/pad.ts
+ *     src/lib/toopo/string/slugify.ts
+ *     src/lib/toopo/string/pad.ts
  *     src/lib/toopo/string/pad/digits.ts
  *
  * The domain stays a folder, so `number/parse` and `string/parse` never collide and no artificial
@@ -24,42 +26,50 @@
  * what the file was in *our* catalogue and says nothing about what it holds - and in the user's editor
  * every installed feature would otherwise open a tab called `reference.ts`.
  *
- * **A folder from the first file, rather than a flat `slugify.ts` promoted to a folder later.**
- * Measured on node v24.15.0, because the promotion has to be invisible to whoever wrote the import:
+ * **The requirement is ADR-0032's and it is kept rather than dropped: an entry file's path never
+ * moves.** A published source writes its imports with the extension, so a feature whose path moved
+ * would break every dependent that had written one. ADR-0032 kept that by putting every feature in a
+ * folder from its first file; this layout keeps it by never putting the entry in a folder at all. The
+ * folder arrives *beside* the entry rather than around it, so gaining a second file adds a path and
+ * moves none.
  *
- *     cjs  ./x.js -> MODULE_NOT_FOUND       cjs  ./x -> x/index.js
- *     esm  ./x.js -> ERR_MODULE_NOT_FOUND   esm  ./x -> ERR_UNSUPPORTED_DIR_IMPORT
+ * That the two can sit together was measured rather than assumed, on node v24.15.0 - the version
+ * ADR-0032's own reading was taken at - with `pad.ts` and `pad/digits.ts` in one directory:
  *
- * A published source writes its imports with the extension, which is the only spelling that resolves
- * under both module systems and under `node16`. At that spelling neither CommonJS nor ESM treats
- * `x.js` and `x/index.js` as one specifier, so an implementation that gained a second file would
- * change the path every dependent had written. The folder costs one level of nesting on a single-file
- * feature and the import path never moves again.
+ *     esm  ./string/pad.js  -> entry+helper       cjs  ./string/pad.cjs -> entry+helper
  *
- * **What this costs, stated rather than discovered: every cross-feature import is rewritten.** The
- * catalogue serves its entry file as `reference.ts` - `contractAnatomy` requires that name at five of
- * five - so a published `number/clamp` names its dependency as `../../string/pad/reference.js`, and
- * that specifier is wrong the moment the file lands as `pad.ts`. Naming the file after the feature and
- * needing no rewriting between features are incompatible, and the first wins because it is the one
- * argued from the user's editor. What softens it is that the rewriting mechanism is needed anyway, for
- * the shared blob below, and that both jobs turn out to be one rule: *a specifier is repointed when
- * the file it names did not land where the specifier says it would.*
+ * A file and a folder of the same name are not candidates for one specifier: `./pad.js` names the
+ * file, and the folder is reached only through a path that says so. The one spelling where both are
+ * candidates is the extensionless `./pad`, which resolves to the file under both module systems and
+ * which ADR-0033 forbids anyway - TS2835 under `node16` and `nodenext`.
+ *
+ * **What this costs, stated rather than discovered: every specifier an entry file writes is
+ * rewritten.** The catalogue serves its entry file as `reference.ts` - `contractAnatomy` requires that
+ * name at five of five - so a published `number/clamp` names its dependency as
+ * `../../string/pad/reference.js`, and that specifier is wrong the moment the file lands as
+ * `number/clamp.ts`. The entry also sits one level above the folder holding its own files, so even
+ * `./digits.js` becomes `./pad/digits.js`. The only specifier left alone is one file of a feature's
+ * folder naming another. Naming the file after the feature and needing no rewriting are incompatible,
+ * and the first wins because it is the one argued from the user's editor. What softens it is that the
+ * rewriting mechanism is needed anyway, for the shared blob below, and that every job turns out to be
+ * one rule: *a specifier is repointed when the file it names did not land where the specifier said it
+ * would.*
  *
  * ---------------------------------------------------------------------------
  * The path carries neither the language nor the major, and that is a decision
  * ---------------------------------------------------------------------------
  *
- * `renderContract` renders `typescript/number/parse@1`; this path is `number/parse/parse.ts`. The
+ * `renderContract` renders `typescript/number/parse@1`; this path is `number/parse.ts`. The
  * asymmetry is deliberate and is argued here because this is where somebody would come to remove it.
  *
- * **A path is a place on disk and not an address.** What governs it is *one feature is one folder*, the
- * rule the refusal below is written on, and a folder somebody opens every day carries what tells two
- * features apart and nothing more. The major is not in it either, so adding the language alone would
- * put half an address into a string that deliberately is not one.
+ * **A path is a place on disk and not an address.** What governs it is *one feature lands in one
+ * place*, the rule the refusal below is written on, and a path somebody opens every day carries what
+ * tells two features apart and nothing more. The major is not in it either, so adding the language
+ * alone would put half an address into a string that deliberately is not one.
  *
  * **The case it would supposedly protect against exists, and something else already refuses it.**
  * Measured by widening `Language` and asking for one contract name in two languages: both plan to
- * `number/parse/parse.ts`, `placedByPath` finds two digests at one path, and the install is refused by
+ * `number/parse.ts`, `placedByPath` finds two digests at one path, and the install is refused by
  * name with nothing written. That refusal is only *true* because the address carries the language -
  * keyed on a language-less rendering the two collide one step earlier, in `seenContracts`, and the
  * sentence that comes out names two versions that do not exist. `packages/registry/address.ts` quotes both.
@@ -80,8 +90,8 @@
  *
  * **An entry file is never deduplicated**, even if two features happened to be byte-identical. A
  * feature's entry file is its identity: dropping one because another feature's answer coincided would
- * leave a folder with no file named after it, and an import of that feature pointing into somebody
- * else's folder.
+ * leave a feature with no file named after it, and an import of that feature pointing at somebody
+ * else's.
  */
 
 import type { ImplementationAddress } from '../registry/address.js'
@@ -121,12 +131,8 @@ export type InstallPlan = {
 
 export type PlanResult = { readonly plan: InstallPlan } | { readonly faults: readonly string[] }
 
-const actionOf = (name: string): string => name.slice(name.indexOf('/') + 1)
-
 const destinationOf = (contractName: string, file: string): string =>
-  file === THE_ENTRY_FILE
-    ? `${contractName}/${actionOf(contractName)}.ts`
-    : `${contractName}/${file}`
+  file === THE_ENTRY_FILE ? `${contractName}.ts` : `${contractName}/${file}`
 
 const addressOf = (held: FrozenImplementation): ImplementationAddress => ({
   contract: held.contract,
@@ -156,8 +162,8 @@ export const planInstall = (order: readonly FrozenImplementation[]): PlanResult 
     if (already !== undefined) {
       faults.push(
         `${contract} is asked for at two versions in one install - ${already} and ${rendered}. One ` +
-          `feature is one folder, so the second would overwrite the first and whichever dependent ` +
-          `asked for it would silently get the other one's code.`,
+          `feature lands in one place, so the second would overwrite the first and whichever ` +
+          `dependent asked for it would silently get the other one's code.`,
       )
       continue
     }

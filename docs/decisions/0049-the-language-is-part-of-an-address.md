@@ -72,7 +72,7 @@ refusal is false:
 before   number/parse@1 is asked for at two versions in one install -
          number/parse@1/reference@1.0.0 and number/parse@1/reference@1.0.0.
 
-after    two different files would both be written to number/parse/parse.ts: the one served as
+after    two different files would both be written to number/parse.ts: the one served as
          number/parse/reference.ts and another with a different digest.
 ```
 
@@ -84,8 +84,8 @@ line of `toopo list` and `toopo search` — and the way out, the day it is worth
 column states a value once for a whole screen and is still one spelling. Never a second string.
 
 **The disk path is the one rendered thing that does not carry it, and not because no collision exists.**
-`destinationOf` builds `number/parse/parse.ts` from `contract.name` alone, so the path carries neither
-the language nor the major: what governs it is *one feature is one folder*, and adding the language
+`destinationOf` builds `number/parse.ts` from `contract.name` alone, so the path carries neither
+the language nor the major: what governs it is *one feature lands in one place*, and adding the language
 alone would put half an address into a string that deliberately is not one. The collision was measured
 and something else already refuses it — `placedByPath` finds two digests at one path and refuses by name
 with nothing written — and that refusal is *true* only because the address carries the language. So the

@@ -14,9 +14,12 @@ import { rewrittenSources } from './rewrite.js'
  */
 
 const THE_CATALOGUE_TREE = {
-  'string/pad/reference.ts': 'string/pad/pad.ts',
+  'string/pad/reference.ts': 'string/pad.ts',
   'string/pad/digits.ts': 'string/pad/digits.ts',
-  'number/clamp/reference.ts': 'number/clamp/clamp.ts',
+  // A second file of `string/pad`'s own folder, which is the only kind of file this layout leaves
+  // where the catalogue served it - and therefore the only one a specifier can already be right about.
+  'string/pad/units.ts': 'string/pad/units.ts',
+  'number/clamp/reference.ts': 'number/clamp.ts',
   // The second carrier of the shared blob, pointing at the copy that was kept.
   'number/clamp/digits.ts': 'string/pad/digits.ts',
 }
@@ -32,7 +35,7 @@ describe('pointing an import at where the file went', () => {
   /**
    * The cost of naming the entry file after its feature, paid here. A published `number/clamp` names
    * its dependency as `../../string/pad/reference.js`, which is wrong the moment that file lands as
-   * `pad.ts`.
+   * `string/pad.ts` - a level shallower as well as under another name.
    */
   it('a-renamed-entry-file-is-repointed', () => {
     const text = rewritten(
@@ -40,7 +43,7 @@ describe('pointing an import at where the file went', () => {
       `import { pad } from '../../string/pad/reference.js'\n\nexport const clamp = pad\n`,
     )
 
-    expect(text).toBe(`import { pad } from '../../string/pad/pad.js'\n\nexport const clamp = pad\n`)
+    expect(text).toBe(`import { pad } from '../string/pad.js'\n\nexport const clamp = pad\n`)
   })
 
   /** The other half of the same rule: a file that was not written because somebody else carries it. */
@@ -51,7 +54,7 @@ describe('pointing an import at where the file went', () => {
     )
 
     expect(text).toBe(
-      `import { DIGITS } from '../../string/pad/digits.js'\n\nexport const clamp = DIGITS\n`,
+      `import { DIGITS } from '../string/pad/digits.js'\n\nexport const clamp = DIGITS\n`,
     )
   })
 
@@ -59,11 +62,16 @@ describe('pointing an import at where the file went', () => {
    * A specifier that already names where the file went is left exactly as it was. An installer that
    * rewrote it anyway would change bytes for no reason, and every rewritten file is a file whose digest
    * stops matching what the registry served.
+   *
+   * **The subject is one file of a feature's folder naming another, and under ADR-0110 nothing else can
+   * be.** An entry file lands a level above the folder it was served in, so every specifier it carries
+   * moves - including one naming a file of its own feature. The files that stay put are the ones the
+   * folder keeps, and this is the guard that says the rewriter leaves those alone.
    */
   it('an-unchanged-specifier-is-left-alone', () => {
-    const source = `import { DIGITS } from './digits.js'\n\nexport const pad = DIGITS\n`
+    const source = `import { DIGITS } from './digits.js'\n\nexport const UNITS = DIGITS\n`
 
-    expect(rewritten('string/pad/reference.ts', source)).toBe(source)
+    expect(rewritten('string/pad/units.ts', source)).toBe(source)
   })
 
   /**
@@ -82,7 +90,7 @@ export const clamp = (value: Pad | Held) => later() ?? value
 `,
     )
 
-    expect(text.match(/string\/pad\/pad\.js/g)).toHaveLength(4)
+    expect(text.match(/\.\.\/string\/pad\.js/g)).toHaveLength(4)
     expect(text).not.toContain('reference.js')
   })
 
@@ -129,6 +137,6 @@ export const clamp = (value: Pad | Held) => later() ?? value
       spellings.map((specifier) =>
         rewritten('number/clamp/reference.ts', `export { DIGITS } from '${specifier}'\n`),
       ),
-    ).toEqual(spellings.map(() => `export { DIGITS } from '../../string/pad/digits.js'\n`))
+    ).toEqual(spellings.map(() => `export { DIGITS } from '../string/pad/digits.js'\n`))
   })
 })
