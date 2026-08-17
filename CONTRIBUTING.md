@@ -163,8 +163,38 @@ is the reason the mutation batteries exist.
 
 ```sh
 pnpm run battery <name>  # replay one battery
-pnpm run mutation        # replay all of them; tens of minutes
+pnpm run mutation        # replay all nineteen
 ```
+
+**Which of the two you want depends on what you touched, and the answer is almost never the second
+one.** A battery injects into exactly one folder, so only the batteries whose folder you edited can
+say anything about your change. Measured at `7dc3b6a` on one machine:
+
+| what you changed | what to run | what it costs |
+| --- | --- | --- |
+| one contract | its two batteries — `<name>` and `<name>-spec` | **63 s to 2 min 41 s**, depending on the contract |
+| `packages/registry/` | `registry-storage` | 8 min 32 s |
+| `packages/cli/` | `cli-install`, `cli-remove`, `cli-search`, `cli-update` | 20 min 33 s together |
+| `packages/site/` | `site` | 3 min 25 s |
+| `packaging/`, `mutation/` | `packaging`, `fixture` | under a minute |
+
+A contributor adding a contract runs two batteries and waits about two minutes. The ten batteries the
+five contracts carry cost 8 min 26 s together — less than `cli-install` alone, which is 9 min 46 s.
+**The expensive batteries are the client's and the registry's, and nothing you do to a contract
+requires running them.**
+
+A full replay is 42 min 16 s at that commit, and it is worth that on exactly two occasions: before a
+release, and before anything is published to a registry, because that is the last commit at which a
+wrong verdict is still correctable. Read every figure here as one run on one machine — the method
+page publishes the spread this repository has measured between replays of identical work, and it is
+minutes rather than seconds.
+
+**One thing that will cost you half an hour if nobody says it: if you add or remove a test file, add
+it to `mutation/census.ts` in the same change.** The instrument compares what a run collected against
+what the repository declares, and the comparison happens at the *calibration* of each battery — so an
+undeclared file does not fail fast. It fails at whichever battery collects that folder, which in a
+full replay can be thirty-four minutes in. That is the control working, and it is worth knowing
+before you launch rather than after.
 
 If you touch a folder a battery injects into, that battery is what says whether your change is
 measured. A guard added to such a folder must be **witnessed** by a mutant that reddens it or

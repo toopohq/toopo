@@ -5,6 +5,13 @@
  * three things that were measured *not* to belong, and the freeze discipline everything here inherits.
  * ADR-0081 is what a contract folder is. ADR-0017 addresses a case, ADR-0020 shapes a fallible answer,
  * ADR-0021 divides a property from a named case, and ADR-0023 is what `SEARCH_ALIAS_RULE` refuses.
+ *
+ * **Every byte of this file is inside the digest of every contract that imports it**, which ADR-0105
+ * made true and which decides how anything here may be written. A sentence that will be false at the
+ * sixth contract cannot be corrected once a major is published - it can only be republished as
+ * `name@2` on five contracts at once. So a count carries its coordinate or is removed, and a
+ * proposition about the catalogue is written to survive the next contract or is dated. The stamp for
+ * the whole of `contractAnatomy` is `THE_ANATOMY_WAS_MEASURED_AT`, below.
  */
 
 import { expect } from 'vitest'
@@ -16,6 +23,26 @@ import { groupingFaults, isFrozenIdentifier } from './identifier.js'
 
 /** Where a requirement can be settled from: stage 1's reach, a vetted module, or a judgement. ADR-0082. */
 export type CheckableFrom = 'the source alone' | 'the module' | 'a reader'
+
+/**
+ * The coordinate every `measured` below is read under, stated once instead of eleven times.
+ *
+ * **They are observations and not requirements**, taken over the catalogue as it stood at the commit
+ * named here: five contracts, ten contract batteries. Each one is what the requirement beside it was
+ * derived from, so a sixth contract does not falsify one - it is held to the requirement rather than
+ * counted into the evidence. Without this line every `five of five` is a present-tense claim about the
+ * catalogue's size, and the day a sixth is admitted the file is eleven sentences of false.
+ *
+ * This file is frozen with every contract that imports it (ADR-0105), which is what turns that from an
+ * untidiness into a defect: a count with no coordinate cannot be corrected after publication, only
+ * republished as `name@2` on five contracts at once.
+ *
+ * **A figure that the sentence does not need is removed rather than stamped**, and one had already
+ * drifted before anybody looked: `over ten batteries and 365 cells` was written at `3ec99c5` and the
+ * ten declare 370 at the commit below. Nothing consumed the figure and nothing could have caught it.
+ * The requirement it sat on is about what a battery must declare, which is true without counting.
+ */
+export const THE_ANATOMY_WAS_MEASURED_AT = '7dc3b6a'
 
 export const contractAnatomy = {
   required: [
@@ -109,7 +136,10 @@ export const contractAnatomy = {
         'two batteries, one calibration mutant, arms that are git refs, every cell pinned, and ' +
         'every silent guard declared - out of this battery\'s reach, or an unprobed region with ' +
         'its nature',
-      measured: 'five of five, over ten batteries and 365 cells.',
+      measured:
+        'five of five, over the two batteries each of them carries. No cell count is carried here, ' +
+        'for the reason the case entry above gives in its own words - and this one is why that reason ' +
+        'is worth stating twice: the figure that used to sit here drifted by five and nothing read it.',
       checkableFrom: 'the module',
       because:
         'a battery is a value, and `run.ts` already refuses an unpinned cell and a silence nobody ' +
@@ -270,9 +300,15 @@ export const GUARD_PERTURBATION_RULE =
   'establishes that the derivation is self-consistent, which is true of a derivation with a hole in it'
 
 /**
- * Why `no ambient output` is inapplicable everywhere, measured once and confirmed twice. ADR-0088.
+ * Why `no ambient output` is inapplicable everywhere, measured on one shape and confirmed on every
+ * shape admitted since. ADR-0088 carries the measurement and the implementation it was taken on.
  *
- * ADR-0008 is why it is a whole sentence: all five contracts open their reason with it.
+ * The count it used to carry - *measured once and confirmed twice* - was true of a catalogue of three
+ * and drifted silently to five. What the sentence is about is that the finding has never needed a word
+ * changed, and that does not drift: each contract records its own confirmation in its own reason, which
+ * is where a sixth will record its.
+ *
+ * ADR-0008 is why it is a whole sentence: every contract opens its reason with it.
  */
 export const NO_AMBIENT_OUTPUT_FINDING =
   'Not reachable by a property - a test cannot observe a write that happened before it ran, and a ' +

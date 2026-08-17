@@ -79,8 +79,10 @@ export type CaseGroup = {
    * What a reader of the page needs before the cases, or `null` when the title says it all.
    *
    * **Required and never optional**, so that having nothing to add is written rather than left out -
-   * the shape `ImplementationRecord.version` already takes for the same reason. Forty-four of the
-   * forty-eight are `null`.
+   * the shape `ImplementationRecord.version` already takes for the same reason. Most are `null`, and
+   * the pair of counts that used to stand here is gone rather than stamped: it said how many groups
+   * the catalogue held at five contracts, which is a fact about the catalogue's size and not about
+   * this field, and it is inside every contract's digest since ADR-0105.
    *
    * **The split is what it is addressed to, and the four that exist are the test.** A sentence for
    * whoever reads the contract page goes here; a sentence for whoever maintains the table stays in a
@@ -158,9 +160,10 @@ export const groupingFaults = (
  * Every address a contract page renders as `#id`, held by more than one thing.
  *
  * A group and a case are both anchored on one page, so they share one space of addresses and a
- * duplicate is a link that silently lands on the wrong element. Measured when the grouping was first
- * derived: two of the forty-eight group identifiers collided with a case of their own table, which
- * is why this exists rather than being assumed away.
+ * duplicate is a link that silently lands on the wrong element. Measured at `3ec99c5`, when the
+ * grouping was first derived: two group identifiers collided with a case of their own table, which is
+ * why this exists rather than being assumed away. The total it was two *of* is not carried, because
+ * what the sentence establishes is that the collision happens, and that is true without counting.
  */
 export const takenAddresses = (addresses: readonly string[]): readonly string[] => [
   ...new Set(addresses.filter((id, at) => addresses.indexOf(id) !== at)),
