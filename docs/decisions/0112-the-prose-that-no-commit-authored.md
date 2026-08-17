@@ -126,6 +126,28 @@ the house style — 331 rule lines in 67 files — but 61 of those blocks are fi
 comments attached to a declaration. All five are repaired: the rule and heading become the bolded lead
 sentence the same files already use one paragraph later.
 
+### A repair can raise the count, and a later reader has to know that
+
+Re-read after the nine repairs, the tree carries **25** at three hands or more against 32, and
+production carries 10 against 17. Two of the movements are the wrong way round, and they are the most
+useful thing this measurement produced.
+
+`CLAUDE.md:232-238` stood at **two** hands. Its defect was one word - an opening *That last one is*
+pointing at a third different antecedent - so the repair replaced the opening sentence and left the
+rest, which was sound. It now stands at **three**. The same happened to the conventions entry, which
+kept its rank of three across a repair that split it in two.
+
+Nothing went wrong. The count asks whether one commit wrote a paragraph, not whether the paragraph is
+sound, so a targeted repair adds a hand exactly as an accreted clause does. **The two are
+indistinguishable to the metric and are opposites to a reader**, which is the whole of why this is a
+report and not a check: a number that falls after a sweep would be read as prose getting better, and a
+number that rises would be read as prose getting worse, and neither reading is available from the
+number alone.
+
+It also disposes of the one repair a check would have rewarded. Rewriting those paragraphs whole would
+return them to one hand and change nothing a reader sees, which is the reflow objection arriving from
+the other side: the cheapest way to satisfy the count is to touch prose that did not need touching.
+
 **What is left undone, named rather than dropped.** Ten of the 32 fall outside the three swept
 populations. Eight read clean. `README.md:31-37` is excluded by this unit's brief. `mutation/census.ts`
 carries *A twelfth on the licence* and *A thirteenth on the narrowing* — the same ordinal defect as the
