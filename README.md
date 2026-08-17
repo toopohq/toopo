@@ -28,9 +28,9 @@ becomes optional.
 
 Because the tests are measured, and the measurement is a command you can run.
 
-This repository carries 19 mutation batteries. They inject **662 deliberate defects** into it — each
+This repository carries 19 mutation batteries. They inject **664 deliberate defects** into it — each
 one a committed file naming the exact edit it makes and the verdict it must produce — and re-run the
-whole suite once per defect. **627 are caught.** The 35 that survive are each classified, and the
+whole suite once per defect. **629 are caught.** The 35 that survive are each classified, and the
 split is published with the total because a survivor count alone reads as a count of holes: 12 are
 equivalent mutants, 6 are behaviour the contract declines to specify, 4 are unreachable on this
 catalogue, 12 exist only where a lens deliberately took the suite's sight away, and **exactly one is
@@ -38,7 +38,7 @@ a debt**.
 
 ```sh
 pnpm install
-pnpm run mutation    # tens of minutes; replays all 662 cells and prints the total
+pnpm run mutation    # tens of minutes; replays all 664 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 

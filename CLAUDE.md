@@ -83,8 +83,24 @@ command, and `address.js`, which took 3 271 of the 4 039 bytes on its own and wh
 because comments are emitted. `publication.ts` is not among the 35, because `packaging/reachable.ts`
 prunes what the entry point cannot reach. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a
 version is half of an implementation's address, nothing it addresses moved, and the publication is the
-event ADR-0106 cut that tie for. **Publishing is a push and a dispatch**, and the last thing that was
-still a command somebody typed has stopped being one.
+event ADR-0106 cut that tie for.
+
+**And the dispatch is gone: the number asks for the publication.** It was two gestures for one decision —
+a version decided in a commit, a run asked for from a menu afterwards — and between them the tree was
+corrected and the package was not, twice in two days, with nothing saying so. The third day it produced a
+red: a dispatch of a tree declaring `1.0.2`, refused by npm because `1.0.2` was already published. A job
+now reads the listing of versions npm holds, compares it with what this checkout declares, and the
+publishing job fires on the difference. **The condition is deliberately not *did this commit move the
+number***, which is a proxy: measured at `8dab5d4`, that comparison selects correctly on all five of the
+440 commits `HEAD` reaches where the version differs from its parent's, and it would still miss a bump
+pushed under a later commit, because GitHub runs a workflow once per push and on the tip. Asking the
+registry has no such case, and it is asked as a **listing** rather than as `dist-tags.latest`, which is a
+pointer that would go on looking right while meaning something else. **The finding worth carrying out of
+this unit is elsewhere**: the line keeping a publication from being cancelled was keyed to
+`github.event_name != 'workflow_dispatch'`, so moving the trigger onto a push would have quietly repealed
+it — the sentence never became wrong, it stopped being attached to anything. Concurrency is evaluated
+before any job runs and so cannot know whether a run will publish; `main` is therefore never cancelled.
+ADR-0111.
 
 **The tree digest `1.0.1` published here is withdrawn rather than carried forward.** It appeared twice,
 both times in prose, and nothing in this repository computes it — so no reader could rebuild it and it
@@ -323,8 +339,18 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   repository owns — the price being a credential on a runner for a question whose whole subject is not
   needing one, which is the same trade the entry below about `servedFrom` refuses and for the same reason.
   The GitHub half is cheaper and is not free either: whether a run can read its own repository's
-  environment protection with the token this workflow carries has not been measured. Not built, and the
-  first dispatch is what will say whether the two sides agree at all.
+  environment protection with the token this workflow carries has not been measured. Not built.
+
+  **The two sides do agree, and that half is now measured rather than awaited.** This entry read *the
+  first dispatch is what will say whether the two sides agree at all*; the dispatch was made and it
+  published. Read at `a413615` off npm's own record: `_npmUser` is
+  `GitHub Actions <npm-oidc-no-reply@github.com>`, `dist.attestations` carries a
+  `https://slsa.dev/provenance/v1` provenance, and `gitHead` names the commit. An identity token was
+  minted, npm exchanged it, and the attestation was written — so the four strings and the environment
+  policy were the ones this file claimed, on that day. **What is not closed is anything about tomorrow**:
+  three of the four are still strings this repository can rename on its own, npm's configuration still
+  carries no branch, and one successful exchange is not a mechanism. ADR-0111 did not touch any of the
+  four, which is worth stating because it moved the trigger and could have.
 
   **Both sides were configured on 2026-08-17, and this paragraph is the entire record of it.** The
   trusted publisher on npmjs.com names `toopohq`, `toopo`, `suites.yml` and the `npm` environment, with
@@ -348,17 +374,20 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   is the one the `npx` path just made canonical. **The population is every user-facing string of
   `packages/cli/`.**
 
-  **And the client a reader actually runs still prints the bare form, which is a fact about the
-  artefact and not about this tree.** Measured against the live origin at `7728ec2`: `npx toopo add
-  string/slugify` installs correctly, and `npx toopo list` in the same project then answers
-  `Take one out with     toopo remove <domain>/<name>`. npm serves `1.0.1`, which predates the
-  conversion, so the site and the client disagree until the next publication - and a publication is a
-  dispatch that belongs to a person. **The two halves of this repair ship on different events**, which
-  is the same split ADR-0106 cut between publishing and anchoring, arriving on a surface rather than on
-  an address. What would close it is not a shape — no spelling of a string
-  literal makes the bare form fail to compile, which is ADR-0054's other branch — but the validation
-  stage reading this repository's own strings, already named twice on this list, already priced and
-  already refused as a lint over prose.
+  **The half about the artefact closed, and the sentence that recorded it was false for four commits.**
+  It read, measured at `7728ec2`, that `npx toopo list` answers `Take one out with toopo remove
+  <domain>/<name>` because *npm serves `1.0.1`, which predates the conversion* — and it went on saying so
+  after `a413615` published `1.0.2`, which carries the conversion. That is this list's own recurring
+  failure arriving on this list: a dated measurement with a present-tense clause beside it, where it is
+  the clause a reader believes. **What made it a four-commit lie rather than a permanent one is that a
+  publication now happens on a number rather than when somebody remembers**, which is the same event
+  ADR-0111 was written for.
+
+  What stays open is the population and nothing else: **every user-facing string of `packages/cli/`**.
+  Every one is converted in this tree; nothing stops the next being written bare. What would close it is
+  not a shape — no spelling of a string literal makes the bare form fail to compile, which is ADR-0054's
+  other branch — but the validation stage reading this repository's own strings, already named twice on
+  this list, already priced and already refused as a lint over prose.
 
   **What the two guards that do exist cost is worth recording, because both were narrowed by
   measurement rather than by taste.** Sweeping every occurrence of a command on the site went red on
@@ -751,10 +780,12 @@ These outlive the current stage and are not open to trade-off.
   what the sentence is about does not need one. Nothing else: no force, no tag, no rewriting of history. This line read
   *never push and never create a remote* until the CI existed, at which point holding the two apart
   stopped protecting anything and only delayed the reading that says the unit worked.
-- **Nothing publishes to npm from a keyboard.** This line read *nothing to npm ever* until `1.0.0` was
-  published by hand, which is what made the sentence false and the practice worth replacing rather than
-  repeating: a publication is a dispatch of `main` carrying the word `publish`, after the run it depends on
-  is green, and no credential exists here to make one any other way. ADR-0109.
+- **Nothing publishes to npm from a keyboard, and nothing asks for a publication either.** This line read
+  *nothing to npm ever* until `1.0.0` was published by hand, and then named a dispatch carrying a typed
+  word until that turned one decision into two gestures. A publication is a **push of `main` declaring a
+  version npm does not hold**, after the run it depends on is green. The deliberate act did not disappear;
+  it moved onto the number, which nobody writes by accident, and no credential exists here to make a
+  publication any other way. ADR-0109, ADR-0111.
 - TypeScript `strict: true`.
 
 **How the catalogue is written.** Each rule below is stated once here and argued once in the record

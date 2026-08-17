@@ -64,6 +64,7 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
 const buildFile = (find: string, replace: string) => ({ file: 'build.ts', find, replace })
 const reachableFile = (find: string, replace: string) => ({ file: 'reachable.ts', find, replace })
 const distConfig = (find: string, replace: string) => ({ file: 'tsconfig.dist.json', find, replace })
+const npmFile = (find: string, replace: string) => ({ file: 'what-npm-holds.ts', find, replace })
 
 const THE_OUTPUT_IS_WALKED_TO_THE_BOTTOM = `    return statSync(full).isDirectory() ? every(full) : [full]`
 
@@ -74,6 +75,10 @@ const A_SPECIFIER_THAT_LEAVES_THE_FOLDER_IS_SEEN = `  ...[...text.matchAll(/(?:^
 const ONLY_THE_ENTRY_POINT_IS_COMPILED = `  "include": [],`
 
 const THE_OUTPUT_FOLDER_IS_REMOVED_FIRST = `rmSync(DIST, { recursive: true, force: true })`
+
+const A_REGISTRY_THAT_DID_NOT_ANSWER_IS_REFUSED = `    throw new WhatNpmHoldsCannotBeRead(url, \`nothing answered (\${theFirstLineOf(error)})\`)`
+
+const THE_LISTING_IS_WHAT_IS_READ = `      ? (listing as { readonly versions?: unknown }).versions`
 
 const NOTHING_IS_DROPPED = buildFile(
   `const dropped = every(DIST).filter((file) => !reachable.has(file))`,
@@ -188,6 +193,46 @@ const mutants: readonly Mutant[] = [
     killed([
       'every-file-in-the-archive-is-loaded-by-a-command',
       'no-part-of-the-instrument-or-of-the-suite-is-in-the-archive',
+    ]),
+  ),
+
+  // -------------------------------------------------------------------------
+  // What decides a publication
+  // -------------------------------------------------------------------------
+
+  /**
+   * **The defect this module exists against**, and the reason ADR-0111 puts a network read in a
+   * condition at all rather than comparing two commits.
+   *
+   * A registry that did not answer and a registry holding nothing are one value once a refusal becomes
+   * an empty set, and they decide opposite things: the first must stop a run, the second is the state
+   * every first publication is decided in. Swallowed, this answers *publish* to a registry that never
+   * spoke - and what follows is either a red at `npm publish` or, if npm is answering by then, a
+   * publication nobody's reading justified.
+   */
+  sameOnEveryLens(
+    'A-15',
+    'reads a registry that did not answer as a registry holding nothing, so a failed lookup and an ' +
+      'unpublished package become the same answer and the gate opens on the one that means the ' +
+      'opposite',
+    [npmFile(A_REGISTRY_THAT_DID_NOT_ANSWER_IS_REFUSED, `    return new Set()`)],
+    killed(['a-reader-that-could-not-read-is-refused-and-never-read-as-emptiness']),
+  ),
+
+  /**
+   * The pointer read where the listing was meant, which is the shape ADR-0111 argues against by name and
+   * the one that would look right for as long as this package has a single channel.
+   */
+  sameOnEveryLens(
+    'A-16',
+    'answers with the keys of `dist-tags` instead of the keys of `versions`, so what npm holds becomes ' +
+      "the set of channel names - and every version but the one `latest` points at reads as unpublished",
+    [npmFile(THE_LISTING_IS_WHAT_IS_READ, `      ? (listing as { readonly 'dist-tags'?: unknown })['dist-tags']`)],
+    killed([
+      'the-versions-npm-holds-are-every-key-of-the-listing',
+      // Measured rather than predicted: a document with no `versions` still carries `dist-tags`, so the
+      // fixture written to be refused is accepted instead.
+      'an-answer-that-lists-no-versions-is-refused',
     ]),
   ),
 

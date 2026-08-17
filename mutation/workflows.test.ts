@@ -36,13 +36,14 @@ import { THE_REPOSITORY } from './paths.ts'
  * data.
  *
  * ---------------------------------------------------------------------------
- * The four about publishing, and why the first of them is the one that matters
+ * The five about publishing, and why the first of them is the one that matters
  * ---------------------------------------------------------------------------
  *
- * ADR-0109 put `npm publish` on a runner. Three things about that job are what stop a publication being
- * made from a red tree, from a branch, or with a stolen secret - and all three are declared in a file,
- * which is the shape this repository has learned to distrust: `CLAUDE.md` asserted *no runner holds an
- * npm credential* in prose for as long as it was true, and prose is what goes on saying it afterwards.
+ * ADR-0109 put `npm publish` on a runner, and ADR-0111 took the person out of the trigger. Four things
+ * about that job are what stop a publication being made from a red tree, from a branch, with a stolen
+ * secret, or over a version that is already out there - and all four are declared in a file, which is
+ * the shape this repository has learned to distrust: `CLAUDE.md` asserted *no runner holds an npm
+ * credential* in prose for as long as it was true, and prose is what goes on saying it afterwards.
  *
  * **The first guard is the one that keeps the other three from being vacuous**, and it is written first
  * for that reason rather than for tidiness. `only-the-job-that-publishes…` and
@@ -193,6 +194,21 @@ const A_CREDENTIAL_FOR_NPM = /secrets\.\w*NPM\w*|NODE_AUTH_TOKEN|_authToken/i
 const jobsThatPublish = (): readonly Job[] =>
   jobs().filter((job) => A_PUBLICATION.test(declarationOf(job)))
 
+/**
+ * The jobs a job waits for, in both spellings the format allows for one key.
+ *
+ * A single dependency is written bare and several are written as a list, so a sweep that knew only one
+ * of the two would read a job that gained a second `needs` as a job that had lost its first.
+ */
+const jobsWaitedForBy = (job: Job): readonly string[] => {
+  const found = /\bneeds:\s*(\[[^\]]*\]|[A-Za-z0-9_-]+)/.exec(declarationOf(job))
+  const written = found?.[1] ?? ''
+
+  return (written.startsWith('[') ? written.slice(1, -1).split(',') : [written])
+    .map((name) => name.trim())
+    .filter((name) => name !== '')
+}
+
 const containing = (file: string, index: number): Job | undefined =>
   jobsThatPublish().find((job) => job.file === file && index >= job.from && index < job.to)
 
@@ -256,6 +272,46 @@ describe('what the continuous integration is allowed to run', () => {
       ]
         .filter(({ held }) => !held)
         .map(({ fault }) => `${job.file}:${job.name} ${fault}`)
+    })
+
+    expect(ungated).toEqual([])
+  })
+
+  /**
+   * The fourth coordinate, which is the one that replaced a person typing a word.
+   *
+   * A publication is asked for by the version number, and the reading that decides it is taken by
+   * another job - so the gate is a reference across two jobs, and a reference has two ends. **Both are
+   * checked, because either end alone is green on a repository that publishes on nothing**: an `if`
+   * naming a job that does not exist is an expression GitHub evaluates to an empty string, and a `needs`
+   * that no condition reads is a job whose answer is thrown away.
+   *
+   * What it deliberately does not read is *which* answer, or how the other job computed it. That job's
+   * own guards are in `packaging/what-npm-holds.test.ts`, and a second statement of them here would be
+   * this file asserting something it cannot see.
+   */
+  it('the-job-that-publishes-to-npm-is-gated-by-a-job-that-read-the-version', () => {
+    const everyJob = new Set(jobs().map((job) => `${job.file}:${job.name}`))
+
+    const ungated = jobsThatPublish().flatMap((job) => {
+      const consulted = [
+        ...declarationOf(job).matchAll(/\bneeds\.([A-Za-z0-9_-]+)\.outputs\.[A-Za-z0-9_-]+/g),
+      ].map((match) => match[1] as string)
+
+      if (consulted.length === 0) {
+        return [`${job.file}:${job.name} asks no job whether the version is one to publish`]
+      }
+
+      const waitedFor = new Set(jobsWaitedForBy(job))
+
+      return consulted.flatMap((name) => [
+        ...(waitedFor.has(name)
+          ? []
+          : [`${job.file}:${job.name} reads ${name}'s answer without waiting for it`]),
+        ...(everyJob.has(`${job.file}:${name}`)
+          ? []
+          : [`${job.file}:${job.name} reads ${name}, which is no job of ${job.file}`]),
+      ])
     })
 
     expect(ungated).toEqual([])

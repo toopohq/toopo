@@ -1,10 +1,11 @@
 # The eight suites, on every push of a branch and on every pull request, then the site built and
-# deployed beside them, and last the one proof that reaches the deployed origin. On a dispatch of `main`
-# carrying the word, one further job publishes the package to npm.
+# deployed beside them, and last the one proof that reaches the deployed origin. On a push of `main`
+# declaring a version npm does not hold, one further job publishes the package.
 # ADR-0098 is why this side builds rather than the deployment service, what that gives up, and why every
 # action here is a digest. ADR-0104 is why the eighth suite is a step of the second job and of neither
 # the first job nor a battery. ADR-0109 is why the publication holds no credential, why it is a job of
-# this file, and which half of its gate this repository cannot keep.
+# this file, and which half of its gate this repository cannot keep. ADR-0111 is why the number asks for
+# the publication and no gesture does.
 #
 # ---------------------------------------------------------------------------
 # What the checkout must be, measured rather than chosen
@@ -83,31 +84,35 @@ on:
   push:
     branches: ['**']
   pull_request:
-  # **The publication is asked for by a person and never by an event**, which is `THE_WRITE_DISCIPLINE`
-  # one floor up: a thing that cannot be undone happens on a second word. The word is typed rather than
-  # ticked because a checkbox arrives here as a value this file has to compare, and a boolean compared in
-  # a GitHub expression is the one shape that can read a refusal as consent - `'false'` is a non-empty
-  # string. A string equality has no such arm.
-  workflow_dispatch:
-    inputs:
-      confirm:
-        description: 'Type publish to publish to npm. Anything else runs the suites and publishes nothing.'
-        required: false
-        default: ''
+  # **There is no manual trigger, and its absence is a decision rather than a gap.** A publication used
+  # to be a dispatch carrying a typed word, which made one decision into two gestures - and between them
+  # the tree was corrected and the package was not, twice in two days. ADR-0111 moved the deliberate act
+  # onto the version number, which nobody writes by accident. Anything added back here would be a second
+  # way to ask for the one thing this repository cannot undo.
 
 # A superseded run measures a tree nobody will merge, and the minutes are metered.
 #
-# **The event is part of the group and a dispatched run is never cancelled**, which is not tidiness.
-# `npm publish` is the one step of this repository that cannot be undone, and a push arriving while it
-# runs must not be able to interrupt it: a cancelled publication is indistinguishable from one that never
-# happened, for anybody reading the run - which is the class of failure this repository already met on a
-# deletion that reported failure and had removed half of what it was asked to.
+# **`main` is never cancelled, and this line is where the publication is protected.** `npm publish` is
+# the one step of this repository that cannot be undone, and a push arriving while it runs must not be
+# able to interrupt it: a cancelled publication is indistinguishable from one that never happened, for
+# anybody reading the run - which is the class of failure this repository already met on a deletion that
+# reported failure and had removed half of what it was asked to.
 #
-# The group carries the event so that a push and a dispatch cannot share one, and the flag is an
-# expression rather than a constant so that pushes and pull requests stay as cancellable as they were.
+# **That protection used to read `github.event_name != 'workflow_dispatch'`, and moving the trigger onto
+# the version would have quietly repealed it.** Publishing became something a *push* does, so the event
+# that was exempt is the event that now publishes - and a second push to `main` would have cancelled a
+# publication in flight, reintroducing precisely the failure the exemption existed against. It is worth
+# a reader's attention that the old line was not wrong and did not become wrong: it stopped being
+# attached to anything.
+#
+# **The branch is the only condition available**, and that is a fact about when this is evaluated rather
+# than a preference. Concurrency is decided before any job runs, so nothing here can know whether this
+# run will publish - the version has not been read yet, and the job that reads it has not started. So
+# what is protected is every run of `main`, which is a superset of the ones that publish and costs a
+# duplicated run on the rare second push. Branches and pull requests stay as cancellable as they were.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
-  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 # Nothing here writes to the repository. The token is narrowed to what a checkout needs.
 permissions:
@@ -321,6 +326,48 @@ jobs:
         run: npm run origin
 
   # ---------------------------------------------------------------------------
+  # Whether this commit publishes, asked of npm and not of the commit before it
+  # ---------------------------------------------------------------------------
+  #
+  # ADR-0111 carries the decision. The short of it: the question a publication turns on is whether npm
+  # already holds the version this tree declares, and every cheaper way of asking is a proxy for that.
+  # Comparing against the parent commit answers *did this commit move the number*, which is a different
+  # question and misses a bump pushed under a later commit - GitHub runs this once per push, on the tip.
+  #
+  # **It reads a listing and never `dist-tags.latest`**, which is a pointer and would start meaning
+  # something else the day a second channel exists. `packaging/what-npm-holds.ts` carries that argument
+  # and the size measurement behind the header it sends.
+  #
+  # **No `fetch-depth`, no install, and both are consequences rather than economies.** The module reads
+  # this checkout's `package.json` and one address; it asks git nothing, so the whole graph would be
+  # fetched for no reader, and it imports only node's own modules, so there is nothing to install.
+  #
+  # **A registry that cannot be read makes this job red**, and the reason that is acceptable is measured
+  # rather than assumed: the `packaging` step above already installs the archive, which resolves its one
+  # dependency from npm on a runner whose cache is empty. An unreachable registry is therefore already a
+  # red run, and this adds no state that was green before. That argument is conditional on the step above
+  # keeping its network, and it is written here so the day it stops is the day somebody meets this.
+  version:
+    runs-on: ubuntu-latest
+
+    outputs:
+      unpublished: ${{ steps.whether.outputs.unpublished }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+
+      # The reading is printed as well as returned, because the log is the only place anybody can
+      # afterwards see why a run published or did not, and a verdict with neither of its two sides beside
+      # it is a verdict nobody can check.
+      - name: whether this commit publishes
+        id: whether
+        run: node packaging/print-whether-to-publish.ts
+
+  # ---------------------------------------------------------------------------
   # The publication, and the only thing this repository does that cannot be
   # undone
   # ---------------------------------------------------------------------------
@@ -341,12 +388,22 @@ jobs:
   # `packaging/against-the-origin/` exists to make checkable. A client is published to talk to an origin
   # already serving the revision it was built against, and that is the sentence the eighth suite turns
   # into a red.
+  #
+  # **The fourth coordinate is `version`, and it is what replaced the typed word.** `needs` now names two
+  # jobs because the gate asks two things: that everything measurable about this tree is green, and that
+  # what it declares is not already out there. The second is what makes the deliberate act the number
+  # itself - a string nobody edits by accident, in the one file whose whole subject is what gets
+  # published. ADR-0111.
+  #
+  # **The reading is taken minutes before this job runs, and that is safe in one direction only.** If npm
+  # gained this version in between, `npm publish` refuses it and this job is red - the same red as before
+  # any of this existed. What cannot happen is the other way round: a version npm holds cannot be
+  # published over, so a stale reading costs a red run and never a wrong archive.
   publish:
-    needs: site
+    needs: [site, version]
     if: >-
-      github.event_name == 'workflow_dispatch'
-      && inputs.confirm == 'publish'
-      && github.ref == 'refs/heads/main'
+      github.ref == 'refs/heads/main'
+      && needs.version.outputs.unpublished == 'true'
     runs-on: ubuntu-latest
 
     # `npm` is a GitHub environment restricted to `main` there, and named in npm's trusted publisher here.

@@ -338,6 +338,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 
   'packaging/vitest.config.ts': {
     'packaging/archive.test.ts': 8,
+    'packaging/what-npm-holds.test.ts': 6,
   },
 
   'mutation/fixture/vitest.config.ts': {
