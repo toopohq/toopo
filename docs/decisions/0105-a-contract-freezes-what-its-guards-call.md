@@ -209,6 +209,34 @@ Four guards, each seen red on its own failure condition before being trusted:
   that establishes the walk is not vacuous: a closure that found nothing would satisfy *reached implies
   declared* for ever.
 
+### What the instrument charged, after all seven suites were green
+
+The suites do not establish that a guard can catch anything, and this unit paid for that twice in one
+replay.
+
+**The census refused first**, at the calibration of the nineteenth battery, 34 minutes in:
+`packages/registry/shared-surface.test.ts: collected 4, and the census does not name it`. It is the
+composition check `CLAUDE.md` records `assertWholeSuiteRan` as lacking — 355 against 355 would have been
+silent while four guards of the contract under measurement sat outside the declaration.
+
+**Then the battery refused two silences**: nothing reddened `the-shared-surface-is-what-the-harness-reaches`
+or `a-changed-shared-file-moves-the-digest`, and neither was declared out of reach. Two cells answer
+them, and both were needed rather than one:
+
+- **I-61** injects the state this repository was in before this record — the frozen half carrying the
+  seven files a contract owns and forgetting what its guards call. The projection is emptied rather than
+  dropped, because dropping the line leaves `filesNamedBy` spreading `undefined` and the kill arrives as
+  a TypeError from a third module: a red about a crash rather than about a freeze.
+- **I-62** keeps the declaration and makes the walk decorative, which is I-02's shape one level out.
+  `the-shared-surface-is-what-the-harness-reaches` is red *alone* on it, so that guard is load-bearing
+  rather than merely present.
+
+The other two were already witnessed and neither by a cell written for them: I-01 reddens
+`a-fetched-harness-resolves-every-import-it-carries` by hashing the working tree instead of the served
+bytes, and I-04 reddens `the-snapshot-names-no-blob-the-registry-cannot-serve` by blanking harness
+digests. That is the argument for both existing, arriving from the instrument rather than from the
+author.
+
 ### One guard over the five, where the file beside it is five guards
 
 `served-files.test.ts` writes `an-undeclared-file-is-refused` as five addresses and this file writes
