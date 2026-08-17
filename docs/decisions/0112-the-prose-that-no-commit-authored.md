@@ -122,9 +122,14 @@ rest, and it is the argument for correction over count:
   held by all five is stated in the same file.
 
 **A second signature, cheap and precise, covers the second instance.** A heading inside a comment is
-the house style — 331 rule lines in 67 files — but 61 of those blocks are file headers and **5** are
-comments attached to a declaration. All five are repaired: the rule and heading become the bolded lead
-sentence the same files already use one paragraph later.
+the house style, not a defect: at `50cc54f`, over production TypeScript alone, **317 rule lines in 64
+files**. What deviates is the *position* rather than the heading — of the 66 comment blocks carrying
+one, **61 are file headers and 5 are attached to a declaration**. All five are repaired: the rule and
+the heading become the bolded lead sentence the same files already use one paragraph later.
+
+The population is stated twice above because it had to be. The first draft of this paragraph read
+*331 rule lines in 67 files* beside the 61 and the 5 — the first pair counted test files and the
+second did not, which is two populations in one sentence, in the record about that.
 
 ### A repair can raise the count, and a later reader has to know that
 
