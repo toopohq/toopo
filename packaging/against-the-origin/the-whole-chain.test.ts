@@ -167,6 +167,73 @@ const theOriginAnswers = async (): Promise<Reachability> => {
 }
 
 /**
+ * The distinct revisions the origin answers to the two questions the client asks, or `null` where a
+ * question was not answered at all.
+ *
+ * It reads the same two addresses `toopo add` reads and compares the same field, deliberately: what
+ * is being waited for below is exactly the condition that client refuses, and a second phrasing of it
+ * could come to disagree with the first.
+ */
+const theRevisionsAnswered = async (): Promise<readonly string[] | null> => {
+  try {
+    const index = (await asked(pathTo(endpointOf('contract-index')))) as {
+      readonly servedFrom: string
+    }
+    const bindings = (await asked(
+      pathTo(endpointOf('implementation-bindings'), renderContract(THE_CONTRACT)),
+    )) as readonly { readonly servedFrom: string }[]
+
+    return [...new Set([index.servedFrom, ...bindings.map((entry) => entry.servedFrom)])]
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Wait until the origin answers one revision to both questions, or until the bound runs out.
+ *
+ * **A deployment returns before it has propagated**, and the header above records the benign half of
+ * that: the revision answering may be the previous one, which is a valid proof of the chain and is
+ * reported rather than asserted. The other half is neither benign nor a defect. An edge part-way
+ * through propagation answers the index from one commit and the bindings from another, and `toopo add`
+ * refuses a registry that answered from more than one revision - correctly, because that is a registry
+ * publishing between two requests. Measured on the run of `f5cf8f2`: the CI step ran 34 seconds after
+ * `wrangler pages deploy` returned, read the index from `f5cf8f2` and the bindings from `9176c9e`, and
+ * failed three guards on the client's own refusal. **The product was working and the measurement was
+ * not**, which is the one thing a proof over a network must not confuse.
+ *
+ * So the disagreement is waited out rather than classed as an outage, and the wait is **bounded so
+ * that it stays a red**: an origin still disagreeing with itself after the bound is one a client would
+ * refuse for real, and this returns anyway so the chain runs and fails with that client's own message.
+ * Waiting for ever, or skipping, would turn a registry that is genuinely inconsistent into a green.
+ *
+ * **What is deliberately not claimed is how long propagation takes.** It was not measured - the run
+ * that found this was read two hours later, which bounds nothing - so the figure below is a bound
+ * chosen against the cost of the step and not a measurement of Cloudflare. It is the declared timeout
+ * `CLOCK_DEPENDENCE_RULE` requires of a guard whose verdict can depend on elapsed time, and it is the
+ * only clock this suite reads.
+ */
+const THE_PROPAGATION_BOUND = 120_000
+
+const BETWEEN_ATTEMPTS = 5_000
+
+const anOriginThatAgreesWithItself = async (): Promise<void> => {
+  const until = Date.now() + THE_PROPAGATION_BOUND
+
+  for (;;) {
+    const revisions = await theRevisionsAnswered()
+    if (revisions === null || revisions.length <= 1 || Date.now() >= until) return
+
+    process.stdout.write(
+      `\n  the origin answers ${revisions.length} revisions - ${revisions.join(', ')} - so it is ` +
+        `publishing between two requests; waiting up to ${THE_PROPAGATION_BOUND / 1000}s for it to ` +
+        `agree with itself\n`,
+    )
+    await new Promise((resolve) => setTimeout(resolve, BETWEEN_ATTEMPTS))
+  }
+}
+
+/**
  * What the registry says about this contract, read straight off two answers.
  *
  * Exactly one binding must carry `status: 'default'`, which is the field the client reads when no
@@ -238,6 +305,8 @@ const report = (): void => {
 }
 
 beforeAll(async () => {
+  await anOriginThatAgreesWithItself()
+
   const before = await theOriginAnswers()
 
   if (!before.reached) {

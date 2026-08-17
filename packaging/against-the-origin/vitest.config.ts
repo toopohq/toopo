@@ -18,6 +18,12 @@ import { defineConfig } from 'vitest/config'
  *
  * The timeout is the neighbouring folder's, and it is the larger of the two this repository declares:
  * this suite packs an archive, installs it, and then waits on a network.
+ *
+ * **It has to exceed `THE_PROPAGATION_BOUND` and does, and the relation is stated because neither
+ * number can see the other.** The hook waits up to two minutes for the origin to agree with itself
+ * before it packs anything, so a hook timeout below that would cut the wait short and report it as a
+ * timed-out hook - which is the one failure shape this file's header says must never happen, a file
+ * made unstartable and its guards reported skipped. Five minutes leaves three for the archive.
  */
 export default defineConfig({
   // Anchored on this file's own directory rather than left to the working directory, because the

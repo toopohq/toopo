@@ -267,6 +267,15 @@ jobs:
       # previous one. That is a valid proof of the chain and not of this commit, which is why the
       # suite reports the revision it measured against and never asserts it.
       #
+      # **The other half of that is not benign and was measured here rather than anticipated.** An edge
+      # part-way through propagation answers one address from the new commit and another from the old,
+      # and `toopo add` refuses a registry that answered from more than one revision. On the run of
+      # `f5cf8f2` this step began 34 seconds after `wrangler pages deploy` returned, read the index
+      # from `f5cf8f2` and the bindings from `9176c9e`, and reddened three guards on that refusal - the
+      # product working and the measurement not. The suite now waits, bounded, for the origin to agree
+      # with itself before it packs anything; the wait is in the suite and not in this file, so that a
+      # run started by hand gets it too.
+      #
       # On a branch, `deploy` is skipped and this measures the branch's own archive against the
       # published registry - the more useful of the two questions, and the reason it carries no `if`.
       - name: the archive against the origin
