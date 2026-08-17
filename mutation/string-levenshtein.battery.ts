@@ -297,9 +297,9 @@ const behaviour: readonly Mutant[] = [
       'the memoise-last idiom with a cheap proxy for identity, and the fourth contract it has been ' +
       'written on. The slot is written on a miss and read on a hit, so two identical consecutive ' +
       'calls agree and determinism cannot see it; a foreign call in between replaces it, which is ' +
-      'the only thing the ambient-input property can see. Four guards are pinned and up to three ' +
-      'more redden depending on the seed - measured over four runs - so the pin names the four that ' +
-      'were red on all of them',
+      'the only thing the ambient-input property can see. Three guards are pinned and up to four ' +
+      'more redden depending on the seed - measured over six runs, and the fifth is why the pin lost ' +
+      'one',
     [
       reference(
         SIGNATURE,
@@ -316,7 +316,32 @@ const behaviour: readonly Mutant[] = [
           `const computeDistance = (a: string, b: string): number => {`,
       ),
     ],
-    killed([A_COMBINING_MARK, SEPARATES_FROM_THE_ECOSYSTEM, SYMMETRY, CALL_HISTORY]),
+    /**
+     * `SYMMETRY` left this pin because it was seen missing, and the observation is worth more than
+     * the guard it removes.
+     *
+     * The pin was set over four runs and named the four guards red on all of them. The fifth run - a
+     * full replay at `3ef069f` - reported `L-20 on C/as-committed: expected killed, measured killed,
+     * no longer caught by: p3-symmetry`. The two verdicts agreeing on a line announcing that they do
+     * not is what a pin naming a guard that missed looks like. The sixth run, the same battery alone
+     * on the same commit with a clean tree, was green again.
+     *
+     * **So the miss is the draw and not a regression, and that was measured rather than assumed**:
+     * nothing this unit touched is reachable from this contract, `p3-symmetry` calls `fc.assert` with
+     * no seed, and `numRuns` is `propertyRuns`. A memoise-last defect breaks symmetry only on a pair
+     * whose two lengths repeat across two calls in the right order, so whether a run finds one is
+     * chance.
+     *
+     * **The repair that is not available is the one that would have been chosen**, and the
+     * publication is why. Raising the draw count lives in `properties.test.ts`, which is one of the
+     * seven files `string/levenshtein@1` froze at `15aeb6c` - so it would rebind a published address,
+     * which permanent rule 6 refuses. ADR-0106 removed a repair from this cell on the day it
+     * published the contract, and this is the first place that consequence has been met.
+     *
+     * The three that remain are two named cases and the ambient-input property, none of which draws.
+     * `p3-symmetry` is not orphaned: it is red on ten other mutants of this battery.
+     */
+    killed([A_COMBINING_MARK, SEPARATES_FROM_THE_ECOSYSTEM, CALL_HISTORY]),
   ),
 ]
 
