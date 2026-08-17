@@ -36,7 +36,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { renderContract } from '../registry/address.js'
+import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { InstalledFile, LockedFeature, Lockfile } from '../registry/implementation-record.js'
 import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
@@ -214,7 +214,9 @@ const migrationFaults = (
     `Delete ${LOCKFILE} and add back the features you want, by name. Nothing on disk is rewritten: ` +
       `a file whose bytes are already the ones toopo would write is recognised and recorded rather ` +
       `than replaced.` +
-      (names.length === 0 ? '' : `\n${names.map((name) => `  toopo add ${name}`).join('\n')}`),
+      (names.length === 0
+        ? ''
+        : `\n${names.map((name) => `  ${THE_INVOCATION} add ${name}`).join('\n')}`),
   ]
 }
 

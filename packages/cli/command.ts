@@ -104,7 +104,7 @@ import { displayed, search } from './search.js'
 import type { RegistrySource } from './source.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
-import { renderContract } from '../registry/address.js'
+import { THE_INVOCATION, renderContract } from '../registry/address.js'
 
 const out = (text: string): void => {
   process.stdout.write(`${text}\n`)
@@ -138,7 +138,7 @@ export const run = async (theRegistry: () => RegistrySource): Promise<void> => {
     if (held === null) {
       refuse([
         `this folder has no ${CONFIGURATION_FILE}, so nothing knows where a feature should go. Run ` +
-          `\`toopo init\` first - it takes no answer and writes one file.`,
+          `\`${THE_INVOCATION} init\` first - it takes no answer and writes one file.`,
       ])
     }
 
@@ -186,7 +186,7 @@ export const run = async (theRegistry: () => RegistrySource): Promise<void> => {
     if (held === null) {
       refuse([
         `this folder has no toopo.lock, so nothing is installed and there is nothing to ${verb}. ` +
-          `Install something with \`toopo add string/slugify\`.`,
+          `Install something with \`${THE_INVOCATION} add string/slugify\`.`,
       ])
     }
 

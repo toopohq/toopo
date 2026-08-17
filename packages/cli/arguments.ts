@@ -12,6 +12,8 @@
  * that quietly installed something other than what was asked for.
  */
 
+import { THE_INVOCATION } from '../registry/address.js'
+
 export type Command =
   | { readonly name: 'init'; readonly directory: string | null }
   | {
@@ -92,14 +94,20 @@ export const THE_WRITE_DISCIPLINE =
   'a command that can destroy or overwrite shows first and writes only on a second command; a ' +
   'command that can only refuse writes at once'
 
-export const USAGE = `usage:
-  toopo init [--dir <path>]                  configure where features go
-  toopo add <domain>/<name> [--implementation <id>]
+/**
+ * The invocation is stated once in the header rather than repeated on every line, because it is the
+ * same six words each time and a reader who has to strip a constant prefix off six rows to compare
+ * them is reading the wrong thing. What varies is the command, and that is what the rows carry.
+ */
+export const USAGE = `usage: ${THE_INVOCATION} <command>
+
+  init [--dir <path>]                        configure where features go
+  add <domain>/<name> [--implementation <id>]
                                              install a feature and what it imports
-  toopo remove <domain>/<name> [--apply]     show what would go, then take it out
-  toopo update [--apply]                     show what would change, then write it
-  toopo list                                 what this project holds
-  toopo search [words...]                    find a contract, or list the catalogue`
+  remove <domain>/<name> [--apply]           show what would go, then take it out
+  update [--apply]                           show what would change, then write it
+  list                                       what this project holds
+  search [words...]                          find a contract, or list the catalogue`
 
 export type ParsedArguments =
   | { readonly command: Command }

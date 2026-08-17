@@ -4,13 +4,12 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { trackedFiles } from '../../mutation/paths.js'
-import { THE_ORIGIN, renderContract } from './address.js'
+import { THE_ORIGIN, THE_PACKAGE_NAME, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
 import { THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
 import {
   THE_AUTHOR_FIELD,
   THE_MINIMUM_RUNTIME,
-  THE_PACKAGE_NAME,
   THE_PACKAGE_VERSION,
   THE_SOURCE_REPOSITORY,
 } from './publication.js'
@@ -199,11 +198,6 @@ describe('what this repository publishes about itself', () => {
    * It is here rather than beside those, because `mutation/` may not import the registry: the
    * dependency runs the other way, and `publication.test.ts` is already where what this repository
    * states about itself is resolved.
-   *
-   * **What is deliberately not asserted is the sentence about npm above it.** *`toopo` was not on npm*
-   * is a claim about a service, it goes false on a day nobody edits this repository, and no guard here
-   * can reach it. What it carries instead is the date it was true, which is the convention this
-   * repository owes every declared absence and the reason the paragraph says so in the open.
    */
   it('the-readme-counts-the-catalogue-the-registry-declares', () => {
     const refused = theFive.filter((source) => source.lifecycle.state === 'never-published')

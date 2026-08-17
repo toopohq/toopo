@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../registry/address.js'
+import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
@@ -130,7 +130,7 @@ describe('what this project holds', () => {
       // Not `toopo update --apply` and not *puts it back*: a missing file whose feature carries a
       // conflict elsewhere is held back whole and comes back on no run. What that command does first
       // is show, and that is what this may promise.
-      expect(screen).toContain('`toopo update` shows what would be put back')
+      expect(screen).toContain(`\`${THE_INVOCATION} update\` shows what would be put back`)
     })
   })
 

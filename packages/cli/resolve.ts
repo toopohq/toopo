@@ -25,7 +25,12 @@
  */
 
 import type { ContractAddress, ImplementationAddress } from '../registry/address.js'
-import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
+import {
+  THE_INVOCATION,
+  renderContract,
+  renderImplementation,
+  sameContract,
+} from '../registry/address.js'
 import type { DependencyEdge } from '../registry/implementation-record.js'
 import { declarationFaults } from '../registry/implementation-record.js'
 import type { ServedExport, ServedIndexEntry } from '../registry/response.js'
@@ -179,7 +184,7 @@ const installable = (servedFrom: string, entry: ServedIndexEntry): Found<Chosen>
          */
         faults: [
           `${renderContract(entry.address)} is in the catalogue and the registry publishes no ` +
-            `implementation of it, so there is nothing to install. \`toopo search ` +
+            `implementation of it, so there is nothing to install. \`${THE_INVOCATION} search ` +
             `${entry.address.name}\` shows what the catalogue says about it.`,
         ],
       }

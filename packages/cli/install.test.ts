@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../registry/address.js'
+import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import { clamp, pad, sign } from '../registry/imagined-graph.js'
 import type { ImplementationRecord, Lockfile } from '../registry/implementation-record.js'
@@ -396,7 +396,7 @@ export const clamp = (value: number, low: number, high: number): number =>
 
       expect('faults' in outcome && outcome.faults).toEqual([
         'typescript/array/group-by@1 is in the catalogue and the registry publishes no implementation of it, ' +
-          'so there is nothing to install. `toopo search array/group-by` shows what the catalogue ' +
+          `so there is nothing to install. \`${THE_INVOCATION} search array/group-by\` shows what the catalogue ` +
           'says about it.',
       ])
     } finally {

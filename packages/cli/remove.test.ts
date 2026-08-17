@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from '../registry/address.js'
+import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { LockedFeature, Lockfile } from '../registry/implementation-record.js'
 import { deciding } from './fixpoint.js'
 import {
@@ -526,7 +526,7 @@ describe('taking a feature out of a project', () => {
       expect(removal.reconciliation.removals.length).toBeGreaterThan(0)
       expect(onDisk(project, 'number/round/round.ts')).toBe(true)
       expect(renderRemoval(removal, lockfile, project.configuration, false)).toContain(
-        'Apply it with  toopo remove number/round --apply',
+        `Apply it with  ${THE_INVOCATION} remove number/round --apply`,
       )
 
       applying(project, removal)

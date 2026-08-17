@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { THE_ORIGIN } from '../packages/registry/address.js'
+import { THE_INVOCATION, THE_ORIGIN } from '../packages/registry/address.js'
 import { THE_PACKAGE_VERSION } from '../packages/registry/publication.js'
 import { anInstalledArchive } from './the-archive.js'
 import type { InstalledArchive } from './the-archive.js'
@@ -136,7 +136,10 @@ describe('the archive somebody installs', () => {
   it('an-installed-toopo-runs-reads-a-project-and-writes-one', () => {
     const usage = archive.toopo()
 
-    expect(usage.stdout).toContain('toopo add')
+    // The usage names the invocation once and the commands under it, so both halves are witnessed:
+    // a header with no rows would print for a binary that knows none of its own commands.
+    expect(usage.stdout).toContain(`usage: ${THE_INVOCATION} <command>`)
+    expect(usage.stdout).toContain('add <domain>/<name>')
 
     expect(archive.toopo('init', '--dir', THE_DIRECTORY).status).toBe(0)
     expect(

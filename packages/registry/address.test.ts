@@ -94,6 +94,11 @@ const RENDERINGS: Readonly<Record<keyof typeof ADDRESS, Rendering>> = {
   caseAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
   guardAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
   THE_ORIGIN: { holdsNoContract: 'it is where this registry is published, and holds no contract' },
+  THE_PACKAGE_NAME: { holdsNoContract: 'it is what npm resolves, and npm does not know a contract' },
+  THE_INVOCATION: {
+    holdsNoContract:
+      'it is how the command is run, and the contract is the argument a reader adds after it',
+  },
 }
 
 describe('how the registry addresses what it serves', () => {

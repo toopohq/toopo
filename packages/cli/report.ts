@@ -38,7 +38,7 @@
  */
 
 import type { ContractAddress } from '../registry/address.js'
-import { renderContract, sameContract } from '../registry/address.js'
+import { THE_INVOCATION, renderContract, sameContract } from '../registry/address.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import type { ServedIndexEntry, ServedRefusals } from '../registry/response.js'
 import type { Configuration } from './configuration.js'
@@ -156,7 +156,7 @@ const whatToCommit = (configuration: Configuration, git: CommitStanding): string
     `git ignores ${configuration.directory}/, so what was just written will not be committed. ` +
     `${lockfile} What toopo installs is source code in your project, not a dependency your ` +
     `package manager restores: un-ignore ${configuration.directory}/, or pick a folder that is ` +
-    `committed with toopo init --dir <path> and add it again.`
+    `committed with ${THE_INVOCATION} init --dir <path> and add it again.`
   )
 }
 
@@ -245,8 +245,8 @@ export const renderInit = (
     ...(relocation === null ? [] : relocationLines(relocation, leftBehind)),
     ...paragraph(whatToCommit(configuration, git)).map((line) => `${INDENT}${line}`),
     '',
-    `${INDENT}Change the folder with  toopo init --dir <path>`,
-    `${INDENT}Install something with  toopo add string/slugify`,
+    `${INDENT}Change the folder with  ${THE_INVOCATION} init --dir <path>`,
+    `${INDENT}Install something with  ${THE_INVOCATION} add string/slugify`,
     '',
   ].join('\n')
 
@@ -691,7 +691,7 @@ export const renderUpdate = (
     // folder git has been asked about and will not accept. Neither is offered as the reason for the
     // other - the second is measured, and the first is a state with more than one way of arising.
     ...commitAdvice(configuration, git, false),
-    ...theClosing(before, update, applied, 'toopo update --apply'),
+    ...theClosing(before, update, applied, `${THE_INVOCATION} update --apply`),
     '',
   ].join('\n')
 
@@ -716,7 +716,7 @@ export const renderRemoval = (
   applied: boolean,
 ): string => {
   const what = renderContract(removal.named)
-  const applyWith = `toopo remove ${removal.named.name} --apply`
+  const applyWith = `${THE_INVOCATION} remove ${removal.named.name} --apply`
 
   if (removal.departure === 'stays-as-a-dependency') {
     /**
@@ -856,8 +856,8 @@ export const renderList = (listing: Listing, configuration: Configuration): stri
       '',
       `${INDENT}toopo.lock records nothing installed.`,
       '',
-      `${INDENT}Find something with   toopo search`,
-      `${INDENT}Install it with       toopo add string/slugify`,
+      `${INDENT}Find something with   ${THE_INVOCATION} search`,
+      `${INDENT}Install it with       ${THE_INVOCATION} add string/slugify`,
       '',
     ].join('\n')
   }
@@ -895,13 +895,13 @@ export const renderList = (listing: Listing, configuration: Configuration): stri
           // back on no run at all. What is true is what that command does first, which is show.
           ...paragraph(
             `${countOf(missing.length, 'file is', 'files are')} missing. ` +
-              `\`toopo update\` shows what would be put back.`,
+              `\`${THE_INVOCATION} update\` shows what would be put back.`,
             72,
           ).map((line) => `${INDENT}${line}`),
           '',
         ]),
-    `${INDENT}Take one out with     toopo remove <domain>/<name>`,
-    `${INDENT}See its import line   toopo add <domain>/<name>`,
+    `${INDENT}Take one out with     ${THE_INVOCATION} remove <domain>/<name>`,
+    `${INDENT}See its import line   ${THE_INVOCATION} add <domain>/<name>`,
     '',
   ].join('\n')
 }
@@ -994,11 +994,11 @@ export const renderSearch = (found: Search): string => {
     ...found.results.flatMap((result) => resultBlock(result, alone)),
     ...(alone
       ? first.installable
-        ? [`${INDENT}toopo add ${first.address.name}`, '']
+        ? [`${INDENT}${THE_INVOCATION} add ${first.address.name}`, '']
         : []
       : [
           `${INDENT}${countOf(found.results.length, 'result', 'results')} - install one with  ` +
-            `toopo add <name>`,
+            `${THE_INVOCATION} add <name>`,
           '',
         ]),
   ].join('\n')
@@ -1023,8 +1023,8 @@ export const renderCatalogue = (entries: readonly Displayed[]): string =>
     `${INDENT}The catalogue holds ${countOf(entries.length, 'contract', 'contracts')}.`,
     '',
     ...entries.flatMap((entry) => resultBlock(entry, false)),
-    `${INDENT}Install one with  toopo add <domain>/<name>`,
-    `${INDENT}Or search         toopo search convert string to number`,
+    `${INDENT}Install one with  ${THE_INVOCATION} add <domain>/<name>`,
+    `${INDENT}Or search         ${THE_INVOCATION} search convert string to number`,
     '',
   ].join('\n')
 

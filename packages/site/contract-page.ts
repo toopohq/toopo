@@ -30,7 +30,7 @@
  * room for the number, and the number is the argument. `readableBytes` stays where it is.
  */
 
-import { contractUrl, renderContract } from '../registry/address.js'
+import { THE_INVOCATION, contractUrl, renderContract } from '../registry/address.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import type { CaseGroup } from '../catalogue/identifier.js'
 import type { CaseRecord, CaseTableRecord, ExportRecord } from '../registry/contract-record.js'
@@ -270,7 +270,7 @@ export const contractPage = (held: Held): Document => {
       line('h1', name),
       line('p', contract.identity.summary, { class: 'lede' }),
 
-      line('pre', `toopo add ${contract.address.name}`),
+      line('pre', `${THE_INVOCATION} add ${contract.address.name}`),
       line(
         'p',
         `${implementation.files.length === 1 ? 'One file' : `${implementation.files.length} files`}, ` +

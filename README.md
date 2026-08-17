@@ -8,22 +8,21 @@ signature, the invariants that must hold for every input, and every edge case na
 argued for — and hands you an implementation that is measured against it in public.
 
 ```sh
-toopo add string/slugify
+npx toopo add string/slugify
 ```
 
 One file lands in `src/lib/toopo/string/slugify/slugify.ts`, with its digest recorded in
 `toopo.lock`. It imports nothing. There is no runtime, no wrapper, no resolution step: after the
 install, nothing of ours runs in your program.
 
-> **`toopo` was not on npm as of 2026-08-17.** The command above is what a contract page tells you
-> to type, and until the first publication there is nothing to type it with. The catalogue itself is
-> served — every page, every answer and every byte a client would fetch is at `toopo.dev` today — so
-> what is missing is the published client and not the registry. What works meanwhile is cloning this
-> repository and running the suites below.
->
-> The date is there because this sentence is the kind that goes false without anybody editing it, and
-> a reader cannot tell a claim that is still true from one nobody came back to. `git log` is what
-> settles it.
+**`npx` is the one spelling that works whether or not you have installed anything**, and it is what
+every contract page prints so that no page has to ask which situation you are in. On a first run it
+names the package and its exact version and waits for a word before anything executes — on a product
+whose thesis is that you verify what you receive, that prompt is the first demonstration of the
+thesis, which is why nothing here tells you to pass `--yes`. It is paid once: a second run is silent.
+
+If you reach for it often, `npm install -g toopo` puts the command on your path and the prefix
+becomes optional.
 
 ## Why you can believe any of it
 
@@ -90,8 +89,8 @@ response can all cite the same one.
 - **TypeScript only**, and every address says so: `typescript/number/parse@1` is the contract's page,
   the first line of every file you install, and what `toopo.lock` records. A second language would
   bring its own contracts rather than sharing these, and it renames none of these addresses. The
-  command takes no prefix — `toopo add number/parse` — because the language is which client you ran,
-  not something you choose per install.
+  command takes no prefix — `npx toopo add number/parse` — because the language is which client you
+  ran, not something you choose per install.
 - **A published contract major is frozen for life.** An incompatible change creates `name@2` beside
   `name@1` and never edits `name@1`. That is the promise the whole registry is built to keep, and
   it is why so little has been published.

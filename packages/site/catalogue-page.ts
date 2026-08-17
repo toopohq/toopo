@@ -10,7 +10,7 @@
  * of it deserves to be told the catalogue considered it and why, and it must never be offered.
  */
 
-import { renderContract } from '../registry/address.js'
+import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
@@ -102,7 +102,7 @@ export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Doc
           line(
             'p',
             entry.installable
-              ? `toopo add ${entry.address.name}`
+              ? `${THE_INVOCATION} add ${entry.address.name}`
               : 'Considered and turned down — see what we refuse and why.',
             { class: 'meta' },
           ),

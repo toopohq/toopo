@@ -166,7 +166,7 @@ const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 const ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE = `    .entries.filter((entry) => entry.installable)`
 
 const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `            entry.installable
-              ? \`toopo add \${entry.address.name}\``
+              ? \`\${THE_INVOCATION} add \${entry.address.name}\``
 
 /**
  * The generator's own restatement of the version the registry published. `cli-install.battery.ts`
@@ -520,7 +520,7 @@ const mutants: readonly Mutant[] = [
       cataloguePageFile(
         A_REFUSED_CONTRACT_IS_OFFERED_NOTHING,
         `            true
-              ? \`toopo add \${entry.address.name}\``,
+              ? \`\${THE_INVOCATION} add \${entry.address.name}\``,
       ),
     ],
     killed(['nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed']),

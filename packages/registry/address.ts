@@ -197,6 +197,55 @@ export const sameContract = (a: ContractAddress, b: ContractAddress): boolean =>
 export const THE_ORIGIN = 'https://toopo.dev'
 
 /**
+ * The name the package is published under, and the word inside the command a user types.
+ *
+ * **It is the most irreversible field of the manifest and it was declared in no code at all**, which
+ * the inventory before the launch is what found. Every other field of `publication.ts` can be
+ * corrected by publishing a later version; a name cannot. npm does not rename a package, and it does
+ * not let a deleted name be taken again - so the first publication settles it for the life of the
+ * registry.
+ *
+ * **It lived in `publication.ts` and moved here when a third consumer appeared**, which is the move
+ * `THE_ORIGIN` above records and the reason is one this file decides rather than taste:
+ * `packaging/reachable.ts` walks the published entry point, so a client rendering the command out of
+ * `publication.ts` would pull that module into the archive and falsify the sentence it carries about
+ * which modules the archive holds. The manifest resolves against this one import further along.
+ *
+ * It is an address in the sense this file means. It is the string npm resolves, and it is the key of
+ * `bin` - which is what npm writes the shim from, so the two disagreeing is `npx toopo` reaching
+ * nothing. `the-public-fields-npm-shows-are-the-ones-this-code-declares` resolves both against it.
+ */
+export const THE_PACKAGE_NAME = 'toopo'
+
+/**
+ * The words a reader types to run this, in the one spelling that works whether or not they have
+ * installed anything.
+ *
+ * **Measured rather than reasoned about, because npm's resolution order is not a thing to be confident
+ * about from memory.** Three situations at `ede19ca`, each in an empty folder with the npx cache purged
+ * first, on npm 11.12.1: with nothing installed, npx downloads the package and runs it; with the
+ * package installed globally, npx runs the global binary and creates no cache entry; with it installed
+ * as a project dependency and nothing global, npx runs `node_modules/.bin` and creates no cache entry.
+ * All three exit 0 and write the file. **One spelling is correct in all three**, so no surface has to
+ * ask a reader which one they are in - and the bare `toopo` that four published surfaces printed until
+ * this constant existed is correct in exactly one of them. That was the first thing a visitor did, and
+ * it answered `command not found`.
+ *
+ * **`npx` and never `npx --yes`.** On a first run npx names the package and its exact version and waits
+ * for a word before anything executes. On a product whose thesis is that you verify what you receive,
+ * that prompt is the first demonstration of the thesis, and `--yes` would delete it: it is not a
+ * friction tolerated, it is a transparency kept. It is paid once - a second run is silent, measured the
+ * same day.
+ *
+ * **What nothing keeps is that every surface renders this rather than the bare word.** The README and
+ * the emitted pages are swept by a guard apiece; the client's own screens are not, because no shape
+ * makes the bare form fail to compile and the sweep that would catch it is a lint over this
+ * repository's own strings - already priced and already refused. ADR-0054 is the treatment that
+ * applies, and `CLAUDE.md` carries the entry.
+ */
+export const THE_INVOCATION = `npx ${THE_PACKAGE_NAME}`
+
+/**
  * The page a contract is published at, absolute, and the one spelling of it anything may write.
  *
  * `packages/site/paths.ts` builds the same string out of a file path and a trailing-slash rule, and

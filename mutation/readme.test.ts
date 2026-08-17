@@ -3,6 +3,7 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
+import { THE_INVOCATION } from '../packages/registry/address.ts'
 import { THE_REPOSITORY } from './paths.ts'
 import {
   THE_PINS_ARE_AN_ASSERTION,
@@ -39,8 +40,15 @@ import {
  * match a layout. Collapsing runs of whitespace makes a claim the sentence rather than the sentence
  * plus its column width, and it is what makes a transcription longer than one line checkable at all.
  */
-const README = (): string =>
-  readFileSync(join(THE_REPOSITORY, 'README.md'), 'utf8').replace(/\s+/g, ' ')
+const readmeSource = (): string => readFileSync(join(THE_REPOSITORY, 'README.md'), 'utf8')
+
+const README = (): string => readmeSource().replace(/\s+/g, ' ')
+
+/** Every line of every fenced block, which is where the page tells a reader what to type. */
+const whatTheReadmeTellsYouToType = (): readonly string[] =>
+  [...readmeSource().matchAll(/```[a-z]*\n([\s\S]*?)```/g)].flatMap((block) =>
+    (block[1] as string).split('\n'),
+  )
 
 describe('what the readme publishes about the measurement', () => {
   /**
@@ -96,6 +104,30 @@ describe('what the readme publishes about the measurement', () => {
    * write the total and stop, because a count of survivors read alone is a count of holes - and four
    * of the five kinds are not holes at all.
    */
+  /**
+   * Every command this page tells a reader to type carries the invocation the code declares.
+   *
+   * **The defect it exists against was published and was met by a reader rather than by a guard.**
+   * The page printed `toopo add string/slugify`, which answers `command not found` for anybody who has
+   * installed nothing - the first thing a visitor does, and it failed. `THE_INVOCATION` is the one
+   * spelling measured to work in all three situations, and nothing here kept the page rendering it.
+   *
+   * **A shell fence is what makes a line an instruction, and that is the whole of the rule.** Inside
+   * one, a word is something a reader pastes into a terminal. In prose it names the command instead -
+   * the licence section says what `toopo add` copies, and prefixing that would be describing a shell
+   * where the sentence is about a licence. So the sweep is over the fenced blocks and deliberately not
+   * over the page, which is the same division `packages/cli/breakage.ts` gets for the same reason.
+   *
+   * The second expectation is what stops the first being vacuous: a negative alone is satisfied by a
+   * page with no commands on it at all.
+   */
+  it('every-command-the-readme-tells-a-reader-to-type-carries-the-invocation', () => {
+    const typed = whatTheReadmeTellsYouToType()
+
+    expect(typed.filter((line) => /^\s*toopo\b/.test(line))).toEqual([])
+    expect(typed.filter((line) => line.trim().startsWith(THE_INVOCATION))).not.toEqual([])
+  })
+
   it('the-readme-never-gives-a-survivor-total-without-its-split', () => {
     const text = README()
     const named = Object.keys(WHAT_A_SURVIVOR_MEANS_TO_A_READER).filter(

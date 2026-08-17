@@ -185,7 +185,9 @@ const WHAT_WAS_WRITTEN_IS_HASHED = `      files.push({ path: file.path, served: 
 
 const A_FILE_WE_DID_NOT_WRITE = `      if (onDisk === wouldWrite.get(file.path)) alreadyOnDisk.add(file.path)`
 
-const AN_OLD_LOCKFILE_NAMES_WHAT_TO_TYPE = `      (names.length === 0 ? '' : \`\\n\${names.map((name) => \`  toopo add \${name}\`).join('\\n')}\`),`
+const AN_OLD_LOCKFILE_NAMES_WHAT_TO_TYPE = `      (names.length === 0
+        ? ''
+        : \`\\n\${names.map((name) => \`  \${THE_INVOCATION} add \${name}\`).join('\\n')}\`),`
 
 const A_FILE_HOLDING_OUR_BYTES_IS_CLAIMED = `    if (held === undefined) {`
 

@@ -8,7 +8,7 @@ import {
   survivorsByKind,
   theMeasurement,
 } from '../../mutation/published.js'
-import { contractUrl, renderCase, renderContract } from '../registry/address.js'
+import { THE_INVOCATION, contractUrl, renderCase, renderContract } from '../registry/address.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
@@ -259,6 +259,41 @@ describe('the site', () => {
     expect(toText(page(REFUSALS_PAGE))).toContain(
       renderContract(refused?.address as never),
     )
+  })
+
+  /**
+   * Every command the site tells a reader to run carries the invocation this code declares.
+   *
+   * **This is the defect a visitor met, and a contract page is where they met it.** The four contract
+   * pages and the catalogue printed `toopo add …`, which answers `command not found` for anybody who
+   * has installed nothing - and somebody who has installed nothing is exactly who a contract page is
+   * for. It was the first thing they were told to do, and it failed.
+   *
+   * **The subject is the install command and nothing else, which is narrower than it first looked and
+   * is where two wider readings were measured and refused.** Sweeping every occurrence of a command
+   * went red on nine, and sweeping every line that starts with one went red on four: all thirteen are
+   * mutant descriptions the method page publishes - `so \`toopo remove string/pad\` on a …`, and four
+   * that open a sentence with the command they are about. Those name a command as the subject of a
+   * sentence; prefixing them would be false, because nobody is being told to run anything.
+   *
+   * So the sweep is over what the site actually instructs, and an install instruction is recognisable
+   * by construction rather than by punctuation: **it names a contract of this catalogue.** That makes
+   * the population the installable entries rather than a shape in the prose, and it is total over them
+   * - a sixth contract joins this guard by being published, with nothing to add here.
+   */
+  it('every-command-the-site-tells-a-reader-to-run-carries-the-invocation', () => {
+    const everyPage = [...pages().values()].map(toText).join('\n')
+    const installable = index.entries
+      .filter((entry) => entry.installable)
+      .map((entry) => entry.address.name)
+
+    expect(installable).not.toEqual([])
+    expect(
+      installable.filter((name) => !everyPage.includes(`${THE_INVOCATION} add ${name}`)),
+    ).toEqual([])
+    expect(
+      installable.filter((name) => new RegExp(`(?<!npx )toopo add ${name}`).test(everyPage)),
+    ).toEqual([])
   })
 
   /**

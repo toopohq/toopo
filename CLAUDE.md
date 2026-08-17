@@ -292,6 +292,30 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   it, and it does not make the entry above any less open. What changes is only which sentence the first
   dispatch will falsify: not *whether they were set up*, but *whether the four strings and the policy
   are the ones this file just claimed*.
+- **That every surface renders the invocation rather than the bare command name.** This one was met by
+  a visitor rather than found by a sweep: the README and the four contract pages published
+  `toopo add string/slugify`, which answers `command not found` for anybody who has installed nothing —
+  the first thing a visitor does, and it failed. `THE_INVOCATION` is the one spelling measured to work
+  in all three situations — nothing installed, installed globally, installed as a project dependency —
+  and the README and the emitted pages now carry a guard apiece over their own surface.
+
+  **The client's own screens carry none, and that is the open half.** A reader who installed nothing
+  runs `npx toopo list` and is told `Take one out with npx toopo remove …`, which is right today
+  because every one of those strings was converted; nothing stops the next one being written bare, and
+  the reader it would fail is the one the `npx` path just made canonical. **The population is every
+  user-facing string of `packages/cli/`.** What would close it is not a shape — no spelling of a string
+  literal makes the bare form fail to compile, which is ADR-0054's other branch — but the validation
+  stage reading this repository's own strings, already named twice on this list, already priced and
+  already refused as a lint over prose.
+
+  **What the two guards that do exist cost is worth recording, because both were narrowed by
+  measurement rather than by taste.** Sweeping every occurrence of a command on the site went red on
+  nine mentions, and sweeping every line beginning with one went red on four more — all thirteen mutant
+  descriptions the method page publishes, where the command is the subject of a sentence and nobody is
+  being told to run anything. So the site's guard is over the install command and recognises one by the
+  fact that **it names a contract of this catalogue**, and the README's is over what sits inside a shell
+  fence. Neither is a sweep for the word, and a rule that swept for the word would be wrong.
+
 - **That a decision can name what confirms it, when what confirms it is a guard over the five.**
   ADR-0001 requires `confirmed-by` present and non-empty, and a guard is addressed by the pair
   `(suite, guard)`. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the

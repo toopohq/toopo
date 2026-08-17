@@ -114,7 +114,7 @@ const THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT = `  refusal: refusals.find((r
 const AN_UNKNOWN_WORD_IS_ONE_NO_ENTRY_ANSWERS = `    entries.every((entry) => bestHit(word, fieldsOf(entry)) === null),`
 
 const A_REFUSED_CONTRACT_IS_OFFERED_NO_INSTALL_LINE = `      ? first.installable
-        ? [\`\${INDENT}toopo add \${first.address.name}\`, '']
+        ? [\`\${INDENT}\${THE_INVOCATION} add \${first.address.name}\`, '']
         : []`
 
 const THE_MARK_SAYS_IT_IS_NOT_INSTALLABLE = `  \`\${INDENT}\${renderContract(result.address)}\${result.installable ? '' : '   not installable'}\`,`
@@ -352,7 +352,7 @@ export const mutants: readonly Mutant[] = [
     [
       reportFile(
         A_REFUSED_CONTRACT_IS_OFFERED_NO_INSTALL_LINE,
-        `      ? [\`\${INDENT}toopo add \${first.address.name}\`, '']`,
+        `      ? [\`\${INDENT}\${THE_INVOCATION} add \${first.address.name}\`, '']`,
       ),
     ],
     killed(['a-refused-contract-is-offered-no-install-line']),

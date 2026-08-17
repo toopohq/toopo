@@ -22,6 +22,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+import { THE_INVOCATION } from '../registry/address.js'
 import { LOCKFILE } from './lockfile.js'
 
 export const CONFIGURATION_FILE = 'toopo.json'
@@ -173,7 +174,7 @@ export const configurationToInstallUnder = (
         `${LOCKFILE} records installed features and there is no ${CONFIGURATION_FILE}, so nothing ` +
           `knows which folder they are in - a lockfile records each file's path relative to the ` +
           `configured directory and never the directory itself. Name it once and run this again:`,
-        `  toopo init --dir <the folder they are in>`,
+        `  ${THE_INVOCATION} init --dir <the folder they are in>`,
       ],
     }
   }
