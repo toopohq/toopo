@@ -130,6 +130,13 @@ are strings that this repository can change on its own** — renaming the workfl
 silently breaks publication — and **npm's configuration carries no branch**, so the environment is doing
 work that looks like it is being done by the condition in the file.
 
+**And the environment fails in the invisible direction, which is the worst of the four.** GitHub creates an
+environment a job names but that does not exist, *with no protection rules on it* — so a run whose
+`environment: npm` was never configured succeeds, npm's claim carries the environment it was told to expect,
+and the branch gate that the file leans on is absent while everything reads as configured. There is no
+error anywhere in that sequence. It is the same shape as a request that answers about content being asked
+about existence: the only thing that settles it is looking at the listing.
+
 Nothing here can read any of it. It is on the list in `CLAUDE.md` of what this repository declares and
 nothing keeps, with the price of closing it: an authenticated read of npm's own API, which is a credential
 on a runner for a question about not needing one.
