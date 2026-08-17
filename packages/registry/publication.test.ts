@@ -7,7 +7,12 @@ import { trackedFiles } from '../../mutation/paths.js'
 import { THE_ORIGIN, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
 import { THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
-import { THE_AUTHOR_FIELD, THE_MINIMUM_RUNTIME, THE_SOURCE_REPOSITORY } from './publication.js'
+import {
+  THE_AUTHOR_FIELD,
+  THE_MINIMUM_RUNTIME,
+  THE_PACKAGE_NAME,
+  THE_SOURCE_REPOSITORY,
+} from './publication.js'
 import { REPOSITORY_ROOT, referenceImplementationOf } from './serialise.js'
 import { theFive } from './the-five.js'
 
@@ -109,7 +114,12 @@ describe('what this repository publishes about itself', () => {
   })
 
   /**
-   * The npm page and the code agree, on the four fields that are facts rather than prose.
+   * The npm page and the code agree, on every field of the manifest that is a fact rather than prose.
+   *
+   * **No count is carried, and the reason is that the one that used to be here was wrong.** It read
+   * *the four fields* while asserting five, because `engines` was added and the sentence was not. The
+   * population is what the paragraph below states - every field that resolves to something declared in
+   * code - and that is true without counting.
    *
    * `package.json` cannot import, so these are transcriptions and this is what resolves them. The
    * fields nobody can derive - a description, a keyword list - are not asserted here: a guard
@@ -127,13 +137,19 @@ describe('what this repository publishes about itself', () => {
    */
   it('the-public-fields-npm-shows-are-the-ones-this-code-declares', () => {
     const manifest = JSON.parse(readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8')) as {
+      readonly name?: unknown
       readonly license?: unknown
       readonly homepage?: unknown
       readonly repository?: unknown
       readonly author?: unknown
       readonly engines?: unknown
+      readonly bin?: Readonly<Record<string, unknown>>
     }
 
+    expect(manifest.name).toBe(THE_PACKAGE_NAME)
+    // The key and not the path: npm writes the shim from the key, so a `bin` naming another command
+    // is `npx toopo` reaching nothing, on the one field a first publication settles for ever.
+    expect(Object.keys(manifest.bin ?? {})).toEqual([THE_PACKAGE_NAME])
     expect(manifest.license).toBe(THE_REPOSITORY_LICENCE)
     expect(manifest.homepage).toBe(THE_ORIGIN)
     expect(manifest.repository).toEqual({ type: 'git', url: THE_SOURCE_REPOSITORY })

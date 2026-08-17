@@ -70,6 +70,24 @@ export const THE_AUTHOR = {
 export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
 
 /**
+ * The name the package is published under, and the word a user types.
+ *
+ * **It is the most irreversible field of the manifest and it was declared in no code at all**, which
+ * the inventory before the launch is what found. Every other field here can be corrected by publishing
+ * a later version; a name cannot. npm does not rename a package, and it does not let a deleted name be
+ * taken again - so the first publication settles it for the life of the registry, and until this
+ * constant existed the only statement of it was a string in `package.json` that nothing read.
+ *
+ * **One string and three consumers, which is why it is worth a constant rather than a transcription.**
+ * It is the package `npm install` resolves, the key of `bin` - which is what npm writes the shim from,
+ * so the two disagreeing is `npx toopo` reaching nothing - and the command every contract page tells a
+ * reader to run. `the-public-fields-npm-shows-are-the-ones-this-code-declares` resolves the first two
+ * against this; the third is already kept by
+ * `npm-writes-a-shim-for-the-command-the-site-tells-people-to-run`.
+ */
+export const THE_PACKAGE_NAME = 'toopo'
+
+/**
  * The runtimes the published command runs on, derived from what it calls rather than chosen.
  *
  * Two APIs set it and they agree. `packages/cli/diff.ts` imports `diff` from `node:util`, which
