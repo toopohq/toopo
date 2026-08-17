@@ -125,12 +125,35 @@ elapsed, three guards failed. A registry that never stops disagreeing does not b
 the three guards failing with the client's own message. A real failure is not waited on, which is the
 half that would be easy to lose.
 
-**And the condition that produced the original red no longer produces it — stated as what it is.** The
-transient cannot be summoned on demand, so what is offered is a count and not a proof: with the
-pre-flight, two runs of `70bb31c` gave one red and one green; with the retry, the runs recorded in the
-commit that carries this record were green. An intermittent fault is not demonstrated absent by any
-number of green runs, and this record claims only that the mechanism which failed has been replaced by
-one whose two failure modes were each seen.
+**And the condition that produced the original red produced a wait instead, on the first run after the
+repair.** It did not have to be summoned. At `92e6acd`, attempt 1:
+
+```
+13:53:45.05  the client refused … answers 2 revisions - 70bb31c…, 92e6acd…
+13:53:50.43  the client refused … answers 1 revisions - 92e6acd…
+13:53:55.86  against https://toopo.dev, which is serving 92e6acd…   4 passed
+```
+
+That is the exact state that was a red one commit earlier — the index from the old deployment, the
+bindings from the new — arriving as two waits and a green.
+
+**The middle line is the one worth reading twice, and it is this record's argument measured rather than
+asserted.** At 13:53:50 the origin *as this suite reads it* answered one revision, and the client,
+asking a moment later, refused anyway. **A repair that waited until the suite saw one revision and then
+ran the chain once would have failed there too** — which is precisely the repair that was rejected
+above, refuted by the log of the mechanism that replaced it rather than by the reasoning that rejected
+it.
+
+**It also gives the propagation span its first coordinate.** First refusal to finished chain: about
+**10.8 seconds**, against a bound of 120. That is one deployment and closes nothing — the open entry in
+`CLAUDE.md` says in as many words that one run measures one deployment — but it is the first figure that
+list has ever had for this, and the retry is what produced it.
+
+**What no number here demonstrates.** Three runs after the repair, three green, one of them by
+recovering. Before it, two runs of `70bb31c` gave one red and one green. **An intermittent fault is not
+shown absent by any count of green runs**, and this record claims only what was seen: the mechanism
+that failed is replaced by one whose two failure modes were each observed red, and whose recovery was
+observed once on the real condition.
 
 ## What would reopen this
 

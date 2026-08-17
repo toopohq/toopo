@@ -221,11 +221,17 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
 
   **What stays open is what this entry always meant, with the prediction removed.**
   `THE_PROPAGATION_BOUND` is two minutes chosen against the cost of the step and not against
-  Cloudflare, and how long a rollout takes is still not measured. The population is every deployment
-  this repository makes, and what would close it is the cheapest measurement on this list: the retry
-  now knows when the client first refused and when it stopped, so recording that span over some runs
-  turns the bound into a figure with coordinates. Not built, and the reason is that one run measures
-  one deployment.
+  Cloudflare. **It now has one coordinate and needs a population**: measured at `92e6acd`, attempt 1,
+  the retry fired on the real condition — the index from the old deployment, the bindings from the new
+  — and the span from the client's first refusal to a finished chain was about **10.8 seconds**. One
+  deployment. The population is every deployment this repository makes, so what would close this is the
+  same span over enough of them to say whether 120 seconds is generous or lucky, and the retry now
+  records both ends of it on every run that waits. Not built, because one run measures one deployment.
+
+  **The same run refuted the repair nobody wrote, which is worth more than the figure.** Five seconds
+  after the first refusal the origin answered *one* revision to this suite and the client refused
+  again. A wait that ran the chain once as soon as the suite saw agreement would have been red there —
+  and that is the shape the pre-flight had.
 - **That a decision can name what confirms it, when what confirms it is a guard over the five.**
   ADR-0001 requires `confirmed-by` present and non-empty, and a guard is addressed by the pair
   `(suite, guard)`. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the
