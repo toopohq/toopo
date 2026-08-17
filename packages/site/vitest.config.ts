@@ -3,12 +3,13 @@ import { defineConfig } from 'vitest/config'
 /**
  * `npm run site` means the generator's own guards, and nothing else.
  *
- * The sixth configuration in this repository, for the three reasons `packages/registry/vitest.config.ts` and
- * `packages/cli/vitest.config.ts` already record: a guard collected by `npm test` enters every cell of every
- * contract battery; a type error anywhere in the root `tsconfig.json`'s `include` makes `npm test`
- * exit non-zero with no failed guard, which the instrument reads as every cell killed by typecheck;
- * and the guards here serialise all five contracts, which reads thirty-seven files and would be paid
- * once per injected defect on every battery in the repository.
+ * The reasons `packages/registry/vitest.config.ts` records apply here unchanged: a guard collected by
+ * `npm test` enters every cell of every contract battery, and a type error anywhere in the root
+ * `tsconfig.json`'s `include` makes `npm test` exit non-zero with no failed guard, which the
+ * instrument reads as every cell killed by typecheck.
+ *
+ * This folder adds one of its own: the guards here serialise all five contracts, which reads
+ * thirty-seven files and would be paid once per injected defect on every battery in the repository.
  *
  * Nothing here writes a file. The pages are built in memory and compared in memory - `build.ts` is the
  * only thing that writes, and it is not a guard. That is deliberate rather than incidental: what the

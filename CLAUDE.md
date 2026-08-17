@@ -199,18 +199,28 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
    leaves the false half of a true sentence lying where somebody will read it.
 
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
-decision record.** Two closed by stage 1 of the validation pipeline and are in ADR-0005; three closed by
-the two-phase write and are in ADR-0039; the class of a declared address nobody resolved closed in
-ADR-0060; permanent rule 6 closed in ADR-0093, and it was never on this list; the three about what git
-holds — a citation that resolves, an address no commit carries, a checkout nothing leaves behind —
-closed together in ADR-0095, because all three are one walk over the same graph; the playground
-reading what a reader types closed in ADR-0096; a replay that could not finish closed in ADR-0102,
-which found a second entry for this list on its way out and put it there; the address a host serves
-closed in ADR-0103; and an archive that really installs a feature closed in ADR-0104, on the event it
-had named, leaving two entries behind it — one for the third guard it did not bring back, one for the
-revision it reports without resolving.
+decision record.** They are a list and not a sentence, and that is a repair rather than a layout:
+this paragraph was a chain of nine clauses joined by semicolons, one unit having added each, and it
+carried five hands at `50cc54f` — the joint-highest in the repository. A closure is one line, so
+adding one cannot lengthen anything a reader has already read. ADR-0112.
 
-**That last one is where rule 2 above was broken, by the commit that built the mechanism.** The entry
+- two closed by stage 1 of the validation pipeline — ADR-0005;
+- three closed by the two-phase write — ADR-0039;
+- the class of a declared address nobody resolved — ADR-0060;
+- permanent rule 6, which was never on this list — ADR-0093;
+- the three about what git holds, a citation that resolves, an address no commit carries and a
+  checkout nothing leaves behind — ADR-0095, all three together because they are one walk over the
+  same graph;
+- the playground reading what a reader types — ADR-0096;
+- a replay that could not finish — ADR-0102, which found a second entry for this list on its way out
+  and put it there;
+- the address a host serves — ADR-0103;
+- an archive that really installs a feature — ADR-0104, on the event it had named, leaving two
+  entries behind it: one for the third guard it did not bring back, one for the revision it reports
+  without resolving.
+
+**The address a host serves is where rule 2 above was broken, by the commit that built the
+mechanism.** The entry
 was closed in fact by `e4eca00`, the move to Pages, which changed eight files and none of them this
 one — so for three commits this list carried a live entry about a redirect that no longer happened,
 and the paragraph above it described the host that had been left behind. Nobody was misled only
@@ -218,8 +228,8 @@ because nobody read it in that window. **A mechanism and its entry are one event
 said so**; what this instance adds is that the sweep is owed even when the mechanism looks like a
 one-field configuration change, because it is the *entry* that names the fact, not the diff.
 
-**That last one is the only entry this list ever carried that no guard could have caught**, because it
-was a decision taken in conversation and written nowhere — the repository held no half for the code to
+**The playground reading what a reader types is the only entry this list ever carried that no guard
+could have caught**, because it was a decision taken in conversation and written nowhere — the repository held no half for the code to
 disagree with. It is also the entry that paid for itself twice over on the way out: closing it found
 *two* published sentences of this repository false, both in the record that had argued the opposite
 position, and both of the class the entry was about. One clause asserted that a raw text field could
@@ -229,8 +239,8 @@ ordinary space carry opposite answers were **identical, byte for byte**, having 
 somewhere they were written. A block whose entire purpose was to show two things differing showed the
 same string twice, with two different reasons beside it, and nothing could have caught that either.
 
-**That last one is the finding this section has to keep, because it is about the section rather than
-about the entry.** *A published version is frozen for life* is the biggest `one-directional`
+**The finding this section has to keep is the one above, because it is about the section rather than
+about any entry.** *A published version is frozen for life* is the biggest `one-directional`
 declaration this repository has ever carried — it is the whole security argument, every lockfile in the
 world would hold the digest it moved, and it is what the product is sold on. It has been in this file
 since the first commit, 367 commits before `74904ef`. This list has existed for 271 of them, for exactly
@@ -266,6 +276,29 @@ whichever ref somebody was standing on, so: **a count that bounds a defect names
 swept**, and `--all` is the only spelling of *this repository* that a tag cannot fall out of.
 
 **Still open, and what each one now costs.**
+
+- **That a paragraph of prose has been read whole by somebody.** ADR-0112 makes it measurable: a
+  paragraph has an author when one commit's blame covers every one of its lines, `npm run hands`
+  counts them, and at `50cc54f`, over all 362 tracked sources, **32 paragraphs of 8 046 carry three
+  hands or more**. Of the 22 in the three populations that unit swept, **nine needed rewriting and
+  thirteen did not** — so the reading designates a zone rather than measuring a defect, and it is
+  worth taking again but never worth acting on unread. **The population is every paragraph of prose
+  this repository holds**, and nothing keeps it between readings.
+
+  **A guard is refused rather than unbuilt, and the argument is the reflow.** `git blame` attributes a
+  line to the commit that last changed it, so a commit that rewraps a paragraph returns it to one hand
+  with the prose untouched — a check whose cheapest satisfaction is a whitespace change, which is a
+  ritual and would be read as coverage. Its red event is the wrong one too: *somebody edited prose
+  twice*, not *prose is defective*. What stands in a guard's place is that the reading is a **command
+  and not a number in prose**, which is the treatment the `1.0.1` tree digest was withdrawn for
+  lacking. It closes the day a reading's repaired-to-healthy ratio approaches *n* of *n*, at which
+  point a refusal becomes arguable — against the reflow, which does not go away.
+
+  **Two instances are left standing and named rather than swept up.** `mutation/census.ts` carries *A
+  twelfth on the licence* and *A thirteenth on the narrowing*; `packages/registry/local-read-api.ts`
+  carries *The third reader of one source*, which is true today and states its own population one
+  paragraph below. Both are the rank defect the four vitest configurations were repaired for, and
+  neither is in a population that unit swept.
 
 - **That the spelling this product prints resolves wherever it says it does.** `renderImportLine` ended
   *the one spelling TypeScript and every bundler resolve* until ADR-0110, and that clause was wider
@@ -792,11 +825,13 @@ These outlive the current stage and are not open to trade-off.
 - English everywhere: code, identifiers, comments, tests, commit messages, documentation.
 - Conventional commits, atomic. **`main` is pushed at the end of a unit, and a unit is not finished
   until the run it triggers is green** — every suite on two runtimes, the deployment behind them,
-  and the one proof that reaches it. The count this line used to carry is gone rather than raised, by
-  the rule 467 established one section up: a rank is checked only by rebuilding the whole list, and
-  what the sentence is about does not need one. Nothing else: no force, no tag, no rewriting of history. This line read
-  *never push and never create a remote* until the CI existed, at which point holding the two apart
-  stopped protecting anything and only delayed the reading that says the unit worked.
+  and the one proof that reaches it. Nothing else: no force, no tag, no rewriting of history.
+
+  Two clauses this line used to carry are gone. It counted the suites, struck by the rule 467
+  established one section up — a rank is checked only by rebuilding the whole list, and what the
+  sentence is about does not need one. And it read *never push and never create a remote*, which held
+  until the CI existed, at which point keeping the two apart stopped protecting anything and only
+  delayed the reading that says the unit worked.
 - **Nothing publishes to npm from a keyboard, and nothing asks for a publication either.** This line read
   *nothing to npm ever* until `1.0.0` was published by hand, and then named a dispatch carrying a typed
   word until that turned one decision into two gestures. A publication is a **push of `main` declaring a

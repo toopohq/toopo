@@ -71,11 +71,8 @@ export type Command =
  * and nobody would choose it deliberately - which is exactly why it has to be refusable by pointing at
  * a sentence.
  *
- * ---------------------------------------------------------------------------
- * The case that tested it: `toopo init --dir` moving an installed folder
- * ---------------------------------------------------------------------------
- *
- * That command now takes files out of one folder and writes them into another, which reads at first
+ * **The case that tested it is `toopo init --dir` moving an installed folder.** That command now
+ * takes files out of one folder and writes them into another, which reads at first
  * like the very thing the rule asks a second word for. It does not, on two counts, and both are worth
  * having on the record because the next command that moves something will raise the question again.
  *

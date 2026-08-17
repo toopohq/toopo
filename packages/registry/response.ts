@@ -410,11 +410,8 @@ export type ServedExport = {
  * still be findable, because somebody searching for `groupBy` should be told the catalogue considered
  * it and why, rather than being told nothing. What must never happen is offering to install it.
  *
- * ---------------------------------------------------------------------------
- * `exports` is here, and it was put here by a consumer rather than by design
- * ---------------------------------------------------------------------------
- *
- * `toopo add` could not name what it had just installed. It printed a file system path, and the one
+ * **`exports` is here, and a consumer put it here rather than design.** `toopo add` could not name
+ * what it had just installed. It printed a file system path, and the one
  * line the user actually needs - `import { parseNumber } from '...'` - was unreachable: an export name
  * is not derivable from an address (`number/parse` exports `parseNumber`), it lives in
  * `identity.exportName` and `surface.exports` on the *contract* record, and the installer's port

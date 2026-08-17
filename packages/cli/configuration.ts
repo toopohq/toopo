@@ -133,11 +133,8 @@ export type ConfigurationToUse =
 /**
  * Which configuration `toopo add` installs under, decided from values alone.
  *
- * ---------------------------------------------------------------------------
- * `init` stops being a toll
- * ---------------------------------------------------------------------------
- *
- * `add` used to refuse a project with no `toopo.json` and name `toopo init`. That stopped somebody for
+ * **`init` stops being a toll.** `add` used to refuse a project with no `toopo.json` and name
+ * `toopo init`. That stopped somebody for
  * nothing: the only thing an install needs to know is a folder, `proposeDirectory` already deduces one,
  * and nothing was at stake in asking. So a project with nothing in it gets the proposed folder written
  * and is told so - **the report says a file appeared**, because a committed file arriving unannounced is
@@ -147,11 +144,8 @@ export type ConfigurationToUse =
  * `init` keeps every reason it had, for whoever wants to choose in advance. What it loses is the right
  * to stand in front of the first command anybody types.
  *
- * ---------------------------------------------------------------------------
- * The one project that is refused, and why removing a friction revealed it
- * ---------------------------------------------------------------------------
- *
- * A lockfile with no configuration beside it is the case the old refusal was covering by accident.
+ * **One project is refused, and removing a friction is what revealed it.** A lockfile with no
+ * configuration beside it is the case the old refusal was covering by accident.
  * **`toopo.lock` records each file's path relative to the configured directory and never the directory
  * itself** - `list.ts` and `write.ts` both join the two - so a project holding installed features and no
  * `toopo.json` is one where the folder is not recoverable from anything on disk. Proposing one would

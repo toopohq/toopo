@@ -9,15 +9,16 @@
  *
  * Nothing below is a string. That is the whole content of this file: a `ContractAddress` is a value
  * with three parts, and a guard is addressed by the *pair* `(contract, guard)` and by no other shape,
- * because there is no type here that carries a guard identifier on its own. ADR-0019 names that
- * cost in advance - "the registry schema must always carry the pair, never the identifier alone" -
- * and ADR-0099 is why the `@` stayed when one host served it behind a redirect,
- * and ADR-0031 is why `THE_ORIGIN` below is declared here rather than in the folder that renders it,
- * ADR-0049 is why every rendering carries the language, and ADR-0054 is the shape this file is the
- * first instance of -
- * and fifteen identifier strings are held by more than one contract today, so the cost is already
- * due. A rule that lives in a sentence is a rule the sixth contract's author never reads; making the
- * unpaired form unrepresentable is what turns it into something the compiler keeps.
+ * because there is no type here that carries a guard identifier on its own. ADR-0019 names that cost
+ * in advance - "the registry schema must always carry the pair, never the identifier alone" - and the
+ * cost is already due: identifiers are held by more than one contract today, `determinism` by all
+ * five of them. A rule that lives in a sentence is a rule the sixth contract's author never reads;
+ * making the unpaired form unrepresentable is what turns it into something the compiler keeps.
+ *
+ * The records the rest of this file answers to: ADR-0031 is why `THE_ORIGIN` is declared here rather
+ * than in the folder that renders it; ADR-0049 is why every rendering carries the language; ADR-0054
+ * is the shape this file is the first instance of; ADR-0099 is why the `@` survived a host that
+ * served it behind a redirect.
  */
 
 import { isFrozenIdentifier } from '../catalogue/identifier.js'
@@ -127,11 +128,8 @@ export type MutantAddress = {
  * spellings of one value, which is the drift this file exists to prevent. `licence.ts` refused the
  * literal MIT notice at +52 per cent on that same figure; there is no arbitration at 0.68.
  *
- * ---------------------------------------------------------------------------
- * Why there is no second, language-less form - measured rather than preferred
- * ---------------------------------------------------------------------------
- *
- * A short form for local use reads as an economy: a screen line is not frozen, and every address inside
+ * **Why there is no second, language-less form, measured rather than preferred.** A short form for
+ * local use reads as an economy: a screen line is not frozen, and every address inside
  * one client carries one language, so the coordinate is constant there. It is refused because that form
  * has already produced a defect, and the defect is in a *key* rather than on a screen. `planInstall`
  * keys the features of one plan by this string. With the language dropped, two contracts of two

@@ -7,10 +7,10 @@
  * created inside the test process, listens on a port the operating system picks, and is closed by the
  * guard that made it.
  *
- * It sits in `packages/cli/` beside `imagined-source.ts`, `temporary-project.ts` and `serving-a-tree.ts`, which
- * are the modules here that exist for guards. `packaging/build.ts` prunes what the published entry point
- * cannot reach, so none of the three ships, and `archive.test.ts` is what says so rather than this
- * sentence.
+ * It sits in `packages/cli/` with the other modules here that exist for guards rather than for the
+ * product. None of them ships: `packaging/build.ts` prunes what the published entry point cannot
+ * reach, and `archive.test.ts` is what says so rather than this sentence - which is why the list is
+ * not written out here, where it would go stale the day a fifth one is added.
  *
  * ---------------------------------------------------------------------------
  * It serves a `RegistrySource`, so there is nothing here that knows a catalogue

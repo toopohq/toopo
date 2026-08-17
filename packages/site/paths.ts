@@ -92,11 +92,8 @@ export const METHOD_PAGE = 'method/index.html'
  * specifiers the source already writes - so the site's layout *is* the source's layout, and a reader
  * who opens it sees the file it came from rather than a bundle that corresponds to nothing.
  *
- * ---------------------------------------------------------------------------
- * An open question, recorded rather than answered
- * ---------------------------------------------------------------------------
- *
- * That paragraph was written when this folder was `site/`, and the move to `packages/` is what made
+ * **An open question, recorded rather than answered.** That paragraph was written when this folder
+ * was `site/`, and the move to `packages/` is what made
  * it worth re-reading: the served address became `/packages/site/start.js`, and `packages` is a word
  * about how this repository is organised that means nothing to a visitor. Beside it, on the same
  * site, `/typescript/number/parse@1/` is an address that was *designed* - the language is a

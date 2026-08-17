@@ -10,12 +10,11 @@
  * ---------------------------------------------------------------------------
  *
  * A playground field declared `Duration` holds a literal, and the literals this catalogue publishes
- * are not JSON. Block
- * 4.4 alone settles cases on `{ days: undefined }`, on `-0`, on `Infinity`, on `NaN`, on a lone
- * surrogate, on a hole in a sparse array, on a symbol, on a regular expression, and on two fields
- * holding the *same* object. `JSON.parse` answers a different value for five of those and refuses the
- * rest - which is why `packages/registry/value.ts` exists at all, and this file is that argument arriving from
- * the other direction.
+ * are not JSON. Block 4.4 alone settles cases on `{ days: undefined }`, on `-0`, on `Infinity`, on
+ * `NaN`, on a lone surrogate, on a hole in a sparse array, on a symbol, on a regular expression, and
+ * on two fields holding the *same* object. `JSON.parse` answers a different value for five of those
+ * and refuses the rest - which is why `packages/registry/value.ts` exists at all, and this file is
+ * that argument arriving from the other direction.
  *
  * ---------------------------------------------------------------------------
  * The two arms it refuses, and why refusing is the whole point
