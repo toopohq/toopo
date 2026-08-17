@@ -386,6 +386,27 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * replaces is nearly seven minutes, and this machine has moved `cli-install` alone by more than three
  * on identical work - so the arithmetic bounds what the change can have cost and says nothing about
  * where the step went, which is the rule the paragraph below already holds every other reading to.
+ *
+ * **The sixth reading is the first whose published figure has a twin of its own population**, which is
+ * the thing the fourth reading supplied for a population that was never the published one. The 662
+ * cells ran at 42 min 16 s and at 42 min 32 s, **sixteen seconds apart** - a fifth of the eighty
+ * seconds the 618 gave and less than a third of the fifty-three the 623 gave, and it is now the
+ * tightest pair this machine has produced. The clause that said *this population has one reading, so
+ * the figure above is bounded by the readings of every other population rather than by a twin of its
+ * own* is retired: it is bounded by its own twin.
+ *
+ * **The two commits are not the same commit, and the claim is made in the form it can be defended
+ * in.** They differ by files that no battery collects and none injects into - the proof against the
+ * origin, the workflow that runs it, and prose - so what was replayed is the same work and not merely
+ * the same size. That is weaker than running one commit twice and stronger than comparing
+ * populations, and saying which of the three it is costs one sentence.
+ *
+ * **It replaces the fifth rather than joining it, on that record's own rule.** The population moved
+ * from 660 to 662: ADR-0105 added two cells and put a walk over what each contract imports into every
+ * record the run builds. **No share of the fifty-two seconds between the two published figures is
+ * attributed to that**, and the reason is the one this file gives every time: the pair above differs
+ * by sixteen seconds with nothing moved at all, so a step of that size on this machine is inside the
+ * noise and an account of where it went would be invented.
  */
 /**
  * Every commit this data quotes, declared once so that a guard can take all of them off both sides.
@@ -406,10 +427,12 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * addresses is not something a reader is owed.
  */
 const QUOTING = {
-  thisRun: '1fb1d85',
-  thePublishedRunItReplaces: '3949c87',
-  theFasterOfTheClosestPair: 'b438de2',
-  theSlowerOfTheClosestPair: '75d3358',
+  thisRun: '7dc3b6a',
+  theTwinOfThisRun: 'f5cf8f2',
+  thePublishedRunItReplaces: '1fb1d85',
+  theRunThatOneReplaced: '3949c87',
+  theFasterOfTheClosestPairOfAnyOtherPopulation: 'b438de2',
+  theSlowerOfTheClosestPairOfAnyOtherPopulation: '75d3358',
   theFasterOfTheWidestPair: '6226769',
   theSlowerOfTheWidestPair: '5bb4e97',
 } as const
@@ -423,19 +446,23 @@ export const THE_REPLAY = {
     'happened against what the battery pinned, and prints the total. A single cell that disagrees ' +
     'fails the run.',
   /** One run of the nineteen, on one machine, at the commit below. Read it beside `spread`. */
-  duration: '41 min 24 s',
+  duration: '42 min 16 s',
   measuredAt: QUOTING.thisRun,
   /** Every other replay taken on the same machine, so the figure above is not read to the second. */
   spread:
-    'every population here is counted in defect cells, and this reading is of 660 where the figure ' +
-    `it replaces was of 631 - so the 34 min 30 s at \`${QUOTING.thePublishedRunItReplaces}\` is a ` +
-    'real past reading of different work rather than a faster version of this one, and the ' +
-    'instrument gained a reading of its own between them. This population has one reading, so the ' +
-    'figure above is bounded by the readings of every other population rather than by a twin of its ' +
-    'own. The closest two of one population this machine has given are the 623 cells: 28 min 9 s at ' +
-    `\`${QUOTING.theFasterOfTheClosestPair}\` and 29 min 2 s at ` +
-    `\`${QUOTING.theSlowerOfTheClosestPair}\`, fifty-three seconds apart on identical ` +
-    'work. The widest is four and a half minutes, over ' +
+    'every population here is counted in defect cells, and this reading is of 662 where the figure ' +
+    `it replaces was of 660 - so the 41 min 24 s at \`${QUOTING.thePublishedRunItReplaces}\` is a ` +
+    'real past reading of different work rather than a faster version of this one, and that one in ' +
+    `turn replaced 34 min 30 s at \`${QUOTING.theRunThatOneReplaced}\` over 631. **This population ` +
+    'is the first whose published figure has a twin of its own**, which every earlier version of ' +
+    'this sentence had to say it lacked: the same 662 cells ran at 42 min 32 s at ' +
+    `\`${QUOTING.theTwinOfThisRun}\`, **sixteen seconds apart**. The two commits differ by files no ` +
+    'battery collects or injects into, so the work is the same work and not merely the same size. ' +
+    'That is the tightest pair this machine has ever given and it retires the sentence it replaces: ' +
+    'the closest two of any *other* population are the 623 cells, 28 min 9 s at ' +
+    `\`${QUOTING.theFasterOfTheClosestPairOfAnyOtherPopulation}\` and 29 min 2 s at ` +
+    `\`${QUOTING.theSlowerOfTheClosestPairOfAnyOtherPopulation}\`, fifty-three seconds apart - more ` +
+    'than three times the spread of the pair above. The widest is four and a half minutes, over ' +
     `the 621: 28 min 1 s at \`${QUOTING.theFasterOfTheWidestPair}\` and ` +
     `32 min 28 s at \`${QUOTING.theSlowerOfTheWidestPair}\`. Every reading below can only approximate ` +
     'the same point by comparing ' +
