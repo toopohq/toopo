@@ -603,7 +603,7 @@ export const battery: Battery = {
         'the-folder-that-was-left-stays-when-it-holds-something-else',
         'the-graph-lands-as-a-tree-of-features',
         'the-import-line-follows-the-configured-directory',
-        'the-local-source-binds-a-visibly-unpublished-version',
+        'the-local-source-binds-the-version-the-registry-published',
         'the-lockfile-holds-what-was-served-and-what-was-written',
         'the-plan-is-in-the-resolutions-order',
         'the-port-answers-every-need-behind-it-and-nothing-else',

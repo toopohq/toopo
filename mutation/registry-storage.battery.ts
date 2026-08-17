@@ -1404,11 +1404,11 @@ export const battery: Battery = {
     /**
      * Out of reach because both of its answers are computed somewhere this battery cannot edit.
      *
-     * `the-decision-to-publish-moves-no-digest` compares the subject's publication commit against this
-     * repository's head, and *both* digests come back from `print-ledger.ts` running in a child process
-     * over a checkout of a commit. This battery edits the working tree, and a working tree is the one
-     * thing neither of those two processes reads - so a mutant would have to reach into a checkout of
-     * a commit it did not make.
+     * `the-decision-to-publish-moves-no-digest` compares three commits of the subject clone against
+     * each other, and every digest comes back from `print-ledger.ts` running in a child process over a
+     * checkout of one of them. This battery edits the working tree, and a working tree is the one
+     * thing none of those processes reads - so a mutant would have to reach into a checkout of a
+     * commit it did not make.
      *
      * The three guards beside it in that file are reddened, and the difference is where the comparison
      * happens rather than where the subject does: those compare through `rebinding.ts`, which is
@@ -1426,6 +1426,19 @@ export const battery: Battery = {
         'the seam it reads is composed in a contract folder, and this battery edits `packages/registry/` only ' +
         '- measured, emptying the reason in `serialise.ts` removes the occurrence rather than ' +
         'misplacing it, and the whole suite stays green',
+    },
+    /**
+     * Both halves of it are files this battery may not touch. `package.json` is the repository's own
+     * manifest and `THE_PACKAGE_VERSION` is read from `publication.ts`, which is in this folder - but
+     * the guard asserts the *absence* of a field in the manifest and the absence of a script naming
+     * `npm publish`, and neither of those is a value `packages/registry/` decides. An edit here cannot
+     * put `private: true` back.
+     */
+    {
+      guards: ['the-manifest-carries-no-private-flag-and-the-catch-that-replaces-it-is-named'],
+      reason:
+        'it asserts what the repository\'s own `package.json` does not carry, and a battery may edit ' +
+        'only the folder under measurement',
     },
   ],
 
@@ -1449,6 +1462,25 @@ export const battery: Battery = {
    * twenty-two had no perturbation written at all.
    */
   unprobedRegions: [
+    /**
+     * The sentence the README publishes about the size of this catalogue, against what `theFive`
+     * declares. It is reachable from here and no mutant reaches it.
+     *
+     * `the-five.ts` is in this folder, so an edit that moved `array/group-by@1` out of
+     * `never-published` would take the refused count to zero and redden it - which is the mutant this
+     * region asks for. It is not written here because that edit reddens the refusals page, the index
+     * and the installability of a contract the catalogue turned down, so the cell would attribute its
+     * kill to any of a dozen guards; naming this one would need a narrower edit than the data allows.
+     * A sixth contract, or a second refused one, makes the count movable without moving anything else.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'an edit to `the-five.ts` that changed how many contracts are refused would redden it, and ' +
+        'every such edit also reddens the refusals page and the index - so no mutant here names this ' +
+        'guard rather than a dozen',
+      guards: ['the-readme-counts-the-catalogue-the-registry-declares'],
+    },
     /**
      * The reading of a declared signature, on the shapes the five actually write.
      *

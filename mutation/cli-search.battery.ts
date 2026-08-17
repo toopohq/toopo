@@ -601,7 +601,7 @@ export const battery: Battery = {
         'the-graph-lands-as-a-tree-of-features',
         'the-import-line-follows-the-configured-directory',
         'the-listing-hashes-the-disk-rather-than-reading-what-we-recorded',
-        'the-local-source-binds-a-visibly-unpublished-version',
+        'the-local-source-binds-the-version-the-registry-published',
         'the-lockfile-holds-what-was-served-and-what-was-written',
         'the-lockfile-standing-is-asked-and-not-predicted',
         'the-plan-is-in-the-resolutions-order',

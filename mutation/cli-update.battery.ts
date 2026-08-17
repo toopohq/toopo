@@ -772,7 +772,7 @@ export const battery: Battery = {
         'every-shape-of-import-is-repointed-and-not-only-the-obvious-one',
         'nothing-but-the-local-adapter-reaches-the-serialisation',
         'the-cost-is-stated-before-the-files',
-        'the-local-source-binds-a-visibly-unpublished-version',
+        'the-local-source-binds-the-version-the-registry-published',
         'the-plan-is-in-the-resolutions-order',
         'the-port-answers-every-need-behind-it-and-nothing-else',
         'the-three-spellings-of-one-file-all-resolve',

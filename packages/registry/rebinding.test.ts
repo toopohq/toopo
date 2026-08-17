@@ -24,10 +24,15 @@ import { EMPTY_LEDGER, publishContract, withContractStanding } from './snapshot.
  * would say anything on the day they disagree. `rebuilt.test.ts` is where the reader is asked to
  * produce a real digest from a real commit, on a repository built to be published from and edited.
  *
- * What no guard in this file can establish is that anything is published. Nothing is - the stand-ins
- * mint forty zeros - so the population these faults are computed over is empty in this repository, and
- * `the-five-anchor-nothing-and-the-check-says-which` is written to be the sentence that says so rather
- * than a green tick over no rows.
+ * What no guard in this file can establish is that the rule holds for *this* catalogue at *this*
+ * commit. Every fault above is computed with the past handed in, so what is proved is the comparison
+ * and never the rebuilding. `against-what-was-published/` is where the two are put together over the
+ * eight bindings this tree really mints, and it is a suite of its own because it spawns a checkout and
+ * a process per revision - ADR-0107.
+ *
+ * What is left here is the cheap half, which a battery may replay sixty times for nothing: the
+ * population is not empty. That guard used to assert the opposite, and its own comment named the day
+ * it would become false; the sentence is kept where it stands, one screen down.
  */
 
 const ADDRESS = { language: 'typescript' as const, name: 'number/parse', major: 1 }
