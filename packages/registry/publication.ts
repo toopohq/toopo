@@ -78,22 +78,34 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * already holds its contracts to, and the youth of the catalogue is a sentence the README owes a
  * reader rather than a digit nobody can read. ADR-0048 records the order a publication takes.
  *
- * **It is 1.0.1 because what 1.0.1 corrects is not in the program.** `1.0.0` was published from a
- * keyboard: it carries no provenance attestation at all, and the registry's record of it names a
- * personal account. An archive that cannot be tied to the commit or to the run that built it is a
- * defect of the artefact rather than of the code - which on a package whose whole argument is *go and
- * check* is the defect that matters most - and an artefact is corrected only by publishing another
- * one. ADR-0109 is what makes the next one different.
+ * **It is 1.0.2 because what 1.0.2 corrects is in the program, and that makes it the first release of
+ * this package whose compiled content differs from its predecessor's.** The two before it did not.
+ * `1.0.0` was published from a keyboard, carried no provenance attestation and named a personal
+ * account; `1.0.1` corrected that artefact and nothing else, and its `dist/` was byte for byte
+ * `1.0.0`'s. ADR-0109 is what made the publication itself different. This one carries out a defect a
+ * reader met instead: the client's own screens sent them to a command that answers `command not found`
+ * for anybody who has installed nothing, which is every reader who took the `npx` path the site now
+ * prints.
  *
- * **So nothing a consumer executes changes, and it is read off the published artefact rather than off
- * a rebuild of it.** `npm pack toopo@1.0.0` was unpacked and its `dist/` compared against the one this
- * tree builds at `1.0.1`: 35 modules, 428 161 bytes, every per-file digest equal, one tree digest of
- * `c1970886` over both. That is what npm is serving today and not a reconstruction of it, which is
- * what makes *the same program, published a different way* a reading instead of an argument. This
- * module is not among those 35 - `packaging/reachable.ts` prunes what the published entry point cannot
- * reach, and nothing it reaches asks what version it is. Neither MAJOR nor MINOR would be true of an
- * archive whose code is byte for byte the previous one, so PATCH is the only digit a publication may
- * move when it republishes the same program.
+ * **Measured against what npm is serving rather than against a rebuild of it.** `npm pack toopo@1.0.1`
+ * unpacked and its `dist/` compared against the one this tree builds: 35 modules either side, 428 161
+ * bytes against 432 200, and **7 of the 35 differ** - the six client modules that render a command,
+ * and `address.js`, which took 3 271 of the 4 039 bytes on its own. **That last figure is prose rather
+ * than program**: comments are emitted, 145 of that module's 173 emitted lines are comment, and what
+ * grew is the argument for `THE_INVOCATION` and not anything a consumer runs. This module is still not
+ * among the 35 - `packaging/reachable.ts` prunes what the published entry point cannot reach, and
+ * nothing it reaches asks what version it is.
+ *
+ * **The comparison is by count, total and per-file digest, and publishes no tree digest.** `1.0.1`'s
+ * did, and that figure occurs in this repository twice, both times in prose: nothing here computes it,
+ * so no reader can rebuild it and it is evidence of nothing. Counts and a per-file table are what
+ * `npm pack` and any digest tool give back.
+ *
+ * **PATCH and not MINOR, on a release that does change the program.** Nothing gains a capability and
+ * nothing changes shape - the six commands, their flags, their grammar and their answers are what they
+ * were, and what moved is the text of six screens plus the constant they now read. MINOR would promise
+ * a reader something to learn, and there is nothing: they get the same tool, telling the truth about
+ * how to run it.
  *
  * **It is not the version an implementation is bound at, and this release is the event that
  * separation was made for.** The two were one string, tied by `the-archive-is-visibly-unpublished`,
@@ -105,7 +117,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * release that moves no implementation's bytes, and the freeze check is what would report it if
  * somebody tied them again.
  */
-export const THE_PACKAGE_VERSION = '1.0.1'
+export const THE_PACKAGE_VERSION = '1.0.2'
 
 /**
  * The version every reference implementation of this catalogue is published at, and frozen at.

@@ -72,17 +72,24 @@ after `needs: site` has reached both matrix legs, the deployment and the proof a
 exchanges an identity token GitHub mints and writes the attestation itself, so **nothing here stores a
 credential** and there is no ninety-day secret to renew. ADR-0109.
 
-**The manifest reads `1.0.1`, and the claim that release rests on is measured rather than argued.** What
-`1.0.1` corrects is not in the program: it is an artefact published with no attestation and a personal
-address frozen into it, which on a package sold on auditability is a defect of the artefact and not of the
-code. So the code must not move, and the reading that says it does not is taken against **what npm is
-serving** rather than against a rebuild: `npm pack toopo@1.0.0` unpacked, its `dist/` compared with the one
-this tree builds at `1.0.1`, and the 35 modules, the 428 161 bytes and every per-file digest are equal under
-one tree digest over both. `publication.ts` is not among those 35, because `packaging/reachable.ts` prunes
-what the entry point cannot reach. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a version is half of an
-implementation's address, nothing it addresses moved, and this release is the event ADR-0106 cut the tie
-for. **Publishing is now a push and a dispatch**, and the last thing that was still a command somebody
-typed has stopped being one.
+**The manifest reads `1.0.2`, and it is the first release of this package whose compiled content differs
+from its predecessor's.** The two before it did not: `1.0.0` was published from a keyboard with no
+attestation and a personal address frozen into it, `1.0.1` corrected that artefact and nothing else, and
+its `dist/` was byte for byte `1.0.0`'s — the reading taken against **what npm was serving** rather than
+against a rebuild. `1.0.2` carries out a defect that is in the program, and the same method reads it:
+`npm pack toopo@1.0.1` unpacked and compared with what this tree builds gives 35 modules either side,
+428 161 bytes against 432 200, and **7 of the 35 differing** — the six client modules that render a
+command, and `address.js`, which took 3 271 of the 4 039 bytes on its own and whose growth is prose,
+because comments are emitted. `publication.ts` is not among the 35, because `packaging/reachable.ts`
+prunes what the entry point cannot reach. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a
+version is half of an implementation's address, nothing it addresses moved, and the publication is the
+event ADR-0106 cut that tie for. **Publishing is a push and a dispatch**, and the last thing that was
+still a command somebody typed has stopped being one.
+
+**The tree digest `1.0.1` published here is withdrawn rather than carried forward.** It appeared twice,
+both times in prose, and nothing in this repository computes it — so no reader could rebuild it and it
+established nothing that the counts and the per-file digests beside it did not already establish. What
+replaces it is the comparison any reader can take with `npm pack` and a digest tool.
 
 **The declared origin serves this catalogue, and that is the half that changed.** `main` builds the
 tree in CI and `wrangler` uploads it to Cloudflare Pages. Measured at `994374d` over **all 76 addresses
