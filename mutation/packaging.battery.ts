@@ -80,6 +80,12 @@ const A_REGISTRY_THAT_DID_NOT_ANSWER_IS_REFUSED = `    throw new WhatNpmHoldsCan
 
 const THE_LISTING_IS_WHAT_IS_READ = `      ? (listing as { readonly versions?: unknown }).versions`
 
+const A_NAME_NPM_DOES_NOT_KNOW_HOLDS_NOTHING = `  if (answer.status === 404) return new Set()`
+
+const ANYTHING_BUT_AN_ANSWER_IS_REFUSED = `  if (answer.status !== 200) throw new WhatNpmHoldsCannotBeRead(url, \`it answered \${answer.status}\`)`
+
+const THE_NAME_IS_PART_OF_THE_ADDRESS = '  const url = `${origin}/${packageName}`'
+
 const NOTHING_IS_DROPPED = buildFile(
   `const dropped = every(DIST).filter((file) => !reachable.has(file))`,
   `const dropped: readonly string[] = []`,
@@ -234,6 +240,41 @@ const mutants: readonly Mutant[] = [
       // fixture written to be refused is accepted instead.
       'an-answer-that-lists-no-versions-is-refused',
     ]),
+  ),
+
+  /**
+   * The state every first publication is decided in, turned into a refusal.
+   *
+   * npm says *no such package* until a package exists, so a module that treated 404 as a failure could
+   * never publish a first version of anything - and this repository is about to be one of several
+   * packages rather than one, on the day a second exists.
+   */
+  sameOnEveryLens(
+    'A-17',
+    'refuses a name npm has never heard of instead of reading it as a package with nothing published, ' +
+      'so the one answer every first publication meets becomes the one answer that stops a run',
+    [npmFile(A_NAME_NPM_DOES_NOT_KNOW_HOLDS_NOTHING, '')],
+    killed(['a-name-npm-has-never-heard-of-holds-no-versions']),
+  ),
+
+  /**
+   * The other half of the same arm, and it fails in the opposite direction: a gateway error carrying a
+   * body that happens to parse is read as an answer about what is published.
+   */
+  sameOnEveryLens(
+    'A-18',
+    'takes any status as an answer as long as the body parses, so a proxy, a rate limit or a gateway ' +
+      'error decides a publication as confidently as the registry would',
+    [npmFile(ANYTHING_BUT_AN_ANSWER_IS_REFUSED, '')],
+    killed(['a-status-that-is-not-an-answer-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'A-19',
+    'asks the registry root instead of the package, so what comes back is about something other than ' +
+      'this package and every version of it reads as unpublished',
+    [npmFile(THE_NAME_IS_PART_OF_THE_ADDRESS, '  const url = `${origin}/`')],
+    killed(['the-address-asked-is-the-name-under-the-origin']),
   ),
 
   // -------------------------------------------------------------------------
