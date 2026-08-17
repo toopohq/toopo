@@ -67,10 +67,11 @@ language.
 published from a keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal
 account, and `dist` carries the registry's own signature and **no attestation at all** — so the archive a
 reader installs could not be tied to the commit or the run that built it, which is the tie every other proof
-here is about. A job of `suites.yml` publishes on a dispatch of `main` carrying the word `publish`,
-after `needs: site` has reached both matrix legs, the deployment and the proof against the origin; npm
-exchanges an identity token GitHub mints and writes the attestation itself, so **nothing here stores a
-credential** and there is no ninety-day secret to renew. ADR-0109.
+here is about. A job of `suites.yml` publishes instead, after `needs: site` has reached both matrix
+legs, the deployment and the proof against the origin; npm exchanges an identity token GitHub mints and
+writes the attestation itself, so **nothing here stores a credential** and there is no ninety-day secret
+to renew. ADR-0109. What that job used to wait for was a dispatch carrying a typed word, and the
+paragraph two below is why it no longer does.
 
 **The manifest reads `1.0.3`, and it is the first release whose change a user meets on their own disk.**
 `1.0.0` was published from a keyboard with no attestation and a personal address frozen into it; `1.0.1`
@@ -362,9 +363,10 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   be** — it is reported by the person who typed it, which is precisely the shape of the one entry this
   list ever carried that no guard could have caught: a decision taken in conversation, with no half in
   the repository for the code to disagree with. So it is written down where the next session will meet
-  it, and it does not make the entry above any less open. What changes is only which sentence the first
-  dispatch will falsify: not *whether they were set up*, but *whether the four strings and the policy
-  are the ones this file just claimed*.
+  it, and it does not make the entry above any less open. **The publication that followed is what turned
+  that from a report into a reading**, and it is recorded one paragraph up rather than restated here —
+  what a successful exchange establishes is that the four strings and the policy were the ones this
+  paragraph claims, on the day it was written, which is exactly as much as one reading ever establishes.
 - **That every surface renders the invocation rather than the bare command name.** This one was met by
   a visitor rather than found by a sweep: the README and the four contract pages published
   `toopo add string/slugify`, which answers `command not found` for anybody who has installed nothing —
