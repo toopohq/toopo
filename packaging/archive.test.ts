@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { THE_ORIGIN } from '../packages/registry/address.js'
-import { THE_UNPUBLISHED_VERSION } from '../packages/cli/local-source.js'
+import { THE_PACKAGE_VERSION } from '../packages/registry/publication.js'
 import { anInstalledArchive } from './the-archive.js'
 import type { InstalledArchive } from './the-archive.js'
 
@@ -326,19 +326,35 @@ describe('the archive somebody installs', () => {
   })
 
   /**
-   * A version that looks published and is not turns the lockfile's own argument against it, which is
-   * the sentence `local-source.ts` already carries about the version it binds implementations at. The
-   * package carries the same string for the same reason, and tying them here is what stops one of them
-   * being quietly stamped `1.0.0` while the other says nothing was ever published.
+   * The version a consumer installs is the version this code declares, read out of their `node_modules`.
+   *
+   * **This guard used to tie the manifest's version to the one implementations are bound at, and the
+   * publication is what cuts that tie.** It was right while both were stand-ins saying *nothing here
+   * was published*: one of them being quietly stamped `1.0.0` while the other denied it was the failure
+   * worth refusing. Published, they answer different questions and must be free to differ - the package
+   * moves on the next patch of the client, an implementation's version is half of a frozen address and
+   * may never move - so a tie kept here would rebind four addresses on the first bug fix. ADR-0093 is
+   * what refuses that, and it refuses it by rebuilding rather than by a comparison in this file.
+   *
+   * **What replaces it is the archive's own question rather than the repository's.**
+   * `publication.test.ts` already resolves `package.json` against `THE_PACKAGE_VERSION`; reading the
+   * same file again here would be that guard written twice. What nothing else reaches is the manifest
+   * npm wrote into somebody's project, and the two are not the same object: `files`, `prepack` and npm's
+   * own rewriting all sit between them.
+   *
+   * **It stays out of the `packaging` battery's reach, and for a better reason than the guard it
+   * replaces.** That one read this repository's `package.json`; this one reads a manifest `npm pack`
+   * produced from it. Neither end is a file this folder writes, so a mutant here cannot move either -
+   * which is a stronger statement of unreachability than the old one, not a repetition of it.
    */
-  it('the-archive-is-visibly-unpublished', () => {
-    const manifest = JSON.parse(readFileSync(join(REPOSITORY, 'package.json'), 'utf8')) as {
-      readonly version: string
-      readonly private: boolean
-    }
+  it('the-installed-archive-carries-the-version-this-code-declares', () => {
+    const manifest = JSON.parse(
+      readFileSync(join(archive.installedAt, 'package.json'), 'utf8'),
+    ) as { readonly version?: unknown; readonly private?: unknown }
 
-    expect(manifest.version).toBe(THE_UNPUBLISHED_VERSION)
-    expect(manifest.private).toBe(true)
+    expect(manifest.version).toBe(THE_PACKAGE_VERSION)
+    // npm refuses to pack a private package at all, so this is what a consumer's copy must not carry.
+    expect(manifest.private).toBeUndefined()
   })
 
   /**

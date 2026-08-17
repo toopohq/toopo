@@ -11,6 +11,7 @@ import {
   THE_AUTHOR_FIELD,
   THE_MINIMUM_RUNTIME,
   THE_PACKAGE_NAME,
+  THE_PACKAGE_VERSION,
   THE_SOURCE_REPOSITORY,
 } from './publication.js'
 import { REPOSITORY_ROOT, referenceImplementationOf } from './serialise.js'
@@ -143,6 +144,7 @@ describe('what this repository publishes about itself', () => {
       readonly repository?: unknown
       readonly author?: unknown
       readonly engines?: unknown
+      readonly version?: unknown
       readonly bin?: Readonly<Record<string, unknown>>
     }
 
@@ -155,6 +157,63 @@ describe('what this repository publishes about itself', () => {
     expect(manifest.repository).toEqual({ type: 'git', url: THE_SOURCE_REPOSITORY })
     expect(manifest.author).toBe(THE_AUTHOR_FIELD)
     expect(manifest.engines).toEqual({ node: THE_MINIMUM_RUNTIME })
+    expect(manifest.version).toBe(THE_PACKAGE_VERSION)
+  })
+
+  /**
+   * The catch that stopped an accidental publication is gone, and this is what says so out loud.
+   *
+   * `private: true` was stage rule 4 for the whole of this repository's private life, and removing it
+   * is the deliberate act this unit exists to take rather than an omission. It is asserted here, on the
+   * field's *absence*, because a guard over a value that must not be present is the only shape that
+   * reddens the day somebody puts it back - and putting it back is now a change that would make every
+   * publication fail with `npm ERR! This package has been marked as private`.
+   *
+   * **What stops a publication nobody decided is no longer this field.** Nothing in this repository
+   * runs `npm publish`: the workflow's token is `contents: read`, there is no npm credential on any
+   * runner, and `prepack` builds rather than publishes. That is the whole of the answer, and it is
+   * written here because this is where a reader will come looking for the catch that used to be.
+   */
+  it('the-manifest-carries-no-private-flag-and-the-catch-that-replaces-it-is-named', () => {
+    const manifest = JSON.parse(readFileSync(join(REPOSITORY_ROOT, 'package.json'), 'utf8')) as {
+      readonly private?: unknown
+      readonly scripts?: Readonly<Record<string, string>>
+    }
+
+    expect(manifest.private).toBeUndefined()
+    expect(Object.values(manifest.scripts ?? {}).filter((line) => line.includes('npm publish'))).toEqual(
+      [],
+    )
+  })
+
+  /**
+   * What the front page says the catalogue is, resolved against what the registry declares it is.
+   *
+   * **The sentence read *Five contracts, four of them installable* and nothing kept it.** Spelled out,
+   * it could not be resolved against anything without a table mapping words to integers - which is a
+   * second statement of the arithmetic, free to be wrong in its own way - so it was written in digits
+   * and pointed at `theFive`. That is the same repair `mutation/readme.test.ts` already applies to
+   * every figure the README publishes about the instrument, arriving on the one figure it publishes
+   * about the catalogue.
+   *
+   * It is here rather than beside those, because `mutation/` may not import the registry: the
+   * dependency runs the other way, and `publication.test.ts` is already where what this repository
+   * states about itself is resolved.
+   *
+   * **What is deliberately not asserted is the sentence about npm above it.** *`toopo` was not on npm*
+   * is a claim about a service, it goes false on a day nobody edits this repository, and no guard here
+   * can reach it. What it carries instead is the date it was true, which is the convention this
+   * repository owes every declared absence and the reason the paragraph says so in the open.
+   */
+  it('the-readme-counts-the-catalogue-the-registry-declares', () => {
+    const refused = theFive.filter((source) => source.lifecycle.state === 'never-published')
+    const readme = readFileSync(join(REPOSITORY_ROOT, 'README.md'), 'utf8').replace(/\s+/g, ' ')
+
+    expect(refused.length).toBeGreaterThan(0)
+    expect(readme).toContain(
+      `**${theFive.length} contracts, ${theFive.length - refused.length} of them installable and ` +
+        `${refused.length} refused.**`,
+    )
   })
 
   /**

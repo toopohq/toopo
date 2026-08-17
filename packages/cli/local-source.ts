@@ -68,6 +68,7 @@ import {
   publishImplementation,
   refuseContract,
 } from '../registry/snapshot.js'
+import { THE_PUBLICATION_INSTANT } from '../registry/publication.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import {
   REPOSITORY_ROOT,
@@ -80,13 +81,19 @@ import { theFive } from '../registry/the-five.js'
 import type { RegistrySource } from './source.js'
 
 /**
- * The version every implementation this source serves is bound at. Visibly not a published version,
- * and that is its whole job.
+ * The version every implementation this source serves is bound at, restated rather than imported.
+ *
+ * **A client may not import another client, so this is one of two independent statements of one fact**
+ * and the disagreement between them is what `source.test.ts` reads. The registry no longer takes part
+ * in that redundancy: it is where `publication.ts` mints the version, so `local-read-api.ts` imports
+ * the declaration and this one is resolved against it. That third leg was missing for as long as the
+ * string named nothing, and it was the leg the emission reads.
+ *
+ * It says `1.0.0` and no longer `0.0.0-local`. The old string's job was to be visibly not a
+ * publication; what does that job now is the ledger itself, whose binding names the commit it was
+ * published from and is refused if that commit does not produce it. ADR-0106.
  */
-export const THE_UNPUBLISHED_VERSION = '0.0.0-local'
-
-/** The epoch, because a binding minted here was never published and a clock would be a second lie. */
-const THE_UNPUBLISHED_INSTANT = '1970-01-01T00:00:00.000Z'
+export const THE_PUBLISHED_VERSION = '1.0.0'
 
 type Holding = {
   readonly address: ContractAddress
@@ -120,7 +127,7 @@ const gather = (): {
     const record = serialiseContract(REPOSITORY_ROOT, source)
     const implementation: ImplementationRecord = {
       ...referenceImplementationOf(REPOSITORY_ROOT, source),
-      version: THE_UNPUBLISHED_VERSION,
+      version: THE_PUBLISHED_VERSION,
     }
 
     const contractShot = contractSnapshot(record)
@@ -150,14 +157,14 @@ const gather = (): {
         decidedAgainst: record.lifecycle.decidedAgainst,
         measurement: record.lifecycle.measurement,
         keptAs: record.lifecycle.keptAs,
-        decidedOn: THE_UNPUBLISHED_INSTANT,
+        decidedOn: THE_PUBLICATION_INSTANT,
       })
     } else {
       ledger = publishImplementation(
         publishContract(ledger, {
           address: record.address,
           digest: contractDigest,
-          publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedAt: THE_PUBLICATION_INSTANT,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { lifecycle: record.lifecycle },
         }),
@@ -165,10 +172,10 @@ const gather = (): {
           address: {
             contract: implementation.contract,
             id: implementation.id,
-            version: THE_UNPUBLISHED_VERSION,
+            version: THE_PUBLISHED_VERSION,
           },
           digest: implementationDigest,
-          publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedAt: THE_PUBLICATION_INSTANT,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { status: implementation.status },
         },
@@ -210,7 +217,7 @@ export const localSource = (servedFrom: string = THE_UNPUBLISHED_REVISION): Regi
               renderImplementation({
                 contract: candidate.address,
                 id: candidate.implementation.id,
-                version: THE_UNPUBLISHED_VERSION,
+                version: THE_PUBLISHED_VERSION,
               }) === renderImplementation(entry.address),
           )
 

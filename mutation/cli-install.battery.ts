@@ -199,10 +199,19 @@ const A_REFUSED_CONTRACT_IS_REFUSED = `      ledger = refuseContract(ledger, {
         decidedAgainst: record.lifecycle.decidedAgainst,
         measurement: record.lifecycle.measurement,
         keptAs: record.lifecycle.keptAs,
-        decidedOn: THE_UNPUBLISHED_INSTANT,
+        decidedOn: THE_PUBLICATION_INSTANT,
       })`
 
-const THE_VERSION_IS_VISIBLY_FALSE = `export const THE_UNPUBLISHED_VERSION = '0.0.0-local'`
+/**
+ * The version this client binds implementations at, which is a restatement of a published fact.
+ *
+ * It used to read `'0.0.0-local'` and the mutant used to stamp it `'1.0.0'`, on the argument that a
+ * version which looks published and is not turns the lockfile's own value against it. The catalogue
+ * is published, so that edit now writes the truth and injects nothing. What is still a defect - and a
+ * worse one - is a version this client invents: an address the registry never minted, recorded in
+ * somebody's `toopo.lock` as though it resolved.
+ */
+const THE_VERSION_IS_A_RESTATEMENT = `export const THE_PUBLISHED_VERSION = '1.0.0'`
 
 const THE_LAST_IMPORT_OF_THE_PLAN = `import type { FrozenImplementation } from '../registry/snapshot.js'`
 
@@ -507,7 +516,7 @@ const mutants: readonly Mutant[] = [
         `      ledger = publishContract(ledger, {
         address: record.address,
         digest: contractDigest,
-        publishedAt: THE_UNPUBLISHED_INSTANT,
+        publishedAt: THE_PUBLICATION_INSTANT,
         standing: { lifecycle: record.lifecycle },
       })`,
       ),
@@ -520,10 +529,10 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'C-18',
-    'binds the five at a version that looks published, so a lockfile names a release that exists ' +
-      'nowhere and a reader has no way to tell it from one that does',
-    [localFile(THE_VERSION_IS_VISIBLY_FALSE, `export const THE_UNPUBLISHED_VERSION = '1.0.0'`)],
-    killed(['the-local-source-binds-a-visibly-unpublished-version']),
+    'binds the five at a version the registry never published, so a lockfile names an address that ' +
+      'resolves to nothing and a reader has no way to tell it from one that does',
+    [localFile(THE_VERSION_IS_A_RESTATEMENT, `export const THE_PUBLISHED_VERSION = '1.0.1'`)],
+    killed(['the-local-source-binds-the-version-the-registry-published']),
   ),
 
   sameOnEveryLens(

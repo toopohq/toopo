@@ -79,15 +79,28 @@ import {
   publishImplementation,
   refuseContract,
 } from './snapshot.js'
+import {
+  THE_PUBLICATION_INSTANT,
+  THE_PUBLISHED_IMPLEMENTATION_VERSION,
+} from './publication.js'
 import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { theFive } from './the-five.js'
 import { servedMethodology } from './verifiability.js'
 
-/** The version every implementation this registry serves is bound at, visibly not a published one. */
-export const THE_UNPUBLISHED_VERSION = '0.0.0-local'
-
-/** The epoch, because a binding minted here was never published and a clock would be a second lie. */
-const THE_UNPUBLISHED_INSTANT = '1970-01-01T00:00:00.000Z'
+/**
+ * The version and the instant this registry binds at, read from the one place that declares them.
+ *
+ * **This module used to declare both itself, and that is the hole this closes.** Its copy of the
+ * version was the one the emission reads - `packages/site/site.ts` builds the deployed tree from
+ * `localReadApi`, so what is written here is what lands in a reader's `toopo.lock` - and it was the
+ * only one of the three tied to nothing at all. A drift here announced a version this repository never
+ * published, in somebody else's lockfile, with every guard green.
+ *
+ * The two stand-ins go on redeclaring it, because a client may not import another client and the
+ * disagreement between two statements is what their guards read. This is not one of the two: it is the
+ * registry, and the registry is where `publication.ts` says the version is minted - so it imports the
+ * declaration rather than restating it, and there is no second statement here left to drift.
+ */
 
 type Holding = {
   readonly address: ContractAddress
@@ -120,7 +133,7 @@ const gather = (): {
     const record = serialiseContract(REPOSITORY_ROOT, source)
     const implementation: ImplementationRecord = {
       ...referenceImplementationOf(REPOSITORY_ROOT, source),
-      version: THE_UNPUBLISHED_VERSION,
+      version: THE_PUBLISHED_IMPLEMENTATION_VERSION,
     }
 
     const contractShot = contractSnapshot(record)
@@ -139,14 +152,14 @@ const gather = (): {
         decidedAgainst: record.lifecycle.decidedAgainst,
         measurement: record.lifecycle.measurement,
         keptAs: record.lifecycle.keptAs,
-        decidedOn: THE_UNPUBLISHED_INSTANT,
+        decidedOn: THE_PUBLICATION_INSTANT,
       })
     } else {
       ledger = publishImplementation(
         publishContract(ledger, {
           address: record.address,
           digest: digestOfSnapshot(contractShot),
-          publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedAt: THE_PUBLICATION_INSTANT,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { lifecycle: record.lifecycle },
         }),
@@ -154,10 +167,10 @@ const gather = (): {
           address: {
             contract: record.address,
             id: implementation.id,
-            version: THE_UNPUBLISHED_VERSION,
+            version: THE_PUBLISHED_IMPLEMENTATION_VERSION,
           },
           digest: digestOfSnapshot(implementationShot),
-          publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedAt: THE_PUBLICATION_INSTANT,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { status: implementation.status },
         },

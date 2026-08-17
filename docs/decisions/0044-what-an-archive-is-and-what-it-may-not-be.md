@@ -10,7 +10,7 @@ confirmed-by:
   - battery: packaging
     guard: every-file-in-the-archive-is-loaded-by-a-command
   - battery: packaging
-    guard: the-archive-is-visibly-unpublished
+    guard: the-installed-archive-carries-the-version-this-code-declares
 ---
 
 # What an archive is, and what it may not be

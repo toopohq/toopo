@@ -56,7 +56,20 @@ const GROUP_BY = addressOf('array/group-by')
 const LEVENSHTEIN = addressOf('string/levenshtein')
 const SLUGIFY = addressOf('string/slugify')
 
-const NOT_YET_PUBLISHED: Lifecycle = { state: 'not-yet-published' }
+/**
+ * The state the four installable contracts entered on the day this catalogue was published.
+ *
+ * **Read the sentence on `publishContract` before moving any contract into it.** Every byte of a
+ * published contract's declared files is frozen from here on - the seven, `reference.ts` and the four
+ * test files included, comments and blank lines included - and the repair for anything that has to
+ * change is `name@2` beside it rather than in place of it. `packages/registry/against-what-was-published/`
+ * is what refuses the alternative, by rebuilding each binding at the commit it records.
+ *
+ * The lifecycle is the standing half and never enters a snapshot, so moving a contract here moves no
+ * digest: measured, and `the-decision-to-publish-moves-no-digest` is the guard that keeps it so.
+ * ADR-0106 is the unit that moved these four, and why the commit that did it could not record where.
+ */
+const PUBLISHED: Lifecycle = { state: 'published' }
 
 /**
  * The two guards an `executable` declaration of the five names, written once because two declarations
@@ -153,7 +166,7 @@ const THE_SHARED_FILES = [
 export const theFive: readonly ContractSource[] = [
   {
     address: NUMBER_PARSE,
-    lifecycle: NOT_YET_PUBLISHED,
+    lifecycle: PUBLISHED,
     folder: 'contracts/typescript/number/parse',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,
@@ -206,7 +219,7 @@ export const theFive: readonly ContractSource[] = [
 
   {
     address: DATE_ADD,
-    lifecycle: NOT_YET_PUBLISHED,
+    lifecycle: PUBLISHED,
     folder: 'contracts/typescript/date/add',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,
@@ -425,7 +438,7 @@ export const theFive: readonly ContractSource[] = [
 
   {
     address: LEVENSHTEIN,
-    lifecycle: NOT_YET_PUBLISHED,
+    lifecycle: PUBLISHED,
     folder: 'contracts/typescript/string/levenshtein',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,
@@ -478,7 +491,7 @@ export const theFive: readonly ContractSource[] = [
 
   {
     address: SLUGIFY,
-    lifecycle: NOT_YET_PUBLISHED,
+    lifecycle: PUBLISHED,
     folder: 'contracts/typescript/string/slugify',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,

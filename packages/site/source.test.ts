@@ -5,8 +5,9 @@ import { describe, it, expect } from 'vitest'
 
 import { ENDPOINTS, portFaults } from '../registry/endpoints.js'
 import { NEEDS } from '../registry/needs.js'
-import { THE_UNPUBLISHED_VERSION as THE_INSTALLERS_VERSION } from '../cli/local-source.js'
-import { THE_UNPUBLISHED_VERSION, localSource } from './local-source.js'
+import { THE_PUBLISHED_VERSION as THE_INSTALLERS_VERSION } from '../cli/local-source.js'
+import { THE_PUBLISHED_IMPLEMENTATION_VERSION } from '../registry/publication.js'
+import { THE_PUBLISHED_VERSION, localSource } from './local-source.js'
 import { NOT_THIS_UNIT, THE_ENDPOINT_BEHIND } from './source.js'
 
 /**
@@ -148,17 +149,21 @@ describe('where the generator gets what it publishes', () => {
   })
 
   /**
-   * This repository has one visibly-false version and two stand-ins that bind at it.
+   * One published version, and two stand-ins that bind at it rather than at an opinion of their own.
    *
-   * The constant is written twice on purpose - a client may not import another client, and a published
-   * registry has no notion of a stand-in - so what keeps them in step is this rather than a comment.
+   * The constant is written twice on purpose - a client may not import another client - so what keeps
+   * them in step is this rather than a comment. **What changed with the publication is the third leg**:
+   * both are now resolved against `publication.ts`, where the registry mints the version, instead of
+   * against a literal that agreed with nothing. That was the hole - the registry's own copy was the one
+   * the emission reads and the only one no guard tied.
+   *
    * It is worth having precisely because nothing the generator renders shows the version: a
    * disagreement would be invisible on every page and would surface the day either stand-in becomes a
    * server.
    */
-  it('both-stand-ins-bind-the-same-visibly-unpublished-version', () => {
-    expect(THE_UNPUBLISHED_VERSION).toBe('0.0.0-local')
-    expect(THE_UNPUBLISHED_VERSION).toBe(THE_INSTALLERS_VERSION)
+  it('both-stand-ins-bind-the-version-the-registry-published', () => {
+    expect(THE_PUBLISHED_VERSION).toBe(THE_PUBLISHED_IMPLEMENTATION_VERSION)
+    expect(THE_PUBLISHED_VERSION).toBe(THE_INSTALLERS_VERSION)
   })
 
   /**

@@ -1,6 +1,7 @@
 /**
  * What this repository states about itself in its manifest, declared where a guard can resolve it.
- * ADR-0048 is what the manifest states, and the order a publication takes.
+ * ADR-0048 is what the manifest states, and the order a publication takes. ADR-0106 is the unit that
+ * filled the three fields below a first publication settles, and why two of them may never be tied.
  *
  *
  * `package.json` is JSON and cannot import, so every fact npm shows on a package page is a
@@ -86,6 +87,68 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * `npm-writes-a-shim-for-the-command-the-site-tells-people-to-run`.
  */
 export const THE_PACKAGE_NAME = 'toopo'
+
+/**
+ * The version npm publishes the command at, and the one field of this file that is meant to move.
+ *
+ * **It is 1.0.0 because the client's interface is finished, not because the catalogue is old.** Six
+ * commands, one lockfile, one configuration file: a `0.x` would promise less than this repository
+ * already holds its contracts to, and the youth of the catalogue is a sentence the README owes a
+ * reader rather than a digit nobody can read. ADR-0048 records the order a publication takes.
+ *
+ * **It is not the version an implementation is bound at, and that separation is load-bearing.** Until
+ * this unit the two were one string, tied by `the-archive-is-visibly-unpublished`, and the tie was
+ * right for exactly as long as both were stand-ins saying *nothing here was published*. Published,
+ * they answer different questions: this one moves on the next patch of the client, and
+ * `THE_PUBLISHED_IMPLEMENTATION_VERSION` may never move at all, because a version is half of an
+ * implementation's address and rebinding one is what permanent rule 6 refuses. **A tie kept across the
+ * publication would rebind four addresses on the first bug fix** - which is the correction from CI
+ * that is already planned - so it is cut here, deliberately, and the freeze check is what would report
+ * it if somebody tied them again.
+ */
+export const THE_PACKAGE_VERSION = '1.0.0'
+
+/**
+ * The version every reference implementation of this catalogue is published at, and frozen at.
+ *
+ * **It had no home for as long as it named nothing.** `revision.ts` argued the string was written
+ * three times because *a published registry mints real versions and has no notion of a stand-in, so
+ * there is no home that would make it one* - and that argument was sound about a stand-in and dies
+ * with it. A published registry does mint real versions; this is where it mints them, and the three
+ * declarations that used to disagree about a fiction now redeclare one fact.
+ *
+ * The redeclaration is kept rather than collapsed, and the reason is that it is a mechanism and not an
+ * accident: a client may not import another client, so the two stand-ins each state this and a guard
+ * requires the three to coincide. What was missing is the third leg - the registry's own copy was tied
+ * to nothing at all, while it is the one the emission reads, so a drift there would have announced a
+ * version this repository never published inside somebody's `toopo.lock`.
+ *
+ * **1.0.0 and not 0.0.0-local, and a reader can see which by looking.** That was the whole job of the
+ * old string, and it is still done: a version that names no publication is now impossible rather than
+ * merely marked, because the ledger's binding is checked against the commit it was published from.
+ */
+export const THE_PUBLISHED_IMPLEMENTATION_VERSION = '1.0.0'
+
+/**
+ * When this catalogue was published, to the day, and the reason it is not to the second.
+ *
+ * `publishedAt` says when somebody decided; `publishedFrom` says what they decided about, and only the
+ * second is checkable. A clock reading is neither derivable nor falsifiable here, so what is written
+ * is the coarsest true thing: the date the decision was taken, at midnight UTC. A time-of-day would
+ * be a precision nobody measured, which is the rule ADR-0018 states about every other figure this
+ * repository publishes.
+ *
+ * It is a constant and never `new Date()`. A publication instant read from a clock would differ on
+ * every launch, so the ledger a reader rebuilds would never be the ledger they were served - and
+ * `snapshot.ts` keeps it out of the frozen half for the neighbouring reason, so nothing here moves a
+ * digest.
+ *
+ * **The three copies of the epoch this replaces were tied by nothing whatever** - not exported, not
+ * asserted, not injected into - so the three stand-ins were free to disagree about when the catalogue
+ * was published, on a field a client records. One declaration is the closure, and it is a shape rather
+ * than a guard: there is no second statement left to drift.
+ */
+export const THE_PUBLICATION_INSTANT = '2026-08-17T00:00:00.000Z'
 
 /**
  * The runtimes the published command runs on, derived from what it calls rather than chosen.

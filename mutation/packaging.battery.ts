@@ -247,10 +247,11 @@ export const battery: Battery = {
    */
   unreachableGuards: [
     {
-      guards: ['the-archive-is-visibly-unpublished'],
+      guards: ['the-installed-archive-carries-the-version-this-code-declares'],
       reason:
-        'it reads the repository\'s own `package.json` against `THE_UNPUBLISHED_VERSION` in ' +
-        '`packages/cli/local-source.ts`, and a battery may edit only the folder under measurement',
+        'both halves of what it compares are outside this folder - the manifest npm wrote into the ' +
+        'installed package, and `THE_PACKAGE_VERSION` in `packages/registry/publication.ts` - and a ' +
+        'battery may edit only the folder under measurement',
     },
   ],
 

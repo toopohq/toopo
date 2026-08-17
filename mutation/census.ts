@@ -284,7 +284,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/signature.test.ts': 14,
     'packages/registry/snapshot.test.ts': 45,
     'packages/registry/frozen-for-life.test.ts': 4,
-    'packages/registry/publication.test.ts': 5,
+    'packages/registry/publication.test.ts': 7,
     'packages/registry/rebinding.test.ts': 13,
     'packages/registry/rebuild.test.ts': 9,
     'packages/registry/the-sixth-contract.test.ts': 15,

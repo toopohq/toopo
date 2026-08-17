@@ -168,7 +168,11 @@ const ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE = `    .entries.filter((entry) => 
 const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `            entry.installable
               ? \`toopo add \${entry.address.name}\``
 
-const THE_VERSION_IS_VISIBLY_FALSE = `export const THE_UNPUBLISHED_VERSION = '0.0.0-local'`
+/**
+ * The generator's own restatement of the version the registry published. `cli-install.battery.ts`
+ * carries the argument for why the edit below is no longer `'1.0.0'`: that string is now the truth.
+ */
+const THE_VERSION_IS_A_RESTATEMENT = `export const THE_PUBLISHED_VERSION = '1.0.0'`
 
 const A_REFUSED_CONTRACT_IS_REFUSED = `    if (record.lifecycle.state === 'never-published') {`
 
@@ -553,10 +557,10 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'W-18',
-    'binds the five at a version that looks published, so the two stand-ins of this repository stop ' +
-      'agreeing about the one thing that says nothing here was ever released',
-    [localFile(THE_VERSION_IS_VISIBLY_FALSE, `export const THE_UNPUBLISHED_VERSION = '1.0.0'`)],
-    killed(['both-stand-ins-bind-the-same-visibly-unpublished-version']),
+    'binds the five at a version the registry never published, so the two stand-ins of this ' +
+      'repository stop agreeing about the version every lockfile they produce records',
+    [localFile(THE_VERSION_IS_A_RESTATEMENT, `export const THE_PUBLISHED_VERSION = '1.0.1'`)],
+    killed(['both-stand-ins-bind-the-version-the-registry-published']),
   ),
 
   sameOnEveryLens(

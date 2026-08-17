@@ -40,9 +40,21 @@ beside it — so a reader who fetches every file a snapshot names can now resolv
 carry, which is the auditor's half of the same hole. The bill is stated rather than discovered: editing
 either shared file rebinds all five addresses at once. ADR-0105.
 
+**The catalogue is marked published, and that is the act this repository was built to be able to take.**
+Four contracts carry `published`, their reference implementations are bound at `1.0.0`, the manifest is
+`toopo@1.0.0` and `private: true` is gone. **Publishing and anchoring are two acts and no commit can do
+both**, which is a fact about the mechanism rather than about this unit: `implementationSnapshot`
+carries the version, so the commit that mints `reference@1.0.0` creates an address no earlier commit
+binds and cannot name itself as the commit it was published from. So the publication is a commit and the
+anchoring is the commit after it. `contractSnapshot` omits the lifecycle - measured, the four contract
+digests are identical either side of the marking - which is what makes the second commit's coordinate
+honest for the first four addresses. ADR-0106.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
-language. And nothing is published: `private: true` holds and the package is not on npm, so a reader
-who meets `toopo add number/parse` on a contract page still has no way to get `toopo`.
+language. And nothing is on npm: the manifest is publishable and no publication has been made, so a
+reader who meets `toopo add number/parse` on a contract page still has no way to get `toopo`. What
+stops one nobody decided is no longer a flag in the manifest - it is that nothing here runs `npm
+publish`, the workflow's token is `contents: read`, and no runner holds an npm credential.
 
 **The declared origin serves this catalogue, and that is the half that changed.** `main` builds the
 tree in CI and `wrangler` uploads it to Cloudflare Pages. Measured at `994374d` over **all 76 addresses
@@ -524,7 +536,12 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
    nothing. ADR-0097 carries the argument, including why a floating `npx wrangler` was refused: a
    repository whose product is that a published version is frozen for life cannot deploy with whatever
    was newest that morning. Feature code still has zero runtime dependencies of any kind.
-4. The root `package.json` carries `"private": true`, so nothing can be published by accident.
+4. **The root `package.json` no longer carries `"private": true`, and what replaced it is not a second
+   flag.** That rule held for this repository's whole private life and removing it is the deliberate act
+   of the unit that published the catalogue. Nothing here runs `npm publish`: the workflow's token is
+   `contents: read`, no runner holds an npm credential, and `prepack` builds. A guard asserts the field's
+   *absence* rather than its value, so putting it back reddens - and putting it back would make every
+   publication fail. ADR-0106.
 5. Working notes, planning documents and status reports do not belong in this repository. Only
    contracts, implementations, tests, the evidence produced by running them, the instrument that
    produces that evidence — including its own fixtures — and the decision records under

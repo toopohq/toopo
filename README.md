@@ -15,12 +15,15 @@ One file lands in `src/lib/toopo/string/slugify/slugify.ts`, with its digest rec
 `toopo.lock`. It imports nothing. There is no runtime, no wrapper, no resolution step: after the
 install, nothing of ours runs in your program.
 
-> **Nothing is published yet.** The command above is what a contract page tells you to type, and
-> there is nothing to type it with: `toopo` is not on npm, and `package.json` carries
-> `"private": true` on purpose. The catalogue itself is served — every page, every answer and every
-> byte a client would fetch is at `toopo.dev` today — so what is missing is the client and not the
-> registry. What works meanwhile is cloning this repository and running the suites below. Publication
-> is a decision, not a missing feature.
+> **`toopo` was not on npm as of 2026-08-17.** The command above is what a contract page tells you
+> to type, and until the first publication there is nothing to type it with. The catalogue itself is
+> served — every page, every answer and every byte a client would fetch is at `toopo.dev` today — so
+> what is missing is the published client and not the registry. What works meanwhile is cloning this
+> repository and running the suites below.
+>
+> The date is there because this sentence is the kind that goes false without anybody editing it, and
+> a reader cannot tell a claim that is still true from one nobody came back to. `git log` is what
+> settles it.
 
 ## Why you can believe any of it
 
@@ -52,7 +55,10 @@ and what it prints happened on your machine rather than on ours.
 
 ## What is in the catalogue
 
-Five contracts, four of them installable.
+**5 contracts, 4 of them installable and 1 refused.** The refused one was considered, measured
+against what the language now does, and turned down — and it is published here beside the four
+rather than deleted, because a catalogue that only shows what it accepted is a catalogue you cannot
+check.
 
 | Contract | What it settles |
 | --- | --- |

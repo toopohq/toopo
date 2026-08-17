@@ -70,6 +70,7 @@ import {
   publishImplementation,
   refuseContract,
 } from '../registry/snapshot.js'
+import { THE_PUBLICATION_INSTANT } from '../registry/publication.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
 import { theFive } from '../registry/the-five.js'
@@ -77,20 +78,20 @@ import { servedMethodology } from '../registry/verifiability.js'
 import type { RegistrySource } from './source.js'
 
 /**
- * The version this stand-in binds its implementations at, visibly not a published one.
+ * The version this stand-in binds its implementations at, restated rather than imported.
  *
- * **Written here and also in `packages/cli/local-source.ts`, deliberately.** A client may not import another
- * client, and the registry has no notion of a stand-in - a published registry mints real versions - so
- * there is no home that would make it one constant. What keeps the two in step is a guard rather than
- * a comment: `source.test.ts` reads the installer's and requires it to be this.
+ * **Written here and also in `packages/cli/local-source.ts`, deliberately.** A client may not import
+ * another client, so the two state one fact twice and `source.test.ts` reads the disagreement. The
+ * sentence this used to carry - *the registry has no notion of a stand-in, so there is no home that
+ * would make it one constant* - was true of a stand-in and died with it: `publication.ts` is the home,
+ * `local-read-api.ts` imports it rather than taking part in the redundancy, and the guard that ties
+ * these two now ties both to that declaration.
  *
  * Nothing this generator renders shows it, which is why the guard is worth having: a disagreement here
  * would be invisible on every page and would surface the day either stand-in is replaced by a server.
+ * ADR-0106.
  */
-export const THE_UNPUBLISHED_VERSION = '0.0.0-local'
-
-/** The epoch, because a binding minted here was never published and a clock would be a second lie. */
-const THE_UNPUBLISHED_INSTANT = '1970-01-01T00:00:00.000Z'
+export const THE_PUBLISHED_VERSION = '1.0.0'
 
 type Holding = {
   readonly address: ContractAddress
@@ -125,7 +126,7 @@ const gather = (): {
     const record = serialiseContract(REPOSITORY_ROOT, source)
     const implementation = {
       ...referenceImplementationOf(REPOSITORY_ROOT, source),
-      version: THE_UNPUBLISHED_VERSION,
+      version: THE_PUBLISHED_VERSION,
     }
 
     const contractShot = contractSnapshot(record)
@@ -147,14 +148,14 @@ const gather = (): {
         decidedAgainst: record.lifecycle.decidedAgainst,
         measurement: record.lifecycle.measurement,
         keptAs: record.lifecycle.keptAs,
-        decidedOn: THE_UNPUBLISHED_INSTANT,
+        decidedOn: THE_PUBLICATION_INSTANT,
       })
     } else {
       ledger = publishImplementation(
         publishContract(ledger, {
           address: record.address,
           digest: contractDigest,
-          publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedAt: THE_PUBLICATION_INSTANT,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { lifecycle: record.lifecycle },
         }),
@@ -162,10 +163,10 @@ const gather = (): {
           address: {
             contract: record.address,
             id: implementation.id,
-            version: THE_UNPUBLISHED_VERSION,
+            version: THE_PUBLISHED_VERSION,
           },
           digest: implementationDigest,
-          publishedAt: THE_UNPUBLISHED_INSTANT,
+          publishedAt: THE_PUBLICATION_INSTANT,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { status: implementation.status },
         },

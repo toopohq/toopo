@@ -6,7 +6,8 @@ import { describe, it, expect } from 'vitest'
 import { ENDPOINTS, portFaults } from '../registry/endpoints.js'
 import { NEEDS } from '../registry/needs.js'
 import { imaginedSource } from './imagined-source.js'
-import { THE_UNPUBLISHED_VERSION, localSource } from './local-source.js'
+import { THE_PUBLISHED_IMPLEMENTATION_VERSION } from '../registry/publication.js'
+import { THE_PUBLISHED_VERSION, localSource } from './local-source.js'
 import { THE_ENDPOINT_BEHIND } from './source.js'
 
 /**
@@ -97,13 +98,21 @@ describe('where an installer gets what it installs', () => {
   })
 
   /**
-   * The five have never been published, so the version this source binds them at is false - and it is
-   * false in a way a reader cannot miss. A `1.0.0` in somebody's `toopo.lock` would name a version that
-   * exists nowhere and would be indistinguishable from one that does, which turns the lockfile's own
-   * argument against it: its whole value is that it can be checked offline against a published fact.
+   * The version this stand-in binds at is the version the registry published, and not a second opinion.
+   *
+   * **The guard this replaces asserted the string was visibly false, and it was the right guard for as
+   * long as it was.** Nothing was published, so `0.0.0-local` was the honest answer and a `1.0.0` here
+   * would have named a release that existed nowhere. Published, the failure inverts: a version this
+   * client invents is one `toopo.lock` records against an address the registry never minted, and a
+   * lockfile whose whole value is that it can be checked offline against a published fact would be
+   * naming a fact nobody published.
+   *
+   * It is resolved against `publication.ts` rather than against a literal, which is the leg that was
+   * missing while the string named nothing: the registry mints the version, and this restates it
+   * because a client may not import another client.
    */
-  it('the-local-source-binds-a-visibly-unpublished-version', async () => {
-    expect(THE_UNPUBLISHED_VERSION).toBe('0.0.0-local')
+  it('the-local-source-binds-the-version-the-registry-published', async () => {
+    expect(THE_PUBLISHED_VERSION).toBe(THE_PUBLISHED_IMPLEMENTATION_VERSION)
 
     const bindings = await localSource().implementationBindings({
       language: 'typescript',
@@ -111,7 +120,9 @@ describe('where an installer gets what it installs', () => {
       major: 1,
     })
 
-    expect(bindings.map((binding) => binding.address.version)).toEqual(['0.0.0-local'])
+    expect(bindings.map((binding) => binding.address.version)).toEqual([
+      THE_PUBLISHED_IMPLEMENTATION_VERSION,
+    ])
   })
 
   /**

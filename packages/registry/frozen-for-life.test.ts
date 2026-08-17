@@ -12,18 +12,27 @@ import { theFive } from './the-five.js'
 import { EMPTY_LEDGER, publishContract } from './snapshot.js'
 
 /**
- * A contract of this catalogue, really marked published and really edited afterwards.
+ * A contract of this catalogue, published for real and really edited afterwards.
  *
- * **Nothing is published, so the subject is built rather than found - and the building is the evidence
- * rather than a preliminary to it.** A freeze check written against the five would compute every one
- * of its answers over an empty set, go green for ever, and be read by nobody until the day it was
- * needed. So `string/slugify@1` is marked `published` in a clone, and the three things that can happen
- * to it afterwards are each committed and each measured: a comment reworded inside its harness, a
- * standing change, and prose outside the seven files.
+ * **The subject stopped being built and started being found**, which is the whole of what the
+ * publication changed here. This file used to mark `string/slugify@1` as `published` in a clone,
+ * because a freeze check written against a catalogue where nothing was published would compute every
+ * answer over an empty set and go green for ever. The four contracts are published now, so the clone's
+ * own head *is* the published subject and there is nothing to mark: what is committed into the clone is
+ * only the four things that can happen to a published contract afterwards.
  *
- * The clone is `--shared` and costs about a tenth of a second, and it is a clone rather than this
- * repository because the subject has to be *published from* a commit and then *edited* - two commits
- * this repository must not carry, on a contract this catalogue must not ship as published.
+ * They are committed rather than written into the working tree because each one has to be *rebuilt at a
+ * commit*, and because two of them are edits this repository must never carry: a reworded comment
+ * inside a frozen harness, and a contract of this catalogue put back to `not-yet-published`.
+ *
+ * The clone is `--shared` and costs about a tenth of a second.
+ *
+ * **`the-decision-to-publish-moves-no-digest` is the guard that gained a job rather than lost one.** It
+ * used to assert that the marking this file performed was not itself a change to the artefact, so that
+ * the measurements around it were about the edits they were written for. It now carries the claim that
+ * lets a binding name a commit taken *before* the publication: the lifecycle is the standing half, no
+ * state of it reaches the digest, and the direction the subject moves in is therefore immaterial. It is
+ * asked here over all three states a contract of this catalogue can carry.
  */
 
 const SLUGIFY = theFive.find((source) => source.address.name === 'string/slugify')
@@ -38,20 +47,25 @@ const A_COMMENT = {
   replace: '**The margin is the point, rather than the figure**',
 }
 
-const NOT_YET_PUBLISHED = 'lifecycle: NOT_YET_PUBLISHED,\n    folder: \'contracts/typescript/string/slugify\''
-const PUBLISHED = 'lifecycle: { state: \'published\' },\n    folder: \'contracts/typescript/string/slugify\''
+/**
+ * The three lifecycle states this subject is moved through, each anchored on the folder line beneath
+ * it - `lifecycle: PUBLISHED,` occurs once per installable contract and only this pair is unique.
+ */
+const PUBLISHED = 'lifecycle: PUBLISHED,\n    folder: \'contracts/typescript/string/slugify\''
 const ABSORBED = `lifecycle: {
       state: 'absorbed-by-the-language',
       answeredBy: 'a future proposal, named here by nothing',
       measurement: 'none: this subject exists to be a standing change, not a claim about the language',
     },
     folder: 'contracts/typescript/string/slugify'`
+const NOT_YET_PUBLISHED =
+  'lifecycle: { state: \'not-yet-published\' },\n    folder: \'contracts/typescript/string/slugify\''
 
 let subject: string
 let asPublished: string
 let afterTheComment: string
 let afterTheStanding: string
-let atHead: string
+let beforeTheDecision: string
 
 const git = (root: string, ...arguments_: readonly string[]): string =>
   execFileSync('git', [...arguments_], { cwd: root, encoding: 'utf8' }).trim()
@@ -120,8 +134,8 @@ beforeAll(() => {
   git(subject, 'config', 'user.email', 'guard@toopo.dev')
   git(subject, 'config', 'user.name', 'a guard')
 
-  rewrite('packages/registry/the-five.ts', NOT_YET_PUBLISHED, PUBLISHED)
-  asPublished = commit('string/slugify@1 is published')
+  // Nothing is marked: the head of this clone is this catalogue, and this catalogue is published.
+  asPublished = git(subject, 'rev-parse', 'HEAD')
 
   rewrite(A_COMMENT.path, A_COMMENT.find, A_COMMENT.replace)
   afterTheComment = commit('one comment of a declared harness file is reworded')
@@ -131,9 +145,15 @@ beforeAll(() => {
   rewrite('README.md', '# Toopo', '# Toopo\n\nA sentence outside every declared file.')
   afterTheStanding = commit('the standing moves and so does prose outside the seven files')
 
-  atHead = git(REPOSITORY_ROOT, 'rev-parse', 'HEAD')
-  for (const revision of [asPublished, afterTheComment, afterTheStanding]) rebuild(subject, revision)
-  rebuild(REPOSITORY_ROOT, atHead)
+  // The third state, reached from the second, so that what moves between these two commits is the
+  // lifecycle and nothing else. The prose of the commit before it stays where it is: it reaches no
+  // digest, which is what the guard above this one has just established.
+  rewrite('packages/registry/the-five.ts', ABSORBED, NOT_YET_PUBLISHED)
+  beforeTheDecision = commit('the subject is put back to the state it was published from')
+
+  for (const revision of [asPublished, afterTheComment, afterTheStanding, beforeTheDecision]) {
+    rebuild(subject, revision)
+  }
 }, 180_000)
 
 afterAll(() => {
@@ -187,11 +207,24 @@ describe('a contract of this catalogue, published and then edited', () => {
   })
 
   /**
-   * Deciding to publish is not itself a change to the artefact. It is asserted because the subject
-   * above rests on it: if marking the contract `published` had moved the digest, every measurement
-   * here would be about that edit rather than about the ones it was written for.
+   * Deciding to publish is not a change to the artefact, in either direction, from any state.
+   *
+   * **This is what lets a binding name a commit taken before the publication, and that is a real
+   * consequence rather than a tidy one.** `publishedFrom` records a commit whose registry produced the
+   * digest, and the commit that marked this catalogue published cannot name itself - so what it names
+   * is the commit before it, at which these four contracts read `not-yet-published`. That is honest
+   * exactly to the extent that the state is outside the snapshot, which is what is asserted here:
+   * three states, one digest, measured over commits rather than argued from `contractSnapshot`'s
+   * field list.
+   *
+   * The three are asserted against one value rather than pairwise, because what is claimed is that the
+   * lifecycle has no reach at all - a pairwise reading would be satisfied by two states agreeing and a
+   * third quietly not being looked at.
    */
   it('the-decision-to-publish-moves-no-digest :: the lifecycle is the standing half', () => {
-    expect(digestAt(asPublished)).toBe(digestAt(atHead))
+    const wasPublished = digestAt(asPublished)
+
+    expect(digestAt(afterTheStanding)).toBe(wasPublished)
+    expect(digestAt(beforeTheDecision)).toBe(wasPublished)
   })
 })
