@@ -1,8 +1,10 @@
 # The eight suites, on every push of a branch and on every pull request, then the site built and
-# deployed beside them, and last the one proof that reaches the deployed origin.
+# deployed beside them, and last the one proof that reaches the deployed origin. On a dispatch of `main`
+# carrying the word, one further job publishes the package to npm.
 # ADR-0098 is why this side builds rather than the deployment service, what that gives up, and why every
 # action here is a digest. ADR-0104 is why the eighth suite is a step of the second job and of neither
-# the first job nor a battery.
+# the first job nor a battery. ADR-0109 is why the publication holds no credential, why it is a job of
+# this file, and which half of its gate this repository cannot keep.
 #
 # ---------------------------------------------------------------------------
 # What the checkout must be, measured rather than chosen
@@ -81,11 +83,31 @@ on:
   push:
     branches: ['**']
   pull_request:
+  # **The publication is asked for by a person and never by an event**, which is `THE_WRITE_DISCIPLINE`
+  # one floor up: a thing that cannot be undone happens on a second word. The word is typed rather than
+  # ticked because a checkbox arrives here as a value this file has to compare, and a boolean compared in
+  # a GitHub expression is the one shape that can read a refusal as consent - `'false'` is a non-empty
+  # string. A string equality has no such arm.
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type publish to publish to npm. Anything else runs the suites and publishes nothing.'
+        required: false
+        default: ''
 
 # A superseded run measures a tree nobody will merge, and the minutes are metered.
+#
+# **The event is part of the group and a dispatched run is never cancelled**, which is not tidiness.
+# `npm publish` is the one step of this repository that cannot be undone, and a push arriving while it
+# runs must not be able to interrupt it: a cancelled publication is indistinguishable from one that never
+# happened, for anybody reading the run - which is the class of failure this repository already met on a
+# deletion that reported failure and had removed half of what it was asked to.
+#
+# The group carries the event so that a push and a dispatch cannot share one, and the flag is an
+# expression rather than a constant so that pushes and pull requests stay as cancellable as they were.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 # Nothing here writes to the repository. The token is narrowed to what a checkout needs.
 permissions:
@@ -297,3 +319,85 @@ jobs:
       # published registry - the more useful of the two questions, and the reason it carries no `if`.
       - name: the archive against the origin
         run: npm run origin
+
+  # ---------------------------------------------------------------------------
+  # The publication, and the only thing this repository does that cannot be
+  # undone
+  # ---------------------------------------------------------------------------
+  #
+  # ADR-0109 carries the argument: why no credential is stored here, why this is a job of this file rather
+  # than a workflow of its own, which half of the gate GitHub keeps and which half npm keeps, and what
+  # nothing in this repository can read.
+  #
+  # **It holds no npm credential, and that is the mechanism rather than a convenience.** npm exchanges the
+  # identity token GitHub mints for a short-lived publishing credential and writes a provenance
+  # attestation itself, so the archive a reader installs names the commit and the run it was built from.
+  # The alternative is a granular token, which npm caps at ninety days for writing - a secret on a runner
+  # that a person mints again four times a year from a personal account, and a fifth thing to lose.
+  #
+  # **`needs: site` is the gate and it is not a formality either.** It reaches both matrix legs through
+  # `site`, so nothing is published from a tree whose suites are red; and it puts the publication after
+  # the deployment and after the proof that reaches it, which is the order
+  # `packaging/against-the-origin/` exists to make checkable. A client is published to talk to an origin
+  # already serving the revision it was built against, and that is the sentence the eighth suite turns
+  # into a red.
+  publish:
+    needs: site
+    if: >-
+      github.event_name == 'workflow_dispatch'
+      && inputs.confirm == 'publish'
+      && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    # `npm` is a GitHub environment restricted to `main` there, and named in npm's trusted publisher here.
+    # **It is the only half of the branch gate that a branch cannot rewrite**: the `if` above lives in a
+    # file any branch may edit, and npm's own configuration carries no branch at all. ADR-0109 states both
+    # halves and which of them this repository is unable to keep.
+    environment: npm
+
+    permissions:
+      contents: read
+      # What npm exchanges for a publishing credential, granted to this job and to no other. At the top of
+      # this file it would reach every job of every pull request, and npm accepts that token as this
+      # package's publisher.
+      id-token: write
+
+    steps:
+      # No `fetch-depth: 0`, and the contrast with the two jobs above is the reason rather than an
+      # omission. Those need the whole graph - fifty-four citations resolve against `--all`, and the site
+      # is stamped with a revision. `packaging/build.ts` asks git nothing at all: it removes `dist/`, runs
+      # the compiler, and prunes what the published entry point cannot reach.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      # `registry-url` is what npm's own documented example for trusted publishing carries, and it is what
+      # writes the registry into the runner's npm configuration. Nothing is written beside it, because
+      # there is nothing to write.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Printed rather than asserted, the way the deploy step above names wrangler's version. Trusted
+      # publishing needs npm 11.5.1 or later; this is the line a run that fell below it is read from, and
+      # a comparison here would be this repository transcribing somebody else's floor into a file that
+      # cannot be told when it moves.
+      - name: which npm publishes
+        run: npm --version
+
+      # `npm publish`, and no flag.
+      #
+      # **`--provenance` is not passed on purpose.** npm writes the attestation on its own when the
+      # publication is a trusted one, so the flag would be a second statement of that - free to disagree
+      # with the registry's configuration, which is the side that actually decides. `--access public` is
+      # not passed either: it is documented for a first publication, and this package has been public
+      # since 1.0.0.
+      #
+      # `prepack` runs `packaging/build.ts`, so the archive cannot carry code older than these sources,
+      # and `files` decides what enters it.
+      - name: publish
+        run: npm publish

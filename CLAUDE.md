@@ -61,10 +61,20 @@ they are worth, and what stands in for it is that they were seen red on three re
 reds published. ADR-0107.
 
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
-language. And nothing is on npm: the manifest is publishable and no publication has been made, so a
-reader who meets `toopo add number/parse` on a contract page still has no way to get `toopo`. What
-stops one nobody decided is no longer a flag in the manifest - it is that nothing here runs `npm
-publish`, the workflow's token is `contents: read`, and no runner holds an npm credential.
+language.
+
+**`toopo@1.0.0` is on npm, and the way it got there is what this unit replaced.** It was published from a
+keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal account, and
+`dist` carries the registry's own signature and **no attestation at all** — so the archive a reader
+installs could not be tied to the commit or the run that built it, which is the tie every other proof
+here is about. A job of `suites.yml` now publishes on a dispatch of `main` carrying the word `publish`,
+after `needs: site` has reached both matrix legs, the deployment and the proof against the origin; npm
+exchanges an identity token GitHub mints and writes the attestation itself, so **nothing here stores a
+credential** and there is no ninety-day secret to renew. The next publication is `1.0.1` — the same
+`dist/` and a different provenance — and `THE_PUBLISHED_IMPLEMENTATION_VERSION` does not move with it,
+which is the tie ADR-0106 cut for exactly this event. **Two things it needs are not in this repository
+and no guard can see them**: npm's trusted publisher, and a GitHub environment restricted to `main`.
+ADR-0109.
 
 **The declared origin serves this catalogue, and that is the half that changed.** `main` builds the
 tree in CI and `wrangler` uploads it to Cloudflare Pages. Measured at `994374d` over **all 76 addresses
@@ -232,6 +242,23 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   after the first refusal the origin answered *one* revision to this suite and the client refused
   again. A wait that ran the chain once as soon as the suite saw agreement would have been red there —
   and that is the shape the pre-flight had.
+- **That the two things a publication depends on outside this repository are what this repository thinks
+  they are.** ADR-0109 put `npm publish` in `suites.yml`, and four guards keep what a file can hold: one
+  job publishes, it is gated by the suites, the branch and an environment, only it may mint an identity
+  token, and no workflow hands npm a credential. **None of them can see the other side.** npm's trusted
+  publisher holds four strings — organisation, repository, workflow filename, environment — and **three of
+  them are things this repository can rename on its own**, at which point publication stops working with
+  every guard green. Worse in kind: **npm's configuration carries no branch**, so the environment is doing
+  work that looks, in the file, as though the condition were doing it. And the environment's own branch
+  policy is a GitHub setting no file here states.
+
+  **The population is those four strings and that policy**, and what would close the npm half is an
+  authenticated read of npm's API compared against `ENDPOINTS`-style declarations of the two names this
+  repository owns — the price being a credential on a runner for a question whose whole subject is not
+  needing one, which is the same trade the entry below about `servedFrom` refuses and for the same reason.
+  The GitHub half is cheaper and is not free either: whether a run can read its own repository's
+  environment protection with the token this workflow carries has not been measured. Not built, and the
+  first dispatch is what will say whether the two sides agree at all.
 - **That a decision can name what confirms it, when what confirms it is a guard over the five.**
   ADR-0001 requires `confirmed-by` present and non-empty, and a guard is addressed by the pair
   `(suite, guard)`. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the
@@ -567,10 +594,11 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
    was newest that morning. Feature code still has zero runtime dependencies of any kind.
 4. **The root `package.json` no longer carries `"private": true`, and what replaced it is not a second
    flag.** That rule held for this repository's whole private life and removing it is the deliberate act
-   of the unit that published the catalogue. Nothing here runs `npm publish`: the workflow's token is
-   `contents: read`, no runner holds an npm credential, and `prepack` builds. A guard asserts the field's
-   *absence* rather than its value, so putting it back reddens - and putting it back would make every
-   publication fail. ADR-0106.
+   of the unit that published the catalogue. `prepack` builds, and one job now runs `npm publish` — the
+   workflow's token is still `contents: read`, exactly one job widens it by `id-token: write`, and **no
+   runner holds an npm credential**, which is a guard rather than this sentence. A guard asserts the
+   field's *absence* rather than its value, so putting it back reddens - and putting it back would make
+   every publication fail. ADR-0106, ADR-0109.
 5. Working notes, planning documents and status reports do not belong in this repository. Only
    contracts, implementations, tests, the evidence produced by running them, the instrument that
    produces that evidence — including its own fixtures — and the decision records under
@@ -611,10 +639,13 @@ These outlive the current stage and are not open to trade-off.
   until the run it triggers is green** — every suite on two runtimes, the deployment behind them,
   and the one proof that reaches it. The count this line used to carry is gone rather than raised, by
   the rule 467 established one section up: a rank is checked only by rebuilding the whole list, and
-  what the sentence is about does not need one. Nothing else: no force, no tag, no rewriting of history, and
-  nothing to npm ever. This line read
+  what the sentence is about does not need one. Nothing else: no force, no tag, no rewriting of history. This line read
   *never push and never create a remote* until the CI existed, at which point holding the two apart
   stopped protecting anything and only delayed the reading that says the unit worked.
+- **Nothing publishes to npm from a keyboard.** This line read *nothing to npm ever* until `1.0.0` was
+  published by hand, which is what made the sentence false and the practice worth replacing rather than
+  repeating: a publication is a dispatch of `main` carrying the word `publish`, after the run it depends on
+  is green, and no credential exists here to make one any other way. ADR-0109.
 - TypeScript `strict: true`.
 
 **How the catalogue is written.** Each rule below is stated once here and argued once in the record

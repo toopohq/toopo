@@ -34,6 +34,32 @@ import { THE_REPOSITORY } from './paths.ts'
  * being present and never for agreeing with the digest, because agreement is a question only the other
  * repository can answer and a guard pretending otherwise would be reading a comment as though it were
  * data.
+ *
+ * ---------------------------------------------------------------------------
+ * The four about publishing, and why the first of them is the one that matters
+ * ---------------------------------------------------------------------------
+ *
+ * ADR-0109 put `npm publish` on a runner. Three things about that job are what stop a publication being
+ * made from a red tree, from a branch, or with a stolen secret - and all three are declared in a file,
+ * which is the shape this repository has learned to distrust: `CLAUDE.md` asserted *no runner holds an
+ * npm credential* in prose for as long as it was true, and prose is what goes on saying it afterwards.
+ *
+ * **The first guard is the one that keeps the other three from being vacuous**, and it is written first
+ * for that reason rather than for tidiness. `only-the-job-that-publishes…` and
+ * `the-job-that-publishes…` both sweep a population derived from *finding* a publishing job; delete the
+ * job and the population is empty, every fault list is empty, and three guards go green on a repository
+ * that publishes nothing. So the count is pinned separately, which is the same argument
+ * `the-archive-reaches-the-network-from-exactly-one-module` makes one folder over, and the same reason a
+ * second job publishing quietly is a red here.
+ *
+ * **Comments are dropped before any of them reads a line, and that is load-bearing.** This file is
+ * mostly prose about gates, so a sweep that counted a paragraph would find `npm publish` in the sentence
+ * saying it is not passed a flag, and a job whose only `if` was in a comment would pass. What is read is
+ * what the host reads.
+ *
+ * **What none of them reaches is npm's own configuration**, which is where the branch is not written and
+ * where the workflow filename and the environment are pinned. `CLAUDE.md` carries that as an entry in
+ * what this repository declares and nothing keeps, with what closing it would cost.
  */
 
 const WORKFLOWS = join(THE_REPOSITORY, '.github', 'workflows')
@@ -43,6 +69,30 @@ const A_DIGEST = /^[0-9a-f]{40}$/
 
 /** What a reader needs beside the digest: the version it was taken from, as a comment. */
 const A_VERSION_COMMENT = /#\s*\S+/
+
+/**
+ * One workflow, read whole.
+ *
+ * The population is the folder rather than a list, for the reason the first guard's comment gives, and it
+ * is read here rather than in each guard because every guard below sweeps the same lines.
+ */
+type Workflow = {
+  readonly file: string
+  readonly lines: readonly string[]
+}
+
+const workflows = (): readonly Workflow[] =>
+  readdirSync(WORKFLOWS)
+    .filter((name) => name.endsWith('.yml') || name.endsWith('.yaml'))
+    .map((file) => ({ file, lines: readFileSync(join(WORKFLOWS, file), 'utf8').split('\n') }))
+
+/**
+ * A line the host does not read, and neither does anything here.
+ *
+ * This file is mostly prose about what the jobs may do, so every sweep below would otherwise find its
+ * subject in a sentence describing it. A comment naming `npm publish` is not a publication.
+ */
+const isAComment = (line: string): boolean => line.trimStart().startsWith('#')
 
 type Reference = {
   readonly file: string
@@ -54,20 +104,97 @@ type Reference = {
 }
 
 const references = (): readonly Reference[] =>
-  readdirSync(WORKFLOWS)
-    .filter((name) => name.endsWith('.yml') || name.endsWith('.yaml'))
-    .flatMap((file) =>
-      readFileSync(join(WORKFLOWS, file), 'utf8')
-        .split('\n')
-        .map((text, index) => ({ text, line: index + 1 }))
-        .flatMap(({ text, line }) => {
-          const found = /^\s*(?:-\s*)?uses:\s*(\S+)(.*)$/.exec(text)
+  workflows().flatMap(({ file, lines }) =>
+    lines.flatMap((text, index) => {
+      const found = /^\s*(?:-\s*)?uses:\s*(\S+)(.*)$/.exec(text)
 
-          return found === null
-            ? []
-            : [{ file, line, uses: found[1] ?? '', trailing: found[2] ?? '' }]
-        }),
-    )
+      return found === null
+        ? []
+        : [{ file, line: index + 1, uses: found[1] ?? '', trailing: found[2] ?? '' }]
+    }),
+  )
+
+/**
+ * A job, as the two coordinates that let a sweep over a whole file say what a line belongs to.
+ *
+ * **The structure read from the format is the smallest one that answers the question**, and it is read by
+ * indentation rather than by a parser because this repository has no YAML parser and will not gain a
+ * dependency to hold four guards. A job identifier is what GitHub allows one to be - letters, digits,
+ * `-` and `_` - which is stricter than *anything before a colon* and is what keeps a two-space comment
+ * ending in a colon from being collected as a job.
+ */
+type Job = {
+  readonly file: string
+  readonly name: string
+  /** The whole file, so a fault can be addressed by line and a sweep can ask what contains it. */
+  readonly lines: readonly string[]
+  /** Index of the first line under the job's header. */
+  readonly from: number
+  /** Index one past the job's last line. */
+  readonly to: number
+}
+
+const A_JOB_HEADER = /^ {2}([A-Za-z0-9_-]+):\s*$/
+
+/** A key of the document rather than of a job, which is where the jobs stop. */
+const opensAtTheLeftMargin = (line: string): boolean => /^\S/.test(line) && !isAComment(line)
+
+const jobs = (): readonly Job[] =>
+  workflows().flatMap(({ file, lines }) => {
+    const opens = lines.findIndex((line) => /^jobs:\s*$/.test(line))
+
+    if (opens < 0) return []
+
+    const under = opens + 1
+    const closes = lines.slice(under).findIndex(opensAtTheLeftMargin)
+    const end = closes < 0 ? lines.length : under + closes
+
+    const headers = lines.slice(under, end).flatMap((line, index) => {
+      const found = A_JOB_HEADER.exec(line)
+
+      return found === null ? [] : [{ name: found[1] ?? '', at: under + index }]
+    })
+
+    return headers.map((header, position) => ({
+      file,
+      name: header.name,
+      lines,
+      from: header.at + 1,
+      to: headers[position + 1]?.at ?? end,
+    }))
+  })
+
+/**
+ * What a job declares, with the comments dropped and every run of whitespace collapsed.
+ *
+ * The collapse is the discipline `CLAUDE.md` states about reading text: a check that depends on where a
+ * line wraps depends on something nobody can see. The publishing job's condition is one expression over
+ * three lines, and re-flowing it must not be an event.
+ */
+const declarationOf = (job: Job): string =>
+  job.lines
+    .slice(job.from, job.to)
+    .filter((line) => !isAComment(line))
+    .join(' ')
+    .replace(/\s+/g, ' ')
+
+/** The command, as it has to be written to run. */
+const A_PUBLICATION = /\bnpm\s+publish\b/
+
+/**
+ * A credential for npm, in the three spellings one has to take to work.
+ *
+ * A secret whose name mentions npm, the variable npm's own setup writes into a configuration, and the
+ * configuration key itself - which is what a `run:` line would set directly. A Cloudflare token does not
+ * match, and it is deliberately not covered: ADR-0098 put that one here and the deployment needs it.
+ */
+const A_CREDENTIAL_FOR_NPM = /secrets\.\w*NPM\w*|NODE_AUTH_TOKEN|_authToken/i
+
+const jobsThatPublish = (): readonly Job[] =>
+  jobs().filter((job) => A_PUBLICATION.test(declarationOf(job)))
+
+const containing = (file: string, index: number): Job | undefined =>
+  jobsThatPublish().find((job) => job.file === file && index >= job.from && index < job.to)
 
 describe('what the continuous integration is allowed to run', () => {
   /**
@@ -98,5 +225,79 @@ describe('what the continuous integration is allowed to run', () => {
       .map((reference) => `${reference.file}:${reference.line} pins ${reference.uses} and says nothing`)
 
     expect(silent).toEqual([])
+  })
+
+  /**
+   * The address is pinned rather than counted, which is what the two guards after this one need from it:
+   * both sweep a population found by looking for a publishing job, so both are green on a repository that
+   * has stopped publishing. A second job publishing is the other half, and it is the more likely one -
+   * a publication copied into a workflow of its own would hold none of the gates argued for here.
+   */
+  it('exactly-one-job-of-this-repository-publishes-to-npm', () => {
+    expect(jobsThatPublish().map((job) => `${job.file}:${job.name}`)).toEqual(['suites.yml:publish'])
+  })
+
+  /**
+   * The three coordinates of one gate, each reported separately so a repair knows which was removed.
+   *
+   * `needs` reaches every suite and the deployment through the job it names, so a red tree cannot publish.
+   * The branch keeps a publication on `main`. The environment is the half GitHub enforces and npm pins,
+   * and it is the only one of the three that survives this file being rewritten on a branch - which is
+   * exactly why the other two are checked here, where a rewrite is a red before it is merged.
+   */
+  it('the-job-that-publishes-to-npm-is-gated-by-the-suites-the-branch-and-the-environment', () => {
+    const ungated = jobsThatPublish().flatMap((job) => {
+      const declared = declarationOf(job)
+
+      return [
+        { held: /\bneeds:/.test(declared), fault: 'waits for no other job' },
+        { held: declared.includes('refs/heads/main'), fault: 'names no branch' },
+        { held: /\benvironment:/.test(declared), fault: 'runs in no environment' },
+      ]
+        .filter(({ held }) => !held)
+        .map(({ fault }) => `${job.file}:${job.name} ${fault}`)
+    })
+
+    expect(ungated).toEqual([])
+  })
+
+  /**
+   * npm accepts this token as the package's publisher, so where it can be minted is where the package can
+   * be published from. Granted at the top of a workflow it reaches every job of every pull request, and
+   * the sweep is therefore over whole files rather than over jobs: the line that would do the damage is
+   * the one that belongs to no job at all.
+   */
+  it('only-the-job-that-publishes-to-npm-can-mint-an-identity-token', () => {
+    const minting = workflows().flatMap(({ file, lines }) =>
+      lines
+        .map((text, index) => ({ text, index }))
+        .filter(({ text }) => !isAComment(text) && /id-token:\s*write/.test(text))
+        .filter(({ index }) => containing(file, index) === undefined)
+        .map(({ index }) => `${file}:${index + 1} mints an identity token outside the job that publishes`),
+    )
+
+    expect(minting).toEqual([])
+  })
+
+  /**
+   * The sentence `CLAUDE.md` used to assert in prose, made a red.
+   *
+   * A publication here is an exchange of a short-lived identity token, so there is nothing to store and
+   * nothing to steal. The regression is one line - an environment variable, or a token written into an
+   * npm configuration by a `run:` - and npm caps a granular write token at ninety days, so the pressure
+   * to add that line arrives four times a year rather than never.
+   *
+   * The fault names where and never what: a guard that printed the match would put a secret's name in
+   * every log that failed, which is the treatment `refusedAddressFaults` already gives one floor up.
+   */
+  it('no-workflow-authenticates-to-npm-with-a-long-lived-credential', () => {
+    const holding = workflows().flatMap(({ file, lines }) =>
+      lines
+        .map((text, index) => ({ text, index }))
+        .filter(({ text }) => !isAComment(text) && A_CREDENTIAL_FOR_NPM.test(text))
+        .map(({ index }) => `${file}:${index + 1} hands npm a credential of its own`),
+    )
+
+    expect(holding).toEqual([])
   })
 })
