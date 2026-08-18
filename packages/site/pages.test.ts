@@ -15,7 +15,7 @@ import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { escapedForMarkdown, readingOf, toHtml, toMarkdown, toText, wordsOf } from './document.js'
 import { localSource } from './local-source.js'
-import { inline } from './methodology-page.js'
+import { inline } from './marks.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 import { theSite } from './site.js'
 
@@ -43,6 +43,25 @@ const page = (path: string): Parameters<typeof toHtml>[0] =>
   pages().get(path) as NonNullable<ReturnType<ReturnType<typeof theSite>['get']>>
 
 const html = (path: string): string => toHtml(page(path))
+
+/**
+ * A sentence written for a reader of source, as a reader of a page sees it.
+ *
+ * Every guard that requires one has to ask for it this way, because a page parses the two marks these
+ * sentences are written with and the literal they were read from still carries them. It is one
+ * function rather than four: `every-surviving-cell-is-published-with-its-own-battery-sentence` used to
+ * strip the marks by hand, which is a copy of `inline` that goes stale the day it learns a third, and
+ * `every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words` compared the literal, which
+ * is right only for as long as no entry of that vocabulary gains a mark.
+ *
+ * **It moved out of the method page's block when the catalogue's own prose started being parsed too.**
+ * Two guards over a contract page were looking a group title and a rationale up in the reading by
+ * their literal, and `separators-the-family-does-not-cover` is the row that found it: the title holds
+ * a mark, so the search was for a string no reader is shown. That is the same defect this helper was
+ * written for, one page along - which is the argument for one function and against a second spelling
+ * of it here. ADR-0117.
+ */
+const asRead = (prose: string): string => inline(prose).map(readingOf).join('')
 
 describe('the site', () => {
   /**
@@ -133,7 +152,7 @@ describe('the site', () => {
         for (const entry of table.cases) {
           const own = titles.findIndex(({ group }) => group.id === entry.group)
           const after = titles[own + 1]?.at ?? reading.length
-          const sits = reading.indexOf(entry.rationale)
+          const sits = reading.indexOf(asRead(entry.rationale))
 
           expect(
             sits > (titles[own] as (typeof titles)[number]).at && sits < after,
@@ -171,7 +190,7 @@ describe('the site', () => {
           expect(
             note,
             `${group.id}: the note reads after its first case`,
-          ).toBeLessThan(reading.indexOf((first as NonNullable<typeof first>).rationale))
+          ).toBeLessThan(reading.indexOf(asRead((first as NonNullable<typeof first>).rationale)))
         }
       }
     }
@@ -509,6 +528,37 @@ describe('the site', () => {
   })
 
   /** Nothing a reader can see is lost between the projections, on every real page. */
+  /**
+   * No sentence any page renders reaches a reader carrying its own markup.
+   *
+   * The sentences are written for a reader of source - `mutation/` writes `**this**` and `` `that` ``,
+   * and so does a contract's own prose - and *printed as they are, a reader of the page sees the
+   * punctuation*. That rule was declared, implemented in `inline`, and then broken by two call sites
+   * reaching for `line` instead of `paragraph`: the method page published
+   * `**No share of any of those steps is attributed to anything**` and `` `cli-install` `` with the
+   * marks showing, on the page whose whole subject is rigour.
+   *
+   * Neither mark is legitimate content, which is what makes the assertion exact rather than a
+   * heuristic: a backtick becomes `code` and an asterisk pair becomes `strong`, so a parsed page has
+   * none of either left in its reading.
+   *
+   * **It asked this of the method page alone until ADR-0117, and the four contract pages were
+   * publishing 220 backticks between them** - 110 on `string/slugify@1`, where 51 `code` elements were
+   * being produced correctly beside them. ADR-0026 scoped it to one page because the register of the
+   * catalogue's own text was an open question and nothing mechanical settled it; what settled it is
+   * that every one of those 220 is paired, so there is no mark to guess at. The population is every
+   * page `theSite` builds, which is what makes the widening a sweep rather than four more call sites
+   * somebody has to remember.
+   */
+  it('no-mark-a-sentence-carries-reaches-the-reader-as-itself', () => {
+    for (const [path, document] of pages()) {
+      const reading = toText(document)
+
+      expect(reading.match(/\*\*[^*]+\*\*/g) ?? [], `unparsed bold on ${path}`).toEqual([])
+      expect(reading.match(/`[^`]+`/g) ?? [], `unparsed code on ${path}`).toEqual([])
+    }
+  })
+
   it('every-word-of-every-page-survives-every-projection', () => {
     for (const path of pages().keys()) {
       const held = page(path)
@@ -721,41 +771,6 @@ describe('the site', () => {
  */
 describe('the page that says how we verify', () => {
   const reading = (): string => toText(page(METHOD_PAGE))
-
-  /**
-   * A sentence of `mutation/` as a reader of this page sees it.
-   *
-   * Every guard below that requires one has to ask for it this way, because the page parses the two
-   * marks these sentences are written with and the literal in `mutation/` still carries them. It is one
-   * function rather than three: `every-surviving-cell-is-published-with-its-own-battery-sentence` used
-   * to strip the marks by hand, which is a copy of `inline` that goes stale the day it learns a third -
-   * and `every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words` compared the literal,
-   * which is right only for as long as no entry of that vocabulary gains a mark.
-   */
-  const asRead = (prose: string): string => inline(prose).map(readingOf).join('')
-
-  /**
-   * Every sentence this page renders has had its two marks parsed, and none reaches a reader as itself.
-   *
-   * `methodology-page.ts` says what these are for in as many words - the sentences come from
-   * `mutation/`, where `**this**` and `` `that` `` are read by a person in an editor, and *printed as
-   * they are, a reader of the page sees the asterisks*. That rule was declared, implemented in
-   * `inline`, and then broken by two call sites reaching for `line` instead of `paragraph`: the page
-   * published `**No share of any of those steps is attributed to anything**` and `` `cli-install` ``
-   * with the punctuation showing, on the page whose whole subject is rigour.
-   *
-   * Neither mark is legitimate content here, which is what makes the assertion exact rather than a
-   * heuristic. A backtick becomes `code` and an asterisk pair becomes `strong`, so a parsed page has
-   * none of either left in its reading - and this page is built entirely from `mutation/` prose, where
-   * both marks are the convention. It is deliberately not asked of a contract page: those publish
-   * contract prose that writes `` `Intl` `` for a reader, on 5 pages and 53 lines, and is a separate
-   * question about the register of the catalogue's own text rather than about this page's renderer.
-   */
-  it('no-mark-a-sentence-carries-reaches-the-reader-as-itself', () => {
-    expect(reading().match(/\*\*[^*]+\*\*/g) ?? [], 'unparsed bold on the method page').toEqual([])
-    expect(reading().match(/`[^`]+`/g) ?? [], 'unparsed code on the method page').toEqual([])
-  })
-
 
   /**
    * **No figure on this page is typed into a sentence.**

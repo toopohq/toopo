@@ -38,6 +38,7 @@ import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
 import { literal } from './literal.js'
+import { inline, marked, paragraph } from './marks.js'
 import { THE_ENTRY_POINT, THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
 import type { PlaygroundField } from './playground.js'
 import { playgroundOf, theCallOf, whatATextFieldCannotCarry } from './playground.js'
@@ -129,7 +130,7 @@ const renderedCase = (
     { id: entry.id },
     anchorTo(entry.id),
     el('p', { class: 'call' }, line('code', `${answer.name}(${call.join(', ')}) → ${result}`)),
-    line('p', entry.rationale, { class: 'why' }),
+    paragraph(entry.rationale, { class: 'why' }),
     ...whatATextFieldCannotCarry(entry, answer, fields).map((field) =>
       line(
         'p',
@@ -168,7 +169,7 @@ const anchorTo = (id: string): Node =>
  * *looks* must not.
  */
 const addressed = (tag: Tag, id: string, title: string): Node =>
-  el(tag, { id, class: 'group' }, anchorTo(id), text(title))
+  el(tag, { id, class: 'group' }, anchorTo(id), ...inline(title))
 
 /**
  * One group of a table: its heading, then the cases that sit under it.
@@ -189,7 +190,7 @@ const renderedGroup = (
   heading: Tag,
 ): readonly Node[] => [
   addressed(heading, group.id, group.title),
-  ...(group.note === null ? [] : [line('p', group.note, { class: 'why' })]),
+  ...(group.note === null ? [] : [paragraph(group.note, { class: 'why' })]),
   el(
     'div',
     { class: 'cases' },
@@ -220,8 +221,8 @@ const renderedTable = (
   alone: boolean,
 ): readonly Node[] => [
   alone
-    ? line('p', `${table.purpose}.`, { class: 'meta' })
-    : line('h3', table.purpose, { class: 'table' }),
+    ? paragraph(`${table.purpose}.`, { class: 'meta' })
+    : marked('h3', table.purpose, { class: 'table' }),
   ...table.groups.flatMap((group) =>
     renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
   ),
@@ -268,7 +269,7 @@ export const contractPage = (held: Held): Document => {
       el('nav', NOTHING, el('a', { href: rootFrom(pageOf(contract.address)) }, text('Toopo'))),
 
       line('h1', name),
-      line('p', contract.identity.summary, { class: 'lede' }),
+      paragraph(contract.identity.summary, { class: 'lede' }),
 
       line('pre', `${THE_INVOCATION} add ${contract.address.name}`),
       line(
@@ -280,13 +281,13 @@ export const contractPage = (held: Held): Document => {
       ),
 
       line('h2', 'What it does'),
-      line('p', contract.identity.description),
+      paragraph(contract.identity.description),
       ...(contract.identity.relationToTheLanguage === undefined
         ? []
-        : [line('p', contract.identity.relationToTheLanguage)]),
+        : [paragraph(contract.identity.relationToTheLanguage)]),
 
       line('h2', 'What it is for, and what it is not'),
-      line('p', contract.identity.inputDomain),
+      paragraph(contract.identity.inputDomain),
 
       line('h2', 'Signature'),
       ...contract.surface.exports.map((entry) =>
@@ -307,7 +308,7 @@ export const contractPage = (held: Held): Document => {
           ]),
       ...(contract.surface.couplingRule === undefined
         ? []
-        : [line('p', `${contract.surface.couplingRule}.`)]),
+        : [paragraph(`${contract.surface.couplingRule}.`)]),
 
       line('h2', `${cases} settled cases`),
       line(
@@ -363,7 +364,7 @@ export const contractPage = (held: Held): Document => {
               { class: 'call' },
               line('code', `${property.name} — ${property.applicable ? 'checked' : 'not applicable'}`),
             ),
-            line('p', property.reason, { class: 'why' }),
+            paragraph(property.reason, { class: 'why' }),
           ),
         ),
       ),
@@ -383,7 +384,7 @@ export const contractPage = (held: Held): Document => {
             'li',
             NOTHING,
             el('p', { class: 'call' }, line('code', `${profile.name} — ${profile.class}`)),
-            line('p', profile.description, { class: 'why' }),
+            paragraph(profile.description, { class: 'why' }),
           ),
         ),
       ),

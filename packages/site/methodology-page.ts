@@ -70,59 +70,13 @@ import type { VerificationStratum } from '../registry/field-map.js'
 import type { ServedMethodology } from '../registry/verifiability.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import { inline, paragraph } from './marks.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, linkTo, rootFrom } from './paths.js'
 
 const NOTHING = {} as const
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
-
-/**
- * A battery's description, with its two inline marks turned into elements.
- *
- * The sentences come from `mutation/`, where `**this**` and `` `that` `` are read by a person in an
- * editor. Printed as they are, a reader of the page sees the asterisks; parsed, they become the
- * elements they already mean. Nothing here holds raw markup - `strong` and `code` are nodes, so
- * `document.ts`'s rule that there is nowhere for an escape to be forgotten survives untouched.
- *
- * It is deliberately two marks and not a Markdown renderer. A third mark would be a feature nobody
- * asked for, and an unpaired one is left as the character it is rather than guessed at.
- *
- * **The two nest, and only the reading found that they had to.** The first version split on both
- * marks at once, so a code mark inside a bold span was swallowed by it - and P-20 of `number-parse`
- * writes exactly that, publishing the backticks around `\s` on the page. Every type was satisfied and
- * every projection guard was green; the sentence was simply wrong on screen.
- */
-const asCode = (prose: string): readonly Node[] =>
-  prose
-    .split(/(`[^`]+`)/g)
-    .filter((piece) => piece !== '')
-    .map((piece) =>
-      piece.startsWith('`') && piece.endsWith('`') && piece.length > 1
-        ? el('code', NOTHING, text(piece.slice(1, -1)))
-        : text(piece),
-    )
-
-/**
- * Exported for the guard that requires each of these sentences on the page.
- *
- * It has to ask for them *as a reader sees them*, which is no longer the literal in `mutation/` now
- * that the marks are parsed - and a guard stripping the marks itself would be a second statement of
- * what this function does, wrong on the day a third mark is added. `whatRunsInYourBrowser` is exported
- * one file along for the same reason: a guard that transcribes goes stale on the first reword.
- */
-export const inline = (prose: string): readonly Node[] =>
-  prose
-    .split(/(\*\*[^*]+\*\*)/g)
-    .filter((piece) => piece !== '')
-    .flatMap((piece) =>
-      piece.startsWith('**') && piece.endsWith('**')
-        ? [el('strong', NOTHING, ...asCode(piece.slice(2, -2)))]
-        : asCode(piece),
-    )
-
-const paragraph = (prose: string, attributes = NOTHING): Node =>
-  el('p', attributes, ...inline(prose))
 
 /**
  * One defect, the cells of it that survive, and the battery's own account of it — once.
