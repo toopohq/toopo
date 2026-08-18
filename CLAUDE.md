@@ -143,6 +143,37 @@ rather than an exit code. Node's own standard library carries the shape 12 times
 `lib/`. **One user-visible cost, accepted rather than smoothed:** a file the user has edited is kept
 where it is and the new copy written beside it, so they hold two. ADR-0110.
 
+**The site has a visual system, and the contract page is built on it — the page a stranger lands on
+from a search, and 99 % of this site at a thousand entries.** Six type sizes and no seventh, one
+spacing unit every length is a multiple of by construction, colour roles rather than colours, one
+accent, dark by `prefers-color-scheme` with no button and nothing remembered. **The accent means *you
+can act on this* or *you are here*, and never a verdict**: this catalogue publishes 35 surviving
+mutants beside 632 caught ones, and a colour survives neither `toText` nor `toMarkdown`, so a page
+that sorted its own evidence by colour would say what its reading does not. The page is a card — name,
+sentence, command, four figures, signature — and then everything, with nothing behind a fold, which is
+the shape a differential trial on `date/add@1` and its 50 cases settled. **Two greys and not three**:
+the mock-ups' fourth answers 2.64:1 on light paper while carrying the case identifier, and the value
+they draw `dim` at answers 4.24:1 on a case a reader has just followed a link to. Both readings are
+arithmetic now rather than something somebody remembered to take. ADR-0115, ADR-0116.
+
+**The web font is refused, and coverage is what refused it rather than weight.** Measured on
+`@fontsource/ibm-plex-mono@5.3.0`: two weights of the Latin subset is 29 596 B and three is 45 216 B,
+against an estimate of ~26 kB. What decides it is that Plex's `latin` range carries U+2191 and U+2193
+and **not U+2192** — the arrow between every call and its answer, 157 times across the four pages — and
+that `string/slugify@1` alone carries 59 distinct mono code points outside it, 57 outside `latin-ext`
+too. Those are what that contract settles cases *about*. The system stack renders them because an
+operating system composes fallbacks a page cannot ship. **What the refusal costs is named rather than
+smoothed**: `ui-monospace` is a different face on every platform and no reading here covers more than
+this machine; what survives is what was specified in units that travel, the case column in `ch` and
+the scale in `rem`. ADR-0115.
+
+**And the catalogue's own prose is parsed by the function that already parsed the method page's.**
+ADR-0026 scoped that guard to one page and named the event that would reopen it — a second page taking
+prose written for a reader of source. 220 literal backticks were reaching readers across the four
+contract pages, 110 of them on `string/slugify@1` beside 51 `code` elements produced correctly on the
+same page. What settled the register ADR-0026 said nothing mechanical could settle is that **every one
+of the 220 is paired**, so there is nothing to guess at. ADR-0117.
+
 **The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
 `string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
 because ES2024 shipped `Map.groupBy` and it answers what the contract specifies; the refusal and the
@@ -412,6 +443,20 @@ swept**, and `--all` is the only spelling of *this repository* that a tag cannot
   writing a guard whose event is cheap. What would close it is reading the structure of the expression,
   and that means this file's YAML sweep learning what an operator is, on a repository that has no YAML
   parser and will not gain a dependency to hold one guard. ADR-0111.
+- **That the one module of this repository which runs in a browser does what it says.**
+  `packages/site/start.ts` builds the playground form and, since ADR-0116, the copy control beside the
+  install command. **Nothing executes it.** `playground.test.ts` imports the functions it calls and
+  runs the stripped reference through a `data:` URL, which is the hard half and is measured; what is
+  not is the file that touches a document. `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing`
+  asserts the *absence* of a served control and says nothing about the built one.
+
+  **The population is `packages/site/start.ts`**, and the event is worth stating because it is not the
+  obvious one: `copyControl` runs first in `start`, so an edit that throws there takes the playground
+  with it — and the section does not look broken, because the prose that stands in for a missing form
+  is exactly what a reader sees when the form was never built. What would close it is a document in
+  the site suite, which means a DOM environment, which means a sixth dev dependency for one file of
+  fifty lines. Priced and not spent; the entry exists so that the next unit adding to that file knows
+  it is writing into the one place here nothing measures.
 - **That every surface renders the invocation rather than the bare command name.** This one was met by
   a visitor rather than found by a sweep: the README and the four contract pages published
   `toopo add string/slugify`, which answers `command not found` for anybody who has installed nothing —
