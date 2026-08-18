@@ -245,6 +245,40 @@ describe('a page and its two projections', () => {
   })
 
   /**
+   * Every colour the stylesheet paints with is a role it declared, and the roles are declared in two
+   * places: the palette, and the palette again in the dark.
+   *
+   * **This is the executable half of the rule that the accent never says a status.** That rule cannot
+   * be stated as *no rule is red*, because red is not the point - what is, is that a colour arrives on
+   * this site by being named as a role, in one of two blocks a reader can hold in their head. A rule
+   * that reached for a literal would be a second palette, invisible, wherever somebody happened to
+   * need one; and *tint the surviving mutants* is exactly the edit that would reach for one.
+   *
+   * What it does not keep is stated rather than implied: somebody may still declare a `--danger` in
+   * the palette and use it. What changes is that the declaration is in the block where the vocabulary
+   * lives instead of buried in a rule, so it is an act somebody takes rather than one they slip into.
+   *
+   * The mutant it exists for is a colour literal in a rule. Seen red before it was believed: with
+   * `color: #c0392b` added to `.why`, the fault reads `#c0392b outside the palette`.
+   */
+  it('every-colour-the-stylesheet-paints-with-is-a-role-it-declared', () => {
+    const style = (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
+    const palettes = [...style.matchAll(/:root\s*\{([^}]*)\}/g)].map((found) => found[1] as string)
+
+    // Two and only two: the palette, and the palette again under `prefers-color-scheme: dark`.
+    expect(palettes).toHaveLength(2)
+
+    // The rules are what is left once the two palettes are taken out, and no colour may survive there
+    // — including one that repeats a palette value, which is a second declaration of the same role.
+    const rules = style.replace(/:root\s*\{[^}]*\}/g, '')
+
+    expect(rules.match(/#[0-9a-fA-F]{3,8}/g) ?? [], 'a colour outside the palette').toEqual([])
+
+    // One accent per palette, so that a second hue cannot be introduced as a second name.
+    for (const block of palettes) expect(block.match(/--accent:/g) ?? []).toHaveLength(1)
+  })
+
+  /**
    * The structured data is a value in the head, and the one escape it needs is a JSON escape.
    *
    * **Measured before it was designed**: written as a text node in the body it goes through

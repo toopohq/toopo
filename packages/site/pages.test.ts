@@ -271,6 +271,50 @@ describe('the site', () => {
    * `every-case-is-addressed` asks this of a contract's data; this asks it of the document, which is
    * where the collision would actually happen and which carries every table at once.
    */
+  /**
+   * The rail of a contract page names every section of it, in order, and names nothing else.
+   *
+   * **What this is worth, and what it is not, stated rather than left to a reader.** Both halves are
+   * built from one array in `contract-page.ts`, so today the guard cannot fail — which is exactly the
+   * trap ADR-0087 names: perturbing an object derived from a claim establishes that the derivation is
+   * self-consistent, and a derivation with a hole in it is self-consistent too.
+   *
+   * It is written anyway, and for a named event rather than for today: **a rail written out by hand.**
+   * That is the ordinary way a table of contents comes into existence, it is what the first draft of
+   * this page nearly was, and its cost is a section a reader cannot reach on the page that will be
+   * most of this site — silently, because every link still resolves and every heading is still there.
+   * The day somebody writes `['What it does', 'Signature', ...]` beside the sections, this reddens on
+   * the first section added after it. ADR-0116.
+   */
+  it('the-rail-of-a-page-names-every-section-of-it-and-only-those', () => {
+    for (const held of heldByTheRegistry(source)) {
+      const document = page(pageOf(held.contract.address))
+      const railed: string[] = []
+      const sectioned: string[] = []
+
+      const walk = (node: Parameters<typeof readingOf>[0], inRail: boolean): void => {
+        if (node.kind !== 'element') return
+
+        const rail = inRail || node.attributes['class'] === 'rail'
+        const href = node.attributes['href']
+        const id = node.attributes['id']
+
+        if (rail && node.tag === 'a' && href !== undefined) railed.push(href.replace('#', ''))
+        if (!rail && node.tag === 'h2' && id !== undefined) sectioned.push(id)
+
+        for (const child of node.children) walk(child, rail)
+      }
+
+      for (const node of document.body) walk(node, false)
+
+      expect(sectioned.length, `${held.contract.address.name}: the page has no addressed sections`)
+        .toBeGreaterThan(0)
+      expect(railed, `${held.contract.address.name}: the rail and the sections disagree`).toEqual(
+        sectioned,
+      )
+    }
+  })
+
   it('every-anchor-on-a-page-is-held-by-one-element', () => {
     for (const [path, document] of pages()) {
       const ids = [...toHtml(document).matchAll(/ id="([^"]+)"/g)].map((found) => found[1] as string)
