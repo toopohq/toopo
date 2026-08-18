@@ -147,7 +147,7 @@ const A_KEY_IS_QUOTED_WHEN_IT_MUST_BE = `const IDENTIFIER = /^[A-Za-z_$][A-Za-z0
 
 const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `      return value.description === null ? 'Symbol()' : \`Symbol(\${quoted(value.description)})\``
 
-const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id },`
+const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id, class: 'case' },`
 
 const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) =>
     renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
@@ -257,7 +257,7 @@ const A_PAGE_IS_WRITTEN_AT_THE_FILE_IT_IS =
 
 const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
 
-const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`
+const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`
 
 const THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS = `    paragraph(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]),`
 
@@ -487,7 +487,12 @@ const mutants: readonly Mutant[] = [
     'W-11',
     'anchors a case on its position instead of its identifier, so every link into a contract page ' +
       'works today and points at a different case the day one is inserted',
-    [contractPageFile(THE_ANCHOR_IS_THE_CASE_IDENTIFIER, `    { id: \`case-\${entry.rationale.length}\` },`)],
+    [
+      contractPageFile(
+        THE_ANCHOR_IS_THE_CASE_IDENTIFIER,
+        `    { id: \`case-\${entry.rationale.length}\`, class: 'case' },`,
+      ),
+    ],
     killed(['every-case-is-anchored-by-the-identifier-its-address-is-made-of']),
   ),
 
@@ -1034,7 +1039,7 @@ const mutants: readonly Mutant[] = [
       cataloguePageFile(
         NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED,
         `import type { Battery } from '../../mutation/run.js'\n` +
-          `import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`,
+          `import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`,
       ),
     ],
     killed(['nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation']),
