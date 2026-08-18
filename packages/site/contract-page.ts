@@ -539,10 +539,17 @@ export const contractPage = (
             'nothing is added to your dependencies.',
         ),
         /**
-         * The name and its weight on one line, because the name alone is not prose.
-         * `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` refuses a carried value
-         * standing by itself in a paragraph - an identifier is an address - and it was red on
-         * `reference.ts` in a paragraph of its own before this read as a sentence.
+         * The names, and no weight beside them, which a mutant is what settled.
+         *
+         * The first draft wrote the byte count of each file, and that number is the card's. With one
+         * file the two are the same figure, so **W-12 survived** - the cell that points the card's
+         * total at the harness instead of at what lands, whose guard looks for the installed total
+         * anywhere on the page and found it here instead. A figure repeated is a guard satisfied by
+         * the copy.
+         *
+         * So the card states the cost and this states what it is a cost of.
+         * `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` is why the name still ends in a
+         * full stop rather than standing alone: an identifier is an address and not prose.
          */
         el(
           'ul',
@@ -551,7 +558,7 @@ export const contractPage = (
             el(
               'li',
               NOTHING,
-              paragraph(`\`${entry.path}\`, ${grouped(entry.bytes)} bytes.`),
+              paragraph(`\`${entry.path}\`.`),
             ),
           ),
         ),
