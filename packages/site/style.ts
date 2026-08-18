@@ -59,8 +59,39 @@
  * somebody has just followed a link to**, which is the one row where a reader is certain to be looking.
  * A ground that lifts is a ground the ink has to lift with.
  * `system-ui` and `ui-monospace` first, so the page is set in whatever the reader's own system uses
- * and downloads nothing. The measure is capped in `ch` rather than pixels because what has to stay
- * readable is a line of prose and a line of code, both of which are counted in characters.
+ * and downloads nothing.
+ *
+ * ---------------------------------------------------------------------------
+ * The measure is counted in characters, and it is on the line rather than on the box
+ * ---------------------------------------------------------------------------
+ *
+ * 45 to 75 characters is the span a line stays readable across, and 75 is the ceiling held here.
+ *
+ * **`ch` is the advance of `0` and not the average character, so a box capped in `ch` under-constrains
+ * everything set smaller than it.** That is not a detail: the worst line this site ever served was 169
+ * characters, and it was small print in a wide box - a cap on the box would have left it exactly
+ * there. So `--measure` is declared on the element that carries the prose, where `ch` resolves against
+ * the face the line is actually set in, and one declaration gives every step of the scale its own 75.
+ *
+ * **The conversion is a measurement, because CSS has no unit for the average character.** Over the 688
+ * prose elements of the eight pages at 1240 and at 390, read with one Range per character grouped by
+ * line box, the densest line was 1.393 characters per ch.
+ *
+ * **Density is a property of the text, so it moves when the column moves**: the same sweep answered
+ * 1.339 before this measure existed and 1.393 once the column had narrowed to it, because a narrower
+ * box breaks the same sentence at different words. It is a fixed point reached by iterating, and 1.04
+ * is the drift across one turn. ADR-0077 is why it is applied rather than noted - a repair is chosen
+ * for its margin, and a margin inside the method's own error has bought nothing. Measured over four
+ * candidates: 1.34 leaves 2 lines over the ceiling at a worst of 78, 1.40 leaves none at 73, 1.45
+ * leaves none at 70, and 1.50 leaves none at 69 while pulling the typical line down to 61.
+ *
+ * **The three numbers are declared apart rather than pre-multiplied into one length**, so that each is
+ * a fact somebody can re-measure on its own and none of them is a compromise wearing another's name.
+ *
+ * **The argument is here and not beside the rule, and the reason is bytes.** This stylesheet is inline
+ * in every page of the tree, so a comment inside the template literal is served to every reader as
+ * many times as there are pages; a comment out here is not. Measured: 4 672 of the 13 323 bytes served
+ * are comments already, and writing this one beside its constant cost 2 843 bytes per page.
  *
  * ---------------------------------------------------------------------------
  * The accent never says a status
@@ -91,26 +122,7 @@ export const STYLE = `
   --ink: #1c1b19; --body: #3a3833; --dim: #6b6660;
   --accent: #a0491d; --target: #f6ece4;
 
-  /* The measure, written in the unit a reader is owed it in and converted rather than guessed.
-     45 to 75 characters is the span a line stays readable across, and 75 is the ceiling held here.
-
-     CSS has no unit for the average character, so the conversion is a measurement and not arithmetic:
-     over the 688 prose elements of the eight pages at 1240 and at 390, read with one Range per
-     character grouped by line box, the densest line was 1.393 characters per ch of the face it was
-     set in.
-
-     The third number is the one worth reading. Density is a property of the text and not of the face,
-     so it *moves when the column moves*: the same sweep answered 1.339 before this measure existed and
-     1.393 once the column had narrowed to it, because a narrower box breaks the same sentence at
-     different words. That is a fixed point reached by iterating, and 1.04 is the drift observed
-     across one turn of it. ADR-0077 is why it is applied rather than noted - a repair is chosen for
-     its margin, and a margin inside the method's own error has bought nothing. Measured over the four
-     candidates: 1.34 leaves 2 lines over the ceiling at a worst of 78, 1.40 leaves none at 73, this
-     leaves none at 70, and 1.50 leaves none at 69 while pulling the typical line down to 61.
-
-     It is written in ch and is therefore resolved against the face it is used on, which is the half a
-     container cannot do: one box holds half as many characters again at var(--t5) as at var(--t3),
-     and the worst line this site ever served - 169 characters - was small print inside a wide box. */
+  /* The longest line a reader is asked to follow, and what one character of this face costs. */
   --the-longest-line: 75;
   --characters-per-ch: 1.393;
   --the-methods-drift: 1.04;
@@ -143,11 +155,8 @@ body > * { grid-column: 2 }
 body > .masthead, body > .shell { grid-column: 1 / -1 }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 a { color: var(--accent) }
-/* The measure is on the element that carries the prose and not on the box around it, because a line is
-   counted in the characters of the face it is set in. The column above sets the page's width; this is
-   what stops a paragraph two steps down the scale from fitting half as many characters again into it.
-   A preformatted block is deliberately outside it: code scrolls rather than wraps, and a measure over
-   one would fold a signature. No backtick in this comment - the stylesheet is one template literal. */
+/* On the element and never on the box around it: a line is counted in the face it is set in. A
+   preformatted block is outside it, because code scrolls rather than wraps. */
 h1, h2, h3, h4, p, li { max-width: var(--measure) }
 h1, h2, h3, h4 { color: var(--ink) }
 h1 { font-size: var(--t1); font-weight: 600; letter-spacing: -.02em; margin: 0 0 var(--s3) }
@@ -203,11 +212,8 @@ ul.toc { list-style: none; padding: 0; margin: 0 }
 ul.toc > li { padding: var(--s) 0 }
 ul.toc a { color: var(--dim); text-decoration: none; font-size: var(--t5) }
 ul.toc a:hover { color: var(--ink) }
-/* The content of a page with a rail, capped at what its widest block needs rather than at what is
-   left over. The measure caps the prose; this caps everything that is not prose, and without it the
-   card and the four figures stretched to 913px at 1240 to hold a 446px sentence. 45rem is what the
-   use-case grid asks for: two tracks of 22rem and the gap between them, so four cards land two by
-   two, which is the arrangement 5a9bbce measured. */
+/* Capped at what its widest block needs and not at what is left over: without it the card stretched
+   to 913px to hold a 446px sentence. 45rem is two 22rem use-case tracks and the gap between them. */
 main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block; max-width: 45rem }
 
 .card { border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6) }
