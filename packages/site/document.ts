@@ -386,6 +386,9 @@ body {
   display: grid; grid-template-columns: 1fr min(74ch, calc(100% - var(--s10))) 1fr;
   margin: 0; padding: 0 0 var(--s24);
   font: var(--t3)/1.62 var(--sans); color: var(--body); background: var(--paper);
+  /* A contract's digest is 64 characters with nothing to break at, and it is prose rather than code:
+     without this the sentence carrying it pushes the whole page sideways on a narrow screen. */
+  overflow-wrap: break-word;
 }
 body > * { grid-column: 2 }
 body > .masthead, body > .shell { grid-column: 1 / -1 }
