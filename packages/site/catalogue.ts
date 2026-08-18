@@ -26,7 +26,7 @@
  */
 
 import type { ContractAddress } from '../registry/address.js'
-import { renderContract } from '../registry/address.js'
+import { renderContract, sameContract } from '../registry/address.js'
 import type { ServedContractBinding, ServedRefusal } from '../registry/response.js'
 import { servedSnapshotFaults } from '../registry/response.js'
 import type { FrozenContract, FrozenImplementation, Snapshot } from '../registry/snapshot.js'
@@ -144,7 +144,25 @@ export type Domain = {
    * `refuseContract` records an argument and binds no digest, so there is no snapshot here and no
    * `Held` to be made of one. ADR-0126.
    */
-  readonly turnedDown: readonly ServedRefusal[]
+  readonly turnedDown: readonly TurnedDown[]
+}
+
+/**
+ * One contract the catalogue turned down, as everything a page about it needs.
+ *
+ * **It is a pair because the registry answers the two halves separately**, and neither half is derivable
+ * from the other. `refusals` carries the judgement - what it was decided against, on what measurement,
+ * what it is kept as - and carries no summary, because a refusal is about a decision. The index carries
+ * the summary, because a summary is about a contract and the index lists every contract the catalogue
+ * has decided anything about, refused or not.
+ *
+ * Joined here rather than at each page, so a page renders a value instead of reaching for a second
+ * answer to complete the first. ADR-0127.
+ */
+export type TurnedDown = {
+  readonly refusal: ServedRefusal
+  /** What the contract was for, in the index's own words. Empty where the index carries none. */
+  readonly summary: string
 }
 
 /**
@@ -168,6 +186,9 @@ export const domainsOf = (
   held: readonly Held[],
 ): readonly Domain[] => {
   const turnedDown = source.refusals().refusals
+  const entries = source.contractIndex().entries
+  const summaryOf = (address: ContractAddress): string =>
+    entries.find((entry) => sameContract(entry.address, address))?.summary ?? ''
   const order: string[] = []
 
   for (const entry of source.contractIndex().entries) {
@@ -176,7 +197,9 @@ export const domainsOf = (
 
   return order.flatMap((name) => {
     const mine = held.filter((one) => domainOf(one.contract.address.name) === name)
-    const refused = turnedDown.filter((one) => domainOf(one.address.name) === name)
+    const refused = turnedDown
+      .filter((one) => domainOf(one.address.name) === name)
+      .map((refusal) => ({ refusal, summary: summaryOf(refusal.address) }))
 
     /**
      * What the page is addressed by, taken from whichever list has something in it.
@@ -185,7 +208,7 @@ export const domainsOf = (
      * filed under it - so exactly one arm of this is unreachable, and it is written rather than
      * asserted because the type cannot say which. A domain with neither is not a domain.
      */
-    const address = mine[0]?.contract.address ?? refused[0]?.address
+    const address = mine[0]?.contract.address ?? refused[0]?.refusal.address
 
     return address === undefined ? [] : [{ name, address, held: mine, turnedDown: refused }]
   })

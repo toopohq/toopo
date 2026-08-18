@@ -186,7 +186,7 @@ describe('the site', () => {
       const filed = index.entries.filter((entry) => entry.domain === domain.name)
       const built = [
         ...domain.held.map((one) => one.contract.address.name),
-        ...domain.turnedDown.map((one) => one.address.name),
+        ...domain.turnedDown.map((one) => one.refusal.address.name),
       ]
 
       expect(
@@ -206,10 +206,10 @@ describe('the site', () => {
       expect(
         domain.turnedDown.map(
           (one) =>
-            `${one.address.name}: ${said.includes(shortNameOf(one.address.name)) && said.includes(one.decidedAgainst)}`,
+            `${one.refusal.address.name}: ${said.includes(shortNameOf(one.refusal.address.name)) && said.includes(one.refusal.decidedAgainst)}`,
         ),
         `${domain.name}: every contract it turned down is named with what it was turned down for`,
-      ).toEqual(domain.turnedDown.map((one) => `${one.address.name}: true`))
+      ).toEqual(domain.turnedDown.map((one) => `${one.refusal.address.name}: true`))
     }
   })
 

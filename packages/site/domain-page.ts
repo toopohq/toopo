@@ -50,8 +50,7 @@
  */
 
 import { THE_INVOCATION } from '../registry/address.js'
-import type { ServedRefusal } from '../registry/response.js'
-import type { Domain, Held } from './catalogue.js'
+import type { Domain, Held, TurnedDown } from './catalogue.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { grouped } from './quantity.js'
@@ -184,20 +183,21 @@ const entry = (held: Held, own: string): Node => {
  * comparison that gives it its force - so the mention says what happened and the page written for it
  * says why.
  */
-const turnedDownEntry = (refusal: ServedRefusal, own: string): Node =>
+const turnedDownEntry = (turnedDown: TurnedDown, own: string): Node =>
   el(
     'li',
     NOTHING,
     el(
-      'h3',
+      'h2',
       { class: 'call' },
       el(
         'a',
         { href: `${rootFrom(own)}${linkTo(REFUSALS_PAGE)}` },
-        text(shortNameOf(refusal.address.name)),
+        text(shortNameOf(turnedDown.refusal.address.name)),
       ),
     ),
-    line('p', `Turned down for ${refusal.decidedAgainst}`, { class: 'why' }),
+    line('p', turnedDown.summary, { class: 'why' }),
+    line('p', `Turned down for ${turnedDown.refusal.decidedAgainst}`, { class: 'meta' }),
   )
 
 export const domainPage = (
@@ -256,7 +256,7 @@ export const domainPage = (
                 el(
                   'ul',
                   { class: 'plain' },
-                  ...domain.turnedDown.map((refusal) => turnedDownEntry(refusal, own)),
+                  ...domain.turnedDown.map((one) => turnedDownEntry(one, own)),
                 ),
               ]),
         ),
