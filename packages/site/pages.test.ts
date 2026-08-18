@@ -152,6 +152,68 @@ describe('the site', () => {
   })
 
   /**
+   * What a domain page is built from is what the index files under that domain.
+   *
+   * **This guard was cited by `catalogue.ts` for three units and did not exist.** Its comment read
+   * *what keeps them from disagreeing is that `a-domain-page-lists-every-contract-the-index-files-under-it`
+   * compares the two sides*, and nothing did: `every-guard-a-decision-names-is-one-its-suite-collects`
+   * resolves the guards a **decision record** names and has no opinion about the ones a comment names.
+   * Found by ADR-0126 naming it in a `confirmed-by`, where the meta suite does look.
+   *
+   * The two sides are two splits of one string in two folders. `packages/registry/response.ts` cuts
+   * `ServedIndexEntry.domain` out of a contract's name; `catalogue.ts` cuts it again, because a `Held`
+   * carries a frozen contract and no index entry, so the two are reached from different values and
+   * neither reads the other.
+   *
+   * **Both halves are asserted, and the second is why this is not an internal check.** The first
+   * compares the grouping against the index. The second reads the page a reader is served.
+   *
+   * **The second half was decorative when it was written and a measurement is what said so.** It
+   * required every contract filed under the domain to be *named* on the page — and the column beside
+   * the content names every contract of the domain too, so a page that dropped an entry from its main
+   * list still carried the name. Seen green with `domain.held.slice(1)` rendering the list, which is a
+   * page missing a contract entirely. What only the main list carries is the install command, so that
+   * is what is required of a contract the domain publishes, and the reason it was turned down for one
+   * it refused. ADR-0126.
+   */
+  it('a-domain-page-lists-every-contract-the-index-files-under-it', () => {
+    const domains = domainsOf(source, heldByTheRegistry(source))
+    const shortNameOf = (name: string): string => name.slice(name.indexOf('/') + 1)
+
+    expect(domains.length, 'the catalogue files contracts under some domain').toBeGreaterThan(0)
+
+    for (const domain of domains) {
+      const filed = index.entries.filter((entry) => entry.domain === domain.name)
+      const built = [
+        ...domain.held.map((one) => one.contract.address.name),
+        ...domain.turnedDown.map((one) => one.address.name),
+      ]
+
+      expect(
+        built.slice().sort(),
+        `${domain.name}: what its page is built from, against what the index files under it`,
+      ).toEqual(filed.map((entry) => entry.address.name).sort())
+
+      const said = toText(page(domainPageOf(domain.address)))
+
+      expect(
+        domain.held.map(
+          (one) => `${one.contract.address.name}: ${said.includes(`add ${one.contract.address.name}`)}`,
+        ),
+        `${domain.name}: every contract it publishes is listed with the command that takes it`,
+      ).toEqual(domain.held.map((one) => `${one.contract.address.name}: true`))
+
+      expect(
+        domain.turnedDown.map(
+          (one) =>
+            `${one.address.name}: ${said.includes(shortNameOf(one.address.name)) && said.includes(one.decidedAgainst)}`,
+        ),
+        `${domain.name}: every contract it turned down is named with what it was turned down for`,
+      ).toEqual(domain.turnedDown.map((one) => `${one.address.name}: true`))
+    }
+  })
+
+  /**
    * The sentence a domain page opens on is computed from the contracts it lists.
    *
    * ADR-0121 refuses a hand-written line there. It would be a fifth statement of what is in a domain -

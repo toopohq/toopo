@@ -65,6 +65,7 @@ const localFile = (find: string, replace: string) => ({ file: 'local-source.ts',
 const sourceFile = (find: string, replace: string) => ({ file: 'source.ts', find, replace })
 const pathsFile = (find: string, replace: string) => ({ file: 'paths.ts', find, replace })
 const readLiteralFile = (find: string, replace: string) => ({ file: 'read-literal.ts', find, replace })
+const domainPageFile = (find: string, replace: string) => ({ file: 'domain-page.ts', find, replace })
 const playgroundFile = (find: string, replace: string) => ({ file: 'playground.ts', find, replace })
 const browserFile = (find: string, replace: string) => ({ file: 'browser.ts', find, replace })
 const methodFile = (find: string, replace: string) => ({
@@ -336,7 +337,28 @@ const THE_DIAGNOSTIC_TAKES_THE_ANSWERS_ARGUMENTS = `  if (spelledCall(diagnostic
 // The defects
 // ---------------------------------------------------------------------------
 
+const THE_CONTRACTS_OF_A_DOMAIN_ARE_LISTED = `...domain.held.map((held) => entry(held, own))`
+
 const mutants: readonly Mutant[] = [
+  /**
+   * A domain page that lists all but one of its contracts, which is the defect
+   * `a-domain-page-lists-every-contract-the-index-files-under-it` was written for and the one its first
+   * draft was **green** on.
+   *
+   * That draft required each contract to be *named* on the page, and the column beside the content
+   * names every contract of the domain - so a page with an entry missing still carried the name. What
+   * only the main list carries is the install command, and that is what the guard reads now.
+   */
+  sameOnEveryLens(
+    'W-87',
+    'lists every contract of a domain but the first, so a reader climbing to a family from a search ' +
+      'is shown a catalogue with a hole in it and the column beside it goes on naming what the list ' +
+      'dropped',
+    [domainPageFile(THE_CONTRACTS_OF_A_DOMAIN_ARE_LISTED, '...domain.held.slice(1).map((held) => entry(held, own))')],
+    killed(['a-domain-page-lists-every-contract-the-index-files-under-it']),
+  ),
+
+
   sameOnEveryLens(
     'W-01',
     'writes contract prose into the markup without escaping it, so an input holding a `<` opens a ' +

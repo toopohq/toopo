@@ -218,6 +218,13 @@
  * one integer. What a unit costs here is a function of how many *files* its guards land in and never
  * of how much it changed. ADR-0123.
  *
+ * A twenty-first on a domain carrying what it turned down: no new file and one count moved, under the
+ * site's - the nineteenth's shape. What it is worth a line for is *why* the count moved. The guard it
+ * counts is one `catalogue.ts` had cited for three units and that did not exist:
+ * `every-guard-a-decision-names-is-one-its-suite-collects` resolves the guards a **decision record**
+ * names and has no opinion about the ones a comment names. It was found by a record naming it in a
+ * `confirmed-by`, where the meta suite does look. ADR-0126.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -343,7 +350,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/document.test.ts': 17,
     'packages/site/indexing.test.ts': 11,
     'packages/site/literal.test.ts': 11,
-    'packages/site/pages.test.ts': 34,
+    'packages/site/pages.test.ts': 35,
     'packages/site/playground.test.ts': 15,
     'packages/site/published-tree.test.ts': 8,
     'packages/site/read-literal.test.ts': 10,
