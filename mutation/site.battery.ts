@@ -257,7 +257,7 @@ const A_PAGE_IS_WRITTEN_AT_THE_FILE_IT_IS =
 
 const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
 
-const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`
+const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'`
 
 const THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS = `    paragraph(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]),`
 
@@ -1080,7 +1080,7 @@ const mutants: readonly Mutant[] = [
       cataloguePageFile(
         NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED,
         `import type { Battery } from '../../mutation/run.js'\n` +
-          `import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'`,
+          `import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'`,
       ),
     ],
     killed(['nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation']),

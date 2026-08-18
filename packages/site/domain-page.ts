@@ -74,8 +74,12 @@ const importedBy = (held: readonly Held[]): ReadonlySet<string> =>
 /**
  * The sentence the page opens on, composed from four things the registry answers.
  *
- * The plurals are written out rather than suffixed, because `1 contracts` on the day a domain has one
- * is the kind of defect that makes a reader stop believing the numbers beside it.
+ * **Every figure is a digit, and the sentence is built so that none of them opens it.** The first
+ * draft spelled the singular - *One contract here* - beside a plural that read *2 contracts here*, so
+ * one page of three stated its count in words and the other two in figures. A reader comparing two
+ * domain pages is comparing quantities, and quantities that change register are quantities somebody
+ * has to stop and convert. The plural of the noun is still written out, because `1 contracts` is the
+ * kind of defect that makes a reader stop believing the numbers beside it.
  */
 const whatIsHere = (domain: Domain): string => {
   const contracts = domain.held.length
@@ -85,14 +89,19 @@ const whatIsHere = (domain: Domain): string => {
 
   const pulls =
     imports.size === 0
-      ? 'imports nothing'
-      : `imports ${imports.size} other ${imports.size === 1 ? 'contract' : 'contracts'} of this catalogue`
+      ? 'nothing'
+      : `${imports.size} other ${imports.size === 1 ? 'contract' : 'contracts'} of this catalogue`
 
-  return contracts === 1
-    ? `One contract here, with ${cases} settled edge cases. Taking it puts ${grouped(bytes)} bytes ` +
-        `of TypeScript in your project, and it ${pulls}.`
-    : `${contracts} contracts here, and ${cases} settled edge cases between them. Taking all of ` +
-        `them puts ${grouped(bytes)} bytes of TypeScript in your project, and ${pulls}.`
+  const settles =
+    contracts === 1
+      ? `${cases} named edge cases`
+      : `${cases} named edge cases between them`
+
+  return (
+    `This domain publishes ${contracts} ${contracts === 1 ? 'contract' : 'contracts'}, settling ` +
+    `${settles}. Taking ${contracts === 1 ? 'it' : 'all of them'} puts ${grouped(bytes)} bytes of ` +
+    `TypeScript in your project, and ${contracts === 1 ? 'it imports' : 'they import'} ${pulls}.`
+  )
 }
 
 /** The last segment of a contract's name, which is what tells it apart inside its own domain. */

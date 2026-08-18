@@ -119,7 +119,7 @@ export const heldByTheRegistry = (source: RegistrySource): readonly Held[] =>
  *
  * **A domain is the first segment of a contract's name and is not a thing the registry declares**, so
  * it is derived here rather than fetched. `ServedIndexEntry.domain` is the split, and its own comment
- * says why it exists - *the site's navigation is built on the domain* - which is this.
+ * says why it exists - *the site's navigation is built on the domain* - which is this. ADR-0121.
  */
 export type Domain = {
   readonly name: string

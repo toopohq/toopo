@@ -1,6 +1,8 @@
 /**
- * The furniture every page carries: the wordmark, and the two pages a reader can always get back to.
- * ADR-0116 is why it exists and what it deliberately leaves out.
+ * The furniture every page carries: the wordmark, the two pages a reader can always get back to, and
+ * the column that says where in the catalogue they are.
+ * ADR-0116 is why it exists and what it deliberately leaves out; ADR-0121 is the column - why it is a
+ * sibling of the rail rather than a part of it, and why it is placed by the grid rather than ordered.
  *
  *
  * ---------------------------------------------------------------------------

@@ -11,7 +11,7 @@ import {
 import { THE_INVOCATION, contractUrl, renderCase, renderContract } from '../registry/address.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
-import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
+import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { escapedForMarkdown, readingOf, toHtml, toMarkdown, toText, wordsOf } from './document.js'
 import { literal } from './literal.js'
@@ -142,6 +142,55 @@ describe('the site', () => {
     expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([false])
     expect(refused.map((entry) => pages().has(domainPageOf(entry.address)))).toEqual([false])
     expect(refused.length).toBe(1)
+  })
+
+  /**
+   * The sentence a domain page opens on is computed from the contracts it lists.
+   *
+   * ADR-0121 refuses a hand-written line there. It would be a fifth statement of what is in a domain -
+   * beside the list under it, the served index, the sitemap and each contract's own summary - and the
+   * one a reader believes, because it is at the top and the list is below the fold. What replaces it
+   * carries how many contracts, how many cases they settle and what they weigh, all four read off the
+   * registry.
+   *
+   * **What this establishes and what it does not, stated rather than implied.** The event it fires on
+   * is somebody writing prose in that slot: prose does not carry these three numbers, so the guard
+   * reddens. It does **not** establish that the derivation is right - the sentence and this guard
+   * compute from the same `Held`, so a hole in that computation moves both together and stays green,
+   * which is ADR-0087's warning arriving where it cannot be avoided. The half that cannot be got this
+   * way is bought instead by there being no second source: nothing in `domain-page.ts` holds a figure
+   * that is not read from a contract.
+   *
+   * Seen red before it was believed, on the mutant it is written for: with the opening replaced by
+   * *Four contracts over text held in memory*, the fault reads that 2 is not in the sentence.
+   */
+  it('the-sentence-a-domain-page-opens-on-is-computed-from-what-it-lists', () => {
+    const domains = domainsOf(source, heldByTheRegistry(source))
+    expect(domains.length, 'the catalogue publishes in some domain').toBeGreaterThan(0)
+
+    for (const domain of domains) {
+      // The block after the title, found by the title rather than by a position: what comes before it
+      // is the masthead, and how many blocks that is is not this guard's business.
+      const blocks = toText(page(domainPageOf(domain.held[0].contract.address))).split('\n\n')
+      const opening = blocks[blocks.indexOf(domain.name) + 1] ?? ''
+
+      const cases = domain.held.reduce(
+        (total, held) => total + held.contract.caseTables.reduce((n, table) => n + table.cases.length, 0),
+        0,
+      )
+      const bytes = domain.held.reduce(
+        (total, held) => total + held.implementation.files.reduce((n, file) => n + file.bytes, 0),
+        0,
+      )
+
+      for (const [what, value] of [
+        ['how many contracts', String(domain.held.length)],
+        ['how many cases they settle', String(cases)],
+        ['what they weigh', bytes.toLocaleString('en-US').replaceAll(',', ' ')],
+      ] as const) {
+        expect(opening, `${domain.name}: the opening does not say ${what}`).toContain(value)
+      }
+    }
   })
 
   /**

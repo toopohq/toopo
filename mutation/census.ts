@@ -328,7 +328,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/document.test.ts': 15,
     'packages/site/indexing.test.ts': 11,
     'packages/site/literal.test.ts': 11,
-    'packages/site/pages.test.ts': 33,
+    'packages/site/pages.test.ts': 34,
     'packages/site/playground.test.ts': 15,
     'packages/site/published-tree.test.ts': 8,
     'packages/site/read-literal.test.ts': 10,
