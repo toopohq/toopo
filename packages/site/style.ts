@@ -181,7 +181,9 @@ pre {
    paragraph already opens with no top margin, so the zero was saying nothing and costing that. */
 .lede { font-size: var(--t2); line-height: 1.45; color: var(--body); margin-bottom: var(--s5) }
 .meta { color: var(--dim); font-size: var(--t5) }
-.why { margin: 0; color: var(--dim) }
+/* The same trap a fourth time: the shorthand's top outranks the gap under a heading, and the
+   refusals page opened each refusal's summary touching the address above it. */
+.why { margin-bottom: 0; color: var(--dim) }
 /* The tag is the outline and the class is the look: a group sits at h3 or at h4 depending on
    whether its contract has one table or two, and it must read the same either way. */
 .table { color: var(--dim); font-weight: 600; margin: var(--s10) 0 0 }
@@ -265,10 +267,10 @@ pre.answer { margin: var(--s5) 0 0; background: var(--paper); font-size: var(--t
 .figure { margin: 0; font-size: var(--t5); color: var(--dim) }
 .figure strong { display: block; font-family: var(--mono); font-size: var(--t2); font-weight: 500; color: var(--ink) }
 
-/* No margin of its own: under a heading the standing gap applies, and after a paragraph the
-   paragraph's own bottom margin collapses into it. Declaring a top here made one gap 16 where every
+/* No top of its own: under a heading the standing gap applies, and elsewhere the margin above
+   collapses into it. Declaring one made a gap of 16 and then of 0, in both directions, where every
    other section heading is followed by 12. */
-ul.chips { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin: 0 }
+ul.chips { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin-bottom: 0 }
 ul.chips a {
   display: inline-block; font-family: var(--mono); font-size: var(--t6); color: var(--body);
   border: 1px solid var(--edge); border-radius: 1rem; padding: var(--s) var(--s3); text-decoration: none;
