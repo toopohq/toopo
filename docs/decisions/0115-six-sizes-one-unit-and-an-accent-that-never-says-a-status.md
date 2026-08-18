@@ -44,7 +44,7 @@ second statement to drift.
 
 **The accent means *you can act on this* or *you are here*, and never *this is good* or *this is
 bad*.** A link, a focus ring, a hover, the page you are on, the case you followed. This catalogue
-publishes 35 surviving mutants beside 632 caught ones, and every contract page carries cases that
+publishes every mutant its suite did not catch beside the ones it did, and every contract page carries cases that
 exist because a defect got past the suite. Colouring those would sort this repository's own evidence
 into things a reader is meant to feel bad about, which is the opposite of why they are published — and
 a colour survives neither `toText` nor `toMarkdown`, so the page and its reading would say different

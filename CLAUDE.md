@@ -19,7 +19,7 @@ answer declares the revision that produced it. Stage 1 of the validation pipelin
 controller beside it. The client, finished at six commands — `init`, `add`, `update`, `remove`,
 `search`, `list` — with a two-phase write, a lockfile carrying two digests per file and the revision
 each feature was resolved against, and a port whose four implementations are asynchronous. The
-generator, seven static pages, four of them with a playground that runs this repository's own modules
+generator, ten static pages, four of them with a playground that runs this repository's own modules
 with their types removed. The archive: compiled JavaScript and nothing else, whose size is no longer a
 function of how many contracts exist. The emitted tree, which is every answer the read API can give,
 written as files at the addresses a client asks. The instrument: nineteen batteries, their pinned
@@ -147,8 +147,8 @@ where it is and the new copy written beside it, so they hold two. ADR-0110.
 from a search, and 99 % of this site at a thousand entries.** Six type sizes and no seventh, one
 spacing unit every length is a multiple of by construction, colour roles rather than colours, one
 accent, dark by `prefers-color-scheme` with no button and nothing remembered. **The accent means *you
-can act on this* or *you are here*, and never a verdict**: this catalogue publishes 35 surviving
-mutants beside 634 caught ones, and a colour survives neither `toText` nor `toMarkdown`, so a page
+can act on this* or *you are here*, and never a verdict**: this catalogue publishes every mutant its
+suite did not catch beside the ones it did, and a colour survives neither `toText` nor `toMarkdown`, so a page
 that sorted its own evidence by colour would say what its reading does not. The page is a card — name,
 sentence, command, four figures, signature — and then everything, with nothing behind a fold, which is
 the shape a differential trial on `date/add@1` and its 50 cases settled. **Two greys and not three**:
@@ -188,6 +188,45 @@ words. Below: the signature, the cases, the properties, the profiles, what a rea
 that against a differential trial, and the line is written into the record so it does not return
 through a later mock-up. `the-rail-of-a-page-names-every-section-of-it-and-only-those` needed no
 change, which is what a derived table of contents buys. ADR-0119.
+
+**A domain has a page, and every page now says where in the catalogue you are standing.** The level
+between the catalogue and a contract was a 404: `/typescript/string/` is where a reader climbs to from
+a search result, and it is the only unit a navigation can be built on at a thousand contracts. Three
+pages and not four — `array` holds one entry, refused before publication, and a page carrying an empty
+list answers nothing the refusals page answers less well. **Its opening sentence is composed and never
+written**: the mock-up's hand-written line would have been a fifth statement of what is in a domain,
+beside the list under it, the index, the sitemap and each contract's summary, and it is the one a
+reader believes. Every term is read off the registry, so a fifth contract lands in that sentence with
+nobody editing it. The column is a *sibling* of the rail rather than a part of it, because
+`the-rail-of-a-page-names-every-section-of-it-and-only-those` requires every link inside `.rail` to be
+a section of the page — and it is placed by the grid rather than reordered, so the document a screen
+reader announces is the one a sighted reader sees. ADR-0121.
+
+**The measure is written in characters and reaches every face, and the ceiling was never held before.**
+Measured at `07a100c` over 688 prose elements, one Range per character grouped by line box: **255 lines
+over 75 characters, worst 169**. The rule existed — `body` laid its content out in a 74ch column — and
+`.shell` spanned the whole width by declaration with nothing under it re-establishing one. **The half
+worth keeping is the other one**: `ch` is the advance of `0`, so a container capped in `ch`
+under-constrains anything set smaller than it, and the 169-character line was small print in a wide
+box. The measure is therefore declared on the element that carries the prose. The constant is a
+measurement and not arithmetic, and it carries the method's own drift: density moves when the column
+moves, 1.339 before and 1.393 after, so 1.04 is applied on ADR-0077's rule rather than noted. After:
+**0 of 910 over 75, worst 70, typical 64**, over ten pages at 1240 and at 390.
+
+**Four defects came out of a browser and out of no static check**, which is the third time this
+repository has paid for that class. Two rules 13px apart where a list item and the heading inside it
+each drew one; and section gaps of 0, 8 and 16 where the system declares one — every instance a
+`margin` shorthand on a class silently outranking `h2 + p` on specificity. Measured after: 100 section
+headings at 12px and nothing touching.
+
+**A guard of the site suite had been reddened by nothing since it was written, and the battery said so
+to nobody.** `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported
+unaccounted for by `npm run battery site` at `07a100c` and at every commit before it — measured both
+ways, by checking the base out and running the battery there. W-24 looks as though it covers it,
+because it replaces the inline stylesheet with a link; it does not, because **with no style element the
+guard finds no palette, its loop runs zero times and it passes**. A guard passing vacuously, in the one
+folder whose subject is that a page can be read. W-24b closes it. **The finding to carry is that no
+battery is replayed in CI**, so a battery's disagreement with itself waits for somebody to run it.
 
 **And the catalogue's own prose is parsed by the function that already parsed the method page's.**
 ADR-0026 scoped that guard to one page and named the event that would reopen it — a second page taking

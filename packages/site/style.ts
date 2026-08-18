@@ -101,9 +101,9 @@
  * page you are on, the case you followed a link to. It never means good or bad, and there is no
  * second colour that could.
  *
- * **A catalogue that publishes its failures does not tint them red.** The method page names 35
- * surviving mutants beside 632 caught ones, and every contract page carries cases that exist because
- * a defect got past the suite. Colouring those would sort this repository's own evidence into things
+ * **A catalogue that publishes its failures does not tint them red.** The method page names every
+ * mutant this repository's suite did not catch beside the ones it did, and every contract page
+ * carries cases that exist because a defect got past the suite. Colouring those would sort this repository's own evidence into things
  * a reader is meant to feel bad about, which is the opposite of why they are published - and it would
  * make the reading and the page say different things, since a colour survives neither `toText` nor
  * `toMarkdown`. Caught and surviving are told apart by the word.
