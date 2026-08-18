@@ -242,9 +242,12 @@ export const cataloguePage = (
          * worth building at five, and because a domain page is now the address a reader lands on from
          * a search for `slugify javascript` and climbs one level from.
          *
-         * A domain with nothing installable in it has no page and is not here: `array` holds one
-         * entry, refused before publication, and what the catalogue publishes about a refusal is the
-         * refusal.
+         * **Every domain the index files a contract under is here, including the one that publishes
+         * nothing.** This paragraph said the opposite for three commits - *a domain with nothing
+         * installable in it has no page and is not here* - and ADR-0126 had already given `array` a
+         * page and this list a fourth chip. The list is `domains`, so the chip appeared and the
+         * sentence above it did not, which is this repository's own recurring defect committed here by
+         * the unit that fixed it one file over. ADR-0126.
          *
          * Chips and not a list, which is the existing look for *a short set of addresses* on this
          * site. As a list each domain took a rule, a heading and a line to carry one word, so three

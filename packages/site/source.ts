@@ -134,9 +134,11 @@ export type DeferredNeed = {
  *
  * **`pre-fill-the-playground` left it one unit earlier**, and what it said while it was here has been
  * paid rather than repeated: a case whose input is a function cannot be pre-filled, and
- * `array/group-by@1` has thirty of them. That contract has no page, so no playground meets one - and
- * `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling` is the guard that turns that from
- * a fact about today into something that reddens the day it stops being true.
+ * `array/group-by@1` has thirty of them. **That contract has a page since ADR-0127 and the page carries
+ * no playground**, which is a narrower reason and a firmer one: a refused contract has no reference
+ * module to strip, so there is nothing for a form to call. `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling`
+ * is the guard that turns that from a fact about today into something that reddens the day it stops
+ * being true.
  *
  * Declared rather than left as a gap, for the reason `field-map.ts` carries `unfilledBecause` and
  * `needs.ts` carries `answeredWithoutTheApi`: a site that quietly built five pages out of six would be
