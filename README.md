@@ -31,8 +31,9 @@ punctuation, symbols, emoji and case — not other people's writing systems. A l
 transliterates instead has picked a romanisation scheme on its users' behalf and frozen it into a
 table; this contract picks none, and argues for that at length rather than asserting it.
 
-Every line above is a row of the contract's table, quoted rather than composed. Which is the next
-thing to explain.
+Every line above is a row of the contract's table, quoted rather than composed. The import is written
+from your project root, and its extension is `.js` although the file is `.ts` — the one spelling
+TypeScript resolves under every module resolution it offers.
 
 ## What a contract is
 
@@ -109,7 +110,7 @@ tried — and here the defects that were tried are files you can read.
 
 Which leaves one thing worth being plain about: **every figure here is read off the batteries in this
 repository, where each cell carries the verdict it must produce. That is what this project asserts
-about its own tests. It is not yet something you have seen happen.** A guard resolves each figure
+about its own tests. It is not yet something you have seen happen.** A guard resolves each of them
 against those batteries, so this page cannot drift from what the instrument declares — and drift is
 the only thing it protects you from. The command above is what turns the claim into an observation,
 and what it prints happened on your machine rather than on ours.
