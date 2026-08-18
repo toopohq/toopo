@@ -282,7 +282,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/served-files.test.ts': 10,
     'packages/registry/shared-surface.test.ts': 4,
     'packages/registry/signature.test.ts': 14,
-    'packages/registry/snapshot.test.ts': 45,
+    'packages/registry/snapshot.test.ts': 46,
     'packages/registry/frozen-for-life.test.ts': 4,
     'packages/registry/publication.test.ts': 7,
     'packages/registry/rebinding.test.ts': 13,
@@ -325,11 +325,11 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'packages/site/vitest.config.ts': {
-    'packages/site/document.test.ts': 13,
+    'packages/site/document.test.ts': 15,
     'packages/site/indexing.test.ts': 11,
     'packages/site/literal.test.ts': 11,
-    'packages/site/pages.test.ts': 29,
-    'packages/site/playground.test.ts': 14,
+    'packages/site/pages.test.ts': 32,
+    'packages/site/playground.test.ts': 15,
     'packages/site/published-tree.test.ts': 8,
     'packages/site/read-literal.test.ts': 10,
     'packages/site/served-headers.test.ts': 7,
