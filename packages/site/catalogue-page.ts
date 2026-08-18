@@ -261,7 +261,7 @@ export const cataloguePage = (
                 NOTHING,
                 el(
                   'a',
-                  { href: linkTo(domainPageOf(domain.held[0].contract.address)) },
+                  { href: linkTo(domainPageOf(domain.address)) },
                   text(domain.name),
                 ),
               ),

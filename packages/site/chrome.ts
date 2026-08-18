@@ -148,8 +148,8 @@ export const beside = (
       { class: 'where', 'aria-label': 'Catalogue' },
       line(
         'p',
-        `${here.name} · ${here.held.length} ${here.held.length === 1 ? 'contract' : 'contracts'}`,
-        domainPageOf(here.held[0].contract.address),
+        whatThisDomainHolds(here),
+        domainPageOf(here.address),
         own,
         { class: 'rail-label' },
       ),
@@ -168,7 +168,7 @@ export const beside = (
           line(
             'li',
             domain.name,
-            domainPageOf(domain.held[0].contract.address),
+            domainPageOf(domain.address),
             own,
             NOTHING,
           ),
@@ -177,6 +177,21 @@ export const beside = (
     ),
     ...rail,
   )
+
+/**
+ * The label of the domain you are standing in, which is a magnitude and the word that says what it
+ * counts.
+ *
+ * **A domain that publishes nothing says what it turned down instead of saying zero.** `array · 0
+ * contracts` is arithmetic that reads as *this corner of the catalogue is empty*, on the one page whose
+ * subject is a contract that was written in full and refused. The rule the header states is that a bare
+ * digit does not survive `toText`, and this is the same rule one turn on: a digit survives, and a digit
+ * counting the wrong noun says something false in every projection. ADR-0126.
+ */
+const whatThisDomainHolds = (domain: Domain): string =>
+  domain.held.length === 0
+    ? `${domain.name} · ${domain.turnedDown.length} turned down`
+    : `${domain.name} · ${domain.held.length} ${domain.held.length === 1 ? 'contract' : 'contracts'}`
 
 /**
  * A line of the column: a link, or the plain words where it is the page you are on.

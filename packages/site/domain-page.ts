@@ -28,24 +28,36 @@
  * four numbers in a row.
  *
  * ---------------------------------------------------------------------------
- * What is not on it
+ * What this domain turned down is on it, and that paragraph used to say the opposite
  * ---------------------------------------------------------------------------
  *
- * No section for what the catalogue refused in this domain. It would render for no domain that has a
- * page - `array` is the one domain with a refusal and it has no page, because a page whose list is
- * empty answers nothing the refusals page does not answer better - so it would be a branch nothing
- * exercises, on the surface where an unexercised branch is a section a reader may one day meet in a
- * state nobody has seen.
+ * It read: *no section for what the catalogue refused in this domain; it would render for no domain
+ * that has a page, so it would be a branch nothing exercises.* That was true of a catalogue where
+ * `array` had no page, and the reason it had none was that its list would be empty. Both halves moved
+ * together: a refusal is a state of a contract rather than an entry on a page of its own, so the domain
+ * that turned something down is the domain a reader climbs to from it. ADR-0126.
+ *
+ * **The branch is exercised on exactly one page and every other domain proves the other arm**, which is
+ * the state the old paragraph was written to avoid and is now reached rather than argued around.
+ *
+ * ---------------------------------------------------------------------------
+ * What is still not on it
+ * ---------------------------------------------------------------------------
+ *
+ * A turned-down contract is named with the reason it was turned down and nothing else. It has no
+ * summary here because `ServedRefusal` carries none - the summary lives in the index, and reaching for
+ * a second answer to decorate a mention would make this page need two where the refusal needs one.
  */
 
 import { THE_INVOCATION } from '../registry/address.js'
+import type { ServedRefusal } from '../registry/response.js'
 import type { Domain, Held } from './catalogue.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { grouped } from './quantity.js'
 import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
-import { domainPageOf, linkTo, pageOf } from './paths.js'
+import { REFUSALS_PAGE, domainPageOf, linkTo, pageOf, rootFrom } from './paths.js'
 
 const NOTHING = {} as const
 
@@ -84,6 +96,7 @@ const whatIsHere = (domain: Domain): string => {
   const cases = domain.held.reduce((total, held) => total + casesOf(held), 0)
   const bytes = domain.held.reduce((total, held) => total + bytesOf(held), 0)
   const imports = importedBy(domain.held)
+  const refused = domain.turnedDown.length
 
   const pulls =
     imports.size === 0
@@ -95,10 +108,28 @@ const whatIsHere = (domain: Domain): string => {
       ? `${cases} named edge cases`
       : `${cases} named edge cases between them`
 
+  /**
+   * What was turned down, appended rather than woven in, so the first sentence a reader meets is about
+   * what they can take and the second is about what the catalogue decided against.
+   *
+   * A domain that publishes nothing opens on the second, because there is no first: `This domain
+   * publishes 0 contracts, settling 0 named edge cases` is a sentence composed correctly out of
+   * nothing, which is the shape ADR-0027's rule refuses - *an empty section tells a reader something is
+   * missing without telling them what*, arriving on a sentence instead of on a heading.
+   */
+  const turnedDown =
+    refused === 0
+      ? ''
+      : ` ${refused} ${refused === 1 ? 'contract was' : 'contracts were'} written in full and then ` +
+        `turned down, each with the measurement it was refused on.`
+
+  if (contracts === 0) return `This domain publishes nothing.${turnedDown}`.trim()
+
   return (
     `This domain publishes ${contracts} ${contracts === 1 ? 'contract' : 'contracts'}, settling ` +
     `${settles}. Taking ${contracts === 1 ? 'it' : 'all of them'} puts ${grouped(bytes)} bytes of ` +
-    `TypeScript in your project, and ${contracts === 1 ? 'it imports' : 'they import'} ${pulls}.`
+    `TypeScript in your project, and ${contracts === 1 ? 'it imports' : 'they import'} ${pulls}.` +
+    turnedDown
   )
 }
 
@@ -140,12 +171,41 @@ const entry = (held: Held, own: string): Node => {
   )
 }
 
+/**
+ * One contract this domain turned down: what it was called, and what it was turned down for.
+ *
+ * **No install line, and that is the whole difference from the entry above.** A command for something
+ * that cannot be installed is the defect
+ * `nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed` already refuses on a
+ * contract page, met here on a list.
+ *
+ * The argument behind the refusal is a link and not a paragraph. What makes a refusal worth publishing
+ * is the measurement it rests on, and a measurement quoted in a list is a measurement without the
+ * comparison that gives it its force - so the mention says what happened and the page written for it
+ * says why.
+ */
+const turnedDownEntry = (refusal: ServedRefusal, own: string): Node =>
+  el(
+    'li',
+    NOTHING,
+    el(
+      'h3',
+      { class: 'call' },
+      el(
+        'a',
+        { href: `${rootFrom(own)}${linkTo(REFUSALS_PAGE)}` },
+        text(shortNameOf(refusal.address.name)),
+      ),
+    ),
+    line('p', `Turned down for ${refusal.decidedAgainst}`, { class: 'why' }),
+  )
+
 export const domainPage = (
   domain: Domain,
   domains: readonly Domain[],
   menu: readonly MenuEntry[],
 ): Document => {
-  const own = domainPageOf(domain.held[0].contract.address)
+  const own = domainPageOf(domain.address)
   const names = domain.held.map((held) => shortNameOf(held.contract.address.name))
 
   return {
@@ -154,14 +214,21 @@ export const domainPage = (
      * for. A title reading `string — 2 contracts` says the shape of the page and nothing about
      * whether the thing they need is on it.
      */
-    title: `${domain.name} — ${names.join(', ')}`,
+    title:
+      names.length === 0
+        ? `${domain.name} — nothing published, ${domain.turnedDown.length} turned down`
+        : `${domain.name} — ${names.join(', ')}`,
     servedBesideItsMarkdown: true,
     /** A list of contracts is not source code, and the only `@type` this site publishes is. */
     structuredData: null,
     description:
-      `${domain.held.length} utility ${domain.held.length === 1 ? 'function' : 'functions'} over ` +
-      `${domain.name}, each with a published contract: a signature, property-based invariants, and ` +
-      `every edge case named and settled. The source is copied into your project.`,
+      domain.held.length === 0
+        ? `Nothing is published over ${domain.name}. What the catalogue turned down here is named ` +
+          `with the measurement it was refused on, because a registry that only shows what it ` +
+          `accepted is a registry whose standard nobody can see.`
+        : `${domain.held.length} utility ${domain.held.length === 1 ? 'function' : 'functions'} over ` +
+          `${domain.name}, each with a published contract: a signature, property-based invariants, ` +
+          `and every edge case named and settled. The source is copied into your project.`,
     body: [
       masthead(own, menu),
       el(
@@ -179,7 +246,19 @@ export const domainPage = (
            * of a thousand is the case this is for; at four it is what keeps the page from being a
            * ribbon down the left of a wide screen.
            */
-          el('ul', { class: 'plain contracts' }, ...domain.held.map((held) => entry(held, own))),
+          ...(domain.held.length === 0
+            ? []
+            : [el('ul', { class: 'plain contracts' }, ...domain.held.map((held) => entry(held, own)))]),
+          ...(domain.turnedDown.length === 0
+            ? []
+            : [
+                line('h2', 'What this domain turned down'),
+                el(
+                  'ul',
+                  { class: 'plain' },
+                  ...domain.turnedDown.map((refusal) => turnedDownEntry(refusal, own)),
+                ),
+              ]),
         ),
         beside(own, domain, domains, []),
       ),

@@ -109,19 +109,26 @@ const underEachHeading = (document: Parameters<typeof toText>[0]): ReadonlyMap<s
 
 describe('the site', () => {
   /**
-   * Four pages for four contracts, three for the domains they sit in, and none for the fifth
-   * contract.
+   * Four pages for four contracts, **four** for the domains the index files them under, and none for
+   * the fifth contract.
    *
    * `array/group-by@1` was decided against *before* publication, so `refuseContract` records the
    * argument and binds no digest: there is no frozen definition to render and nothing about it a
-   * reader could check. What the catalogue publishes about it is the refusal, and the refusals page is
-   * where that goes. A contract page with no digest behind it would be a contract page missing the
-   * only half that makes this registry worth anything.
+   * reader could check. A contract page with no digest behind it would be a contract page missing the
+   * only half that makes this registry worth anything, which is ADR-0027 and is unchanged.
    *
-   * **`array` has no domain page either, and that is the same decision one level up.** A domain page
-   * for it would carry an empty list and one line pointing at the refusals page, which answers
-   * nothing that page does not answer better. So the domain side is asserted from the *installable*
-   * entries and never from the index's domains, and the two differing is what this guard is for.
+   * **`array` has a domain page, and that half is ADR-0126 reversing ADR-0027 one level up.** The
+   * argument for excluding it was that such a page *would carry an empty list and one line pointing at
+   * the refusals page, which answers nothing that page does not answer better* - true of a page that
+   * says nothing about the refusal, and the refusal is now what that page is about. So the domain side
+   * is asserted from the index's **domains** and no longer from its installable entries, and the two
+   * differing is what this guard is for: a domain page for a domain nothing is filed under would be an
+   * address in the navigation that leads nowhere.
+   *
+   * **The name is unchanged and it was worth checking rather than assuming.** It says every installable
+   * contract has a page and a refused one does not, which is still exactly what the two assertions
+   * about *contract* pages hold; the domain side was never in the name. Renaming it would have broken
+   * the `confirmed-by` of ADR-0027 and ADR-0121 to describe a half the name does not mention.
    *
    * The three pages that are not about one contract are named here, so that a page appearing or
    * disappearing is this guard's business rather than nobody's.
@@ -135,12 +142,12 @@ describe('the site', () => {
         CATALOGUE_PAGE,
         METHOD_PAGE,
         REFUSALS_PAGE,
-        ...new Set(installable.map((entry) => domainPageOf(entry.address))),
+        ...new Set(index.entries.map((entry) => domainPageOf(entry.address))),
         ...installable.map((entry) => pageOf(entry.address)),
       ].sort(),
     )
     expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([false])
-    expect(refused.map((entry) => pages().has(domainPageOf(entry.address)))).toEqual([false])
+    expect(refused.map((entry) => pages().has(domainPageOf(entry.address)))).toEqual([true])
     expect(refused.length).toBe(1)
   })
 
@@ -171,7 +178,7 @@ describe('the site', () => {
     for (const domain of domains) {
       // The block after the title, found by the title rather than by a position: what comes before it
       // is the masthead, and how many blocks that is is not this guard's business.
-      const blocks = toText(page(domainPageOf(domain.held[0].contract.address))).split('\n\n')
+      const blocks = toText(page(domainPageOf(domain.address))).split('\n\n')
       const opening = blocks[blocks.indexOf(domain.name) + 1] ?? ''
 
       const cases = domain.held.reduce(
@@ -183,11 +190,26 @@ describe('the site', () => {
         0,
       )
 
-      for (const [what, value] of [
-        ['how many contracts', String(domain.held.length)],
-        ['how many cases they settle', String(cases)],
-        ['what they weigh', bytes.toLocaleString('en-US').replaceAll(',', ' ')],
-      ] as const) {
+      /**
+       * A domain that publishes nothing states one figure and not four, and the arm is here rather
+       * than in a widened loop.
+       *
+       * The three above are read off what is published, so on `array` they are `0`, `0` and `0` - and
+       * a guard requiring the sentence to carry `0` is satisfied by *This domain publishes 0
+       * contracts, settling 0 named edge cases*, which is the sentence ADR-0126 refused for saying
+       * nothing correctly. What that page does state is how many contracts were turned down, so that
+       * is what is required of it. ADR-0126.
+       */
+      const owed =
+        domain.held.length === 0
+          ? ([['how many it turned down', String(domain.turnedDown.length)]] as const)
+          : ([
+              ['how many contracts', String(domain.held.length)],
+              ['how many cases they settle', String(cases)],
+              ['what they weigh', bytes.toLocaleString('en-US').replaceAll(',', ' ')],
+            ] as const)
+
+      for (const [what, value] of owed) {
         expect(opening, `${domain.name}: the opening does not say ${what}`).toContain(value)
       }
     }

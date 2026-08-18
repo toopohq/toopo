@@ -25,8 +25,9 @@
  * that the page can then tell its reader which parts of it are checkable.
  */
 
+import type { ContractAddress } from '../registry/address.js'
 import { renderContract } from '../registry/address.js'
-import type { ServedContractBinding } from '../registry/response.js'
+import type { ServedContractBinding, ServedRefusal } from '../registry/response.js'
 import { servedSnapshotFaults } from '../registry/response.js'
 import type { FrozenContract, FrozenImplementation, Snapshot } from '../registry/snapshot.js'
 import type { RegistrySource } from './source.js'
@@ -124,34 +125,49 @@ export const heldByTheRegistry = (source: RegistrySource): readonly Held[] =>
 export type Domain = {
   readonly name: string
   /**
-   * In the registry's own order, and never empty.
+   * The address this domain's page is computed from, which is an address of one of its contracts.
    *
-   * The tuple is the guarantee `domainsOf` already makes, written where a caller reads it: a domain's
-   * page is addressed by going up one level from a contract of it, so *this list has a first element*
-   * is what makes that address exist at all. As `readonly Held[]` every caller reaching for it has to
-   * assert something the filter one function below has already established.
+   * **It is a field rather than `held[0]`, and the reason is that `held` may now be empty.** A domain's
+   * page is addressed by going up one level from a contract of it; that used to make *this list has a
+   * first element* the thing the address depended on, so `held` was a tuple. A domain the catalogue has
+   * only ever turned something down in has no held contract and has a page, so what the address depends
+   * on is that the domain exists at all - which is what `domainsOf` establishes and what this field
+   * carries. Every caller that reached into a list for an address now reads one.
    */
-  readonly held: readonly [Held, ...Held[]]
+  readonly address: ContractAddress
+  /** What this domain publishes, in the registry's own order. Empty where everything in it was refused. */
+  readonly held: readonly Held[]
+  /**
+   * What this domain was refused, in the registry's own order.
+   *
+   * A refusal is what the registry holds about a contract it decided against before publication:
+   * `refuseContract` records an argument and binds no digest, so there is no snapshot here and no
+   * `Held` to be made of one. ADR-0126.
+   */
+  readonly turnedDown: readonly ServedRefusal[]
 }
 
 /**
- * Every domain that has a page, which is every domain something is published in.
+ * Every domain the catalogue has decided anything about, which is every domain the index files a
+ * contract under.
  *
- * **A domain whose contracts were all refused is not here, and that is a decision rather than a
- * filter that happens to drop it.** `array` holds one entry, `array/group-by@1`, turned down before
- * publication. A page for it would carry an empty list, a figure of zero and one line pointing at the
- * refusals page - which answers no question that page does not answer better, and would put an
- * address in the catalogue's navigation that a reader gains nothing by following. What is published
- * about a refusal is the refusal.
+ * **A domain whose contracts were all refused is here, and it used to be excluded on an argument this
+ * change refutes rather than outgrows.** That argument was that such a page *would carry an empty list,
+ * a figure of zero and one line pointing at the refusals page - which answers no question that page
+ * does not answer better*. It is true of a page that says nothing about the refusal, and the refusal is
+ * now what the page is about: `array` publishes nothing, has turned one contract down, and the reason
+ * it did is on it. ADR-0126.
  *
- * **A domain does not carry what it refused**, and that is the same decision one step on: no domain
- * with a page has a refusal today, so the section that would render one is a branch nothing
- * exercises. `domain-page.ts` carries the argument at the surface where it is visible.
+ * **The order is the index's and the refusals are ordered inside it**, so a domain that has both lists
+ * what it publishes first. Neither list is sorted here: the registry's order is the one the front page,
+ * the sitemap and every column already use, and a second ordering would be a second opinion about which
+ * contract comes first.
  */
 export const domainsOf = (
   source: RegistrySource,
   held: readonly Held[],
 ): readonly Domain[] => {
+  const turnedDown = source.refusals().refusals
   const order: string[] = []
 
   for (const entry of source.contractIndex().entries) {
@@ -159,9 +175,19 @@ export const domainsOf = (
   }
 
   return order.flatMap((name) => {
-    const [first, ...rest] = held.filter((one) => domainOf(one.contract.address.name) === name)
+    const mine = held.filter((one) => domainOf(one.contract.address.name) === name)
+    const refused = turnedDown.filter((one) => domainOf(one.address.name) === name)
 
-    return first === undefined ? [] : [{ name, held: [first, ...rest] as const }]
+    /**
+     * What the page is addressed by, taken from whichever list has something in it.
+     *
+     * A domain of the index has at least one contract by construction - it exists because an entry was
+     * filed under it - so exactly one arm of this is unreachable, and it is written rather than
+     * asserted because the type cannot say which. A domain with neither is not a domain.
+     */
+    const address = mine[0]?.contract.address ?? refused[0]?.address
+
+    return address === undefined ? [] : [{ name, address, held: mine, turnedDown: refused }]
   })
 }
 

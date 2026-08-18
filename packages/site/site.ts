@@ -88,7 +88,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
       : ([[REFUSALS_PAGE, refusalsPage(index, refusals, menu)]] as const)),
     ...domains.map(
       (domain) =>
-        [domainPageOf(domain.held[0].contract.address), domainPage(domain, domains, menu)] as const,
+        [domainPageOf(domain.address), domainPage(domain, domains, menu)] as const,
     ),
     /**
      * Walked through the domains rather than over the contracts, so that the domain a contract page
