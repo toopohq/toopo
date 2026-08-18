@@ -47,7 +47,10 @@
  */
 
 import { THE_INVOCATION, contractUrl, renderContract } from '../registry/address.js'
-import { THE_COPIED_LICENCE } from '../registry/licence.js'
+import type { TheMeasurement, WhySurviving } from '../../mutation/published.js'
+import { WHAT_A_SURVIVOR_MEANS_TO_A_READER } from '../../mutation/published.js'
+import { THE_COPIED_LICENCE, licenceHeaderOf } from '../registry/licence.js'
+import { renderKind } from './survivors.js'
 import type { CaseGroup } from '../catalogue/identifier.js'
 import type {
   CaseRecord,
@@ -456,6 +459,15 @@ export const contractPage = (
   here: Domain,
   domains: readonly Domain[],
   menu: readonly MenuEntry[],
+  /**
+   * What this repository injected into this contract, taken through the one door and handed here.
+   *
+   * Passed rather than read, which is the split `site.ts` already makes: the data comes through the
+   * port so a page cannot choose its own population, and the vocabulary naming a survivor's kind is
+   * imported, because a page rewriting the instrument's words is what would make this a second
+   * statement instead of a projection. ADR-0130.
+   */
+  measured: TheMeasurement,
 ): Document => {
   const { contract, implementation } = held
   const name = renderContract(contract.address)
@@ -497,6 +509,59 @@ export const contractPage = (
          */
         marked('h3', 'What it is for, and what it is not', { id: 'what-it-is-for' }),
         paragraph(contract.identity.inputDomain),
+      ],
+    },
+    {
+      id: 'what-lands',
+      title: 'What lands in your project',
+      body: [
+        /**
+         * **The card already carries the figures, so this carries what a figure cannot.** ADR-0116
+         * settled the card as name, sentence, command, figures and signature; *4 299 bytes, one
+         * file* does not say which file, and the licence a reader is handed was imported by this
+         * module for the structured data and shown to nobody.
+         *
+         * **No path, and the reason is that this site cannot know one.** `configuration.ts` answers
+         * `src/lib/toopo` where a `src` folder exists and `lib/toopo` where it does not, so a full
+         * path published here would be right for one reader and wrong for the next. The README
+         * carries that imprecision and nobody has raised it; this states the rule in a clause
+         * instead of drawing a path that is half false. ADR-0130.
+         */
+        /**
+         * `paragraph` and not `line`, because the clause names a directory and an identifier in
+         * prose is written in backticks. ADR-0117 is the unit that found 220 of them reaching
+         * readers as themselves across these four pages; `line` is what puts them there.
+         */
+        paragraph(
+          `${files === 1 ? 'One file' : `${files} files`}, under a folder the installer chooses ` +
+            'from what your project already looks like: inside a `src` directory where you have ' +
+            'one, and at the root of the project where you do not. Nothing else is written, and ' +
+            'nothing is added to your dependencies.',
+        ),
+        /**
+         * The name and its weight on one line, because the name alone is not prose.
+         * `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` refuses a carried value
+         * standing by itself in a paragraph - an identifier is an address - and it was red on
+         * `reference.ts` in a paragraph of its own before this read as a sentence.
+         */
+        el(
+          'ul',
+          { class: 'plain' },
+          ...implementation.files.map((entry) =>
+            el(
+              'li',
+              NOTHING,
+              paragraph(`\`${entry.path}\`, ${grouped(entry.bytes)} bytes.`),
+            ),
+          ),
+        ),
+        /**
+         * The header every copied file carries, shown rather than described, and read from the one
+         * module that spells it. It answers *what does this oblige me to* with the shortest true
+         * answer there is, and it is the one part of what lands that a byte count cannot imply.
+         */
+        line('p', 'Each of them opens on these two lines:'),
+        line('pre', licenceHeaderOf(contract.address).trimEnd(), { class: 'answer' }),
       ],
     },
     {
@@ -648,6 +713,72 @@ export const contractPage = (
             ),
           ),
         ),
+      ],
+    },
+    {
+      id: 'how-this-measured',
+      title: 'How this contract measured',
+      body: [
+        /**
+         * **This function's own batteries, and it is a projection rather than a second statement.**
+         * The method page publishes `theMeasurement()` - the whole population and its breakdown,
+         * which the global claim and the README rest on. This publishes `theMeasurementOf` at this
+         * contract's address. One function at two populations, which is what makes it a filter and
+         * not the duplication ADR-0128 and ADR-0129 refused.
+         *
+         * **Below the line, and the placement is the argument.** ADR-0119 measured this page at
+         * 3 800 visible words, 754 above the line and 3 262 below. What a suite did not catch is
+         * read after a reader has decided rather than before, so it sits in the half answering
+         * *what exactly is it bound to do* and immediately before what they can check themselves.
+         *
+         * **No colour, and the temptation is named so the visual unit finds it named.** A caught
+         * mutant and a survivor on one page invite a palette to sort them, and ADR-0115 settled
+         * that: an accent means *you can act on this* and never *this is bad*, and a colour survives
+         * neither `toText` nor `toMarkdown`. They are told apart by the word here as everywhere.
+         * ADR-0130.
+         */
+        line(
+          'p',
+          `${measured.batteries === 1 ? 'One battery breaks' : `${measured.batteries} batteries break`} ` +
+            `this implementation on purpose, ${grouped(measured.defects.cells)} times, and require ` +
+            `the contract's own suite to notice each time. ${grouped(measured.defects.killed)} of ` +
+            `those defects were caught.`,
+        ),
+        /**
+         * **A contract with no survivor says so rather than dropping the section**, and that is the
+         * stronger half rather than a symmetry. No survivor is not an absent result: it is the best
+         * reading this project can publish about a function - everything sent at this suite was
+         * caught - and a page going quiet for want of a list to render would lose it. It is also
+         * ADR-0027's rule, which an absent section cannot be told from a forgotten one.
+         */
+        ...(measured.defects.surviving.length === 0
+          ? [
+              line(
+                'p',
+                'Nothing survived. Every defect written against this contract was noticed by its ' +
+                  'own suite, which is the best reading there is to publish about a function and is ' +
+                  'why this section is here to say it.',
+              ),
+            ]
+          : [
+              /**
+               * Grouped by kind, which is the shape the method page proved and `survivors.ts` now
+               * holds for both. A defect is measured once per lens, so a flat list repeats one
+               * defect per lens and repeats its kind's sentence per entry - measured on this
+               * contract, 18 cells rendered flat gave two identical paragraphs two lines apart and
+               * the same explanation eight times.
+               */
+              line(
+                'p',
+                `${measured.defects.surviving.length === 1 ? 'One cell survived' : `${measured.defects.surviving.length} cells survived`}` +
+                  `, and what did is here rather than on a page of its own, because what a suite ` +
+                  `did not catch is a fact about this function. Each carries the battery's own ` +
+                  `account of why, in the instrument's words and not this page's.`,
+              ),
+              ...(Object.keys(WHAT_A_SURVIVOR_MEANS_TO_A_READER) as readonly WhySurviving[]).flatMap(
+                (why) => renderKind(measured.defects, why),
+              ),
+            ]),
       ],
     },
     {

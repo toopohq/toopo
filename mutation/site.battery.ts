@@ -74,6 +74,7 @@ const methodFile = (find: string, replace: string) => ({
   replace,
 })
 const indexingFile = (find: string, replace: string) => ({ file: 'indexing.ts', find, replace })
+const survivorsFile = (find: string, replace: string) => ({ file: 'survivors.ts', find, replace })
 const siteFile = (find: string, replace: string) => ({ file: 'site.ts', find, replace })
 const servedHeadersFile = (find: string, replace: string) => ({
   file: 'served-headers.ts',
@@ -1122,7 +1123,7 @@ const mutants: readonly Mutant[] = [
       'catalogue that has only two - the page goes on stating the true total above a list that ' +
       'quietly does not reach it',
     [
-      methodFile(
+      survivorsFile(
         EVERY_SURVIVOR_IS_SHOWN,
         `    el('div', { class: 'cases' }, ...defects.slice(0, 2).map(renderSurvivor)),`,
       ),
@@ -1198,7 +1199,7 @@ const mutants: readonly Mutant[] = [
       'instrument holds. It reads better, it is shorter, and it is a second statement of one ' +
       'judgement sitting in the file most likely to drift from the data it describes - which is what ' +
       'the whole page is written against',
-    [methodFile(THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS, `    paragraph('Some of these are not holes.'),`)],
+    [survivorsFile(THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS, `    paragraph('Some of these are not holes.'),`)],
     killed(['every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words']),
   ),
 

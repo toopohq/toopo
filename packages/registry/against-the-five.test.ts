@@ -14,6 +14,7 @@ import {
   serialiseContract,
 } from './serialise.js'
 import { eachContract, theFive } from './the-five.js'
+import { THE_BATTERIES, theFolderOf } from '../../mutation/published.js'
 
 /**
  * A record cannot drift from the contract it describes.
@@ -142,6 +143,37 @@ describe('the five, read against their own source', () => {
     )
 
     expect(cited).toHaveLength(4)
+  })
+
+  /**
+   * Every battery that injects into `contracts/` injects into a folder one of the five owns, and every
+   * one of the five is injected into.
+   *
+   * **It exists because a contract page now publishes its own measurement**, and the join it publishes
+   * is a *composition* rather than a declaration: `theFolderOf` builds `contracts/<language>/<name>`
+   * and a battery declares the folder it edits, in another file, in another folder. A filter over a
+   * composed string that stops matching answers an empty measurement, and an empty measurement on a
+   * contract page reads exactly like a contract nobody has measured. ADR-0130.
+   *
+   * **Both directions, because either alone is satisfied by nothing.** A battery pointing at a folder
+   * no contract owns is a battery measuring something the catalogue does not publish; a contract no
+   * battery names is a page that would publish a measurement of zero cells while its suite is real.
+   *
+   * The population is the batteries under `contracts/`. The eight that inject into `packages/` and
+   * into `mutation/fixture` measure this repository's machinery rather than a contract, which
+   * `the-five.ts` already says in as many words about the record it makes of them.
+   */
+  it('every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns', () => {
+    const owned = new Set(theFive.map((source) => theFolderOf(source.address.language, source.address.name)))
+    const injected = THE_BATTERIES.map((battery) => battery.contractPath).filter((path) =>
+      path.startsWith('contracts/'),
+    )
+
+    expect(injected.filter((path) => !owned.has(path)), 'a battery injects where no contract is').toEqual([])
+    expect(
+      [...owned].filter((path) => !injected.includes(path)),
+      'a contract no battery injects into',
+    ).toEqual([])
   })
 
   /**

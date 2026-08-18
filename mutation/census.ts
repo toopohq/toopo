@@ -218,6 +218,12 @@
  * one integer. What a unit costs here is a function of how many *files* its guards land in and never
  * of how much it changed. ADR-0123.
  *
+ * A twenty-second on a contract page publishing its own measurement: no new file and one count
+ * moved, under the registry's. The guard it counts joins two folders - a battery's declared
+ * `contractPath` and a contract's address - and it is counted where the contract half is,
+ * because a battery may edit only the folder under measurement and `mutation/` is not one a
+ * battery of this repository injects into. ADR-0130.
+ *
  * A twenty-first on a domain carrying what it turned down: no new file and one count moved, under the
  * site's - the nineteenth's shape. What it is worth a line for is *why* the count moved. The guard it
  * counts is one `catalogue.ts` had cited for three units and that did not exist:
@@ -291,7 +297,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 
   'packages/registry/vitest.config.ts': {
     'packages/registry/address.test.ts': 3,
-    'packages/registry/against-the-five.test.ts': 50,
+    'packages/registry/against-the-five.test.ts': 51,
     'packages/registry/attestation.test.ts': 3,
     'packages/registry/coverage.test.ts': 20,
     'packages/registry/determinism.test.ts': 20,

@@ -312,6 +312,37 @@ export const theMeasurement = (batteries: readonly Battery[] = THE_BATTERIES): T
   unprobed: silencesOf(batteries, 'unprobedRegions'),
 })
 
+/**
+ * Where a contract's own batteries say they inject, composed rather than declared a second time.
+ *
+ * A battery names the folder it edits, and a contract's folder is `contracts/<language>/<name>` - so
+ * the two are joined here, on the side that holds the batteries, and no module of `packages/site/` ever
+ * spells a path. `every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns` is
+ * what keeps the join from becoming a filter that silently matches nothing. ADR-0130.
+ */
+export const theFolderOf = (language: string, name: string): string =>
+  `contracts/${language}/${name}`
+
+/**
+ * What this repository injected into one contract, and what its own suite caught.
+ *
+ * **It is `theMeasurement` at a second argument and never a second statement of it.** The method page
+ * publishes the whole population and its breakdown, which is what the global claim and the README rest
+ * on; a contract page publishes its own. One function, two populations - which is the opposite of two
+ * sentences that could come to disagree, and is why this is a projection rather than the duplication
+ * ADR-0128 and ADR-0129 refused.
+ *
+ * An address whose folder no battery injects into answers a measurement of nothing rather than
+ * throwing: a sixth contract arrives before its battery does, and a page that could not be built until
+ * somebody wrote one would make the order of two commits load-bearing.
+ */
+export const theMeasurementOf = (
+  language: string,
+  name: string,
+  batteries: readonly Battery[] = THE_BATTERIES,
+): TheMeasurement =>
+  theMeasurement(batteries.filter((battery) => battery.contractPath === theFolderOf(language, name)))
+
 /** How many survivors of each kind, in the order the vocabulary declares them. */
 export const survivorsByKind = (
   population: PublishedPopulation,

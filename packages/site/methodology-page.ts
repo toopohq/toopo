@@ -69,6 +69,7 @@ import {
 import type { VerificationStratum } from '../registry/field-map.js'
 import type { ServedMethodology } from '../registry/verifiability.js'
 import type { Document, Node, Tag } from './document.js'
+import { renderKind } from './survivors.js'
 import { el, text } from './document.js'
 import type { MenuEntry } from './chrome.js'
 import { masthead } from './chrome.js'
@@ -81,75 +82,11 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
 /**
- * One defect, the cells of it that survive, and the battery's own account of it — once.
- *
- * **Grouped by mutant rather than listed by cell, and the reading is what decided it.** A defect
- * measured through two lenses is two cells, and the first draft printed the same paragraph twice,
- * two lines apart, for every one of them. Six of `number/parse@1`'s defects appeared as twelve
- * identical entries. Nothing was false and it was unreadable, which on this page is the same
- * failure: a reader who stops reading has not been told anything.
- *
- * The count above stays in cells, because a cell is what was measured and a mutant is not.
+ * A survivor is rendered by `survivors.ts`, which is where the gathering and its argument moved
+ * when the contract page became the second reader of them. The count on this page stays in cells,
+ * because a cell is what was measured and a mutant is not. ADR-0130.
  */
-const renderSurvivor = (survivors: readonly PublishedSurvivor[]): Node => {
-  const first = survivors[0]
 
-  return el(
-    'div',
-    NOTHING,
-    el(
-      'p',
-      { class: 'call' },
-      line('code', `${first?.battery ?? ''} · ${first?.mutant ?? ''}`),
-      text(
-        survivors.length === 1
-          ? ` on ${first?.cell ?? ''}`
-          : ` on ${survivors.map((one) => one.cell).join(' and ')}`,
-      ),
-    ),
-    paragraph(first?.description ?? '', { class: 'why' }),
-  )
-}
-
-/** The survivors of one kind, gathered by the defect they are cells of, in the order they were declared. */
-const byMutant = (
-  survivors: readonly PublishedSurvivor[],
-): readonly (readonly PublishedSurvivor[])[] => {
-  const gathered = new Map<string, PublishedSurvivor[]>()
-
-  for (const survivor of survivors) {
-    const key = `${survivor.battery} ${survivor.mutant}`
-    gathered.set(key, [...(gathered.get(key) ?? []), survivor])
-  }
-
-  return [...gathered.values()]
-}
-
-/**
- * One kind of survivor, its meaning, how many there are, and every one of them.
- *
- * A kind with nothing in it is not rendered, for the reason the refusals page drops an empty section:
- * a heading over nothing tells a reader something is missing without telling them what.
- */
-const renderKind = (population: PublishedPopulation, why: WhySurviving): readonly Node[] => {
-  const theirs = population.surviving.filter((survivor) => survivor.why === why)
-  if (theirs.length === 0) return []
-
-  const defects = byMutant(theirs)
-
-  return [
-    line(
-      'h3',
-      `${theirs.length} ${
-        theirs.length === defects.length
-          ? ''
-          : `cells of ${defects.length} defect${defects.length === 1 ? '' : 's'} `
-      }— ${why.replaceAll('-', ' ')}`,
-    ),
-    paragraph(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]),
-    el('div', { class: 'cases' }, ...defects.map(renderSurvivor)),
-  ]
-}
 
 /**
  * The count, and the split, in one sentence that cannot be read without the other half.
