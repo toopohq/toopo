@@ -157,12 +157,44 @@ published carries an attestation naming a commit of this history. **That publica
 unit**, deliberately — the version is what triggers `npm publish` since ADR-0111, so moving it inside a
 rewrite would publish from the middle of one.
 
-**Every paragraph carrying a translated identifier returns to one hand.** Read before this unit, at the
-commit now named `f5386216`: **8 826 paragraphs across 383 tracked sources, 25 at three hands or more**.
-The translation touches 73 files, so `npm run hands` will read cleaner afterwards with no prose having
-improved. This is the reflow objection `CLAUDE.md` already records as the reason no guard is written
-over that reading, arriving by a door nobody had predicted — and it is why the figure is published here
-with its coordinate rather than left for a later reading to misinterpret as progress.
+**The `hands` reading moved, in the opposite direction from the one this record first predicted, and
+what is published is what was measured.** The prediction was that a commit touching 73 files returns
+every paragraph carrying an identifier to one hand, so the reading would come out artificially clean.
+It does the reverse. Blame attributes a *line*, and the translation rewrote the lines carrying an
+identifier and no others — so a paragraph that had two hands now has three, and almost none dropped to
+one.
+
+```
+at f5386216, before      8 826 paragraphs, 383 tracked sources    25 at three hands or more
+at cf8acec, after        8 890 paragraphs, 384 tracked sources    38 at three hands or more
+```
+
+Thirteen more paragraphs are designated as worth rereading, and not one of them was rewritten by
+anybody: a mechanical rename put them there. **That is the reflow objection with its sign reversed**,
+and it is worse in kind than the version predicted — a clean reading invites nothing, whereas thirteen
+false designations invite the next session to reread prose that has not changed. `CLAUDE.md` already
+holds that this reading designates a zone rather than measuring a defect and is never worth acting on
+unread; this is a concrete reason why. **The first commit of this unit carries the prediction in its
+message and it is wrong there**; it is corrected here rather than in the history, because the history is
+what this repository has just spent a unit agreeing not to rewrite for convenience.
+
+**The freeze passed for the wrong reason until the object database was cleaned, and this is the finding
+a later rewrite most needs.** `filter-repo` does not delete the objects it replaces, and its own cleanup
+step failed on this machine, so the pre-rewrite commits stayed resolvable by hash. Measured on the old
+`PUBLISHED_FROM`, which by then named nothing:
+
+```
+git rev-parse --verify --quiet <old>^{commit}     resolved
+git rev-list --all                                did not hold it
+npm run freeze                                    green
+```
+
+**A green there proves nothing about the translation**, because `git worktree add` answers for a commit
+no ref reaches. It is the hazard `history.ts` documents about `rev-parse`, arriving one floor down on
+the check that rebuilds a published binding — and on a fresh clone, which is what CI runs, it would have
+been red. After `git reflog expire --expire=now --all` and `git gc --prune=now` the old identifier stops
+resolving, and only then does the suite mean anything: green with the translated coordinate, and red on
+`ARevisionCannotBeRebuilt` with the old one. Both were seen.
 
 **Commit messages had their coordinates translated wholesale, by the tool and not by the rule.**
 `filter-repo` rewrites resolvable identifiers inside messages unless told not to, and it cannot know
