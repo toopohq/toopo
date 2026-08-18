@@ -319,8 +319,16 @@ export const readingOf = (node: Node): string => projected(node, THE_READING, fa
  * a multiple of `--s`, declared as such rather than rounded to it, so the rhythm is a consequence of
  * one number instead of a habit.
  *
- * The colours are named for what they *do* - paper, wash, card, rule, edge, ink, body, dim, faint -
- * so that the dark palette is the same document with different values and never a second stylesheet.
+ * The colours are named for what they *do* - paper, wash, card, rule, edge, ink, body, dim - so that
+ * the dark palette is the same document with different values and never a second stylesheet.
+ *
+ * **There are two greys and not three, and a measurement is what removed the third.** The mock-ups
+ * carry a `faint` below `dim`, and it was carrying the case identifier, the rail's label and the page
+ * you are on. Read in a browser: 2.64:1 on light paper, 3.37:1 on dark, and 2.37:1 on a case somebody
+ * had just followed a link to - against the 4.5:1 that text under 24px owes a reader. `dim` itself is
+ * 5.45:1, so there was no room underneath it for a fourth legible step, and a colour that is only
+ * *nearly* legible is worse than one step fewer. What tells the identifier apart from the argument
+ * beside it is now the size and the face, which is what a scale is for.
  * `system-ui` and `ui-monospace` first, so the page is set in whatever the reader's own system uses
  * and downloads nothing. The measure is capped in `ch` rather than pixels because what has to stay
  * readable is a line of prose and a line of code, both of which are counted in characters.
@@ -351,7 +359,7 @@ const STYLE = `
   --t1: 1.625rem; --t2: 1.1875rem; --t3: 1rem; --t4: .9375rem; --t5: .8125rem; --t6: .6875rem;
 
   --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;
-  --ink: #1c1b19; --body: #3a3833; --dim: #6b6660; --faint: #a19b93;
+  --ink: #1c1b19; --body: #3a3833; --dim: #6b6660;
   --accent: #a0491d; --target: #f6ece4;
 
   --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -362,7 +370,7 @@ const STYLE = `
 @media (prefers-color-scheme: dark) {
   :root {
     --paper: #171614; --wash: #201f1c; --card: #201f1c; --rule: #34322e; --edge: #45423c;
-    --ink: #e8e5df; --body: #c5c0b8; --dim: #8b857d; --faint: #6f6a63;
+    --ink: #e8e5df; --body: #c5c0b8; --dim: #8b857d;
     --accent: #e2905d; --target: #2a231d;
   }
 }
@@ -399,7 +407,7 @@ pre {
    whether its contract has one table or two, and it must read the same either way. */
 .table { color: var(--dim); font-weight: 600; margin: var(--s10) 0 0 }
 .group:target { background: var(--target); box-shadow: 0 0 0 var(--s2) var(--target); border-radius: 2px }
-.anchor { color: var(--faint); text-decoration: none; font-size: var(--t6); float: right }
+.anchor { color: var(--dim); text-decoration: none; font-size: var(--t6); float: right }
 .anchor:hover { color: var(--accent) }
 /* The title line of a list item, at whatever tag the outline asks for: a contract's name on the front
    page is a heading because it titles a section, and must not take the standing margin of one. */
@@ -417,13 +425,13 @@ ul.plain > li { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
 ul.menu { display: flex; flex-wrap: wrap; gap: var(--s5); list-style: none; padding: 0; margin: 0 0 0 auto; font-size: var(--t5) }
 ul.menu a { color: var(--body); text-decoration: none }
 ul.menu a:hover { color: var(--accent) }
-ul.menu .here { color: var(--faint) }
+ul.menu .here { color: var(--dim) }
 
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 78rem; margin: 0 auto; width: 100% }
 .rail { padding: var(--s6) var(--s6) 0 }
 .rail-label {
   margin: 0 0 var(--s2); font-family: var(--mono); font-size: var(--t6);
-  letter-spacing: .06em; text-transform: uppercase; color: var(--faint);
+  letter-spacing: .06em; text-transform: uppercase; color: var(--dim);
 }
 ul.toc { list-style: none; padding: 0; margin: 0 }
 ul.toc > li { padding: var(--s) 0 }
@@ -466,7 +474,7 @@ ul.chips a:hover { border-color: var(--accent); color: var(--ink) }
 .what .call { margin: 0 0 var(--s2) }
 .what code { color: var(--ink); line-height: 1.55; overflow-wrap: anywhere }
 .case-id { margin: 0; font-size: var(--t6) }
-.case-id a { font-family: var(--mono); color: var(--faint); text-decoration: none }
+.case-id a { font-family: var(--mono); color: var(--dim); text-decoration: none }
 .case-id a:hover { color: var(--accent) }
 .argument > p { margin: 0 0 var(--s2); font-size: var(--t4) }
 .argument > p:last-child { margin-bottom: 0 }
