@@ -130,9 +130,10 @@ removed* — no *because a catalogue that only shows what it accepted is a catal
 no *because a legal boundary kept by a declaration nothing enforces …*, nothing that explains where it
 could assert. It measures **1 203 words**. That page was not kept, so this is the one figure here
 nobody can rebuild: what to strike is a judgement about which clause explains and which asserts, and
-two readers would not draw the line in the same place. It carries its commit for that reason, on
-[ADR-0018](0018-a-published-count-carries-its-coordinates.md)'s treatment of every figure this
-repository cannot re-derive.
+two readers would not draw the line in the same place. Its coordinate is this record's own commit,
+which is all a reading of a discarded artefact can carry — the treatment
+[ADR-0018](0018-a-published-count-carries-its-coordinates.md) gives every figure this repository
+cannot re-derive.
 
 What the floor is made of *is* rebuildable, from the page alone. **282 of the 1 398 words are frozen by
 the decisions above**: 158 in the five fenced blocks, 75 in the catalogue table, 49 in the title and its
@@ -145,21 +146,19 @@ free.
 
 Counting what a page asserts is a judgement and not a measurement, so it is given as one: on the order
 of eighty distinct facts, which puts this page near thirteen words a fact and a 700-word page near
-four.
-**So what this section leaves is a distance and not a target: about 200 words separate the page from
-the floor, and all of them are argument.** Below the floor a cut is the removal of facts under another
-name, and the honest form of that request is to name which.
+four. **So what this section leaves is a distance and not a target: about 200 words separate the page
+from the floor, and all of them are argument.** Below the floor a cut is the removal of facts under
+another name, and the honest form of that request is to name which.
 
 ### The ratio that measured a wrap column
 
 The reading that opened the size question was words per line, where this page stood at 9.0 — 1 551
 words over 173 lines at `2cec0be` — against a median of 3.4 over those same five. **It measures an
 editor's setting and not a density.** Reflowing this page's own words at 60 columns instead of 100 —
-not one word changed — takes it from 8.6 to 6.1.
-Measured at `2cec0be`: the median non-blank line is 93 characters and none exceeds 105, because this
-repository wraps prose at 100 columns. The five wrap nothing, which is reported rather than measured
-here, their medians sitting between 18 and 55 and their longest lines reaching 835. GitHub and npm
-render Markdown as HTML, so no reader sees any of it.
+not one word changed — takes it from 8.6 to 6.1. Measured at `2cec0be`: the median non-blank line is
+93 characters and none exceeds 105, because this repository wraps prose at 100 columns. The five wrap
+nothing, which is reported rather than measured here, their medians sitting between 18 and 55 and
+their longest lines reaching 835. GitHub and npm render Markdown as HTML, so no reader sees any of it.
 
 This is [ADR-0030](0030-what-the-method-page-may-say.md)'s rule arriving on a second subject. *An
 address is not a figure* says that a run of digits is not evidence of a quantity and that what decides
