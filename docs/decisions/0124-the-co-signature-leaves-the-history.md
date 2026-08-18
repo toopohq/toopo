@@ -5,7 +5,6 @@ decision-makers: Mathis Perron
 governs:
   - mutation/history.ts
   - mutation/paths.ts
-  - .claude/settings.json
 confirmed-by:
   - battery: meta
     guard: every-commit-this-repository-cites-is-one-it-has
@@ -73,9 +72,9 @@ Measured over every tracked file, not only the ones the citation guard reads: **
 kept.** The two are `gitHead` lines inside fenced transcripts of npm's own record, in ADR-0109 and
 ADR-0111.
 
-**The finding worth carrying out of this is that one identifier fell on both sides.** `a413615`
+**The finding worth carrying out of this is that one identifier fell on both sides.** `a413615…`
 occurred five times. In ADR-0111 it is transcribed from npm's record as `gitHead a413615908a9…` and it
-stays; four lines above, *Measured at `a413615`, by reading npm's own record* is where the reading was
+stays; four lines above, *Measured at `a413615…`, by reading npm's own record* is where the reading was
 taken and it moved. Same seven digits, two natures, and no rule keyed to the identifier could have
 separated them. The same split runs through ADR-0109, where the coordinate and the `gitHead` named one
 commit when the record was written and now name two — which is the rule working and not a defect, so
@@ -93,12 +92,12 @@ records.
 `packages/catalogue/every-contract.ts` and `packages/catalogue/identifier.ts` are `THE_SHARED_FILES`;
 `contractSnapshot.frozen` names `sharedHarness`, whose entries carry a `sha256` per file. So one
 character changed in either rebinds all four published contract digests. Between them they hold three
-dead identifiers: `3ec99c5` twice in prose, and `THE_ANATOMY_WAS_MEASURED_AT`, which is an exported
+dead identifiers: `3ec99c5…` twice in prose, and `THE_ANATOMY_WAS_MEASURED_AT`, which is an exported
 constant and not a comment.
 
 Considered:
 
-- **Rewrite only the commits after `3ec99c5`.** That identifier survives, the freeze holds, no guard
+- **Rewrite only the commits after `3ec99c5…`.** That identifier survives, the freeze holds, no guard
   moves — and 320 commits keep the trailer. Rejected: it does not do the thing that was asked.
 
 - **Let the four published digests move, and republish the bindings as a revision**, which is the word
@@ -144,6 +143,12 @@ a sentence, which is the distinction this repository applies everywhere else.
 **It is a default and not a prohibition.** Crediting somebody who worked on a change is what a trailer
 is for, and anybody may write one by hand. What it refuses is a trailer nobody decided to add.
 
+**It is not in this record's `governs`, and the reason is the format rather than a judgement.**
+`every-file-a-decision-governs-cites-it-back` requires the file to name the record, and strict JSON has
+no comment — so the citation lives beside the convention in `CLAUDE.md` instead, which is where a
+contributor meets the rule. A file that cannot cite its own reason is one whose reason has to be
+findable from the other end, and that is what the entry there is for.
+
 ## Consequences
 
 **The four npm attestations name commits that no longer exist.** `1.0.0` through `1.0.3` each froze a
@@ -171,6 +176,14 @@ written since made that untrue: a `git log` excerpt in ADR-0111, the `npm run ha
 and two comments in `style.ts` write identifiers no backtick repeats. Every one had to be translated by
 hand, and the guard would have been green with all of them dead. The paragraph is corrected and the gap
 is on `CLAUDE.md`'s list with what would close it.
+
+**The citation guard reddened on this record, which is the limit `history.ts` declares happening.**
+That module says it cannot exhibit a dead identifier, only describe one: a citation is a citation
+wherever it is written, so naming `3ec99c5…` in the ordinary form made this record cite a commit that
+no longer exists — correctly, four times across three files. The repair is the convention the module
+already had for a truncated digest: the ellipsis goes inside the quoting, so the closing backtick never
+follows the digits and the identifier reads as what it is. **A dead identifier is not a citation and
+must not be written as one**, which is a rule this unit needed and could not have learned any other way.
 
 **A convention that forbade this is rewritten rather than quietly broken.** `CLAUDE.md` said *no force,
 no tag, no rewriting of history*. Two of those three have now been done twice, on the owner's decision

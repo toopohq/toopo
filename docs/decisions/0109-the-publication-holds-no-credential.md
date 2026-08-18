@@ -31,7 +31,7 @@ dist.attestations  absent
 ```
 
 **The `gitHead` in that block and the coordinate above it were one commit and are now two.** Both named
-`ee4e485` when this was written. [ADR-0124](0124-the-co-signature-leaves-the-history.md) reissued every
+`ee4e485…` when this was written. [ADR-0124](0124-the-co-signature-leaves-the-history.md) reissued every
 commit of this history, so the coordinate moved with the repository and the transcript did not: npm holds
 what npm holds, and this record may not correct another registry's record of its own past. The line is
 kept as npm spells it, and it names a commit this repository no longer has.

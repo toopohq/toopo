@@ -445,7 +445,7 @@ record declares**, which is a worse thing and has never been named here before.
 **Still open, and what each one now costs.**
 
 - **That a citation inside a file a published contract freezes ever resolves again.** The two shared
-  files carry three identifiers of a history that no longer exists — `3ec99c5` twice in prose, and
+  files carry three identifiers of a history that no longer exists — `3ec99c5…` twice in prose, and
   `THE_ANATOMY_WAS_MEASURED_AT` in `every-contract.ts`, which is a constant and not a comment. They
   cannot be repaired: the digest covers those files byte for byte, so the edit that would fix them
   rebinds four published addresses, and permanent rule 6 forbids it. **The population is every file a
