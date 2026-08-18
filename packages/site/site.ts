@@ -58,6 +58,7 @@ import {
 } from './paths.js'
 import { notFoundPage } from './not-found-page.js'
 import { refusalsPage } from './refusals-page.js'
+import { turnedDownPage } from './turned-down-page.js'
 import { renderHeaders, theHeaderRules } from './served-headers.js'
 import type { RegistrySource } from './source.js'
 
@@ -98,6 +99,18 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
     ...domains.flatMap((domain) =>
       domain.held.map(
         (one) => [pageOf(one.contract.address), contractPage(one, domain, domains, menu)] as const,
+      ),
+    ),
+    /**
+     * And a page at the same address for a contract the catalogue turned down, which is ADR-0127
+     * reversing ADR-0027's other half. It is `pageOf` in both arms rather than a second spelling: a
+     * refusal is a state of a contract and not a different kind of thing, so it is at the address the
+     * contract has.
+     */
+    ...domains.flatMap((domain) =>
+      domain.turnedDown.map(
+        (one) =>
+          [pageOf(one.refusal.address), turnedDownPage(one, domain, domains, menu)] as const,
       ),
     ),
   ])

@@ -109,32 +109,32 @@ const underEachHeading = (document: Parameters<typeof toText>[0]): ReadonlyMap<s
 
 describe('the site', () => {
   /**
-   * Four pages for four contracts, **four** for the domains the index files them under, and none for
-   * the fifth contract.
+   * Five pages for five contracts, four for the domains the index files them under, and three that are
+   * about no contract at all.
    *
-   * `array/group-by@1` was decided against *before* publication, so `refuseContract` records the
-   * argument and binds no digest: there is no frozen definition to render and nothing about it a
-   * reader could check. A contract page with no digest behind it would be a contract page missing the
-   * only half that makes this registry worth anything, which is ADR-0027 and is unchanged.
+   * **This guard was `every-installable-contract-has-a-page-and-a-refused-one-does-not` and the rename
+   * is the decision rather than a tidying.** ADR-0027 settled that a refused contract has no page, on
+   * an argument about what such a page would be missing; ADR-0127 reverses it, because the page a
+   * refusal gets is not a contract page with a hole where the digest goes - it is a page about a
+   * decision, and it says in a sentence that the frozen half is absent and why. The old name would have
+   * gone on asserting the opposite of what the file does, which is the one thing a guard's address must
+   * never do. `confirmed-by` of ADR-0027 and ADR-0121 moved with it, which is the cost and is what the
+   * meta suite would otherwise have refused.
    *
-   * **`array` has a domain page, and that half is ADR-0126 reversing ADR-0027 one level up.** The
-   * argument for excluding it was that such a page *would carry an empty list and one line pointing at
-   * the refusals page, which answers nothing that page does not answer better* - true of a page that
-   * says nothing about the refusal, and the refusal is now what that page is about. So the domain side
-   * is asserted from the index's **domains** and no longer from its installable entries, and the two
-   * differing is what this guard is for: a domain page for a domain nothing is filed under would be an
-   * address in the navigation that leads nowhere.
+   * **What ADR-0027 keeps is asserted by another guard and not weakened here.**
+   * `nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed` is what holds that a
+   * refused contract is never offered, and it was written for the catalogue's list before this page
+   * existed - so it arrived at the new page already holding the one thing it must not do.
    *
-   * **The name is unchanged and it was worth checking rather than assuming.** It says every installable
-   * contract has a page and a refused one does not, which is still exactly what the two assertions
-   * about *contract* pages hold; the domain side was never in the name. Renaming it would have broken
-   * the `confirmed-by` of ADR-0027 and ADR-0121 to describe a half the name does not mention.
+   * **A refused contract is at `pageOf` and never at a second spelling.** A refusal is a state of a
+   * contract, so it is at the address the contract has: a reader who searches for `group-by` lands
+   * where they would have landed had it been published. Asserting the whole key set from the index is
+   * what makes an extra page and a missing one the same failure.
    *
    * The three pages that are not about one contract are named here, so that a page appearing or
    * disappearing is this guard's business rather than nobody's.
    */
-  it('every-installable-contract-has-a-page-and-a-refused-one-does-not', () => {
-    const installable = index.entries.filter((entry) => entry.installable)
+  it('every-contract-the-index-lists-has-a-page-at-its-own-address', () => {
     const refused = index.entries.filter((entry) => !entry.installable)
 
     expect([...pages().keys()].sort()).toEqual(
@@ -143,10 +143,10 @@ describe('the site', () => {
         METHOD_PAGE,
         REFUSALS_PAGE,
         ...new Set(index.entries.map((entry) => domainPageOf(entry.address))),
-        ...installable.map((entry) => pageOf(entry.address)),
+        ...index.entries.map((entry) => pageOf(entry.address)),
       ].sort(),
     )
-    expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([false])
+    expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([true])
     expect(refused.map((entry) => pages().has(domainPageOf(entry.address)))).toEqual([true])
     expect(refused.length).toBe(1)
   })
@@ -727,7 +727,14 @@ describe('the site', () => {
       const reading = toText(page(path))
       const entry = index.entries.find((one) => pageOf(one.address) === path)
 
-      if (entry === undefined) {
+      /**
+       * A page with no playground must not say it, which is what this arm always held and what a
+       * turned-down contract joined rather than was exempted from. `browser.ts` strips a
+       * `reference.ts`, and a contract the catalogue refused has no reference module to strip - so the
+       * sentence would be about something that does not exist. The discriminator is therefore whether
+       * the contract is installable and no longer whether the path is a contract's. ADR-0127.
+       */
+      if (entry === undefined || !entry.installable) {
         expect(reading).not.toContain('types stripped')
         continue
       }

@@ -155,13 +155,19 @@ export const cataloguePage = (
                * one lies: the front page's outline held its four sections and not one contract name, on the
                * page that *is* this site's navigation. The class, because 121 of the 126 list items here
                * open with `.call` and these five are the only departure.
+               *
+               * **The link does not branch.** Every entry goes to the address its contract has,
+               * installable or not: it used to send a refused one to the refusals page, and that branch
+               * went when a refusal became a state of a contract rather than a page of its own. What
+               * still branches is the line under it, which is about a command and is a different
+               * question. ADR-0127.
                */
               el(
                 'h3',
                 { class: 'call' },
                 el(
                   'a',
-                  { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },
+                  { href: linkTo(pageOf(entry.address)) },
                   text(renderContract(entry.address)),
                 ),
               ),
@@ -170,7 +176,7 @@ export const cataloguePage = (
                 'p',
                 entry.installable
                   ? `${THE_INVOCATION} add ${entry.address.name}`
-                  : 'Considered and turned down — see what we refuse and why.',
+                  : 'Considered and turned down — the measurement it was refused on is on its page.',
                 { class: 'meta' },
               ),
             ),

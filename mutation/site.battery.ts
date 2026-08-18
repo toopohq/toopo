@@ -253,7 +253,7 @@ const A_CONTRACT_NAME_IS_A_TITLE = `              el(
                 { class: 'call' },
                 el(
                   'a',
-                  { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },
+                  { href: linkTo(pageOf(entry.address)) },
                   text(renderContract(entry.address)),
                 ),
               ),`
@@ -645,7 +645,7 @@ const mutants: readonly Mutant[] = [
     [localFile(A_REFUSED_CONTRACT_IS_REFUSED, `    if (false) {`)],
     killed([
       'a-refused-contract-is-in-the-index-and-resolves-to-no-binding',
-      'every-installable-contract-has-a-page-and-a-refused-one-does-not',
+      'every-contract-the-index-lists-has-a-page-at-its-own-address',
       'nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed',
     ]),
   ),
@@ -655,7 +655,7 @@ const mutants: readonly Mutant[] = [
     'builds a page for every contract the index holds, including the refused one, which has no ' +
       'binding and therefore no frozen definition to render',
     [catalogueFile(ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE, `    .entries.filter(() => true)`)],
-    killed(['every-installable-contract-has-a-page-and-a-refused-one-does-not']),
+    killed(['every-contract-the-index-lists-has-a-page-at-its-own-address']),
   ),
 
   sameOnEveryLens(
@@ -1337,7 +1337,7 @@ const mutants: readonly Mutant[] = [
         A_CONTRACT_NAME_IS_A_TITLE,
         `              el(\n` +
           `                'a',\n` +
-          `                { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },\n` +
+          `                { href: linkTo(pageOf(entry.address)) },\n` +
           `                text(renderContract(entry.address)),\n` +
           `              ),`,
       ),

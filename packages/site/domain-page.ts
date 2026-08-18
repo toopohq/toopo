@@ -56,7 +56,7 @@ import { el, text } from './document.js'
 import { grouped } from './quantity.js'
 import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
-import { REFUSALS_PAGE, domainPageOf, linkTo, pageOf, rootFrom } from './paths.js'
+import { domainPageOf, linkTo, pageOf, rootFrom } from './paths.js'
 
 const NOTHING = {} as const
 
@@ -192,7 +192,7 @@ const turnedDownEntry = (turnedDown: TurnedDown, own: string): Node =>
       { class: 'call' },
       el(
         'a',
-        { href: `${rootFrom(own)}${linkTo(REFUSALS_PAGE)}` },
+        { href: `${rootFrom(own)}${linkTo(pageOf(turnedDown.refusal.address))}` },
         text(shortNameOf(turnedDown.refusal.address.name)),
       ),
     ),

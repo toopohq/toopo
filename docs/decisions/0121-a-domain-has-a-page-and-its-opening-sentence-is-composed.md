@@ -8,7 +8,7 @@ governs:
   - packages/site/chrome.ts
 confirmed-by:
   - battery: site
-    guard: every-installable-contract-has-a-page-and-a-refused-one-does-not
+    guard: every-contract-the-index-lists-has-a-page-at-its-own-address
   - battery: site
     guard: every-page-is-reachable-from-the-front-page
 ---
@@ -66,7 +66,7 @@ empty list, a figure of zero and a line pointing at the refusals page — which 
 answers less well, and puts an address in the navigation a reader gains nothing by following.
 
 So `domainsOf` drops a domain with nothing published in it, and
-`every-installable-contract-has-a-page-and-a-refused-one-does-not` asserts the domain side from the
+`every-contract-the-index-lists-has-a-page-at-its-own-address` asserts the domain side from the
 **installable** entries rather than from the index's domains, so the two differing is a red.
 
 ### The column is a sibling of the rail, and it is placed rather than ordered

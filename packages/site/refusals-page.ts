@@ -1,6 +1,6 @@
 /**
- * What the catalogue turned down, and the measurement each refusal rests on.
- * ADR-0027 is why a refused contract is published here and has no page of its own.
+ * The index of what the catalogue turned down, one line each, at the address that list has always had.
+ * ADR-0127 is why a refusal is explained at the contract's own address and only listed here.
  *
  *
  * ---------------------------------------------------------------------------
@@ -23,8 +23,8 @@
  * catalogue it was refused from, or let the second read as though it had never existed.
  *
  * The second list is empty today and its section is not rendered when it is - an empty heading tells a
- * reader something is missing without telling them what, which is the rule the contract page follows
- * about benchmarks.
+ * reader something is missing without telling them what, which is ADR-0027's rule and the reason that
+ * record still governs this file after ADR-0127 took the explaining half of it away.
  *
  * ---------------------------------------------------------------------------
  * What this page cannot say, named rather than left to be noticed
@@ -32,9 +32,19 @@
  *
  * A refused contract has no binding and no snapshot, so its own prose - the comparison of lodash,
  * Ramda, d3 and the two ES2024 built-ins that makes its case - is not reachable from any endpoint. The
- * registry serves a refusal, not a definition of the thing refused. What is here is what the registry
- * holds: the address, the summary from the index, the decision, the measurement, and what the contract
- * is kept as.
+ * registry serves a refusal, not a definition of the thing refused, and `turned-down-page.ts` says so
+ * on the page where a reader would look for it.
+ *
+ * ---------------------------------------------------------------------------
+ * The address is kept and the job changed, which is the whole of ADR-0125 applied
+ * ---------------------------------------------------------------------------
+ *
+ * This page used to carry the decision, the measurement and what each contract is kept as. Those moved
+ * to the contract's own address. **The address did not move with them**, because an address this tree
+ * has served goes on being written and what it says is free to change - and `/refused/` has been served
+ * since the first deployment, is in the sitemap and is in the index a retriever reads. A reader who
+ * kept the link gets the list of what the catalogue turned down, which is the question they followed it
+ * for.
  */
 
 import { renderContract, sameContract } from '../registry/address.js'
@@ -43,7 +53,7 @@ import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { MenuEntry } from './chrome.js'
 import { masthead } from './chrome.js'
-import { REFUSALS_PAGE } from './paths.js'
+import { REFUSALS_PAGE, linkTo, pageOf, rootFrom } from './paths.js'
 
 const NOTHING = {} as const
 
@@ -75,21 +85,41 @@ export const refusalsPage = (
         'p',
         'A registry that only shows what it accepted is a registry whose standard nobody can see. ' +
           'These contracts were written in full — signature, properties, every edge case settled — ' +
-          'and then turned down. Each refusal is published with the measurement it rests on, so it ' +
-          'can be disagreed with.',
+          'and then turned down. Each one is at its own address, with the measurement its refusal ' +
+          'rests on, so the decision can be disagreed with.',
         { class: 'lede' },
       ),
 
-      ...refusals.refusals.flatMap((refusal) => [
-        line('h2', renderContract(refusal.address)),
-        line('p', summaryOf(refusal.address), { class: 'why' }),
-        line('h3', 'Turned down for'),
-        line('p', refusal.decidedAgainst),
-        line('h3', 'On this measurement'),
-        line('p', refusal.measurement),
-        line('h3', 'Kept as'),
-        line('p', refusal.keptAs),
-      ]),
+      /**
+       * One line each, linking to the contract's own address, and the measurement is not here.
+       *
+       * **This page was where a refusal was explained and is now the index of them**, which is
+       * ADR-0127. What makes a refusal worth publishing is the measurement it rests on, and a
+       * measurement quoted in a list is one without the comparison that gives it force - so the list
+       * says what happened and the page at the contract's address says why. It is the relation a domain
+       * page already has to a contract page, applied to refusals.
+       */
+      el(
+        'ul',
+        { class: 'plain' },
+        ...refusals.refusals.map((refusal) =>
+          el(
+            'li',
+            NOTHING,
+            el(
+              'h2',
+              { class: 'call' },
+              el(
+                'a',
+                { href: `${rootFrom(REFUSALS_PAGE)}${linkTo(pageOf(refusal.address))}` },
+                text(renderContract(refusal.address)),
+              ),
+            ),
+            line('p', summaryOf(refusal.address), { class: 'why' }),
+            line('p', `Turned down for ${refusal.decidedAgainst}`, { class: 'meta' }),
+          ),
+        ),
+      ),
 
       ...(refusals.absorbed.length === 0
         ? []

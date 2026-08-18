@@ -8,7 +8,7 @@ governs:
   - packages/site/chrome.ts
 confirmed-by:
   - battery: site
-    guard: every-installable-contract-has-a-page-and-a-refused-one-does-not
+    guard: every-contract-the-index-lists-has-a-page-at-its-own-address
   - battery: site
     guard: the-sentence-a-domain-page-opens-on-is-computed-from-what-it-lists
   - battery: site
@@ -66,9 +66,12 @@ and refused. `chrome.ts` already holds the rule that a bare digit does not survi
 same rule one turn on, because a digit counting the wrong thing is false in every projection and not
 only in the text one.
 
-**The mention links to the refusals page and carries no measurement.** What makes a refusal worth
-publishing is the measurement it rests on, and a measurement quoted in a list is one without the
-comparison that gives it force. So the mention says what happened and the page written for it says why.
+**The mention carries no measurement.** What makes a refusal worth publishing is the measurement it
+rests on, and a measurement quoted in a list is one without the comparison that gives it force. So the
+mention says what happened and the page written for it says why. **It pointed at `/refused/` on the day
+this was written and points at the contract's own address since
+[ADR-0127](0127-a-refusal-is-a-state-of-a-contract-at-its-own-address.md)** — the destination moved and
+the rule did not, which is what makes the rule the part worth having stated.
 
 ## Consequences
 
@@ -87,11 +90,15 @@ is priced in `CLAUDE.md` rather than taken here.
 
 ## Confirmation
 
-`every-installable-contract-has-a-page-and-a-refused-one-does-not` **keeps its name**, checked rather
-than assumed: it says every installable contract has a page and a refused one does not, which is exactly
-what its two assertions about *contract* pages still hold. The domain side was never in the name.
-Renaming it would have broken the `confirmed-by` of ADR-0027 and ADR-0121 in order to describe a half
-the name does not mention. What changed inside it is the source of the domain side — the index's domains
+`every-contract-the-index-lists-has-a-page-at-its-own-address` **kept its name through this record and
+lost it to the next**, which is worth leaving here rather than smoothing. It was
+`every-installable-contract-has-a-page-and-a-refused-one-does-not`, and this unit checked rather than
+assumed: the domain side was never in the name, so what this record changed left it true.
+[ADR-0127](0127-a-refusal-is-a-state-of-a-contract-at-its-own-address.md) gave a refused contract a page
+one unit later, at which point the name asserted the opposite of what the file did and the rename
+stopped being optional. **The cost that made it worth avoiding here is what it cost there**: the
+`confirmed-by` of two other records had to move with it, which is the mechanism that found the missing
+guard in the first place. What changed inside it is the source of the domain side — the index's domains
 rather than its installable entries — and it was seen red on exactly that: `typescript/array/index.html`
 present where the guard expected ten pages.
 
@@ -110,6 +117,8 @@ its arms is exercised per page.
 ## More Information
 
 - [ADR-0027](0027-what-a-contract-page-publishes-and-what-it-leaves-out.md) — why a refused contract has
-  no page of its own, which stands.
+  no page of its own. **It stood on the day this was written and was reversed one unit later** by
+  [ADR-0127](0127-a-refusal-is-a-state-of-a-contract-at-its-own-address.md); what survives of it is that
+  a page with no digest behind it must say so rather than look like the others.
 - [ADR-0125](0125-an-address-this-tree-has-served-goes-on-being-written.md) — why adding an address is
   free and removing one is not.

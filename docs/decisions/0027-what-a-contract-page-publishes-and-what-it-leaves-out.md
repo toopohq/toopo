@@ -7,7 +7,7 @@ governs:
   - packages/site/refusals-page.ts
 confirmed-by:
   - battery: site
-    guard: every-installable-contract-has-a-page-and-a-refused-one-does-not
+    guard: every-contract-the-index-lists-has-a-page-at-its-own-address
   - battery: site
     guard: a-page-is-addressed-by-the-contract-it-is-about
   - battery: site
@@ -67,9 +67,13 @@ whole site: one page per thing that exists, one page for the thing that was refu
 
 ## Confirmation
 
-`every-installable-contract-has-a-page-and-a-refused-one-does-not` holds the partition in both
-directions, which is the only form that can fail: a guard over one direction is satisfied by publishing
-every contract or by publishing none. `a-page-is-addressed-by-the-contract-it-is-about` resolves the
+`every-contract-the-index-lists-has-a-page-at-its-own-address` holds the whole key set, which is the
+only form that can fail: a guard over one direction is satisfied by publishing every contract or by
+publishing none. **It was `every-installable-contract-has-a-page-and-a-refused-one-does-not` until
+[ADR-0127](0127-a-refusal-is-a-state-of-a-contract-at-its-own-address.md)**, which reversed the half of
+this record that a refused contract has no page — so the name went on asserting the opposite of what
+the file did and had to move with it. What this record decided and keeps is the other half, and
+`nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed` is what holds it. `a-page-is-addressed-by-the-contract-it-is-about` resolves the
 page path against `renderContract`, and `nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed`
 is the half that would otherwise send a reader to a command that cannot work.
 `the-cost-a-page-states-is-what-lands-and-not-what-is-served` keeps the one figure the page does
