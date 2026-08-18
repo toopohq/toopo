@@ -1,6 +1,7 @@
 /**
  * The only module of this repository that runs in somebody else's browser.
- * ADR-0096 is why a field holds text, and why the answer names the call it was made from.
+ * ADR-0096 is why a field holds text, and why the answer names the call it was made from; ADR-0116 is
+ * why the copy control is built here rather than served.
  *
  * ---------------------------------------------------------------------------
  * What it is allowed to be, which is nothing the page depends on
