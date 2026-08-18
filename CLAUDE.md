@@ -832,6 +832,19 @@ record declares**, which is a worse thing and has never been named here before.
   is `check-anchors` learning to apply the replacement and refuse a result the compiler rejects, and the
   price is that it stops being a pure read of the working tree. Not built.
 
+  **It is paid at every passage rather than one day, and two units in a row are what turned that from
+  a prediction into a rate.** ADR-0127 moved a branching link expression out of `catalogue-page.ts`
+  and `W-64`'s `replace` went on quoting it; ADR-0129 reformatted an import in the same file and
+  `W-53`'s `replace` went on quoting the single line. Both were moved by hand, and in both cases what
+  reported anything at all was the *other* half — the `find` — so neither would have been seen had
+  the quoted text alone still matched.
+
+  **What that changes is what a reader does with the entry and not whether it closes.** It was
+  written as a possibility with a price beside it, which is the shape of an entry somebody acts on
+  the day it fires. Two instances in two units make it a **cost every unit touching anchored prose
+  pays**, and an entry that charges at each passage is treated before one that would charge once.
+  The rate is two of two units and the population is unchanged: every cell of every battery.
+
 - **That a battery's disagreement with itself is ever read.** `npm run battery <name>` ends by pairing
   every guard of its suite against the mutants that redden it, and refuses a run where a guard is
   neither witnessed nor declared unreachable. **No workflow runs it.** `suites.yml` runs the eight
