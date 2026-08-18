@@ -193,7 +193,9 @@ pre {
    its rule, which the list item already draws. Measured: a domain page listing its contracts at h2
    drew two lines 13px apart, one from the item and one from the heading inside it. */
 .call { display: block; margin: 0 0 var(--s2); border-top: 0; padding-top: 0 }
-ul.plain { list-style: none; padding: 0; margin: 0 0 var(--s4) }
+/* Bottom only, for the reason the lede carries: the shorthand's zero beat the standing gap under a
+   heading on specificity, and a section opening on a list touched its own title. */
+ul.plain { list-style: none; padding: 0; margin-bottom: var(--s4) }
 ul.plain > li { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
 
 .masthead {
@@ -263,7 +265,10 @@ pre.answer { margin: var(--s5) 0 0; background: var(--paper); font-size: var(--t
 .figure { margin: 0; font-size: var(--t5); color: var(--dim) }
 .figure strong { display: block; font-family: var(--mono); font-size: var(--t2); font-weight: 500; color: var(--ink) }
 
-ul.chips { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin: var(--s4) 0 0 }
+/* No margin of its own: under a heading the standing gap applies, and after a paragraph the
+   paragraph's own bottom margin collapses into it. Declaring a top here made one gap 16 where every
+   other section heading is followed by 12. */
+ul.chips { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin: 0 }
 ul.chips a {
   display: inline-block; font-family: var(--mono); font-size: var(--t6); color: var(--body);
   border: 1px solid var(--edge); border-radius: 1rem; padding: var(--s) var(--s3); text-decoration: none;
