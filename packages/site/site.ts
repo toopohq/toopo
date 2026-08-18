@@ -11,14 +11,20 @@
  * about benchmark figures, applied to the page that exists to publish a judgement.
  *
  * ---------------------------------------------------------------------------
- * The method page has two upstreams, and the second one is not the registry
+ * Two pages have an upstream that is not the registry
  * ---------------------------------------------------------------------------
  *
- * Every other page here is a rendering of what the port answers. The method page is half that - what a
+ * Most pages here are a rendering of what the port answers. The method page is half that - what a
  * reader can check and what they must believe is `servedMethodology()`, straight through the port -
  * and half something the registry cannot serve at all: `packages/registry/verifiability.ts` says in as many
  * words that *the instrument measures the catalogue and is not part of it*, so no endpoint can carry
  * how this catalogue's own tests are measured.
+ *
+ * **The front page joined it, and it is the same reading rather than a second door.** Three figures of
+ * its column beside the catalogue are counts of what the instrument injected and caught, which is the
+ * claim a visitor is deciding whether to believe and is exactly the thing no endpoint answers. It
+ * comes through the same module, taken once here and given to both pages, so a page cannot reach past
+ * the port on its own.
  *
  * So it comes through `mutation/published.ts`, which is a declared door rather than a reach into
  * another folder: one module, named, deriving what may be published from the batteries themselves.
@@ -75,7 +81,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
   const domains = domainsOf(source, heldByTheRegistry(source))
 
   return new Map<string, Document>([
-    [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu)],
+    [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu, theMeasurement())],
     [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
     ...(refusals.refusals.length === 0
       ? []

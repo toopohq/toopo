@@ -316,6 +316,50 @@ describe('a page and its two projections', () => {
   })
 
   /**
+   * Every track of a layout is a fraction, a floor, or a length this stylesheet declared.
+   *
+   * **The ceiling guard above says in as many words that it reads `max-width` and nothing else, and
+   * this unit is what turned that limit from a note into a hole.** The layout used to be one ceiling
+   * on one column; it is now three arrangements of grid tracks, and a rail typed as `240px` in a track
+   * would be ADR-0122's whole defect arriving through the door that guard declines to watch. So the
+   * claim is split rather than widened: a ceiling is derived, and a track is a fraction of what is
+   * left, a floor under a track that grows, or a length with a name.
+   *
+   * **A floor is admitted and is not an exception.** `minmax(8.5rem, 1fr)` and
+   * `minmax(min(22rem, 100%), 1fr)` say *do not go under this*, which is a statement about when a
+   * second column may appear rather than about how wide the layout is - the two are opposite claims
+   * and only the second is what a page's width is decided by. The maximum of both is `1fr`.
+   *
+   * The scan is a regular expression and not a parser, which is what kept the guard above from
+   * reaching into `minmax()` at all: a literal is admitted where it opens a `minmax()`, directly or
+   * through a `min()`, and refused anywhere else in the declaration. That is total over the four forms
+   * this stylesheet writes and needs no balanced parentheses.
+   *
+   * Born green, and the event it is written for is named: somebody sizing a column by a number. Seen
+   * red before it was believed - with the three-column arrangement typed as
+   * `240px minmax(0, 1fr) 268px`, the fault reads both lengths.
+   */
+  it('every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length', () => {
+    const style = (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
+    const rules = style.replace(/:root\s*\{[^}]*\}/g, '')
+    const tracks = [...rules.matchAll(/grid-template-columns:\s*([^;}]+)/g)].map((found) =>
+      (found[1] as string).trim(),
+    )
+
+    // The same refusal the ceiling guard makes: a sweep whose population has left is a sweep that
+    // passes by having nothing to look at.
+    expect(tracks.length, 'no track to sweep').toBeGreaterThan(0)
+
+    const typed = tracks.filter((value) =>
+      [...value.matchAll(/\d*\.?\d+(?:rem|px|em|ch|vw|vh)/g)].some(
+        (found) => !/minmax\(\s*(?:min\(\s*)?$/.test(value.slice(0, found.index)),
+      ),
+    )
+
+    expect(typed, 'a track sized by a typed length rather than by a declared one').toEqual([])
+  })
+
+  /**
    * Every ink this palette can put on every ground it can paint clears the contrast a reader is owed.
    *
    * **Not born green, and that is the whole argument for it: it would have been red twice today.** The

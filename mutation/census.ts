@@ -211,6 +211,13 @@
  * the suite produces verdicts that look exactly like verdicts, and nothing else in that half-hour would
  * have said so. ADR-0105.
  *
+ * A nineteenth on the columns: no new file and **one count moved**, under the site's. It is the
+ * cheapest shape this file has - the eighth's - and it is worth a line for the opposite reason to the
+ * eighteenth's: nothing charged it. The guard it counts is over the stylesheet, which is where the two
+ * guards over the stylesheet already are, so a unit that rewrote the whole layout of every page paid
+ * one integer. What a unit costs here is a function of how many *files* its guards land in and never
+ * of how much it changed. ADR-0123.
+ *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
  * ---------------------------------------------------------------------------
@@ -325,7 +332,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'packages/site/vitest.config.ts': {
-    'packages/site/document.test.ts': 16,
+    'packages/site/document.test.ts': 17,
     'packages/site/indexing.test.ts': 11,
     'packages/site/literal.test.ts': 11,
     'packages/site/pages.test.ts': 34,

@@ -488,9 +488,21 @@ describe('the site', () => {
    * sentence; prefixing them would be false, because nobody is being told to run anything.
    *
    * So the sweep is over what the site actually instructs, and an install instruction is recognisable
-   * by construction rather than by punctuation: **it names a contract of this catalogue.** That makes
-   * the population the installable entries rather than a shape in the prose, and it is total over them
-   * - a sixth contract joins this guard by being published, with nothing to add here.
+   * by construction rather than by punctuation.
+   *
+   * **It used to recognise one by the fact that it names a contract of this catalogue, and that broke
+   * the day the front page printed the shape of every command at once.** `add domain/function` names
+   * no contract, so a guard keyed to the five names carried no opinion about the one command a reader
+   * meets before they know what a contract is called - which is the surface the original defect was
+   * found on. The recognition is now the shape of an *address* rather than the list of them: `add`
+   * followed by a slash-separated pair. That is strictly wider, it needs nothing added when a sixth
+   * contract is published, and it is still not a lint over prose - the thirteen mutant descriptions
+   * that made the two wider sweeps red name a command as the subject of a sentence and never hand it
+   * an address, which is what the slash tests for.
+   *
+   * Measured before it was believed: 24 occurrences of `toopo add` across the eleven pages of the
+   * tree, 24 of them carrying the invocation, and the fault reads `toopo add domain/function` with the
+   * front page's command written bare.
    */
   it('every-command-the-site-tells-a-reader-to-run-carries-the-invocation', () => {
     const everyPage = [...pages().values()].map(toText).join('\n')
@@ -498,12 +510,16 @@ describe('the site', () => {
       .filter((entry) => entry.installable)
       .map((entry) => entry.address.name)
 
+    // Total over the catalogue: every installable contract is offered, and offered runnably.
     expect(installable).not.toEqual([])
     expect(
       installable.filter((name) => !everyPage.includes(`${THE_INVOCATION} add ${name}`)),
     ).toEqual([])
+
+    // Total over the surface: no install instruction anywhere is written bare, named or generic.
     expect(
-      installable.filter((name) => new RegExp(`(?<!npx )toopo add ${name}`).test(everyPage)),
+      everyPage.match(/(?<!npx )toopo add \S+\/\S+/g) ?? [],
+      'an install command a reader cannot run',
     ).toEqual([])
   })
 

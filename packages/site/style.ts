@@ -127,11 +127,16 @@ export const STYLE = `
   --ink: #1c1b19; --body: #3a3833; --dim: #6b6660;
   --accent: #a0491d; --target: #f6ece4;
 
-  /* The longest line a reader is asked to follow, and what one character of this face costs. */
+  /* The span a line stays readable across, both ends of it, and what one character of this face
+     costs. The header has stated that span as 45 to 75 since it was written and derived only its
+     top; a column of secondary matter is what the bottom names, and it is a bound already argued
+     for rather than a constant somebody chose for a sidebar. */
   --the-longest-line: 75;
+  --the-shortest-line: 45;
   --characters-per-ch: 1.393;
   --the-methods-drift: 1.04;
   --measure: calc(var(--the-longest-line) * 1ch / (var(--characters-per-ch) * var(--the-methods-drift)));
+  --aside: calc(var(--the-shortest-line) * 1ch / (var(--characters-per-ch) * var(--the-methods-drift)));
   /* What a block of this catalogue may be, for the two that would otherwise take whatever is
      offered. A column of prose is at most a measure, so a block of two columns of prose is at most
      two of them and the gap between: a settled case is a call beside an argument, and the use cases
@@ -143,6 +148,12 @@ export const STYLE = `
   /* The navigation column, named rather than repeated: the shell's ceiling is the rail plus what
      stands beside it, and a rail declared in two places is a rail that drifts. */
   --rail: 15rem;
+  /* What one contract of a list needs before another may stand beside it. At a measure a list is two
+     abreast exactly where its column is two measures wide and one everywhere else, which is a
+     breakpoint nobody has to write and nobody can be wrong about; at a two-columns it is one at every
+     width. Whether an index reads better in one column or two is a judgement that will be taken
+     again, and this is the whole of where it is taken. */
+  --a-contract-in-a-list: var(--measure);
 
   --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -229,6 +240,13 @@ pre {
    heading on specificity, and a section opening on a list touched its own title. */
 ul.plain { list-style: none; padding: 0; margin-bottom: var(--s4) }
 ul.plain > li { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
+/* A list of contracts, on the two pages that publish one. auto-fit takes as many tracks as the floor
+   allows and no more, so the column decides the count and no width is written: the rule above still
+   draws each item's own line, and the rows line up because every track is the same width. */
+ul.contracts {
+  display: grid; column-gap: var(--s10);
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--a-contract-in-a-list), 100%), 1fr));
+}
 
 .masthead {
   display: flex; align-items: baseline; gap: var(--s6);
@@ -246,15 +264,28 @@ ul.menu .here { color: var(--dim) }
    questions. A reader on a phone gets the page and then the navigation; a reader on a laptop gets the
    navigation on the left of it. Placing it puts the content first in the DOM, which is what a screen
    reader announces and what a text projection reads, and CSS order would have made those two disagree. */
-/* The rail, what stands beside it, and the three gutters around and between them. Nothing in that
-   is chosen: it is what the widest block needs, so the day a block grows the layout follows without
-   this line being edited. It replaces 78rem, which named no question anywhere in this repository and
-   is what centred a 1 248px layout on a 2 560px screen. */
-.shell {
-  display: grid; grid-template-columns: minmax(0, 1fr); margin: 0 auto; width: 100%;
-  max-width: calc(var(--rail) + var(--two-columns) + 3 * var(--s6));
-}
+/* One shell and three arrangements, each asked for by what the page actually holds rather than by a
+   class the page remembers to carry. A shell with a table of contents has a column on both sides of
+   the content; one with a column of secondary matter has it on the right; one with neither has the
+   navigation and the content. Every ceiling is its own arrangement's tracks and gutters added up, so
+   the day a track moves the layout follows without a number here being edited.
+
+   Narrow is one column and has no ceiling to give: the viewport is the bound, and a page that stacks
+   has nothing to centre. ADR-0123. */
+.shell { display: grid; grid-template-columns: minmax(0, 1fr); margin: 0 auto; width: 100% }
 .beside { padding: var(--s6) var(--s6) 0 }
+.aside { padding: var(--s6) var(--s6) 0 }
+/* Three blocks in one column, told apart by a line and the space around it. On the adjacent sibling
+   rather than on every block, so the first one does not open with a rule under the heading it has
+   just been given by the column it sits in. */
+.aside > section + section { margin-top: var(--s8); padding-top: var(--s6); border-top: 1px solid var(--rule) }
+/* The figures already have a heading above them, so the rule and the space the card's version draws
+   to stand itself off the sentence before it would be a second separator saying the same thing. The
+   bottom is not symmetry: a figure ends at zero so that its own two lines hold together, and without
+   this the last label touched the sentence under it - measured at 0px in a browser. */
+.aside .figures { margin: var(--s3) 0 var(--s5); padding-top: 0; border-top: 0 }
+.aside p { font-size: var(--t5); color: var(--dim) }
+.aside .figure strong { font-size: var(--t2) }
 .rail-label {
   margin: 0 0 var(--s2); font-family: var(--mono); font-size: var(--t6);
   letter-spacing: .06em; text-transform: uppercase; color: var(--dim);
@@ -311,6 +342,12 @@ pre.install .copy {
 }
 pre.install .copy:hover { color: var(--accent) }
 pre.answer { margin: var(--s5) 0 0; background: var(--paper); font-size: var(--t4) }
+/* The shape of a command rather than a command: the front page's, which names every address at once
+   and therefore none. It takes the install block's size and not its class, because the class is what
+   a copy control looks for and this is the one command on the site that would answer nothing if a
+   reader ran what they had copied. */
+pre.shape { font-size: var(--t4); color: var(--dim) }
+pre.shape code { color: var(--ink) }
 .figures {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: var(--s4);
   margin: var(--s5) 0 0; padding-top: var(--s5); border-top: 1px solid var(--rule);
@@ -353,7 +390,11 @@ ul.toc > li.under { padding-left: var(--s3) }
 }
 .use-case { border: 1px solid var(--edge); border-radius: 9px; background: var(--card); padding: var(--s5) }
 .use-case h3 { margin: 0 0 var(--s2); font-size: var(--t4) }
-.use-case > p { margin: 0 0 var(--s3); font-size: var(--t4) }
+/* The bottom only, and it is the same trap this stylesheet names four times above: a shorthand on a
+   class outranks the standing gap under a heading, so a use case opened 8px under its own title where
+   every other heading on the site is followed by 12. Found by the sweep this unit built rather than by
+   an eye, and pre-dating it - measured on string/slugify@1 at all four widths. */
+.use-case > p { margin-bottom: var(--s3); font-size: var(--t4) }
 .use-case .call {
   margin: 0 0 var(--s3); padding: var(--s3); background: var(--paper);
   border: 1px solid var(--rule); border-radius: 6px;
@@ -390,9 +431,60 @@ ul.toc > li.under { padding-left: var(--s3) }
 #playground pre { margin: 0; background: var(--paper); border-color: var(--edge) }
 
 @media (min-width: 64rem) {
-  .shell { grid-template-columns: var(--rail) minmax(0, 1fr); gap: var(--s6); padding: 0 var(--s6) }
-  .beside { grid-area: 1 / 1; position: sticky; top: var(--s12); align-self: start; padding: var(--s10) 0 0 }
-  main { grid-area: 1 / 2; padding: var(--s10) 0 0 }
+  .shell { gap: var(--s6); padding: 0 var(--s6) }
+  main { padding: var(--s10) 0 0 }
+
+  /* Where you are in the catalogue, and then the page. */
+  .shell:has(.beside) {
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    max-width: calc(var(--rail) + var(--two-columns) + 3 * var(--s6));
+  }
+  .shell:has(.beside) .beside { grid-area: 1 / 1 }
+  .shell:has(.beside) main { grid-area: 1 / 2 }
+
+  /* The page, and then what a reader may skip. */
+  .shell:has(.aside) {
+    grid-template-columns: minmax(0, 1fr) var(--aside);
+    max-width: calc(var(--two-columns) + var(--aside) + 3 * var(--s6));
+  }
+  .shell:has(.aside) main { grid-area: 1 / 1 }
+  .shell:has(.aside) .aside { grid-area: 1 / 2 }
+
+  .beside, .aside { position: sticky; top: var(--s12); align-self: start }
+  .aside { padding: var(--s10) 0 0 var(--s6); border-left: 1px solid var(--rule) }
+  .beside { padding: var(--s10) 0 0 }
+}
+
+/* Three columns, and the one width in this stylesheet that is typed rather than derived.
+
+   A media query cannot read a custom property - var() is not allowed in the condition, in any
+   browser, and no backtick may be written here either because the whole stylesheet is one template
+   literal - so the threshold is the arithmetic of the three tracks and their four gutters, taken on
+   this machine's system font and rounded up to the next whole rem: 240 + 933 + 268 + 96 resolves to
+   1 537px, and 97rem is 1 552. What makes the rounding safe rather than lucky is that the content
+   track is minmax(0, 1fr): a face whose zero is wider than this one squeezes the middle column
+   rather than pushing the page past the viewport.
+
+   The table of contents is what asks for the third column, so a page without one does not declare a
+   track it has nothing to put in. */
+@media (min-width: 97rem) {
+  .shell:has(.rail) {
+    grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside);
+    max-width: calc(var(--rail) + var(--two-columns) + var(--aside) + 4 * var(--s6));
+  }
+  /* The column beside the content becomes its two halves, which is the one way a table of contents
+     crosses to the other side of the page without leaving its parent in the document. Reparenting is
+     what CSS cannot do; dissolving the box around two things already written in order is what it can,
+     and the reading a screen reader gets is the one it got before. */
+  .shell:has(.rail) .beside { display: contents }
+  .shell:has(.rail) .where {
+    grid-area: 1 / 1; position: sticky; top: var(--s12); align-self: start;
+    margin: 0; padding: var(--s10) 0 0;
+  }
+  .shell:has(.rail) .rail {
+    grid-area: 1 / 3; position: sticky; top: var(--s12); align-self: start;
+    padding: var(--s10) 0 0 var(--s6); border-left: 1px solid var(--rule);
+  }
 }
 @media (min-width: 52rem) {
   /* The call column is as wide as a call may be, and a call here is a paragraph rather than a pre,

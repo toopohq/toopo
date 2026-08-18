@@ -55,17 +55,21 @@ export type Attributes = Readonly<Record<string, string>>
  * where a block belonged, and the element after it began mid-line, on the first screen of the site. A
  * partial table cannot fail to be silent about a tag nobody entered.
  *
- * With the set closed, a total map over it is the shape ADR-0054 asks for: **a sixteenth tag does not
+ * With the set closed, a total map over it is the shape ADR-0054 asks for: **one more tag does not
  * compile until every projection has said what it does with it.**
  * That is worth more here than anywhere else in this folder, because there are now three projections
  * and the cost of forgetting one is a reading that is quietly wrong rather than a page that breaks.
  *
- * The set is what has a call site, measured rather than remembered: fifteen occur on the seven pages
- * and `section` occurs in `document.test.ts`, which builds nesting no page happens to write today.
- * `main` is the sixteenth and arrived with the rail: a page carrying a masthead and a table of
- * contents makes whoever navigates by landmark cross both before reaching a word of the contract, and
- * the remedy for that is the landmark rather than a rule about how many links may come first.
- * ADR-0116.
+ * Every one of them has a call site, which is a property of the set rather than a count of it: all but
+ * `section` are written by a page, and that one occurs in `document.test.ts`, which builds nesting no
+ * page happens to write today.
+ *
+ * **The last two arrived for the same reason, one at each end of the content.** `main` came with the
+ * rail: a page carrying a masthead and a table of contents makes whoever navigates by landmark cross
+ * both before reaching a word of the contract, and the remedy for that is the landmark rather than a
+ * rule about how many links may come first. `aside` came with the column beside it, and the argument
+ * is that rule read backwards - matter a reader may skip has to be skippable, and `complementary` is
+ * what says so to somebody who is not looking at the columns. ADR-0116, ADR-0123.
  * Eight tags the separator table used to carry - `table`, `tr`, `ol`, `dl`, `dt`, `dd`, `header`,
  * `footer` - had no call site at all and are gone with it, because an entry nothing exercises is an
  * entry nothing keeps honest.
@@ -83,6 +87,7 @@ export type Tag =
   | 'section'
   | 'nav'
   | 'main'
+  | 'aside'
   | 'a'
   | 'code'
   | 'strong'
@@ -251,6 +256,7 @@ const THE_READING: Projection = {
     section: ends('\n\n'),
     nav: ends('\n\n'),
     main: ends('\n\n'),
+    aside: ends('\n\n'),
     a: ends(''),
     code: ends(''),
     strong: ends(''),
@@ -449,6 +455,7 @@ const THE_MARKDOWN: Projection = {
     section: ends('\n\n'),
     nav: ends('\n\n'),
     main: ends('\n\n'),
+    aside: ends('\n\n'),
     a: (element, children) => {
       const href = element.attributes['href']
 

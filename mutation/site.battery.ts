@@ -129,6 +129,8 @@ const THE_LIGHT_PALETTE = `  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0;
 
 const THE_SHELL_IS_AS_WIDE_AS_WHAT_IT_HOLDS = `  max-width: calc(var(--rail) + var(--two-columns) + 3 * var(--s6));`
 
+const THE_THREE_COLUMNS_ARE_DECLARED_LENGTHS = `    grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside);`
+
 const THE_INVISIBLE_IS_MADE_VISIBLE = `  \`'\${value.replaceAll('\\\\', '\\\\\\\\').replaceAll("'", "\\\\'").replace(INVISIBLE, escaped)}'\``
 
 const THE_ORDINARY_SPACE_IS_KEPT = `const INVISIBLE = /[\\p{Cc}\\p{Cf}\\p{Cs}\\p{M}\\p{Zl}\\p{Zp}]|[^\\P{Zs} ]/gu`
@@ -170,8 +172,8 @@ const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 
 const ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE = `    .entries.filter((entry) => entry.installable)`
 
-const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `            entry.installable
-              ? \`\${THE_INVOCATION} add \${entry.address.name}\``
+const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `                entry.installable
+                  ? \`\${THE_INVOCATION} add \${entry.address.name}\``
 
 /**
  * The generator's own restatement of the version the registry published. `cli-install.battery.ts`
@@ -245,15 +247,15 @@ const A_PIN_IS_NOT_AN_OBSERVATION = `    paragraph(THE_PINS_ARE_AN_ASSERTION),`
  * sentence it carries goes on being read by `every-figure-on-the-method-page-comes-from-what-it-was-
  * built-from`, which would redden on any edit that touched the figures instead.
  */
-const A_CONTRACT_NAME_IS_A_TITLE = `          el(
-            'h3',
-            { class: 'call' },
-            el(
-              'a',
-              { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },
-              text(renderContract(entry.address)),
-            ),
-          ),`
+const A_CONTRACT_NAME_IS_A_TITLE = `              el(
+                'h3',
+                { class: 'call' },
+                el(
+                  'a',
+                  { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },
+                  text(renderContract(entry.address)),
+                ),
+              ),`
 
 const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `        paragraph(silence.reason, { class: 'why' }),`
 
@@ -533,8 +535,8 @@ const mutants: readonly Mutant[] = [
     [
       cataloguePageFile(
         A_REFUSED_CONTRACT_IS_OFFERED_NOTHING,
-        `            true
-              ? \`\${THE_INVOCATION} add \${entry.address.name}\``,
+        `                true
+                  ? \`\${THE_INVOCATION} add \${entry.address.name}\``,
       ),
     ],
     killed(['nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed']),
@@ -705,6 +707,31 @@ const mutants: readonly Mutant[] = [
       'inside the measure, and a width nobody derived reads exactly like a width somebody chose',
     [styleFile(THE_SHELL_IS_AS_WIDE_AS_WHAT_IT_HOLDS, '  max-width: 78rem;')],
     killed(['every-ceiling-on-a-box-is-derived-and-never-typed']),
+  ),
+
+  /**
+   * W-85 one door along. That cell types the ceiling; this one types the tracks under it, which is
+   * where the layout moved when it stopped being one column and became three - and the guard W-85
+   * belongs to says in its own comment that it reads `max-width` and nothing else.
+   *
+   * The two lengths it writes are the ones this stylesheet derives, to the pixel on the machine the
+   * arithmetic was taken on. That is what makes it the plausible edit rather than a vandalism: the
+   * pages render identically here and stop being derived everywhere else.
+   */
+  sameOnEveryLens(
+    'W-86',
+    'types the two columns beside the content instead of deriving them, on the arrangement that ' +
+      'carries a table of contents. Nothing on the rendered page looks wrong on the machine the ' +
+      'numbers were read on - the three columns are there, the measure holds, and the layout is ' +
+      'exactly as wide as it was - and on any face whose zero is a different width the rail and the ' +
+      'column beside it stop being what they were derived from',
+    [
+      styleFile(
+        THE_THREE_COLUMNS_ARE_DECLARED_LENGTHS,
+        '    grid-template-columns: 240px minmax(0, 1fr) 268px;',
+      ),
+    ],
+    killed(['every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length']),
   ),
 
   sameOnEveryLens(
@@ -1286,11 +1313,11 @@ const mutants: readonly Mutant[] = [
     [
       cataloguePageFile(
         A_CONTRACT_NAME_IS_A_TITLE,
-        `          el(\n` +
-          `            'a',\n` +
-          `            { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },\n` +
-          `            text(renderContract(entry.address)),\n` +
-          `          ),`,
+        `              el(\n` +
+          `                'a',\n` +
+          `                { href: linkTo(entry.installable ? pageOf(entry.address) : REFUSALS_PAGE) },\n` +
+          `                text(renderContract(entry.address)),\n` +
+          `              ),`,
       ),
     ],
     killed(['no-element-runs-into-the-one-beside-it']),

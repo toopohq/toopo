@@ -175,7 +175,13 @@ export const domainPage = (
           line('p', `typescript / ${domain.name}`, { class: 'address' }),
           line('h1', domain.name),
           line('p', whatIsHere(domain), { class: 'lede' }),
-          el('ul', { class: 'plain' }, ...domain.held.map((held) => entry(held, own))),
+          /**
+           * The same block the front page lists a catalogue with, and it takes the same class: two
+           * contracts abreast where the column is two measures wide, one where it is not. A domain
+           * of a thousand is the case this is for; at four it is what keeps the page from being a
+           * ribbon down the left of a wide screen.
+           */
+          el('ul', { class: 'plain contracts' }, ...domain.held.map((held) => entry(held, own))),
         ),
         beside(own, domain, domains, []),
       ),
