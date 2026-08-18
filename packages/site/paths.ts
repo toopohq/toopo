@@ -193,6 +193,6 @@ export const THE_NOT_FOUND_FILE = '404.html'
  * as a literal while it was the only module in this repository that touched a disk;
  * `packaging/print-what-a-deployment-would-drop.ts` now reads the same folder, because the question it
  * asks is about the bytes that are uploaded rather than about a rebuilding of them. Two spellings of
- * one folder make a comparison that can quietly start being about nothing.
+ * one folder make a comparison that can quietly start being about nothing. ADR-0125.
  */
 export const THE_BUILT_TREE = 'out'
