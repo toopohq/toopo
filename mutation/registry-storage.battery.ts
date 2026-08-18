@@ -350,10 +350,19 @@ const mutants: readonly Mutant[] = [
     'stops sorting the served file list, so the order of the harness follows whatever order the ' +
       'source happened to declare',
     [serialiseFile(SORT_THE_FILES, '  const served = [...files]')],
-    // One of the five, and only one: `array/group-by@1` is the contract whose declared list is not
-    // already in sorted order, so it is the only one the sort was load-bearing for. The other four
-    // instances of this guard are silent under it, and are declared below rather than left implied.
-    killed(['the-harness-is-in-one-order-array-group-by']),
+    // All five, and it used to be one. `array/group-by@1` was the only contract whose declared list
+    // was not already in sorted order, so the sort was load-bearing for it alone and the other four
+    // instances of this guard were declared silent. ADR-0129 put `THE_SEVEN_FILES` in the order a
+    // reader meets them rather than in alphabetical order, which makes the sort load-bearing for
+    // every contract - so the declaration went stale and the guard got stronger. Five is the count
+    // ADR-0076 says a pin names in full.
+    killed([
+      'the-harness-is-in-one-order-array-group-by',
+      'the-harness-is-in-one-order-date-add',
+      'the-harness-is-in-one-order-number-parse',
+      'the-harness-is-in-one-order-string-levenshtein',
+      'the-harness-is-in-one-order-string-slugify',
+    ]),
   ),
 
   sameOnEveryLens(
@@ -1387,6 +1396,22 @@ export const battery: Battery = {
    * which this battery does see, as a `killed-by-typecheck`.
    */
   unreachableGuards: [
+    /**
+     * Half of what it compares is in `mutation/`, and a battery injects only into the folder under
+     * measurement.
+     *
+     * It joins a battery's declared `contractPath` to a contract's composed folder, and the
+     * composition is `theFolderOf` in `published.ts`. No edit this battery can make reaches it; the
+     * half it *can* reach is a contract's address in `the-five.ts`, and moving one of those is a
+     * defect this battery has no cell for because it would redden dozens of guards at once and
+     * measure none of them. ADR-0130.
+     */
+    {
+      guards: ['every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns'],
+      reason:
+        'the composition it checks lives in `mutation/published.ts`, and a battery edits only the ' +
+        'folder under measurement',
+    },
     {
       guards: ['every-export-that-renders-no-contract-says-why'],
       reason:
@@ -1467,6 +1492,28 @@ export const battery: Battery = {
    * twenty-two had no perturbation written at all.
    */
   unprobedRegions: [
+    /**
+     * **Unaccounted for since the day it was written, and found by a replay rather than by a
+     * reader.** It arrived at `70cfb22` with the standing, and its name has never appeared in this
+     * file - so from that commit until this one the battery measured a suite one guard larger than
+     * it accounted for, and said so to nobody, because nothing replays a battery but a person
+     * typing the command. `CLAUDE.md` carries that as an open entry and this is its second
+     * recorded instance, on a second battery.
+     *
+     * It is reachable and no mutant reaches it. `CONTRACT_STANDING_FIELDS` is in this folder, so a
+     * field declared there and carried by no contract reddens it - and that cell is not written
+     * here because it is the same edit as the one that would test the partition, which several
+     * mutants already make: the kill would attribute to whichever of them ran, and naming this one
+     * needs an edit that adds a standing field without moving the partition. Declared as the debt
+     * it is rather than left as silence. ADR-0130.
+     */
+    {
+      guards: ['every-standing-field-a-contract-declares-is-carried-by-one'],
+      nature: 'claims detection',
+      reason:
+        'a field declared standing and carried by no contract would redden it, and no cell here ' +
+        'writes that edit without also moving the partition several mutants already measure',
+    },
     /**
      * The sentence the README publishes about the size of this catalogue, against what `theFive`
      * declares. It is reachable from here and no mutant reaches it.
@@ -1663,10 +1710,6 @@ export const battery: Battery = {
         'the-frozen-half-and-the-standing-half-partition-an-implementation-number-parse',
         'the-frozen-half-and-the-standing-half-partition-an-implementation-string-levenshtein',
         'the-frozen-half-and-the-standing-half-partition-an-implementation-string-slugify',
-        'the-harness-is-in-one-order-date-add',
-        'the-harness-is-in-one-order-number-parse',
-        'the-harness-is-in-one-order-string-levenshtein',
-        'the-harness-is-in-one-order-string-slugify',
         'the-limit-of-a-signature-is-published',
         'two-majors-of-one-name-coexist',
       ],
