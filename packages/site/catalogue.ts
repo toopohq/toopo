@@ -157,7 +157,7 @@ export type Domain = {
  * has decided anything about, refused or not.
  *
  * Joined here rather than at each page, so a page renders a value instead of reaching for a second
- * answer to complete the first. ADR-0127.
+ * answer to complete the first. ADR-0126.
  */
 export type TurnedDown = {
   readonly refusal: ServedRefusal
