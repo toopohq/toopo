@@ -14,14 +14,20 @@ import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
-import { METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
+import type { MenuEntry } from './chrome.js'
+import { masthead } from './chrome.js'
+import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 
 const NOTHING = {} as const
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
-export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Document => ({
+export const cataloguePage = (
+  index: ServedIndex,
+  refusals: ServedRefusals,
+  menu: readonly MenuEntry[],
+): Document => ({
   title: 'Toopo — utility functions with a public, executable contract',
   /** A list of contracts is not source code, and the only `@type` this site publishes is. */
   servedBesideItsMarkdown: true,
@@ -37,6 +43,8 @@ export const cataloguePage = (index: ServedIndex, refusals: ServedRefusals): Doc
     `published contract: a signature, property-based invariants, and every edge case named and ` +
     `settled. The source is copied into your project.`,
   body: [
+    masthead(CATALOGUE_PAGE, menu),
+
     line('h1', 'Toopo'),
     line(
       'p',

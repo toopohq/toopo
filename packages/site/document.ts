@@ -59,8 +59,12 @@ export type Attributes = Readonly<Record<string, string>>
  * That is worth more here than anywhere else in this folder, because there are now three projections
  * and the cost of forgetting one is a reading that is quietly wrong rather than a page that breaks.
  *
- * The set is what has a call site, measured rather than remembered: fourteen occur on the seven pages
+ * The set is what has a call site, measured rather than remembered: fifteen occur on the seven pages
  * and `section` occurs in `document.test.ts`, which builds nesting no page happens to write today.
+ * `main` is the sixteenth and arrived with the rail: a page carrying a masthead and a table of
+ * contents makes whoever navigates by landmark cross both before reaching a word of the contract, and
+ * the remedy for that is the landmark rather than a rule about how many links may come first.
+ * ADR-0116.
  * Eight tags the separator table used to carry - `table`, `tr`, `ol`, `dl`, `dt`, `dd`, `header`,
  * `footer` - had no call site at all and are gone with it, because an entry nothing exercises is an
  * entry nothing keeps honest.
@@ -77,6 +81,7 @@ export type Tag =
   | 'div'
   | 'section'
   | 'nav'
+  | 'main'
   | 'a'
   | 'code'
   | 'strong'
@@ -244,6 +249,7 @@ const THE_READING: Projection = {
     div: ends(''),
     section: ends('\n\n'),
     nav: ends('\n\n'),
+    main: ends('\n\n'),
     a: ends(''),
     code: ends(''),
     strong: ends(''),
@@ -283,11 +289,18 @@ export const readingOf = (node: Node): string => projected(node, THE_READING, fa
 
 /**
  * The stylesheet, which is the whole of what this site loads beyond the page itself.
+ * ADR-0115 is the system it declares: the scale, the unit, the roles and the one accent.
  *
  * Inline rather than a file, and that is a measurement about the launch rather than a preference:
  * seven pages served once each, where a second request costs a round trip and a cache entry buys
- * nothing until somebody reads a second page. No web font and no image, and this project cannot
- * publish the byte cost of every feature and then serve a heavy page.
+ * nothing until somebody reads a second page. **The arithmetic that will overturn it is known and is
+ * not today's**: this text is repeated in every page of the tree, so a catalogue of a thousand
+ * contracts carries a thousand copies, and at that size a file and one request is the cheaper half by
+ * orders of magnitude. It is written here rather than acted on because seven copies is not a problem
+ * and because a file would be a second address with a cache policy nothing here derives.
+ *
+ * No image, and no web font: ADR-0115 carries what the second refusal costs and what would reverse
+ * it, measured rather than assumed.
  *
  * **This paragraph used to end "and no script", and the playground took that clause and not the one
  * after it.** What it was actually protecting survives untouched: *a contract page that needs
@@ -297,56 +310,185 @@ export const readingOf = (node: Node): string => projected(node, THE_READING, fa
  * HTML cannot do, which is answer an input nobody wrote down in advance, and `start.ts` builds its
  * own form so that a reader without JavaScript meets prose rather than a control that does nothing.
  *
- * `system-ui` first, so the page is set in whatever the reader's own system uses and downloads
- * nothing. The measure is capped in `ch` rather than pixels because what has to stay readable is a
- * line of prose and a line of code, both of which are counted in characters.
+ * ---------------------------------------------------------------------------
+ * Six sizes, one unit, and roles rather than colours
+ * ---------------------------------------------------------------------------
+ *
+ * The scale is six steps and there is no seventh: a page that needs one more size is a page that has
+ * stopped distinguishing things and started decorating them. Every length that separates anything is
+ * a multiple of `--s`, declared as such rather than rounded to it, so the rhythm is a consequence of
+ * one number instead of a habit.
+ *
+ * The colours are named for what they *do* - paper, wash, card, rule, edge, ink, body, dim, faint -
+ * so that the dark palette is the same document with different values and never a second stylesheet.
+ * `system-ui` and `ui-monospace` first, so the page is set in whatever the reader's own system uses
+ * and downloads nothing. The measure is capped in `ch` rather than pixels because what has to stay
+ * readable is a line of prose and a line of code, both of which are counted in characters.
+ *
+ * ---------------------------------------------------------------------------
+ * The accent never says a status
+ * ---------------------------------------------------------------------------
+ *
+ * One accent, and it means *you can act on this or you are here*: a link, a focus ring, a hover, the
+ * page you are on, the case you followed a link to. It never means good or bad, and there is no
+ * second colour that could.
+ *
+ * **A catalogue that publishes its failures does not tint them red.** The method page names 35
+ * surviving mutants beside 632 caught ones, and every contract page carries cases that exist because
+ * a defect got past the suite. Colouring those would sort this repository's own evidence into things
+ * a reader is meant to feel bad about, which is the opposite of why they are published - and it would
+ * make the reading and the page say different things, since a colour survives neither `toText` nor
+ * `toMarkdown`. Caught and surviving are told apart by the word.
  */
 const STYLE = `
-:root { --ink: #16161a; --dim: #55555f; --rule: #dcdce4; --wash: #f6f6f9; --link: #1c4fd8 }
+:root {
+  --s: .25rem;
+  --s2: calc(var(--s) * 2); --s3: calc(var(--s) * 3); --s4: calc(var(--s) * 4);
+  --s5: calc(var(--s) * 5); --s6: calc(var(--s) * 6); --s8: calc(var(--s) * 8);
+  --s10: calc(var(--s) * 10); --s12: calc(var(--s) * 12); --s16: calc(var(--s) * 16);
+  --s24: calc(var(--s) * 24);
+
+  --t1: 1.625rem; --t2: 1.1875rem; --t3: 1rem; --t4: .9375rem; --t5: .8125rem; --t6: .6875rem;
+
+  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;
+  --ink: #1c1b19; --body: #3a3833; --dim: #6b6660; --faint: #a19b93;
+  --accent: #a0491d; --target: #f6ece4;
+
+  --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  color-scheme: light dark;
+}
 @media (prefers-color-scheme: dark) {
-  :root { --ink: #e8e8ee; --dim: #a0a0ad; --rule: #33333c; --wash: #1c1c21; --link: #8fb0ff }
+  :root {
+    --paper: #171614; --wash: #201f1c; --card: #201f1c; --rule: #34322e; --edge: #45423c;
+    --ink: #e8e5df; --body: #c5c0b8; --dim: #8b857d; --faint: #6f6a63;
+    --accent: #e2905d; --target: #2a231d;
+  }
 }
 * { box-sizing: border-box }
+/* A full-bleed column: everything sits in a measure, and the two elements that lay themselves out
+   span the whole width. It is one declaration rather than a wrapper on every page. */
 body {
-  margin: 0 auto; padding: 2.5rem 1.25rem 6rem; max-width: 74ch;
-  font: 1rem/1.6 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: var(--ink); background: Canvas;
+  display: grid; grid-template-columns: 1fr min(74ch, calc(100% - var(--s10))) 1fr;
+  margin: 0; padding: 0 0 var(--s24);
+  font: var(--t3)/1.62 var(--sans); color: var(--body); background: var(--paper);
 }
-h1 { font-size: 1.6rem; margin: 0 0 .25rem; letter-spacing: -.01em }
-h2 { font-size: 1.15rem; margin: 2.75rem 0 .75rem; padding-top: .75rem; border-top: 1px solid var(--rule) }
-h3, h4 { font-size: 1rem; margin: 2rem 0 .25rem; font-weight: 600 }
+body > * { grid-column: 2 }
+body > .masthead, body > .shell { grid-column: 1 / -1 }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+a { color: var(--accent) }
+h1, h2, h3, h4 { color: var(--ink) }
+h1 { font-family: var(--mono); font-size: var(--t1); font-weight: 500; letter-spacing: -.02em; margin: 0 0 var(--s3) }
+h2 {
+  font-size: var(--t3); font-weight: 600; margin: var(--s12) 0 0;
+  padding-top: var(--s4); border-top: 1px solid var(--rule); scroll-margin-top: var(--s16);
+}
+h3, h4 { font-size: var(--t4); font-weight: 600; margin: var(--s8) 0 0; scroll-margin-top: var(--s16) }
+h2 + p, h2 + ul, h3 + p, h4 + p { margin-top: var(--s3) }
+p { margin: 0 0 var(--s4) }
+code, pre { font-family: var(--mono); font-size: .875em }
+pre {
+  margin: 0 0 var(--s4); padding: var(--s3) var(--s4); overflow-x: auto;
+  background: var(--wash); border: 1px solid var(--rule); border-radius: 6px; color: var(--ink);
+}
+.lede { font-size: var(--t2); line-height: 1.45; color: var(--body); margin: 0 0 var(--s5); max-width: 60ch }
+.meta { color: var(--dim); font-size: var(--t5) }
+.why { margin: 0; color: var(--dim) }
 /* The tag is the outline and the class is the look: a group sits at h3 or at h4 depending on
    whether its contract has one table or two, and it must read the same either way. */
-.table { color: var(--dim); font-weight: 600; margin: 1.75rem 0 .5rem }
-.group:target { background: var(--wash); box-shadow: 0 0 0 .5rem var(--wash); border-radius: 3px }
-p { margin: 0 0 1rem }
-a { color: var(--link) }
-code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .875em }
-pre {
-  margin: 0 0 1rem; padding: .75rem 1rem; overflow-x: auto;
-  background: var(--wash); border: 1px solid var(--rule); border-radius: 6px;
-}
-.lede { font-size: 1.15rem; color: var(--dim); margin: 0 0 1.5rem }
-.meta { color: var(--dim); font-size: .875rem }
-.cases { margin: 0 }
-.cases > div { padding: .85rem 0; border-top: 1px solid var(--rule) }
-.cases > div:target { background: var(--wash); box-shadow: 0 0 0 .75rem var(--wash); border-radius: 3px }
+.table { color: var(--dim); font-weight: 600; margin: var(--s10) 0 0 }
+.group:target { background: var(--target); box-shadow: 0 0 0 var(--s2) var(--target); border-radius: 2px }
+.anchor { color: var(--faint); text-decoration: none; font-size: var(--t6); float: right }
+.anchor:hover { color: var(--accent) }
 /* The title line of a list item, at whatever tag the outline asks for: a contract's name on the front
    page is a heading because it titles a section, and must not take the standing margin of one. */
-.call { display: block; margin: 0 0 .3rem }
-.why { margin: 0; color: var(--dim) }
-.anchor { color: var(--dim); text-decoration: none; font-size: .8rem; float: right }
-.anchor:hover { color: var(--link); text-decoration: underline }
-ul.plain { list-style: none; padding: 0; margin: 0 0 1rem }
-ul.plain > li { padding: .5rem 0; border-top: 1px solid var(--rule) }
-#playground label { display: block; color: var(--dim); font-size: .875rem; margin-bottom: .2rem }
-#playground .why { display: block; font-size: .8rem; margin-top: .2rem }
-#playground input {
-  width: 100%; padding: .5rem .6rem; color: var(--ink); background: Canvas;
-  border: 1px solid var(--rule); border-radius: 6px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .875em;
+.call { display: block; margin: 0 0 var(--s2) }
+ul.plain { list-style: none; padding: 0; margin: 0 0 var(--s4) }
+ul.plain > li { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
+
+.masthead {
+  display: flex; align-items: baseline; gap: var(--s6);
+  padding: var(--s3) var(--s6); margin: 0; border-bottom: 1px solid var(--rule);
+  position: sticky; top: 0; z-index: 20; background: var(--paper);
 }
-#playground input:focus { outline: 2px solid var(--link); outline-offset: 1px }
+.wordmark { margin: 0; font-family: var(--mono); font-size: var(--t3); color: var(--ink) }
+.wordmark a { color: var(--ink); text-decoration: none }
+ul.menu { display: flex; flex-wrap: wrap; gap: var(--s5); list-style: none; padding: 0; margin: 0 0 0 auto; font-size: var(--t5) }
+ul.menu a { color: var(--body); text-decoration: none }
+ul.menu a:hover { color: var(--accent) }
+ul.menu .here { color: var(--faint) }
+
+.shell { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 78rem; margin: 0 auto; width: 100% }
+.rail { padding: var(--s6) var(--s6) 0 }
+.rail-label {
+  margin: 0 0 var(--s2); font-family: var(--mono); font-size: var(--t6);
+  letter-spacing: .06em; text-transform: uppercase; color: var(--faint);
+}
+ul.toc { list-style: none; padding: 0; margin: 0 }
+ul.toc > li { padding: var(--s) 0 }
+ul.toc a { color: var(--dim); text-decoration: none; font-size: var(--t5) }
+ul.toc a:hover { color: var(--ink) }
+main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
+
+.card { border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6) }
+.address { margin: 0 0 var(--s2); font-size: var(--t5); color: var(--dim) }
+.card h1 { margin: 0 0 var(--s3) }
+pre.install { display: flex; align-items: center; gap: var(--s4); background: var(--paper); max-width: 44ch; font-size: var(--t4) }
+pre.install .copy {
+  margin-left: auto; border: 0; border-left: 1px solid var(--edge); background: none;
+  padding: var(--s2) 0 var(--s2) var(--s4); font: inherit; font-size: var(--t5);
+  color: var(--dim); cursor: pointer;
+}
+pre.install .copy:hover { color: var(--accent) }
+pre.answer { margin: var(--s5) 0 0; background: var(--paper); font-size: var(--t4) }
+.figures {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: var(--s4);
+  margin: var(--s5) 0 0; padding-top: var(--s5); border-top: 1px solid var(--rule);
+}
+.figure { margin: 0; font-size: var(--t5); color: var(--dim) }
+.figure strong { display: block; font-family: var(--mono); font-size: var(--t2); font-weight: 500; color: var(--ink) }
+
+ul.chips { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin: var(--s4) 0 0 }
+ul.chips a {
+  display: inline-block; font-family: var(--mono); font-size: var(--t6); color: var(--body);
+  border: 1px solid var(--edge); border-radius: 1rem; padding: var(--s) var(--s3); text-decoration: none;
+}
+ul.chips a:hover { border-color: var(--accent); color: var(--ink) }
+
+.cases { margin: 0 }
+.case {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2) var(--s10);
+  padding: var(--s5) 0; border-top: 1px solid var(--rule); scroll-margin-top: var(--s16);
+}
+.case:target { background: var(--target); box-shadow: 0 0 0 var(--s3) var(--target); border-radius: 2px }
+.what { min-width: 0 }
+.what .call { margin: 0 0 var(--s2) }
+.what code { color: var(--ink); line-height: 1.55; overflow-wrap: anywhere }
+.case-id { margin: 0; font-size: var(--t6) }
+.case-id a { font-family: var(--mono); color: var(--faint); text-decoration: none }
+.case-id a:hover { color: var(--accent) }
+.argument > p { margin: 0 0 var(--s2); font-size: var(--t4) }
+.argument > p:last-child { margin-bottom: 0 }
+
+#playground { display: block; margin: var(--s4) 0 0; padding: var(--s4); background: var(--wash); border: 1px solid var(--edge); border-radius: 8px }
+#playground p { margin: 0 0 var(--s3) }
+#playground label { display: block; color: var(--dim); font-size: var(--t5); font-family: var(--mono); margin-bottom: var(--s) }
+#playground .why { display: block; font-size: var(--t6); margin-top: var(--s) }
+#playground input {
+  width: 100%; padding: var(--s2) var(--s3); color: var(--ink); background: var(--paper);
+  border: 1px solid var(--edge); border-radius: 6px; font-family: var(--mono); font-size: var(--t4);
+}
+#playground pre { margin: 0; background: var(--paper); border-color: var(--edge) }
+
+@media (min-width: 64rem) {
+  .shell { grid-template-columns: 15rem minmax(0, 1fr); gap: var(--s6); padding: 0 var(--s6) }
+  .rail { position: sticky; top: var(--s12); align-self: start; padding: var(--s10) 0 0 }
+  main { padding: var(--s10) 0 0 }
+}
+@media (min-width: 52rem) {
+  .case { grid-template-columns: minmax(0, 34ch) minmax(0, 1fr) }
+}
 `.trim()
 
 /**
@@ -499,6 +641,7 @@ const THE_MARKDOWN: Projection = {
     div: ends(''),
     section: ends('\n\n'),
     nav: ends('\n\n'),
+    main: ends('\n\n'),
     a: (element, children) => {
       const href = element.attributes['href']
 

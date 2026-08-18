@@ -63,6 +63,48 @@ const html = (path: string): string => toHtml(page(path))
  */
 const asRead = (prose: string): string => inline(prose).map(readingOf).join('')
 
+/**
+ * What a reader reads under each `h2` of a page, by the title of that `h2`.
+ *
+ * **It walks the value because searching the reading stopped working, and the reason is worth having
+ * written down.** A contract page now carries a table of contents, so every section title occurs
+ * twice in the reading — once as a link in the rail, once as the heading — and two guards that looked
+ * a title up with `indexOf` silently found the rail, which sits before everything. One of them then
+ * required a sentence to come *before* `Properties` and was reading the rail's entry for it.
+ *
+ * A separator would not have saved them either. A heading ends a reading with a blank line and a list
+ * item with a single newline, so the two look distinguishable — until the last item of a list, which
+ * is followed by the list's own newline and reads exactly like a heading. The disambiguation is
+ * structural or it is luck.
+ *
+ * Only the level that holds the headings is descended into, which is what keeps the rail out: its
+ * `nav` carries no `h2`, so nothing under it is ever attributed to a section. ADR-0116.
+ */
+const underEachHeading = (document: Parameters<typeof toText>[0]): ReadonlyMap<string, string> => {
+  const found = new Map<string, string>()
+
+  const walk = (nodes: readonly Parameters<typeof readingOf>[0][]): void => {
+    let heading: string | null = null
+
+    for (const node of nodes) {
+      if (node.kind !== 'element') continue
+
+      if (node.tag === 'h2') {
+        heading = readingOf(node).trim()
+        found.set(heading, '')
+        continue
+      }
+
+      if (heading === null) walk(node.children)
+      else found.set(heading, (found.get(heading) as string) + readingOf(node))
+    }
+  }
+
+  walk(document.body)
+
+  return found
+}
+
 describe('the site', () => {
   /**
    * Four pages for four contracts, and the fifth contract has none.
@@ -111,7 +153,7 @@ describe('the site', () => {
           const address = renderCase({ contract: held.contract.address, case: entry.id })
 
           expect(address).toBe(`${renderContract(held.contract.address)}#${entry.id}`)
-          expect(rendered).toContain(`<div id="${entry.id}">`)
+          expect(rendered).toContain(` id="${entry.id}"`)
           expect(rendered).toContain(`href="#${entry.id}"`)
         }
       }
@@ -372,9 +414,19 @@ describe('the site', () => {
 
       const said = whatRunsInYourBrowser(entry.address.name)
 
+      const sections = underEachHeading(page(path))
+
       expect(reading.split(said)).toHaveLength(2)
-      expect(reading.indexOf(said)).toBeGreaterThan(reading.indexOf('Try it on your own input'))
-      expect(reading.indexOf(said)).toBeLessThan(reading.indexOf('\nProperties\n'))
+      expect(
+        sections.get('Try it on your own input'),
+        `${path}: it is not said beside the playground`,
+      ).toContain(said)
+      expect(
+        [...sections].filter(
+          ([title, under]) => title !== 'Try it on your own input' && under.includes(said),
+        ),
+        `${path}: it is said under a second heading as well`,
+      ).toEqual([])
     }
   })
 
@@ -401,7 +453,7 @@ describe('the site', () => {
 
       // What a reader without JavaScript meets where the form would be: a sentence, not a gap.
       expect(
-        reading.slice(reading.indexOf('Try it on your own input')).split('\n\n')[1],
+        underEachHeading(page(pageOf(held.contract.address))).get('Try it on your own input'),
       ).toContain('What you type into a field is the value')
     }
   })

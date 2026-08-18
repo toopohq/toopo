@@ -41,14 +41,20 @@ import { renderContract, sameContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
-import { REFUSALS_PAGE, rootFrom } from './paths.js'
+import type { MenuEntry } from './chrome.js'
+import { masthead } from './chrome.js'
+import { REFUSALS_PAGE } from './paths.js'
 
 const NOTHING = {} as const
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
-export const refusalsPage = (index: ServedIndex, refusals: ServedRefusals): Document => {
+export const refusalsPage = (
+  index: ServedIndex,
+  refusals: ServedRefusals,
+  menu: readonly MenuEntry[],
+): Document => {
   const summaryOf = (address: Parameters<typeof renderContract>[0]): string =>
     index.entries.find((entry) => sameContract(entry.address, address))?.summary ?? ''
 
@@ -62,7 +68,7 @@ export const refusalsPage = (index: ServedIndex, refusals: ServedRefusals): Docu
       `written in full and then turned down. Each refusal is published with the measurement it was ` +
       `decided on.`,
     body: [
-      el('nav', NOTHING, el('a', { href: rootFrom(REFUSALS_PAGE) }, text('Toopo'))),
+      masthead(REFUSALS_PAGE, menu),
 
       line('h1', 'What we refuse, and why'),
       line(

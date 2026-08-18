@@ -70,6 +70,8 @@ import type { VerificationStratum } from '../registry/field-map.js'
 import type { ServedMethodology } from '../registry/verifiability.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import type { MenuEntry } from './chrome.js'
+import { masthead } from './chrome.js'
 import { inline, paragraph } from './marks.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, linkTo, rootFrom } from './paths.js'
 
@@ -206,6 +208,7 @@ const renderStratum = (
 export const methodologyPage = (
   methodology: ServedMethodology,
   measured: TheMeasurement,
+  menu: readonly MenuEntry[],
 ): Document => ({
   title: 'How Toopo verifies, and what that does not prove',
   /** An argument about how this catalogue is measured is not source code, and points at no one file. */
@@ -215,7 +218,7 @@ export const methodologyPage = (
     `Every contract here is measured by breaking the code on purpose and requiring the tests to go ` +
     `red. ${measured.defects.cells} defects, what they caught, and every one they did not.`,
   body: [
-    el('nav', NOTHING, el('a', { href: rootFrom(METHOD_PAGE) }, text('Toopo'))),
+    masthead(METHOD_PAGE, menu),
 
     line('h1', 'How we verify'),
     line(

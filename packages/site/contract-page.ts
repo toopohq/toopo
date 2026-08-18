@@ -1,6 +1,7 @@
 /**
  * The page a contract has, which is the only page of this site that carries the product.
- * ADR-0027 is what this page publishes and what it leaves out.
+ * ADR-0027 is what this page publishes and what it leaves out; ADR-0116 is the shape it takes and why
+ * nothing on it is behind a fold.
  *
  *
  * ---------------------------------------------------------------------------
@@ -23,6 +24,21 @@
  * useful on its own.
  *
  * ---------------------------------------------------------------------------
+ * A card, and then everything, with nothing folded away
+ * ---------------------------------------------------------------------------
+ *
+ * The page answers two readers who want opposite things. Somebody in a hurry needs the name, the
+ * sentence, the command, the cost and the signature, and needs them above the fold; somebody who
+ * arrived from a search for this exact behaviour needs the argument for every settled case. The card
+ * serves the first without costing the second anything, which is why it is a card and not a summary
+ * that repeats what follows.
+ *
+ * **Nothing is behind a disclosure control, and that is the one thing this page will not trade.**
+ * Auditability is the product. A page whose argument is the product, hiding its argument by default,
+ * gives up the only claim it makes - and at fifty cases the fold buys length a table of contents
+ * already buys without hiding anything. ADR-0116 carries the trial that decided it.
+ *
+ * ---------------------------------------------------------------------------
  * Bytes exactly, not rounded
  * ---------------------------------------------------------------------------
  *
@@ -37,6 +53,8 @@ import type { CaseRecord, CaseTableRecord, ExportRecord } from '../registry/cont
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
+import type { MenuEntry } from './chrome.js'
+import { masthead } from './chrome.js'
 import { literal } from './literal.js'
 import { inline, marked, paragraph } from './marks.js'
 import { THE_ENTRY_POINT, THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
@@ -106,12 +124,28 @@ const spelledOut = (parts: readonly string[]): string =>
     : `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1] as string}`
 
 /**
- * One case, as the call it is.
+ * One case: the call it is, the address it answers to, and the argument for the answer.
  *
  * The fields of a case begin with the arguments of the contract's own signature, in the signature's
  * order - `packages/registry/signature.ts` reads that call and `packages/registry/serialise.ts` refuses a contract where
  * it stops being true - so what is left after them is the answer. A single answer field is written
  * bare, because there is nothing to tell it apart from; two or more are named.
+ *
+ * **The identifier is shown rather than hidden behind a bare `#`, and that is a repair and not a
+ * decoration.** `number/parse@1#ordinary-integer` is the address of this case - what a bug report
+ * cites, what the batteries pin, what the major freezes - and the page publishing it was rendering it
+ * into an attribute and a one-character link. Shown, the link needs no separate marker, so the
+ * standalone `#` beside a case is gone rather than added to.
+ *
+ * It is written `#ordinary-integer` and not `ordinary-integer`, which is the fragment a reader appends
+ * to this page's URL and is also what keeps the line honest:
+ * `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` refuses a carried value standing alone in
+ * a paragraph, and it is right to - an identifier is an address and not prose. The `#` is what says
+ * so.
+ *
+ * The two halves are wrapped because the layout puts them in two columns and a grid cannot place
+ * children it has to interleave. They are wrappers for a reason a reader can see, which is the only
+ * kind this file writes.
  */
 const renderedCase = (
   entry: CaseRecord,
@@ -127,28 +161,36 @@ const renderedCase = (
 
   return el(
     'div',
-    { id: entry.id },
-    anchorTo(entry.id),
-    el('p', { class: 'call' }, line('code', `${answer.name}(${call.join(', ')}) → ${result}`)),
-    paragraph(entry.rationale, { class: 'why' }),
-    ...whatATextFieldCannotCarry(entry, answer, fields).map((field) =>
-      line(
-        'p',
-        `A text field drops ${spelledOut(field.lost)}, so the ${field.name} field cannot be retyped ` +
-          `in the playground below. The answer above is what this contract settles for it.`,
-        { class: 'meta' },
-      ),
+    { id: entry.id, class: 'case' },
+    el(
+      'div',
+      { class: 'what' },
+      el('p', { class: 'call' }, line('code', `${answer.name}(${call.join(', ')}) → ${result}`)),
+      el('p', { class: 'case-id' }, el('a', { href: `#${entry.id}` }, text(`#${entry.id}`))),
     ),
-    ...(entry.provenance.kind === 'found-by-mutation'
-      ? [
-          line(
-            'p',
-            `This case exists because a mutant survived without it: ` +
-              `${entry.provenance.mutant.battery}/${entry.provenance.mutant.mutant}.`,
-            { class: 'meta' },
-          ),
-        ]
-      : []),
+    el(
+      'div',
+      { class: 'argument' },
+      paragraph(entry.rationale),
+      ...whatATextFieldCannotCarry(entry, answer, fields).map((field) =>
+        line(
+          'p',
+          `A text field drops ${spelledOut(field.lost)}, so the ${field.name} field cannot be retyped ` +
+            `in the playground below. The answer above is what this contract settles for it.`,
+          { class: 'meta' },
+        ),
+      ),
+      ...(entry.provenance.kind === 'found-by-mutation'
+        ? [
+            line(
+              'p',
+              `This case exists because a mutant survived without it: ` +
+                `${entry.provenance.mutant.battery}/${entry.provenance.mutant.mutant}.`,
+              { class: 'meta' },
+            ),
+          ]
+        : []),
+    ),
   )
 }
 
@@ -162,7 +204,7 @@ const anchorTo = (id: string): Node =>
   el('a', { class: 'anchor', href: `#${id}`, 'aria-hidden': 'true' }, text('#'))
 
 /**
- * A heading that carries its own address, the way a case does.
+ * A heading that carries its own address.
  *
  * The tag is the outline and the class is the appearance, and they are separated on purpose: how
  * deeply a group is nested depends on whether its contract has one table or two, and how a group
@@ -201,6 +243,39 @@ const renderedGroup = (
 ]
 
 /**
+ * The jump bar over one table's groups, carrying each group's own title and how many cases it holds.
+ *
+ * **The title is the group's, in full, and never a shortened one.** The mock-up this page is derived
+ * from prints `the surprise` where the group is called `The surprise, in front`, which is a second
+ * name for something that already has one - the defect ADR-0017 is about, arriving as a nicety. A
+ * long title wraps.
+ *
+ * One bar per table rather than one per page: `date/add@1` sorts twelve groups under two tables, and
+ * a single bar would flatten the one distinction those two tables exist to make.
+ *
+ * A list rather than a run of anchors, which is the reading and not the look: two elements that each
+ * carry content and neither of which separates are one sentence to whoever is listening, and
+ * `no-element-runs-into-the-one-beside-it` is the guard that says so.
+ */
+const theGroupBar = (table: CaseTableRecord): Node =>
+  el(
+    'ul',
+    { class: 'chips' },
+    ...table.groups.map((group) =>
+      el(
+        'li',
+        NOTHING,
+        el(
+          'a',
+          { href: `#${group.id}` },
+          ...inline(group.title),
+          text(` ${table.cases.filter((entry) => entry.group === group.id).length}`),
+        ),
+      ),
+    ),
+  )
+
+/**
  * A table, as its purpose and then its groups - and the purpose is a heading only when there is
  * something for it to separate.
  *
@@ -223,21 +298,250 @@ const renderedTable = (
   alone
     ? paragraph(`${table.purpose}.`, { class: 'meta' })
     : marked('h3', table.purpose, { class: 'table' }),
+  theGroupBar(table),
   ...table.groups.flatMap((group) =>
     renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
   ),
 ]
 
-export const contractPage = (held: Held): Document => {
+/**
+ * One section of the page: the address a reader can link, the title they read, and what is under it.
+ *
+ * **The table of contents is derived from these and never written beside them.** A rail listing the
+ * sections and a body rendering them are two statements of one outline, and the day a section is
+ * added the rail is the half that does not move - which is the class this repository spends its
+ * length removing. So the sections are a value, `theRail` reads it, and the headings are read off the
+ * same list.
+ *
+ * The identifier is a literal beside the title rather than a slug of it, which is ADR-0017 arriving
+ * on a page anchor: a name that is a rendering of the data it addresses moves when the data moves,
+ * and `41 settled cases` gains a case every time somebody settles one.
+ */
+type Section = {
+  readonly id: string
+  readonly title: string
+  readonly body: readonly Node[]
+}
+
+const rendered = (section: Section): readonly Node[] => [
+  marked('h2', section.title, { id: section.id }),
+  ...section.body,
+]
+
+/** The table of contents, as the sections themselves say they are. */
+const theRail = (sections: readonly Section[]): Node =>
+  el(
+    'nav',
+    { class: 'rail', 'aria-label': 'On this page' },
+    line('p', 'On this page', { class: 'rail-label' }),
+    el(
+      'ul',
+      { class: 'toc' },
+      ...sections.map((section) =>
+        el('li', NOTHING, el('a', { href: `#${section.id}` }, text(section.title))),
+      ),
+    ),
+  )
+
+/**
+ * One figure of the card: the number, then what it counts.
+ *
+ * **It is one paragraph and not two, and the reading is why.** Split into a value and a label the
+ * page reads `3 332` and then `bytes, one file` as two separate things, where
+ * `the-cost-a-page-states-is-what-lands-and-not-what-is-served` asks for `3 332 bytes` - and it is
+ * right to, because that is the sentence a reader is owed and two stacked fragments are not one. The
+ * look the mock-up carries, a large mono figure over a small label, is what the stylesheet makes of
+ * `strong`; the sentence survives underneath it.
+ */
+const figure = (value: string, counts: string): Node =>
+  el('p', { class: 'figure' }, el('strong', NOTHING, text(value)), text(` ${counts}`))
+
+export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document => {
   const { contract, implementation } = held
   const name = renderContract(contract.address)
+  const own = pageOf(contract.address)
   const answer = contract.surface.exports.find((entry) => entry.role === 'the-answer') as ExportRecord
   const cases = contract.caseTables.reduce((count, table) => count + table.cases.length, 0)
   const bytes = implementation.files.reduce((total, file) => total + file.bytes, 0)
+  const files = implementation.files.length
+  const imports = implementation.dependsOn.length
+  const checked = contract.properties.universal.filter((property) => property.applicable).length
   const playground = playgroundOf(contract, name)
+
+  /**
+   * The short name the heading takes, which is the last segment of the contract's own name.
+   *
+   * The address sits above it and the document title carries it in full, so nothing is lost - and a
+   * heading that repeats an address a reader has just read spends the largest type on the page saying
+   * one thing twice.
+   */
+  const shortName = contract.address.name.split('/').at(-1) as string
+
+  const sections: readonly Section[] = [
+    {
+      id: 'what-it-does',
+      title: 'What it does',
+      body: [
+        paragraph(contract.identity.description),
+        ...(contract.identity.relationToTheLanguage === undefined
+          ? []
+          : [paragraph(contract.identity.relationToTheLanguage)]),
+      ],
+    },
+    {
+      id: 'what-it-is-for',
+      title: 'What it is for, and what it is not',
+      body: [paragraph(contract.identity.inputDomain)],
+    },
+    {
+      id: 'signature',
+      title: 'Signature',
+      body: [
+        line('p', `You get ${spelledOut(contract.surface.exports.map((entry) => entry.name))}.`, {
+          class: 'meta',
+        }),
+        ...contract.surface.exports.map((entry) =>
+          line('pre', `type ${entry.typeName} = ${entry.text}`),
+        ),
+        ...contract.surface.supportingTypes.map((entry) =>
+          line('pre', `type ${entry.name} = ${entry.text}`),
+        ),
+        ...(contract.surface.failureReasons === undefined
+          ? []
+          : [
+              line(
+                'p',
+                `A call fails for one of ${contract.surface.failureReasons.length} reasons, and the ` +
+                  `set is frozen with the major version: ` +
+                  `${contract.surface.failureReasons.map((reason) => `"${reason}"`).join(', ')}.`,
+              ),
+            ]),
+        ...(contract.surface.couplingRule === undefined
+          ? []
+          : [paragraph(`${contract.surface.couplingRule}.`)]),
+      ],
+    },
+    {
+      id: 'settled-cases',
+      title: `${cases} settled cases`,
+      body: [
+        line(
+          'p',
+          `Every one of them is named, frozen with the major version, and linkable. This is what the ` +
+            `contract decides, one input at a time.`,
+        ),
+        ...contract.caseTables.flatMap((table) =>
+          renderedTable(table, answer, playground.fields, contract.caseTables.length === 1),
+        ),
+      ],
+    },
+    {
+      id: 'try-it',
+      title: 'Try it on your own input',
+      body: [
+        line(
+          'p',
+          `This calls ${playground.calls} on whatever you type. What you type into a field is the ` +
+            `value, character for character, and the form opens on ${playground.opensOnCase} so there ` +
+            `is a call that works to edit.${spelledFields(playground.fields)} What comes back is what ` +
+            `the function answered, under the call it was made from — invisible characters are named ` +
+            `there, so two inputs that look alike on screen do not print alike. The settled answer is ` +
+            `on the case's own line above, and is deliberately not repeated here.` +
+            (playground.describes === null
+              ? ''
+              : ` When it answers nothing, ${playground.describes} is called on the same input and its ` +
+                `reason is printed underneath: the two exports are one surface, and every input this ` +
+                `contract turns down answers ${playground.calls} alike.`),
+        ),
+        line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),
+        el('div', {
+          id: 'playground',
+          'data-playground': JSON.stringify({
+            calls: playground.calls,
+            describes: playground.describes,
+            module: THE_REFERENCE_MODULE,
+            fields: playground.fields,
+          }),
+        }),
+      ],
+    },
+    {
+      id: 'properties',
+      title: 'Properties',
+      body: [
+        line(
+          'p',
+          `Every property below is checked on ${grouped(contract.properties.runs)} generated cases per ` +
+            `run, re-seeded each time.`,
+        ),
+        el(
+          'ul',
+          { class: 'plain' },
+          ...contract.properties.universal.map((property) =>
+            el(
+              'li',
+              NOTHING,
+              el(
+                'p',
+                { class: 'call' },
+                line('code', `${property.name} — ${property.applicable ? 'checked' : 'not applicable'}`),
+              ),
+              paragraph(property.reason, { class: 'why' }),
+            ),
+          ),
+        ),
+      ],
+    },
+    {
+      id: 'profiles',
+      title: 'Benchmark profiles',
+      body: [
+        line(
+          'p',
+          `The shapes of input an implementation is timed on. No figures yet: there is no reference ` +
+            `machine, and a number produced on a developer laptop would be a number with nothing ` +
+            `behind it.`,
+        ),
+        el(
+          'ul',
+          { class: 'plain' },
+          ...contract.benchmarks.profiles.map((profile) =>
+            el(
+              'li',
+              NOTHING,
+              el('p', { class: 'call' }, line('code', `${profile.name} — ${profile.class}`)),
+              paragraph(profile.description, { class: 'why' }),
+            ),
+          ),
+        ),
+      ],
+    },
+    {
+      id: 'checking',
+      title: 'What you can check yourself',
+      body: [
+        line(
+          'p',
+          /**
+           * It used to end *so you can fetch them*, and there is nowhere to fetch them from: no server
+           * is published, and the archive `toopo` ships in deliberately carries only what a command
+           * reads. What content addressing really buys is the sentence below - a copy obtained from
+           * anywhere can be checked against this definition before it is trusted - and that is true
+           * today, of any copy, from any source, which is the whole point of a digest.
+           */
+          `This definition is frozen. Its canonical text hashes to ${held.binding.digest}, and the ` +
+            `${contract.harness.length} files of its test harness are listed inside it with their own ` +
+            `hashes — so a copy of the harness can be checked against this definition before it is ` +
+            `trusted, then run against any implementation, without taking our word for any of it.`,
+        ),
+        line('p', `Written for ${contract.environments.join(', ')}.`, { class: 'meta' }),
+      ],
+    },
+  ]
 
   return {
     title: `${name} — ${contract.identity.summary}`,
+    servedBesideItsMarkdown: true,
     /**
      * Every field is the value the page already renders, read from the same record.
      *
@@ -246,7 +550,6 @@ export const contractPage = (held: Held): Document => {
      * `programmingLanguage` is the language coordinate of the address rather than a prettier spelling
      * of it, because a rendering of an address is a second name for it.
      */
-    servedBesideItsMarkdown: true,
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'SoftwareSourceCode',
@@ -263,148 +566,43 @@ export const contractPage = (held: Held): Document => {
      */
     description:
       `${cases} named edge cases, settled and frozen. TypeScript source copied into your project: ` +
-      `${implementation.files.length === 1 ? 'one file' : `${implementation.files.length} files`}, ` +
+      `${files === 1 ? 'one file' : `${files} files`}, ` +
       `${grouped(bytes)} bytes, no dependencies.`,
     body: [
-      el('nav', NOTHING, el('a', { href: rootFrom(pageOf(contract.address)) }, text('Toopo'))),
+      masthead(own, menu),
 
-      line('h1', name),
-      paragraph(contract.identity.summary, { class: 'lede' }),
-
-      line('pre', `${THE_INVOCATION} add ${contract.address.name}`),
-      line(
-        'p',
-        `${implementation.files.length === 1 ? 'One file' : `${implementation.files.length} files`}, ` +
-          `${grouped(bytes)} bytes, copied into your project. It imports nothing. ` +
-          `You get ${contract.surface.exports.map((entry) => entry.name).join(' and ')}.`,
-        { class: 'meta' },
-      ),
-
-      line('h2', 'What it does'),
-      paragraph(contract.identity.description),
-      ...(contract.identity.relationToTheLanguage === undefined
-        ? []
-        : [paragraph(contract.identity.relationToTheLanguage)]),
-
-      line('h2', 'What it is for, and what it is not'),
-      paragraph(contract.identity.inputDomain),
-
-      line('h2', 'Signature'),
-      ...contract.surface.exports.map((entry) =>
-        line('pre', `type ${entry.typeName} = ${entry.text}`),
-      ),
-      ...contract.surface.supportingTypes.map((entry) =>
-        line('pre', `type ${entry.name} = ${entry.text}`),
-      ),
-      ...(contract.surface.failureReasons === undefined
-        ? []
-        : [
-            line(
-              'p',
-              `A call fails for one of ${contract.surface.failureReasons.length} reasons, and the ` +
-                `set is frozen with the major version: ` +
-                `${contract.surface.failureReasons.map((reason) => `"${reason}"`).join(', ')}.`,
-            ),
-          ]),
-      ...(contract.surface.couplingRule === undefined
-        ? []
-        : [paragraph(`${contract.surface.couplingRule}.`)]),
-
-      line('h2', `${cases} settled cases`),
-      line(
-        'p',
-        `Every one of them is named, frozen with the major version, and linkable. This is what the ` +
-          `contract decides, one input at a time.`,
-      ),
-      ...contract.caseTables.flatMap((table) =>
-        renderedTable(table, answer, playground.fields, contract.caseTables.length === 1),
-      ),
-
-      line('h2', 'Try it on your own input'),
-      line(
-        'p',
-        `This calls ${playground.calls} on whatever you type. What you type into a field is the ` +
-          `value, character for character, and the form opens on ${playground.opensOnCase} so there ` +
-          `is a call that works to edit.${spelledFields(playground.fields)} What comes back is what ` +
-          `the function answered, under the call it was made from — invisible characters are named ` +
-          `there, so two inputs that look alike on screen do not print alike. The settled answer is ` +
-          `on the case's own line above, and is deliberately not repeated here.` +
-          (playground.describes === null
-            ? ''
-            : ` When it answers nothing, ${playground.describes} is called on the same input and its ` +
-              `reason is printed underneath: the two exports are one surface, and every input this ` +
-              `contract turns down answers ${playground.calls} alike.`),
-      ),
-      line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),
-      el('div', {
-        id: 'playground',
-        'data-playground': JSON.stringify({
-          calls: playground.calls,
-          describes: playground.describes,
-          module: THE_REFERENCE_MODULE,
-          fields: playground.fields,
-        }),
-      }),
-
-      line('h2', 'Properties'),
-      line(
-        'p',
-        `Every property below is checked on ${grouped(contract.properties.runs)} generated cases per ` +
-          `run, re-seeded each time.`,
-      ),
       el(
-        'ul',
-        { class: 'plain' },
-        ...contract.properties.universal.map((property) =>
+        'div',
+        { class: 'shell' },
+        theRail(sections),
+        el(
+          'main',
+          NOTHING,
+          /**
+           * The card, which is the whole of what this page owes somebody in a hurry: what it is
+           * called, what it does, how to get it, what it costs, and what it answers.
+           */
           el(
-            'li',
-            NOTHING,
+            'div',
+            { class: 'card' },
+            el('p', { class: 'address' }, line('code', name)),
+            line('h1', shortName),
+            paragraph(contract.identity.summary, { class: 'lede' }),
+            line('pre', `${THE_INVOCATION} add ${contract.address.name}`, { class: 'install' }),
             el(
-              'p',
-              { class: 'call' },
-              line('code', `${property.name} — ${property.applicable ? 'checked' : 'not applicable'}`),
+              'div',
+              { class: 'figures' },
+              figure(grouped(bytes), `bytes, ${files === 1 ? 'one file' : `${files} files`}`),
+              figure(String(imports), imports === 1 ? 'import' : 'imports'),
+              figure(String(cases), 'settled cases'),
+              figure(`${checked} / ${contract.properties.universal.length}`, 'properties checked'),
             ),
-            paragraph(property.reason, { class: 'why' }),
+            line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
           ),
+
+          ...sections.flatMap(rendered),
         ),
       ),
-
-      line('h2', 'Benchmark profiles'),
-      line(
-        'p',
-        `The shapes of input an implementation is timed on. No figures yet: there is no reference ` +
-          `machine, and a number produced on a developer laptop would be a number with nothing ` +
-          `behind it.`,
-      ),
-      el(
-        'ul',
-        { class: 'plain' },
-        ...contract.benchmarks.profiles.map((profile) =>
-          el(
-            'li',
-            NOTHING,
-            el('p', { class: 'call' }, line('code', `${profile.name} — ${profile.class}`)),
-            paragraph(profile.description, { class: 'why' }),
-          ),
-        ),
-      ),
-
-      line('h2', 'What you can check yourself'),
-      line(
-        'p',
-        /**
-         * It used to end *so you can fetch them*, and there is nowhere to fetch them from: no server
-         * is published, and the archive `toopo` ships in deliberately carries only what a command
-         * reads. What content addressing really buys is the sentence below - a copy obtained from
-         * anywhere can be checked against this definition before it is trusted - and that is true
-         * today, of any copy, from any source, which is the whole point of a digest.
-         */
-        `This definition is frozen. Its canonical text hashes to ${held.binding.digest}, and the ` +
-          `${contract.harness.length} files of its test harness are listed inside it with their own ` +
-          `hashes — so a copy of the harness can be checked against this definition before it is ` +
-          `trusted, then run against any implementation, without taking our word for any of it.`,
-      ),
-      line('p', `Written for ${contract.environments.join(', ')}.`, { class: 'meta' }),
 
       /**
        * Last, and carrying no content of its own: a `script` node holds attributes and no children,
@@ -413,7 +611,7 @@ export const contractPage = (held: Held): Document => {
        */
       el('script', {
         type: 'module',
-        src: `${rootFrom(pageOf(contract.address))}${THE_ENTRY_POINT}`,
+        src: `${rootFrom(own)}${THE_ENTRY_POINT}`,
       }),
     ],
   }

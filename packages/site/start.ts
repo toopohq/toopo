@@ -62,7 +62,51 @@ const labelled = (field: ThePlayground['fields'][number], at: number): HTMLEleme
   return row
 }
 
+/**
+ * The copy control beside the install command, built here for the reason the form below is.
+ *
+ * A button served in the HTML does nothing without this file, and
+ * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` is the rule that refuses
+ * one. Without JavaScript a reader meets the command as text and selects it, which is what they would
+ * have done anyway.
+ *
+ * The command is read *before* the button is appended, because afterwards the element's text is the
+ * command plus the word `copy` - which is the kind of defect that only shows up in somebody else's
+ * terminal.
+ *
+ * What it says after copying is a word and not a colour, which is the rule the stylesheet states for
+ * this site's accent and which holds here for a second reason: a reader who cannot tell the two
+ * colours apart still reads the word.
+ */
+const copyControl = (): void => {
+  const install = document.querySelector('pre.install')
+  if (install === null || !navigator.clipboard) return
+
+  const command = install.textContent ?? ''
+  const button = document.createElement('button')
+
+  button.type = 'button'
+  button.className = 'copy'
+  button.textContent = 'copy'
+  button.setAttribute('aria-label', `Copy ${command} to the clipboard`)
+
+  button.addEventListener('click', () => {
+    void navigator.clipboard.writeText(command).then(
+      () => {
+        button.textContent = 'copied'
+      },
+      () => {
+        button.textContent = 'press ⌘C'
+      },
+    )
+  })
+
+  install.append(button)
+}
+
 const start = async (): Promise<void> => {
+  copyControl()
+
   const container = document.getElementById('playground')
   const declared = container?.dataset['playground']
   if (container === null || declared === undefined) return

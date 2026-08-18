@@ -33,6 +33,7 @@ import { theReferenceModules } from './browser.js'
 import type { Document } from './document.js'
 import { toHtml, toMarkdown } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
+import { theMenu } from './chrome.js'
 import { contractPage } from './contract-page.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { theCrawlerFiles } from './indexing.js'
@@ -56,14 +57,20 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
   const index = source.contractIndex()
   const refusals = source.refusals()
 
+  /**
+   * The masthead's destinations, decided once here because this is the one place that knows which
+   * pages exist: the refusals page is emitted only when something has been refused.
+   */
+  const menu = theMenu(refusals.refusals.length)
+
   return new Map<string, Document>([
-    [CATALOGUE_PAGE, cataloguePage(index, refusals)],
-    [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement())],
+    [CATALOGUE_PAGE, cataloguePage(index, refusals, menu)],
+    [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
     ...(refusals.refusals.length === 0
       ? []
-      : ([[REFUSALS_PAGE, refusalsPage(index, refusals)]] as const)),
+      : ([[REFUSALS_PAGE, refusalsPage(index, refusals, menu)]] as const)),
     ...heldByTheRegistry(source).map(
-      (held) => [pageOf(held.contract.address), contractPage(held)] as const,
+      (held) => [pageOf(held.contract.address), contractPage(held, menu)] as const,
     ),
   ])
 }
