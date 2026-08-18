@@ -396,6 +396,9 @@ body > .masthead, body > .shell { grid-column: 1 / -1 }
 a { color: var(--accent) }
 h1, h2, h3, h4 { color: var(--ink) }
 h1 { font-family: var(--mono); font-size: var(--t1); font-weight: 500; letter-spacing: -.02em; margin: 0 0 var(--s3) }
+/* A page whose title is a direct child of the body has no card and no main to stand it off the
+   masthead, and measured in a browser the two were touching at a gap of 0. */
+body > h1 { margin-top: var(--s10) }
 h2 {
   font-size: var(--t3); font-weight: 600; margin: var(--s12) 0 0;
   padding-top: var(--s4); border-top: 1px solid var(--rule); scroll-margin-top: var(--s16);
