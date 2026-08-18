@@ -903,9 +903,11 @@ record declares**, which is a worse thing and has never been named here before.
   five files found by convention are served at addresses no listing names, so nothing would say if one
   of them stopped being written.
 
-  **The population is the emitted tree minus its sitemap**, and it is the larger half by count — 76
-  addresses served at `27d1dbb` against the 10 the sitemap names. What makes it an entry rather than the
-  same entry again is that the two halves fail differently: a page is what a reader arrives at from a
+  **The population is the emitted tree minus its sitemap**, and it is the larger half by count: the
+  sitemap names **10** addresses, measured at `15f4edf` off the origin and off this tree, both. The 76
+  beside it is `27d1dbb`'s and the two are not subtracted here, because a difference taken across two
+  coordinates is a figure nobody can rebuild. What makes it an entry rather than the same entry again is
+  that the two halves fail differently: a page is what a reader arrives at from a
   search and can have linked, and an answer is what a client fetches under a digest it holds. The second
   is covered for the frozen ones by permanent rule 6 and by nothing at all for the rest.
 
