@@ -160,7 +160,6 @@ export const domainPage = (
       el(
         'div',
         { class: 'shell' },
-        beside(own, domain, domains, []),
         el(
           'main',
           NOTHING,
@@ -169,6 +168,7 @@ export const domainPage = (
           line('p', whatIsHere(domain), { class: 'lede' }),
           el('ul', { class: 'plain' }, ...domain.held.map((held) => entry(held, own))),
         ),
+        beside(own, domain, domains, []),
       ),
     ],
   }

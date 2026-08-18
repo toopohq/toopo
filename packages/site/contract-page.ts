@@ -736,15 +736,6 @@ export const contractPage = (
       el(
         'div',
         { class: 'shell' },
-        /**
-         * The column: where this contract sits in the catalogue, and then this page's own sections.
-         *
-         * The domain is a parameter and never looked up here. A search would have to answer *what if
-         * no domain holds this contract*, which is a question with no honest answer at a rendering
-         * site - and `site.ts` builds these pages by walking the domains, so the contract being in
-         * the domain it is rendered under is the loop rather than a claim.
-         */
-        beside(own, here, domains, [theRail(halves)]),
         el(
           'main',
           NOTHING,
@@ -781,6 +772,20 @@ export const contractPage = (
           ...halves.reference.lede,
           ...halves.reference.sections.flatMap(rendered),
         ),
+        /**
+         * The column: where this contract sits in the catalogue, and then this page's own sections.
+         *
+         * **After `main` in the document and to the left of it on a wide screen**, which the grid
+         * places rather than `order` reorders. A reader on a phone meets the contract and then the
+         * navigation; a screen reader and `toText` follow the document, and those two agreeing is
+         * what `order` would have broken.
+         *
+         * The domain is a parameter and never looked up here. A search would have to answer *what if
+         * no domain holds this contract*, which is a question with no honest answer at a rendering
+         * site - and `site.ts` builds these pages by walking the domains, so the contract being in
+         * the domain it is rendered under is the loop rather than a claim.
+         */
+        beside(own, here, domains, [theRail(halves)]),
       ),
 
       /**

@@ -185,8 +185,10 @@ pre {
 .anchor { color: var(--dim); text-decoration: none; font-size: var(--t6); float: right }
 .anchor:hover { color: var(--accent) }
 /* The title line of a list item, at whatever tag the outline asks for: a contract's name on the front
-   page is a heading because it titles a section, and must not take the standing margin of one. */
-.call { display: block; margin: 0 0 var(--s2) }
+   page is a heading because it titles a section, and must not take the standing margin of one - nor
+   its rule, which the list item already draws. Measured: a domain page listing its contracts at h2
+   drew two lines 13px apart, one from the item and one from the heading inside it. */
+.call { display: block; margin: 0 0 var(--s2); border-top: 0; padding-top: 0 }
 ul.plain { list-style: none; padding: 0; margin: 0 0 var(--s4) }
 ul.plain > li { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
 
@@ -202,6 +204,10 @@ ul.menu a { color: var(--body); text-decoration: none }
 ul.menu a:hover { color: var(--accent) }
 ul.menu .here { color: var(--dim) }
 
+/* The column is placed by the grid and never by source order, because the two answer different
+   questions. A reader on a phone gets the page and then the navigation; a reader on a laptop gets the
+   navigation on the left of it. Placing it puts the content first in the DOM, which is what a screen
+   reader announces and what a text projection reads, and CSS order would have made those two disagree. */
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 78rem; margin: 0 auto; width: 100% }
 .beside { padding: var(--s6) var(--s6) 0 }
 .rail-label {
@@ -313,8 +319,8 @@ ul.toc > li.under { padding-left: var(--s3) }
 
 @media (min-width: 64rem) {
   .shell { grid-template-columns: 15rem minmax(0, 1fr); gap: var(--s6); padding: 0 var(--s6) }
-  .beside { position: sticky; top: var(--s12); align-self: start; padding: var(--s10) 0 0 }
-  main { padding: var(--s10) 0 0 }
+  .beside { grid-area: 1 / 1; position: sticky; top: var(--s12); align-self: start; padding: var(--s10) 0 0 }
+  main { grid-area: 1 / 2; padding: var(--s10) 0 0 }
 }
 @media (min-width: 52rem) {
   .case { grid-template-columns: minmax(0, 34ch) minmax(0, 1fr) }

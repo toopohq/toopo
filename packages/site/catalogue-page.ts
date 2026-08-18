@@ -84,26 +84,26 @@ export const cataloguePage = (
      * refused before publication, and what the catalogue publishes about a refusal is the refusal.
      */
     line('h2', 'Domains'),
+    /**
+     * Chips and not a list, which is the existing look for *a short set of addresses* on this site.
+     * As a list each domain took a rule, a heading and a line to carry one word, so three domains
+     * filled as much of the front page as the five contracts under them - which is a section shouting
+     * over the one it is a summary of.
+     *
+     * No count on a chip. It would read `number 1` in every projection but the visual one, and the
+     * count of a domain is on that domain's page, in a sentence that says what it counts.
+     */
     el(
       'ul',
-      { class: 'plain' },
+      { class: 'chips' },
       ...domains.map((domain) =>
         el(
           'li',
           NOTHING,
           el(
-            'p',
-            { class: 'call' },
-            el(
-              'a',
-              { href: linkTo(domainPageOf(domain.held[0].contract.address)) },
-              text(domain.name),
-            ),
-          ),
-          line(
-            'p',
-            `${domain.held.length} ${domain.held.length === 1 ? 'contract' : 'contracts'}`,
-            { class: 'meta' },
+            'a',
+            { href: linkTo(domainPageOf(domain.held[0].contract.address)) },
+            text(domain.name),
           ),
         ),
       ),
