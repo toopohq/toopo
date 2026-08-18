@@ -175,7 +175,11 @@ pre {
   margin: 0 0 var(--s4); padding: var(--s3) var(--s4); overflow-x: auto;
   background: var(--wash); border: 1px solid var(--rule); border-radius: 6px; color: var(--ink);
 }
-.lede { font-size: var(--t2); line-height: 1.45; color: var(--body); margin: 0 0 var(--s5) }
+/* Only the bottom, because the top belongs to whatever precedes it. Setting the shorthand here beat
+   the standing gap under a heading on specificity, and the method page had one section in eleven
+   whose opening sentence touched its own title - measured at 0px against 12 everywhere else. A
+   paragraph already opens with no top margin, so the zero was saying nothing and costing that. */
+.lede { font-size: var(--t2); line-height: 1.45; color: var(--body); margin-bottom: var(--s5) }
 .meta { color: var(--dim); font-size: var(--t5) }
 .why { margin: 0; color: var(--dim) }
 /* The tag is the outline and the class is the look: a group sits at h3 or at h4 depending on
