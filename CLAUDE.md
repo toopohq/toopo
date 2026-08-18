@@ -569,6 +569,22 @@ record declares**, which is a worse thing and has never been named here before.
   is `check-anchors` learning to apply the replacement and refuse a result the compiler rejects, and the
   price is that it stops being a pure read of the working tree. Not built.
 
+- **That a set of examples is not narrower than what the contract it illustrates settles.** ADR-0120
+  states the rule and refuses the guard in the same breath, and the refusal is the part worth
+  re-reading before somebody writes the guard anyway: the proposal was to sweep Unicode ranges, which
+  is mechanical and cheap, and **it would have been green on the defect that motivated it**. Two of
+  `string/slugify@1`'s four use cases were French; the set already carried `日本語テキスト`, so a sweep
+  over writing systems sees three Latins and one Han and has no opinion. Three languages in one script
+  are three languages. The stronger form — one example per language — is the heuristic the script
+  proposal existed to avoid.
+
+  **The population is every set of examples the catalogue publishes**, which today is four use cases on
+  one contract and is four per contract on five when the other three are written. Each example on its
+  own is verified: `every-use-case-replays-through-the-stripped-artefact-a-browser-runs` executes the
+  call and compares the answer. **What nothing reads is the set as a set.** It closes where two entries
+  above it close, in a validation stage reading a submission's own strings, already priced and already
+  refused as a lint over prose.
+
 - **That the revision an installed client records is a commit this repository holds.** A lockfile
   carries `servedFrom`, and the proof against the origin asserts its *shape* — forty hexadecimal
   digits — and reports its value without resolving it. That is deliberate and it is the cheaper half of
@@ -964,6 +980,10 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
 - A pin naming five or fewer red guards names all of them; above five it names only the guards the
   mutant was written to exercise. **Five is a convention and reads as though it were derived**, so the
   distribution it was cut from is published beside it and remeasured when a contract moves it. ADR-0076.
+- **An example is chosen for what it shows.** Where two examples in one set would show the same thing,
+  they do not show it in the same language. The test that decides the next one: could this example make
+  its point in another language? If it could, and something else in the set is already in this one, it
+  changes. ADR-0120.
 
 ## Verification discipline
 

@@ -501,6 +501,14 @@ export const theFive: readonly ContractSource[] = [
      * arguing against the contract's own domain would be the page contradicting itself two sections
      * apart.
      *
+     * **Four jobs in four languages, and the third one used to be a second French.** The 27 settled
+     * cases of this contract reach Japanese, Russian, Arabic, Hindi, Vietnamese, Greek, Turkish and
+     * Norwegian; these four were written in one sitting by somebody whose own language is French, and
+     * two of them were French. Nothing was wrong with either example - the set was narrower than what
+     * the contract settles, which is a claim a reader takes from it without being told. `Kraków`
+     * shows exactly what this slot needs, the spaces, the case and the fold, and shows nothing the
+     * job above it already shows. ADR-0120.
+     *
      * They are declared here and not in `contract.ts`, and that is not tidiness: `contractSnapshot`
      * hashes the seven files, so a published contract cannot gain a byte in its own folder. ADR-0118.
      */
@@ -535,8 +543,8 @@ export const theFive: readonly ContractSource[] = [
           'Good for grouping and wrong for identity. `C++` and `C#` both answer `c`, so a tag store ' +
           'keyed on the slug alone silently merges them: keep the text the user typed as well, and ' +
           'let the slug decide only what sits together.',
-        text: ' Café  ',
-        expected: 'cafe',
+        text: '  Kraków  ',
+        expected: 'krakow',
       },
       {
         name: 'A catalogue in several scripts',
