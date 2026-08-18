@@ -96,6 +96,22 @@ export const CATALOGUE_PAGE = 'index.html'
 export const METHOD_PAGE = 'method/index.html'
 
 /**
+ * `/what-a-contract-is/`, and it is the first address this site has chosen since choosing one became
+ * permanent.
+ *
+ * **The choice is paid in advance.** ADR-0125 made *an address this tree has served goes on being
+ * written* executable, so changing our mind about this word costs keeping it for ever beside whatever
+ * replaces it. It is worth saying because the two addresses above were chosen before that was true.
+ *
+ * **It says the reader's question and not the category.** `/contracts/` is the shorter word and is
+ * refused: the registry uses it for the thing itself, so a reader looking for *what is a contract*
+ * would land on what reads as a list of them. The one-word habit of `method` and `refused` is two
+ * instances rather than a rule, and this site already addresses `typescript/string/slugify@1` without
+ * keeping it. ADR-0129.
+ */
+export const WHAT_A_CONTRACT_IS_PAGE = 'what-a-contract-is/index.html'
+
+/**
  * The module every page loads, and the implementation each one loads beside itself.
  *
  * They are paths, so they live here with the others rather than beside the code that strips them:

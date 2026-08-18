@@ -46,6 +46,7 @@ import {
   CATALOGUE_PAGE,
   METHOD_PAGE,
   REFUSALS_PAGE,
+  WHAT_A_CONTRACT_IS_PAGE,
   domainPageOf,
   linkTo,
   pageOf,
@@ -67,6 +68,7 @@ export type MenuEntry = {
  * reader's choice they gain nothing by making.
  */
 export const theMenu = (refused: number): readonly MenuEntry[] => [
+  { label: 'What a contract is', page: WHAT_A_CONTRACT_IS_PAGE },
   { label: 'How we verify', page: METHOD_PAGE },
   ...(refused === 0 ? [] : [{ label: 'What we refuse', page: REFUSALS_PAGE }]),
 ]

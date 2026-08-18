@@ -22,7 +22,15 @@ import { figure, grouped } from './quantity.js'
 import type { Domain } from './catalogue.js'
 import type { MenuEntry } from './chrome.js'
 import { masthead } from './chrome.js'
-import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
+import {
+  CATALOGUE_PAGE,
+  METHOD_PAGE,
+  REFUSALS_PAGE,
+  WHAT_A_CONTRACT_IS_PAGE,
+  domainPageOf,
+  linkTo,
+  pageOf,
+} from './paths.js'
 
 const NOTHING = {} as const
 
@@ -299,8 +307,16 @@ export const cataloguePage = (
             ]),
 
         /**
-         * The question every visitor arrives with and the site had no answer to, and silence in front
-         * of it is not neutrality.
+         * The question every visitor arrives with, answered in one sentence and then handed on.
+         *
+         * **This block used to carry three arguments in one paragraph** - a contract is frozen for
+         * life, an implementation freezes nothing, a contribution is never a contract - stacked in a
+         * box beside a list, on the surface a stranger meets first. They are sections of their own
+         * page now, and ADR-0119's cut is the same one: what they gain is room rather than words.
+         *
+         * **A sentence stays rather than only a link, and the reason is a click.** *Never a contract*
+         * is the answer a visitor came for, and deferring five words by one click is friction where
+         * deferring a paragraph is a gain. ADR-0129.
          *
          * **It carries no link, and that is the page's own guard rather than an omission.**
          * `every-page-is-reachable-from-the-front-page` compares every `href` here against the set of
@@ -309,22 +325,28 @@ export const cataloguePage = (
          * gap is the class the whole project spends its length removing. So the file is named and not
          * linked.
          *
-         * **No figure, deliberately.** The ratio that carries this argument lives in `CONTRIBUTING.md`,
-         * where a guard derives it from the five records; restating it here would be a second
-         * statement of one measurement, on the surface that cannot compute it. A sentence that is true
-         * without counting does not count.
+         * **`CONTRIBUTING.md` moved with the argument it belongs to** and is named on the page that
+         * now carries it. Restating the ratio that argument rests on was refused here and is refused
+         * there for the same reason: a guard derives it from the five records in `CONTRIBUTING.md`
+         * itself, and a sentence that is true without counting does not count.
          */
         block(
-          'What a contribution can be',
+          'What a contract is',
           line(
             'p',
-            'An implementation, or an input where ours is wrong — never a contract. A contract is ' +
-              'frozen for the life of its major version, and almost everything it settles is an ' +
-              'address that can never move, so it is ours to keep rather than yours to send. An ' +
-              'implementation freezes nothing: it competes under a contract that already exists, and ' +
-              'that contract\'s own suite — public, and runnable by anyone — is what decides between ' +
-              'it and ours. CONTRIBUTING.md in the repository says what can be received today and ' +
-              'what cannot.',
+            'The whole specification of one function: its signature, the invariants that must ' +
+              'hold for every input, and every edge case named, settled and argued for. A ' +
+              'contribution can be an implementation, or an input where ours is wrong — never a ' +
+              'contract.',
+          ),
+          el(
+            'p',
+            NOTHING,
+            el(
+              'a',
+              { href: linkTo(WHAT_A_CONTRACT_IS_PAGE) },
+              text('A contract is the whole specification of one function'),
+            ),
           ),
         ),
       ),

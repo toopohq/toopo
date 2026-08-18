@@ -50,6 +50,7 @@ import {
   CATALOGUE_PAGE,
   METHOD_PAGE,
   REFUSALS_PAGE,
+  WHAT_A_CONTRACT_IS_PAGE,
   domainPageOf,
   THE_HEADERS_FILE,
   THE_NOT_FOUND_FILE,
@@ -59,6 +60,7 @@ import {
 import { notFoundPage } from './not-found-page.js'
 import { refusalsPage } from './refusals-page.js'
 import { turnedDownPage } from './turned-down-page.js'
+import { whatAContractIsPage } from './what-a-contract-is-page.js'
 import { renderHeaders, theHeaderRules } from './served-headers.js'
 import type { RegistrySource } from './source.js'
 
@@ -84,6 +86,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
   return new Map<string, Document>([
     [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu, theMeasurement())],
     [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
+    [WHAT_A_CONTRACT_IS_PAGE, whatAContractIsPage(menu)],
     ...(refusals.refusals.length === 0
       ? []
       : ([[REFUSALS_PAGE, refusalsPage(index, refusals, menu)]] as const)),

@@ -18,7 +18,15 @@ import { literal } from './literal.js'
 import { localSource } from './local-source.js'
 import { inline } from './marks.js'
 import { theCallOf } from './playground.js'
-import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
+import {
+  CATALOGUE_PAGE,
+  METHOD_PAGE,
+  REFUSALS_PAGE,
+  WHAT_A_CONTRACT_IS_PAGE,
+  domainPageOf,
+  linkTo,
+  pageOf,
+} from './paths.js'
 import { theSite } from './site.js'
 
 /**
@@ -131,8 +139,9 @@ describe('the site', () => {
    * where they would have landed had it been published. Asserting the whole key set from the index is
    * what makes an extra page and a missing one the same failure.
    *
-   * The three pages that are not about one contract are named here, so that a page appearing or
-   * disappearing is this guard's business rather than nobody's.
+   * The four pages that are not about one contract are named here, so that a page appearing or
+   * disappearing is this guard's business rather than nobody's - which is what it was for when
+   * ADR-0129 added the fourth, and the only guard that noticed.
    */
   it('every-contract-the-index-lists-has-a-page-at-its-own-address', () => {
     const refused = index.entries.filter((entry) => !entry.installable)
@@ -142,6 +151,7 @@ describe('the site', () => {
         CATALOGUE_PAGE,
         METHOD_PAGE,
         REFUSALS_PAGE,
+        WHAT_A_CONTRACT_IS_PAGE,
         ...new Set(index.entries.map((entry) => domainPageOf(entry.address))),
         ...index.entries.map((entry) => pageOf(entry.address)),
       ].sort(),

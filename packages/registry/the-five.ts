@@ -24,6 +24,7 @@ import type { ContractSource } from './serialise.js'
 import { SERVED_AS_A_FILE } from './serialise.js'
 import type { ContractAddress } from './address.js'
 import type { Lifecycle } from './contract-record.js'
+import { THE_SEVEN_FILE_NAMES } from './the-seven-files.js'
 
 import * as numberParse from '../../contracts/typescript/number/parse/contract.js'
 import * as numberParseCases from '../../contracts/typescript/number/parse/edge-cases.js'
@@ -128,22 +129,13 @@ const ACCEPTED_AND_REJECTED = [
 ]
 
 /**
- * The seven files with fixed names, shared because `contractAnatomy` measured them shared at five of
- * five and requires them of a sixth contract. `array/group-by@1` carries nine; the two extras are its
- * own and are listed with it.
+ * The seven files with fixed names, read from the module that also says what each one is.
  *
- * This is the list of what an installation receives, so it is written out rather than read off the
- * disk - `harnessOf` refuses any disagreement between the two.
+ * It used to be a private list here and the meanings were nowhere. `the-seven-files.ts` carries both,
+ * so the list a reader is served and the list the site describes cannot come apart - which is what a
+ * second copy on a page would have made possible. ADR-0129.
  */
-const THE_SEVEN_FILES = [
-  'contract.ts',
-  'edge-cases.test.ts',
-  'edge-cases.ts',
-  'profiles.test.ts',
-  'properties.test.ts',
-  'reference.ts',
-  'signature.test-d.ts',
-] as const
+const THE_SEVEN_FILES = THE_SEVEN_FILE_NAMES
 
 /**
  * What every contract's own files reach outside their folder, and what is therefore frozen with it.
