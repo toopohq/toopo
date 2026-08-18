@@ -1,6 +1,6 @@
 {
   "name": "toopo",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Copy utility functions into your project, each verified against a public, executable contract. Not a dependency: the source lands in your repository and it is yours.",
   "license": "MIT",
   "author": "Mathis Perron <hello@toopo.dev>",

@@ -70,24 +70,41 @@ reader installs could not be tied to the commit or the run that built it, which 
 here is about. A job of `suites.yml` publishes instead, after `needs: site` has reached both matrix
 legs, the deployment and the proof against the origin; npm exchanges an identity token GitHub mints and
 writes the attestation itself, so **nothing here stores a credential** and there is no ninety-day secret
-to renew. ADR-0109. What that job used to wait for was a dispatch carrying a typed word, and the
-paragraph two below is why it no longer does.
+to renew. ADR-0109. What that job used to wait for was a dispatch carrying a typed word, and ADR-0111 —
+below, under its own heading — is why it no longer does.
 
-**The manifest reads `1.0.3`, and it is the first release whose change a user meets on their own disk.**
-`1.0.0` was published from a keyboard with no attestation and a personal address frozen into it; `1.0.1`
-corrected that artefact and nothing else, its `dist/` byte for byte `1.0.0`'s; `1.0.2` carried out a
-defect in the program and was the first whose compiled content differed. `1.0.3` carries ADR-0110: a
-feature lands at `lib/toopo/string/slugify.ts` and no longer at `…/slugify/slugify.ts`. Read by the
-method `1.0.2` established — `npm pack toopo@1.0.2` unpacked and compared with what this tree builds —
-35 modules either side, 432 200 bytes against 434 251, and **5 of the 35 differing**: `ignored.js`,
-`plan.js`, `reconcile.js`, `report.js` and `rewrite.js`. Those five are exactly the five modules
-`d8a25ae` edited that reach the archive, which was checked rather than assumed; `relocate.js` is
-unchanged, because that commit touched only its test. **PATCH, and the tension is written down rather
-than smoothed**: this moves where files appear in somebody's repository, which is further than either
-release before it — but nothing gains a capability and nothing changes shape, and MINOR would promise a
-reader something to learn where there is nothing. `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at
-`1.0.0`: a version is half of an implementation's address, nothing it addresses moved, and the
-publication is the event ADR-0106 cut that tie for.
+**The manifest reads `1.0.4`, and it is the first release that corrects neither the program nor the
+artefact.** `1.0.0` was published from a keyboard with no attestation and a personal address frozen into
+it; `1.0.1` corrected that artefact and nothing else, its `dist/` byte for byte `1.0.0`'s; `1.0.2`
+carried out a defect in the program and was the first whose compiled content differed; `1.0.3` carries
+ADR-0110, a feature landing at `lib/toopo/string/slugify.ts` rather than at `…/slugify/slugify.ts`, and
+was the first whose change a user meets on their own disk. **`1.0.4` repairs a chain of provenance this
+repository broke itself**: ADR-0124 reissued all 506 commits of this graph, and an attestation is
+addressing like everything else, so the four npm holds name commits of a history that no longer exists.
+`npm view toopo@1.0.3 gitHead` prints one and nothing here resolves it. **The four are named by that
+command and never written down**, because a citation of a dead commit inside the paragraph explaining
+why they are dead is the defect that paragraph describes — the rule that withdrew `1.0.1`'s tree digest,
+applied to an address rather than to a figure.
+
+**What it leaves open cannot be closed, and that is the shape of the entry rather than a regret.** npm
+does not republish a version, so those four attestations stay wrong for as long as npm holds them: the
+chain is reattached forwards and never backwards. **The population is those four and nothing closes
+it.** What *was* checkable was checked — **not one of the four commits they would name in this history
+sits in a file a published contract freezes**, so the citation sweep reaches every one of them that is
+written down rather than the rewrite's own pass being the only thing that ever held them. Three are
+cited, in a record, in `packages/registry/address.ts` and in this file; the fourth is cited nowhere. The
+frozen population carries two citations and both are the dead identifier this list already records.
+
+**Measured before the rank was chosen, by the method `1.0.2` established** — `npm pack toopo@1.0.3`
+unpacked and compared with what this tree builds — 35 modules either side, 434 251 bytes against
+434 709, and **8 of the 35 differing**, which are exactly the eight sources that reach the archive and
+moved since the publication. Six moved only inside documentation comments, four of them because the
+rewrite replaced an identifier of seven characters by another of seven. **The two that carry code are
+ADR-0118's `useCases`, and no command reaches them.** **PATCH is founded on one fact and confirmed by
+the others**: the manifest declares a `bin` and no `exports`, so nothing here is importable and the
+whole public surface is the grammar of the six commands, which has not moved.
+`THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a version is half of an implementation's
+address, nothing it addresses moved, and the publication is the event ADR-0106 cut that tie for.
 
 **And the dispatch is gone: the number asks for the publication.** It was two gestures for one decision —
 a version decided in a commit, a run asked for from a menu afterwards — and between them the tree was
