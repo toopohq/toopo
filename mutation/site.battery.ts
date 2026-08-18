@@ -127,6 +127,8 @@ const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${STYLE}</style>\`,`
 
 const THE_LIGHT_PALETTE = `  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;`
 
+const THE_SHELL_IS_AS_WIDE_AS_WHAT_IT_HOLDS = `  max-width: calc(var(--rail) + var(--two-columns) + 3 * var(--s6));`
+
 const THE_INVISIBLE_IS_MADE_VISIBLE = `  \`'\${value.replaceAll('\\\\', '\\\\\\\\').replaceAll("'", "\\\\'").replace(INVISIBLE, escaped)}'\``
 
 const THE_ORDINARY_SPACE_IS_KEPT = `const INVISIBLE = /[\\p{Cc}\\p{Cf}\\p{Cs}\\p{M}\\p{Zl}\\p{Zp}]|[^\\P{Zs} ]/gu`
@@ -693,6 +695,16 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible']),
+  ),
+
+  sameOnEveryLens(
+    'W-85',
+    'types the layout ceiling as a round number instead of deriving it, which is the edit that put ' +
+      'the content of a contract page on 38.7% of a 2 560px screen and every page with no rail on ' +
+      '17.5% of one. Nothing on the rendered page looks wrong: the pages are there, the lines are ' +
+      'inside the measure, and a width nobody derived reads exactly like a width somebody chose',
+    [styleFile(THE_SHELL_IS_AS_WIDE_AS_WHAT_IT_HOLDS, '  max-width: 78rem;')],
+    killed(['every-ceiling-on-a-box-is-derived-and-never-typed']),
   ),
 
   sameOnEveryLens(

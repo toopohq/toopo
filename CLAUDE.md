@@ -210,8 +210,28 @@ worth keeping is the other one**: `ch` is the advance of `0`, so a container cap
 under-constrains anything set smaller than it, and the 169-character line was small print in a wide
 box. The measure is therefore declared on the element that carries the prose. The constant is a
 measurement and not arithmetic, and it carries the method's own drift: density moves when the column
-moves, 1.339 before and 1.393 after, so 1.04 is applied on ADR-0077's rule rather than noted. After:
-**0 of 910 over 75, worst 70, typical 64**, over ten pages at 1240 and at 390.
+moves, 1.339 before and 1.393 after, so 1.04 is applied on ADR-0077's rule rather than noted.
+
+**It was re-taken when the columns moved, and ADR-0122 holds that reading rather than this line.**
+What is worth carrying here is that the two readings are not the same population: the second sweeps
+every element the rule names — `h1, h2, h3, h4, p, li` — over every page of the tree, and groups
+characters into line boxes by vertical overlap rather than by a rounded `top`, so a `code` span set
+smaller stays on the line a reader sees it on. **The `910` above is not reproducible by it**, it is
+four to five times short of what that method counts, and nothing here says which population it was.
+
+**A ceiling belongs to the block and never to the column, and the owner found that on his own screen
+before any check here did.** Three container ceilings were in play and the smallest was the one named:
+`main` at 45rem, `.shell` at 78rem — which named no question anywhere in this repository — and the
+body's own grid track at a *measure*, which is a bound on a line applied to a box. Only the domain and
+contract pages carry a `.shell`, so that third one bound the card, the code blocks and the lists of
+the other four pages at every width. Measured at `e2e764b` over all eleven files of HTML at four
+widths: **17.5% of a 2 560px screen on the front page, 38.7% on a contract page**. Each block now says
+what it is worth — a card and a code block as wide as their content, a case table one width for every
+row — and the layout is derived from the widest of them, `2 * measure + gap`, which resolves within
+3px of the 78rem it replaces. After: **46% on a contract page**, and the settled cases render their
+157 calls in 223 lines instead of 325. **Three pages did not move at all, and that is the answer**:
+every child of them is prose, prose is bounded on the line, and the container was never what bound
+them. ADR-0122.
 
 **Four defects came out of a browser and out of no static check**, which is the third time this
 repository has paid for that class. Two rules 13px apart where a list item and the heading inside it
@@ -621,6 +641,21 @@ record declares**, which is a worse thing and has never been named here before.
   closes it is not a guard but a job, and the price is what stage rule 1 says about the replay: the
   full instrument is tens of minutes, one battery is minutes, and nineteen of them in a matrix leg is
   the whole run again. **The population is every battery of this repository.**
+
+- **That a count of this site's own pages is one somebody took.** The stylesheet's header said *seven
+  pages served once each*; the generator writes **ten**, and the tree holds **eleven** files of HTML
+  with the 404. It has been wrong since ADR-0121 added three domain pages, and it did real work: it
+  is where the figure that opened this unit came from, and the session that read it planned against
+  eleven and then twelve before counting. **The population is every statement of a page count in this
+  repository**, and it is not small — `seven pages` occurs fourteen times across ten files, `eight
+  pages` once in the stylesheet's own measure paragraph, `ten pages` once here. Most are stamped
+  measurements inside records, which do not drift by rule; the two that made a present-tense claim
+  are repaired, and the rest are named here rather than swept, because sweeping a record's dated
+  reading would falsify it. **What closes it is the form and not a number**: a sentence that can be
+  true without counting does not count, which is what the stylesheet's header now does. What nothing
+  keeps is that the next one written will reach for a number again, and the executable form is the
+  validation stage reading this repository's own strings — already on this list, already priced,
+  already refused as a lint over prose.
 
 - **That a set of examples is not narrower than what the contract it illustrates settles.** ADR-0120
   states the rule and refuses the guard in the same breath, and the refusal is the part worth

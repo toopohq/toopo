@@ -279,6 +279,43 @@ describe('a page and its two projections', () => {
   })
 
   /**
+   * Every ceiling a box carries is derived from a declared length, and never typed as one.
+   *
+   * **This is the palette guard's shape on the other axis, and it exists because that axis cost this
+   * site its whole width.** A colour arrives here by being named as a role; a width arrives by being
+   * derived from the measure, the rail or the spacing unit. Two ceilings had been typed instead -
+   * `45rem` on the content column and `78rem` on the shell - and at 2 560px they left the contract
+   * pages holding 38.7% of the screen and the four pages with no rail holding 17.5%. Neither number
+   * named a question, and nothing could have told anybody so. ADR-0122.
+   *
+   * **What it does not reach is stated rather than implied.** It reads `max-width` and nothing else,
+   * so a ceiling written as the second argument of `minmax()` or of `fit-content()` is outside it.
+   * Those are one occurrence apiece today and reading them means carrying a balanced-paren scan for a
+   * form nobody has yet got wrong, where the two that *were* wrong were both `max-width`.
+   *
+   * `100%` is admitted and is not an exception: it is the containing block, which is what a box that
+   * must not overflow its parent has to say, and it bounds nothing on its own.
+   *
+   * The mutant it exists for is a ceiling typed as a length. Seen red before it was believed: with
+   * `.shell` returned to `max-width: 78rem`, the fault reads `78rem`.
+   */
+  it('every-ceiling-on-a-box-is-derived-and-never-typed', () => {
+    const style = (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
+
+    // The palettes hold no width, and taking them out keeps this guard reading rules only.
+    const rules = style.replace(/:root\s*\{[^}]*\}/g, '')
+    const ceilings = [...rules.matchAll(/max-width:\s*([^;}]+)/g)].map((found) => (found[1] as string).trim())
+
+    // Without this the guard passes on a stylesheet that declares no ceiling at all, which is the way
+    // a guard over a population goes green by losing its population.
+    expect(ceilings.length, 'no ceiling to sweep').toBeGreaterThan(0)
+
+    const typed = ceilings.filter((value) => !value.includes('var(--') && value !== '100%')
+
+    expect(typed, 'a ceiling typed as a length rather than derived from a declared one').toEqual([])
+  })
+
+  /**
    * Every ink this palette can put on every ground it can paint clears the contrast a reader is owed.
    *
    * **Not born green, and that is the whole argument for it: it would have been red twice today.** The

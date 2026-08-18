@@ -16,12 +16,17 @@
  * ADR-0115 is the system it declares: the scale, the unit, the roles and the one accent.
  *
  * Inline rather than a file, and that is a measurement about the launch rather than a preference:
- * seven pages served once each, where a second request costs a round trip and a cache entry buys
- * nothing until somebody reads a second page. **The arithmetic that will overturn it is known and is
- * not today's**: this text is repeated in every page of the tree, so a catalogue of a thousand
- * contracts carries a thousand copies, and at that size a file and one request is the cheaper half by
- * orders of magnitude. It is written here rather than acted on because seven copies is not a problem
- * and because a file would be a second address with a cache policy nothing here derives.
+ * every page is served once each, where a second request costs a round trip and a cache entry buys
+ * nothing until somebody reads a second page. **It counted the pages until this unit and the count
+ * was wrong** - it read seven where the generator writes ten and the tree holds eleven files of
+ * HTML - and the argument never needed one, which is the form to reach for first.
+ *
+ * **The arithmetic that will overturn it is known and is not today's**: this text is repeated in
+ * every page of the tree, so a catalogue of a thousand contracts
+ * carries a thousand copies, and at that size a file and one request is the cheaper half by orders
+ * of magnitude. It is written here rather than acted on because a copy per page is not a
+ * problem at this size and because a file would be a second address with a cache policy nothing here
+ * derives.
  *
  * No image, and no web font: ADR-0115 carries what the second refusal costs and what would reverse
  * it, measured rather than assumed.
@@ -127,6 +132,17 @@ export const STYLE = `
   --characters-per-ch: 1.393;
   --the-methods-drift: 1.04;
   --measure: calc(var(--the-longest-line) * 1ch / (var(--characters-per-ch) * var(--the-methods-drift)));
+  /* What a block of this catalogue may be, for the two that would otherwise take whatever is
+     offered. A column of prose is at most a measure, so a block of two columns of prose is at most
+     two of them and the gap between: a settled case is a call beside an argument, and the use cases
+     are jobs read two abreast. It bounds the use-case grid and, through the shell, the content
+     column. The widest block this catalogue puts on a page is a case row, and measured under these
+     rules it asks for 905px against the 933 this resolves to - so the bound is a ceiling and not a
+     squeeze. */
+  --two-columns: calc(2 * var(--measure) + var(--s10));
+  /* The navigation column, named rather than repeated: the shell's ceiling is the rail plus what
+     stands beside it, and a rail declared in two places is a rail that drifts. */
+  --rail: 15rem;
 
   --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -141,15 +157,26 @@ export const STYLE = `
   }
 }
 * { box-sizing: border-box }
-/* A full-bleed column: everything sits in a measure, and the two elements that lay themselves out
-   span the whole width. It is one declaration rather than a wrapper on every page. */
+/* A full-bleed column: the track asks its content how wide it wants to be, stops at what a block of
+   this catalogue may be, and the two elements that lay themselves out span the whole width. It is
+   one declaration rather than a wrapper on every page.
+
+   It used to ask for a measure, and a measure bounds a line rather than a box - so the four pages
+   with no rail had their card, their code blocks and their lists bound by a rule about prose.
+   Measured at e2e764b: 446px of ink on a 2 560px screen, 17.5% of it. ADR-0122. */
 body {
-  display: grid; grid-template-columns: 1fr min(var(--measure), calc(100% - var(--s10))) 1fr;
+  display: grid;
+  grid-template-columns: 1fr fit-content(min(var(--two-columns), calc(100% - var(--s10)))) 1fr;
   margin: 0; padding: 0 0 var(--s24);
   font: var(--t3)/1.62 var(--sans); color: var(--body); background: var(--paper);
   /* A contract's digest is 64 characters with nothing to break at, and it is prose rather than code:
-     without this the sentence carrying it pushes the whole page sideways on a narrow screen. */
-  overflow-wrap: break-word;
+     without this the sentence carrying it pushes the whole page sideways on a narrow screen.
+     anywhere and not break-word, which is the same rendering and a different intrinsic size: the
+     second breaks the word without counting the break in min-content, so the track above - which
+     asks its content how wide it wants to be - was floored by the unbroken digest and ran past the
+     viewport at 390. Measured on the method page: 400px of track in a 375px window. No backtick in
+     this comment, for the reason the use-case grid's comment gives. */
+  overflow-wrap: anywhere;
 }
 body > * { grid-column: 2 }
 body > .masthead, body > .shell { grid-column: 1 / -1 }
@@ -171,8 +198,11 @@ h3, h4 { font-size: var(--t4); font-weight: 600; margin: var(--s8) 0 0; scroll-m
 h2 + p, h2 + ul, h3 + p, h4 + p { margin-top: var(--s3) }
 p { margin: 0 0 var(--s4) }
 code, pre { font-family: var(--mono); font-size: .875em }
+/* As wide as its longest line, and past what is available it scrolls rather than wraps - which is
+   the sentence the overflow already made, now also about the box. A code block wider than its own
+   content is an empty box with a border: measured at 2 183px around a 356px signature. */
 pre {
-  margin: 0 0 var(--s4); padding: var(--s3) var(--s4); overflow-x: auto;
+  margin: 0 0 var(--s4); padding: var(--s3) var(--s4); overflow-x: auto; width: fit-content; max-width: 100%;
   background: var(--wash); border: 1px solid var(--rule); border-radius: 6px; color: var(--ink);
 }
 /* Only the bottom, because the top belongs to whatever precedes it. Setting the shorthand here beat
@@ -216,7 +246,14 @@ ul.menu .here { color: var(--dim) }
    questions. A reader on a phone gets the page and then the navigation; a reader on a laptop gets the
    navigation on the left of it. Placing it puts the content first in the DOM, which is what a screen
    reader announces and what a text projection reads, and CSS order would have made those two disagree. */
-.shell { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 78rem; margin: 0 auto; width: 100% }
+/* The rail, what stands beside it, and the three gutters around and between them. Nothing in that
+   is chosen: it is what the widest block needs, so the day a block grows the layout follows without
+   this line being edited. It replaces 78rem, which named no question anywhere in this repository and
+   is what centred a 1 248px layout on a 2 560px screen. */
+.shell {
+  display: grid; grid-template-columns: minmax(0, 1fr); margin: 0 auto; width: 100%;
+  max-width: calc(var(--rail) + var(--two-columns) + 3 * var(--s6));
+}
 .beside { padding: var(--s6) var(--s6) 0 }
 .rail-label {
   margin: 0 0 var(--s2); font-family: var(--mono); font-size: var(--t6);
@@ -243,16 +280,30 @@ ul.siblings > li.here, ul.domains > li.here {
   border-left: 2px solid var(--accent); border-radius: 0 5px 5px 0; padding-left: var(--s2);
 }
 .rail { margin: 0 }
-/* Capped at what its widest block needs and not at what is left over: without it the card stretched
-   to 913px to hold a 446px sentence. 45rem is two 22rem use-case tracks and the gap between them. */
-main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block; max-width: 45rem }
+/* No ceiling of its own, and the sentence that used to stand here was right about the wrong element.
+   It read: capped at what its widest block needs and not at what is left over. That is what a card,
+   a case table and a code block each now say about themselves, so the column has nothing left to
+   say - and on the column it said it to everything else too, including the blocks that gain by being
+   wide. ADR-0122. */
+main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
 
-.card { border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6) }
+/* As wide as its widest block needs and not as wide as what is left over - the sentence the content
+   column used to carry, on the element it was always about. The ceiling is what stops it: fit-content
+   has a min-content floor, a pre does not wrap at any width, so a card holding a signature is floored
+   at that line. Measured without it: the four contract pages scrolled sideways at 390. */
+.card {
+  border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6);
+  width: fit-content; max-width: 100%;
+}
 .address { margin: 0 0 var(--s2); font-size: var(--t5); color: var(--dim) }
 /* The mono face names what the registry addresses - a contract, a command, a value - and never a
    sentence. A contract page's title is a function's name; "Nothing is served at this address" is not. */
 .card h1 { font-family: var(--mono); font-weight: 500; margin: 0 0 var(--s3) }
-pre.install { display: flex; align-items: center; gap: var(--s4); background: var(--paper); max-width: 44ch; font-size: var(--t4) }
+/* The ceiling is only what the card's is: the block is as wide as its own command, which the rule
+   over every pre already says, and 44ch was a guess at the longest one. It is restated because it is
+   more specific than that rule, and 44ch left the block 34px past a 390 viewport once the card
+   stopped handing it a width. */
+pre.install { display: flex; align-items: center; gap: var(--s4); background: var(--paper); max-width: 100%; font-size: var(--t4) }
 pre.install .copy {
   margin-left: auto; border: 0; border-left: 1px solid var(--edge); background: none;
   padding: var(--s2) 0 var(--s2) var(--s4); font: inherit; font-size: var(--t5);
@@ -291,8 +342,15 @@ ul.toc > li.under { padding-left: var(--s3) }
    what 17rem gave at 1240 and is the only thing about this section a browser had to be asked. The
    min() is what keeps one column from overflowing a narrow viewport: auto-fit honours the minimum
    even when the container is smaller than it. No backtick in this comment - the whole stylesheet is
-   one template literal, and one would end it. */
-.use-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr)); gap: var(--s4); margin: 0 0 var(--s4) }
+   one template literal, and one would end it.
+   The ceiling is the one thing here a track cannot say for itself: auto-fit takes whatever it is
+   offered, so at 2 560 the four cards stood alone in a row 1 892px wide while nothing else on the
+   page passed 950. Two abreast is what the floor was chosen for, and this is that decision holding
+   at every width rather than at 1240. */
+.use-cases {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  gap: var(--s4); margin: 0 0 var(--s4); max-width: var(--two-columns);
+}
 .use-case { border: 1px solid var(--edge); border-radius: 9px; background: var(--card); padding: var(--s5) }
 .use-case h3 { margin: 0 0 var(--s2); font-size: var(--t4) }
 .use-case > p { margin: 0 0 var(--s3); font-size: var(--t4) }
@@ -303,7 +361,10 @@ ul.toc > li.under { padding-left: var(--s3) }
 .use-case .call code { color: var(--ink); line-height: 1.55; overflow-wrap: anywhere }
 .use-case .why { margin: 0; font-size: var(--t5) }
 
-.cases { margin: 0 }
+/* One width for every row, so the rules between them line up, and that width is what a case asks
+   for. On the container and not on the row: a row sized to its own content would leave the
+   separators ragged, which is the one thing a table of forty-one cases must not be. */
+.cases { margin: 0; width: fit-content; max-width: 100% }
 .case {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2) var(--s10);
   padding: var(--s5) 0; border-top: 1px solid var(--rule); scroll-margin-top: var(--s16);
@@ -329,11 +390,15 @@ ul.toc > li.under { padding-left: var(--s3) }
 #playground pre { margin: 0; background: var(--paper); border-color: var(--edge) }
 
 @media (min-width: 64rem) {
-  .shell { grid-template-columns: 15rem minmax(0, 1fr); gap: var(--s6); padding: 0 var(--s6) }
+  .shell { grid-template-columns: var(--rail) minmax(0, 1fr); gap: var(--s6); padding: 0 var(--s6) }
   .beside { grid-area: 1 / 1; position: sticky; top: var(--s12); align-self: start; padding: var(--s10) 0 0 }
   main { grid-area: 1 / 2; padding: var(--s10) 0 0 }
 }
 @media (min-width: 52rem) {
-  .case { grid-template-columns: minmax(0, 34ch) minmax(0, 1fr) }
+  /* The call column is as wide as a call may be, and a call here is a paragraph rather than a pre,
+     so that is the measure. It was 34ch, which named nothing: measured at e2e764b, that folded 50 of
+     50 calls on number/parse@1 and 43 of 43 on date/add@1 onto more than one line, and 325 rendered
+     lines carried the 157 calls of the four pages. At the measure it is 223. */
+  .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr) }
 }
 `.trim()
