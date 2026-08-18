@@ -48,18 +48,24 @@ const A_COMMENT = {
 }
 
 /**
- * The three lifecycle states this subject is moved through, each anchored on the folder line beneath
+ * The three lifecycle states this subject is moved through, each anchored on the address line above
  * it - `lifecycle: PUBLISHED,` occurs once per installable contract and only this pair is unique.
+ *
+ * **It was anchored on the `folder` line beneath instead, until something was declared between the
+ * two.** ADR-0118 put a use case there, and this file broke with a message about text the source does
+ * not carry - which is right and is not what the reader needs to hear. Anchoring upward is not merely
+ * the other side: `address: SLUGIFY` names the contract this subject is *about*, where `folder` was a
+ * neighbour that happened to be adjacent, so what the pair now depends on is that a contract's entry
+ * begins with its address.
  */
-const PUBLISHED = 'lifecycle: PUBLISHED,\n    folder: \'contracts/typescript/string/slugify\''
-const ABSORBED = `lifecycle: {
+const PUBLISHED = 'address: SLUGIFY,\n    lifecycle: PUBLISHED,'
+const ABSORBED = `address: SLUGIFY,
+    lifecycle: {
       state: 'absorbed-by-the-language',
       answeredBy: 'a future proposal, named here by nothing',
       measurement: 'none: this subject exists to be a standing change, not a claim about the language',
-    },
-    folder: 'contracts/typescript/string/slugify'`
-const NOT_YET_PUBLISHED =
-  'lifecycle: { state: \'not-yet-published\' },\n    folder: \'contracts/typescript/string/slugify\''
+    },`
+const NOT_YET_PUBLISHED = 'address: SLUGIFY,\n    lifecycle: { state: \'not-yet-published\' },'
 
 let subject: string
 let asPublished: string
