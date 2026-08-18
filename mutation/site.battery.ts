@@ -56,6 +56,7 @@ const UNDER: ArmUnderTest = { arm: 'W', asCommitted: 'as-committed', blinded: []
 const { sameOnEveryLens } = mutantsOn(UNDER)
 
 const documentFile = (find: string, replace: string) => ({ file: 'document.ts', find, replace })
+const styleFile = (find: string, replace: string) => ({ file: 'style.ts', find, replace })
 const literalFile = (find: string, replace: string) => ({ file: 'literal.ts', find, replace })
 const contractPageFile = (find: string, replace: string) => ({ file: 'contract-page.ts', find, replace })
 const cataloguePageFile = (find: string, replace: string) => ({ file: 'catalogue-page.ts', find, replace })
@@ -123,6 +124,8 @@ const A_PROJECTION_CARRIES_WHAT_A_READER_MEETS = `    how.prose(document.descrip
 const THE_PAGE_DECLARES_ITS_LANGUAGE = `    '<html lang="en">',`
 
 const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${STYLE}</style>\`,`
+
+const THE_LIGHT_PALETTE = `  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;`
 
 const THE_INVISIBLE_IS_MADE_VISIBLE = `  \`'\${value.replaceAll('\\\\', '\\\\\\\\').replaceAll("'", "\\\\'").replace(INVISIBLE, escaped)}'\``
 
@@ -664,6 +667,32 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['a-page-loads-nothing-and-runs-nothing']),
+  ),
+
+  /**
+   * **The one cell of this battery written against a guard rather than against a defect somebody
+   * would plausibly commit**, and the reason it exists is that nothing reddened that guard at all.
+   * `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported unaccounted for
+   * by this battery at `07a100c` and at every commit since it was written, measured both ways - and
+   * W-24 looked as though it covered it, because it takes the stylesheet out of the page. It does
+   * not: with no style element the guard's loop runs zero times and it passes on an empty palette.
+   *
+   * A guard that passes vacuously is the shape this repository is built against, and it was sitting
+   * inside the one folder whose subject is that a page can be read.
+   */
+  sameOnEveryLens(
+    'W-24b',
+    'lifts the paper a shade, which is the plausible half of a palette edit - a ground that moves is ' +
+      'a taste somebody has, where an ink that moves is a decision. It carries `dim` under 4.5:1 on ' +
+      'every surface at once, and nothing on the rendered page looks wrong: the text is there, the ' +
+      'colours are roles, and the contrast is a number nobody reads off a screen',
+    [
+      styleFile(
+        THE_LIGHT_PALETTE,
+        '  --paper: #d8d5cf; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;',
+      ),
+    ],
+    killed(['every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible']),
   ),
 
   sameOnEveryLens(
