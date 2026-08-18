@@ -109,9 +109,9 @@ from the one proposed, and it is not one this unit found.
 
 ### The stylesheet stays in the page, and the arithmetic that will overturn that is written down
 
-The constraint for this unit is that the CSS is hand-written and served in the page. Measured: the
-stylesheet is **2 707 B before and 8 538 B after**, and it is repeated in every page — **18 949 B
-before, 59 766 B after** across seven. At a thousand contracts it is 8.5 MB of one repeated text, at
+The constraint for this unit is that the CSS is hand-written and served in the page. Measured,
+`a036396` against `7f76d8f`: the stylesheet is **2 707 B before and 8 538 B after**, and it is
+repeated in every page — **18 949 B before, 59 766 B after** across seven. At a thousand contracts it is 8.5 MB of one repeated text, at
 which point a file and one request is cheaper by orders of magnitude. It is not acted on here because
 seven copies is not a problem and because a file would be a second address carrying a cache policy
 nothing in this repository derives — which is an open entry of its own.

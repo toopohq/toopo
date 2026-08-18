@@ -115,11 +115,16 @@ something has been refused.
 
 ## Consequences
 
-**A contract page costs about a third more.** Measured over the built tree: `string/slugify@1` goes
-from 35 191 to 46 471 bytes (+32 %), `date/add@1` from 38 631 to 50 067 (+30 %), `number/parse@1` from
-34 676 to 45 724 (+32 %), `string/levenshtein@1` from 25 041 to 34 191 (+37 %). About 5 800 of each is
-the stylesheet, which every page pays; the rest is the card, the rail, the chip bars and the case
-identifiers. The whole tree goes from 1 089 510 to 1 171 027 bytes, +7 %, over the same 78 files.
+**A contract page costs about a third more.** Measured over the built tree, `a036396` against
+`7f76d8f`: `string/slugify@1` goes from 35 191 to 46 471 bytes (+32 %), `date/add@1` from 38 631 to
+50 067 (+30 %), `number/parse@1` from 34 676 to 45 724 (+32 %), `string/levenshtein@1` from 25 041 to
+34 191 (+37 %). About 5 800 of each is the stylesheet, which every page pays; the rest is the card,
+the rail, the chip bars and the case identifiers. The whole tree goes from 1 089 510 to 1 171 097
+bytes, +7 %, over the same 78 files.
+
+The Markdown twins grow too, 13 % to 18 % on the four, and that is the backticks of ADR-0117 becoming
+code spans rather than escaped punctuation. `packages/site/start.js` goes from 5 475 to 7 078 bytes,
+which is the copy control.
 
 Three guards were repaired for one cause and it is the cause worth keeping. The rail repeats every
 section title, so a guard locating a section with `indexOf` over the reading found the rail rather
