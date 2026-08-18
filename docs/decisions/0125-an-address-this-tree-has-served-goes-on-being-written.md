@@ -123,6 +123,18 @@ against itself.
 The reading is therefore taken between `build the site` and `deploy`, which is the one moment the two
 sides are two different trees.
 
+**The rule that generalises, and it is worth more than the placement it decided.** That folder was
+chosen twice — proposed in a plan and approved on reading it — on the strength of resembling the
+question: it is the suite about the live origin, and this is a reading of the live origin. Neither pass
+asked *when does it run*. So: **the right home for a guard is not the suite it most resembles, it is the
+only moment its two sides differ.** Resemblance picks a folder; the comparison picks an instant, and
+where the two disagree the folder is what has to move.
+
+It is [ADR-0087](0087-a-guard-perturbs-the-claim-never-the-object-derived-from-it.md)'s question asked
+about a schedule rather than about a value. That rule asks whether a guard perturbs the claim or
+something derived from it; this asks whether the two things a guard compares are still two things by the
+time it runs. Both fail the same way — the guard passes, and the passing means nothing.
+
 **The coverage is inductive.** Each run compares one deployment against the one before it, and a chain
 of those reaches back to the first. That is why it must run on every push of `main` and not only before
 a publication, and it is why a push whose run never happened is a link missing from the chain that
@@ -177,6 +189,17 @@ is printed beside the written one.
 That is [ADR-0087](0087-a-guard-perturbs-the-claim-never-the-object-derived-from-it.md)'s test arriving
 on a fixture rather than on a guard: what was being perturbed was the pair of functions and not the
 condition that makes their order matter.
+
+**How both were found is the part to keep, because neither was found by rereading.** Each surfaced while
+the *next* guard was being written. Naming a neighbour forces the first one's claim to be said out loud
+— *this one is about the order, so that one must be about something else* — and it is in that sentence
+that the gap shows. A reread asks whether a guard looks right, which it does; writing the guard beside
+it asks what it establishes that the neighbour does not, which is a question a decorative guard cannot
+answer.
+
+So the cheapest test for a guard that cannot fail, after ADR-0087's, is: **write its neighbour.** It
+costs one guard and it is paid for twice here — the ordering fixture and the root element — against a
+reread that had already passed over both.
 
 **`a-document-that-is-not-a-sitemap-is-refused` needed a fifth fixture for the same reason.** An error
 page, a feed, a JSON body and an empty string carry no `<loc>` at all, so all four stay refused by the
