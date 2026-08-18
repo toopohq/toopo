@@ -55,6 +55,7 @@ import type {
   ExportRecord,
   UseCaseRecord,
 } from '../registry/contract-record.js'
+import type { FrozenContract } from '../registry/snapshot.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
@@ -424,6 +425,44 @@ const renderedUseCase = (entry: UseCaseRecord, answer: ExportRecord): Node => {
 const figure = (value: string, counts: string): Node =>
   el('p', { class: 'figure' }, el('strong', NOTHING, text(value)), text(` ${counts}`))
 
+/**
+ * How many of a contract's properties are checked, said where the reasons are.
+ *
+ * **This used to be a figure of the card, reading `2 / 4` under `properties checked`, and it was the
+ * one figure there that answered no question a reader had.** The other three answer what am I taking
+ * on, what does it pull in, and is this serious. A bare ratio answers none of them and reads as a
+ * confession - *only half of it is verified* - where what it says is *we refuse to write two
+ * decorative tests*. It is the class
+ * `the-readme-never-gives-a-survivor-total-without-its-split` keeps elsewhere: a ratio without its
+ * breakdown is read as a count of holes.
+ *
+ * So it is here, at the head of the section whose list gives every property its verdict and its
+ * reason in full, which is the breakdown. The figure did not leave the site; it left the card.
+ *
+ * **The sentence it replaces was false.** It read *every property below is checked on N generated
+ * cases per run*, on a page listing two properties that are not checked at all - the same defect one
+ * floor down, a total asserted over a set that has exceptions in it. Nothing counts here that the
+ * record does not already carry, so the sentence cannot come apart from the list under it.
+ */
+const theStandingOfTheProperties = (properties: FrozenContract['properties']): string => {
+  const total = properties.universal.length
+  const checked = properties.universal.filter((property) => property.applicable).length
+  const trial = `${grouped(properties.runs)} generated cases per run, re-seeded each time`
+
+  if (checked === total) {
+    return `All ${total} of them are checked on ${trial}.`
+  }
+
+  const unchecked = total - checked
+  const why =
+    `not applicable to this contract, and ${unchecked === 1 ? 'says' : 'each says'} why below.`
+
+  return checked === 0
+    ? `None of these ${total} is checked. All ${total} are ${why}`
+    : `${checked} of these ${total} ${checked === 1 ? 'is' : 'are'} checked on ${trial}. ` +
+        `The other ${unchecked === 1 ? 'one is' : `${unchecked} are`} ${why}`
+}
+
 export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document => {
   const { contract, implementation } = held
   const name = renderContract(contract.address)
@@ -433,7 +472,6 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
   const bytes = implementation.files.reduce((total, file) => total + file.bytes, 0)
   const files = implementation.files.length
   const imports = implementation.dependsOn.length
-  const checked = contract.properties.universal.filter((property) => property.applicable).length
   const playground = playgroundOf(contract, name)
 
   /**
@@ -576,11 +614,7 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
       id: 'properties',
       title: 'Properties',
       body: [
-        line(
-          'p',
-          `Every property below is checked on ${grouped(contract.properties.runs)} generated cases per ` +
-            `run, re-seeded each time.`,
-        ),
+        line('p', theStandingOfTheProperties(contract.properties)),
         el(
           'ul',
           { class: 'plain' },
@@ -718,7 +752,6 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
               figure(grouped(bytes), `bytes, ${files === 1 ? 'one file' : `${files} files`}`),
               figure(String(imports), imports === 1 ? 'import' : 'imports'),
               figure(String(cases), 'settled cases'),
-              figure(`${checked} / ${contract.properties.universal.length}`, 'properties checked'),
             ),
             line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
           ),

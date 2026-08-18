@@ -469,6 +469,76 @@ describe('the site', () => {
   })
 
   /**
+   * Every figure of the card counts one thing, and a proportion is stated where its breakdown is.
+   *
+   * The card used to carry `2 / 4` under `properties checked`, beside three figures that each answer a
+   * question a reader arrived with - what am I taking on, what does it pull in, is this serious. A
+   * bare ratio answers none of them and is read as a count of holes, which is the same defect
+   * `the-readme-never-gives-a-survivor-total-without-its-split` keeps one repository over.
+   *
+   * **The two halves are one claim and not two.** Taking the ratio off the card would be a page
+   * hiding an unflattering number if the number were not somewhere a reader can act on it; leaving it
+   * on the card would be a proportion published away from its own breakdown. So the guard requires
+   * both at once: nothing on the card is a proportion, and the section that lists every property with
+   * its verdict and its reason states how many of them are checked.
+   *
+   * **It perturbs the claim and not the record.** Both the sentence and the list below it are derived
+   * from `properties.universal`, so moving that record moves the two together and a guard comparing
+   * them would be green over a derivation with a hole in it - ADR-0087. What is asserted here is what
+   * the card is *for*: a figure is a quantity, which is a statement about the card that no amount of
+   * consistency between two derived things establishes.
+   *
+   * Seen red before it was believed, on both halves: with the figure put back the card carries
+   * `2 / 4`, and with the count taken out of the sentence the section no longer names it.
+   */
+  it('every-figure-of-the-card-is-a-quantity-and-a-proportion-sits-with-its-breakdown', () => {
+    const figures = (document: Parameters<typeof toText>[0]): readonly string[] => {
+      const found: string[] = []
+      const walk = (node: Parameters<typeof readingOf>[0]): void => {
+        if (node.kind !== 'element') return
+        if (node.attributes['class'] === 'figure') found.push(readingOf(node).trim())
+        else for (const child of node.children) walk(child)
+      }
+
+      for (const node of document.body) walk(node)
+
+      return found
+    }
+
+    for (const held of heldByTheRegistry(source)) {
+      const document = page(pageOf(held.contract.address))
+
+      const shown = figures(document)
+      expect(shown.length, 'the card states some figures').toBeGreaterThan(0)
+
+      for (const reading of shown) {
+        /** A figure is a number and then what it counts, so what comes first is a number or nothing. */
+        const value = (/^[\d ]+/.exec(reading) ?? [''])[0].replaceAll(' ', '')
+        expect(value, `"${reading}" opens on a quantity`).toMatch(/^\d+$/)
+        expect(reading, `"${reading}" is one count and not a proportion`).not.toMatch(/of|\//)
+      }
+
+      const properties = held.contract.properties.universal
+      const checked = properties.filter((property) => property.applicable).length
+      const said = underEachHeading(document).get('Properties') ?? ''
+
+      /**
+       * The opening sentence and not the whole section, because the whole section holds every reason
+       * written out and a stray digit anywhere in it would satisfy a search for a count. It is the
+       * sentence rather than a transcription of it: a guard holding a copy of the words goes stale on
+       * the first reword, which is what `asRead` exists one file along to stop.
+       */
+      const opening = `${said.split('.')[0] as string}.`
+
+      expect(opening, 'the opening names how many are checked').toContain(String(checked))
+      expect(opening, 'the opening names how many there are').toContain(String(properties.length))
+      for (const property of properties) {
+        expect(said, `${property.name} carries its verdict`).toContain(property.name)
+      }
+    }
+  })
+
+  /**
    * A page that renders an answer nobody checked undoes the argument the whole registry rests on. The
    * generator is the consumer with the most to lose by skipping the check: it publishes the definition
    * to everybody, and nothing downstream ever asks again.

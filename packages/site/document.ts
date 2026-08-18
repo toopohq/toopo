@@ -317,6 +317,16 @@ const asJsonLd = (data: StructuredData): string =>
  */
 const THE_ALTERNATE_LINK = `<link rel="alternate" type="text/markdown" href="${THE_MARKDOWN_FILE}">`
 
+/**
+ * The head of a page, and the one thing worth saying about it: **it names nothing a browser has to go
+ * and fetch.** No stylesheet link, no font, no script but the playground's own module, no image.
+ *
+ * That is ADR-0115's decision arriving here rather than a habit of this file. The system it decides
+ * lives in `style.ts`; what is left of it at this end is the `style` element, which is the whole
+ * reason the rest of that record can be true of a page served once from a static host.
+ * `a-page-loads-nothing-and-runs-nothing` is what holds it.
+ */
+
 export const toHtml = (document: Document): string =>
   [
     '<!doctype html>',
