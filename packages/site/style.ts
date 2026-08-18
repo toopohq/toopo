@@ -203,15 +203,32 @@ ul.menu a:hover { color: var(--accent) }
 ul.menu .here { color: var(--dim) }
 
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 78rem; margin: 0 auto; width: 100% }
-.rail { padding: var(--s6) var(--s6) 0 }
+.beside { padding: var(--s6) var(--s6) 0 }
 .rail-label {
   margin: 0 0 var(--s2); font-family: var(--mono); font-size: var(--t6);
   letter-spacing: .06em; text-transform: uppercase; color: var(--dim);
 }
+.rail-label a { color: inherit; text-decoration: none }
+.rail-label a:hover { color: var(--ink) }
 ul.toc { list-style: none; padding: 0; margin: 0 }
 ul.toc > li { padding: var(--s) 0 }
 ul.toc a { color: var(--dim); text-decoration: none; font-size: var(--t5) }
 ul.toc a:hover { color: var(--ink) }
+
+/* Where you are in the catalogue, above what is on the page you are reading. The two are separate
+   elements rather than one list, because the rail names sections of this page and this names other
+   pages, and one guard walks the first. */
+.where { margin: 0 0 var(--s8) }
+ul.siblings, ul.domains { list-style: none; padding: 0; margin: 0 0 var(--s6); font-family: var(--mono) }
+ul.siblings > li, ul.domains > li { padding: var(--s) var(--s3); font-size: var(--t5) }
+ul.siblings a, ul.domains a { color: var(--body); text-decoration: none }
+ul.siblings a:hover, ul.domains a:hover { color: var(--ink) }
+/* The accent means you are here, which is one of the two things it is allowed to mean. */
+ul.siblings > li.here, ul.domains > li.here {
+  color: var(--ink); background: var(--wash);
+  border-left: 2px solid var(--accent); border-radius: 0 5px 5px 0; padding-left: var(--s2);
+}
+.rail { margin: 0 }
 /* Capped at what its widest block needs and not at what is left over: without it the card stretched
    to 913px to hold a 446px sentence. 45rem is two 22rem use-case tracks and the gap between them. */
 main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block; max-width: 45rem }
@@ -296,7 +313,7 @@ ul.toc > li.under { padding-left: var(--s3) }
 
 @media (min-width: 64rem) {
   .shell { grid-template-columns: 15rem minmax(0, 1fr); gap: var(--s6); padding: 0 var(--s6) }
-  .rail { position: sticky; top: var(--s12); align-self: start; padding: var(--s10) 0 0 }
+  .beside { position: sticky; top: var(--s12); align-self: start; padding: var(--s10) 0 0 }
   main { padding: var(--s10) 0 0 }
 }
 @media (min-width: 52rem) {

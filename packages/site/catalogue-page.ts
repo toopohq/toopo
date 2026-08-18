@@ -14,9 +14,10 @@ import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import type { Domain } from './catalogue.js'
 import type { MenuEntry } from './chrome.js'
 import { masthead } from './chrome.js'
-import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
+import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
 
 const NOTHING = {} as const
 
@@ -26,6 +27,7 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
 export const cataloguePage = (
   index: ServedIndex,
   refusals: ServedRefusals,
+  domains: readonly Domain[],
   menu: readonly MenuEntry[],
 ): Document => ({
   title: 'Toopo — utility functions with a public, executable contract',
@@ -68,6 +70,43 @@ export const cataloguePage = (
         'for. Anything that satisfies it can replace anything else that does, which is what makes ' +
         'an implementation a detail. The contract is what this project publishes; the code is what ' +
         'it hands you.',
+    ),
+
+    /**
+     * The domains, above the contracts rather than instead of them.
+     *
+     * At five contracts the list below is the navigation and this is a second way into the same
+     * five, which is a cost. It is here because the shape that survives a thousand contracts is the
+     * one worth building at five, and because a domain page is now the address a reader lands on
+     * from a search for `slugify javascript` and climbs one level from.
+     *
+     * A domain with nothing installable in it has no page and is not here: `array` holds one entry,
+     * refused before publication, and what the catalogue publishes about a refusal is the refusal.
+     */
+    line('h2', 'Domains'),
+    el(
+      'ul',
+      { class: 'plain' },
+      ...domains.map((domain) =>
+        el(
+          'li',
+          NOTHING,
+          el(
+            'p',
+            { class: 'call' },
+            el(
+              'a',
+              { href: linkTo(domainPageOf(domain.held[0].contract.address)) },
+              text(domain.name),
+            ),
+          ),
+          line(
+            'p',
+            `${domain.held.length} ${domain.held.length === 1 ? 'contract' : 'contracts'}`,
+            { class: 'meta' },
+          ),
+        ),
+      ),
     ),
 
     line('h2', `${index.entries.length} contracts`),

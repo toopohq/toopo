@@ -58,9 +58,9 @@ import type {
 import type { FrozenContract } from '../registry/snapshot.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
-import type { Held } from './catalogue.js'
+import type { Domain, Held } from './catalogue.js'
 import type { MenuEntry } from './chrome.js'
-import { masthead } from './chrome.js'
+import { beside, masthead } from './chrome.js'
 import { literal } from './literal.js'
 import { inline, marked, paragraph } from './marks.js'
 import { THE_ENTRY_POINT, THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
@@ -463,7 +463,12 @@ const theStandingOfTheProperties = (properties: FrozenContract['properties']): s
         `The other ${unchecked === 1 ? 'one is' : `${unchecked} are`} ${why}`
 }
 
-export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document => {
+export const contractPage = (
+  held: Held,
+  here: Domain,
+  domains: readonly Domain[],
+  menu: readonly MenuEntry[],
+): Document => {
   const { contract, implementation } = held
   const name = renderContract(contract.address)
   const own = pageOf(contract.address)
@@ -731,7 +736,15 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
       el(
         'div',
         { class: 'shell' },
-        theRail(halves),
+        /**
+         * The column: where this contract sits in the catalogue, and then this page's own sections.
+         *
+         * The domain is a parameter and never looked up here. A search would have to answer *what if
+         * no domain holds this contract*, which is a question with no honest answer at a rendering
+         * site - and `site.ts` builds these pages by walking the domains, so the contract being in
+         * the domain it is rendered under is the loop rather than a claim.
+         */
+        beside(own, here, domains, [theRail(halves)]),
         el(
           'main',
           NOTHING,

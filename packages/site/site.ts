@@ -35,7 +35,8 @@ import { toHtml, toMarkdown } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
 import { theMenu } from './chrome.js'
 import { contractPage } from './contract-page.js'
-import { heldByTheRegistry } from './catalogue.js'
+import { domainPage } from './domain-page.js'
+import { domainsOf, heldByTheRegistry } from './catalogue.js'
 import { theCrawlerFiles } from './indexing.js'
 import { localSource } from './local-source.js'
 import { methodologyPage } from './methodology-page.js'
@@ -43,6 +44,7 @@ import {
   CATALOGUE_PAGE,
   METHOD_PAGE,
   REFUSALS_PAGE,
+  domainPageOf,
   THE_HEADERS_FILE,
   THE_NOT_FOUND_FILE,
   markdownOf,
@@ -63,14 +65,34 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
    */
   const menu = theMenu(refusals.refusals.length)
 
+  /**
+   * The domains, built once and given to every page that renders navigation.
+   *
+   * A contract page's column names its siblings and the other domains, so it needs the whole set -
+   * and building it per page would be the walk over the index taken eight times to answer one
+   * question. It is the same argument `theMenu` above is built on, one level down.
+   */
+  const domains = domainsOf(source, heldByTheRegistry(source))
+
   return new Map<string, Document>([
-    [CATALOGUE_PAGE, cataloguePage(index, refusals, menu)],
+    [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu)],
     [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
     ...(refusals.refusals.length === 0
       ? []
       : ([[REFUSALS_PAGE, refusalsPage(index, refusals, menu)]] as const)),
-    ...heldByTheRegistry(source).map(
-      (held) => [pageOf(held.contract.address), contractPage(held, menu)] as const,
+    ...domains.map(
+      (domain) =>
+        [domainPageOf(domain.held[0].contract.address), domainPage(domain, domains, menu)] as const,
+    ),
+    /**
+     * Walked through the domains rather than over the contracts, so that the domain a contract page
+     * renders its column from is the one it is in by construction. The order is unchanged: both
+     * lists are the index's order, and grouping one by the other's first segment preserves it.
+     */
+    ...domains.flatMap((domain) =>
+      domain.held.map(
+        (one) => [pageOf(one.contract.address), contractPage(one, domain, domains, menu)] as const,
+      ),
     ),
   ])
 }

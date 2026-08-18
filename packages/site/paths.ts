@@ -37,6 +37,21 @@ export { THE_ORIGIN }
 export const pageOf = (address: ContractAddress): string => `${renderContract(address)}/index.html`
 
 /**
+ * The page a domain has, which is the folder every contract of that domain already sits in.
+ *
+ * **Derived from `pageOf` and never composed from a language and a name**, which is the rule at the
+ * head of this file arriving on a second kind of page: `renderContract` is the one spelling of
+ * `language/domain/name@major`, and a second function assembling `${language}/${domain}` would be a
+ * second statement of that shape - correct today and wrong the first time an address gains a segment.
+ *
+ * So a domain page is addressed by taking a contract of it and going up one level. It takes an
+ * address rather than a string for the same reason: there is no such thing as the `string` domain
+ * without a language, and a domain page of a language nothing is published in has nothing on it.
+ */
+export const domainPageOf = (address: ContractAddress): string =>
+  `${pageOf(address).split('/').slice(0, -2).join('/')}/index.html`
+
+/**
  * The name a page's Markdown twin takes, beside it and never anywhere else.
  *
  * It is a constant rather than two literals because two things have to agree on it and they are in

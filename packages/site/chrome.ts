@@ -22,9 +22,18 @@
  * this repository already keeps is applied before it can be broken rather than after.
  */
 
-import type { Node } from './document.js'
+import type { Domain } from './catalogue.js'
+import type { Attributes, Node } from './document.js'
 import { el, text } from './document.js'
-import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, rootFrom } from './paths.js'
+import {
+  CATALOGUE_PAGE,
+  METHOD_PAGE,
+  REFUSALS_PAGE,
+  domainPageOf,
+  linkTo,
+  pageOf,
+  rootFrom,
+} from './paths.js'
 
 const NOTHING = {} as const
 
@@ -78,3 +87,97 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
     ),
     el('ul', { class: 'menu' }, ...menu.map((entry) => destination(own, entry.page, entry.label))),
   )
+
+/**
+ * The column beside a page: where you are in the catalogue, and then whatever that page adds.
+ *
+ * **The rule it keeps is the current domain in full and the others one line each, never the whole
+ * catalogue.** That is what MDN, the Rust book and the Python documentation all do, and the reason is
+ * arithmetic rather than fashion: a navigation listing every contract is readable at five and is a
+ * wall at a thousand, and the shape that survives to a thousand is the one worth building at five.
+ *
+ * **It is a sibling of the rail rather than a part of it**, and that is a decision about a guard as
+ * much as about markup. `the-rail-of-a-page-names-every-section-of-it-and-only-those` walks
+ * everything inside `.rail` and requires each link to be a section of the page; the links here go to
+ * other pages. Putting them inside would have meant widening that guard to ignore them, which is a
+ * guard being narrowed to fit what somebody wanted to add. Two elements in one column costs nothing
+ * and leaves the rail meaning exactly what it meant.
+ *
+ * ---------------------------------------------------------------------------
+ * No count beside a domain, and it is the mock-up this departs from
+ * ---------------------------------------------------------------------------
+ *
+ * The mock-up draws `array 97 · date 156 · util 136`, from a catalogue of a thousand that does not
+ * exist. The system is a magnitude beside a name; the data is fiction. Applied to what is really
+ * here, every line would read `1`, `1`, `2` - which makes the catalogue look empty in the navigation
+ * of every page, and answers no question a reader of three domains has.
+ *
+ * A bare digit is also the one thing here that does not survive a projection. `toText` renders a list
+ * item as its words, so `string` and `2` come out as `string 2` with nothing saying what the 2
+ * counts. So the figure is where there is room for the word that makes it mean something - the label
+ * of the domain you are standing in - and the list is names.
+ */
+export const beside = (
+  own: string,
+  here: Domain,
+  domains: readonly Domain[],
+  rail: readonly Node[],
+): Node =>
+  el(
+    'div',
+    { class: 'beside' },
+    el(
+      'nav',
+      { class: 'where', 'aria-label': 'Catalogue' },
+      line(
+        'p',
+        `${here.name} · ${here.held.length} ${here.held.length === 1 ? 'contract' : 'contracts'}`,
+        domainPageOf(here.held[0].contract.address),
+        own,
+        { class: 'rail-label' },
+      ),
+      el(
+        'ul',
+        { class: 'siblings' },
+        ...here.held.map((one) =>
+          line('li', shortNameOf(one.contract.address.name), pageOf(one.contract.address), own, NOTHING),
+        ),
+      ),
+      el('p', { class: 'rail-label' }, text('Domains')),
+      el(
+        'ul',
+        { class: 'domains' },
+        ...domains.map((domain) =>
+          line(
+            'li',
+            domain.name,
+            domainPageOf(domain.held[0].contract.address),
+            own,
+            NOTHING,
+          ),
+        ),
+      ),
+    ),
+    ...rail,
+  )
+
+/**
+ * A line of the column: a link, or the plain words where it is the page you are on.
+ *
+ * The same reading `destination` makes of the masthead, and the same declaration: a link to the page
+ * under the reader's cursor is a control that does nothing, and `aria-current` is what says *this one*
+ * rather than a class this repository invented.
+ */
+const line = (
+  tag: 'p' | 'li',
+  label: string,
+  page: string,
+  own: string,
+  attributes: Attributes,
+): Node =>
+  own === page
+    ? el(tag, { ...attributes, class: `${attributes['class'] ?? ''} here`.trim(), 'aria-current': 'page' }, text(label))
+    : el(tag, attributes, el('a', { href: `${rootFrom(own)}${linkTo(page)}` }, text(label)))
+
+/** The last segment of a contract's name, which is what tells it apart inside its own domain. */
+const shortNameOf = (name: string): string => name.slice(name.indexOf('/') + 1)

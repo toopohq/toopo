@@ -18,7 +18,7 @@ import { literal } from './literal.js'
 import { localSource } from './local-source.js'
 import { inline } from './marks.js'
 import { theCallOf } from './playground.js'
-import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
+import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
 import { theSite } from './site.js'
 
 /**
@@ -109,13 +109,19 @@ const underEachHeading = (document: Parameters<typeof toText>[0]): ReadonlyMap<s
 
 describe('the site', () => {
   /**
-   * Four pages for four contracts, and the fifth contract has none.
+   * Four pages for four contracts, three for the domains they sit in, and none for the fifth
+   * contract.
    *
    * `array/group-by@1` was decided against *before* publication, so `refuseContract` records the
    * argument and binds no digest: there is no frozen definition to render and nothing about it a
    * reader could check. What the catalogue publishes about it is the refusal, and the refusals page is
    * where that goes. A contract page with no digest behind it would be a contract page missing the
    * only half that makes this registry worth anything.
+   *
+   * **`array` has no domain page either, and that is the same decision one level up.** A domain page
+   * for it would carry an empty list and one line pointing at the refusals page, which answers
+   * nothing that page does not answer better. So the domain side is asserted from the *installable*
+   * entries and never from the index's domains, and the two differing is what this guard is for.
    *
    * The three pages that are not about one contract are named here, so that a page appearing or
    * disappearing is this guard's business rather than nobody's.
@@ -129,10 +135,12 @@ describe('the site', () => {
         CATALOGUE_PAGE,
         METHOD_PAGE,
         REFUSALS_PAGE,
+        ...new Set(installable.map((entry) => domainPageOf(entry.address))),
         ...installable.map((entry) => pageOf(entry.address)),
       ].sort(),
     )
     expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([false])
+    expect(refused.map((entry) => pages().has(domainPageOf(entry.address)))).toEqual([false])
     expect(refused.length).toBe(1)
   })
 

@@ -113,3 +113,64 @@ export const heldByTheRegistry = (source: RegistrySource): readonly Held[] =>
 
       return { binding, contract: contract.frozen, implementation: implementation.frozen }
     })
+
+/**
+ * One domain of the catalogue: the contracts published in it, and what it turned down.
+ *
+ * **A domain is the first segment of a contract's name and is not a thing the registry declares**, so
+ * it is derived here rather than fetched. `ServedIndexEntry.domain` is the split, and its own comment
+ * says why it exists - *the site's navigation is built on the domain* - which is this.
+ */
+export type Domain = {
+  readonly name: string
+  /**
+   * In the registry's own order, and never empty.
+   *
+   * The tuple is the guarantee `domainsOf` already makes, written where a caller reads it: a domain's
+   * page is addressed by going up one level from a contract of it, so *this list has a first element*
+   * is what makes that address exist at all. As `readonly Held[]` every caller reaching for it has to
+   * assert something the filter one function below has already established.
+   */
+  readonly held: readonly [Held, ...Held[]]
+}
+
+/**
+ * Every domain that has a page, which is every domain something is published in.
+ *
+ * **A domain whose contracts were all refused is not here, and that is a decision rather than a
+ * filter that happens to drop it.** `array` holds one entry, `array/group-by@1`, turned down before
+ * publication. A page for it would carry an empty list, a figure of zero and one line pointing at the
+ * refusals page - which answers no question that page does not answer better, and would put an
+ * address in the catalogue's navigation that a reader gains nothing by following. What is published
+ * about a refusal is the refusal.
+ *
+ * **A domain does not carry what it refused**, and that is the same decision one step on: no domain
+ * with a page has a refusal today, so the section that would render one is a branch nothing
+ * exercises. `domain-page.ts` carries the argument at the surface where it is visible.
+ */
+export const domainsOf = (
+  source: RegistrySource,
+  held: readonly Held[],
+): readonly Domain[] => {
+  const order: string[] = []
+
+  for (const entry of source.contractIndex().entries) {
+    if (!order.includes(entry.domain)) order.push(entry.domain)
+  }
+
+  return order.flatMap((name) => {
+    const [first, ...rest] = held.filter((one) => domainOf(one.contract.address.name) === name)
+
+    return first === undefined ? [] : [{ name, held: [first, ...rest] as const }]
+  })
+}
+
+/**
+ * The domain a contract's name opens on.
+ *
+ * `packages/registry/response.ts` splits the same string to build `ServedIndexEntry.domain`, and this
+ * is not a second copy of that rule: a `Held` carries a frozen contract and no index entry, so the
+ * two are reached from different values. What keeps them from disagreeing is that
+ * `a-domain-page-lists-every-contract-the-index-files-under-it` compares the two sides.
+ */
+const domainOf = (name: string): string => name.slice(0, name.indexOf('/'))
