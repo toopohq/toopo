@@ -29,8 +29,7 @@ The last two lines are the point, and they are what nobody expects: **the output
 ASCII.** Japanese stays Japanese and Cyrillic stays Cyrillic, because what a slug drops is
 punctuation, symbols, emoji and case — not other people's writing systems. A library that
 transliterates instead has picked a romanisation scheme on its users' behalf and frozen it into a
-table of two thousand entries; this contract picks none, and argues for that at length rather than
-asserting it.
+table; this contract picks none, and argues for that at length rather than asserting it.
 
 Every line above is a row of the contract's table, quoted rather than composed. Which is the next
 thing to explain.
