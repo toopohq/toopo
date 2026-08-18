@@ -16,6 +16,12 @@
  * The name is a union rather than a string, on the rule ADR-0054 states: where a shape can make a
  * wrong value fail to compile, that shape is reached for before a sentence is written. A third root
  * document adds a member here and nothing else.
+ *
+ * **`theFive` is read here and nowhere else under `mutation/`**, which is the whole of why this module
+ * exists and is why the second reader below sits beside the first rather than in the guard that wants
+ * it. One asks the catalogue a question about all of it and the other about one member of it; both are
+ * questions a root document asks, and answering them from two copies of the same import is how the two
+ * come to disagree about what the catalogue is. ADR-0114.
  */
 
 import { readFileSync } from 'node:fs'
@@ -41,3 +47,18 @@ export const rootDocument = (name: RootDocument): string =>
  */
 export const theCatalogueRecords = (): readonly ContractRecord[] =>
   theFive.map((source) => serialiseContract(REPOSITORY_ROOT, source))
+
+/**
+ * One contract of the catalogue, addressed by the folder it lives in.
+ *
+ * A document that shows what a contract *is* has to read one, and the folder is what a guard already
+ * holds: `THE_SUITES` maps a battery's name to the path of the contract it measures, so the caller
+ * names a contract once and this resolves it. Serialised for the reason above - what a document shows
+ * of a contract is what the registry would serve of it, and the declaration on disk is one step
+ * upstream of that.
+ */
+export const theCatalogueRecordIn = (folder: string): ContractRecord | undefined => {
+  const source = theFive.find((entry) => entry.folder === folder)
+
+  return source === undefined ? undefined : serialiseContract(REPOSITORY_ROOT, source)
+}

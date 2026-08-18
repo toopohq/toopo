@@ -1,9 +1,12 @@
 import { describe, it, expect } from 'vitest'
 
 import { edgeCases } from '../contracts/typescript/string/slugify/edge-cases.ts'
+import type { ContractAddress } from '../packages/registry/address.ts'
+import type { ContractRecord } from '../packages/registry/contract-record.ts'
 import { THE_INVOCATION, renderContract } from '../packages/registry/address.ts'
+import { licenceHeaderOf } from '../packages/registry/licence.ts'
 import { THE_SUITES, guardsCollectedIn } from './decisions.ts'
-import { rootDocument, theCatalogueRecords } from './root-documents.ts'
+import { rootDocument, theCatalogueRecordIn, theCatalogueRecords } from './root-documents.ts'
 import {
   THE_PINS_ARE_AN_ASSERTION,
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
@@ -48,8 +51,13 @@ const readmeSource = (): string => rootDocument('README.md')
 
 const README = (): string => readmeSource().replace(/\s+/g, ' ')
 
-/** Every line of every fenced block, which is where the page tells a reader what to type. */
-const whatTheReadmeTellsYouToType = (): readonly string[] =>
+/**
+ * Every line of every fenced block, which is where the page shows rather than describes.
+ *
+ * Two guards read it and they read it for different things - what a reader is told to type, and
+ * what a contract's folder holds - so it is named for what it returns rather than for either.
+ */
+const everyFencedLine = (): readonly string[] =>
   [...readmeSource().matchAll(/```[a-z]*\n([\s\S]*?)```/g)].flatMap((block) =>
     (block[1] as string).split('\n'),
   )
@@ -126,7 +134,7 @@ describe('what the readme publishes about the measurement', () => {
    * page with no commands on it at all.
    */
   it('every-command-the-readme-tells-a-reader-to-type-carries-the-invocation', () => {
-    const typed = whatTheReadmeTellsYouToType()
+    const typed = everyFencedLine()
 
     expect(typed.filter((line) => /^\s*toopo\b/.test(line))).toEqual([])
     expect(typed.filter((line) => line.trim().startsWith(THE_INVOCATION))).not.toEqual([])
@@ -154,8 +162,22 @@ describe('what the readme publishes about the measurement', () => {
  */
 const DEMONSTRATED = 'string-slugify'
 
-/** A call and its answer, as the page writes one: `slugify('x')  //=> 'y'`. */
-const AN_ANSWER_SHOWN = /^slugify\('(.*)'\) +\/\/=> '(.*)'$/gm
+/**
+ * A file of a contract's folder, as the page lists one: a bare name at the head of a line.
+ *
+ * The token is taken up to the first space rather than by a whitespace class, and the dot is a class
+ * rather than an escape, so that the shape a reader has to check is the shape written here.
+ */
+const A_FILE_OF_A_CONTRACT = /^[a-z0-9-]+[.][a-z0-9.-]*ts$/
+
+const whatTheReadmeSaysAContractHolds = (): readonly string[] =>
+  everyFencedLine()
+    .map((line) => line.trim().split(' ')[0] ?? '')
+    .filter((token) => A_FILE_OF_A_CONTRACT.test(token))
+
+/** The record of the contract the page opens, through the folder its battery already names. */
+const theContractShown = (): ContractRecord | undefined =>
+  theCatalogueRecordIn(THE_SUITES[DEMONSTRATED] as string)
 
 /** The row the page quotes whole, and the two guards below that read it are why it is named once. */
 const QUOTED = 'cyrillic-is-kept'
@@ -217,34 +239,28 @@ describe('what the readme shows of the catalogue', () => {
   })
 
   /**
-   * Every answer the page prints beside a call is one the contract settles.
+   * Every file the page says a contract's folder holds, against the files the contract declares.
    *
-   * **This is what the page's opening claims about itself** - *every line above is a row of the
-   * contract's table, quoted rather than composed* - and a claim about a demonstration is exactly the
-   * kind nobody rereads. Without it the front of a registry that sells verification would print five
-   * plausible answers, which is the failure it exists to argue against, on the surface where it would
-   * cost most.
+   * **This is the block a reader learns the product from**, and it is the one claim on the page that no
+   * competitor can make: seven files arrive, one of them is the implementation and six are the
+   * verification, and all seven are readable before anything is installed. A page that got the list
+   * wrong would be miscounting the thing it exists to sell.
    *
-   * The comparison is against the table and deliberately not against the implementation. Running
-   * `slugify` here would establish that the page agrees with the code; comparing against the table
-   * establishes that it agrees with the *specification*, which is the object this project publishes -
-   * and `edge-cases.test.ts` is what ties the two, once, where it belongs.
+   * Both directions, because each fails on a different edit. A file renamed in the contract reddens the
+   * first; a file dropped from the page reddens the second - and the second is the one that matters,
+   * since the cheapest way to keep a list true is to stop listing. The names are read off `harness`
+   * rather than off the source's declaration, on `theCatalogueRecords`' own rule: what a document shows
+   * of a contract is what the registry would serve of it.
    *
-   * The second expectation is what stops the first being vacuous: a page with no demonstration on it
-   * satisfies a filter over nothing.
+   * `expect(held)` is what stops both filters being vacuous on a catalogue this could not resolve.
    */
-  it('every-answer-the-readme-shows-is-a-case-the-contract-settles', () => {
-    const shown = [...readmeSource().matchAll(AN_ANSWER_SHOWN)].map(
-      (call) => [call[1] as string, call[2] as string] as const,
-    )
+  it('every-file-the-readme-says-a-contract-holds-is-one-the-contract-declares', () => {
+    const held = (theContractShown()?.harness ?? []).map((file) => file.path)
+    const shown = whatTheReadmeSaysAContractHolds()
 
-    expect(
-      shown.filter(
-        ([text, answer]) =>
-          !edgeCases.some((entry) => entry.text === text && entry.expected === answer),
-      ),
-    ).toEqual([])
-    expect(shown).not.toEqual([])
+    expect(held).not.toEqual([])
+    expect(shown.filter((name) => !held.includes(name))).toEqual([])
+    expect(held.filter((name) => !shown.includes(name))).toEqual([])
   })
 
   /**
@@ -288,5 +304,24 @@ describe('what the readme shows of the catalogue', () => {
 
     expect(named.filter((guard) => !collected.has(guard))).toEqual([])
     expect(named.filter((guard) => !text.includes(`\`${guard}\``))).toEqual([])
+  })
+
+  /**
+   * The two lines the page shows at the head of an installed file are the two the installer writes.
+   *
+   * Byte for byte against `licenceHeaderOf`, which is the same comparison
+   * `every-file-the-installer-copies-is-marked-mit-0` already makes over the five copied files - so the
+   * page is held to the mechanism rather than to a transcription somebody checked once. A header is
+   * frozen into other people's repositories for ever, and a front page showing a different one would be
+   * advertising an address that no installed file carries.
+   *
+   * Read off the raw source and not the collapsed text: the header is two lines, and what makes the
+   * quotation worth anything is that the break between them is where the installer puts it.
+   */
+  it('the-header-the-readme-shows-is-the-one-the-installer-writes', () => {
+    const address = theContractShown()?.address
+
+    expect(address).toBeDefined()
+    expect(readmeSource()).toContain(licenceHeaderOf(address as ContractAddress))
   })
 })

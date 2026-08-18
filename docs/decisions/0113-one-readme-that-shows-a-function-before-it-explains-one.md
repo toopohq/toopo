@@ -10,14 +10,23 @@ confirmed-by:
   - battery: meta
     guard: every-contract-the-catalogue-holds-is-named-on-the-readme
   - battery: meta
-    guard: every-answer-the-readme-shows-is-a-case-the-contract-settles
-  - battery: meta
     guard: every-field-the-readme-quotes-from-a-case-is-the-one-the-contract-declares
   - battery: meta
     guard: every-property-the-readme-names-is-one-the-contracts-suite-collects
 ---
 
 # One README that shows a function before it explains one
+
+> **The section this record's title names has been superseded by
+> [ADR-0114](0114-a-front-page-that-shows-the-registry-and-not-a-function.md), and on none of the
+> triggers below.** *What would reopen this* named a sixth contract, per-version READMEs, a second
+> language and a retired contract; none of them happened. What was wrong is the population the reading
+> below was taken over: the thirteen READMEs measured are libraries of functions, this repository is a
+> registry that publishes them under a method which is the product, and the one member of the right
+> group — `shadcn/ui`, the same distribution model — was classed as an exception instead of read as the
+> comparison. The demonstration of five calls is gone, and with it one of the five guards. **What is
+> kept is what was measured rather than what was concluded from it**: the thirteen readings, the
+> one-file decision and the age it costs, and the repair of 187 to 157.
 
 ## Context and Problem Statement
 
@@ -177,11 +186,15 @@ assertion into an observation, which the page says in those words.
 
 ## Confirmation
 
-Five guards, all under `meta`, named in `confirmed-by` above. Between them they establish that the two
-catalogue figures equal what the records give, that every contract the catalogue holds is named on the
-page, that every answer shown is a case the contract settles, that every field of the quoted row is
-the one the contract declares, and that both properties named resolve to guards the contract's suite
-collects.
+**Four guards, where there were five, and the one that went is named rather than dropped quietly.**
+`every-answer-the-readme-shows-is-a-case-the-contract-settles` read the demonstration of five calls, and
+there is none; [ADR-0114](0114-a-front-page-that-shows-the-registry-and-not-a-function.md) carries what
+replaced that block and the two guards over it.
+
+What is left, all under `meta` and named in `confirmed-by` above, establishes that the two catalogue
+figures equal what the records give, that every contract the catalogue holds is named on the page, that
+every field of the quoted row is the one the contract declares, and that both properties named resolve
+to guards the contract's suite collects.
 
 **They are guards that run and not guards shown to catch something**, which is
 [ADR-0001](0001-record-decisions-in-madr-format.md)'s distinction and applies to everything under

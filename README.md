@@ -1,49 +1,41 @@
 # Toopo
 
-**Utility functions you copy into your project, each verified against a public, executable
-contract.** Not a dependency: the source lands in your repository and it is yours.
+**Utility functions you copy into your project, each one verified against a public, executable
+contract.** Not a dependency: the source lands in your repository and it is yours. What makes this a
+registry rather than a collection is the contract — the specification that judges the code, owned
+here, frozen for life, and yours to read before you install anything.
 
 ```sh
 npx toopo add string/slugify
 ```
 
-One file lands in `src/lib/toopo/string/slugify.ts`, with its digest recorded in `toopo.lock`. It
-imports nothing. There is no runtime, no wrapper, no resolution step: after the install, nothing of
-ours runs in your program. `npx` is the one spelling that works whether or not you have installed
-anything, and on a first run it names the package and its exact version and waits for a word — on a
-product whose thesis is that you verify what you receive, that prompt is the first demonstration of
-the thesis. `npm install -g toopo` makes the prefix optional.
-
-```ts
-import { slugify } from './src/lib/toopo/string/slugify.js'
-
-slugify('Crème Brûlée')      //=> 'creme-brulee'
-slugify('Salt & Pepper')     //=> 'salt-pepper'
-slugify('  hello   world  ') //=> 'hello-world'
-
-slugify('日本語テキスト')      //=> '日本語テキスト'
-slugify('Привет мир')        //=> 'привет-мир'
-```
-
-The last two lines are the point, and they are what nobody expects: **the output is Unicode, not
-ASCII.** Japanese stays Japanese and Cyrillic stays Cyrillic, because what a slug drops is
-punctuation, symbols, emoji and case — not other people's writing systems. A library that
-transliterates instead has picked a romanisation scheme on its users' behalf and frozen it into a
-table; this contract picks none, and argues for that at length rather than asserting it.
-
-Every line above is a row of the contract's table, quoted rather than composed. The import is written
-from your project root, and its extension is `.js` although the file is `.ts` — the one spelling
-TypeScript resolves under every module resolution it offers.
+`npx` works whether or not you have installed anything; `npm install -g toopo` makes the prefix
+optional.
 
 ## What a contract is
 
-The utility is not the product. **The contract is:** the complete, executable specification of one
-function — its TypeScript signature, the invariants that must hold for every input, every edge case
-named, settled and argued for, and its benchmark profiles. Implementations compete underneath it and
-are interchangeable. The registry owns the contract; you own the copy of the code.
+A folder of seven files. **One of them is the implementation. The other six are what judges it**, and
+every one of them is readable before you install anything:
 
-So `slugify('Привет мир')` above is not an example written for a README. It is this row, and
-`cyrillic-is-kept` is its address:
+```
+contract.ts          the signature, the identity, and what this contract refuses to be
+edge-cases.ts        every input that has been settled, each one named and frozen for life
+edge-cases.test.ts   that table, executed
+properties.test.ts   what must hold for every input, rather than for a chosen one
+profiles.test.ts     the benchmark profiles, and what each sample is there to measure
+signature.test-d.ts  the types, checked as types — a widened input fails before anything runs
+reference.ts         the implementation, and the only file toopo add writes into your project
+```
+
+Every library has tests. **These are not the implementation's tests, they are the specification**: the
+registry owns them, they are published at an address, they are frozen with the contract's major
+version for life, and they are what any implementation has to satisfy — ours today, somebody else's
+tomorrow. You receive one file, and you can hold it against the six that judge it whenever you like.
+
+## What a settled input looks like
+
+The specification is not prose. Every input that has been settled is a row, addressed by an identifier
+that never changes, so that a report, a URL anchor and an API response can all cite the same one:
 
 ```ts
 {
@@ -57,11 +49,34 @@ So `slugify('Привет мир')` above is not an example written for a README
 }
 ```
 
+Nothing there was written for a README. `provenance: 'specified'` is the row saying this answer was
+decided rather than inherited from a language or a standard — and a specification has to be able to
+say that about itself, because the answers it chose are the ones somebody will disagree with. The
+argument travels with the answer instead of living in a changelog.
+
 Beside the table sit the properties, which say what must hold for *every* input rather than for a
-named one — `p2-idempotence`, that slugging a slug changes nothing; `p8-one-separator-per-gap`, that
-a separator appears exactly between two runs. `toopo add` writes you the implementation and nothing
-else. The table that judges it, the properties, the rationales and the benchmarks stay in the open,
-at the address written into the first line of the file you installed.
+named one — `p2-idempotence`, that slugging a slug changes nothing; `p8-one-separator-per-gap`, that a
+separator appears exactly between two runs.
+
+## What lands in your project
+
+One file, at `src/lib/toopo/string/slugify.ts`, with its digest recorded in `toopo.lock`. It imports
+nothing, and after the install nothing of ours runs in your program: no runtime, no wrapper, no
+resolution step. Its first two lines are the whole of what it asks of you:
+
+```ts
+// typescript/string/slugify@1 - https://toopo.dev/typescript/string/slugify@1/
+// Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
+```
+
+The first line is an address: whoever finds this file in six months can look up what it is meant to
+do, and read the six files that decide it. The second is a licence that asks nothing back. Both lines
+are provenance rather than a condition, and you may delete them. You import it as
+`./src/lib/toopo/string/slugify.js` from your project root — the extension is `.js` although the file
+is `.ts`, which is the one spelling TypeScript resolves under every module resolution it offers.
+
+`toopo.lock` records, for every file it wrote, what the registry served and what landed on your disk —
+so *is this the code I was given* is a question your own checkout answers, with nothing from us.
 
 ## What is in the catalogue
 
@@ -135,9 +150,7 @@ and what it prints happened on your machine rather than on ours.
 
 This repository is MIT. **What `toopo add` copies into your project is MIT-0** — the MIT licence
 with its attribution clause removed — so you owe nothing for the code you receive: no notice, no
-attribution, no mention anywhere. The two-line header on those files is provenance, not a condition;
-its first line is the address of the contract that file was verified against, so whoever finds it in
-six months can look up what it is meant to do. You may delete it.
+attribution, no mention anywhere.
 
 [LICENSE](LICENSE) carries both texts and the reason for the split. The perimeter is derived from
 what the installer actually copies rather than from a list of paths, because a legal boundary kept
