@@ -463,6 +463,34 @@ record declares**, which is a worse thing and has never been named here before.
 
 **Still open, and what each one now costs.**
 
+- **That a comment naming a guard is naming one that exists.** A record may not: `confirmationFaults`
+  resolves every pair a `confirmed-by` declares against the guards its suite collects, and
+  `citationFaults` resolves the other direction. **A comment is resolved by nothing.** So citing a guard
+  in a record is an act of *verification* and citing one in a comment is an assertion nothing holds —
+  and the two look identical to a reader, because both are an identifier in backticks beside a sentence
+  saying what it keeps.
+
+  **It is not hypothetical.** `packages/site/catalogue.ts` published *what keeps them from disagreeing is
+  that `a-domain-page-lists-every-contract-the-index-files-under-it` compares the two sides* for three
+  units, and no suite collected any such guard. It came out when ADR-0126 put the name in a
+  `confirmed-by`, where the meta suite does look. The guard is written now; the class is this entry.
+
+  **The population is measured and it is not the defect count.** At `948678d`, over every tracked `.ts`,
+  `.md` and `.yml`, matching a backticked kebab-case token of four words or more: 279 tokens, of which
+  226 are guards some suite collects, and **50 of those are named in a comment and cited by no record**.
+  That is the set where the mechanism above is not running. The remaining 53 are tokens no suite
+  collects, and **counting them as defects would be false**: read one by one they are mostly case
+  identifiers, `NEEDS` identifiers, a lifecycle state, sample names and one npm package — the form
+  cannot tell a guard's address from a case's, because ADR-0017 gives them the same shape on purpose.
+
+  **What would close it is not a wider sweep.** A guard over comments would have to decide which
+  kebab-case token is meant as a guard, which is the judgement the shape deliberately does not carry. The
+  executable form is the one three entries here already name — a validation stage reading this
+  repository's own strings — and what it would need beyond those is a way for a comment to *declare* that
+  it is citing a guard, which is a convention nothing here has. Priced and not taken. **What is cheap and
+  is done instead is the convention**: a comment that says a guard keeps something is worth a record's
+  `confirmed-by`, and the record is where the citation is resolved. ADR-0126.
+
 - **That a citation inside a file a published contract freezes ever resolves again.** The two shared
   files carry three identifiers of a history that no longer exists — `3ec99c5…` twice in prose, and
   `THE_ANATOMY_WAS_MEASURED_AT` in `every-contract.ts`, which is a constant and not a comment. They
@@ -1291,6 +1319,15 @@ of the thesis.
   measured twice, ten units apart, on subjects sharing nothing. It is the cheapest test for a guard
   that cannot fail: ask whether what the guard perturbs is the claim or something computed from it.
   ADR-0087.
+- **Write the guard beside it.** After ADR-0087's test, this is the cheapest way to find a guard that
+  cannot fail, and it is a gesture rather than a rule: naming a *neighbouring* guard forces the first
+  one's claim to be said out loud — *this one is about the order, so that one is about something else* —
+  and the gap shows in that sentence. A reread asks whether a guard looks right, which it does; the
+  neighbour asks what it establishes that the neighbour does not, which is the question a decorative
+  guard cannot answer. **Four were found this way in one day**, three of them on guards written the same
+  hour: a round-trip fixture whose five characters could not disagree, a document check its own
+  counter-examples were refused by for another reason, and a page check the column already satisfied.
+  ADR-0125, ADR-0126.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
 - Report what you left out. Never narrow the scope silently.
