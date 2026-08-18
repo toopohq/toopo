@@ -556,7 +556,7 @@ const mutants: readonly Mutant[] = [
    * in the first place: a wrong page does not break a build, it is believed.
    */
   sameOnEveryLens(
-    'W-16',
+    'W-83',
     'drops the warning from every use case, leaving four demonstrations that are each true and ' +
       'together tell a reader to key a tag store on a lossy answer',
     [contractPageFile(A_USE_CASE_CARRIES_ITS_WARNING, '')],
@@ -573,7 +573,7 @@ const mutants: readonly Mutant[] = [
    * `日本語テキスト` for `日本語テキスト` and the two halves of that call are the same string.
    */
   sameOnEveryLens(
-    'W-17',
+    'W-84',
     'shows a use case answering its own argument, so the card demonstrates a function that does ' +
       'nothing while the replay that checks the declared answer stays green',
     [
