@@ -8,7 +8,7 @@ governs:
 confirmed-by:
   - battery: freeze
     guard: every-published-binding-still-hashes-to-what-it-was-published-as
-  - battery: registry
+  - battery: registry-storage
     guard: every-standing-field-says-why-it-cannot-be-frozen
 ---
 
