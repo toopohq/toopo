@@ -28,9 +28,9 @@ before the decision and the decision was reaffirmed after it, which is why this 
 mechanism rather than the intent.
 
 **A rewrite of this repository's history is not a routine act**, and the reason is the thing this
-repository sells. Two hundred and twenty-three identifiers in the tracked tree name commits of this
-graph; four npm attestations name commits of it; three `evidence/*` tags retain seventeen commits that
-`main` does not reach. All of that is addressing, and a rewrite renames every address at once.
+repository sells. **226 occurrences across every tracked file named a commit of this graph**; four npm
+attestations name commits of it; three `evidence/*` tags retain seventeen commits that `main` does not
+reach. All of that is addressing, and a rewrite renames every address at once.
 
 **Second time, and the first is why this one was possible.** ADR-0095 records the rewrite of
 2026-08-16, which took a personal address out of every commit and established that the trees survive a
@@ -68,9 +68,20 @@ The rule is applied **per occurrence and never per identifier**, and the test is
 - **This repository at that commit** — the identifier is a coordinate, and it is translated.
 - **Another system's record** — the identifier is a quotation, and it stays as that system spells it.
 
-Measured over every tracked file, not only the ones the citation guard reads: **221 translated, 2
-kept.** The two are `gitHead` lines inside fenced transcripts of npm's own record, in ADR-0109 and
-ADR-0111.
+Measured over every tracked file and not only the ones the citation guard reads, as one population
+whose parts add up:
+
+```
+translated                                                221
+kept as npm spells them, the two fenced gitHead lines       2
+frozen inside a published contract, unrepairable            3
+                                                          ---
+occurrences naming a commit of this graph                 226
+```
+
+**The sweep is over every tracked file for a reason worth stating**: `A_CITATION` reads `.ts` and `.md`,
+and three of the 221 were in `suites.yml` and `wrangler.jsonc`, where no guard would ever have found
+them dead.
 
 **The finding worth carrying out of this is that one identifier fell on both sides.** `a413615…`
 occurred five times. In ADR-0111 it is transcribed from npm's record as `gitHead a413615908a9…` and it
@@ -198,9 +209,9 @@ resolving, and only then does the suite mean anything: green with the translated
 
 **Commit messages had their coordinates translated wholesale, by the tool and not by the rule.**
 `filter-repo` rewrites resolvable identifiers inside messages unless told not to, and it cannot know
-which of them quote npm. Measured: 102 messages carry 175 resolvable runs, four of which name a
-`gitHead` npm still holds. Turning the feature off would have broken 171 correct translations to
-protect 4, in text no mechanism here reads. Taken knowingly.
+which of them quote npm. Measured: 102 messages carry 175 resolvable runs, and **four of those messages
+name a `gitHead` npm still holds**. Turning the feature off would have broken every correct translation
+among the 175 to protect what those four say, in text no mechanism here reads. Taken knowingly.
 
 **A guard's own claim of coverage was found false on the way through.** `history.ts` said the
 identifiers its narrow form misses are quoted elsewhere in their own file and reached anyway. Records
