@@ -1,10 +1,9 @@
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
-
 import { describe, it, expect } from 'vitest'
 
-import { THE_INVOCATION } from '../packages/registry/address.ts'
-import { THE_REPOSITORY } from './paths.ts'
+import { edgeCases } from '../contracts/typescript/string/slugify/edge-cases.ts'
+import { THE_INVOCATION, renderContract } from '../packages/registry/address.ts'
+import { THE_SUITES, guardsCollectedIn } from './decisions.ts'
+import { rootDocument, theCatalogueRecords } from './root-documents.ts'
 import {
   THE_PINS_ARE_AN_ASSERTION,
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
@@ -13,8 +12,7 @@ import {
 } from './published.ts'
 
 /**
- * The figures the front of this repository publishes, and the sentence that says what kind of thing
- * they are, resolved against the instrument that produces both.
+ * Everything the front of this repository shows of itself, resolved against what produced it.
  *
  * `README.md` is the first thing a stranger reads and the last thing anybody edits. It cannot compute
  * anything - it is Markdown, and generating it would put the project's opening sentence behind a
@@ -24,8 +22,14 @@ import {
  * **It is the same guard the method page carries, aimed the other way.** There, every figure is
  * computed and a guard requires each run of digits a reader can see to occur in the data. Here the
  * figures are written and a guard requires each to equal what the data says. Both fail on the same
- * event - the instrument moving while the prose does not - and this one is the cheaper half, because
- * a README has five figures and a page has forty.
+ * event - the thing measured moving while the prose does not - and this one is the cheaper half,
+ * because a README carries a handful of figures and a page carries forty.
+ *
+ * **The two blocks below are two upstreams, and the second arrived with a false figure already on the
+ * page.** The instrument produces the mutation figures; the catalogue produces the contract counts,
+ * the answers the demonstration prints and the addresses it names. Nothing had ever aimed anything at
+ * the second, so the page could publish a count of the whole catalogue as a count of what a reader can
+ * install - which is what it did, for a year. ADR-0113.
  *
  * The limit is the method page's own, stated rather than discovered: **a literal equal to today's
  * value passes today.** It goes red on the day the measurement moves, which is the day it would
@@ -40,7 +44,7 @@ import {
  * match a layout. Collapsing runs of whitespace makes a claim the sentence rather than the sentence
  * plus its column width, and it is what makes a transcription longer than one line checkable at all.
  */
-const readmeSource = (): string => readFileSync(join(THE_REPOSITORY, 'README.md'), 'utf8')
+const readmeSource = (): string => rootDocument('README.md')
 
 const README = (): string => readmeSource().replace(/\s+/g, ' ')
 
@@ -139,5 +143,150 @@ describe('what the readme publishes about the measurement', () => {
     expect(named.filter((why) => !text.includes(String(counted[why as keyof typeof counted])))).toEqual(
       [],
     )
+  })
+})
+
+/**
+ * The contract the README demonstrates, and the row it quotes to say what a contract is. ADR-0113.
+ *
+ * `string/slugify@1` is named here and nowhere else in this file, so the day the page demonstrates a
+ * different one this is the single line that moves.
+ */
+const DEMONSTRATED = 'string-slugify'
+
+/** A call and its answer, as the page writes one: `slugify('x')  //=> 'y'`. */
+const AN_ANSWER_SHOWN = /^slugify\('(.*)'\) +\/\/=> '(.*)'$/gm
+
+/** The row the page quotes whole, and the two guards below that read it are why it is named once. */
+const QUOTED = 'cyrillic-is-kept'
+
+/**
+ * As much of a rationale as the page shows before its ellipsis.
+ *
+ * A README quoting three hundred characters of argument would be quoting the contract instead of
+ * pointing at it, and truncating without a mechanism is how a quotation becomes a paraphrase nobody
+ * checked. So the page shows one sentence and this is what says which sentence that is.
+ */
+const firstSentenceOf = (rationale: string): string =>
+  rationale.slice(0, rationale.indexOf('. ') + 1)
+
+describe('what the readme shows of the catalogue', () => {
+  /**
+   * The two figures the page gives about the catalogue, against the records the registry would serve.
+   *
+   * **They were wrong when this guard was written, which is the whole argument for it.** The page said
+   * *the four installable contracts settle 187 named edge cases*; 187 is the total over all five, and
+   * the four settle 157 - a figure `packages/site/read-literal.test.ts` had already published in as many
+   * words, one folder away, for a year. Nothing connected the two, because the guard above this one
+   * resolves the instrument's figures and the catalogue is a second upstream nobody had aimed anything
+   * at.
+   *
+   * The counts are derived and never transcribed, so `1 refused` is arithmetic over the lifecycles
+   * rather than a word: a sixth contract, or a fifth published, reddens this without anybody counting.
+   */
+  it('every-figure-the-readme-gives-about-the-catalogue-is-one-the-contracts-declare', () => {
+    const held = theCatalogueRecords()
+    const installable = held.filter((record) => record.lifecycle.state === 'published')
+    const refused = held.filter((record) => record.lifecycle.state !== 'published')
+    const cases = installable.reduce(
+      (total, record) => total + record.caseTables.reduce((count, table) => count + table.cases.length, 0),
+      0,
+    )
+    const text = README()
+
+    const claims = [
+      `**${held.length} contracts, ${installable.length} of them installable and ${refused.length} refused.**`,
+      `settle **${cases} named edge cases**`,
+    ]
+
+    expect(claims.filter((claim) => !text.includes(claim))).toEqual([])
+  })
+
+  /**
+   * And the table beside those figures names every contract there is.
+   *
+   * A count and a list are two claims, and the count is the one that stays true while the list rots: a
+   * sixth contract admitted tomorrow reddens the guard above by arithmetic, and this is what stops the
+   * repair being to edit the number and leave the table at five.
+   */
+  it('every-contract-the-catalogue-holds-is-named-on-the-readme', () => {
+    const text = README()
+    const named = theCatalogueRecords().map((record) => renderContract(record.address))
+
+    expect(named.filter((address) => !text.includes(`\`${address}\``))).toEqual([])
+  })
+
+  /**
+   * Every answer the page prints beside a call is one the contract settles.
+   *
+   * **This is what the page's opening claims about itself** - *every line above is a row of the
+   * contract's table, quoted rather than composed* - and a claim about a demonstration is exactly the
+   * kind nobody rereads. Without it the front of a registry that sells verification would print five
+   * plausible answers, which is the failure it exists to argue against, on the surface where it would
+   * cost most.
+   *
+   * The comparison is against the table and deliberately not against the implementation. Running
+   * `slugify` here would establish that the page agrees with the code; comparing against the table
+   * establishes that it agrees with the *specification*, which is the object this project publishes -
+   * and `edge-cases.test.ts` is what ties the two, once, where it belongs.
+   *
+   * The second expectation is what stops the first being vacuous: a page with no demonstration on it
+   * satisfies a filter over nothing.
+   */
+  it('every-answer-the-readme-shows-is-a-case-the-contract-settles', () => {
+    const shown = [...readmeSource().matchAll(AN_ANSWER_SHOWN)].map(
+      (call) => [call[1] as string, call[2] as string] as const,
+    )
+
+    expect(
+      shown.filter(
+        ([text, answer]) =>
+          !edgeCases.some((entry) => entry.text === text && entry.expected === answer),
+      ),
+    ).toEqual([])
+    expect(shown).not.toEqual([])
+  })
+
+  /**
+   * And the row the page quotes to show what a contract is carries the fields the contract gives it.
+   *
+   * Every field is read off the row rather than written here, so the block on the page is a quotation
+   * and not a drawing of one. What it cannot establish is that the *shape* is right - a field the
+   * contract carries and the page leaves out is invisible here - and that fails in the safe direction:
+   * the page under-quotes rather than inventing.
+   */
+  it('every-field-the-readme-quotes-from-a-case-is-the-one-the-contract-declares', () => {
+    const row = edgeCases.find((entry) => entry.id === QUOTED)
+    const text = README()
+
+    expect(row).toBeDefined()
+
+    const claims = [
+      `id: '${row?.id}'`,
+      `group: '${row?.group}'`,
+      `text: '${row?.text}'`,
+      `expected: '${row?.expected}'`,
+      `provenance: '${row?.provenance}'`,
+      firstSentenceOf(row?.rationale ?? ''),
+    ]
+
+    expect(claims.filter((claim) => !text.includes(claim))).toEqual([])
+  })
+
+  /**
+   * Every property the page names by its identifier is one the contract's suite collects.
+   *
+   * An address printed on the front page and resolving nowhere is this repository's own recurring
+   * defect, and the README had never carried an address before this unit. Both directions are asked:
+   * a guard renamed in the contract reddens the first expectation, and a property dropped from the page
+   * reddens the second - which is what keeps this list about the page rather than about itself.
+   */
+  it('every-property-the-readme-names-is-one-the-contracts-suite-collects', () => {
+    const named = ['p2-idempotence', 'p8-one-separator-per-gap']
+    const collected = guardsCollectedIn(THE_SUITES[DEMONSTRATED] as string)
+    const text = README()
+
+    expect(named.filter((guard) => !collected.has(guard))).toEqual([])
+    expect(named.filter((guard) => !text.includes(`\`${guard}\``))).toEqual([])
   })
 })

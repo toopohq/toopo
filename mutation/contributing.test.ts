@@ -1,13 +1,8 @@
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
-
 import { describe, it, expect } from 'vitest'
 
-import { THE_REPOSITORY } from './paths.ts'
+import { rootDocument, theCatalogueRecords } from './root-documents.ts'
 import { FIELD_MAP } from '../packages/registry/field-map.ts'
 import type { ContractRecord } from '../packages/registry/contract-record.ts'
-import { REPOSITORY_ROOT, serialiseContract } from '../packages/registry/serialise.ts'
-import { theFive } from '../packages/registry/the-five.ts'
 import {
   CONTRACT_METHOD_RULE,
   EVALUATION_RULE,
@@ -33,10 +28,7 @@ import { OWN_SIGNATURE_RULE } from '../packages/validation/states-its-own-signat
  * no battery injects into, which is `verifiability.ts`'s line and not an escape from one.
  */
 
-const CONTRIBUTING = (): string => readFileSync(join(THE_REPOSITORY, 'CONTRIBUTING.md'), 'utf8')
-
-const records = (): readonly ContractRecord[] =>
-  theFive.map((source) => serialiseContract(REPOSITORY_ROOT, source))
+const CONTRIBUTING = (): string => rootDocument('CONTRIBUTING.md')
 
 /**
  * Each family the document counts, addressed by the path the schema already gives it.
@@ -93,7 +85,7 @@ describe('what the contributing guide publishes about the catalogue', () => {
    * instead of failing on the first.
    */
   it('every-figure-in-contributing-is-the-one-the-five-contracts-declare', () => {
-    const held = records()
+    const held = theCatalogueRecords()
     const text = CONTRIBUTING()
 
     const claims = [
@@ -122,7 +114,7 @@ describe('what the contributing guide publishes about the catalogue', () => {
    * overstates - so the claim cannot quietly become true of nothing.
    */
   it('the-ratio-contributing-argues-from-is-the-one-the-counts-give', () => {
-    const held = records()
+    const held = theCatalogueRecords()
 
     expect(Math.floor(totalOf(held, FROZEN) / totalOf(held, CORRIGIBLE))).toBe(3)
     expect(CONTRIBUTING()).toContain('More than three frozen for every one')
