@@ -21,15 +21,15 @@ on gaining clauses, each correct where it was added, until the paragraph says le
 its parts. Three instances were found by hand, which is not a method.
 
 **The mechanism is insertion and not appending, and that was measured rather than assumed.** The
-header of `packages/registry/address.ts` was the first instance. Its blame at `50cc54f`:
+header of `packages/registry/address.ts` was the first instance. Its blame at `2385fc2`:
 
-    144fc4c3  2026-08-03  10  Nothing below is a string. That is the whole content …
-    144fc4c3  2026-08-03  13  cost in advance - "…the pair, never the identifier alone" -
-    5a3b9650  2026-08-16  14  and ADR-0099 is why the `@` stayed …
-    a0420817  2026-08-15  15  and ADR-0031 is why `THE_ORIGIN` …
-    81dcaf0e  2026-08-15  16  ADR-0049 is why every rendering carries the language …
-    81dcaf0e  2026-08-15  17  first instance of -
-    144fc4c3  2026-08-03  18  and fifteen identifier strings are held by more than one contract …
+    f9d1b079  2026-08-03  10  Nothing below is a string. That is the whole content …
+    f9d1b079  2026-08-03  13  cost in advance - "…the pair, never the identifier alone" -
+    9053d18d  2026-08-16  14  and ADR-0099 is why the `@` stayed …
+    ce98c449  2026-08-15  15  and ADR-0031 is why `THE_ORIGIN` …
+    c1fa3b2e  2026-08-15  16  ADR-0049 is why every rendering carries the language …
+    c1fa3b2e  2026-08-15  17  first instance of -
+    f9d1b079  2026-08-03  18  and fifteen identifier strings are held by more than one contract …
 
 Four commits spliced four clauses **between** line 13 and line 18. The closing clause is original, and
 it reads as a non-sequitur because it used to follow line 13 directly. The dash opened at line 17 is
@@ -69,7 +69,7 @@ the class, and `git blame` is the only thing that decides the author of a line, 
 that sentence made executable rather than a typographic trace of it.
 
 **Three hands is where the report starts listing, and the cut was measured rather than picked.** A
-sample of seventeen two-hand paragraphs at `50cc54f` reads clean — contract headers, module headers,
+sample of seventeen two-hand paragraphs at `2385fc2` reads clean — contract headers, module headers,
 well-built blocks — because two hands is ordinarily a correction. Three is the first count at which
 two separate units have edited a paragraph without either touching what the other left.
 
@@ -81,7 +81,7 @@ taking again.
 
 ## Consequences
 
-**Measured at `50cc54f`, over every tracked source: 8 046 paragraphs across 362 files, 32 at three
+**Measured at `2385fc2`, over every tracked source: 8 046 paragraphs across 362 files, 32 at three
 hands or more.**
 
 | population | paragraphs | 1 | 2 | 3 | 4 | 5 |
@@ -122,7 +122,7 @@ rest, and it is the argument for correction over count:
   held by all five is stated in the same file.
 
 **A second signature, cheap and precise, covers the second instance.** A heading inside a comment is
-the house style, not a defect: at `50cc54f`, over production TypeScript alone, **317 rule lines in 64
+the house style, not a defect: at `2385fc2`, over production TypeScript alone, **317 rule lines in 64
 files**. What deviates is the *position* rather than the heading — of the 66 comment blocks carrying
 one, **61 are file headers and 5 are attached to a declaration**. All five are repaired: the rule and
 the heading become the bolded lead sentence the same files already use one paragraph later.

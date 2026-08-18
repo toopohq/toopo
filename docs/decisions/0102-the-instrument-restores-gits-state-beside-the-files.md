@@ -14,7 +14,7 @@ confirmed-by:
 ## Context and Problem Statement
 
 A full replay of the nineteen batteries could not finish, and had not been able to for about twenty
-commits. Measured at `0671e6e`: a completed `registry-storage` leaves `.rebuilt/<HEAD>` registered as a
+commits. Measured at `c21865e`: a completed `registry-storage` leaves `.rebuilt/<HEAD>` registered as a
 worktree whose directory has gone, and the six batteries that follow it in `THE_BATTERIES` — `site`,
 `string-levenshtein-spec`, `string-levenshtein`, `string-slugify-spec`, `string-slugify`,
 `validation-stage-1` — then die in a tenth of a second each at `assertNoStrayWorktree`. So
@@ -41,7 +41,7 @@ the directory goes and the registration stays:
 ```
  Test Files  1 passed (1)      Tests  4 passed (4)
 
-C:/…/toopo/.rebuilt/0671e6e6…  0671e6e (detached HEAD) prunable
+C:/…/toopo/.rebuilt/c21865eb…  c21865e (detached HEAD) prunable
 prunable gitdir file points to non-existent location
 ```
 
@@ -51,7 +51,7 @@ its pin says — and leaves git exactly as it found it:
 ```
  Test Files  2 failed (2)      Tests  4 failed | 9 passed (13)
 
-C:/Users/Mathis/Desktop/Toopo/toopo  0671e6e [main]
+C:/Users/Mathis/Desktop/Toopo/toopo  c21865e [main]
 ```
 
 **The path says where it comes from.** `bindingsAtRevision` is called against *this* repository in
@@ -115,14 +115,14 @@ exists against, arriving one cell later and blamed on the wrong run.
 
 The obvious repair is the battery-level `finally`, and it is wrong. What it would leave is this.
 
-Measured at `0671e6e`, with the residue present, on the whole `packages/registry` suite read exactly as
+Measured at `c21865e`, with the residue present, on the whole `packages/registry` suite read exactly as
 `runSuite` reads it:
 
 ```
 assertions in the JSON report : 351
 by status                     : {"passed":347,"skipped":4}
 failed                        : 0
-frozen-for-life reported      : "0671e6e6… cannot be rebuilt, because git could no…"
+frozen-for-life reported      : "c21865eb… cannot be rebuilt, because git could no…"
 ```
 
 The four guards of `frozen-for-life.test.ts` are **`skipped`, not `failed`**. The file cannot start:

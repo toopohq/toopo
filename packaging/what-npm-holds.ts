@@ -19,7 +19,7 @@
  * ---------------------------------------------------------------------------
  *
  * npm serves two documents at one address and the `Accept` header chooses between them. Measured at
- * `8dab5d4` against `registry.npmjs.org`, on this package:
+ * `d8a25ae` against `registry.npmjs.org`, on this package:
  *
  *     GET /toopo                                       200   18 521 bytes
  *     GET /toopo  with the abbreviated Accept           200    2 597 bytes

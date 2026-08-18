@@ -117,7 +117,7 @@ search engine that found the temporary address would index an address whose ever
 indexing does not come back on request.
 
 **That clause is dated because the origin has since been connected**, and the rule outlived its own
-premise: as of `994374d` those links resolve, so indexing the temporary address would publish a
+premise: as of `27d1dbb` those links resolve, so indexing the temporary address would publish a
 duplicate of a live catalogue rather than a set of dead ones. The decision does not move — the harm is
 milder and more durable — and [ADR-0103](0103-the-declared-origin-serves-this-catalogue.md) carries the
 measurement that the pattern still matches, which is the half this record could only ask for.
@@ -177,7 +177,7 @@ file of that folder reaches a hundred and first rule. The claim was made before 
 asked, and the batteries are what refused it — `site` reported six of the eight new guards as guards
 nothing reddens, which is how the gap was found rather than by rereading this section.
 
-Read off `npm run battery`, at `02ebe46`:
+Read off `npm run battery`, at `5547bcb`:
 
 | guard | red on |
 | --- | --- |

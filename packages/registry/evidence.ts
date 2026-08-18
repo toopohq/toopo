@@ -188,7 +188,7 @@ export const resolveGuard = (
  * gain and lose `p1-two-spellings-one-slug`, `G-22` gains and loses `p2-idempotence`, each on both
  * lenses. All three runs exited zero, so every *pinned* guard held: what moves is exactly what the
  * battery does not pin, which is the discipline working rather than failing. Two of those three cells
- * are new here - `fc51b00` found `L-18` and `G-22` by checking declared pins, and a cell whose
+ * are new here - `c2601e5` found `L-18` and `G-22` by checking declared pins, and a cell whose
  * movement is unpinned leaves no trace for that check to find.
  *
  * `attributionRuns` is the number of independent runs a claim naming a guard must survive as an
@@ -218,6 +218,6 @@ export const SEEDING_POLICY: SeedingPolicy = {
   measurement:
     'three complete runs of the string-slugify battery, 58 cells each: 0 verdicts moved and 6 ' +
     'attributions moved, on G-07, G-22 and F-10, each on both lenses. Every pinned guard held. ' +
-    'Earlier, at fc51b00: L-18 red on 23 runs of 25 and G-22 on 8 of 9, measured while checking ' +
+    'Earlier, at c2601e5: L-18 red on 23 runs of 25 and G-22 on 8 of 9, measured while checking ' +
     'declared pins. The intersection of three runs is what the batteries already take.',
 }

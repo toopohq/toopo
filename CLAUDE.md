@@ -33,7 +33,7 @@ registered here is its root.
 **And that freeze now covers what a contract's guards call, which until this unit it did not.** A
 fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard
 left all eight ledger digests identical to the byte while a contract the guard exists to refuse went
-green — measured at `9176c9e`, with the same defect red once the shared file was put back. `sharedHarness`
+green — measured at `e8f68ca`, with the same defect red once the shared file was put back. `sharedHarness`
 is the closure: the files a contract reaches outside its folder are declared, derived independently by a
 walk over what the seven really import, refused on any disagreement, frozen with the contract and served
 beside it — so a reader who fetches every file a snapshot names can now resolve every import those files
@@ -81,7 +81,7 @@ feature lands at `lib/toopo/string/slugify.ts` and no longer at `…/slugify/slu
 method `1.0.2` established — `npm pack toopo@1.0.2` unpacked and compared with what this tree builds —
 35 modules either side, 432 200 bytes against 434 251, and **5 of the 35 differing**: `ignored.js`,
 `plan.js`, `reconcile.js`, `report.js` and `rewrite.js`. Those five are exactly the five modules
-`8dab5d4` edited that reach the archive, which was checked rather than assumed; `relocate.js` is
+`d8a25ae` edited that reach the archive, which was checked rather than assumed; `relocate.js` is
 unchanged, because that commit touched only its test. **PATCH, and the tension is written down rather
 than smoothed**: this moves where files appear in somebody's repository, which is further than either
 release before it — but nothing gains a capability and nothing changes shape, and MINOR would promise a
@@ -95,7 +95,7 @@ corrected and the package was not, twice in two days, with nothing saying so. Th
 red: a dispatch of a tree declaring `1.0.2`, refused by npm because `1.0.2` was already published. A job
 now reads the listing of versions npm holds, compares it with what this checkout declares, and the
 publishing job fires on the difference. **The condition is deliberately not *did this commit move the
-number***, which is a proxy: measured at `8dab5d4`, that comparison selects correctly on all five of the
+number***, which is a proxy: measured at `d8a25ae`, that comparison selects correctly on all five of the
 440 commits `HEAD` reaches where the version differs from its parent's, and it would still miss a bump
 pushed under a later commit, because GitHub runs a workflow once per push and on the tip. Asking the
 registry has no such case, and it is asked as a **listing** rather than as `dist-tags.latest`, which is a
@@ -112,7 +112,7 @@ established nothing that the counts and the per-file digests beside it did not a
 replaces it is the comparison any reader can take with `npm pack` and a digest tool.
 
 **The declared origin serves this catalogue, and that is the half that changed.** `main` builds the
-tree in CI and `wrangler` uploads it to Cloudflare Pages. Measured at `994374d` over **all 76 addresses
+tree in CI and `wrangler` uploads it to Cloudflare Pages. Measured at `27d1dbb` over **all 76 addresses
 the tree writes** — not a sample of them: every one answers, the 36 addressed by content carry the
 year-long `Cache-Control` `cachePolicyFor` declares, `_headers` answers 404, and an address nothing was
 ever served at answers 404 with the page that says exactly that. **`@` is served directly, with no
@@ -180,7 +180,7 @@ is part of the contract* stops being an assertion. It carries no identifier, bec
 and an address on rewritable prose will one day name something else; the warning is a required field,
 because that is what a use case is worth reading for. ADR-0118.
 
-**And the page is read in two halves.** Measured at `7bdbb33`: 3 800 visible words over eight sections
+**And the page is read in two halves.** Measured at `f05951f`: 3 800 visible words over eight sections
 of one weight, of which **2 482 — two thirds of everything under a heading — were the settled cases**.
 The complaint was never the length. Above the line: what it does, a form, the jobs it is for — 754
 words. Below: the signature, the cases, the properties, the profiles, what a reader can check — 3 262.
@@ -203,7 +203,7 @@ a section of the page — and it is placed by the grid rather than reordered, so
 reader announces is the one a sighted reader sees. ADR-0121.
 
 **The measure is written in characters and reaches every face, and the ceiling was never held before.**
-Measured at `07a100c` over 688 prose elements, one Range per character grouped by line box: **255 lines
+Measured at `81bf9bc` over 688 prose elements, one Range per character grouped by line box: **255 lines
 over 75 characters, worst 169**. The rule existed — `body` laid its content out in a 74ch column — and
 `.shell` spanned the whole width by declaration with nothing under it re-establishing one. **The half
 worth keeping is the other one**: `ch` is the advance of `0`, so a container capped in `ch`
@@ -224,7 +224,7 @@ before any check here did.** Three container ceilings were in play and the small
 `main` at 45rem, `.shell` at 78rem — which named no question anywhere in this repository — and the
 body's own grid track at a *measure*, which is a bound on a line applied to a box. Only the domain and
 contract pages carry a `.shell`, so that third one bound the card, the code blocks and the lists of
-the other four pages at every width. Measured at `e2e764b` over all eleven files of HTML at four
+the other four pages at every width. Measured at `456ee44` over all eleven files of HTML at four
 widths: **17.5% of a 2 560px screen on the front page, 38.7% on a contract page**. Each block now says
 what it is worth — a card and a code block as wide as their content, a case table one width for every
 row — and the layout is derived from the widest of them, `2 * measure + gap`, which resolves within
@@ -269,7 +269,7 @@ headings at 12px and nothing touching.
 
 **A guard of the site suite had been reddened by nothing since it was written, and the battery said so
 to nobody.** `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported
-unaccounted for by `npm run battery site` at `07a100c` and at every commit before it — measured both
+unaccounted for by `npm run battery site` at `81bf9bc` and at every commit before it — measured both
 ways, by checking the base out and running the battery there. W-24 looks as though it covers it,
 because it replaces the inline stylesheet with a link; it does not, because **with no style element the
 guard finds no palette, its loop runs zero times and it passes**. A guard passing vacuously, in the one
@@ -341,7 +341,7 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
 decision record.** They are a list and not a sentence, and that is a repair rather than a layout:
 this paragraph was a chain of nine clauses joined by semicolons, one unit having added each, and it
-carried five hands at `50cc54f` — the joint-highest in the repository. A closure is one line, so
+carried five hands at `2385fc2` — the joint-highest in the repository. A closure is one line, so
 adding one cannot lengthen anything a reader has already read. ADR-0112.
 
 - two closed by stage 1 of the validation pipeline — ADR-0005;
@@ -361,7 +361,7 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
-was closed in fact by `e4eca00`, the move to Pages, which changed eight files and none of them this
+was closed in fact by `45f702f`, the move to Pages, which changed eight files and none of them this
 one — so for three commits this list carried a live entry about a redirect that no longer happened,
 and the paragraph above it described the host that had been left behind. Nobody was misled only
 because nobody read it in that window. **A mechanism and its entry are one event and the rule already
@@ -383,7 +383,7 @@ same string twice, with two different reasons beside it, and nothing could have 
 about any entry.** *A published version is frozen for life* is the biggest `one-directional`
 declaration this repository has ever carried — it is the whole security argument, every lockfile in the
 world would hold the digest it moved, and it is what the product is sold on. It has been in this file
-since the first commit, 367 commits before `74904ef`. This list has existed for 271 of them, for exactly
+since the first commit, 367 commits before `d75ac8f`. This list has existed for 271 of them, for exactly
 this class of defect, and it never named it. Ten entries at that commit, none of them the one that
 mattered most.
 
@@ -423,7 +423,7 @@ record declares**, which is a worse thing and has never been named here before.
   to an alias, no answer cites one, and correcting one breaks nobody's code; being wrong about an
   alias costs a revision* and not a major. `searchAliases` is a field of `identity`,
   `contractSnapshot` freezes `identity` whole, and since ADR-0106 the four contracts are bound at
-  `15aeb6c`. Measured at `7bdbb33`: adding one alias to `string/slugify@1` moves its contract digest
+  `d3a5166`. Measured at `f05951f`: adding one alias to `string/slugify@1` moves its contract digest
   from `855107da…` to `5fe0ecfa…`, which `every-published-binding-still-hashes-to-what-it-was-published-as`
   refuses. **So the cheapest of the three contributions this project invites is the one that cannot be
   accepted**, and a reader of ADR-0023 leaves believing they can make it.
@@ -443,6 +443,47 @@ record declares**, which is a worse thing and has never been named here before.
   now say it is not kept: the head of ADR-0023, and this entry.
 
 **Still open, and what each one now costs.**
+
+- **That a citation inside a file a published contract freezes ever resolves again.** The two shared
+  files carry three identifiers of a history that no longer exists — `3ec99c5` twice in prose, and
+  `THE_ANATOMY_WAS_MEASURED_AT` in `every-contract.ts`, which is a constant and not a comment. They
+  cannot be repaired: the digest covers those files byte for byte, so the edit that would fix them
+  rebinds four published addresses, and permanent rule 6 forbids it. **The population is every file a
+  published contract freezes**, which today is `packages/catalogue/every-contract.ts` and
+  `packages/catalogue/identifier.ts`, and it grows by seven files with each contract published.
+
+  **The fact that makes this an entry rather than an internal untidiness is that those files are
+  served.** An auditor who fetches a contract's snapshot receives the shared harness with it, so what
+  arrives on their disk carries three identifiers that resolve nowhere — in the one artefact whose
+  whole claim is that it can be checked without taking our word for anything.
+
+  `theEditableSources` is the honest half: the citation guard sweeps what this repository may still
+  edit, and says so rather than claiming a sweep one part of which is out of reach. **What nothing
+  keeps is that the next frozen file carries a fourth.** What would close it is a validation stage
+  refusing a commit identifier in a file a submission freezes — which is the same stage three entries
+  below already name, priced there and refused there as a lint over prose. Written into that stage's
+  requirements rather than built. ADR-0124.
+
+- **That an identifier this repository writes bare is one somebody can follow.** `A_CITATION` matches
+  seven hexadecimal digits closed by a backtick, and that form was measured rather than chosen — it
+  separated 58 of 68 citations from all 29 benign runs on the day it was written. **What it does not
+  match is an identifier written bare**, and `history.ts` claimed for three records that the ones it
+  misses are quoted elsewhere in their own file and reached anyway. That claim is false: a `git log`
+  excerpt in ADR-0111, the `npm run hands` table in ADR-0112, and two ordinary comments in `style.ts`
+  write identifiers no backtick in those files repeats.
+
+  **It was found by this rewrite and not by a guard**, which is the whole of why it is here: every one
+  of those had to be translated by hand, and the guard would have been green with all of them dead —
+  the exact morning ADR-0095 says this module exists to be red on. **No rank is published**, on the
+  rule that a sentence which can be true without counting does not count, and the shape is what a
+  reader needs: an identifier inside a fenced block or a comment.
+  `git grep -nE '\b[0-9a-f]{7,40}\b' -- '*.ts' '*.md'` names the population at any commit.
+
+  **What would close it is widening the form to every run that resolves**, and the reason that is a
+  decision rather than a one-line change is what the narrow form was bought for: a truncated digest, a
+  decimal constant and a deliberately fake identifier all have to stay benign, and resolution rather
+  than shape would have to be shown to separate them. Priced as its own unit and not taken here,
+  because a rewrite is the wrong place to widen the guard that reads it. ADR-0124.
 
 - **That a breakpoint is the arithmetic of the lengths it separates.** Two guards now keep that every
   ceiling and every track of this site's layout is derived — `every-ceiling-on-a-box-is-derived-and-never-typed`
@@ -464,7 +505,7 @@ record declares**, which is a worse thing and has never been named here before.
 
 - **That a paragraph of prose has been read whole by somebody.** ADR-0112 makes it measurable: a
   paragraph has an author when one commit's blame covers every one of its lines, `npm run hands`
-  counts them, and at `50cc54f`, over all 362 tracked sources, **32 paragraphs of 8 046 carry three
+  counts them, and at `2385fc2`, over all 362 tracked sources, **32 paragraphs of 8 046 carry three
   hands or more**. Of the 22 in the three populations that unit swept, **nine needed rewriting and
   thirteen did not** — so the reading designates a zone rather than measuring a defect, and it is
   worth taking again but never worth acting on unread. **The population is every paragraph of prose
@@ -514,11 +555,11 @@ record declares**, which is a worse thing and has never been named here before.
 
   **This entry predicted the wrong failure, and it was refuted by observation rather than by
   argument.** It read *the day propagation exceeds it, CI is red with nothing wrong, which is the exact
-  failure the wait was written to remove*. Measured at `70bb31c`: the bound was **never consumed** —
+  failure the wait was written to remove*. Measured at `d739337`: the bound was **never consumed** —
   the waiting line the pre-flight prints appears in neither of that commit's two run logs — and CI was
   red anyway, once in two runs. The pre-flight read one revision and returned on its first attempt; the
-  installed client, seconds later, read the index from `70bb31c` and the implementations from
-  `1a8e562`. **An agreement observed on one reading says nothing about the next**, and no reading taken
+  installed client, seconds later, read the index from `d739337` and the implementations from
+  `013f688`. **An agreement observed on one reading says nothing about the next**, and no reading taken
   inside the suite can be the client's, because the client is another process. The cause is the alias
   and not a cache: Cloudflare Pages makes a hash-based deployment address atomic and updates a branch
   alias to point at it, `toopo.dev` is that alias, and `CF-Cache-Status: DYNAMIC` on all three
@@ -532,7 +573,7 @@ record declares**, which is a worse thing and has never been named here before.
   Cloudflare. **It has readings and it has no population**, and the two are not the same thing. Both
   readings so far are of the retry firing on the real condition — the index from the old deployment,
   the bindings from the new — and both are the span from the client's first refusal to a finished
-  chain: about **10.8 seconds** at `92e6acd`, and about **5.5 seconds** at `3b55309`. Neither is within
+  chain: about **10.8 seconds** at `206190d`, and about **5.5 seconds** at `1048d89`. Neither is within
   an order of magnitude of the 120 seconds the bound allows.
 
   **Two readings do not become a population by being written down, which is why they are written as
@@ -565,7 +606,7 @@ record declares**, which is a worse thing and has never been named here before.
 
   **The two sides do agree, and that half is now measured rather than awaited.** This entry read *the
   first dispatch is what will say whether the two sides agree at all*; the dispatch was made and it
-  published. Read at `a413615` off npm's own record: `_npmUser` is
+  published. Read at `2efc482` off npm's own record: `_npmUser` is
   `GitHub Actions <npm-oidc-no-reply@github.com>`, `dist.attestations` carries a
   `https://slsa.dev/provenance/v1` provenance, and `gitHead` names the commit. An identity token was
   minted, npm exchanged it, and the attestation was written — so the four strings and the environment
@@ -624,9 +665,9 @@ record declares**, which is a worse thing and has never been named here before.
   `packages/cli/`.**
 
   **The half about the artefact closed, and the sentence that recorded it was false for four commits.**
-  It read, measured at `7728ec2`, that `npx toopo list` answers `Take one out with toopo remove
+  It read, measured at `f065a7f`, that `npx toopo list` answers `Take one out with toopo remove
   <domain>/<name>` because *npm serves `1.0.1`, which predates the conversion* — and it went on saying so
-  after `a413615` published `1.0.2`, which carries the conversion. That is this list's own recurring
+  after `2efc482` published `1.0.2`, which carries the conversion. That is this list's own recurring
   failure arriving on this list: a dated measurement with a present-tense clause beside it, where it is
   the clause a reader believes. **What made it a four-commit lie rather than a permanent one is that a
   publication now happens on a number rather than when somebody remembers**, which is the same event
@@ -653,7 +694,7 @@ record declares**, which is a worse thing and has never been named here before.
   one. **So a decision whose subject is per-contract has no citable guard at all**, and nothing says
   so — the author discovers it as nine faults from
   `every-guard-a-decision-names-is-one-its-suite-collects`, which reports that the suite collects no
-  such identifier and not that the identifier could never have existed. Measured at `4001aa3`: zero of
+  such identifier and not that the identifier could never have existed. Measured at `10abc40`: zero of
   the 105 records cite a parameterised guard, so the rule has been kept by accident rather than by
   anything. ADR-0105 folded four guards into one apiece and that was right on its own merits, which is
   exactly what makes this worth writing down: the collision was paid around rather than found. **The
@@ -667,7 +708,7 @@ record declares**, which is a worse thing and has never been named here before.
   parameters, both affected anchors were updated, `npm run anchors` went to 0 loose — and I-01's
   replacement still read `readFileSync(join(directory, name))`, naming two identifiers that no longer
   exist. Injected, that cell does not typecheck, so it measures nothing and the anchor check says it is
-  fine. **The population is every cell of every battery**, 586 anchors across 82 files at `9176c9e`, and
+  fine. **The population is every cell of every battery**, 586 anchors across 82 files at `e8f68ca`, and
   what makes it worth an entry rather than a note is that the failure is silent in exactly the tool
   built to prevent it. What would close it is not a second lint over the text: it is injecting each
   mutant and typechecking the tree, which the replay already does one cell at a time — so the cheap form
@@ -682,7 +723,7 @@ record declares**, which is a worse thing and has never been named here before.
 
   **It is not hypothetical and the population is not zero**:
   `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was unaccounted for by the site
-  battery from the commit that wrote it until `e0be781`, measured at `07a100c` and at HEAD by running
+  battery from the commit that wrote it until `916b9f4`, measured at `81bf9bc` and at HEAD by running
   the battery at both. Nothing was red anywhere, and the guard passed vacuously the whole time. What
   closes it is not a guard but a job, and the price is what stage rule 1 says about the replay: the
   full instrument is tens of minutes, one battery is minutes, and nineteen of them in a matrix leg is
@@ -748,7 +789,7 @@ record declares**, which is a worse thing and has never been named here before.
   here whose closure would cost more than everything it sits next to, and it is not built.
 - **That no file of the tracked tree names the machine it was written on.** The sweep before the first
   push established it and nothing keeps it. **The population is the tracked tree and never the graph**,
-  and that is the whole shape of this entry rather than a detail of it: measured at `2640b5d` over
+  and that is the whole shape of this entry rather than a detail of it: measured at `efb26d1` over
   `git rev-list --objects --all`, seventeen blobs and one commit message carry a developer's home path —
   fourteen of the blobs `CLAUDE.md`, two `mutation/paths.ts`, one `vitest-entry-point.ts` — while HEAD
   carries none, every occurrence having been elided by hand as it was noticed. So a reading over the
@@ -785,9 +826,9 @@ record declares**, which is a worse thing and has never been named here before.
   cannot answer.
 - **`contentTypeOf` — declared in `endpoints.ts`, read by the local server and by no deployment**, and
   the two readings of it are worth keeping side by side because between them the defect **changed
-  nature rather than improved**. Measured at `c764867` on Workers static assets: every named and every
+  nature rather than improved**. Measured at `ed1abfd` on Workers static assets: every named and every
   content-addressed answer arrived with **no `Content-Type` at all**, because they are files with no
-  extension and nothing told the host what they are. Measured at `994374d` on Pages, over all 76
+  extension and nothing told the host what they are. Measured at `27d1dbb` on Pages, over all 76
   addresses: the pages, the twins and the modules now carry a right one, and the same **48 answers** —
   12 named and 36 addressed by content — carry `application/octet-stream`. From no header to a wrong
   header is more visible and no better: a header that is absent is a host with no opinion, and one that
@@ -797,7 +838,7 @@ record declares**, which is a worse thing and has never been named here before.
   read from `contentTypeOf` instead of `cacheControlOf`.
 
 - **That every address this tree serves carries a cache policy this repository chose.** Measured at
-  `994374d` over the 76 addresses: **ten of them do not.** The nine modules and `robots.txt` answer
+  `27d1dbb` over the 76 addresses: **ten of them do not.** The nine modules and `robots.txt` answer
   `public, max-age=14400, must-revalidate`, a policy written in no file here. `theHeaderRules` derives
   one rule per endpoint from `ENDPOINTS`, and a module is not an endpoint, so those ten match nothing
   and fall through to whatever the host does that morning.
@@ -830,7 +871,7 @@ record declares**, which is a worse thing and has never been named here before.
   served from — which is the shape `packages/registry/rebuild.ts` already has for a binding, applied to
   a tree instead of an artefact. **The clause that dated this entry has expired**: it read *not urgent
   while nothing is published, a broken promise the day after*, and 76 addresses are served at the
-  declared origin as of `994374d`. The promise is live now — a reader who follows a link that stops
+  declared origin as of `27d1dbb`. The promise is live now — a reader who follows a link that stops
   being written is told nothing was ever there — and what has not changed is the price.
 - **That a declared absence carries the date it was true**, which nothing keeps and which was found on
   this repository's own prose one day after it was written. ADR-0098 published *whether a runner's
@@ -839,7 +880,7 @@ record declares**, which is a worse thing and has never been named here before.
   has not been measured, where measuring it is possible and would falsify the sentence.** It is
   ADR-0018's rule about a dated number arriving on a declared absence, and it is harder to see there
   because there is no figure to date — nothing looks like a count, so nothing invites a coordinate.
-  Swept over the ninety-eight records at `c764867`, and **written as a list rather than as a number,
+  Swept over the ninety-eight records at `ed1abfd`, and **written as a list rather than as a number,
   because a rank is checked only by rebuilding the whole list**:
   - ADR-0001, *the cause is not established*, of a 126-line gap between two classifiers;
   - ADR-0055, *nobody has ever checked which* arms real cases reach;
@@ -859,7 +900,7 @@ record declares**, which is a worse thing and has never been named here before.
   already priced, and already refused as a lint over prose.
 - **That a control which counts a suite has seen the suite it counted.** `assertWholeSuiteRan` compares
   a total against a total and never looks at the composition, so a guard that stops answering is
-  invisible to it as long as something else answers in its place. Measured at `0671e6e`, on the state
+  invisible to it as long as something else answers in its place. Measured at `c21865e`, on the state
   ADR-0102 was closing: with a checkout left registered, `packages/registry/frozen-for-life.test.ts`
   cannot start, and the report reads **351 assertions, 347 passed, 4 skipped, 0 failed** — 351 against
   the control's 351, so the check is silent while four guards of the contract under measurement have
@@ -883,7 +924,7 @@ record declares**, which is a worse thing and has never been named here before.
   the manifest. One file, and it is the cheapest entry on this list.
 
   **That guard would be green the day it is written, and it was measured rather than assumed.** At
-  `994374d` the manifest declares one runtime dependency, `typescript`, and
+  `27d1dbb` the manifest declares one runtime dependency, `typescript`, and
   `dist/packages/validation/typescript-api.js` imports `typescript/unstable/sync` — so the declaration
   and the walk already agree, and the guard finds nothing. It is written anyway on the rule below about
   a guard born green: what it buys is not today's defect but the day somebody moves a package from one
@@ -1069,13 +1110,30 @@ These outlive the current stage and are not open to trade-off.
 - English everywhere: code, identifiers, comments, tests, commit messages, documentation.
 - Conventional commits, atomic. **`main` is pushed at the end of a unit, and a unit is not finished
   until the run it triggers is green** — every suite on two runtimes, the deployment behind them,
-  and the one proof that reaches it. Nothing else: no force, no tag, no rewriting of history.
+  and the one proof that reaches it. Nothing else: no force and no rewriting of history.
 
-  Two clauses this line used to carry are gone. It counted the suites, struck by the rule 467
+  **That clause has been broken twice, both times deliberately, both times by the owner's decision,
+  and it is written here rather than kept as a rule nobody honours.** The history was reissued on
+  2026-08-16 to take a personal address out of every commit, and on 2026-08-18 to take the assistant's
+  co-signature out of every commit. Both moved every identifier and neither moved a single tree, which
+  is what made the stamped measurements survive as renames. **What stays forbidden is a rewrite that
+  is not one of these**: an amendment to tidy a message, a rebase to linearise, a force-push that
+  repairs a mistake. Those buy nothing that a new commit does not buy, and they cost every citation in
+  the tree at once. A third rewrite is a decision with a record, not a convenience. ADR-0095, ADR-0124.
+
+  Three clauses this line used to carry are gone. It counted the suites, struck by the rule 467
   established one section up — a rank is checked only by rebuilding the whole list, and what the
-  sentence is about does not need one. And it read *never push and never create a remote*, which held
+  sentence is about does not need one. It read *never push and never create a remote*, which held
   until the CI existed, at which point keeping the two apart stopped protecting anything and only
-  delayed the reading that says the unit worked.
+  delayed the reading that says the unit worked. And it read *no tag*, which the two rewrites both
+  refuted: the three `evidence/*` tags are annotated, they are reissued with the commits they name,
+  and a convention forbidding what the mechanism requires is one that reads as false the first time
+  somebody checks it.
+- **A commit is signed by whoever wrote it, and the assistant is not a whoever.** `.claude/settings.json`
+  turns the co-signature off for anybody who clones this repository, so the convention is a mechanism
+  rather than a sentence a contributor has to read. **It is a default and not a prohibition**: crediting
+  a person who worked on a change is what a trailer is for, and anybody may write one by hand. What it
+  refuses is a trailer nobody decided to add. ADR-0124.
 - **Nothing publishes to npm from a keyboard, and nothing asks for a publication either.** This line read
   *nothing to npm ever* until `1.0.0` was published by hand, and then named a dispatch carrying a typed
   word until that turned one decision into two gestures. A publication is a **push of `main` declaring a

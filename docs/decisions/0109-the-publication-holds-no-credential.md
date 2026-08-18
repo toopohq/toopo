@@ -19,7 +19,7 @@ confirmed-by:
 
 ## Context and Problem Statement
 
-`toopo@1.0.0` was published by hand, from the machine it was written on. Measured at `ee4e485`, by reading
+`toopo@1.0.0` was published by hand, from the machine it was written on. Measured at `5130fd5`, by reading
 the registry's own record:
 
 ```
@@ -29,6 +29,12 @@ gitHead       ee4e48531f8c58df6ed8d40eb7923b102327b6e6
 dist.signatures  one, the registry's own
 dist.attestations  absent
 ```
+
+**The `gitHead` in that block and the coordinate above it were one commit and are now two.** Both named
+`ee4e485` when this was written. [ADR-0124](0124-the-co-signature-leaves-the-history.md) reissued every
+commit of this history, so the coordinate moved with the repository and the transcript did not: npm holds
+what npm holds, and this record may not correct another registry's record of its own past. The line is
+kept as npm spells it, and it names a commit this repository no longer has.
 
 The last line is the one that matters. A registry signature says *npm served these bytes*; it says nothing
 about where they came from. **So the archive a reader installs cannot be tied to the commit or to the run
@@ -158,7 +164,7 @@ account at the moment of sending, so the corrected address arrives with the same
 
 ### What has not been measured
 
-**No trusted publication has been made from this repository, at the time of writing, at `ee4e485`.** The
+**No trusted publication has been made from this repository, at the time of writing, at `5130fd5`.** The
 job is written from npm's documented example and its shape is argued above; whether the exchange succeeds
 on a first run is not something a green suite here can say, and it is not claimed. The first dispatch is
 the measurement, and what it will produce is either a published 1.0.1 carrying an attestation or a red job

@@ -115,8 +115,8 @@ something has been refused.
 
 ## Consequences
 
-**A contract page costs about a third more.** Measured over the built tree, `a036396` against
-`7f76d8f`: `string/slugify@1` goes from 35 191 to 46 471 bytes (+32 %), `date/add@1` from 38 631 to
+**A contract page costs about a third more.** Measured over the built tree, `21df25d` against
+`b667425`: `string/slugify@1` goes from 35 191 to 46 471 bytes (+32 %), `date/add@1` from 38 631 to
 50 067 (+30 %), `number/parse@1` from 34 676 to 45 724 (+32 %), `string/levenshtein@1` from 25 041 to
 34 191 (+37 %). About 5 800 of each is the stylesheet, which every page pays; the rest is the card,
 the rail, the chip bars and the case identifiers. The whole tree goes from 1 089 510 to 1 171 097

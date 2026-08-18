@@ -5,7 +5,7 @@
  * has rather than what a file says: which commits exist, what those commits carry, and which trees
  * are registered against them.
  *
- *     a citation      -> the identifier written in this repository's prose names a commit of it
+ *     a citation      -> an identifier this repository may still edit names a commit of it
  *     an address      -> no commit and no tag carries an address this repository refuses to publish
  *     a worktree      -> the only checkout registered here is this repository's own root
  *
@@ -52,12 +52,24 @@
  * backtick never follows the digits; a decimal constant is not seven digits long; and a fake
  * identifier is a single-quoted string in a test rather than prose. **Nothing is excluded by name.**
  *
- * The ten citations that form spells differently are covered without widening it. Three carry a
- * revision suffix inside the quoting and are read here. Five are the values of `QUOTING` in
- * `published.ts`, which is a declaration that those strings are commit identifiers and is read as one.
- * The remaining two - a fenced table in a decision record, and one sentence of `evidence.ts` - name
- * identifiers that same file also cites in the form above, so resolving distinct identifiers reaches
- * them anyway.
+ * Two spellings are reached without widening it. A revision suffix inside the quoting is read here.
+ * The values of `QUOTING` in `published.ts` are a declaration that those strings are commit
+ * identifiers, and that declaration is read as one.
+ *
+ * **What is not reached is an identifier written bare, and this paragraph used to say it was.** It
+ * claimed that the identifiers the form misses are named elsewhere in their own file, so that
+ * resolving distinct identifiers arrives at them anyway. That was true of the two instances it was
+ * written about, and records added since write identifiers bare inside a fenced block - a `git log`
+ * excerpt, the table `npm run hands` prints - where nothing quotes them. `style.ts` writes two in
+ * ordinary comments. **No rank is published for it**, on the rule that a sentence which can be true
+ * without counting does not count, and because the population is not stable: what a reader may take
+ * is that the gap is real and that this command names it.
+ *
+ *     git grep -nE '\b[0-9a-f]{7,40}\b' -- '*.ts' '*.md'
+ *
+ * It is on `CLAUDE.md`'s list of what this repository declares and nothing keeps, with what would
+ * close it. The rewrite of ADR-0124 is what found it: every one of those bare identifiers had to be
+ * translated by hand, and this guard would have been green with all of them dead.
  *
  * ---------------------------------------------------------------------------
  * Two limits, declared because each fails silently if it is not
@@ -102,6 +114,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+import { theFive } from '../packages/registry/the-five.ts'
 import { THE_REPOSITORY, answered, git, strayWorktrees, trackedSources } from './paths.ts'
 import { THE_COMMITS_QUOTED } from './published.ts'
 
@@ -111,6 +124,48 @@ import { THE_COMMITS_QUOTED } from './published.ts'
 
 /** Every commit reachable from any ref of this repository, which is what *this repository* means. */
 export const theHistory = (): readonly string[] => answered(git('rev-list', '--all'))
+
+/**
+ * Every file a published contract freezes, derived from what the registry serves rather than listed.
+ *
+ * A published contract's digest covers its seven declared files and every file they reach outside the
+ * folder, byte for byte, comments included. `sharedHarness` is inside `contractSnapshot.frozen`, so
+ * one character changed in either shared file rebinds every published address at once.
+ */
+const frozenByAPublishedContract = (): readonly string[] =>
+  theFive
+    .filter((source) => source.lifecycle.state === 'published')
+    .flatMap((source) => [...source.files.map((file) => `${source.folder}/${file}`), ...source.shared])
+
+/**
+ * The tracked sources this repository may still edit, which is the population a citation guard has.
+ *
+ * ---------------------------------------------------------------------------
+ * This is a category and not an exemption, and the difference is what it can promise
+ * ---------------------------------------------------------------------------
+ *
+ * A citation goes stale and is repaired; that is the whole loop this guard drives. **Inside a file a
+ * published contract freezes there is no repair**, because permanent rule 6 forbids the edit that
+ * would make one - so a citation written there is dead the moment the history is rewritten and stays
+ * dead for the life of the major. Sweeping it anyway would not catch a defect: it would assert
+ * something no action can satisfy, and a guard whose red has no green is a permanent red rather than
+ * a guard.
+ *
+ * So what is swept is named for what it is. A repository cannot answer for what it no longer has the
+ * right to modify, and saying so is more honest than claiming a sweep over a whole one part of which
+ * is out of reach. **The set is derived from the registry and never typed**, so a sixth contract
+ * publishing a sixth folder narrows this on its own.
+ *
+ * What it costs is on `CLAUDE.md`'s list of what this repository declares and nothing keeps, with its
+ * population and what would close it: the two shared files carry three identifiers of a history that
+ * no longer exists, they are served with the contract, and nothing stops the next frozen file
+ * carrying a fourth. ADR-0124.
+ */
+export const theEditableSources = (): readonly string[] => {
+  const frozen = new Set(frozenByAPublishedContract())
+
+  return trackedSources().filter((path) => !frozen.has(path))
+}
 
 // ---------------------------------------------------------------------------
 // A citation
@@ -139,7 +194,7 @@ const distinct = (citations: readonly Citation[]): readonly Citation[] => [
 /** Every commit this repository names, in its prose and in the one place it declares them as data. */
 export const citationsMade = (): readonly Citation[] =>
   distinct([
-    ...trackedSources().flatMap((path) =>
+    ...theEditableSources().flatMap((path) =>
       [...readFileSync(join(THE_REPOSITORY, path), 'utf8').matchAll(A_CITATION)].map((found) => ({
         identifier: found[1] as string,
         by: path,

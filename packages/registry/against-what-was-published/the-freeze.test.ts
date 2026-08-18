@@ -18,7 +18,7 @@ import { REPOSITORY_ROOT } from '../serialise.js'
  * commits made into it.
  *
  * **None of the three asks the question about this catalogue at this commit**, and that question is the
- * whole of permanent rule 6: the four contracts published at `15aeb6c` are bound to four digests, and
+ * whole of permanent rule 6: the four contracts published at `d3a5166` are bound to four digests, and
  * this tree either still produces them or the addresses have been rebound. Nothing here is a fixture.
  * The subject is the working tree, the past is a commit in this repository's own history, and the
  * comparison is between what somebody promised and what they are shipping.

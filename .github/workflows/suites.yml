@@ -11,7 +11,7 @@
 # What the checkout must be, measured rather than chosen
 # ---------------------------------------------------------------------------
 #
-# `fetch-depth: 0` is load-bearing and looks like a cost. Measured at `2640b5d`, by handing
+# `fetch-depth: 0` is load-bearing and looks like a cost. Measured at `efb26d1`, by handing
 # `deadCitationFaults` the population a depth-1 clone holds:
 #
 #     citations made:            54
@@ -314,7 +314,7 @@ jobs:
       # working and the measurement not.
       #
       # The suite used to ask the origin whether it agreed with itself before packing anything, and
-      # that was refuted at `70bb31c`: the pre-flight returned on its first attempt, never printing its
+      # that was refuted at `d739337`: the pre-flight returned on its first attempt, never printing its
       # waiting line, and the installed client read two revisions seconds later. An agreement observed
       # on one reading says nothing about the next. What retries now is the chain itself, bounded, on
       # the client's own refusal - the only observation made at the instant that decides. ADR-0108. The

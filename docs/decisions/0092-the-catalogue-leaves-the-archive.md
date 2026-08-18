@@ -27,7 +27,7 @@ The npm archive carried the whole catalogue. `dist/registry.json` held every con
 serves — the index, the refusals, every binding, every implementation snapshot, and every
 `reference.ts` base64 inside it — so an installed `toopo` needed nothing but the tarball.
 
-Measured at `5965079`, `npm pack --dry-run --json`:
+Measured at `3844729`, `npm pack --dry-run --json`:
 
 ```
 packed      128 527 B
@@ -72,7 +72,7 @@ This unit is the last irreversible one, which is the wrong moment to invent a us
 
 ### What it cost, measured rather than estimated
 
-At `abd7870`, the same command:
+At `9866181`, the same command:
 
 ```
                 before        after      delta

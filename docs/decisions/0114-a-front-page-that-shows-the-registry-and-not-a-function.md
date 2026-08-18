@@ -19,7 +19,7 @@ confirmed-by:
 produced another one, and it did it cleanly: the demonstration it added is checked by guards, and every
 figure on the page resolves. What was wrong was not the execution, it was the object being shown.
 
-Measured at `4318d0c`: `README.md` held 160 lines, four fenced blocks, **11 occurrences of `slugify`**,
+Measured at `4b8e105`: `README.md` held 160 lines, four fenced blocks, **11 occurrences of `slugify`**,
 and its lines 6 to 58 — **53 of 160** — were about one function. The demonstration opened at line 17
 with five calls and their answers. `@sindresorhus/slugify`, the direct competitor of the contract shown,
 reaches its first call at line 17 and prints an answer beside it. **The two pages showed the same kind
@@ -120,7 +120,7 @@ the header line, the import, and the catalogue table. None is a call.
 ### How long the page may be, and where a cut stops being one
 
 This decision set the page's shape and left its size open, and the size was what a reader raised one
-unit later. Measured with `wc -w`: **1 551 words at `2cec0be`**, where five comparable projects run
+unit later. Measured with `wc -w`: **1 551 words at `43470d1`**, where five comparable projects run
 from 235 to 674 — those five being reported rather than measured here. The page this section is
 committed with holds **1 398**, every fact, limit, figure and argument of the longer one kept.
 
@@ -153,9 +153,9 @@ another name, and the honest form of that request is to name which.
 ### The ratio that measured a wrap column
 
 The reading that opened the size question was words per line, where this page stood at 9.0 — 1 551
-words over 173 lines at `2cec0be` — against a median of 3.4 over those same five. **It measures an
+words over 173 lines at `43470d1` — against a median of 3.4 over those same five. **It measures an
 editor's setting and not a density.** Reflowing this page's own words at 60 columns instead of 100 —
-not one word changed — takes it from 8.6 to 6.1. Measured at `2cec0be`: the median non-blank line is
+not one word changed — takes it from 8.6 to 6.1. Measured at `43470d1`: the median non-blank line is
 93 characters and none exceeds 105, because this repository wraps prose at 100 columns. The five wrap
 nothing, which is reported rather than measured here, their medians sitting between 18 and 55 and
 their longest lines reaching 835. GitHub and npm render Markdown as HTML, so no reader sees any of it.

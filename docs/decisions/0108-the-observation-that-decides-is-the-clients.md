@@ -21,11 +21,11 @@ confirmed-by:
 ## Context and Problem Statement
 
 The proof against the origin is the last thing that runs before anything is published. It failed at
-`70bb31c` on three of its four guards, with the installed client's own refusal:
+`d739337` on three of its four guards, with the installed client's own refusal:
 
 ```
 the registry answered this from more than one revision - the catalogue index from
-70bb31c…, the implementations 1a8e562…
+d739337…, the implementations 013f688…
 ```
 
 `toopo add` is right to refuse that: a lockfile stamped with one revision while the other answer came
@@ -126,12 +126,12 @@ the three guards failing with the client's own message. A real failure is not wa
 half that would be easy to lose.
 
 **And the condition that produced the original red produced a wait instead, on the first run after the
-repair.** It did not have to be summoned. At `92e6acd`, attempt 1:
+repair.** It did not have to be summoned. At `206190d`, attempt 1:
 
 ```
-13:53:45.05  the client refused … answers 2 revisions - 70bb31c…, 92e6acd…
-13:53:50.43  the client refused … answers 1 revisions - 92e6acd…
-13:53:55.86  against https://toopo.dev, which is serving 92e6acd…   4 passed
+13:53:45.05  the client refused … answers 2 revisions - d739337…, 206190d…
+13:53:50.43  the client refused … answers 1 revisions - 206190d…
+13:53:55.86  against https://toopo.dev, which is serving 206190d…   4 passed
 ```
 
 That is the exact state that was a red one commit earlier — the index from the old deployment, the
@@ -150,7 +150,7 @@ it.
 list has ever had for this, and the retry is what produced it.
 
 **What no number here demonstrates.** Three runs after the repair, three green, one of them by
-recovering. Before it, two runs of `70bb31c` gave one red and one green. **An intermittent fault is not
+recovering. Before it, two runs of `d739337` gave one red and one green. **An intermittent fault is not
 shown absent by any count of green runs**, and this record claims only what was seen: the mechanism
 that failed is replaced by one whose two failure modes were each observed red, and whose recovery was
 observed once on the real condition.

@@ -18,7 +18,7 @@ confirmed-by:
 
 ## Context and Problem Statement
 
-The first real deployment served every contract address behind a redirect. Measured at `c764867` on
+The first real deployment served every contract address behind a redirect. Measured at `ed1abfd` on
 `https://toopo.mathis-perron.workers.dev`:
 
 ```
@@ -135,7 +135,7 @@ publishes the unencoded form, so a crawler indexes a redirect rather than a page
 
 **That paragraph stood in the present tense for three commits after it stopped being true**, and it is
 the same fault this repository keeps paying for. [ADR-0100](0100-the-site-moves-to-the-mechanism-that-serves-the-address.md)
-moved the site one commit later, on the criterion this record set; measured at `994374d`, every
+moved the site one commit later, on the criterion this record set; measured at `27d1dbb`, every
 contract address at the declared origin answers 200 with no redirect, and
 [ADR-0103](0103-the-declared-origin-serves-this-catalogue.md) carries the sweep and the entry it
 closed. **The decision this record took is untouched by that** — the address never moved, which was the

@@ -19,7 +19,7 @@ why, in as many words: *what a contract's own prose does with a backtick is a qu
 register of the catalogue's text, and nothing mechanical settles it.* Its **What would reopen this**
 named the event — a second page taking prose written for a reader of source.
 
-That page is the contract page, and it has been taking that prose all along. Measured at `a036396`
+That page is the contract page, and it has been taking that prose all along. Measured at `21df25d`
 over the built tree: **220 literal backticks across the four contract pages** — 110 on
 `string/slugify@1`, 86 on `date/add@1`, 18 on `string/levenshtein@1`, 6 on `number/parse@1` — beside
 51 `code` elements produced correctly on that same slugify page from its own calls. A visitor reading

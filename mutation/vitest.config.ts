@@ -11,7 +11,7 @@ import { defineConfig } from 'vitest/config'
  * **That model covered the writers and not the readers, and the omission was a red rather than an
  * argument.** `fileParallelism` was never set, so *files* ran concurrently while the guards inside each
  * one ran in order - and `anchors.test.ts` reads the same fixture `instrument.test.ts` rewrites.
- * Measured on CI at `432b7bf`, from the run's own timestamps:
+ * Measured on CI at `43f4626`, from the run's own timestamps:
  *
  *     16:23:52.268  workflows.test.ts passed
  *     16:23:53.402  calibration C/as-committed  control green

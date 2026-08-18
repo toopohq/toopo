@@ -31,7 +31,7 @@ confirmed-by:
 ## Context and Problem Statement
 
 `README.md` is read by the two audiences that arrive knowing nothing: the visitor to
-`npmjs.com/package/toopo` and the visitor to `github.com/toopohq/toopo`. Measured at `69ec551`, it
+`npmjs.com/package/toopo` and the visitor to `github.com/toopohq/toopo`. Measured at `919ad88`, it
 held **three fenced blocks, all of them `sh`; zero function calls; zero lines of TypeScript.** Its
 thirteen lines of code were an install command and twelve lines of `pnpm`, eleven of which are
 development commands.
@@ -80,7 +80,7 @@ attempt to be the documentation.
 npm and GitHub render the same file to two readers with different errands, and two files would serve
 each better on the day they were written.
 
-Measured at `69ec551` from `registry.npmjs.org/toopo`: the package has four published versions, and
+Measured at `919ad88` from `registry.npmjs.org/toopo`: the package has four published versions, and
 npm holds **one** README for the package — a single top-level `readme`, no per-version copy — taken
 from the latest publish. It was byte-identical to the working tree's. So the same file is already read
 at two different ages: GitHub shows `HEAD`, npm shows the last publication.

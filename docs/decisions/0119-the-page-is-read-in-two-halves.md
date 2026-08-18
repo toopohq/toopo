@@ -18,7 +18,7 @@ contract page: a card, and then everything, with nothing behind a fold. It is ri
 it left a page a reader cannot navigate. The criticism was *too big, too long, slow to understand* —
 and the measurement says where all of it is.
 
-Measured at `7bdbb33` on `string/slugify@1`, over the text projection, words being runs of
+Measured at `f05951f` on `string/slugify@1`, over the text projection, words being runs of
 non-whitespace:
 
 | words | section |

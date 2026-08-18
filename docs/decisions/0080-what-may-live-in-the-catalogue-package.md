@@ -70,7 +70,7 @@ is sound and it is about the wrong half.
 **The freeze this record invoked as what keeps it was not happening.** *Anything here is frozen with
 every contract at once* was the whole enforcement mechanism named above, and nothing computed it: a
 contract's digest covered the seven files of its folder and none of what they import. Measured at
-`9176c9e` — emptying `expectUniversalPropertiesAnswered` in the very file this record governs left all
+`e8f68ca` — emptying `expectUniversalPropertiesAnswered` in the very file this record governs left all
 eight ledger digests identical to the byte, while a contract declaring `deterministic` inapplicable,
 which that guard exists to refuse, went green. So the cost of a wrong entry was **not** visible before
 it was made; there was no cost at all, which is the opposite of what this section claimed.

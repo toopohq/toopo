@@ -247,10 +247,10 @@ export const readHands = (paths: readonly string[] = trackedSources()): HandsRea
  * How many hands are worth reporting, and why the number is not a verdict.
  *
  * Two hands is a paragraph somebody corrected, which is ordinary and was measured to be: a sample of
- * the two-hand paragraphs at `50cc54f` reads clean. Three is the first count at which two separate
+ * the two-hand paragraphs at `2385fc2` reads clean. Three is the first count at which two separate
  * units have edited a paragraph without either touching what the other left. It is where the report
  * starts listing, and ADR-0112 publishes what a reading of the list found: of the twenty-two at
- * `50cc54f`, some needed rewriting and some did not.
+ * `2385fc2`, some needed rewriting and some did not.
  */
 export const THE_REPORTING_DEPTH = 3
 

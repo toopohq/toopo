@@ -59,7 +59,7 @@ strings out of a comparison on the method page and never asks git whether any of
 The obvious spelling passes an identifier that has left the history, because a rewrite does not delete
 the objects it replaces — they survive in the object database until a `gc` nobody schedules.
 
-Measured at `e1d3aab`, over the three commits a rewrite and two amendments had just replaced. This
+Measured at `f1bf37b`, over the three commits a rewrite and two amendments had just replaced. This
 record cannot write the three identifiers in the form a citation takes, for the reason given below, so
 what is transcribed is the two commands and what they answered:
 
@@ -86,7 +86,7 @@ about.
 Not every run of hexadecimal digits is a commit, and a guard that reddened on the rest would become a
 list of exceptions nobody rereads — which is the shape ADR-0023's alias rule was refused at.
 
-The distinction was already in the repository and nobody had noticed it. Measured at `e1d3aab`, over
+The distinction was already in the repository and nobody had noticed it. Measured at `f1bf37b`, over
 every run of seven or more hexadecimal digits in the tracked files, classified by whether git could
 resolve it at all:
 
@@ -124,7 +124,7 @@ guessable string is not a secret. It stops the address being republished; it doe
 already suspects it from confirming it.**
 
 What the digest is of is a statement and not a measurement. Nothing in this repository still carries the
-address — measured at `e1d3aab`, `git log --walk-reflogs --format='%ae %ce' --all` answers one distinct
+address — measured at `f1bf37b`, `git log --walk-reflogs --format='%ae %ce' --all` answers one distinct
 value and `git count-objects -v` reports no garbage — so nothing here can confirm which address it is.
 The declaration is the author's; only the mechanism is the repository's.
 

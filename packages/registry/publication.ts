@@ -51,7 +51,7 @@ export const THE_SOURCE_REPOSITORY = 'git+https://github.com/toopohq/toopo.git'
  * published the moment a remote exists, carries an author and a committer address on every commit, and
  * is cloned rather than fetched - so the one thing that cannot be undone is exactly what a manifest
  * cannot be undone in. The 391 commits of this repository carried a personal address and were reissued
- * under this one before any remote existed; the reissued history runs to `c0d2ec6`, and the tree of all
+ * under this one before any remote existed; the reissued history runs to `cf4d903`, and the tree of all
  * 391 is unchanged, which is what makes it a rename and not an edit. Nothing tracked keeps that: the
  * identity a future commit takes is `user.email` in a local config no clone carries, so this paragraph
  * is the whole of what a reader of a fresh checkout is told.
@@ -94,7 +94,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  *     packages/cli/report.js      47 828 -> 48 537   (+709)
  *     packages/cli/rewrite.js      8 546 ->  9 322   (+776)
  *
- * **The five are exactly the five `8dab5d4` edited that reach the archive**, which is stated because it
+ * **The five are exactly the five `d8a25ae` edited that reach the archive**, which is stated because it
  * was checked and not because it was expected: that commit touched six non-test modules of
  * `packages/cli/` - the five above and `imagined-source.ts`, which is a test double the walk prunes.
  * `relocate.js` is byte for byte what `1.0.2` shipped, and the commit that moved the installed path
@@ -191,7 +191,7 @@ export const THE_PUBLICATION_INSTANT = '2026-08-17T00:00:00.000Z'
  * that could measure it ran v24.15.0. **It is named now, and the run this asked for is what named it:
  * the contributor floor is 22.18.0.**
  *
- * Measured at `2b7aa5c`, which is the tree the suites ran from - the run that produced this widened
+ * Measured at `660610f`, which is the tree the suites ran from - the run that produced this widened
  * the matrix and changed nothing else, and a matrix list is in no suite. Every 22.x release from this
  * range's own floor upward was a leg: 22.15.0, 22.15.1, 22.16.0, 22.17.0 and 22.17.1 all fail at the
  * first suite with `ERR_UNKNOWN_FILE_EXTENSION` on `run-vitest.ts` - one cause, fifteen occurrences -

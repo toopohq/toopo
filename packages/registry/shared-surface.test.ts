@@ -18,7 +18,7 @@ import { specifiersIn } from '../../packaging/reachable.js'
  *
  * A contract's fingerprint used to cover the seven files of its folder and nothing they call. Four of
  * those seven import `packages/catalogue/every-contract.ts`, so the guards a published contract runs
- * were decided by bytes no address named. Measured at `9176c9e`: emptying
+ * were decided by bytes no address named. Measured at `e8f68ca`: emptying
  * `expectUniversalPropertiesAnswered` left all eight ledger digests identical to the byte, while a
  * contract declaring `deterministic` inapplicable - which that guard exists to refuse - went green.
  * The freeze held to the letter and not in substance, on the one promise this project is sold on.

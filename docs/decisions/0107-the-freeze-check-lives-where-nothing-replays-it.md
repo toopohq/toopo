@@ -105,15 +105,15 @@ Three reds, taken on this working tree and read.
 the history:
 
 ```
-typescript/string/slugify@1 was published from 15aeb6c… bound to 855107da…, and this tree now
+typescript/string/slugify@1 was published from d3a5166… bound to 855107da…, and this tree now
 produces c6ca0bc0…. A published version is frozen for life, so the repair is not to update the
 binding: it is to put back what moved, or to publish the change as a new major beside this one.
 ```
 
 **A coordinate naming the wrong commit**, and it is the red that demonstrates ADR-0106's asymmetry
-rather than merely failing. Pointed at `1a8e562`, the commit before the publication: the four contracts
+rather than merely failing. Pointed at `013f688`, the commit before the publication: the four contracts
 produce **no fault at all** — that commit really does bind their digests — and the four implementations
-produce one each, *records that it was published from 1a8e562…, and the registry at that commit binds
+produce one each, *records that it was published from 013f688…, and the registry at that commit binds
 no such address*. Four faults, all of one half. That is the measurement the two-commit form rests on,
 made by the guard itself.
 

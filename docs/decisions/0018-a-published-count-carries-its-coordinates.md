@@ -43,7 +43,7 @@ what holds the second. It is the rule about identifiers rendering a count, arriv
 **And the remeasurement that replaced 467 did not survive its own paragraph, which is the third
 instance and the one that settles the treatment.** This sentence went on to publish *501 `it(...)` call
 sites* and *974 collected assertions*, and neither reproduces under any counting I can construct.
-Measured at `3fcd9f6`, over every tracked `.test.ts` and `.test-d.ts`: **514 call sites — 479 written
+Measured at `f5e91ba`, over every tracked `.test.ts` and `.test-d.ts`: **514 call sites — 479 written
 `it(` and 35 arriving through `it.each` — and the census declared 998**, which was 472 + 288 + 27 +
 146 + 62 + 3 across the six configurations and was what the six suites reported at that commit.
 Restricting to `.test.ts` gave 486, and to `contracts/` gave 94; nothing gave 501, and nothing gave
@@ -59,9 +59,9 @@ true sentence that goes false while nobody is looking, three times now in `CLAUD
 **A stamp does not travel to the sentence beside it, and that is the fourth instance — the one that
 cost a clause rather than a number.** *the census declared 998* carries its commit and is true of it
 for ever. *and is exactly what the six suites report when they run* sat immediately after, in the
-present tense, over the same quantity — and it went false at `c651d56`, one commit later, when the
+present tense, over the same quantity — and it went false at `bbbd0da`, one commit later, when the
 `cli` configuration went from 146 guards to 147 and the census total from 998 to **999**, measured at
-`13b7a42`. The commit that falsified it is the one that added
+`cbc0d0a`. The commit that falsified it is the one that added
 `every-clean-refusal-resolves-to-the-guard-it-names` — so the sentence was broken by the very unit
 that was closing this same class elsewhere in this file.
 
@@ -75,7 +75,7 @@ available, and the middle one is what the paragraph above now does.
 **ADR-0001 published a table of five unstamped counts, and its first row was false one commit later —
 in the commit that published it.** The table names the four files with the worst prose-to-code ratio,
 and the whole point of the record that carries it is that those four were about to be moved. Every row
-reproduces exactly at `ee7f365^`; at `ee7f365`, `contract-record.ts` had gone from 434 lines of prose to
+reproduces exactly at `8f43fb5^`; at `8f43fb5`, `contract-record.ts` had gone from 434 lines of prose to
 30, and the row saying 434 was published in that same commit. The repository-wide figure beside it —
 19 761 against 34 902 — reproduces at no commit: its ratio was right, its two counts are each 126 away
 from what a classifier reproducing all four rows gives, no single tracked file accounts for the gap, and
@@ -111,7 +111,7 @@ the class. Four more figures published in this project were wrong in the same wa
 
 ### The sixth, and it is a unit of measure rather than a stamp
 
-**The archive was briefed as *121,6 kB empaquetés dont 30,4 kB de catalogue*.** Measured at `5965079`,
+**The archive was briefed as *121,6 kB empaquetés dont 30,4 kB de catalogue*.** Measured at `3844729`,
 the packed archive was 128 527 B and the catalogue inside it was 30 438 B **unpacked** — 12 652 B of
 the packed total. The sentence put a compressed whole beside an uncompressed part and read as one
 figure with a share of itself; the share it implied, 25 per cent, is neither of the two true ones,
@@ -128,6 +128,15 @@ counted in**, and a ratio of two counts is only a ratio when both were.
 **A commit was said to be *the only one of 392* carrying a `Co-Authored-By` trailer.** Measured over
 the graph as it then stood: **363 of its 393 commits carried one**, 349 of the 374 on `main`. The line
 was not an exception, it was the convention, and the sentence was wrong by the whole population.
+
+**That measurement became unverifiable on 2026-08-18, and it is left standing rather than corrected.**
+[ADR-0124](0124-the-co-signature-leaves-the-history.md) took the trailer out of every commit, so the
+graph it counted no longer exists and nobody can re-take the reading. The sentence stays true — it is
+past tense and it says which graph it counted — and the honest repair is this clause and not a new
+number. **Rewriting the figure would be committing, in the record whose subject is figures nobody
+took, the failure the record was written about**: there is no population left to count, so any digit
+put here would be one somebody decided rather than measured. The rule this instance produced is what
+survives, and it does not depend on the count.
 
 **What is new is not the error but how it survived.** It was written in a report, and the instruction
 that answered it adopted the figure and reasoned from it — *one in 392 is an inconsistency, remove it*

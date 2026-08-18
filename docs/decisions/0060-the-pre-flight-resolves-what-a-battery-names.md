@@ -43,7 +43,7 @@ than the twenty-odd minutes a battery does.
 what this repository declares and nothing keeps — applied late, which is how the rule was found.**
 `benchmarks.profiles[].name` sat in the list reading *frozen by the section above, enforced by nothing*
 while a paragraph two screens down said the class was closed: two statements of one fact in one file,
-and it is always the list that lies. Measured at `c651d56`: the five contracts declare **27** profiles,
+and it is always the list that lies. Measured at `bbbd0da`: the five contracts declare **27** profiles,
 the suite collects **27** guard titles `profile-<name>`, and **27 of 27** are named by a battery — so
 the address half resolves for every one of them. The content half stayed in the list and now says what
 it is.
@@ -60,7 +60,7 @@ is the class this repository spent months removing from its prose, and putting i
 would be worse, because a comment that contradicts another is read by a person and two guards that
 contradict each other are read by nobody until one goes red.
 
-**Both halves were measured before the mechanism was written**, at `1281424`, by putting back the two
+**Both halves were measured before the mechanism was written**, at `4344a72`, by putting back the two
 mistakes this repository had already made and corrected before measuring — and neither outcome is the
 one the debt was filed expecting. A **pin** naming a guard no guard carries does redden, and the red
 says the wrong thing:

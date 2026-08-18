@@ -209,7 +209,7 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
    * **The address half is closed, and this comment used to end by saying it never would be.** Both
    * spellings it named as unguarded - a pin caught only by no longer matching, and a silence
    * declaration naming nothing - are what `assertEveryAddressResolves` refuses in `calibrate()`,
-   * before a verdict exists. Measured at `c651d56`: the five declare 27 profiles and 27 of 27 are
+   * before a verdict exists. Measured at `bbbd0da`: the five declare 27 profiles and 27 of 27 are
    * named by a battery, so every one resolves. A mutant that renames a profile still renames the
    * guard built from it, which is why the resolution reads what a battery names and not what the
    * suite collects: `profiles.test.ts` builds the title from this very field, so the two can never

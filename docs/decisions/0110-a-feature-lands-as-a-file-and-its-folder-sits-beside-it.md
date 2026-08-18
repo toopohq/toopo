@@ -41,7 +41,7 @@ lockfile and changing it later means moving files inside other people's reposito
 one such repository.
 
 **The folder is paying for a case that does not exist, and the case cannot arrive by accident.**
-Measured at `a413615`: four of the five contracts are installable — `array/group-by@1` is
+Measured at `2efc482`: four of the five contracts are installable — `array/group-by@1` is
 `never-published` — and each installs exactly one file, which
 `each-of-the-five-installs-one-file-named-after-itself` pins. That is not a coincidence of the
 catalogue. `referenceImplementationOf` in `packages/registry/serialise.ts` filters a contract's harness

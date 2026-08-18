@@ -29,7 +29,7 @@ confirmed-by:
 
 [ADR-0109](0109-the-publication-holds-no-credential.md) took the credential out of publishing and put
 `npm publish` in a job of `suites.yml`, triggered by a dispatch of `main` carrying the typed word
-`publish`. **That mechanism works and this record is not about a defect in it.** Measured at `a413615`,
+`publish`. **That mechanism works and this record is not about a defect in it.** Measured at `2efc482`,
 by reading npm's own record of the version it produced:
 
 ```
@@ -42,18 +42,22 @@ dist.attestations  provenance, https://slsa.dev/provenance/v1
 The publisher is an identity GitHub minted and npm exchanged, the attestation is written, and the commit
 is named. Every sentence ADR-0109 could not check before a first dispatch is true.
 
+**The commit it names is one this repository no longer has**, and the block is kept as npm spells it for
+the reason [ADR-0124](0124-the-co-signature-leaves-the-history.md) gives: a transcript of another
+registry's record is not this repository's to rename. The coordinate three lines above it is, and it moved.
+
 **What is wrong is that one decision is carried by two gestures.** A version is decided in a commit; the
 publication is asked for later, from a menu, by a person who has to remember. Between the two the
 repository is in a state nothing describes: the tree is corrected and the package is not.
 
-**It happened twice in two days, and neither time did anything say so.** `7728ec2` corrected the command
+**It happened twice in two days, and neither time did anything say so.** `f065a7f` corrected the command
 four surfaces printed, and the fix reached the site on its own push while npm went on serving a client
-that told readers to run something answering `command not found`. `8dab5d4` moved the installed path from
+that told readers to run something answering `command not found`. `d8a25ae` moved the installed path from
 `lib/toopo/string/slugify/slugify.ts` to `lib/toopo/string/slugify.ts`, and the package on npm still
 writes the old shape. The gap closes when somebody remembers, and its width is however long that takes.
 
-**The third day it produced a red.** A dispatch of `8dab5d4` — a tree declaring `1.0.2`, which had been
-published from `a413615` — reached npm and was refused:
+**The third day it produced a red.** A dispatch of `d8a25ae` — a tree declaring `1.0.2`, which had been
+published from `2efc482` — reached npm and was refused:
 
 ```
 npm notice version: 1.0.2
@@ -95,15 +99,15 @@ is that npm does not hold it.
 ### Why not the parent commit, when the parent commit works
 
 The comparison against `HEAD^` was measured before it was refused, over the whole population rather than
-a sample of it. At `8dab5d4`, reading `package.json` at every commit `HEAD` reaches and at each one's
+a sample of it. At `d8a25ae`, reading `package.json` at every commit `HEAD` reaches and at each one's
 parent:
 
 ```
-1.0.1 -> 1.0.2   a413615 chore(publication): the first version whose compiled content differs…
-1.0.0 -> 1.0.1   3b55309 chore(publication): the version moves and the code does not
-0.0.0-local -> 1.0.0   15aeb6c feat(publication): the catalogue is marked published…
-undefined -> 0.0.0-local   566cd3e feat(packaging): the archive somebody installs…
-(no parent)      2e906d0 chore: initialise repository…
+1.0.1 -> 1.0.2   2efc482 chore(publication): the first version whose compiled content differs…
+1.0.0 -> 1.0.1   1048d89 chore(publication): the version moves and the code does not
+0.0.0-local -> 1.0.0   d3a5166 feat(publication): the catalogue is marked published…
+undefined -> 0.0.0-local   60ac800 feat(packaging): the archive somebody installs…
+(no parent)      50e86d7 chore: initialise repository…
 
 commits swept: 440
 commits where the version differs from the parent's: 5
@@ -131,7 +135,7 @@ Worker was still there. **A request answers about content; only a listing answer
 So what is read is the document holding every version of the package, and the answer is its key set.
 `GET /toopo/1.0.3` is a request about one address. `dist-tags.latest` is worse than either: it is a
 *pointer*, and it would go on looking correct while meaning something else entirely the day a second
-channel exists. Measured at `8dab5d4`, the two are separate keys of the same document and the listing is
+channel exists. Measured at `d8a25ae`, the two are separate keys of the same document and the listing is
 independent of every tag:
 
 ```

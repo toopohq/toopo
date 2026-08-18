@@ -24,7 +24,7 @@ had not done: *a reading of the front page as something other than a list. The 1
 measurement of a page whose every element is prose. It is not evidence that the page is right; it is
 evidence that no ceiling is what makes it narrow.* This is that unit.
 
-Measured at `eefca18` over all eleven files of HTML the tree holds, at 1440, 1920 and 2560, in a real
+Measured at `196580b` over all eleven files of HTML the tree holds, at 1440, 1920 and 2560, in a real
 browser, with **the share defined exactly as ADR-0122 defines it** — the span of rendered ink over the
 width the layout resolved against, taken from text rectangles rather than boxes, clipped to every
 scroll container above them, with the masthead left out:

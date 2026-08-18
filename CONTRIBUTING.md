@@ -168,7 +168,7 @@ pnpm run mutation        # replay all nineteen
 
 **Which of the two you want depends on what you touched, and the answer is almost never the second
 one.** A battery injects into exactly one folder, so only the batteries whose folder you edited can
-say anything about your change. Measured at `7dc3b6a` on one machine:
+say anything about your change. Measured at `4dc8a69` on one machine:
 
 | what you changed | what to run | what it costs |
 | --- | --- | --- |

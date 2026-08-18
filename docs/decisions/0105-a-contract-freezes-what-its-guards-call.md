@@ -38,7 +38,7 @@ properties.test.ts   -> packages/catalogue/every-contract.ts
 
 `harnessOf` hashes the folder. Nothing hashed what the folder calls.
 
-### Measured at `9176c9e`, three perturbations, one at a time
+### Measured at `e8f68ca`, three perturbations, one at a time
 
 **The verification could be emptied with no address moving.** `expectUniversalPropertiesAnswered` was
 replaced by a body that asserts nothing, and `npm run ledger` was asked again:
@@ -193,7 +193,7 @@ green. It is recorded in `CLAUDE.md` among what this repository declares and not
 Four guards, each seen red on its own failure condition before being trusted:
 
 - **the registry stops serving the shared surface** — `servedFilesOf` reduced to the harness, which is
-  the state this repository was in at `9176c9e`. Two red, naming the defect file by file: 26 unresolved
+  the state this repository was in at `e8f68ca`. Two red, naming the defect file by file: 26 unresolved
   imports across the five, of the form `contracts/typescript/number/parse/properties.test.ts imports
   packages/catalogue/every-contract.ts, which the registry does not serve`, and ten blobs named by a
   snapshot that nothing could have handed over.

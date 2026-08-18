@@ -80,7 +80,7 @@ block.
 
 ### The Markdown saves about a third, and that is arithmetic rather than a claim about robots
 
-Measured at `1225b88`, HTML against the Markdown projection: **20 364 B against 33 917 B for
+Measured at `fc36162`, HTML against the Markdown projection: **20 364 B against 33 917 B for
 `number/parse@1`**, and 60.0 %, 64.9 %, 64.1 %, 64.4 % over the four contract pages. The front page is
 48.2 % and the method page is 90.0 %.
 
@@ -147,7 +147,7 @@ arriving through the machine-readable door. W-73 is that mutant.
 ## Consequences
 
 **The tree grows from 66 files to 74, and the hosting wall moves from 1 537 contracts to 1 427.**
-Measured at `1225b88` and after: the deployment is `14P + R + 17` where it was `13P + R + 13`, with `P`
+Measured at `fc36162` and after: the deployment is `14P + R + 17` where it was `13P + R + 13`, with `P`
 published contracts and `R` refused ones — a Markdown twin per page, three of them fixed, and one
 `llms.txt`.
 

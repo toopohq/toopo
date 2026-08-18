@@ -321,7 +321,7 @@ const behaviour: readonly Mutant[] = [
      * the guard it removes.
      *
      * The pin was set over four runs and named the four guards red on all of them. The fifth run - a
-     * full replay at `3ef069f` - reported `L-20 on C/as-committed: expected killed, measured killed,
+     * full replay at `304481a` - reported `L-20 on C/as-committed: expected killed, measured killed,
      * no longer caught by: p3-symmetry`. The two verdicts agreeing on a line announcing that they do
      * not is what a pin naming a guard that missed looks like. The sixth run, the same battery alone
      * on the same commit with a clean tree, was green again.
@@ -334,7 +334,7 @@ const behaviour: readonly Mutant[] = [
      *
      * **The repair that is not available is the one that would have been chosen**, and the
      * publication is why. Raising the draw count lives in `properties.test.ts`, which is one of the
-     * seven files `string/levenshtein@1` froze at `15aeb6c` - so it would rebind a published address,
+     * seven files `string/levenshtein@1` froze at `d3a5166` - so it would rebind a published address,
      * which permanent rule 6 refuses. ADR-0106 removed a repair from this cell on the day it
      * published the contract, and this is the first place that consequence has been met.
      *

@@ -62,7 +62,7 @@
  * *Nothing above it changes* is built, and one thing inside it had to
  * ---------------------------------------------------------------------------
  *
- * The sentence above was a claim about a day that had not come. It was paid at `5fa4373`, at a maquette
+ * The sentence above was a claim about a day that had not come. It was paid at `dc6e9ca`, at a maquette
  * reverted for being an implementation of a design nobody had taken, and it is a unit here:
  * `http-source.ts` is the implementation, `fixpoint.ts` is what lets a decision stay synchronous in
  * front of it, and `serving-over-http.ts` is the apparatus a guard answers from.

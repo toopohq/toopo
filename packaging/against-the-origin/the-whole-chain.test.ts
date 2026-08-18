@@ -229,10 +229,10 @@ const BETWEEN_ATTEMPTS = 5_000
  * ---------------------------------------------------------------------------
  *
  * This suite used to ask the origin whether it agreed with itself *before* packing anything, and go
- * ahead once it did. That was refuted by a run rather than argued away. At `70bb31c` the pre-flight
+ * ahead once it did. That was refuted by a run rather than argued away. At `d739337` the pre-flight
  * read one revision and returned on its first attempt - the waiting line it prints appears nowhere in
  * either log, so the bound was never consumed - and the installed client, seconds later, read the
- * index from `70bb31c` and the implementations from `1a8e562` and refused. **An agreement observed on
+ * index from `d739337` and the implementations from `013f688` and refused. **An agreement observed on
  * one reading says nothing about the next reading**, because the two are separate requests and a
  * rollout can move between them. The pre-flight could not have been widened into a fix: the reads
  * that matter are made by a different process, the installed `toopo`, and no observation taken here is

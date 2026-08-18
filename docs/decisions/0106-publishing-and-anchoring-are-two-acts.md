@@ -62,7 +62,7 @@ commit in this history.
 
 That asymmetry is the whole problem. For the contracts, the commit before the marking already binds
 every digest — measured over the last six commits, `HEAD`, `HEAD~1`, `HEAD~2` and `HEAD~3` each rebuild
-all eight bindings of this tree, and `7a677f3` is the last commit that moved the four contract digests.
+all eight bindings of this tree, and `bc3c3cc` is the last commit that moved the four contract digests.
 For the implementations, no past commit binds the address at all, and `faultFor` would say so in as many
 words: *the registry at that commit binds no such address*.
 

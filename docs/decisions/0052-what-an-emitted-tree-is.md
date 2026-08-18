@@ -101,7 +101,7 @@ registry serialising *itself* is what publishing is until a publishing tool exis
 
 ## Consequences
 
-**Measured at `785bd4c`, over five contracts of which four are published: 48 files, 517 287 B.** Per
+**Measured at `56c052c`, over five contracts of which four are published: 48 files, 517 287 B.** Per
 published contract eleven files — one contract binding, one implementation list, two snapshots and seven
 harness blobs — and 126 kB. The harness dominates and is what varies: seven files here, one blob per
 test file anywhere else.
@@ -115,7 +115,7 @@ a formula rather than on a figure.
 
 **And the wall this published at 1 817 contracts is not the wall.** These are the emitted *answers*; a
 static host counts every file it serves, which is also the pages, the modules a browser loads and the
-files found by convention at the root. Measured at `1225b88` over the same five contracts: **66 files
+files found by convention at the root. Measured at `fc36162` over the same five contracts: **66 files
 deployed, `13P + R + 13`**, and a twenty-thousand-file limit at **1 537 contracts**. The figure above
 described a subtree and was cited as a deadline, here and elsewhere, until somebody counted the tree.
 

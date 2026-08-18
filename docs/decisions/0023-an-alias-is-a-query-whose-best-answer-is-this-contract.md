@@ -16,7 +16,7 @@ confirmed-by:
 > published.** *An alias is not frozen with the major* is a decision this record still holds to, and it
 > is not what the code does: `searchAliases` sits inside `identity`, `contractSnapshot` freezes
 > `identity` whole, and since [ADR-0106](0106-publishing-and-anchoring-are-two-acts.md) the four
-> published contracts are bound at `15aeb6c`. Measured at `7bdbb33` — adding one alias to
+> published contracts are bound at `d3a5166`. Measured at `f05951f` — adding one alias to
 > `string/slugify@1` moves its contract digest from `855107da…` to `5fe0ecfa…`, which
 > `every-published-binding-still-hashes-to-what-it-was-published-as` refuses. **So correcting a lying
 > alias today reddens a guard, and *costs a revision* names something nothing implements.**

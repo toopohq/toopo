@@ -20,7 +20,7 @@
 // ---------------------------------------------------------------------------
 //
 // **No custom domain, although one is connected.** `https://toopo.dev` serves this tree as of
-// `994374d` and it is attached in the dashboard, not here - because a custom domain is a fact about
+// `27d1dbb` and it is attached in the dashboard, not here - because a custom domain is a fact about
 // which names point at a project and wrangler's Pages configuration has no field for it. That is a
 // gap in this file's own claim to hold every decision, and it is written down rather than left to be
 // discovered: what was decided here is what is deployed, and where it answers from is decided next

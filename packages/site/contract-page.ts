@@ -333,7 +333,7 @@ type Section = {
  * The page in the two halves a reader reads it in. ADR-0119.
  *
  * **The length did not go down, it got sorted**, and that is the whole of what this type does.
- * Measured at `7bdbb33` on `string/slugify@1`: 3 800 visible words across eight sections of one
+ * Measured at `f05951f` on `string/slugify@1`: 3 800 visible words across eight sections of one
  * weight, of which 2 482 - a little over two thirds of everything under a heading - were the settled
  * cases. A reader who says the page is long is reading one section and being given no way to know
  * that. So the sections are declared in two lists, the first answering *is this the function I want*

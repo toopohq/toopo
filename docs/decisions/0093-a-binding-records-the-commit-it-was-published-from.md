@@ -44,14 +44,14 @@ first time one is.
 
 ### The reach of it, measured on a commit already in the history
 
-`string/slugify@1`'s frozen digest moved between `03a468b` and `d116fe9`:
+`string/slugify@1`'s frozen digest moved between `3946133` and `e4105cd`:
 
 ```
-03a468b   8bea4012754af625ac35b2a1283dbbc2e54e276df9a107133d82cc3e7a9feadf
-d116fe9   8753bb972e614de3bdb6a4c27cd227d0a6bdc617c5ba5c6c5eabb392a23a78a1
+3946133   8bea4012754af625ac35b2a1283dbbc2e54e276df9a107133d82cc3e7a9feadf
+e4105cd   8753bb972e614de3bdb6a4c27cd227d0a6bdc617c5ba5c6c5eabb392a23a78a1
 ```
 
-The whole of what moved is `5965079`, *docs: the threshold is reformulated, three rules leave their
+The whole of what moved is `3844729`, *docs: the threshold is reformulated, three rules leave their
 files, and twenty-one citations are repaired*, on one line of one comment:
 
 ```diff
@@ -66,7 +66,7 @@ commit would have rebound its address.**
 
 ### What is legitimate, which is narrower than it reads
 
-Measured in a checkout, one perturbation at a time, on `string/slugify@1` at `d116fe9`:
+Measured in a checkout, one perturbation at a time, on `string/slugify@1` at `e4105cd`:
 
 ```
 8753bb972e614de3…  untouched

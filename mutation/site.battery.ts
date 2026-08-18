@@ -677,7 +677,7 @@ const mutants: readonly Mutant[] = [
    * **The one cell of this battery written against a guard rather than against a defect somebody
    * would plausibly commit**, and the reason it exists is that nothing reddened that guard at all.
    * `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported unaccounted for
-   * by this battery at `07a100c` and at every commit since it was written, measured both ways - and
+   * by this battery at `81bf9bc` and at every commit since it was written, measured both ways - and
    * W-24 looked as though it covered it, because it takes the stylesheet out of the page. It does
    * not: with no style element the guard's loop runs zero times and it passes on an empty palette.
    *

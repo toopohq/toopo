@@ -16,7 +16,7 @@ confirmed-by:
 
 ## Context and Problem Statement
 
-The site had no presentation. Measured at `a036396`: the whole stylesheet was 2 707 bytes, the type
+The site had no presentation. Measured at `21df25d`: the whole stylesheet was 2 707 bytes, the type
 was whatever the reader's browser defaults to, there was no dark mode, and a contract page was
 35 191 bytes of good content in no system at all. That page is the one a stranger lands on from a
 search, and it will be 99 % of this site when the catalogue holds a thousand entries.
@@ -111,7 +111,7 @@ from the one proposed, and it is not one this unit found.
 ### The stylesheet stays in the page, and the arithmetic that will overturn that is written down
 
 The constraint for this unit is that the CSS is hand-written and served in the page. Measured,
-`a036396` against `7f76d8f`: the stylesheet is **2 707 B before and 8 538 B after**, and it is
+`21df25d` against `b667425`: the stylesheet is **2 707 B before and 8 538 B after**, and it is
 repeated in every page — **18 949 B before, 59 766 B after** across seven. At a thousand contracts it is 8.5 MB of one repeated text, at
 which point a file and one request is cheaper by orders of magnitude. It is not acted on here because
 seven copies is not a problem and because a file would be a second address carrying a cache policy

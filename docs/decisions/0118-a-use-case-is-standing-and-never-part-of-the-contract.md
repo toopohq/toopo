@@ -17,14 +17,14 @@ confirmed-by:
 
 The owner of the product read the contract page built at
 [ADR-0116](0116-a-card-and-then-everything-with-nothing-folded-away.md) and made one criticism: it
-never says what the function is for in real life. Measured at `7bdbb33` on `string/slugify@1`: **3 800
+never says what the function is for in real life. Measured at `f05951f` on `string/slugify@1`: **3 800
 visible words under eight sections of one weight**, and not one line of it about a job somebody has.
 
 So the page owes a section of use cases — a call as somebody would make it, and the one thing to know
 before relying on it. The question this record answers is *where that text lives*, and it turned out
 to have exactly one answer rather than several.
 
-**`string/slugify@1` is published.** Its contract snapshot is bound at `15aeb6c` to
+**`string/slugify@1` is published.** Its contract snapshot is bound at `d3a5166` to
 `855107daf43419d2ca8f2f01e1a8e39b5de127974c287b75867fa5bdf1443ce1`, and
 `every-published-binding-still-hashes-to-what-it-was-published-as` rebuilds that commit and compares.
 Two measurements, taken before anything was written:

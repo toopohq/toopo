@@ -121,7 +121,7 @@ export const METHOD_PAGE = 'method/index.html'
  * organisation word belongs in a public URL.
  *
  * It is not settled here because nothing in that unit changed a behaviour, and the deadline it named
- * has passed. **`/packages/site/start.js` has been served at the declared origin since `994374d`**,
+ * has passed. **`/packages/site/start.js` has been served at the declared origin since `27d1dbb`**,
  * measured, and the argument that freezes a case identifier applies to it now: an address a reader
  * can have linked is an address that moving costs something. It is no longer free and it is not yet
  * expensive - nothing installed cites it, no sitemap carries it, and the nine modules are the one

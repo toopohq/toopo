@@ -93,10 +93,15 @@ export const trackedFiles = (): readonly string[] => answered(git('ls-files'))
 /**
  * The tracked files this repository reads as text of its own, which is its TypeScript and its prose.
  *
- * Both citation guards ask for exactly this set and for the same reason, so it is stated once:
+ * Both citation guards start from this set and for the same reason, so it is stated once:
  * `decisions.ts` resolves an `ADR-NNNN` written anywhere, `history.ts` resolves a commit identifier,
  * and neither may reach `dist/` - a compiled copy of every comment in `packages/`, where a citation
  * surviving a build would stand in for one in the source it was built from.
+ *
+ * **Only one of them sweeps all of it.** A record is never deleted, so an `ADR-NNNN` written into a
+ * file a published contract freezes goes on resolving for ever; a commit identifier written there
+ * dies the day the history is rewritten and cannot be repaired, because the repair is the edit
+ * permanent rule 6 forbids. `theEditableSources` is where that narrowing is argued. ADR-0124.
  */
 export const trackedSources = (): readonly string[] =>
   trackedFiles().filter((path) => path.endsWith('.ts') || path.endsWith('.md'))

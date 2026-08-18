@@ -117,7 +117,7 @@ without it.** The serialisation, because there are three of them and they differ
 The divisor, because a kibibyte and a kilobyte are the same word in any comment that does not say
 which. The commit, because a record grows, and without it a reader who re-measures and gets something
 else cannot tell *this figure was wrong* from *the tree has moved*. So what follows is **the canonical
-text of a whole record in bytes, divided by 1000, measured at `726aa16`** - the canonical text because
+text of a whole record in bytes, divided by 1000, measured at `1db7dfb`** - the canonical text because
 that is the form a digest is taken over, and 1000 because `packages/cli/report.ts` prints a kilobyte
 that way and one repository holds one kilobyte.
 
@@ -144,7 +144,7 @@ need the tree they described. That failure is where *a published size names the 
 taken under* came from.
 
 Its second version named the serialisation and not the divisor, **and every figure it published was a
-kibibyte called a kilobyte**. Re-measured at `8d197f5`, the commit that published them: the records
+kibibyte called a kilobyte**. Re-measured at `52866f9`, the commit that published them: the records
 come to 32.9, 50.8, 45.7, 32.9 and 42.7 kB against a published 32.1, 49.6, 44.6, 32.1 and 41.7, and the
 omissions to 1772.2 kB against a published 1730.6. The ratio is 1.024 throughout, and the *share*
 reproduced exactly - a ratio cancels the divisor, which is how the error survived beside a figure that
@@ -152,5 +152,5 @@ checked out. `packages/cli/report.ts` divides by 1000 and C-44 of `cli-install` 
 implementation that does not, so the repository already executed the decimal kilobyte one folder from a
 comment publishing the binary one.
 
-It also called that record the third largest when it was the second, at `8d197f5` as at `726aa16`.
+It also called that record the third largest when it was the second, at `52866f9` as at `1db7dfb`.
 That one needed no divisor to be wrong.

@@ -27,7 +27,7 @@ six clauses in the present tense, each true when written.
 
 ## Considered Options
 
-- **Probe a sample**, as the sweep at `c764867` did — one address of each class, thirty-four of them.
+- **Probe a sample**, as the sweep at `ed1abfd` did — one address of each class, thirty-four of them.
 - **Probe every address the emitted tree writes.**
 - **Build the probe into a suite**, so it runs on every push.
 
@@ -38,7 +38,7 @@ class rather than by row.
 
 ### Why not the sample, in the words of the sample itself
 
-The sweep at `c764867` was published as *thirty-four addresses*, and **that figure cannot be rebuilt
+The sweep at `ed1abfd` was published as *thirty-four addresses*, and **that figure cannot be rebuilt
 from its own decomposition.** What the commit lists is seven pages, seven Markdown twins, three files
 found by convention, twelve named answers, both content-addressed endpoints and `_headers` — thirty-two.
 Adding the redirect row's destination, which is the only address it names that is not already in the
@@ -60,10 +60,10 @@ and it is **not** refused in general: the one guard worth that price is the end-
 
 ## What the sweep found
 
-Measured at `994374d`, over the 76 addresses the emitted tree writes plus one address it does not.
+Measured at `27d1dbb`, over the 76 addresses the emitted tree writes plus one address it does not.
 
 **The deployment carries the same commit, and the reading is eleven of twelve rather than twelve.**
-Every named answer that holds a record answers `servedFrom: 994374d`; the twelfth,
+Every named answer that holds a record answers `servedFrom: 27d1dbb`; the twelfth,
 `/typescript/array/group-by@1/implementation-bindings`, is the two-byte empty list of the refused
 contract and has no field to carry one. That is not a gap in the sweep — an answer with no record has
 nothing to stamp — and it is written here because *every named answer* was the first sentence, and it
@@ -133,7 +133,7 @@ way that reads as a general rule is worse than an entry left open, because the n
 somebody who believes the question is settled.
 
 **Six clauses of this repository went false when the domain was connected, and three more had been
-false since `e4eca00`.** They are repaired in this unit and counted in its commit. The second group is
+false since `45f702f`.** They are repaired in this unit and counted in its commit. The second group is
 the one worth reading: the move to Pages closed an entry of the open list in fact and swept nothing, so
 `CLAUDE.md` described a redirect that no longer happened for three commits. That list's own rule
 already says a mechanism and its entry are one event; what this adds is that the sweep is owed even

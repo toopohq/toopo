@@ -121,13 +121,13 @@ sweeping nothing.
 
 ### And the unknown this decision was taken over is now measured
 
-The job ran on `b042d13`. Between the `git status --porcelain` step and the build that follows it the
+The job ran on `d20f7f1`. Between the `git status --porcelain` step and the build that follows it the
 log carries **nothing at all** — the tree was clean after `actions/checkout` and
 `pnpm install --frozen-lockfile`, so `.git` reaches the runner, git answers there, and `theRevision`
 names the commit rather than refusing:
 
 ```
-served from b042d130caa060ac561d9ff951aef1cdcc08db25
+served from d20f7f1fb55e625d7cc51234e120a1bb7f0c7a38
 1055466 B  75 files: 7 pages, 7 markdown, 9 modules, 4 found by convention, 48 answers
 ```
 

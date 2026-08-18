@@ -578,7 +578,7 @@ const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
  * the value is that a term which grew is now flat.
  *
  * ---------------------------------------------------------------------------
- * Where a replay's cost actually sits, measured at `7dc3b6a` and not repaired
+ * Where a replay's cost actually sits, measured at `4dc8a69` and not repaired
  * ---------------------------------------------------------------------------
  *
  * **It is not the number of cells.** `registry-storage` runs 59 cells in 511.6 s and `date-add` runs
@@ -821,7 +821,7 @@ const assertGuardsAreAddressed = (label: string, guards: readonly GuardIdentity[
 /**
  * Every guard this battery names is a guard the run carries - checked before a single verdict exists.
  *
- * **Both halves of this were measured rather than argued**, on `site` at `1281424`, by putting back the
+ * **Both halves of this were measured rather than argued**, on `site` at `4344a72`, by putting back the
  * two mistakes this repository has already made once and corrected before measuring. Neither outcome is
  * the one the debt was filed expecting.
  *

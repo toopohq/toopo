@@ -427,14 +427,14 @@ export const THE_PINS_ARE_AN_ASSERTION =
  * addresses is not something a reader is owed.
  */
 const QUOTING = {
-  thisRun: '7dc3b6a',
-  theTwinOfThisRun: 'f5cf8f2',
-  thePublishedRunItReplaces: '1fb1d85',
-  theRunThatOneReplaced: '3949c87',
-  theFasterOfTheClosestPairOfAnyOtherPopulation: 'b438de2',
-  theSlowerOfTheClosestPairOfAnyOtherPopulation: '75d3358',
-  theFasterOfTheWidestPair: '6226769',
-  theSlowerOfTheWidestPair: '5bb4e97',
+  thisRun: '4dc8a69',
+  theTwinOfThisRun: '7224814',
+  thePublishedRunItReplaces: 'b55ce52',
+  theRunThatOneReplaced: '1cbccf0',
+  theFasterOfTheClosestPairOfAnyOtherPopulation: '612a52d',
+  theSlowerOfTheClosestPairOfAnyOtherPopulation: 'ef78a04',
+  theFasterOfTheWidestPair: 'd3b0873',
+  theSlowerOfTheWidestPair: '81b77f7',
 } as const
 
 export const THE_COMMITS_QUOTED: readonly string[] = Object.values(QUOTING)

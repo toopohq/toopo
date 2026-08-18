@@ -85,7 +85,7 @@ the exact edit it makes and the verdict it must produce.
 ### A survivor declares its kind
 
 **A survivor declares its kind, and the aggregate is never available without the split.** A count of
-surviving cells published alone reads as a count of holes. Measured at `39af7f3` over the nineteen
+surviving cells published alone reads as a count of holes. Measured at `0ee3818` over the nineteen
 batteries: **36 surviving defect cells — 12 equivalent, 7 outside what the contract specifies, 4
 unreachable on this catalogue, 1 a declared open class, and 12 that live only where a lens blinded the
 suite.** Exactly one is a debt. `survived` is a function requiring a `SurvivalNature`, so a survivor
@@ -170,7 +170,7 @@ asking the same of every digit run near a stamp.
 
 **The rewrite of this repository's history revealed them rather than caused them.** When the personal
 address left the history, every commit was reissued under a new identifier; the reissued history runs
-to `c0d2ec6` and the tree of all 391 commits is unchanged, so every measurement stayed true and every
+to `cf4d903` and the tree of all 391 commits is unchanged, so every measurement stayed true and every
 stamp was translated to the same commit's new name. These six did not survive translation, because
 the new names carry neither `41` nor `9269` — and no rule could have made them, since which digits an
 identifier happens to hold is not a property the rewrite preserves or could preserve. They were false
@@ -179,7 +179,7 @@ in potential from the day they were written, and the dependence is what falsifie
 **The form that replaces them is the one `mutation/published.ts` already used**, which is why it is not
 an invention: *on a stamp whose digit runs included `41`*. The sentence names the run, the identifier
 goes, and a future rename has nothing left to make false. Where a stamp is only an address —
-ADR-0031's measurement of the sitemap, at `23ce165` — it is translated and stays.
+ADR-0031's measurement of the sitemap, at `912d1fc` — it is translated and stays.
 
 ## What would reopen this
 

@@ -61,7 +61,7 @@
  * request against the real deployment, reading the header back - the same measurement that settles
  * whether Cloudflare's splat spans a slash, which nothing in this repository can answer either.
  *
- * That request has been made for one of the two shapes. Measured at `994374d`, on one address of each
+ * That request has been made for one of the two shapes. Measured at `27d1dbb`, on one address of each
  * class the tree writes: `toopo.pages.dev` answers `X-Robots-Tag: noindex` and `toopo.dev` answers no
  * such header, **read in one sweep because either half alone proves nothing** - an absent header at the
  * origin is equally what a rule matching nothing produces. The two-label shape has no live instance to
@@ -76,7 +76,7 @@
  * spells `@` applies to the redirect and not to its destination** - so the address that serves the
  * bytes falls through to whatever the platform sends. On that mechanism an address loses its address
  * and its headers together. Pages, which is what serves this tree, answers `@` directly - measured at
- * `994374d` over every contract address - so the trap is not armed here today and the shape below is
+ * `27d1dbb` over every contract address - so the trap is not armed here today and the shape below is
  * what would keep it disarmed on a host that armed it again.
  *
  * Every rule here is `pathTo(endpoint, EVERY_ADDRESS)`, and none of the three arms puts a rendered

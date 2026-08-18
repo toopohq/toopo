@@ -16,7 +16,7 @@ import type { ReadOneAddress } from './what-npm-holds.js'
  * kept out of every battery. What can be wrong in the module is how it reads an answer, so an answer is
  * what it is handed.
  *
- * **The listing below is the document npm really serves**, read at `8dab5d4`: the four keys, the three
+ * **The listing below is the document npm really serves**, read at `d8a25ae`: the four keys, the three
  * versions, and a `dist-tags` naming one of them. It is written out rather than reduced to what each
  * guard needs, because the one defect worth catching here is reading the pointer instead of the
  * listing, and a fixture with no pointer in it could not catch that.

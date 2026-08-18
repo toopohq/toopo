@@ -174,7 +174,7 @@ export const STYLE = `
 
    It used to ask for a measure, and a measure bounds a line rather than a box - so the four pages
    with no rail had their card, their code blocks and their lists bound by a rule about prose.
-   Measured at e2e764b: 446px of ink on a 2 560px screen, 17.5% of it. ADR-0122. */
+   Measured at 456ee44: 446px of ink on a 2 560px screen, 17.5% of it. ADR-0122. */
 body {
   display: grid;
   grid-template-columns: 1fr fit-content(min(var(--two-columns), calc(100% - var(--s10)))) 1fr;
@@ -488,7 +488,7 @@ ul.toc > li.under { padding-left: var(--s3) }
 }
 @media (min-width: 52rem) {
   /* The call column is as wide as a call may be, and a call here is a paragraph rather than a pre,
-     so that is the measure. It was 34ch, which named nothing: measured at e2e764b, that folded 50 of
+     so that is the measure. It was 34ch, which named nothing: measured at 456ee44, that folded 50 of
      50 calls on number/parse@1 and 43 of 43 on date/add@1 onto more than one line, and 325 rendered
      lines carried the 157 calls of the four pages. At the measure it is 223. */
   .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr) }

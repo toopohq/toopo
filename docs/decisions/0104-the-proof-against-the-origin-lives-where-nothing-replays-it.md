@@ -27,7 +27,7 @@ left `packaging/` with it. They installed a real feature out of a real tarball a
 on disk with the bytes in `contracts/`. The entry named the event that would end the loss: **the first
 deployment answering on `https://toopo.dev`**.
 
-That deployment exists. Measured at `16e04f7`, by packing, installing into an empty project and
+That deployment exists. Measured at `22083a5`, by packing, installing into an empty project and
 running the installed binary against the declared origin:
 
 ```
@@ -40,7 +40,7 @@ tarball  133 318 B packed / 440 870 B unpacked
   200     517 B  /snapshot/d448f1dd…
   200   4 299 B  /blob/d1a5f60e…
 
-toopo.lock: served.sha256 = sha256 = d1a5f60e… · bytes 4 299 · servedFrom 16e04f7118…
+toopo.lock: served.sha256 = sha256 = d1a5f60e… · bytes 4 299 · servedFrom 22083a53cf…
 ```
 
 So the proof is available rather than hypothetical, and what this unit decides is not whether to take
@@ -121,7 +121,7 @@ deployment is ours, and wrong about the place: the repair would be in the emissi
 
 `beforeAll` captures what happened and never rethrows. A hook that throws makes a file unstartable and
 its guards are reported *skipped*, which `assertWholeSuiteRan` cannot tell from guards that passed
-because it compares a total against a total — measured at `0671e6e` on this repository, and open in
+because it compares a total against a total — measured at `c21865e` on this repository, and open in
 `CLAUDE.md`. A network-dependent hook is the most likely thing in this repository ever to throw, so the
 open entry is a constraint on this file's construction rather than a remark about another's.
 
@@ -163,10 +163,10 @@ an invented revision passes — is on the open list with the resolution that wou
 ## Consequences
 
 - The seven suites become the seven suites and one proof against the origin. `CLAUDE.md` and the
-  workflow header say so. Measured at `dbcbdeb`, in the order the workflow runs them: **472, 65, 351,
+  workflow header say so. Measured at `e40a9a0`, in the order the workflow runs them: **472, 65, 351,
   27, 187, 111, 8**, and **4** against the origin. Only the last is new — no count above it moved, which
   is the whole of what keeping this suite out of `packaging/vitest.config.ts` was for.
-- **Cost, measured on this machine at `16e04f7`:** ~3.5 s of work and **5 requests, ~11.3 kB** to the
+- **Cost, measured on this machine at `22083a5`:** ~3.5 s of work and **5 requests, ~11.3 kB** to the
   origin per run — the probe, the two that read what is announced, and the four the install makes; six
   requests when it fails and re-probes. In continuous integration it is one step in a job that already
   exists, so no checkout and no installation are added. The 23-minute replay does not move, which is

@@ -16,7 +16,7 @@ confirmed-by:
 ## Context and Problem Statement
 
 The owner opened the site on a wide screen and said everything was centred and squeezed into the
-middle for no reason. Measured at `e2e764b`, over all eleven files of HTML the tree holds, at 1440,
+middle for no reason. Measured at `456ee44`, over all eleven files of HTML the tree holds, at 1440,
 1920, 2560 and 390, in a real browser:
 
 | page | 1440 | 1920 | 2560 | 390 |
@@ -177,7 +177,7 @@ one.
   outside it. Those are one occurrence apiece today, and reading them means carrying a balanced-paren
   scan for a form nobody has got wrong yet, where both forms that *were* wrong were `max-width`.
 - One defect at 390 is left where it was found: on `levenshtein@1` the copy button sits 17px past the
-  viewport, inside a block that scrolls. It is present at `e2e764b` and present here, it was measured
+  viewport, inside a block that scrolls. It is present at `456ee44` and present here, it was measured
   both ways rather than assumed, and it is not this unit's.
 
 ## What would reopen this

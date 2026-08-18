@@ -220,7 +220,7 @@ export const THE_PACKAGE_NAME = 'toopo'
  * installed anything.
  *
  * **Measured rather than reasoned about, because npm's resolution order is not a thing to be confident
- * about from memory.** Three situations at `ede19ca`, each in an empty folder with the npx cache purged
+ * about from memory.** Three situations at `84a6b7c`, each in an empty folder with the npx cache purged
  * first, on npm 11.12.1: with nothing installed, npx downloads the package and runs it; with the
  * package installed globally, npx runs the global binary and creates no cache entry; with it installed
  * as a project dependency and nothing global, npx runs `node_modules/.bin` and creates no cache entry.
