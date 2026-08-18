@@ -117,6 +117,56 @@ Measured on the page this unit writes: `slugify` occurs **6 times against 11**, 
 six is an address or a path** — the install command, the installed file's location, the two halves of
 the header line, the import, and the catalogue table. None is a call.
 
+### How long the page may be, and where a cut stops being one
+
+This decision set the page's shape and left its size open, and the size was what a reader raised one
+unit later. Measured with `wc -w`: **1 551 words at `2cec0be`**, where five comparable projects run
+from 235 to 674 — those five being reported rather than measured here. The page this section is
+committed with holds **1 398**, every fact, limit, figure and argument of the longer one kept.
+
+**A target of 700 was proposed and refused on a floor that was built rather than estimated.** A second
+page was written carrying every fact, limit and figure of this one with *every justifying clause
+removed* — no *because a catalogue that only shows what it accepted is a catalogue you cannot check*,
+no *because a legal boundary kept by a declaration nothing enforces …*, nothing that explains where it
+could assert. It measures **1 203 words**. That page was not kept, so this is the one figure here
+nobody can rebuild: what to strike is a judgement about which clause explains and which asserts, and
+two readers would not draw the line in the same place. It carries its commit for that reason, on
+[ADR-0018](0018-a-published-count-carries-its-coordinates.md)'s treatment of every figure this
+repository cannot re-derive.
+
+What the floor is made of *is* rebuildable, from the page alone. **282 of the 1 398 words are frozen by
+the decisions above**: 158 in the five fenced blocks, 75 in the catalogue table, 49 in the title and its
+eight section headings. Thirty-nine more are `THE_PINS_ARE_AN_ASSERTION`, which
+`the-readme-says-its-figures-are-an-assertion-and-not-an-observation` requires word for word, and
+thirty-nine again are the nine literal claims
+`every-figure-in-the-readme-is-the-one-the-instrument-declares` resolves — `**667 deliberate
+defects**`, `6 are behaviour the contract declines to specify`, and seven others. That leaves 1 038
+free.
+
+Counting what a page asserts is a judgement and not a measurement, so it is given as one: on the order
+of eighty distinct facts, which puts this page near thirteen words a fact and a 700-word page near
+four.
+**So what this section leaves is a distance and not a target: about 200 words separate the page from
+the floor, and all of them are argument.** Below the floor a cut is the removal of facts under another
+name, and the honest form of that request is to name which.
+
+### The ratio that measured a wrap column
+
+The reading that opened the size question was words per line, where this page stood at 9.0 — 1 551
+words over 173 lines at `2cec0be` — against a median of 3.4 over those same five. **It measures an
+editor's setting and not a density.** Reflowing this page's own words at 60 columns instead of 100 —
+not one word changed — takes it from 8.6 to 6.1.
+Measured at `2cec0be`: the median non-blank line is 93 characters and none exceeds 105, because this
+repository wraps prose at 100 columns. The five wrap nothing, which is reported rather than measured
+here, their medians sitting between 18 and 55 and their longest lines reaching 835. GitHub and npm
+render Markdown as HTML, so no reader sees any of it.
+
+This is [ADR-0030](0030-what-the-method-page-may-say.md)'s rule arriving on a second subject. *An
+address is not a figure* says that a run of digits is not evidence of a quantity and that what decides
+is the rendering; here a ratio is not evidence of a density, and what decides is the column an author's
+editor was set to. Reflowing would have moved it by two points and repaired nothing, which is why the
+page is still wrapped where the rest of this repository is.
+
 ## Consequences
 
 - `every-answer-the-readme-shows-is-a-case-the-contract-settles` is deleted with the block it read, in
@@ -126,7 +176,8 @@ the header line, the import, and the catalogue table. None is a call.
   still read from exactly one place under `mutation/` — which is the whole reason that module exists.
 - The licence section no longer describes the two-line header, because the page now shows it. One
   duplication removed and none created.
-- The page is 173 lines against 160, and the growth is entirely in what it shows.
+- The page went from 160 lines to 173, and that growth was entirely in what it shows. What it then cost
+  in words, and what cutting it back costs, is the two sections above.
 
 ## Confirmation
 
