@@ -374,7 +374,9 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
 - the address a host serves — ADR-0103;
 - an archive that really installs a feature — ADR-0104, on the event it had named, leaving two
   entries behind it: one for the third guard it did not bring back, one for the revision it reports
-  without resolving.
+  without resolving;
+- the address the emitted tree never loses — ADR-0125, over the pages a listing names, leaving behind
+  it the addresses no listing names and the chain of runs the reading is inductive over.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -632,6 +634,23 @@ record declares**, which is a worse thing and has never been named here before.
   carries no branch, and one successful exchange is not a mechanism. ADR-0111 did not touch any of the
   four, which is worth stating because it moved the trigger and could have.
 
+  **A second reading exists, it was taken across the event most likely to have broken it, and it is
+  stronger than the first in one specific way.** ADR-0124 reissued all 506 commits of this graph. Read at
+  `f95c4fa` off npm's own record and off the attestation behind it, for `1.0.4` — the first release
+  published after the rewrite: `_npmUser` is unchanged, `gitHead` is `f95c4fa` and `git cat-file -t`
+  resolves it here, and the provenance names `refs/heads/main`, `https://github.com/toopohq/toopo` and
+  `.github/workflows/suites.yml`. So the four strings and the environment policy survived a rewrite of
+  every identifier in the history, and `event_name` reads `push` — ADR-0111's trigger, confirmed from the
+  side this repository does not write.
+
+  **What is stronger is that the provenance carries two identifiers and not only names.**
+  `repository_id: 1319617655` and `repository_owner_id: 280416883` are stamped by GitHub and a rename
+  does not move them, so an attestation already published goes on naming the right repository whatever
+  this side is called afterwards. **That is true of the attestation and false of the configuration**: npm's
+  trusted publisher is keyed on the four strings, three of which this repository can still rename on its
+  own, and a rename would stop the *next* publication with every guard here green. Both halves are written
+  because the entry read blacker than it is with only the first.
+
   **Both sides were configured on 2026-08-17, and this paragraph is the entire record of it.** The
   trusted publisher on npmjs.com names `toopohq`, `toopo`, `suites.yml` and the `npm` environment, with
   `npm publish` as the permitted command and publishing access at its strictest setting; the GitHub
@@ -876,20 +895,25 @@ record declares**, which is a worse thing and has never been named here before.
   the emission does. **Declaring it does not explain the split and does not need to** — it makes the
   split stop deciding anything. Today those ten land on a default; the day the default moves, nothing
   here says so, and that is the failure, not the four hours. ADR-0103.
-- **That the emitted tree never loses an address it once served**, which the 404 page now promises to
-  every reader and which nothing keeps. ADR-0101 publishes *nothing has ever been served at this
-  address*, derived from permanent rule 6 — and **rule 6 freezes a published version, not the emission**.
-  Nothing stops somebody changing the walk tomorrow so that an address served yesterday stops being
-  written; the 404 would then tell a reader that nothing was ever served there, which would be false, on
-  the page whose whole content is that claim. The closure guard is not it: `the-emitted-tree-is-closed`
-  asks that every address the tree *names* is one it *holds*, which is a statement about one tree and
-  says nothing about the tree before it. **The population is the set of addresses of the emitted tree**,
-  and what would close it is a comparison against the same set at the commit each address was first
-  served from — which is the shape `packages/registry/rebuild.ts` already has for a binding, applied to
-  a tree instead of an artefact. **The clause that dated this entry has expired**: it read *not urgent
-  while nothing is published, a broken promise the day after*, and 76 addresses are served at the
-  declared origin as of `27d1dbb`. The promise is live now — a reader who follows a link that stops
-  being written is told nothing was ever there — and what has not changed is the price.
+- **That an address the emitted tree serves and no listing names goes on being written.** The pages are
+  kept, by a mechanism and at a price the closed entry never considered: it costed a rebuild of the tree
+  at every commit an address was first served from, and what does the work is one fetch of the origin's
+  own `sitemap.xml`, compared against the sitemap the deployment is about to upload. **What that reaches
+  is what a sitemap carries**, and this entry is the rest: the named answers, the nine modules and the
+  five files found by convention are served at addresses no listing names, so nothing would say if one
+  of them stopped being written.
+
+  **The population is the emitted tree minus its sitemap**, and it is the larger half by count — 76
+  addresses served at `27d1dbb` against the 10 the sitemap names. What makes it an entry rather than the
+  same entry again is that the two halves fail differently: a page is what a reader arrives at from a
+  search and can have linked, and an answer is what a client fetches under a digest it holds. The second
+  is covered for the frozen ones by permanent rule 6 and by nothing at all for the rest.
+
+  **A second thing nothing keeps, and it is about the mechanism rather than about the population.** The
+  coverage is inductive — each run compares one deployment against the one before it — so it holds only
+  while every push of `main` runs. A push whose workflow never ran, or a job made non-required, is a link
+  missing from that chain, and nothing in a later run can see one. What would close *that* is a reading
+  over more than one predecessor, which needs a listing this repository does not keep. ADR-0125.
 - **That a declared absence carries the date it was true**, which nothing keeps and which was found on
   this repository's own prose one day after it was written. ADR-0098 published *whether a runner's
   checkout satisfies that has not been measured* in the present tense; the job ran on the next commit

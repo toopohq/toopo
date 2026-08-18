@@ -65,6 +65,11 @@ const buildFile = (find: string, replace: string) => ({ file: 'build.ts', find, 
 const reachableFile = (find: string, replace: string) => ({ file: 'reachable.ts', find, replace })
 const distConfig = (find: string, replace: string) => ({ file: 'tsconfig.dist.json', find, replace })
 const npmFile = (find: string, replace: string) => ({ file: 'what-npm-holds.ts', find, replace })
+const originFile = (find: string, replace: string) => ({
+  file: 'what-the-origin-lists.ts',
+  find,
+  replace,
+})
 
 const THE_OUTPUT_IS_WALKED_TO_THE_BOTTOM = `    return statSync(full).isDirectory() ? every(full) : [full]`
 
@@ -85,6 +90,32 @@ const A_NAME_NPM_DOES_NOT_KNOW_HOLDS_NOTHING = `  if (answer.status === 404) ret
 const ANYTHING_BUT_AN_ANSWER_IS_REFUSED = `  if (answer.status !== 200) throw new WhatNpmHoldsCannotBeRead(url, \`it answered \${answer.status}\`)`
 
 const THE_NAME_IS_PART_OF_THE_ADDRESS = '  const url = `${origin}/${packageName}`'
+
+const THE_AMPERSAND_IS_UNDONE_LAST = `    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&apos;', "'")
+    .replaceAll('&amp;', '&')`
+
+const A_DOCUMENT_THAT_IS_NOT_A_SITEMAP_IS_REFUSED = `  if (!body.includes('<urlset')) {
+    throw new WhatTheOriginListsCannotBeRead(url, 'it answered something that is not a sitemap')
+  }`
+
+const A_SITEMAP_NAMING_NOTHING_IS_REFUSED = `  if (listed.length === 0) {
+    throw new WhatTheOriginListsCannotBeRead(url, 'it answered a sitemap that names no address')
+  }`
+
+const AN_ORIGIN_THAT_DID_NOT_ANSWER_IS_REFUSED = `    throw new WhatTheOriginListsCannotBeRead(url, \`nothing answered (\${theFirstLineOf(error)})\`)`
+
+const ONLY_TWO_HUNDRED_IS_AN_ANSWER = `  if (answer.status !== 200) {`
+
+const NOTHING_BUT_TWO_HUNDRED_IS_READ = `  if (answer.status !== 200) {
+    throw new WhatTheOriginListsCannotBeRead(url, \`it answered \${answer.status}\`)
+  }`
+
+const THE_SITEMAP_IS_WHAT_IS_ASKED_FOR = '  const url = `${origin}/${SITEMAP}`'
+
+const WHAT_THE_ORIGIN_KEEPS_AND_THIS_TREE_DROPS = `): readonly string[] => [...served].filter((address) => !written.has(address))`
 
 const NOTHING_IS_DROPPED = buildFile(
   `const dropped = every(DIST).filter((file) => !reachable.has(file))`,
@@ -275,6 +306,131 @@ const mutants: readonly Mutant[] = [
       'this package and every version of it reads as unpublished',
     [npmFile(THE_NAME_IS_PART_OF_THE_ADDRESS, '  const url = `${origin}/`')],
     killed(['the-address-asked-is-the-name-under-the-origin']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // What decides a deployment
+  // -------------------------------------------------------------------------
+
+  /**
+   * The one defect of this pair that no status and no refusal would catch: an address read back as a
+   * *different* address, silently.
+   *
+   * `indexing.ts` escapes the ampersand first and this undoes it last, which is the same order read
+   * from either end. Undone first, `&amp;lt;` - a sitemap naming an address that holds the four
+   * characters `&lt;` - comes back holding `<`. Every count still reconciles and the comparison is
+   * about a set that is not the one the origin published.
+   */
+  sameOnEveryLens(
+    'A-20',
+    'undoes the ampersand before the other four, so an address holding an escaped entity is read back ' +
+      'as a different address and a page that is still served reads as one this tree has dropped',
+    [
+      originFile(
+        THE_AMPERSAND_IS_UNDONE_LAST,
+        `    .replaceAll('&amp;', '&')
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&apos;', "'")`,
+      ),
+    ],
+    killed(['every-address-a-sitemap-names-is-read-back-from-it']),
+  ),
+
+  /**
+   * The root element unread, which matters for exactly one document and it is one of this protocol's
+   * own: a `<sitemapindex>` whose every `<loc>` is the address of another sitemap rather than of a
+   * page. Read as a page list it reports that every real address has been dropped.
+   *
+   * **Measured rather than predicted.** The three other documents this guard is handed - an error page,
+   * a feed, a JSON body - carry no `<loc>` at all and stay refused by the count, so this edit reddens
+   * on the sitemap index alone.
+   */
+  sameOnEveryLens(
+    'A-21',
+    'reads any document carrying a `<loc>` as a sitemap, so a sitemap index - which lists sitemaps and ' +
+      'not pages - is taken for the page list and every address the origin serves reads as lost',
+    [originFile(A_DOCUMENT_THAT_IS_NOT_A_SITEMAP_IS_REFUSED, '')],
+    killed(['a-document-that-is-not-a-sitemap-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'A-22',
+    'reads a sitemap naming nothing as a site with no pages, so an origin serving an empty listing ' +
+      'clears every deployment instead of stopping it',
+    [originFile(A_SITEMAP_NAMING_NOTHING_IS_REFUSED, '')],
+    killed(['a-sitemap-naming-no-address-is-refused']),
+  ),
+
+  /**
+   * **The defect this module exists against, and it is A-15's arm pointing the other way.**
+   *
+   * `theVersionsNpmHolds` reads a 404 as *no such package*, and that is right there: a wrong reading
+   * ends in npm refusing the publication, so the failure is a red. The same arm here fails into a
+   * green. An origin answering 404 for its own sitemap lists nothing, nothing can then be found
+   * missing from it, and the deployment that drops every page at once is cleared by the reading
+   * written to refuse it.
+   *
+   * It is the one cell of this battery that is an *addition* rather than a removal, because the
+   * plausible way to write this defect is to copy the arm from the module next door.
+   */
+  sameOnEveryLens(
+    'A-23',
+    'copies the neighbouring module\'s 404 arm, so an origin that has no sitemap reads as a site that ' +
+      'serves no page - and the one deployment that would drop every address at once is the one this ' +
+      'clears',
+    [originFile(ONLY_TWO_HUNDRED_IS_AN_ANSWER, `  if (answer.status === 404) return new Set()\n${ONLY_TWO_HUNDRED_IS_AN_ANSWER}`)],
+    killed(['a-404-for-a-sitemap-is-refused-and-never-read-as-an-empty-site']),
+  ),
+
+  sameOnEveryLens(
+    'A-24',
+    'takes any status as an answer as long as the body parses, so a gateway error carrying a cached ' +
+      'sitemap decides a deployment as confidently as the origin would',
+    [originFile(NOTHING_BUT_TWO_HUNDRED_IS_READ, '')],
+    killed(['a-status-that-is-not-an-answer-refuses-the-reading']),
+  ),
+
+  /**
+   * A-15's defect on the second reader of this folder, and the reason both modules are written with
+   * the refusal rather than with a fallback: an origin that did not answer and an origin serving
+   * nothing are one value once a refusal becomes an empty set, and they decide opposite things.
+   */
+  sameOnEveryLens(
+    'A-25',
+    'reads an origin that did not answer as an origin listing nothing, so a network that was down ' +
+      'while this ran clears a deployment that drops every page a reader has ever linked to',
+    [originFile(AN_ORIGIN_THAT_DID_NOT_ANSWER_IS_REFUSED, `    return new Set()`)],
+    killed(['an-origin-that-could-not-be-read-establishes-nothing']),
+  ),
+
+  sameOnEveryLens(
+    'A-26',
+    'asks the origin for its front page instead of its sitemap, so what is parsed is a document that ' +
+      'lists nothing and the reading refuses every run for a reason that is not the one it names',
+    [originFile(THE_SITEMAP_IS_WHAT_IS_ASKED_FOR, '  const url = `${origin}/`')],
+    killed(['the-address-asked-is-the-sitemap-under-the-origin']),
+  ),
+
+  /**
+   * The comparison run the other way, which is the failure that looks like the guard working.
+   *
+   * Every ordinary unit of this repository adds a page, so the reversed difference is non-empty on
+   * almost every deployment - and it names the addresses being *added*, under a sentence saying they
+   * would stop being served. It refuses the runs it should clear and clears the one it should refuse.
+   */
+  sameOnEveryLens(
+    'A-27',
+    'reports the addresses this tree writes and the origin does not, so a unit adding a page is ' +
+      'refused as one dropping it and a unit dropping a page goes through',
+    [
+      originFile(
+        WHAT_THE_ORIGIN_KEEPS_AND_THIS_TREE_DROPS,
+        `): readonly string[] => [...written].filter((address) => !served.has(address))`,
+      ),
+    ],
+    killed(['only-an-address-the-origin-serves-and-this-tree-drops-is-reported']),
   ),
 
   // -------------------------------------------------------------------------

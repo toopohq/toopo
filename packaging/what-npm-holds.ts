@@ -77,8 +77,14 @@ export class WhatNpmHoldsCannotBeRead extends Error {
   }
 }
 
-/** The first line of whatever was thrown, because a stack trace is not a sentence a refusal can carry. */
-const theFirstLineOf = (error: unknown): string =>
+/**
+ * The first line of whatever was thrown, because a stack trace is not a sentence a refusal can carry.
+ *
+ * Exported the day a second reader in this folder needed it, and it stays here rather than moving to a
+ * module of its own: it says nothing about npm, and one declaration two callers reach is what a shared
+ * sentence costs. `what-the-origin-lists.ts` is that caller.
+ */
+export const theFirstLineOf = (error: unknown): string =>
   error instanceof Error ? (error.message.split('\n')[0] ?? error.name) : String(error)
 
 /** `fetch`, reduced to the two things this module reads. It has no arm, by design; the comment above says why. */

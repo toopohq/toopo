@@ -218,6 +218,14 @@
  * one integer. What a unit costs here is a function of how many *files* its guards land in and never
  * of how much it changed. ADR-0123.
  *
+ * A twentieth on the address that goes on being written: one new file under the packaging's and no
+ * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
+ * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
+ * obvious home was `packaging/against-the-origin/`, which no battery replays and which this file
+ * therefore never counts. Splitting the reader from the reading put eight guards inside the census
+ * instead of none, and left the socket in a script the workflow runs. **A suite this file cannot count
+ * is a suite nothing can compose-check**, which is the eighteenth's finding read forwards. ADR-0125.
+ *
  * ---------------------------------------------------------------------------
  * The census this file is not, and the wall it does not move
  * ---------------------------------------------------------------------------
@@ -346,6 +354,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'packaging/vitest.config.ts': {
     'packaging/archive.test.ts': 8,
     'packaging/what-npm-holds.test.ts': 6,
+    'packaging/what-the-origin-lists.test.ts': 8,
   },
 
   'mutation/fixture/vitest.config.ts': {

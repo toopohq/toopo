@@ -35,7 +35,8 @@ const { dirname, join } = await import('node:path')
 
 const { theRevision } = await import('../registry/revision.ts')
 const { THE_BROWSER_GRAPH, asABrowserModule } = await import('./browser.ts')
-const { LLMS_TXT, ROBOTS, SITEMAP, THE_HEADERS_FILE, THE_NOT_FOUND_FILE } = await import('./paths.ts')
+const { LLMS_TXT, ROBOTS, SITEMAP, THE_BUILT_TREE, THE_HEADERS_FILE, THE_NOT_FOUND_FILE } =
+  await import('./paths.ts')
 const { thePublication } = await import('./site.ts')
 
 /**
@@ -59,7 +60,7 @@ const FOUND_BY_CONVENTION = new Set<string>([
   THE_NOT_FOUND_FILE,
 ])
 
-const OUT = join(import.meta.dirname, 'out')
+const OUT = join(import.meta.dirname, THE_BUILT_TREE)
 const ROOT = join(import.meta.dirname, '..', '..')
 
 /**

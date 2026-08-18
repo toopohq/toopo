@@ -276,6 +276,35 @@ jobs:
       # method ADR-0100's probes had to repair: a request answers about content, only a listing answers
       # about existence. Deploying to find out would make a first run and a broken run look alike, and
       # creating unconditionally would fail every run after the first.
+      # ---------------------------------------------------------------------
+      # The last moment this comparison says anything
+      # ---------------------------------------------------------------------
+      #
+      # ADR-0125 carries the decision. An address this tree has served goes on being written; what it
+      # says is free to change. Three pages of this site have been rewritten with nothing broken,
+      # because the promise the 404 makes is about the address and never about its content.
+      #
+      # **It runs here and it cannot run after `deploy`.** The origin is still serving the previous
+      # deployment at this point, so the two sides of the comparison are two different trees. One step
+      # later the origin serves this commit and every address it lists is one this tree has just
+      # written - a guard that cannot fail, which is what `packages/site/out` would be compared against
+      # if this sat beside `the archive against the origin`.
+      #
+      # **The coverage is inductive**: each run compares one deployment against the one before it, and a
+      # chain of those reaches back to the first. A push whose run never happened is a link missing from
+      # that chain, and nothing here can see one.
+      #
+      # **`main` only, and a branch is not a deployment.** A branch forked before `main` added a page
+      # does not write that page, and the origin lists it - so a branch would be red on an address
+      # nobody dropped, which is the ordinary state this repository refuses to write a guard for. The
+      # deployment is what the promise is about and `main` is what deploys.
+      #
+      # It gates `deploy` by standing before it: an address is never lost, because the upload that would
+      # lose it does not happen.
+      - name: what a deployment would drop
+        if: github.ref == 'refs/heads/main'
+        run: node packaging/print-what-a-deployment-would-drop.ts
+
       - name: deploy
         if: github.ref == 'refs/heads/main'
         env:

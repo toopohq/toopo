@@ -183,3 +183,16 @@ export const THE_HEADERS_FILE = '_headers'
  * every address holding nothing. ADR-0101.
  */
 export const THE_NOT_FOUND_FILE = '404.html'
+
+/**
+ * The folder the build writes the tree into, beside this one.
+ *
+ * It is the one name here that is not an address a reader is served: everything above says where a
+ * thing lives *in* the tree, and this says where the tree lands on a disk. It is here anyway, and for
+ * the reason `THE_ORIGIN` moved one floor up - **a second consumer appeared.** `build.ts` spelled it
+ * as a literal while it was the only module in this repository that touched a disk;
+ * `packaging/print-what-a-deployment-would-drop.ts` now reads the same folder, because the question it
+ * asks is about the bytes that are uploaded rather than about a rebuilding of them. Two spellings of
+ * one folder make a comparison that can quietly start being about nothing.
+ */
+export const THE_BUILT_TREE = 'out'
