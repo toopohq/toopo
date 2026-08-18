@@ -58,6 +58,7 @@ import type {
 import type { FrozenContract } from '../registry/snapshot.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import { figure, grouped } from './quantity.js'
 import type { Domain, Held } from './catalogue.js'
 import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
@@ -90,7 +91,6 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
 /** A number with the thousands marked, because a byte count is read as a quantity. */
-const grouped = (value: number): string => value.toLocaleString('en-US').replaceAll(',', ' ')
 
 /*
  * What this page says about the playground below it is read off that playground rather than written
@@ -412,18 +412,6 @@ const renderedUseCase = (entry: UseCaseRecord, answer: ExportRecord): Node => {
   )
 }
 
-/**
- * One figure of the card: the number, then what it counts.
- *
- * **It is one paragraph and not two, and the reading is why.** Split into a value and a label the
- * page reads `3 332` and then `bytes, one file` as two separate things, where
- * `the-cost-a-page-states-is-what-lands-and-not-what-is-served` asks for `3 332 bytes` - and it is
- * right to, because that is the sentence a reader is owed and two stacked fragments are not one. The
- * look the mock-up carries, a large mono figure over a small label, is what the stylesheet makes of
- * `strong`; the sentence survives underneath it.
- */
-const figure = (value: string, counts: string): Node =>
-  el('p', { class: 'figure' }, el('strong', NOTHING, text(value)), text(` ${counts}`))
 
 /**
  * How many of a contract's properties are checked, said where the reasons are.

@@ -42,6 +42,7 @@ import { THE_INVOCATION } from '../registry/address.js'
 import type { Domain, Held } from './catalogue.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import { grouped } from './quantity.js'
 import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
 import { domainPageOf, linkTo, pageOf } from './paths.js'
@@ -50,9 +51,6 @@ const NOTHING = {} as const
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
-
-/** A number with the thousands marked, because a byte count is read as a quantity. */
-const grouped = (value: number): string => value.toLocaleString('en-US').replaceAll(',', ' ')
 
 /** What one contract settles, weighs and pulls in - the three figures a reader is choosing on. */
 const casesOf = (held: Held): number =>

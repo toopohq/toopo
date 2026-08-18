@@ -18,6 +18,7 @@ import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import { figure, grouped } from './quantity.js'
 import type { Domain } from './catalogue.js'
 import type { MenuEntry } from './chrome.js'
 import { masthead } from './chrome.js'
@@ -27,17 +28,6 @@ const NOTHING = {} as const
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
-
-/** A number with the thousands marked, because a count of cells is read as a quantity. */
-const grouped = (value: number): string => value.toLocaleString('en-US').replaceAll(',', ' ')
-
-/**
- * One figure of the column: the quantity, and the word that says what it counts.
- *
- * The same element the contract card uses, because a reader who has seen one has learnt this one.
- */
-const figure = (value: number, counts: string): Node =>
-  el('p', { class: 'figure' }, el('strong', NOTHING, text(grouped(value))), text(counts))
 
 /**
  * A block of the column: a heading the outline keeps, and then whatever the block is.
@@ -221,9 +211,9 @@ export const cataloguePage = (
           el(
             'div',
             { class: 'figures' },
-            figure(measured.defects.cells, 'defect cells injected'),
-            figure(measured.defects.killed, 'caught by the suite'),
-            figure(measured.batteries, 'batteries, replayable'),
+            figure(grouped(measured.defects.cells), 'defect cells injected'),
+            figure(grouped(measured.defects.killed), 'caught by the suite'),
+            figure(grouped(measured.batteries), 'batteries, replayable'),
           ),
           line(
             'p',
