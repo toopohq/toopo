@@ -233,6 +233,34 @@ row — and the layout is derived from the widest of them, `2 * measure + gap`, 
 every child of them is prose, prose is bounded on the line, and the container was never what bound
 them. ADR-0122.
 
+**A wide screen is now filled by a column, and the line did not move.** ADR-0122 named this unit in
+its own reopening section — the front page's 19.8% was a page whose every element is prose, which is
+evidence that no ceiling made it narrow and not evidence that the page was right. A contract page's
+table of contents crosses to the right of the content, the front page gains a column carrying the
+three sections it used to queue under the catalogue, and both lists of contracts go two abreast where
+there is room. Measured over all eleven pages at 1440, 1920 and 2560, by ADR-0122's own definition of
+the share: at 2 560 the front page **19.8% → 48.1%**, a contract page **45.9% → 55.9%**,
+`/typescript/string/` **29.6% → 45.8%**. The measure held, which was the thing at risk: **0 of 11 964
+prose lines over 75 characters, worst 70**, against 0 of 11 913, worst 70. **Not one word of the site
+changed** — the three sections keep their `h2`, so the outline, the Markdown twin and the sitemap are
+identical, and the only matter added is four figures derived from the batteries. **The domain page
+keeps two columns**, because a third would have carried the four figures its opening sentence already
+composes and ADR-0121 composed them precisely so they would not be stated a fifth time. ADR-0123.
+
+**`--the-shortest-line: 45` is the shape to reach for, and it is worth more than the layout it
+bought.** The column of secondary matter needed a width, and the stylesheet had declared the answer
+for a year without deriving it: *45 to 75 characters is the span a line stays readable across*, of
+which only the top was a length. **No number entered that file that was not already argued for in
+it.** The same move settled the two-abreast list with no breakpoint at all — `auto-fit` over a floor
+of one measure is two columns exactly where the column is two measures wide — so the value the owner
+will flip is a length in the palette and never a grid to restructure.
+
+**One width in that stylesheet is typed, and the language is why rather than the author.** `var()` is
+not allowed in a media query's condition, in any browser, so the three-column threshold is the
+arithmetic of its own tracks taken on one machine and rounded up. It is written beside that
+arithmetic, it degrades by squeezing rather than overflowing, and it is on the list below as the thing
+nothing keeps.
+
 **Four defects came out of a browser and out of no static check**, which is the third time this
 repository has paid for that class. Two rules 13px apart where a list item and the heading inside it
 each drew one; and section gaps of 0, 8 and 16 where the system declares one — every instance a
@@ -415,6 +443,24 @@ record declares**, which is a worse thing and has never been named here before.
   now say it is not kept: the head of ADR-0023, and this entry.
 
 **Still open, and what each one now costs.**
+
+- **That a breakpoint is the arithmetic of the lengths it separates.** Two guards now keep that every
+  ceiling and every track of this site's layout is derived — `every-ceiling-on-a-box-is-derived-and-never-typed`
+  and `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` — and **neither can read
+  the one place a width is still typed**, because `var()` is not allowed in a media query's condition
+  in any browser and never has been. **The population is the three conditions of `style.ts`**: `52rem`,
+  `64rem` and `97rem`. Each is computed from the same declared lengths the rules under it use, each
+  carries that arithmetic in the comment above it, and nothing compares the two. The failure is quiet
+  by construction: a threshold that no longer matches its own tracks does not break a page, it moves
+  the width at which the page changes shape, and only a reading at exactly that width would say so.
+
+  **What would close it is not a lint and the price is a browser.** Every one of those lengths
+  resolves against `ch`, which is a property of the face the reader's own system supplies, so the
+  arithmetic cannot be evaluated by anything that does not lay text out — the guard would be the
+  eleven-page sweep this repository already takes by hand, made into a suite with a browser as a dev
+  dependency. That is the trade stage rule 3 admits only where the mechanism keeping a tool out of the
+  product is executable, and it would buy a check on three integers. **Refused knowingly, and it is
+  the whole of what ADR-0123's third reopening trigger is about.**
 
 - **That a paragraph of prose has been read whole by somebody.** ADR-0112 makes it measurable: a
   paragraph has an author when one commit's blame covers every one of its lines, `npm run hands`
