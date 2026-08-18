@@ -121,6 +121,20 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
       'publication, on exactly this measurement.',
   },
 
+  // Prose the registry curates, which is why none of the three is frozen and none is an address.
+  'useCases[].name': { visibility: 'public', verification: 'documentary' },
+  'useCases[].situation': { visibility: 'public', verification: 'documentary' },
+  'useCases[].caveat': { visibility: 'public', verification: 'documentary' },
+  /**
+   * `executable` for the same reason a case's data is, and by the same guard.
+   *
+   * `every-use-case-replays-through-the-stripped-artefact-a-browser-runs` calls the shipped module
+   * with these arguments and compares its answer with the one declared here, so a use case that
+   * announces a result the function does not produce reddens. That is what keeps this field from
+   * being what a demonstration on a page usually is - a transcription somebody took once.
+   */
+  'useCases[].data': { visibility: 'public', verification: 'executable' },
+
   'identity.exportName': { visibility: 'public', verification: 'executable' },
   'identity.summary': { visibility: 'public', verification: 'documentary' },
   'identity.description': { visibility: 'public', verification: 'documentary' },
@@ -272,6 +286,9 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
  */
 const LEAF_FIELDS = new Set([
   'caseTables[].cases[].data',
+  // The same value one section along, and a leaf for the same reason: it is the contract's, not the
+  // schema's, and walking in would classify one path per use case.
+  'useCases[].data',
   'benchmarks.profiles[].data',
   'benchmarks.profiles[].samples.values[]',
   'ownDeclarations[].value',
@@ -311,6 +328,13 @@ export const pathsIn = (value: unknown, path: string, into: Set<string>): void =
 export const publicContract = (record: ContractRecord): unknown => ({
   address: record.address,
   lifecycle: record.lifecycle,
+  /**
+   * Omitted rather than served as an `undefined`, which is what an optional field costs here.
+   * `pathsIn` treats anything that is not an object as a leaf, so writing the key unconditionally
+   * emits the bare path `useCases` on the four contracts that declare none - a path no
+   * classification can sensibly carry, since what would be classified is the absence.
+   */
+  ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
   identity: record.identity,
   surface: record.surface,
   environments: record.environments,

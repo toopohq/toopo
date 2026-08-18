@@ -46,7 +46,12 @@
  * refuses.
  */
 
-import type { CaseRecord, ExportRecord, ParameterRecord } from '../registry/contract-record.js'
+import type {
+  CaseRecord,
+  ExportRecord,
+  ParameterRecord,
+  WrittenAsACall,
+} from '../registry/contract-record.js'
 import type { EncodedField } from '../registry/value.js'
 import type { FrozenContract } from '../registry/snapshot.js'
 import { decode, encode } from '../registry/value.js'
@@ -159,13 +164,16 @@ const asADeclaredValue = (answer: unknown): unknown =>
 /**
  * The fields of a case, parted where the signature stops.
  *
- * `packages/registry/signature.ts` reads the call and `packages/registry/serialise.ts` refuses a contract whose cases do
- * not begin with it, so what is left after the parameters is the answer. Written once and used twice -
- * by the page that renders a case and by the playground that opens on one - because two slices at one
- * boundary are one statement that would come apart.
+ * `packages/registry/signature.ts` reads the call and `packages/registry/serialise.ts` refuses a contract whose rows do
+ * not begin with it, so what is left after the parameters is the answer. Written once and reached
+ * from four places - the page that renders a case, the playground that opens on one, the page that
+ * renders a use case and the replay that checks one - because four slices at one boundary are one
+ * statement that would come apart.
+ *
+ * It takes `WrittenAsACall` and not `CaseRecord`, which is the one field it has ever read.
  */
 export const theCallOf = (
-  entry: CaseRecord,
+  entry: WrittenAsACall,
   answer: ExportRecord,
 ): {
   readonly given: readonly EncodedField[]
@@ -367,14 +375,15 @@ const theTextFor = (
 }
 
 /**
- * What every field of the form holds for one case, in the signature's order.
+ * What every field of the form holds for one row, in the signature's order.
  *
- * Written once and reached twice - by the form, which opens on a case, and by the replay, which drives
- * every case through the same reading a reader's browser would. Two statements of *what a field holds*
- * would be free to disagree exactly where it matters: on the notation a reader is being taught.
+ * Written once and reached three times - by the form, which opens on a case, and by the replay, which
+ * drives every case and every use case through the same reading a reader's browser would. Two
+ * statements of *what a field holds* would be free to disagree exactly where it matters: on the
+ * notation a reader is being taught.
  */
 export const theFieldsFor = (
-  entry: CaseRecord,
+  entry: WrittenAsACall,
   answer: ExportRecord,
   what: string,
 ): readonly string[] => {

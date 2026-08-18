@@ -12,6 +12,24 @@ confirmed-by:
 
 # An alias is a query whose best answer is this contract
 
+> **The consequence below is contradicted by the mechanism, and has been since the catalogue was
+> published.** *An alias is not frozen with the major* is a decision this record still holds to, and it
+> is not what the code does: `searchAliases` sits inside `identity`, `contractSnapshot` freezes
+> `identity` whole, and since [ADR-0106](0106-publishing-and-anchoring-are-two-acts.md) the four
+> published contracts are bound at `15aeb6c`. Measured at `7bdbb33` — adding one alias to
+> `string/slugify@1` moves its contract digest from `855107da…` to `5fe0ecfa…`, which
+> `every-published-binding-still-hashes-to-what-it-was-published-as` refuses. **So correcting a lying
+> alias today reddens a guard, and *costs a revision* names something nothing implements.**
+>
+> Nothing below is retracted. The decision is right — an alias is not an address, and being wrong about
+> one must not cost `name@2` — and what is wrong is the mechanism, which has never had a way to carry a
+> field that is *of a contract* and *outside the digest*.
+> [ADR-0118](0118-a-use-case-is-standing-and-never-part-of-the-contract.md) built that way for a new
+> field and deliberately did not move this one: `searchAliases` is inside four published digests, so
+> taking it out is itself the change permanent rule 6 forbids. It is on the list in `CLAUDE.md` of what
+> this repository declares and nothing keeps, as the first entry there where the mechanism does the
+> opposite of the record rather than merely failing to enforce it.
+
 ## Context and Problem Statement
 
 `identity.searchAliases` is the searchable surface of a contract: the description is not in the index,

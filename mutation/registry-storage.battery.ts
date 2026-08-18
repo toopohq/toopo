@@ -217,10 +217,15 @@ const REFUSE_A_REBINDING = `  const held = entries[0]
 
 const SERVE_THE_CANONICAL_TEXT = `  canonicalText: canonical(snapshot, 'snapshot'),`
 
-const A_BINDING_IS_ONLY_STANDING = `  readonly lifecycle: Lifecycle
+/**
+ * Both anchor on the last member of the binding rather than on `lifecycle`, which is where they were
+ * until the standing gained a second field. The mutant adds one member to the type and one to the
+ * builder, so what it has to attach to is the end of each - and `lifecycle` stopped being that.
+ */
+const A_BINDING_IS_ONLY_STANDING = `  readonly useCases?: readonly UseCaseRecord[]
 }`
 
-const A_BINDING_IS_BUILT_FROM_STANDING = `  lifecycle: entry.standing.lifecycle,
+const A_BINDING_IS_BUILT_FROM_STANDING = `  ...(entry.standing.useCases === undefined ? {} : { useCases: entry.standing.useCases }),
 })`
 
 // --- The licence perimeter, which is derived from what the installer copies ---
@@ -441,13 +446,13 @@ const mutants: readonly Mutant[] = [
         // Written with a structural type rather than by naming `HarnessFile`, so that the defect is
         // caught by the guard that exists for it and not by an import this file does not have. A
         // mutant killed by the typechecker would measure the import and not the projection.
-        `  readonly lifecycle: Lifecycle
+        `  readonly useCases?: readonly UseCaseRecord[]
   readonly harness: readonly { readonly path: string }[]
 }`,
       ),
       responseFile(
         A_BINDING_IS_BUILT_FROM_STANDING,
-        `  lifecycle: entry.standing.lifecycle,
+        `  ...(entry.standing.useCases === undefined ? {} : { useCases: entry.standing.useCases }),
   harness: [],
 })`,
       ),

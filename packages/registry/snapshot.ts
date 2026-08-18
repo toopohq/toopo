@@ -90,6 +90,7 @@ import type {
   OwnDeclaration,
   PropertiesRecord,
   SurfaceRecord,
+  UseCaseRecord,
 } from './contract-record.js'
 import type {
   DependencyEdge,
@@ -171,10 +172,15 @@ export type StandingField = {
  * The question is: *may the registry change its mind about this field after publication?* Every field
  * a contract record grows has to answer it, and an answer of yes puts the field here whatever else it
  * is. `snapshot.test.ts` requires the two halves to partition a record exactly, so a field added to
- * neither is refused - which only works while this list is a place a field can be added to. Two
- * candidates already exist on paper and neither is filled today: anything the registry curates about a
- * contract, as `tags` are one level down, and anything a later measurement attaches to an artefact
- * published without it.
+ * neither is refused - which only works while this list is a place a field can be added to.
+ *
+ * **The list stopped holding one entry, and the entry that arrived is one this comment had named.**
+ * It read *two candidates already exist on paper and neither is filled today: anything the registry
+ * curates about a contract, as `tags` are one level down, and anything a later measurement attaches
+ * to an artefact published without it.* `useCases` is the first of the two, and it arrived because
+ * the alternative was impossible rather than merely worse: `string/slugify@1` is published, so a
+ * field in `identity` moves its digest and a byte in `contract.ts` moves it too - both measured, and
+ * both permanent rule 6 firing correctly. The second candidate is still on paper. ADR-0118.
  */
 export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
   {
@@ -184,6 +190,14 @@ export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
       'permanent rule 6 forbids unpublishing it. Inside the digest, either the rule firing breaks ' +
       'immutability or the state is unreachable - and an unreachable state is the decorative rule ' +
       'its own comment warns against.',
+  },
+  {
+    field: 'useCases',
+    reason:
+      'how a function gets used is the registry\'s curation and not a fact about the artefact: ' +
+      'nothing links to a use case, no answer cites one, and rewriting one the day it reads badly ' +
+      'breaks nobody\'s code. Inside the digest it would freeze prose for the life of a major, ' +
+      'which is what ADR-0023 refuses for an alias and for the same three reasons.',
   },
 ]
 
@@ -294,7 +308,11 @@ export const edgeTo = (target: ImplementationRecord): DependencyEdge => {
 // The standing - what the registry may still change about a frozen artefact
 // ---------------------------------------------------------------------------
 
-export type ContractStanding = { readonly lifecycle: Lifecycle }
+export type ContractStanding = {
+  readonly lifecycle: Lifecycle
+  /** Absent on a contract that declares none, for the reason the record states. ADR-0118. */
+  readonly useCases?: readonly UseCaseRecord[]
+}
 
 export type ImplementationStanding = { readonly status: ImplementationStatus }
 

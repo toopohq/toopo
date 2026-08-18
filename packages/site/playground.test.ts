@@ -4,7 +4,12 @@ import { dirname, join, posix } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { renderContract } from '../registry/address.js'
-import type { CaseRecord, ExportRecord } from '../registry/contract-record.js'
+import type {
+  CaseRecord,
+  ExportRecord,
+  UseCaseRecord,
+  WrittenAsACall,
+} from '../registry/contract-record.js'
 import type { FrozenContract } from '../registry/snapshot.js'
 import { THE_BROWSER_GRAPH, asABrowserModule, theReferenceModules } from './browser.js'
 import type { Held } from './catalogue.js'
@@ -78,22 +83,29 @@ const diagnosticOf = (contract: FrozenContract): ExportRecord | undefined =>
   contract.surface.exports.find((entry) => entry.role === 'the-diagnostic')
 
 /**
- * One case, replayed through the artefact a browser runs: the answer, and the reason underneath it.
+ * One row, replayed through the artefact a browser runs: the answer, and the reason underneath it.
  *
  * Faults are returned rather than asserted so that a bad row names itself instead of stopping the
  * sweep at the first one, which is what makes the list at the end readable.
+ *
+ * **`cited` is passed rather than read off the row, and that is what lets a use case through here.** A
+ * case is addressed by a frozen identifier and a use case is deliberately addressed by nothing, so
+ * there is no one field to read - and inventing an identifier for a use case, only so that this
+ * function could go on reading `entry.id`, would be minting an address for a thing this repository
+ * has just argued must not have one. ADR-0118.
  */
 const replayed = (
   one: Held,
   module: Record<string, (...args: readonly unknown[]) => unknown>,
-  entry: CaseRecord,
+  entry: WrittenAsACall,
+  cited: string,
 ): readonly string[] => {
   const what = renderContract(one.contract.address)
   const answer = answerOf(one.contract)
   const diagnostic = diagnosticOf(one.contract)
   const { written, answered } = theCallOf(entry, answer)
   const held = theFieldsFor(entry, answer, what)
-  const made = `${what}#${entry.id}: ${answer.name}(${written.join(', ')})`
+  const made = `${what}#${cited}: ${answer.name}(${written.join(', ')})`
   const wanted = diagnostic === undefined ? 1 : 2
 
   if (answered.length !== wanted) {
@@ -111,7 +123,7 @@ const replayed = (
     const got = answerWritten((module[answer.name] as (...args: readonly unknown[]) => unknown)(...given))
     const settled = literal(answered[0].value)
 
-    if (got !== settled) return [`${made} answers ${got} where the case settles ${settled}`]
+    if (got !== settled) return [`${made} answers ${got} where the row declares ${settled}`]
     if (diagnostic === undefined) return []
 
     const described = module[diagnostic.name] as (...args: readonly unknown[]) => unknown
@@ -120,7 +132,7 @@ const replayed = (
 
     return reason === settledReason
       ? []
-      : [`${made} is described ${reason} where the case settles ${settledReason}`]
+      : [`${made} is described ${reason} where the row declares ${settledReason}`]
   } catch (thrown) {
     return [`${made} throws ${thrown instanceof Error ? thrown.message : String(thrown)}`]
   }
@@ -143,13 +155,50 @@ describe('the playground, against the catalogue it opens on', () => {
       const module = await shipped(one)
 
       for (const table of one.contract.caseTables) {
-        for (const entry of table.cases) faults.push(...replayed(one, module, entry))
+        for (const entry of table.cases) faults.push(...replayed(one, module, entry, entry.id))
       }
     }
 
     // The bound, so that a run reaching no case at all cannot pass with an empty list of faults.
     expect(held.map((one) => one.contract.caseTables.flatMap((table) => table.cases).length > 0)).toEqual(
       held.map(() => true),
+    )
+    expect(faults).toEqual([])
+  })
+
+  /**
+   * Every use case a page shows, run against the module that page ships.
+   *
+   * **A use case is a demonstration, and a demonstration nothing runs is what this page exists to be
+   * the opposite of.** ADR-0114 took exactly that out of the README - a call and an answer written
+   * beside each other by somebody careful, with nothing keeping the second true of the first - and
+   * the contract page is the worst place in this catalogue to put it back, because everything else on
+   * it was checked. So a use case replays through `replayed`, the same function and the same shipped
+   * artefact as the 41 settled cases, and an answer that does not come back reddens here.
+   *
+   * **The bound is over the contracts that declare use cases and not over all of them**, which is the
+   * difference between this and the guard above. Use cases are optional by design, so requiring every
+   * contract to carry one would be this guard inventing a rule the schema does not state; and
+   * asserting an empty fault list over a catalogue that happens to declare none would be the check
+   * that goes green for ever. What is asserted is that the contracts declaring them are not zero and
+   * that each declares at least one - so the day the field is emptied by accident, this fails rather
+   * than passing quietly. ADR-0118.
+   */
+  it('every-use-case-replays-through-the-stripped-artefact-a-browser-runs', async () => {
+    const faults: string[] = []
+    const declaring = theHeld().filter((one) => one.binding.useCases !== undefined)
+
+    for (const one of declaring) {
+      const module = await shipped(one)
+
+      for (const entry of one.binding.useCases as readonly UseCaseRecord[]) {
+        faults.push(...replayed(one, module, entry, entry.name))
+      }
+    }
+
+    expect(declaring.length).toBeGreaterThan(0)
+    expect(declaring.map((one) => (one.binding.useCases as readonly UseCaseRecord[]).length > 0)).toEqual(
+      declaring.map(() => true),
     )
     expect(faults).toEqual([])
   })
@@ -181,7 +230,7 @@ describe('the playground, against the catalogue it opens on', () => {
       'no-break-space-grouping',
       'an-ordinary-space-between-digits',
     ])
-    expect(alike.flatMap((entry) => replayed(one, module, entry))).toEqual([])
+    expect(alike.flatMap((entry) => replayed(one, module, entry, entry.id))).toEqual([])
 
     const reasons = alike.map((entry) => {
       const held = theFieldsFor(entry, answerOf(one.contract), 'typescript/number/parse@1')

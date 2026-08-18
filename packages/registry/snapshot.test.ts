@@ -103,18 +103,44 @@ describe('what a snapshot freezes, and what it may not', () => {
   /**
    * The whole finding of this unit, as a guard. Every field a record carries is either inside the
    * digest or declared as standing with the sentence that keeps it out - and nothing is neither.
+   *
+   * **It compares against the standing fields this record carries, and that is not a weakening.** The
+   * standing gained an optional member with `useCases`, so a list of every declared standing field is
+   * no longer what any one contract holds - four of the five declare no use case. What the guard is
+   * for survives untouched: a field added to the record and to neither half appears on the left and
+   * not on the right, and the equality reddens. What it stops asking is whether every declared
+   * standing field is filled, which is a question about the catalogue rather than about a contract
+   * and is asked once, below.
    */
   it.each(eachContract)(
     'the-frozen-half-and-the-standing-half-partition-a-contract-%s',
     (_name, source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const snapshot = contractSnapshot(record)
-
-      expect([...missingFrom(record, snapshot.frozen, '')].sort()).toEqual(
-        [...CONTRACT_STANDING_FIELDS.map((entry) => entry.field)].sort(),
+      const carried = CONTRACT_STANDING_FIELDS.map((entry) => entry.field).filter(
+        (field) => field in record,
       )
+
+      expect([...missingFrom(record, snapshot.frozen, '')].sort()).toEqual([...carried].sort())
     },
   )
+
+  /**
+   * And no standing field is declared that nothing fills.
+   *
+   * The half the guard above gave up when the standing gained an optional member, asked where it
+   * belongs: a declaration nothing in the catalogue carries is the decorative rule this repository
+   * refuses everywhere else, and it would be invisible to a per-contract check by construction -
+   * every contract would simply not carry it.
+   */
+  it('every-standing-field-a-contract-declares-is-carried-by-one :: nothing is declared unfilled', () => {
+    const records = theFive.map((source) => serialiseContract(REPOSITORY_ROOT, source))
+    const unfilled = CONTRACT_STANDING_FIELDS.map((entry) => entry.field).filter(
+      (field) => !records.some((record) => field in record),
+    )
+
+    expect(unfilled).toEqual([])
+  })
 
   it.each(eachContract)(
     'a-snapshot-invents-no-field-%s',

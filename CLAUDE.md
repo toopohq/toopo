@@ -148,7 +148,7 @@ from a search, and 99 % of this site at a thousand entries.** Six type sizes and
 spacing unit every length is a multiple of by construction, colour roles rather than colours, one
 accent, dark by `prefers-color-scheme` with no button and nothing remembered. **The accent means *you
 can act on this* or *you are here*, and never a verdict**: this catalogue publishes 35 surviving
-mutants beside 632 caught ones, and a colour survives neither `toText` nor `toMarkdown`, so a page
+mutants beside 634 caught ones, and a colour survives neither `toText` nor `toMarkdown`, so a page
 that sorted its own evidence by colour would say what its reading does not. The page is a card — name,
 sentence, command, four figures, signature — and then everything, with nothing behind a fold, which is
 the shape a differential trial on `date/add@1` and its 50 cases settled. **Two greys and not three**:
@@ -166,6 +166,28 @@ operating system composes fallbacks a page cannot ship. **What the refusal costs
 smoothed**: `ui-monospace` is a different face on every platform and no reading here covers more than
 this machine; what survives is what was specified in units that travel, the case column in `ch` and
 the scale in `rem`. ADR-0115.
+
+**A contract page now says what the function is for in real life, and where that text lives was the
+decision.** `string/slugify@1` carries four use cases — a call as somebody makes it, and the one thing
+to know before relying on it. It is published, so both obvious homes were closed by permanent rule 6
+and both were measured rather than reasoned about: a field in `identity` moves its digest from
+`855107da…` to `bd256afd…`, and **one comment appended to `contract.ts` moves it to `84403f0c…`**,
+because `contractSnapshot` freezes the seven files' digests too. So the field is **standing** — the
+mechanism written for *may the registry change its mind about this after publication*, whose own
+comment had named this field before it existed. Measured: the eight ledger digests are identical to
+the byte with four use cases declared, and `npm run freeze` is green. The page's sentence *nothing here
+is part of the contract* stops being an assertion. It carries no identifier, because nothing cites it
+and an address on rewritable prose will one day name something else; the warning is a required field,
+because that is what a use case is worth reading for. ADR-0118.
+
+**And the page is read in two halves.** Measured at `7bdbb33`: 3 800 visible words over eight sections
+of one weight, of which **2 482 — two thirds of everything under a heading — were the settled cases**.
+The complaint was never the length. Above the line: what it does, a form, the jobs it is for — 754
+words. Below: the signature, the cases, the properties, the profiles, what a reader can check — 3 262.
+**Nothing is folded**, and the mock-up this cut came from proposed folding by group; ADR-0116 settled
+that against a differential trial, and the line is written into the record so it does not return
+through a later mock-up. `the-rail-of-a-page-names-every-section-of-it-and-only-those` needed no
+change, which is what a derived table of contents buys. ADR-0119.
 
 **And the catalogue's own prose is parsed by the function that already parsed the method page's.**
 ADR-0026 scoped that guard to one page and named the event that would reopen it — a second page taking
@@ -305,6 +327,33 @@ green over a branch
 while the defect left by another door. What made 374 wrong is not a miscount but a population read off
 whichever ref somebody was standing on, so: **a count that bounds a defect names the population it
 swept**, and `--all` is the only spelling of *this repository* that a tag cannot fall out of.
+
+**One entry of this list is not of this list's class, and it is first because of that.** Every other
+entry says *nothing keeps this rule*. This one says **the mechanism does the opposite of what the
+record declares**, which is a worse thing and has never been named here before.
+
+- **That an alias is not frozen with the major.** ADR-0023 decides it in as many words — *nobody links
+  to an alias, no answer cites one, and correcting one breaks nobody's code; being wrong about an
+  alias costs a revision* and not a major. `searchAliases` is a field of `identity`,
+  `contractSnapshot` freezes `identity` whole, and since ADR-0106 the four contracts are bound at
+  `15aeb6c`. Measured at `7bdbb33`: adding one alias to `string/slugify@1` moves its contract digest
+  from `855107da…` to `5fe0ecfa…`, which `every-published-binding-still-hashes-to-what-it-was-published-as`
+  refuses. **So the cheapest of the three contributions this project invites is the one that cannot be
+  accepted**, and a reader of ADR-0023 leaves believing they can make it.
+
+  **It was harmless for the whole of this repository's private life and became live at a publication**,
+  which is why no sweep found it: nothing was anchored, so nothing could be broken. It is the same
+  event as the two ADR-0093 misses recorded above, arriving on a record that had *argued* the field was
+  unfrozen rather than on one that had forgotten to say so.
+
+  **ADR-0118 built the mechanism and deliberately did not use it here.** A field of the standing is of
+  a contract and outside the digest, which is exactly what ADR-0023 describes; moving `searchAliases`
+  there would move four published digests, which is the change permanent rule 6 forbids. **The
+  population is the eight aliases of the four published contracts.** What would close it is not a
+  guard: it is a way for the registry to bind a *second* contract digest under one address — a
+  revision, which is the word ADR-0023 already uses and which nothing implements. Priced as a unit of
+  the publishing tool and not built. What is done instead is that both places a reader meets the claim
+  now say it is not kept: the head of ADR-0023, and this entry.
 
 **Still open, and what each one now costs.**
 

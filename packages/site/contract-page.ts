@@ -49,7 +49,12 @@
 import { THE_INVOCATION, contractUrl, renderContract } from '../registry/address.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import type { CaseGroup } from '../catalogue/identifier.js'
-import type { CaseRecord, CaseTableRecord, ExportRecord } from '../registry/contract-record.js'
+import type {
+  CaseRecord,
+  CaseTableRecord,
+  ExportRecord,
+  UseCaseRecord,
+} from '../registry/contract-record.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { Held } from './catalogue.js'
@@ -323,13 +328,51 @@ type Section = {
   readonly body: readonly Node[]
 }
 
+/**
+ * The page in the two halves a reader reads it in. ADR-0119.
+ *
+ * **The length did not go down, it got sorted**, and that is the whole of what this type does.
+ * Measured at `7bdbb33` on `string/slugify@1`: 3 800 visible words across eight sections of one
+ * weight, of which 2 482 - a little over two thirds of everything under a heading - were the settled
+ * cases. A reader who says the page is long is reading one section and being given no way to know
+ * that. So the sections are declared in two lists, the first answering *is this the function I want*
+ * and the second *what exactly is it bound to do*.
+ *
+ * **Nothing is folded away, and that is a decision this type has to keep rather than a side effect.**
+ * ADR-0116 settled that on a differential trial, and the mock-up this cut came from proposed the
+ * opposite in its own Reference lede - *it opens by group and every group states its size before you
+ * open it*. That line is not implemented and must not arrive by a later mock-up: a group behind a
+ * fold is a case a reader cannot find with the browser's own search, on a page whose argument is that
+ * every case is there.
+ *
+ * The divider is derived from this shape rather than declared beside it, for the reason `theRail` is:
+ * a heading listed in one place and rendered from another is two statements of one outline.
+ */
+type Halves = {
+  readonly summary: readonly Section[]
+  readonly reference: {
+    readonly lede: readonly Node[]
+    readonly sections: readonly Section[]
+  }
+}
+
+/** The address the Reference half answers to, used by the rail, the heading and nothing else. */
+const REFERENCE = 'reference'
+
 const rendered = (section: Section): readonly Node[] => [
   marked('h2', section.title, { id: section.id }),
   ...section.body,
 ]
 
-/** The table of contents, as the sections themselves say they are. */
-const theRail = (sections: readonly Section[]): Node =>
+/**
+ * The table of contents, as the sections themselves say they are.
+ *
+ * The reference entries are marked with a class and not nested in a second list, because the page's
+ * outline is flat: those sections are `h2`s beside the divider rather than under it, and a nested
+ * list would claim a nesting the document does not have. ADR-0025 - the tag is the outline and the
+ * class is the look.
+ */
+const theRail = (halves: Halves): Node =>
   el(
     'nav',
     { class: 'rail', 'aria-label': 'On this page' },
@@ -337,11 +380,36 @@ const theRail = (sections: readonly Section[]): Node =>
     el(
       'ul',
       { class: 'toc' },
-      ...sections.map((section) =>
+      ...halves.summary.map((section) =>
         el('li', NOTHING, el('a', { href: `#${section.id}` }, text(section.title))),
+      ),
+      el('li', { class: 'divides' }, el('a', { href: `#${REFERENCE}` }, text('Reference'))),
+      ...halves.reference.sections.map((section) =>
+        el('li', { class: 'under' }, el('a', { href: `#${section.id}` }, text(section.title))),
       ),
     ),
   )
+
+/** One use case: the job, the call as somebody makes it, and the warning that makes it worth reading. */
+const renderedUseCase = (entry: UseCaseRecord, answer: ExportRecord): Node => {
+  const { written, answered } = theCallOf(entry, answer)
+  const result = answered.map((field) => literal(field.value)).join(', ')
+
+  return el(
+    'div',
+    { class: 'use-case' },
+    /**
+     * No identifier, which is the decision showing through to the reader rather than an omission.
+     * Every other heading on this page carries the address a link anchors on; this one carries none,
+     * because a use case is prose the registry may rewrite and an address that may come to name
+     * something else is worse than no address at all. ADR-0118.
+     */
+    line('h3', entry.name),
+    paragraph(entry.situation),
+    el('p', { class: 'call' }, line('code', `${answer.name}(${written.join(', ')}) → ${result}`)),
+    paragraph(entry.caveat, { class: 'why' }),
+  )
+}
 
 /**
  * One figure of the card: the number, then what it counts.
@@ -377,7 +445,9 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
    */
   const shortName = contract.address.name.split('/').at(-1) as string
 
-  const sections: readonly Section[] = [
+  const useCases = held.binding.useCases ?? []
+
+  const summary: readonly Section[] = [
     {
       id: 'what-it-does',
       title: 'What it does',
@@ -386,13 +456,80 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
         ...(contract.identity.relationToTheLanguage === undefined
           ? []
           : [paragraph(contract.identity.relationToTheLanguage)]),
+        /**
+         * Under *What it does* rather than beside it, which is the one section this cut merged.
+         *
+         * The two answer one question - what this function is for - and a reader deciding whether to
+         * install it reads them together. It keeps its own address, so every link written to
+         * `#what-it-is-for` still resolves; what it loses is a line in the rail, and a rail entry is
+         * not an address.
+         */
+        marked('h3', 'What it is for, and what it is not', { id: 'what-it-is-for' }),
+        paragraph(contract.identity.inputDomain),
       ],
     },
     {
-      id: 'what-it-is-for',
-      title: 'What it is for, and what it is not',
-      body: [paragraph(contract.identity.inputDomain)],
+      id: 'try-it',
+      title: 'Try it on your own input',
+      body: [
+        line(
+          'p',
+          `This calls ${playground.calls} on whatever you type. What you type into a field is the ` +
+            `value, character for character, and the form opens on ${playground.opensOnCase} so there ` +
+            `is a call that works to edit.${spelledFields(playground.fields)} What comes back is what ` +
+            `the function answered, under the call it was made from — invisible characters are named ` +
+            `there, so two inputs that look alike on screen do not print alike. The settled answer is ` +
+            `on the case's own line below, and is deliberately not repeated here.` +
+            (playground.describes === null
+              ? ''
+              : ` When it answers nothing, ${playground.describes} is called on the same input and its ` +
+                `reason is printed underneath: the two exports are one surface, and every input this ` +
+                `contract turns down answers ${playground.calls} alike.`),
+        ),
+        line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),
+        el('div', {
+          id: 'playground',
+          'data-playground': JSON.stringify({
+            calls: playground.calls,
+            describes: playground.describes,
+            module: THE_REFERENCE_MODULE,
+            fields: playground.fields,
+          }),
+        }),
+      ],
     },
+    /**
+     * Absent on a contract that declares none, rather than an empty heading. The registry serves the
+     * field only when it holds something, so there is no state where this renders a promise with
+     * nothing under it.
+     */
+    ...(useCases.length === 0
+      ? []
+      : [
+          {
+            id: 'in-practice',
+            title: 'In practice',
+            body: [
+              /**
+               * The sentence does not count the cards, and that is ADR-0018 arriving on a page rather
+               * than on a comment: *four jobs* is a figure that goes wrong the day somebody adds a
+               * fifth, and nothing would catch it because a reader cannot check a number against a
+               * list they have not counted.
+               */
+              line(
+                'p',
+                `The jobs this function is written for, each with the call as you would make it and ` +
+                  `the one thing to know before you rely on it. Nothing here is part of the ` +
+                  `contract: the settled cases below are what is guaranteed, and these are only how ` +
+                  `the guarantee gets used.`,
+              ),
+              el('div', { class: 'use-cases' }, ...useCases.map((entry) => renderedUseCase(entry, answer))),
+            ],
+          },
+        ]),
+  ]
+
+  const referenceSections: readonly Section[] = [
     {
       id: 'signature',
       title: 'Signature',
@@ -433,36 +570,6 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
         ...contract.caseTables.flatMap((table) =>
           renderedTable(table, answer, playground.fields, contract.caseTables.length === 1),
         ),
-      ],
-    },
-    {
-      id: 'try-it',
-      title: 'Try it on your own input',
-      body: [
-        line(
-          'p',
-          `This calls ${playground.calls} on whatever you type. What you type into a field is the ` +
-            `value, character for character, and the form opens on ${playground.opensOnCase} so there ` +
-            `is a call that works to edit.${spelledFields(playground.fields)} What comes back is what ` +
-            `the function answered, under the call it was made from — invisible characters are named ` +
-            `there, so two inputs that look alike on screen do not print alike. The settled answer is ` +
-            `on the case's own line above, and is deliberately not repeated here.` +
-            (playground.describes === null
-              ? ''
-              : ` When it answers nothing, ${playground.describes} is called on the same input and its ` +
-                `reason is printed underneath: the two exports are one surface, and every input this ` +
-                `contract turns down answers ${playground.calls} alike.`),
-        ),
-        line('p', whatRunsInYourBrowser(contract.address.name), { class: 'meta' }),
-        el('div', {
-          id: 'playground',
-          'data-playground': JSON.stringify({
-            calls: playground.calls,
-            describes: playground.describes,
-            module: THE_REFERENCE_MODULE,
-            fields: playground.fields,
-          }),
-        }),
       ],
     },
     {
@@ -539,6 +646,22 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
     },
   ]
 
+  const halves: Halves = {
+    summary,
+    reference: {
+      lede: [
+        line(
+          'p',
+          `Everything above answers whether this function does what you need. Everything below is ` +
+            `what it is bound to do, in full. It is long on purpose, and none of it is folded away: ` +
+            `a case a reader cannot find with their browser's own search is a case this catalogue ` +
+            `did not really publish.`,
+        ),
+      ],
+      sections: referenceSections,
+    },
+  }
+
   return {
     title: `${name} — ${contract.identity.summary}`,
     servedBesideItsMarkdown: true,
@@ -574,7 +697,7 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
       el(
         'div',
         { class: 'shell' },
-        theRail(sections),
+        theRail(halves),
         el(
           'main',
           NOTHING,
@@ -600,7 +723,17 @@ export const contractPage = (held: Held, menu: readonly MenuEntry[]): Document =
             line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
           ),
 
-          ...sections.flatMap(rendered),
+          ...halves.summary.flatMap(rendered),
+
+          /**
+           * The line the page is read in two halves across, rendered from the shape rather than
+           * written beside it: it is an `h2` with an address like every other section heading, so the
+           * rail lists it and `the-rail-of-a-page-names-every-section-of-it-and-only-those` holds
+           * over it too.
+           */
+          marked('h2', 'Reference', { id: REFERENCE, class: 'divides' }),
+          ...halves.reference.lede,
+          ...halves.reference.sections.flatMap(rendered),
         ),
       ),
 

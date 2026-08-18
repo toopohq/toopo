@@ -14,8 +14,10 @@ import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { escapedForMarkdown, readingOf, toHtml, toMarkdown, toText, wordsOf } from './document.js'
+import { literal } from './literal.js'
 import { localSource } from './local-source.js'
 import { inline } from './marks.js'
+import { theCallOf } from './playground.js'
 import { CATALOGUE_PAGE, METHOD_PAGE, REFUSALS_PAGE, linkTo, pageOf } from './paths.js'
 import { theSite } from './site.js'
 
@@ -348,6 +350,53 @@ describe('the site', () => {
     // And an input a page must never print as it is, because another case prints the same glyphs.
     expect(parse).toContain("parseNumber('1\\u00A0000') → expected null, reason 'separator'")
     expect(parse).toContain("parseNumber('1 000') → expected null, reason 'not-decimal'")
+  })
+
+  /**
+   * A use case reaches the reader as the call, its answer, and the warning that goes with it.
+   *
+   * **This is the half `every-use-case-replays-through-the-stripped-artefact-a-browser-runs` cannot
+   * see, and the distinction is worth stating because it is easy to think one guard covers both.**
+   * That one asks the record: it calls the shipped module with the declared arguments and refuses a
+   * declared answer the function does not produce. It never looks at a page. So a rendering that
+   * printed the argument where the answer goes, or dropped the caveat, would publish a false
+   * demonstration with the replay green - which is exactly the shape of defect this catalogue exists
+   * to refuse. `a-case-is-rendered-as-the-call-its-signature-declares` is the same guard for the
+   * settled cases, and this is its counterpart for the cards above them.
+   *
+   * The caveat is asserted by name rather than by counting the cards, because the caveat is the field
+   * a use case is worth reading for: a card without it is four confident lines telling somebody that
+   * `C++` and `C#` both answer `c` is fine. ADR-0118.
+   */
+  it('a-use-case-shows-its-call-its-answer-and-its-caveat', () => {
+    const faults: string[] = []
+    const declaring = heldByTheRegistry(source).filter((held) => held.binding.useCases !== undefined)
+
+    for (const held of declaring) {
+      const what = renderContract(held.contract.address)
+      const reading = toText(page(pageOf(held.contract.address)))
+      const answer = held.contract.surface.exports.find(
+        (entry) => entry.role === 'the-answer',
+      ) as (typeof held.contract.surface.exports)[number]
+
+      for (const entry of held.binding.useCases ?? []) {
+        const { written, answered } = theCallOf(entry, answer)
+        const call = `${answer.name}(${written.join(', ')}) → ${answered
+          .map((field) => literal(field.value))
+          .join(', ')}`
+
+        if (!reading.includes(call)) faults.push(`${what}: the page does not read \`${call}\``)
+        if (!reading.includes(asRead(entry.caveat))) {
+          faults.push(`${what}: the caveat of "${entry.name}" does not reach the reader`)
+        }
+        if (!reading.includes(asRead(entry.situation))) {
+          faults.push(`${what}: the situation of "${entry.name}" does not reach the reader`)
+        }
+      }
+    }
+
+    expect(declaring.length).toBeGreaterThan(0)
+    expect(faults).toEqual([])
   })
 
   /**

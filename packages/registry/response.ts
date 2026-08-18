@@ -51,7 +51,7 @@ import type { ContractAddress, ImplementationAddress } from './address.js'
 import { renderContract, renderImplementation } from './address.js'
 import type { Attestation } from './attestation.js'
 import { DIGEST, canonical, digestOfBytes, servedBytes } from './canonical.js'
-import type { ExportRole, Lifecycle } from './contract-record.js'
+import type { ExportRole, Lifecycle, UseCaseRecord } from './contract-record.js'
 import type { BenchmarkFigure, ImplementationStatus } from './implementation-record.js'
 import type {
   Ledger,
@@ -253,6 +253,15 @@ export type ServedContractBinding = NamedAnswer & {
   readonly digest: string
   readonly publishedAt: string
   readonly lifecycle: Lifecycle
+  /**
+   * How the contract is used, which is prose the registry may rewrite. ADR-0118.
+   *
+   * It travels in the binding and not in the snapshot, which is the sentence above holding rather
+   * than bending: a use case is no part of the definition. `a-contract-binding-carries-only-the-address`
+   * goes on being satisfied because `contractSnapshot` never carried this - so the guard is answering
+   * about a field that exists rather than about a field nobody added.
+   */
+  readonly useCases?: readonly UseCaseRecord[]
 }
 
 /**
@@ -305,6 +314,7 @@ export const CONTRACT_BINDING_NATURES: Readonly<Record<keyof ServedContractBindi
   digest: 'bound-for-life',
   publishedAt: 'bound-for-life',
   lifecycle: 'revisable',
+  useCases: 'revisable',
 }
 
 export const IMPLEMENTATION_BINDING_NATURES: Readonly<
@@ -339,6 +349,7 @@ export const servedContractBinding = (
   digest: entry.digest,
   publishedAt: entry.publishedAt,
   lifecycle: entry.standing.lifecycle,
+  ...(entry.standing.useCases === undefined ? {} : { useCases: entry.standing.useCases }),
 })
 
 /**

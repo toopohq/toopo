@@ -477,6 +477,27 @@ ul.chips a {
 }
 ul.chips a:hover { border-color: var(--accent); color: var(--ink) }
 
+/* The line the page is read in two halves across. It is heavier than a section rule and takes the
+   largest step of the scale above it, because what it separates is not two sections but two ways of
+   reading: everything above answers "is this the one", everything below is the binding itself. */
+h2.divides { font-size: var(--t2); margin-top: var(--s16); padding-top: var(--s5); border-top-width: 2px; border-top-color: var(--ink) }
+ul.toc > li.divides { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--rule) }
+ul.toc > li.divides a { color: var(--body) }
+ul.toc > li.under { padding-left: var(--s3) }
+
+/* One card per job. The grid is the look; what makes these read differently from a case is that they
+   carry a sans-serif heading and no address, which is the record's own decision showing through. */
+.use-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: var(--s4); margin: 0 0 var(--s4) }
+.use-case { border: 1px solid var(--edge); border-radius: 9px; background: var(--card); padding: var(--s5) }
+.use-case h3 { margin: 0 0 var(--s2); font-size: var(--t4) }
+.use-case > p { margin: 0 0 var(--s3); font-size: var(--t4) }
+.use-case .call {
+  margin: 0 0 var(--s3); padding: var(--s3); background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 6px;
+}
+.use-case .call code { color: var(--ink); line-height: 1.55; overflow-wrap: anywhere }
+.use-case .why { margin: 0; font-size: var(--t5) }
+
 .cases { margin: 0 }
 .case {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2) var(--s10);

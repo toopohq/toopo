@@ -39,6 +39,7 @@ import type {
   ProfileSamples,
   SupportingTypeRecord,
   UniversalPropertyRecord,
+  UseCaseRecord,
 } from './contract-record.js'
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { VerificationStratum } from './field-map.js'
@@ -46,6 +47,7 @@ import type { BatteryRecord, CaseProvenance } from './evidence.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
 import { resolveGuard, resolveProvenance } from './evidence.js'
 import { parametersOf } from './signature.js'
+import type { EncodedValue } from './value.js'
 import { encode } from './value.js'
 import type { CaseGroup } from '../catalogue/identifier.js'
 import { groupingFaults, takenAddresses } from '../catalogue/identifier.js'
@@ -55,6 +57,9 @@ export const REPOSITORY_ROOT = join(import.meta.dirname, '..', '..')
 
 /** The four fields every table of every contract shares, and the only four. */
 const SHARED_CASE_FIELDS = ['id', 'group', 'provenance', 'rationale'] as const
+
+/** What a use case carries besides its call: its title, its situation, and its warning. ADR-0118. */
+const SHARED_USE_CASE_FIELDS = ['name', 'situation', 'caveat'] as const
 
 /** `samples` is here because five of five call it that, which is the catalogue's bar for naming. */
 const PROFILE_FIELDS_THE_SCHEMA_NAMES = ['name', 'description', 'samples'] as const
@@ -121,6 +126,14 @@ export type UncarriedExport = {
 export type ContractSource = {
   readonly address: ContractAddress
   readonly lifecycle: Lifecycle
+  /**
+   * How the contract is used, declared here and never in `contract.ts`. ADR-0118.
+   *
+   * The rows are shaped like a case table's - the prose fields, then the call - and are read by
+   * `useCaseOf` rather than typed, for the reason every other row of this file is read rather than
+   * typed: a declared shape and an encoded value would be two statements of one thing.
+   */
+  readonly useCases?: readonly Readonly<Record<string, unknown>>[]
   /** The folder, relative to the repository root, as the instrument already addresses one. */
   readonly folder: string
   /**
@@ -234,13 +247,37 @@ export class CaseIsNotACall extends Error {
   constructor(where: string, call: readonly string[], fields: readonly string[]) {
     super(
       `${where} holds [${fields.join(', ')}], and the contract's answer is called with ` +
-        `(${call.join(', ')}). A case of block 4.4 is a call: its first fields are the arguments, ` +
-        `named as the signature names them and in the signature's order, and everything after them ` +
-        `is the answer. Without that a contract page can only list a case's fields side by side, ` +
-        `which is a table of a call rather than the call.`,
+        `(${call.join(', ')}). A row this page renders as a call is one: its first fields are the ` +
+        `arguments, named as the signature names them and in the signature's order, and everything ` +
+        `after them is the answer. Without that a contract page can only list the fields side by ` +
+        `side, which is a table of a call rather than the call.`,
     )
     this.name = 'CaseIsNotACall'
   }
+}
+
+/**
+ * The fields of a row that a page renders as a call, with the call checked and the rest encoded.
+ *
+ * Written once and reached twice - by a case of block 4.4, and by a use case beside it - because both
+ * are read back by `theCallOf` and rendered by one function. A second spelling of this rule here
+ * would be the copy ADR-0026 refuses: not a second opinion, the same statement written where nobody
+ * will maintain it.
+ */
+const encodedCall = (
+  entry: Readonly<Record<string, unknown>>,
+  shared: readonly string[],
+  where: string,
+  call: readonly string[],
+): EncodedValue => {
+  const data = Object.fromEntries(Object.entries(entry).filter(([name]) => !shared.includes(name)))
+  const fields = Object.keys(data)
+
+  if (fields.slice(0, call.length).join(',') !== call.join(',')) {
+    throw new CaseIsNotACall(where, call, fields)
+  }
+
+  return encode(data, where)
 }
 
 const caseOf = (
@@ -252,23 +289,32 @@ const caseOf = (
 ): CaseRecord => {
   const id = entry['id'] as string
   const where = `${table}#${id}`
-  const data = Object.fromEntries(
-    Object.entries(entry).filter(([name]) => !SHARED_CASE_FIELDS.includes(name as 'id')),
-  )
-
-  const fields = Object.keys(data)
-  if (fields.slice(0, call.length).join(',') !== call.join(',')) {
-    throw new CaseIsNotACall(where, call, fields)
-  }
 
   return {
     id,
     group: entry['group'] as string,
     provenance: provenanceOf(where, entry['provenance'] as string, contract, batteries),
     rationale: entry['rationale'] as string,
-    data: encode(data, where),
+    data: encodedCall(entry, SHARED_CASE_FIELDS, where, call),
   }
 }
+
+/**
+ * One use case, read the way a case is read: prose off the front, and the call encoded.
+ *
+ * `where` is the title rather than an identifier, because a use case carries none - `UseCaseRecord`
+ * says why - so a refusal names the card its author is looking at.
+ */
+const useCaseOf = (
+  entry: Readonly<Record<string, unknown>>,
+  contract: string,
+  call: readonly string[],
+): UseCaseRecord => ({
+  name: entry['name'] as string,
+  situation: entry['situation'] as string,
+  data: encodedCall(entry, SHARED_USE_CASE_FIELDS, `${contract}/useCases#${entry['name'] as string}`, call),
+  caveat: entry['caveat'] as string,
+})
 
 /**
  * A table's grouping is not a partition of its cases.
@@ -721,6 +767,14 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
   return {
     address: source.address,
     lifecycle: source.lifecycle,
+    // Absent rather than empty on a contract that declares none, which `ContractRecord` argues.
+    ...(source.useCases === undefined
+      ? {}
+      : {
+          useCases: source.useCases.map((entry) =>
+            useCaseOf(entry, source.address.name, surface.call),
+          ),
+        }),
     identity: identityOf(source.module),
     surface: {
       exports: surface.exports,

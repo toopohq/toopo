@@ -277,6 +277,10 @@ const THE_SITEMAP_IS_WHERE_A_CRAWLER_LOOKS = `export const SITEMAP = 'sitemap.xm
 
 const A_PAGE_IS_ADDRESSED_BY_ITS_CONTRACT = `export const pageOf = (address: ContractAddress): string => \`\${renderContract(address)}/index.html\``
 
+const A_USE_CASE_CARRIES_ITS_WARNING = `    paragraph(entry.caveat, { class: 'why' }),`
+
+const A_USE_CASE_SHOWS_WHAT_CAME_BACK = `  const result = answered.map((field) => literal(field.value)).join(', ')`
+
 const A_NUMBER_IS_READ_AS_ITSELF = `  if (number !== null) return Number(number)`
 
 const A_WORD_WITH_NO_SPELLING_IS_REFUSED = `  for (const word of Object.values(WITHOUT_A_SPELLING)) {`
@@ -542,6 +546,43 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['a-page-is-addressed-by-the-contract-it-is-about']),
+  ),
+
+  /**
+   * The warning is what a use case is worth reading for, and dropping it leaves the page *tidier*.
+   *
+   * Four confident cards, each with a call and an answer that are both true, and nothing telling
+   * anybody that `C++` and `C#` answer the same slug. That is the shape this battery was written for
+   * in the first place: a wrong page does not break a build, it is believed.
+   */
+  sameOnEveryLens(
+    'W-16',
+    'drops the warning from every use case, leaving four demonstrations that are each true and ' +
+      'together tell a reader to key a tag store on a lossy answer',
+    [contractPageFile(A_USE_CASE_CARRIES_ITS_WARNING, '')],
+    killed(['a-use-case-shows-its-call-its-answer-and-its-caveat']),
+  ),
+
+  /**
+   * The card prints what was passed in where what came back belongs.
+   *
+   * **`every-use-case-replays-through-the-stripped-artefact-a-browser-runs` is green under this
+   * mutant**, and that is the point of writing it: that guard asks the record whether the declared
+   * answer is real, and this defect leaves the record alone and lies on the page. Measured while
+   * writing it - three of the four cards redden and the fourth does not, because `slugify` answers
+   * `日本語テキスト` for `日本語テキスト` and the two halves of that call are the same string.
+   */
+  sameOnEveryLens(
+    'W-17',
+    'shows a use case answering its own argument, so the card demonstrates a function that does ' +
+      'nothing while the replay that checks the declared answer stays green',
+    [
+      contractPageFile(
+        A_USE_CASE_SHOWS_WHAT_CAME_BACK,
+        `  const result = written.join(', ')`,
+      ),
+    ],
+    killed(['a-use-case-shows-its-call-its-answer-and-its-caveat']),
   ),
 
   sameOnEveryLens(

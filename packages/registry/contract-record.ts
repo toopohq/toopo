@@ -42,7 +42,16 @@ export const stringsIn = (value: unknown, into: Set<string> = new Set()): Readon
   return into
 }
 
-/** Seven fields at five of five, and one optional because two contracts owe it. ADR-0009. */
+/**
+ * What every contract of the catalogue carries, and one field that not all of them do yet.
+ *
+ * **The measurement is `contractAnatomy`'s and is not restated here.** That one names the commit it
+ * was taken at; a second copy in this comment is a count with no coordinate, which is what ADR-0018
+ * refuses - and this one had already gone ambiguous before anybody looked. It read *one optional
+ * because two contracts owe it*, where *owe* means *still lack*, and it was read as *two contracts
+ * carry it* by the next person to open the file. Both readings cannot be checked here, because
+ * neither number is here. ADR-0009, ADR-0018.
+ */
 export type IdentityRecord = {
   readonly exportName: string
   readonly summary: string
@@ -104,15 +113,26 @@ export type PropertiesRecord = {
 
 // --- Block 4.4 - the named and settled edge cases ---
 
-export type CaseRecord = {
+/**
+ * A row of a contract that is written as a call, which is the only thing `theCallOf` reads.
+ *
+ * Two records satisfy it - a settled case, and a use case beside it - and it exists so that the
+ * functions which slice a call apart say so in their signature. They took a `CaseRecord` and read one
+ * field of it, which is a type claiming a coupling the code does not have: the day a second record
+ * needed the same slice, the honest change was to widen the parameter rather than to copy the slice.
+ */
+export type WrittenAsACall = {
+  /** Where the schema stops understanding a contract: rendered, never interpreted. ADR-0004. */
+  readonly data: EncodedValue
+}
+
+export type CaseRecord = WrittenAsACall & {
   /** A name, frozen with the major, never a rendering of the row it addresses. ADR-0017. */
   readonly id: string
   /** Required, because a case with no group would be a silence about where it belongs. ADR-0012. */
   readonly group: string
   readonly provenance: CaseProvenance
   readonly rationale: string
-  /** Where the schema stops understanding a contract: rendered, never interpreted. ADR-0004. */
-  readonly data: EncodedValue
 }
 
 /** Plural, because two contracts separate their tables and flattening loses that. ADR-0012. */
@@ -169,11 +189,68 @@ export type OwnDeclaration = {
   readonly executableBy?: GuardAddress
 }
 
+// --- What the registry says about a contract without binding it ---
+
+/**
+ * One job a contract is written for: the call as somebody would make it, and the one thing to know
+ * before relying on it.
+ *
+ * ---------------------------------------------------------------------------
+ * It carries no identifier, and the reason is the same one that keeps it out of the digest
+ * ---------------------------------------------------------------------------
+ *
+ * Every other row of this schema that a page renders has a frozen kebab-case address - a case, a
+ * group, a reason literal, a benchmark profile - because something cites it: a URL anchors on one, a
+ * validation report names one, a battery pins one. Nothing cites a use case. It is curation in
+ * ADR-0023's sense, which is exactly why it may be rewritten the day it reads badly, and an address
+ * on a thing that may be rewritten is an address that will one day name something else.
+ *
+ * ---------------------------------------------------------------------------
+ * The call is a value and never a snippet
+ * ---------------------------------------------------------------------------
+ *
+ * `data` is written the way a case of block 4.4 is written - the arguments first, named as the
+ * signature names them and in its order, then the answer - so `theCallOf` reads it and the same
+ * replay that checks the settled cases against the shipped module checks these. A code sample with
+ * lines around the call would put unverified text beside verified text on the one page whose whole
+ * argument is that everything on it was checked, which is the defect ADR-0114 took out of the README.
+ */
+export type UseCaseRecord = WrittenAsACall & {
+  /** The card's title. Prose, because nothing addresses it. */
+  readonly name: string
+  /** What somebody is doing when they reach for this, in one sentence. */
+  readonly situation: string
+  /**
+   * What to know before relying on it, and the field that makes the rest worth reading.
+   *
+   * Required rather than optional, and a field rather than a second paragraph of `situation`: the
+   * warnings are what a use case is *for* - a slug is lossy, two headings collide, an edited title
+   * moves a page - and prose merged into the description leaves nothing refusing a use case written
+   * without one. `CaseRecord.rationale`, `UniversalPropertyRecord.reason` and `CaseGroup.note` are
+   * the same shape for the same reason.
+   */
+  readonly caveat: string
+}
+
 // --- The record ---
 
 export type ContractRecord = {
   readonly address: ContractAddress
   readonly lifecycle: Lifecycle
+  /**
+   * How the contract is used, which the registry may rewrite under a frozen address. ADR-0118.
+   *
+   * Beside `lifecycle` and not inside `identity`, and that placement is the whole decision rather
+   * than a tidiness: `contractSnapshot` freezes `identity` whole, so a field there would move a
+   * published contract's digest and break permanent rule 6. Both halves of the standing are declared
+   * outside the contract's own folder for the same reason - the seven files are hashed into the
+   * digest too, so a published contract cannot gain a byte.
+   *
+   * Absent on a contract that declares none, never an empty list: `canonical.ts` refuses an
+   * `undefined` inside a value, and an empty array would be a section a page renders with nothing in
+   * it. The same treatment `surface.failureReasons` gets, one block along.
+   */
+  readonly useCases?: readonly UseCaseRecord[]
   readonly identity: IdentityRecord
   readonly surface: SurfaceRecord
   readonly environments: readonly string[]

@@ -157,7 +157,10 @@ const gather = (): {
           digest: contractDigest,
           publishedAt: THE_PUBLICATION_INSTANT,
           publishedFrom: THE_UNPUBLISHED_REVISION,
-          standing: { lifecycle: record.lifecycle },
+          standing: {
+            lifecycle: record.lifecycle,
+            ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
+          },
         }),
         {
           address: {

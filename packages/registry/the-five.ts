@@ -492,6 +492,63 @@ export const theFive: readonly ContractSource[] = [
   {
     address: SLUGIFY,
     lifecycle: PUBLISHED,
+    /**
+     * Four jobs, chosen because they carry four different warnings and not because four is a number.
+     *
+     * The warning is what a use case is worth reading for, so two jobs that end in the same one are
+     * one job written twice. A fifth was drafted and dropped rather than kept: a filename on a
+     * case-insensitive file system, which `inputDomain` already refuses in as many words - a use case
+     * arguing against the contract's own domain would be the page contradicting itself two sections
+     * apart.
+     *
+     * They are declared here and not in `contract.ts`, and that is not tidiness: `contractSnapshot`
+     * hashes the seven files, so a published contract cannot gain a byte in its own folder. ADR-0118.
+     */
+    useCases: [
+      {
+        name: 'A URL for an article title',
+        situation:
+          'The common job: somebody types a headline, and the site needs a path segment for it.',
+        caveat:
+          'Store the slug beside the article rather than recomputing it on read. A title corrected ' +
+          'for a typo answers a different slug, and every link to the old one is then broken by an ' +
+          'edit nobody thought was a move.',
+        text: 'Crème Brûlée, 12 façons',
+        expected: 'creme-brulee-12-facons',
+      },
+      {
+        name: 'An anchor for a heading',
+        situation:
+          'Fragment identifiers for a table of contents built from the headings of a document.',
+        caveat:
+          'Two headings can slug alike, and this function will not number the repeats for you. A ' +
+          'document that allows a heading to occur twice has to disambiguate them itself, because ' +
+          'the answer here depends on one input and cannot know what else is on the page.',
+        text: 'What NFKC unifies',
+        expected: 'what-nfkc-unifies',
+      },
+      {
+        name: 'A tag typed by hand',
+        situation:
+          'Normalising labels, so that two people who typed the same tag differently land on one tag.',
+        caveat:
+          'Good for grouping and wrong for identity. `C++` and `C#` both answer `c`, so a tag store ' +
+          'keyed on the slug alone silently merges them: keep the text the user typed as well, and ' +
+          'let the slug decide only what sits together.',
+        text: ' Café  ',
+        expected: 'cafe',
+      },
+      {
+        name: 'A catalogue in several scripts',
+        situation: 'Product names in more than one writing system, each needing a readable address.',
+        caveat:
+          'This is the reason to prefer this contract over an ASCII slugifier, and it is also the ' +
+          'reason to check what your URLs are for: the answer is a valid path segment and is not ' +
+          'ASCII. If something downstream needs Latin letters, romanise first and slugify the result.',
+        text: '日本語テキスト',
+        expected: '日本語テキスト',
+      },
+    ],
     folder: 'contracts/typescript/string/slugify',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,
