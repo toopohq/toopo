@@ -75,8 +75,8 @@ export const refusalsPage = (
     structuredData: null,
     description:
       `${refusals.refusals.length} contract${refusals.refusals.length === 1 ? ' was' : 's were'} ` +
-      `written in full and then turned down. Each refusal is published with the measurement it was ` +
-      `decided on.`,
+      `written in full and then turned down. Each one is at its own address, with the measurement its ` +
+      `refusal was decided on.`,
     body: [
       masthead(REFUSALS_PAGE, menu),
 
