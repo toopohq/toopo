@@ -395,7 +395,7 @@ body > .masthead, body > .shell { grid-column: 1 / -1 }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 a { color: var(--accent) }
 h1, h2, h3, h4 { color: var(--ink) }
-h1 { font-family: var(--mono); font-size: var(--t1); font-weight: 500; letter-spacing: -.02em; margin: 0 0 var(--s3) }
+h1 { font-size: var(--t1); font-weight: 600; letter-spacing: -.02em; margin: 0 0 var(--s3) }
 /* A page whose title is a direct child of the body has no card and no main to stand it off the
    masthead, and measured in a browser the two were touching at a gap of 0. */
 body > h1 { margin-top: var(--s10) }
@@ -452,7 +452,9 @@ main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
 
 .card { border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6) }
 .address { margin: 0 0 var(--s2); font-size: var(--t5); color: var(--dim) }
-.card h1 { margin: 0 0 var(--s3) }
+/* The mono face names what the registry addresses - a contract, a command, a value - and never a
+   sentence. A contract page's title is a function's name; "Nothing is served at this address" is not. */
+.card h1 { font-family: var(--mono); font-weight: 500; margin: 0 0 var(--s3) }
 pre.install { display: flex; align-items: center; gap: var(--s4); background: var(--paper); max-width: 44ch; font-size: var(--t4) }
 pre.install .copy {
   margin-left: auto; border: 0; border-left: 1px solid var(--edge); background: none;
