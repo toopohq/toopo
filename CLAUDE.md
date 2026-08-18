@@ -354,6 +354,15 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
 2. **The change that builds such a mechanism sweeps this list for every entry naming it, and closes
    them in the same commit.** The mechanism and the entry are one event; separating them is what
    leaves the false half of a true sentence lying where somebody will read it.
+3. **An entry can be false without being stale, and that is the failure neither half above catches.**
+   The two rules are written against *drift* — the code moves and the list does not. An entry written
+   from an assumption about what the code holds, rather than from a reading of it, is wrong on the day
+   it is published and stays exactly as wrong: nothing about it looks old, its mechanism is still
+   unbuilt, and every remedy here is aimed at the version of it that used to be true. The alias entry
+   above asked for a field that had existed since the first contract was written, and it was found by
+   somebody setting out to build the field. **So an entry that describes what the code does not have
+   names where it looked**, the way a count names its population — because the cheapest way to be wrong
+   here is to describe a schema nobody opened. ADR-0128.
 
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
 decision record.** They are a list and not a sentence, and that is a repair rather than a layout:
@@ -1066,10 +1075,22 @@ record declares**, which is a worse thing and has never been named here before.
   `one-directional` fields the schema already carried, with GS-11 as the measurement. Closed by the
   validation pipeline, for the reason the entry above closes there.
 - **The rule that an alias must not name what its contract refuses to be**, argued in ADR-0023, which
-  also carries the criterion. The eight liars are gone, but nothing keeps it: the executable form
-  needs each contract to publish its exclusions as data, which is a new frozen field on five contracts
-  to buy a check that would still be matching words against prose. Looked for, priced, and declared
-  rather than dressed as a mechanism — which is the treatment this list exists to give.
+  also carries the criterion. The eight liars are gone and nothing keeps it.
+
+  **This entry used to ask for something and the thing it asked for already existed.** It read *the
+  executable form needs each contract to publish its exclusions as data, which is a new frozen field on
+  five contracts.* Measured at `5f152b1`: every contract publishes its exclusions in
+  `identity.inputDomain` — *not a locale-aware parser*, *not a similarity ratio, not a phonetic match*,
+  *not written for a DNS label* — `identity` is inside the frozen half, and a contract page renders it
+  under a heading called **What it is for, and what it is not**. There is no field to add, and adding
+  one would be a second statement of a frozen half that permanent rule 6 makes unremovable for the life
+  of the majors. ADR-0128.
+
+  **So the entry asks for nothing, and what it now says is why.** The exclusions are published and they
+  are **prose**, so a check over them is the word-matching this entry already refused — its own
+  conclusion, which was more true than its premise. What would close it is a way to read that prose that
+  is not word-matching, and nothing here has one. Declared rather than dressed as a mechanism, which is
+  the treatment this list exists to give.
 - **The rule that a report may not name a cause no measurement establishes**, whose nine instances are
   repaired and whose class nothing keeps. It closes **one sentence at a time**, and what closes a
   sentence is naming it in *Derive the sentence from the fact* above: three are there, so those three

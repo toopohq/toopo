@@ -44,9 +44,12 @@
  * What is still not on it
  * ---------------------------------------------------------------------------
  *
- * A turned-down contract is named with the reason it was turned down and nothing else. It has no
- * summary here because `ServedRefusal` carries none - the summary lives in the index, and reaching for
- * a second answer to decorate a mention would make this page need two where the refusal needs one.
+ * **No section for what this family does not cover**, which the redesign draws and which was measured
+ * before it was refused. Its per-contract half is `identity.inputDomain`, published and frozen on every
+ * contract and rendered on each one's page under *What it is for, and what it is not*; what is left is
+ * a statement about permanent rule 7 and the refusal of a contract nobody wrote, neither of which is
+ * about a family. A hand-written version is what ADR-0121 refused one section higher on this same page,
+ * for the same reason. ADR-0128.
  */
 
 import { THE_INVOCATION } from '../registry/address.js'

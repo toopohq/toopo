@@ -181,6 +181,14 @@ export type StandingField = {
  * the alternative was impossible rather than merely worse: `string/slugify@1` is published, so a
  * field in `identity` moves its digest and a byte in `contract.ts` moves it too - both measured, and
  * both permanent rule 6 firing correctly. The second candidate is still on paper. ADR-0118.
+ *
+ * **A third was proposed, measured and refused, and it is written here because this is where somebody
+ * reaching for it arrives.** *What a contract refuses to be* looked like `useCases`' twin - a redesign
+ * wanted it, and `CLAUDE.md` asked for it by name. It is already published: `identity.inputDomain`
+ * carries the `it is not…` clauses of all four contracts, inside the frozen half. Adding it here would
+ * be a second statement **one half of which permanent rule 6 makes unremovable for the life of the
+ * majors** - which is not the duplication this repository accepts as a test, because neither side could
+ * ever be repaired. ADR-0128.
  */
 export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
   {
