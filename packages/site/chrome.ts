@@ -18,10 +18,25 @@
  * What is not here, and will be
  * ---------------------------------------------------------------------------
  *
- * The mock-up this is derived from carries a search field in the masthead. Search is not built, and a
- * field that searches nothing is exactly what
- * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` refuses - so the rule
- * this repository already keeps is applied before it can be broken rather than after.
+ * The mock-up this is derived from carries a search field in the masthead, with a placeholder reading
+ * *describe what you need…* and a keyboard hint beside it. Search is not built, and the three ways to
+ * ship the control anyway were each considered and each refused.
+ *
+ * **Served and inert** is what `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing`
+ * already refuses, so that one is settled by a rule this repository keeps rather than by a preference.
+ *
+ * **Served and disabled** is a promise deferred where a reader sees a fault: nothing on the page says
+ * whether the feature is coming or broken, and a control that cannot be used is read as one that has
+ * stopped working.
+ *
+ * **A link wearing a search field's clothes** is the worst of the three and is the one that looks
+ * reasonable. A box carrying *describe what you need…* that answers a click with a list is a control
+ * lying about what it does - a reader who typed into it before noticing has been told this site can
+ * do something it cannot. An inert control disappoints; this one misleads.
+ *
+ * So the masthead carries no field. What a reader has instead is real: the wordmark is the catalogue,
+ * and at five contracts the catalogue *is* the search - `catalogue-page.ts` says so in its own header,
+ * and the domains beside it are the shape that survives the catalogue growing past being read at once.
  */
 
 import type { Domain } from './catalogue.js'

@@ -608,6 +608,20 @@ record declares**, which is a worse thing and has never been named here before.
   is `check-anchors` learning to apply the replacement and refuse a result the compiler rejects, and the
   price is that it stops being a pure read of the working tree. Not built.
 
+- **That a battery's disagreement with itself is ever read.** `npm run battery <name>` ends by pairing
+  every guard of its suite against the mutants that redden it, and refuses a run where a guard is
+  neither witnessed nor declared unreachable. **No workflow runs it.** `suites.yml` runs the eight
+  suites, the deployment, the proof against the origin and the publication, and not one battery - so
+  that check fires when somebody happens to type it.
+
+  **It is not hypothetical and the population is not zero**:
+  `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was unaccounted for by the site
+  battery from the commit that wrote it until `e0be781`, measured at `07a100c` and at HEAD by running
+  the battery at both. Nothing was red anywhere, and the guard passed vacuously the whole time. What
+  closes it is not a guard but a job, and the price is what stage rule 1 says about the replay: the
+  full instrument is tens of minutes, one battery is minutes, and nineteen of them in a matrix leg is
+  the whole run again. **The population is every battery of this repository.**
+
 - **That a set of examples is not narrower than what the contract it illustrates settles.** ADR-0120
   states the rule and refuses the guard in the same breath, and the refusal is the part worth
   re-reading before somebody writes the guard anyway: the proposal was to sweep Unicode ranges, which
