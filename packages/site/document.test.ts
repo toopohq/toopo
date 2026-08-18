@@ -279,6 +279,89 @@ describe('a page and its two projections', () => {
   })
 
   /**
+   * Every ink this palette can put on every ground it can paint clears the contrast a reader is owed.
+   *
+   * **Not born green, and that is the whole argument for it: it would have been red twice today.** The
+   * mock-ups' fourth grey answered 2.64:1 on light paper and 2.37:1 on a case somebody had just
+   * followed a link to, while carrying the case identifier; and the value they draw `dim` at answers
+   * 4.24:1 on that same targeted case. Both were found by reading the built pages in a browser, which
+   * is a thing somebody remembers to do. This is the same reading as arithmetic, and it is arithmetic
+   * because the palette is eight hex values — a browser was needed to *find* the defect and is not
+   * needed to keep it out.
+   *
+   * The two lists are the vocabulary rather than a second statement of it: a ground is a surface a
+   * page paints, an ink is something it writes with, and the guard requires every one of them to be
+   * present in both palettes. Without that half, renaming a token would drop it out of the sweep and
+   * leave this green over the pairs that remain.
+   *
+   * 4.5:1 is what WCAG 2.2 asks of text below 24px, which every one of these inks is used at
+   * somewhere: `dim` at 11px on a case identifier is the smallest. No exception is made for the
+   * accent, which is a link and is read.
+   */
+  it('every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible', () => {
+    const GROUNDS = ['paper', 'wash', 'card', 'target']
+    const INKS = ['ink', 'body', 'dim', 'accent']
+    /** A line, which owes 3:1 as a non-text distinction and is never a ground or an ink. */
+    const NEITHER = ['rule', 'edge']
+
+    const luminance = (hex: string): number => {
+      const channels = [1, 3, 5].map((at) => Number.parseInt(hex.slice(at, at + 2), 16) / 255)
+      const linear = channels.map((one) =>
+        one <= 0.03928 ? one / 12.92 : ((one + 0.055) / 1.055) ** 2.4,
+      )
+
+      return (
+        0.2126 * (linear[0] as number) +
+        0.7152 * (linear[1] as number) +
+        0.0722 * (linear[2] as number)
+      )
+    }
+
+    const contrast = (one: string, other: string): number => {
+      const [lighter, darker] = [luminance(one), luminance(other)].sort((a, b) => b - a)
+
+      return ((lighter as number) + 0.05) / ((darker as number) + 0.05)
+    }
+
+    const style = (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
+    const palettes = [...style.matchAll(/:root\s*\{([^}]*)\}/g)].map((found) => found[1] as string)
+    const failures: string[] = []
+
+    for (const [at, block] of palettes.entries()) {
+      const scheme = at === 0 ? 'light' : 'dark'
+      const declared = new Map(
+        [...block.matchAll(/--([a-z]+):\s*(#[0-9a-fA-F]{6})/g)].map((found) => [
+          found[1] as string,
+          found[2] as string,
+        ]),
+      )
+
+      // Total over the palette in both directions: a role that left the palette stops being swept,
+      // and a colour that joined it is one nobody classed. `faint` is how the first half happened.
+      const classed = new Set([...GROUNDS, ...INKS, ...NEITHER])
+
+      for (const role of classed) {
+        if (!declared.has(role)) failures.push(`${scheme}: no --${role} in the palette`)
+      }
+      for (const role of declared.keys()) {
+        if (!classed.has(role)) failures.push(`${scheme}: --${role} is neither a ground nor an ink`)
+      }
+
+      for (const ground of GROUNDS) {
+        for (const ink of INKS) {
+          const two = [declared.get(ink), declared.get(ground)]
+          if (two.some((one) => one === undefined)) continue
+
+          const ratio = contrast(two[0] as string, two[1] as string)
+          if (ratio < 4.5) failures.push(`${scheme}: ${ink} on ${ground} is ${ratio.toFixed(2)}:1`)
+        }
+      }
+    }
+
+    expect(failures, 'an ink a reader cannot read on a ground this palette paints').toEqual([])
+  })
+
+  /**
    * The structured data is a value in the head, and the one escape it needs is a JSON escape.
    *
    * **Measured before it was designed**: written as a text node in the body it goes through
