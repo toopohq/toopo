@@ -522,6 +522,50 @@ record declares**, which is a worse thing and has never been named here before.
   product is executable, and it would buy a check on three integers. **Refused knowingly, and it is
   the whole of what ADR-0123's third reopening trigger is about.**
 
+  **That paragraph was the whole entry and it was incomplete in a way that changes what the entry is.**
+  It announces a price, and a debt that announces a price invites somebody to pay it. Two of these three
+  thresholds are not waiting on a browser: **no arrangement of today's CSS reaches them**, and that is a
+  demonstration rather than an estimate.
+
+  **`97rem` is closed to the language by counting.** The three-column shell wants `.where | main |
+  .rail`; the document is `main, .where, .rail`, because ADR-0121 put the content first so a reader at
+  390 does not meet sixteen lines of navigation before a word. Read in a browser at `7e9438c`, flexbox
+  reaches exactly two orders from that document — `row` gives `main, .where, .rail` and `row-reverse`
+  gives `.rail, .where, main`. **Three elements have six orders, a flex container reaches two, and
+  neither is the one wanted.** `order` reaches it and is refused for a measured reason rather than a
+  stylistic one: it applies at every width, so it restores at 390 exactly the defect ADR-0121 removed. A
+  grid reaches it by placement, and placement is what needs the condition.
+
+  **The corollary is why the third one is not closed to the language**, and it is the same count read
+  the other way: a two-element shell has two orders and a flex container reaches **both**. So
+  `flex-direction: row-reverse` derives the `64rem` threshold, measured on `/typescript/string/` at
+  `7e9438c` — identical geometry at and above 1024, the fold moving down to about 760, and the document
+  untouched, since a container's direction is not `order`. **It is available and it is not taken**: it
+  would change what a reader sees between 760 and 1024 on five pages, for a layout the redesign is about
+  to replace, and an entry that read *impossible* without reading *except here* would be false in the
+  other direction.
+
+  **`52rem` is closed by ADR-0122 rather than by the language.** A case row two abreast is a grid, and
+  `minmax(0, var(--measure))` sizes the call column **on its content up to a ceiling** while a flex basis
+  imposes that width even where the call is short — which takes the room from the argument beside it.
+  Measured over the settled cases of `string/slugify@1`, as the height the rows occupy: the flex form
+  wins at 1024, where the grid squeezes the argument to 211px and pays **11 853** against **9 412** — and
+  loses where it matters, **8 548 against the grid's 6 897 at 1240**, which is the ordinary width. That
+  is what ADR-0122 chose the grid for, one level down.
+
+  **And the candidate before it was refused on its own principle.** Folding on two measures puts the
+  threshold at `2 * measure + gap`, which is what `--two-columns` *is* by definition — so the fold lands
+  exactly on the container's own ceiling and sub-pixel rounding decides it. **A switch at the micron is
+  not a derived threshold, it is a threshold nobody controls**, and it would have read as the closure of
+  this entry.
+
+  **It reopens on the structure and not on a better use of flexbox.** What blocks `97rem` is a property
+  of *this* document order, not of CSS: the seven mock-ups of the redesign carry no width condition at
+  all and fold on bases, because their pages are not built out of `main, .where, .rail`. So the day the
+  page structure changes — which is planned — this may close for nothing, by no longer holding the order
+  that causes it. **What is taken again on that day is the measurement and never this argument**, which
+  is about one arrangement and expires with it.
+
 - **That a paragraph of prose has been read whole by somebody.** ADR-0112 makes it measurable: a
   paragraph has an author when one commit's blame covers every one of its lines, `npm run hands`
   counts them, and at `2385fc2`, over all 362 tracked sources, **32 paragraphs of 8 046 carry three
