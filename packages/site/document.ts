@@ -487,7 +487,12 @@ ul.toc > li.under { padding-left: var(--s3) }
 
 /* One card per job. The grid is the look; what makes these read differently from a case is that they
    carry a sans-serif heading and no address, which is the record's own decision showing through. */
-.use-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); gap: var(--s4); margin: 0 0 var(--s4) }
+/* The track is wide enough that four cards land two by two rather than three and an orphan, which is
+   what 17rem gave at 1240 and is the only thing about this section a browser had to be asked. The
+   min() is what keeps one column from overflowing a narrow viewport: auto-fit honours the minimum
+   even when the container is smaller than it. No backtick in this comment - the whole stylesheet is
+   one template literal, and one would end it. */
+.use-cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr)); gap: var(--s4); margin: 0 0 var(--s4) }
 .use-case { border: 1px solid var(--edge); border-radius: 9px; background: var(--card); padding: var(--s5) }
 .use-case h3 { margin: 0 0 var(--s2); font-size: var(--t4) }
 .use-case > p { margin: 0 0 var(--s3); font-size: var(--t4) }
