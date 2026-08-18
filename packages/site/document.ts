@@ -329,6 +329,11 @@ export const readingOf = (node: Node): string => projected(node, THE_READING, fa
  * 5.45:1, so there was no room underneath it for a fourth legible step, and a colour that is only
  * *nearly* legible is worse than one step fewer. What tells the identifier apart from the argument
  * beside it is now the size and the face, which is what a scale is for.
+ *
+ * `dim` itself is a shade lighter in the dark palette than the mock-ups draw it, for the same reason
+ * and on the same reading: `#8b857d` clears 4.5:1 on paper and on wash and answers **4.24:1 on a case
+ * somebody has just followed a link to**, which is the one row where a reader is certain to be looking.
+ * A ground that lifts is a ground the ink has to lift with.
  * `system-ui` and `ui-monospace` first, so the page is set in whatever the reader's own system uses
  * and downloads nothing. The measure is capped in `ch` rather than pixels because what has to stay
  * readable is a line of prose and a line of code, both of which are counted in characters.
@@ -370,7 +375,7 @@ const STYLE = `
 @media (prefers-color-scheme: dark) {
   :root {
     --paper: #171614; --wash: #201f1c; --card: #201f1c; --rule: #34322e; --edge: #45423c;
-    --ink: #e8e5df; --body: #c5c0b8; --dim: #8b857d;
+    --ink: #e8e5df; --body: #c5c0b8; --dim: #918b83;
     --accent: #e2905d; --target: #2a231d;
   }
 }
