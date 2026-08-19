@@ -99,6 +99,11 @@ const RENDERINGS: Readonly<Record<keyof typeof ADDRESS, Rendering>> = {
     holdsNoContract:
       'it is how the command is run, and the contract is the argument a reader adds after it',
   },
+  THE_WAYS_TO_RUN_IT: {
+    holdsNoContract:
+      'each entry is a package manager and the words it runs this by, which is the same shape as ' +
+      'THE_INVOCATION four times over - the contract is still the argument a reader adds after it',
+  },
 }
 
 describe('how the registry addresses what it serves', () => {
