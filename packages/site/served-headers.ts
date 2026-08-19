@@ -41,10 +41,11 @@
  * the host rule below carries, for the same reason. The reading is below, beside the one that settled
  * the host rule.
  *
- * **There is no record for this and that is the rule rather than an omission.** A record exists for
- * what will not fit beside the line; the whole of why this header exists is why a function nobody
- * read decided nothing, and that argument is these four paragraphs. An address for it would be two
- * places carrying one piece of reasoning, waiting to disagree.
+ * **The argument for it lives here and not in a record, which is the rule rather than an omission.**
+ * A record exists for what will not fit beside the line, and the whole of why this header exists is
+ * why a function nobody read decided nothing - that argument is these four paragraphs. ADR-0137
+ * records only that the open entry closed with that unit, because a search is what made the
+ * uncompressed document worth the trip.
  *
  * ---------------------------------------------------------------------------
  * A rule is an endpoint's own address with the address left open

@@ -132,6 +132,20 @@ population without touching the guard, and nothing reports a population that has
 be *read* rather than searched, and that remains true of a catalogue of five; what the field adds is
 the reader who arrives knowing what they need and not what it is called.
 
+**An open entry closed with this unit, and it closed here because a search is what made it cost
+something.** `contentTypeOf` had declared since the read API was designed what each answer travels as,
+and no deployment read it: measured against the declared origin at `501e32a`, **every answer of the
+read API arrived `application/octet-stream` and none of them compressed**, while the pages, the modules
+and `llms.txt` arrived `Content-Encoding: br`. A file with no extension is one a host has no opinion
+about. The document a search fetches was 3 601 B where it is 1 262 B in brotli, which is what turned a
+tidy declaration into a cost a reader pays.
+
+`packages/site/served-headers.ts` carries the whole argument beside the rule that makes it, and this
+paragraph is deliberately not a second copy of it: what belongs to a record is that the entry closed
+and with which unit. **What no guard reaches is whether a declared type is compressed** - that is
+somebody else's software, and it is settled by a request against the deployment, exactly as the host
+rule beside it is.
+
 ## Confirmation
 
 `every-page-runs-the-one-module-and-serves-the-search-as-a-slot` was seen red with the append removed,

@@ -140,23 +140,24 @@ export type DeferredNeed = {
  * is the guard that turns that from a fact about today into something that reddens the day it stops
  * being true.
  *
- * Declared rather than left as a gap, for the reason `field-map.ts` carries `unfilledBecause` and
- * `needs.ts` carries `answeredWithoutTheApi`: a site that quietly built five pages out of six would be
- * indistinguishable from one that had forgotten one.
+ * **`search-with-an-alias-thesaurus` left it last, and it is the only one of the three that was lifted
+ * rather than paid.** The entry read *until the catalogue stops fitting on one screen*, and that
+ * condition is not met: five contracts still fit. What changed is that the product promises somebody
+ * can describe what they need, and a promise is not kept by a page a reader has to know how to read.
+ * **A deferral can be lifted by a promise rather than by a threshold, and which of the two did it is
+ * worth recording** - otherwise the next reader meets an unmet condition and takes it for an oversight.
+ *
+ * Its other clause decided the shape instead of standing in the way. *A ranking here would be a second
+ * implementation of the one the client holds* was true, and it stopped being an objection when the
+ * matching rule moved to `packages/registry/`: the site runs that function rather than a version of it.
+ * ADR-0136, ADR-0137.
+ *
+ * **So this map is empty, and empty is a state rather than an absence.** Nothing the site needs is
+ * deferred today. Declared rather than left as a gap, for the reason `field-map.ts` carries
+ * `unfilledBecause` and `needs.ts` carries `answeredWithoutTheApi`: a site that quietly built five
+ * pages out of six would be indistinguishable from one that had forgotten one.
  */
-export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {
-  'search-with-an-alias-thesaurus': {
-    because:
-      'search is a unit of its own, and at five contracts the catalogue page answers the same ' +
-      'question better: a box asks somebody to guess a word for a list they could have read. A ' +
-      'ranking here would also be a second implementation of the one `packages/cli/search.ts` holds, for five ' +
-      'lines that fit on a screen',
-    until:
-      'the catalogue stops fitting on one screen - measured as the front page listing more contracts ' +
-      'than a reader can take in without scrolling, which is where reading a list stops beating ' +
-      'typing a word',
-  },
-}
+export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {}
 
 /**
  * The sentence that has to stay true when a server arrives, kept here rather than in a paragraph

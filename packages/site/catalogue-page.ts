@@ -1,9 +1,15 @@
 /**
  * The page the whole catalogue fits on, which at five contracts is the whole site's navigation.
  *
- * It is deliberately not a search. Search is a unit of its own and `packages/cli/search.ts` already holds the
- * matching rule it will be built on; what a catalogue of five needs is to be *read*, and a list a
- * reader can take in at once beats a box they have to guess a word for.
+ * It is deliberately not a search, and there is one in the masthead since ADR-0137 - the two answer
+ * different readers rather than the same one twice. What a catalogue of five needs is to be *read*,
+ * and a list a reader can take in at once beats a box they have to guess a word for. **What the field
+ * is for is the reader who knows what they need and not what it is called**, which no list answers at
+ * any size.
+ *
+ * The clause that has gone from here is *search is a unit of its own and `packages/cli/search.ts`
+ * holds the matching rule it will be built on*. It was right about where the rule was and wrong about
+ * where it would stay: `packages/registry/search.ts` holds it, because two surfaces needed it.
  *
  * A contract the catalogue refused is listed and carries no install command, which is the rule
  * `toopo search` already follows on the terminal: it must be findable, because somebody who has heard

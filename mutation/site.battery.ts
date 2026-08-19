@@ -187,19 +187,16 @@ const A_REFUSED_CONTRACT_IS_REFUSED = `    if (record.lifecycle.state === 'never
 
 const THE_INDEX_ENDPOINT = `  contractIndex: 'contract-index',`
 
-const A_DEFERRED_NEED_IS_NAMED = `  'search-with-an-alias-thesaurus': {`
-
 /**
- * The whole value, not its first line.
+ * The empty map itself, because nothing is deferred any more.
  *
- * W-52 emptied one line of three and survived, correctly: two lines of trigger were left and the
- * guard is about a trigger being absent. The battery caught a mutant that was not the defect it
- * claimed to be, which is the reading the pinned verdicts exist to produce.
+ * These two anchors quoted the one entry `NOT_THIS_UNIT` used to carry, and ADR-0137 lifted it - so a
+ * mutant that *perturbs* a deferral has nothing to perturb. Both now **add** one, which is the same
+ * claim reached from the other side and the only side that is left: a key naming no need, and a
+ * deferral with no event behind it. What that keeps is the two guards being reachable at all, where a
+ * sweep over an empty map passes by having nothing to look at.
  */
-const A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT = `    until:
-      'the catalogue stops fitting on one screen - measured as the front page listing more contracts ' +
-      'than a reader can take in without scrolling, which is where reading a list stops beating ' +
-      'typing a word',`
+const NOTHING_IS_DEFERRED = `export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {}`
 
 /**
  * The lenses sentence, and not the score sentence, because W-47 has to be alone on its guard.
@@ -677,9 +674,16 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'W-22',
-    'stops declaring which of the site\'s needs this site builds no page for, so a scope decision ' +
-      'becomes indistinguishable from a page somebody forgot',
-    [sourceFile(A_DEFERRED_NEED_IS_NAMED, `  'search-with-an-alias-thesaurus-not': {`)],
+    'defers a need this site does not have, so the map stops being a statement about what was ' +
+      'decided and becomes a place anything may be written - the same defect as a page somebody ' +
+      'forgot, arriving from the side that is left now that nothing is deferred',
+    [
+      sourceFile(
+        NOTHING_IS_DEFERRED,
+        `export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {\n` +
+          `  'no-such-need': { because: 'a scope decision', until: 'somebody asks' },\n}`,
+      ),
+    ],
     killed(['the-needs-of-the-site-are-answered-or-deferred-with-a-reason']),
   ),
 
@@ -1179,10 +1183,16 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'W-52',
-    'empties the trigger on the one need this site builds no page for, leaving a reason with no ' +
-      'event behind it - which ages into a description of the past and is how a scope decision ' +
-      'becomes something nobody revisits',
-    [sourceFile(A_DEFERRED_NEED_SAYS_WHAT_WOULD_CLOSE_IT, `    until: '',`)],
+    'defers a need with no event behind it, leaving a reason that ages into a description of the ' +
+      'past - which is how a scope decision becomes something nobody revisits. It adds the entry ' +
+      'rather than emptying one, because ADR-0137 lifted the last deferral this site had',
+    [
+      sourceFile(
+        NOTHING_IS_DEFERRED,
+        `export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {\n` +
+          `  'search-with-an-alias-thesaurus': { because: 'a box asks for a guess', until: '' },\n}`,
+      ),
+    ],
     killed(['every-deferred-need-names-what-would-close-it']),
   ),
 

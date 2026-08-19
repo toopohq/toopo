@@ -30,6 +30,29 @@ holds rather than against what somebody checked: a commit identifier in the pros
 this graph, no object of it carries an address the project refuses to publish, and the only checkout
 registered here is its root.
 
+**The site has a search, and it is the one the client has rather than a second one.** A page fetches
+`contract-index` and `refusals` — the two answers it already serves — and runs `packages/registry/search.ts`
+against them, so a reader typing into the masthead and a reader typing into a terminal get one answer by
+construction. The site's own port had deferred it for three units, *until the catalogue stops fitting on
+one screen*; **that condition is not met and the deferral is lifted anyway**, because the promise is that
+somebody describes what they need, and a promise is not kept by a page a reader has to know how to read.
+A deferral can be lifted by a promise rather than by a threshold, and the record says which of the two
+did it. What is served is a slot and never a control: a reader without JavaScript meets a masthead with
+nothing extra in it. **Every page loads 19 789 B in brotli before a reader acts**, the two answers cost
+1 262 B more on the first query, and the playground — the larger half — stays behind an `await import`
+that nine pages never make. Three examples are offered before anybody types and a guard runs the
+catalogue's own search over each of them, because an example that finds nothing is the defect a visitor
+met on the install command. ADR-0137.
+
+**Two things it broke are worth more than what it built.** A stylesheet can be green and broken: the
+first repair of the sticky bar used a spacing step the scale does not declare, which makes the whole
+`calc()` invalid, so `--the-sticky-bar` resolved to **nothing at all** and the site suite stayed green
+through it — found by reading the computed value in a browser. And moving the playground behind a
+dynamic import took its edge out of `every-import-a-browser-module-keeps-is-a-module-the-site-writes`,
+which matched `from '...'` and cannot see an `import()`: **an edit that changes how a dependency is
+expressed can leave a guard's population without touching the guard**, and nothing reports a population
+that has quietly shrunk.
+
 **And that freeze now covers what a contract's guards call, which until this unit it did not.** A
 fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard
 left all eight ledger digests identical to the byte while a contract the guard exists to refuse went
@@ -504,6 +527,9 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   without resolving;
 - the address the emitted tree never loses — ADR-0125, over the pages a listing names, leaving behind
   it the addresses no listing names and the chain of runs the reading is inductive over.
+- the declaration of what an answer *is*, which no deployment read — ADR-0137, closed where the cache
+  policy closed and for the reason a search gave it: the document every query fetches was the one
+  paying for it.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1229,19 +1255,6 @@ record declares**, which is a worse thing and has never been named here before.
   still among them — and what is **not** closed is the general case: nothing in this repository requires
   a deletion to be proved by a listing, and the next one written will be as free to ask a question that
   cannot answer.
-- **`contentTypeOf` — declared in `endpoints.ts`, read by the local server and by no deployment**, and
-  the two readings of it are worth keeping side by side because between them the defect **changed
-  nature rather than improved**. Measured at `ed1abfd` on Workers static assets: every named and every
-  content-addressed answer arrived with **no `Content-Type` at all**, because they are files with no
-  extension and nothing told the host what they are. Measured at `27d1dbb` on Pages, over all 76
-  addresses: the pages, the twins and the modules now carry a right one, and the same **48 answers** —
-  12 named and 36 addressed by content — carry `application/octet-stream`. From no header to a wrong
-  header is more visible and no better: a header that is absent is a host with no opinion, and one that
-  says *these are arbitrary bytes* about a JSON document is this repository's declaration contradicted
-  by its own deployment. **It closes where the cache policy closed**, in
-  `packages/site/served-headers.ts`, by the same derivation from `ENDPOINTS`: one more header per rule,
-  read from `contentTypeOf` instead of `cacheControlOf`.
-
 - **That every address this tree serves carries a cache policy this repository chose.** Measured at
   `27d1dbb` over the 76 addresses: **ten of them do not.** The nine modules and `robots.txt` answer
   `public, max-age=14400, must-revalidate`, a policy written in no file here. `theHeaderRules` derives
