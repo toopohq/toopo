@@ -374,6 +374,26 @@ to **663** at 3840 and its median from 57 to 226, and `45 to 75 characters is th
 readable across` is still declared in the stylesheet, still true, and now enforced by nothing. Whether
 that wants a ceiling is the owner's to decide and the figures are in the record. ADR-0134.
 
+**A box on a phone now gives up its content, and the rule that decides it is about the text rather
+than about the element.** Four defects, one shape: the install command was cut off on three of the
+four published contracts at 390 and on all four at 320, taking the copy control off the screen with
+it; four to six code blocks per contract page scrolled sideways, worst **2.11× its own window**, so a
+reader saw under half of a signature; every one of the nineteen destinations of two contract pages'
+tables of contents landed **25px behind the sticky bar**; and the site introduced itself as `toop`
+over `o` on every page below about 479. Measured warm on both sides over 14 pages × 21 widths × 2
+themes: **2 541px of hidden command, 197 scrolling blocks, 142 broken wordmarks and 12 pages painting
+outside the viewport, all to zero.** Above 736 the geometry does not move at all; below it the cost is
+**+0.05% of page length at 390** and a bar shorter at every width.
+
+**What the rule separates is what the argument here had never been tested against.** *A code block
+scrolls rather than wraps* was written about a block wider than its content, never about a screen
+narrower than a type declaration — so a `pre` now folds where the language allows and scrolls only
+where it does not, which keeps the old sentence for the case it was right about. **And repairing the
+wordmark made the sticky bar worse before anything made it better**: the bar's height is the menu's
+and never the wordmark's, so giving the name its width back took it from the menu, which wrapped one
+row further and paid the height straight back — 89.1px to 130.1px at 320, measured, which is why the
+menu's own row gap is in that unit. ADR-0135.
+
 **Two figures this repository has published cannot be rebuilt, and both were found by trying.**
 ADR-0133's prose-line counts reproduce to neither of the two populations its own table declares — 601
 with navigation, 580 without, against 585 — while every one of its eight heights reproduces **to the
@@ -767,7 +787,9 @@ record declares**, which is a worse thing and has never been named here before.
   read twice: ten declarations went because a ceiling stated in characters went with them, and the
   thirty that remain are as unread as the forty were.
 
-  **It is the class this repository has now paid for five times**, and ADR-0134 is the fifth: the whole
+  **It is the class this repository has now paid for six times**, and ADR-0135 is the sixth: four
+  defects a phone reader met on every visit, found by a sweep and repaired against readings taken by
+  hand, with the eight suites green on both sides of the change. ADR-0134 was the fifth: the whole
   of it was decided in an inspector by the owner and settled by a browser sweep at nine widths, and the
   eight suites were green before the change, after the change, and would have been green had it broken
   every page in the tree. ADR-0132 was the fourth: five candidate arrangements were built in a browser
@@ -782,6 +804,32 @@ record declares**, which is a worse thing and has never been named here before.
   about *where* rather than about the price: **a unit repairing a layout is not where one decides to add
   a tool to the repository**, because the decision would be taken by whoever most wants the layout to
   land. ADR-0132.
+
+  **It is demonstrated rather than predicted since `6aa90db`, and the demonstration corrected the
+  claim.** Collapsing every page of the site to a twenty-pixel column *was* caught -
+  `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` reddened, because the collapse
+  was typed as a length. Rebuilt out of declared lengths, which that guard admits, the same collapse
+  passed **122 of 122** with every page rendering one character per line. So the entry is not that
+  nothing reads the stylesheet: two guards do, and they read its *text*. What nothing reads is what it
+  renders.
+
+- **That what a linked-to element clears is the bar that is really above it.** The masthead is
+  sticky, so an element scrolled to under it is one a reader followed a link to and cannot see -
+  which is what nineteen destinations of two contract pages did at every width a phone has until
+  ADR-0135. The repair ties the clearance to the bar by sharing its terms: the padding the masthead
+  declares, and its content at the tallest that content gets. **One term of that arithmetic is data
+  and not a length.** `--the-menu-at-its-tallest: 3` is the most rows the menu wraps to between 280
+  and 479, measured, and the menu's entry count lives in `theMenu` of `packages/site/chrome.ts` where
+  nothing resolves it against the stylesheet. **A fourth destination in the masthead makes the
+  clearance too short and no check says so**, and the failure is quiet by construction: the page is
+  not broken, it is one row of navigation taller than the offset that was written for it, and only
+  somebody following a link at a phone width would find out.
+
+  **The population is that one declaration**, and what would close it is not a lint: CSS cannot read a
+  rendered height, so the two can only be compared by laying a page out. It is the ninth suite, priced
+  four times on this list already, and this is the first entry whose closure that suite would make
+  *cheap* rather than merely possible - the check is one line, *every address a page publishes clears
+  the bar above it*, with no number in it. ADR-0135.
 
 - **That a paragraph of prose has been read whole by somebody.** ADR-0112 makes it measurable: a
   paragraph has an author when one commit's blame covers every one of its lines, `npm run hands`
