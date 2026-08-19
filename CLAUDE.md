@@ -888,6 +888,14 @@ record declares**, which is a worse thing and has never been named here before.
   full instrument is tens of minutes, one battery is minutes, and nineteen of them in a matrix leg is
   the whole run again. **The population is every battery of this repository.**
 
+  **A second instance, on a second battery, and it differs from the first in the way that matters.**
+  `every-standing-field-a-contract-declares-is-carried-by-one` was written at `70cfb22` and its name
+  had never appeared in `registry-storage.battery.ts` - so it was unaccounted for **from the day it
+  existed** rather than made so by a later change, and the battery measured a suite one guard larger
+  than it accounted for from that commit until `e0c5133`. The first instance *became* unaccounted;
+  this one never was accounted. Nothing distinguishes them while nobody runs the battery, which is
+  the entry: it was found because a unit touching another folder happened to replay this one.
+
 - **That a count of this site's own pages is one somebody took.** The stylesheet's header said *seven
   pages served once each*; the generator writes **ten**, and the tree holds **eleven** files of HTML
   with the 404. It has been wrong since ADR-0121 added three domain pages, and it did real work: it
