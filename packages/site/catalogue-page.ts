@@ -14,10 +14,12 @@
  */
 
 import type { TheMeasurement } from '../../mutation/published.js'
+import { THE_COMMANDS } from '../cli/arguments.js'
 import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import { paragraph } from './marks.js'
 import { figure, grouped } from './quantity.js'
 import type { Domain } from './catalogue.js'
 import type { MenuEntry } from './chrome.js'
@@ -229,11 +231,20 @@ export const cataloguePage = (
             figure(grouped(measured.defects.killed), 'caught by the suite'),
             figure(grouped(measured.batteries), 'batteries, replayable'),
           ),
+          /**
+           * **The clause after the figures is owed to the reader who does not follow the link.**
+           * `the-readme-never-gives-a-survivor-total-without-its-split` exists because a bare figure
+           * misleads exactly the person who stops reading, and this block publishes two of them on the
+           * surface a stranger meets first. The method page's *What this does not prove* is a section
+           * and is not copied here; what is here is the one thing those two numbers do not say by
+           * themselves. ADR-0131.
+           */
           line(
             'p',
             'A test suite that has never failed proves nothing. Every contract here is measured by ' +
               'breaking the implementation on purpose and requiring the suite to notice — and what ' +
-              'those measurements did not catch is published beside what they did.',
+              'those measurements did not catch is published beside what they did. They measure what ' +
+              'the tests notice, which is not the same as what the code does.',
           ),
           el(
             'p',
@@ -330,6 +341,38 @@ export const cataloguePage = (
          * there for the same reason: a guard derives it from the five records in `CONTRIBUTING.md`
          * itself, and a sentence that is true without counting does not count.
          */
+        /**
+         * **The six commands, read from the rows the client prints and never described beside them.**
+         * `THE_COMMANDS` is what `USAGE` renders for a terminal, so the help a user types and the
+         * page a visitor reads are one value - which is ADR-0129's move on a second surface, and the
+         * reason this section could be written at all: the data existed and the site said nothing.
+         *
+         * **The sentence above them is permanent rules 1 and 2 said to a visitor, and it was checked
+         * rather than transcribed from the mock-up.** `command.ts` states that nothing this tool does
+         * needs a package manager to have been used, `a-project-with-no-package-json-installs-normally`
+         * is the guard, and `write.ts` writes the feature's files, the configuration and the lockfile
+         * and nothing else. ADR-0131.
+         */
+        block(
+          'What the command does',
+          line(
+            'p',
+            'It copies files. Nothing is added to your package.json, nothing of ours runs in your ' +
+              'build, and a lockfile records what was served and what was written — so a file you ' +
+              'edited is never overwritten and one that moved is named.',
+          ),
+          el(
+            'ul',
+            { class: 'plain' },
+            ...THE_COMMANDS.map((command) =>
+              el(
+                'li',
+                NOTHING,
+                paragraph(`\`${command.name}\` — ${command.does}.`),
+              ),
+            ),
+          ),
+        ),
         block(
           'What a contract is',
           line(

@@ -96,15 +96,71 @@ export const THE_WRITE_DISCIPLINE =
  * same six words each time and a reader who has to strip a constant prefix off six rows to compare
  * them is reading the wrong thing. What varies is the command, and that is what the rows carry.
  */
-export const USAGE = `usage: ${THE_INVOCATION} <command>
+/**
+ * The six commands, what each one takes, and what it does, in the order a project meets them.
+ *
+ * **One declaration, two surfaces.** `USAGE` renders it for a terminal and the front page renders it
+ * for a visitor - and the site had nothing at all about what the command does, on the page a
+ * stranger arrives at. Written as rows rather than as the printed block it used to be, so the two
+ * cannot drift the way a page describing a help text always does. ADR-0131.
+ *
+ * `takes` is what follows the name, spelled as a terminal spells it. `does` is one clause, because
+ * a usage line that wraps is a usage line a reader compares by eye against six others.
+ */
+export type CommandRow = {
+  readonly name: string
+  readonly takes: string
+  readonly does: string
+}
 
-  init [--dir <path>]                        configure where features go
-  add <domain>/<name> [--implementation <id>]
-                                             install a feature and what it imports
-  remove <domain>/<name> [--apply]           show what would go, then take it out
-  update [--apply]                           show what would change, then write it
-  list                                       what this project holds
-  search [words...]                          find a contract, or list the catalogue`
+export const THE_COMMANDS: readonly CommandRow[] = [
+  { name: 'init', takes: '[--dir <path>]', does: 'configure where features go' },
+  {
+    name: 'add',
+    takes: '<domain>/<name> [--implementation <id>]',
+    does: 'install a feature and what it imports',
+  },
+  {
+    name: 'remove',
+    takes: '<domain>/<name> [--apply]',
+    does: 'show what would go, then take it out',
+  },
+  { name: 'update', takes: '[--apply]', does: 'show what would change, then write it' },
+  { name: 'list', takes: '', does: 'what this project holds' },
+  { name: 'search', takes: '[words...]', does: 'find a contract, or list the catalogue' },
+]
+
+/**
+ * Where the second column starts, which is where the hand-aligned block this replaced put it.
+ *
+ * Measured rather than chosen: the printed usage is byte for byte what it was before the rows became
+ * data, so a refactor of how it is built moved no string a user sees.
+ */
+const THE_COLUMN = 45
+
+/**
+ * The rows as a terminal reads them, composed rather than transcribed.
+ *
+ * The invocation is stated once in the header rather than repeated on every line, because it is the
+ * same six words each time and a reader who has to strip a constant prefix off six rows to compare
+ * them is reading the wrong thing. What varies is the command, and that is what the rows carry.
+ *
+ * A row longer than the column wraps rather than pushing the second column out, so the six answers
+ * stay in one line down the page.
+ */
+const usageRow = (row: CommandRow): string => {
+  const left = `  ${row.name}${row.takes === '' ? '' : ` ${row.takes}`}`
+
+  return left.length >= THE_COLUMN
+    ? `${left}${NEWLINE}${' '.repeat(THE_COLUMN)}${row.does}`
+    : `${left.padEnd(THE_COLUMN)}${row.does}`
+}
+
+const NEWLINE = '\n'
+
+export const USAGE = [`usage: ${THE_INVOCATION} <command>`, '', ...THE_COMMANDS.map(usageRow)].join(
+  NEWLINE,
+)
 
 export type ParsedArguments =
   | { readonly command: Command }
