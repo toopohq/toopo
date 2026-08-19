@@ -236,7 +236,7 @@ export const STYLE = `
      was added: measured in a browser, the bar at 320 went from 106 to 126 while this said 103, so
      every address a page publishes landed 23px behind it. The field takes its own row where the bar
      is tallest, so it enters the sum as a row and a gap rather than as a maximum. */
-  --the-menu-at-its-tallest: 3;
+  --the-menu-at-its-tallest: 1;
   --the-field-at-its-tallest: calc(
     var(--t5) * var(--the-line) + var(--s) * 2 + var(--the-hairline) * 2
   );

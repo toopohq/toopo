@@ -62,15 +62,27 @@ export type MenuEntry = {
 }
 
 /**
- * The pages the masthead offers, which is every page of this site that is not about one contract.
+ * The page the masthead offers, which is one and used to be three.
  *
  * The catalogue is not among them: it is what the wordmark is for, and two links to one address is a
  * reader's choice they gain nothing by making.
+ *
+ * **What a masthead is for is the thing a reader needs before they know they need it**, and only one
+ * of the three was that. *How we verify* is the claim this whole catalogue rests on and the one a
+ * reader evaluating the project goes looking for without being told it exists.
+ *
+ * The other two are reached where they are asked for instead of everywhere. *What a contract is* is
+ * linked from the phrase on a contract page that uses the word - the seam, where the page stops
+ * describing a function and starts quoting a binding - and from the front page. *What we refuse* is
+ * linked from the front page and from the domain that turned something down, which is where somebody
+ * meets a refusal rather than where they would go looking for the set of them.
+ *
+ * **No address is lost and none was ever going to be**: an address this tree has served goes on being
+ * written, and what changes is what points at it. ADR-0125 is that rule and it is about the address
+ * rather than about the navigation.
  */
-export const theMenu = (refused: number): readonly MenuEntry[] => [
-  { label: 'What a contract is', page: WHAT_A_CONTRACT_IS_PAGE },
+export const theMenu = (): readonly MenuEntry[] => [
   { label: 'How we verify', page: METHOD_PAGE },
-  ...(refused === 0 ? [] : [{ label: 'What we refuse', page: REFUSALS_PAGE }]),
 ]
 
 /**

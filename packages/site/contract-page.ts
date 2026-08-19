@@ -72,7 +72,13 @@ import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
 import { literal } from './literal.js'
 import { inline, marked, paragraph } from './marks.js'
-import { THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
+import {
+  THE_REFERENCE_MODULE,
+  WHAT_A_CONTRACT_IS_PAGE,
+  linkTo,
+  pageOf,
+  rootFrom,
+} from './paths.js'
 import type { PlaygroundField } from './playground.js'
 import { playgroundOf, theCallOf, whatATextFieldCannotCarry } from './playground.js'
 
@@ -769,12 +775,29 @@ export const contractPage = (
     summary,
     reference: {
       lede: [
-        line(
+        /**
+         * The one link this page makes to what a contract is, and it is here because this is where
+         * a reader asks.
+         *
+         * It used to be in the masthead of every page, which put it in front of somebody who had not
+         * met the word yet and left it nowhere near the sentence that uses it. The seam is the moment
+         * the page stops describing the function and starts quoting the binding, so *what it is bound
+         * to do* is exactly the phrase a reader who does not know the term stops on.
+         */
+        el(
           'p',
-          `Everything above answers whether this function does what you need. Everything below is ` +
-            `what it is bound to do, in full. It is long on purpose, and none of it is folded away: ` +
-            `a case a reader cannot find with their browser's own search is a case this catalogue ` +
-            `did not really publish.`,
+          NOTHING,
+          text('Everything above answers whether this function does what you need. Everything below is '),
+          el(
+            'a',
+            { href: `${rootFrom(own)}${linkTo(WHAT_A_CONTRACT_IS_PAGE)}` },
+            text('what it is bound to do'),
+          ),
+          text(
+            `, in full. It is long on purpose, and none of it is folded away: a case a reader ` +
+              `cannot find with their browser's own search is a case this catalogue did not really ` +
+              `publish.`,
+          ),
         ),
       ],
       sections: referenceSections,

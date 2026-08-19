@@ -74,7 +74,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
    * The masthead's destinations, decided once here because this is the one place that knows which
    * pages exist: the refusals page is emitted only when something has been refused.
    */
-  const menu = theMenu(refusals.refusals.length)
+  const menu = theMenu()
 
   /**
    * The domains, built once and given to every page that renders navigation.
