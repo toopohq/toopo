@@ -63,6 +63,7 @@ const cataloguePageFile = (find: string, replace: string) => ({ file: 'catalogue
 const catalogueFile = (find: string, replace: string) => ({ file: 'catalogue.ts', find, replace })
 const localFile = (find: string, replace: string) => ({ file: 'local-source.ts', find, replace })
 const sourceFile = (find: string, replace: string) => ({ file: 'source.ts', find, replace })
+const chromeFile = (find: string, replace: string) => ({ file: 'chrome.ts', find, replace })
 const pathsFile = (find: string, replace: string) => ({ file: 'paths.ts', find, replace })
 const readLiteralFile = (find: string, replace: string) => ({ file: 'read-literal.ts', find, replace })
 const domainPageFile = (find: string, replace: string) => ({ file: 'domain-page.ts', find, replace })
@@ -1705,6 +1706,25 @@ const mutants: readonly Mutant[] = [
       'a pattern should be and applies none of them',
     [servedHeadersFile('`  ${name}: ${value}`', '`${name}: ${value}`')],
     killed(['the-rendering-carries-every-rule-with-its-headers-indented-beneath-it']),
+  ),
+
+  /**
+   * **This cell exists because the battery asked for it and a reader had not.** The guard it reddens
+   * was written with ADR-0137 and seen red by hand on this very edit; nothing in this file reddened
+   * it, so the run refused itself - *nothing reddens it, and the battery does not say why*. Seeing a
+   * guard red once is a reader's observation, and a cell is what makes it a measurement taken on
+   * every replay.
+   *
+   * The query is one this catalogue genuinely cannot answer, and that is what makes the mutant the
+   * defect rather than a broken string: `tolerance` appears in no name, export or alias, so the
+   * example offered before a reader has typed anything would find nothing.
+   */
+  sameOnEveryLens(
+    'W-83',
+    'offers a query the catalogue cannot answer as the invitation to search, so the first thing a ' +
+      'reader is shown they might try is the thing that disproves the claim it was put there to make',
+    [chromeFile(`  'add days to a date',`, `  'typo tolerance',`)],
+    killed(['every-example-the-masthead-offers-is-answered-by-the-catalogue']),
   ),
 ]
 
