@@ -38,7 +38,13 @@
  *
  * **What this cannot establish is that a declared type is compressed**, which is a fact about
  * somebody else's software and is settled by a request against the real deployment - the same limit
- * the host rule below carries, for the same reason. ADR-0137 carries the reading.
+ * the host rule below carries, for the same reason. The reading is below, beside the one that settled
+ * the host rule.
+ *
+ * **There is no record for this and that is the rule rather than an omission.** A record exists for
+ * what will not fit beside the line; the whole of why this header exists is why a function nobody
+ * read decided nothing, and that argument is these four paragraphs. An address for it would be two
+ * places carrying one piece of reasoning, waiting to disagree.
  *
  * ---------------------------------------------------------------------------
  * A rule is an endpoint's own address with the address left open
