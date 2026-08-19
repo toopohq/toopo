@@ -213,11 +213,31 @@ export const STYLE = `
   /* Declared because two rules need it and one of them is arithmetic. */
   --the-line: 1.62;
 
+  /* The one hairline this site draws, named because two things now depend on it: the rules that draw
+     a border, and the arithmetic that has to know how tall a bordered box is. */
+  --the-hairline: 1px;
+
+  /* The narrowest a query field may be before it stops being one. Measured rather than derived, the
+     way the row count below is: at this basis the field takes its own row under 390 and leaves the
+     menu a single row from 600 up, which is the bar at its shortest on both sides of that. It is in
+     characters because what the box holds is characters. ADR-0137. */
+  --the-shortest-query: 14;
+  --the-query-field: calc(var(--the-shortest-query) * 1ch);
+
   /* What a linked-to element has to clear: the sticky bar, in the bar's own terms. The header says
-     why the terms are shared and which one of them is data rather than a length. ADR-0135. */
+     why the terms are shared and which one of them is data rather than a length. ADR-0135.
+
+     The field is a second term since ADR-0137, and it is the term that made the sum wrong before it
+     was added: measured in a browser, the bar at 320 went from 106 to 126 while this said 103, so
+     every address a page publishes landed 23px behind it. The field takes its own row where the bar
+     is tallest, so it enters the sum as a row and a gap rather than as a maximum. */
   --the-menu-at-its-tallest: 3;
+  --the-field-at-its-tallest: calc(
+    var(--t5) * var(--the-line) + var(--s1) * 2 + var(--the-hairline) * 2
+  );
   --the-sticky-bar: calc(
     var(--s3) * 2 +
+    var(--the-field-at-its-tallest) + var(--s6) +
     var(--the-menu-at-its-tallest) * var(--t5) * var(--the-line) +
     (var(--the-menu-at-its-tallest) - 1) * var(--s2)
   );
@@ -319,7 +339,7 @@ ul.contracts {
 }
 
 .masthead {
-  display: flex; align-items: baseline; gap: var(--s6);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s6);
   padding: var(--s3) var(--s6); margin: 0; border-bottom: 1px solid var(--rule);
   position: sticky; top: 0; z-index: 20; background: var(--paper);
 }
@@ -342,10 +362,10 @@ ul.menu .here { color: var(--dim) }
 /* The field is a phrase and never a paragraph, so it is the shortest line this palette declares -
    a length already argued for as one somebody reads across, rather than a width chosen for a box.
    It grows to that and stops, which leaves the menu where it was. ADR-0137. */
-.masthead .search { position: relative; flex: 0 1 var(--aside); min-width: 0 }
+.masthead .search { position: relative; flex: 1 1 var(--the-query-field); max-width: var(--aside); min-width: 0 }
 .masthead .search input {
   width: 100%; font-family: var(--mono); font-size: var(--t5); line-height: var(--the-line);
-  color: var(--ink); background: var(--paper); border: 1px solid var(--rule);
+  color: var(--ink); background: var(--paper); border: var(--the-hairline) solid var(--rule);
   padding: var(--s1) var(--s2);
 }
 /* The accent means *you can act on this*, which is exactly what a focused field is. ADR-0115. */
