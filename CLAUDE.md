@@ -720,6 +720,29 @@ record declares**, which is a worse thing and has never been named here before.
   `no-element-runs-into-the-one-beside-it` and its neighbours were written to avoid. Priced and not
   taken. ADR-0130.
 
+- **That two things a reader sees side by side are told apart, where one of them is not an element.**
+  `no-element-runs-into-the-one-beside-it` walks a node's children and skips any pair where either
+  side is a text node — read in the guard: `if (left.child.kind !== 'element' || right.child.kind
+  !== 'element') continue`. So a phrasing element followed by bare text is outside its reach by
+  construction, and the separator between them is the author's and kept by nothing.
+
+  **It was found by a surviving mutant and not by a reading**, which is the whole reason it is worth
+  an entry rather than a note. W-64 was re-anchored onto the front page's turned-down mark — take the
+  ` — ` off and the page reads `group-byturned down` — and the cell **survived**. Nothing was red. A
+  guard whose subject is exactly that defect could not see it, and the instrument is what said so.
+
+  **The population is every place this site writes text beside a phrasing element**, which today is
+  one: the mark after a turned-down contract's name on the front page, one contract of five. That is
+  what makes the price wrong rather than the defect small.
+
+  **What would close it is one of two things and both cost more than they buy.** Widening the guard
+  to element-against-text changes its population across every page of the tree, and a guard whose
+  population moves is one whose green has to be re-earned everywhere at once. Or the mark becomes an
+  element — and `Tag` has no `span`, deliberately, so it would mean either adding one to a union
+  that is small on purpose or rendering the mark as a block, which puts it under the name instead of
+  beside it and is a layout decision taken to satisfy a guard. Priced and refused, and the refusal is
+  the entry.
+
 - **That a citation inside a file a published contract freezes ever resolves again.** The two shared
   files carry three identifiers of a history that no longer exists — `3ec99c5…` twice in prose, and
   `THE_ANATOMY_WAS_MEASURED_AT` in `every-contract.ts`, which is a constant and not a comment. They
