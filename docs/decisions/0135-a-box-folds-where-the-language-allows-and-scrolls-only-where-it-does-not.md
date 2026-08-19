@@ -125,8 +125,15 @@ Vertical space, where content that was hidden is now shown, and nowhere else.
 | 768 and above | unchanged | **0.00%** |
 
 At 390 the four contract pages gain 9 to 155px — `date/add@1` most, its `DescribeAddFailure` being the
-longest signature — and every page without a card **loses 12px**, the bar being shorter. **Above 736
-nothing moves at all**: the desktop rendering is byte-identical in geometry.
+longest signature — and every page without a card **loses 12px**, the bar being shorter.
+
+**Above 736 nothing moves, and that is a reading rather than a summary of one.** The first draft of
+this record said the desktop rendering was byte-identical in geometry, on the strength of three
+summed page heights — which is a claim about a total standing in for a claim about a composition,
+the shape `assertWholeSuiteRan` is on this repository's own debt list for. Re-taken by comparing every
+element's box, keyed by its position in the tree, between the build at `6aa90db` and the build at
+`9dd5e70`: **10 185 elements over 14 pages × 3 widths — 768, 1280 and 1920 — and not one moved by more
+than half a pixel.**
 
 ## Considered Options
 
