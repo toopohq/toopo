@@ -52,8 +52,9 @@ describe('a reader receives the rules and not the argument for them', () => {
    * The prose of `style.ts` does not travel.
    *
    * Measured at `018a2da`: 75 comments and 25 007 B of a 41 540 B sheet, written into every one of the
-   * fifteen files of HTML the build produces - **7 969 B per page in brotli, which is 68 % of what the
-   * front page transfers.** ADR-0141 carries the reading and the trade it settled.
+   * fifteen files of HTML the build produces. Read across the change, at `018a2da` and at `54b42e6`:
+   * **the front page goes from 11 724 B to 3 805 B in brotli**, and the tree from 236 960 to 119 086.
+   * ADR-0141 carries the reading and the trade it settled.
    *
    * **The source is asserted to carry a comment first**, because a sweep whose population has left is
    * a sweep that passes by having nothing to look at - the shape the two geometry guards of

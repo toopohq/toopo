@@ -1825,7 +1825,8 @@ const mutants: readonly Mutant[] = [
   sameOnEveryLens(
     'W-92',
     'serves the stylesheet with its argument still in it, which is 25 007 B of prose about lengths ' +
-      'and contrast written into every page of the tree - 7 969 B per reader in brotli, and nothing ' +
+      'and contrast written into every page of the tree - three times what the front page is worth ' +
+      'without them, once both are compressed, and nothing ' +
       'on the rendered page looks wrong because nothing on it is',
     [
       servedStylesheetFile(

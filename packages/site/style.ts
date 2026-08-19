@@ -33,7 +33,7 @@
  * **What made that paragraph true was measured rather than believed, and the reading moved the
  * threshold further away.** What a page carries is this sheet with its comments taken out - the prose
  * below is a maintainer's and never a reader's - which is 3 267 B in brotli against the 11 236 B the
- * annotated string weighs. A linked file would buy 3 240 B per page after the first and cost a round
+ * annotated string weighs. A linked file would buy 3 264 B per page after the first and cost a round
  * trip before the first paint. `served-stylesheet.ts` carries the whole of that comparison beside the
  * removal that produced it. ADR-0141.
  *

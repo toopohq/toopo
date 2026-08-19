@@ -46,10 +46,20 @@ origin at `501e32a`. In brotli at quality 11:
 | the stylesheet without them | 16 533 | 3 267 |
 | the prose | 25 007 | **7 969** |
 
-So the raw count overstates by a factor of **3.1**, and what is left is still **68 % of what the front
-page transfers** — 11 724 B to 3 781. Per page the saving runs from 7 697 B on the method page, the
-heaviest, to 7 974 B on a domain page. Over the tree, **236 960 B against 118 759**: half the HTML
-weight of this site was the commentary of one stylesheet.
+So the raw count overstates by a factor of **3.1**. What is left is still **68 % of what the front page
+transfers**: measured across the change, at `018a2da` and at `54b42e6`, that page goes from 11 724 B
+to 3 805. Per page the saving runs from 7 679 B on the method page, the heaviest, to 7 954 B on a
+domain page. Over the tree, **236 960 B against 119 086** — half the HTML weight of this site was the
+commentary of one stylesheet.
+
+**The figures in the first three paragraphs of this record and in the commit that carried it were
+wrong, by 327 B over the tree, and the cause is worth more than the correction.** They were taken
+before the change, by substituting a stripped sheet into the built pages — and the sheet substituted
+was the *swept* variant, the one refused two sections below for buying 21 B. So the simulation
+measured a thing that was never shipped, and every derived figure was 0.3 % optimistic. Nothing about
+it looked wrong: the sheet-level readings, which decided the unit, were exact and are unchanged.
+**Simulate the artefact you are going to ship, or measure after.** The figures above are the shipped
+tree; what stands in the commit message is not, and it is left there rather than rewritten.
 
 **Nothing is removed from `style.ts`.** The prose is the reason the constants hold their values and it
 is worth what it weighs where it is. What changed is what a reader downloads.
@@ -65,10 +75,10 @@ measured. It is measured here, on the front page, in brotli:
 | | first page | every page after |
 | --- | --- | --- |
 | inline, comments in | 11 724 | 11 724 |
-| inline, comments out | 3 781 | 3 781 |
-| linked, comments out | 3 787 + one round trip | 541 |
+| inline, comments out | 3 805 | 3 805 |
+| linked, comments out | 3 808 + one round trip | 541 |
 
-Linking buys 3 240 B per additional page. It costs a render-blocking round trip before the first
+Linking buys 3 264 B per additional page. It costs a render-blocking round trip before the first
 paint; one more address that no listing names, which is an entry already on the list of what this
 repository declares and nothing keeps; and **a cache policy this repository does not derive**.
 `theHeaderRules` derives one rule per endpoint from `ENDPOINTS`, and a stylesheet is not an endpoint,
@@ -219,7 +229,7 @@ Priced and not taken.
 ## What would reopen this
 
 - **A catalogue where the pages outnumber a reader's session by enough.** The linked-file arithmetic is
-  in *Considered Options* with both columns; it turns on 3 240 B per additional page against one round
+  in *Considered Options* with both columns; it turns on 3 264 B per additional page against one round
   trip, and it changes if a reader starts visiting many pages or if the sheet grows again.
 - **A cache policy for the addresses no endpoint names.** That entry is on the list of what this
   repository declares and nothing keeps; the day it closes, the strongest objection to a linked

@@ -38,11 +38,48 @@ one screen*; **that condition is not met and the deferral is lifted anyway**, be
 somebody describes what they need, and a promise is not kept by a page a reader has to know how to read.
 A deferral can be lifted by a promise rather than by a threshold, and the record says which of the two
 did it. What is served is a slot and never a control: a reader without JavaScript meets a masthead with
-nothing extra in it. **Every page loads 19 789 B in brotli before a reader acts**, the two answers cost
-1 262 B more on the first query, and the playground — the larger half — stays behind an `await import`
-that nine pages never make. Three examples are offered before anybody types and a guard runs the
+nothing extra in it. The two answers cost 1 262 B more on the first query, and the playground — the
+larger half — stays behind an `await import` that nine pages never make. **This line read *every page
+loads 19 789 B in brotli before a reader acts* and that was ADR-0137's figure at `62f2474` restated
+here with no coordinate**, which is ADR-0018's defect exactly: a dated number and a present-tense
+clause, and it is the clause a reader believes. Measured at `018a2da`, neither reading of its
+population reproduces it — 34 167 B for the page and the five modules a search needs, 22 443 B for
+those modules alone. It is not restated with today's number, because the number moves whenever the
+tree does; ADR-0137 holds the reading it was, with the commit it was taken at. Three examples are offered before anybody types and a guard runs the
 catalogue's own search over each of them, because an example that finds nothing is the defect a visitor
 met on the install command. ADR-0137.
+
+**A reader receives the rules and not the argument for them, and the reason to link a stylesheet went
+with the prose.** `style.ts` keeps its reasoning beside the declaration it explains and every word of it
+was being downloaded by every visitor: 75 comments, 25 007 B of a 41 540 B sheet, inlined into fifteen
+files of HTML. **The raw figure overstates by 3.1 and the decision survives it** — in brotli the sheet
+is 11 236 B and 3 267 B stripped, and across the change the front page goes 11 724 → 3 805 and the tree
+236 960 → 119 086, which is half the HTML weight of this site. The linked file was measured and
+refused: it buys 3 264 B per page after the first, against a round trip, an address no listing names,
+and a `.css` falling through to the host's four-hour default where pages are served `max-age=0` — a
+stale script is a control that does nothing, a stale stylesheet is the page. **The argument for a file
+was that the sheet is heavy; it is 3 267 B.** Not a pixel moved, and a browser's own parser says so:
+both sheets through `CSSStyleSheet.replaceSync`, `cssRules` compared on serialised `cssText`, **169
+rules each and zero differing**, the probe perturbed twice before it was believed. That is a
+verification taken once and never a guard, and ADR-0141 says which of the two it is so nobody promotes
+it. **The blind spot is published**: a removal taking one declaration out of the middle of a rule,
+braces balanced, is invisible to all three guards, and the total form is the parser the browser lent.
+ADR-0141.
+
+**The same defect is three times larger one door along, and it is measured and not taken.** The browser
+modules a reader downloads carry **80 752 B of comments out of 137 081 — 59 %**, measured at `018a2da`
+by a scan respecting strings, template literals and comments; `search.js` is 76 % comment and
+`address.js` 77 %. It is not a declaration nobody keeps, so it is written here rather than on the list
+below: nothing is unkept, something is unpaid. **What refuses it is not scope but a difference in
+kind** — a CSS comment is whitespace-equivalent and a JavaScript comment is not, a comment spanning a
+line break being a line terminator for automatic semicolon insertion, so a mis-reading costs executed
+code where the CSS one cost bytes. `stripTypeScriptTypes` takes `mode` and a source map and offers
+nothing for it, so it means a JavaScript reader handling regular-expression literals as well. **And the
+verification does not transfer, which is what settles it**: `CSSStyleSheet.replaceSync` and a rule-by-rule
+comparison have no JavaScript equivalent, so the second half would land without the check that makes
+the first defensible. Taking it needs a way to establish that two modules mean the same thing — parsing
+both and comparing, which is a dependency, or a suite exercising all nine files, where the playground
+suite reaches four functions.
 
 **Two things it broke are worth more than what it built.** A stylesheet can be green and broken: the
 first repair of the sticky bar used a spacing step the scale does not declare, which makes the whole
