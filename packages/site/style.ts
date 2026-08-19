@@ -101,8 +101,56 @@
  *
  * **The argument is here and not beside the rule, and the reason is bytes.** This stylesheet is inline
  * in every page of the tree, so a comment inside the template literal is served to every reader as
- * many times as there are pages; a comment out here is not. Measured: 4 672 of the 13 323 bytes served
- * are comments already, and writing this one beside its constant cost 2 843 bytes per page.
+ * many times as there are pages; a comment out here is not. **More than half of what this file serves
+ * is comment**, which is what makes the split worth making rather than merely tidy.
+ *
+ * **The count that used to stand there is withdrawn rather than corrected, and it is the reason this
+ * paragraph is worth reading twice.** It read *4 672 of the 13 323 bytes served*, with no commit
+ * beside it - true the day it was written, and wrong by a factor of two before anybody read it again,
+ * because the quantity moves every time this file is edited. A present-tense count of a moving
+ * quantity is the defect `CLAUDE.md` names most often, and this paragraph was an instance of it while
+ * arguing for a discipline. What replaces it is a claim that survives an edit, and the exact figures
+ * are stamped in ADR-0135 where a date makes them honest.
+ *
+ * ---------------------------------------------------------------------------
+ * A box folds where the language allows and scrolls only where it does not
+ * ---------------------------------------------------------------------------
+ *
+ * ADR-0135 is the record and the measurements; this is the rule, because four rules below are
+ * consequences of it and none of them reads as one on its own.
+ *
+ * **A `pre` used to say: as wide as its longest line, and past what is available it scrolls rather
+ * than wraps.** The first half is about a block *wider* than its content - `width: fit-content`
+ * replacing a 2 183px box around a 356px signature - and the second was never put against a screen
+ * *narrower* than a type declaration. One rule carried both, so the second inherited an argument made
+ * for the first: at 390 a contract page hid four to six blocks behind their own scrollbars, worst
+ * 361px behind a 325px window.
+ *
+ * **They are two cases.** A signature has break points - a space, a comma, an arrow. A digest has
+ * none. So `white-space: pre-wrap` takes the break points the text already has, and `overflow-wrap`
+ * stays `normal` so a token with nowhere to break keeps its shape and its block scrolls. What tells
+ * them apart is the text and no longer which element carries it.
+ *
+ * **Two blocks opt out, in opposite directions, and both are the same test applied.** The install
+ * command takes `anywhere`, because a command is not a signature: its longest token is an address a
+ * reader has to read and copy in full, and a line break inserts no character. The playground's answer
+ * takes `anywhere` too, because it renders what the settled cases render - a call and what it
+ * answered - and those already break anywhere; the two were one shape wrapping two ways.
+ *
+ * **The wordmark opts out the other way.** `overflow-wrap: anywhere` on `body` exists so a
+ * 64-character digest cannot push a page sideways, and it makes *any* word's min-content one
+ * character - so a flex row squeezed the site's own name to nothing and introduced it as `toop` over
+ * `o` on every page below about 479. `normal` gives the word its width back, and a flex item cannot
+ * be shrunk under its min-content. The control beside the install command is the same reading on a
+ * different object: `flex: none`, because a control is not text that reflows.
+ *
+ * **And what a linked-to element clears is the sticky bar, which the two now share terms for.** CSS
+ * cannot read a rendered height, so the clearance is built from the bar's own declarations - its
+ * padding, and its content at the tallest that content gets. **The bar's height is the menu's and
+ * never the wordmark's**, which is why repairing the wordmark made this worse before the menu's own
+ * row gap made it better: giving the name its 44px back takes them from the menu, which wraps one row
+ * further and pays the height straight back. The one term that is data rather than a length is how
+ * many rows the menu wraps to, and `CLAUDE.md` carries it among what nothing keeps.
  *
  * ---------------------------------------------------------------------------
  * The accent never says a status
@@ -162,27 +210,11 @@ export const STYLE = `
   --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* The leading every line of this site is set on, declared because two rules need it and one of
-     them is arithmetic: the body sets the page in it, and the clearance below adds up line boxes
-     that are this tall. It was typed in the body's own font shorthand and nowhere else, which was
-     honest while nothing else had to know it. */
+  /* Declared because two rules need it and one of them is arithmetic. */
   --the-line: 1.62;
 
-  /* What a linked-to element has to clear, which is the sticky bar above it.
-
-     Before this, every one of the eleven destinations of a contract page's own table of contents
-     landed about 25px behind that bar at every width a phone has - measured by really following
-     each link at 320, 360, 390, 414 and 430, not by arithmetic - and the row a reader had followed
-     a link to was the row the bar was covering.
-
-     It is the bar's own terms rather than a number read off a screen: the padding the masthead
-     declares, the rule it draws, and its content at the tallest that content gets. What decides
-     that height is the menu and never the wordmark - measured, and it is why repairing the
-     wordmark did not close this.
-
-     Three rows is the one term here that is data rather than a length: it is the most the menu
-     wraps to at any width a phone has, and a fourth destination would move it. Nothing keeps that,
-     and CLAUDE.md carries it as such. ADR-0135. */
+  /* What a linked-to element has to clear: the sticky bar, in the bar's own terms. The header says
+     why the terms are shared and which one of them is data rather than a length. ADR-0135. */
   --the-menu-at-its-tallest: 3;
   --the-sticky-bar: calc(
     var(--s3) * 2 +
@@ -192,12 +224,9 @@ export const STYLE = `
 
   color-scheme: light dark;
 
-  /* On the scroll container rather than on each target, because the rule is about every address
-     this site publishes and a list of selectors is a list that forgets one. It already had:
-     h2, h3, h4 and a case carried their own offset and the playground section carried none.
-
-     The bar and a gap off it, so that what a reader followed a link to is clear of the bar rather
-     than touching it - which is the same standing gap a heading takes from what precedes it. */
+  /* On the scroll container and not on each target: a list of selectors is a list that forgets
+     one, and this one had - the playground section carried no offset at all. The bar, and the
+     standing gap off it that a heading already takes from what precedes it. */
   scroll-padding-top: calc(var(--the-sticky-bar) + var(--s3));
 }
 @media (prefers-color-scheme: dark) {
@@ -248,20 +277,10 @@ h2 + p, h2 + ul, h3 + p, h4 + p { margin-top: var(--s3) }
 p { margin: 0 0 var(--s4) }
 code, pre { font-family: var(--mono); font-size: .875em }
 /* As wide as its longest line, which is what keeps a code block from being an empty box with a
-   border: measured at 2 183px around a 356px signature.
-
-   **Past what is available it folds where the language allows and scrolls only where it does not**,
-   and those were one case here until this rule. The sentence that stood here read that a block
-   scrolls rather than wraps, and it was written about a block wider than its own content - never
-   about a screen narrower than a type declaration. Measured at 6aa90db: at 390 a contract page
-   carried four to six blocks a reader could only reach sideways, worst 361px hidden behind a 325px
-   window, which is under half of a signature the page exists to publish.
-
-   A signature has break points - a space, a comma, an arrow - and pre-wrap takes them while keeping
-   every space and newline the text really has. A digest has none, and overflow-wrap stays normal so
-   that a token with nowhere to break is never chopped: it keeps its shape and the block scrolls,
-   which is the case the old sentence was right about. The two are now told apart by what the text
-   is rather than by which element carries it. ADR-0135. */
+   border: measured at 2 183px around a 356px signature. Past what is available it folds where the
+   language allows and scrolls only where it does not - a signature has break points and a digest
+   has none, so pre-wrap takes the first and normal protects the second. The header carries the
+   argument and what it was measured against. ADR-0135. */
 pre {
   margin: 0 0 var(--s4); padding: var(--s3) var(--s4); overflow-x: auto; width: fit-content; max-width: 100%;
   background: var(--wash); border: 1px solid var(--rule); border-radius: 6px; color: var(--ink);
@@ -304,18 +323,14 @@ ul.contracts {
   padding: var(--s3) var(--s6); margin: 0; border-bottom: 1px solid var(--rule);
   position: sticky; top: 0; z-index: 20; background: var(--paper);
 }
-/* The one word on this site that may not be broken, and the body's own rule is what was breaking
-   it. overflow-wrap: anywhere makes a word's min-content one character, so a flex row squeezed the
-   name to nothing and the site introduced itself as toop over o - on every page below about 479,
-   which is every phone. Normal gives the word its width back, and a flex item cannot be shrunk
-   under its min-content. ADR-0135. */
+/* The one word on this site that may not be broken, and the body's own rule was breaking it: with
+   anywhere a word's min-content is one character, so a flex row squeezed the name to nothing.
+   ADR-0135. */
 .wordmark { margin: 0; font-family: var(--mono); font-size: var(--t3); color: var(--ink); overflow-wrap: normal }
 .wordmark a { color: var(--ink); text-decoration: none }
-/* Two gaps and not one, because the two axes separate different things: side by side these are
-   three destinations and need telling apart, stacked they are one list and the smaller step reads
-   as such. It is also what the bar costs a phone - the menu is what decides the masthead's height
-   and never the wordmark, measured on both - and at the step it had, a menu on three rows put 130px
-   of sticky bar over a 844px screen. ADR-0135. */
+/* Two gaps and not one: side by side these are three destinations and need telling apart, stacked
+   they are one list. It is also what the bar costs a phone, the menu being what decides the
+   masthead's height and never the wordmark. ADR-0135. */
 ul.menu {
   display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5);
   list-style: none; padding: 0; margin: 0 0 0 auto; font-size: var(--t5);
@@ -414,28 +429,16 @@ main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
    over every pre already says, and 44ch was a guess at the longest one. It is restated because it is
    more specific than that rule, and 44ch left the block 34px past a 390 viewport once the card
    stopped handing it a width. */
-/* The command folds inside its own half of the row, and the control keeps its place beside it.
-
-   The row could not do that while the command could not fold: a flex item that cannot wrap cannot
-   shrink, so the whole row overflowed and the control - pushed to the end by its own margin - ended
-   up at the end of the scroll width rather than the end of the visible one. At 390 it sat 65px past
-   the right edge of its own block on three of the four published contracts, and a reader met neither
-   the whole command nor the fact that a control exists at all. The command is what this card is for.
-
-   So nothing here wraps the row. Once the pre rule lets the text fold, the row shrinks the text and
-   leaves the control where it was, which is the same arrangement at every width and needs no
-   arrangement for narrow screens.
-
-   anywhere and not the pre rule's normal, because a command is not a signature: its longest token is
-   an address that has to be readable and copyable in full at any width, and CSS breaking a line
-   inserts no character, so what a reader copies is what was written. ADR-0135. */
+/* The command folds inside its own half of the row and the control keeps its place beside it, at
+   every width - nothing here wraps the row. anywhere and not the pre rule's normal, because a
+   command is not a signature: its longest token is an address a reader has to be able to read and
+   copy in full, and a line break inserts no character. ADR-0135. */
 pre.install {
   display: flex; align-items: center; gap: var(--s4);
   background: var(--paper); max-width: 100%; font-size: var(--t4); overflow-wrap: anywhere;
 }
 /* As wide as its own label and never narrower: a control is not text that reflows. Left to shrink
-   with the row it takes the command's anywhere and offers a reader cop over y, which is a control
-   that has stopped saying what it does. */
+   it took the command's anywhere and offered a reader cop over y. */
 pre.install .copy {
   flex: none;
   margin-left: auto; border: 0; border-left: 1px solid var(--edge); background: none;
@@ -537,10 +540,8 @@ ul.toc > li.under { padding-left: var(--s3) }
   border: 1px solid var(--edge); border-radius: 6px; font-family: var(--mono); font-size: var(--t4);
 }
 /* A call and what it answered, which is the settled cases' own content arriving live - so it breaks
-   where they break rather than where a pre does. The two were rendering the same shape and wrapping
-   differently: a case's call takes anywhere and this took the pre rule's normal, which left one
-   token of a default answer past its box at the two narrowest widths a phone has. A reader who can
-   see the whole answer is the entire point of the section. */
+   where they break rather than where a pre does. The two were rendering one shape and wrapping two
+   ways. */
 #playground pre { margin: 0; background: var(--paper); border-color: var(--edge); overflow-wrap: anywhere }
 
 @media (min-width: 64rem) {

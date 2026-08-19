@@ -158,6 +158,17 @@ knowing about before somebody builds on it.
 **`--the-line: 1.62` is declared rather than typed in the body's font shorthand**, because two rules
 need it now and one of them is arithmetic.
 
+**A count this stylesheet published about itself was withdrawn on the way past.** Its header argued
+that a long comment belongs outside the served literal, and gave *4 672 of the 13 323 bytes served are
+comments* with no commit beside it — a present-tense count of a quantity that moves whenever the file
+is edited. Measured at `2649780`, over the literal `style.ts` exports and its `/* */` comments: the
+figure had reached **14 007 of 25 191 bytes in 37 comments before this unit**, and the first draft of
+this unit's own comments took it to **19 397 of 30 957** — 5 766 bytes on every page of the tree, which
+is the practice that paragraph exists to forbid, broken by the unit reading it. Rewritten to the
+header, the same reasoning costs **2 264 bytes per page and lands at 15 895 of 27 455 in 45 comments**.
+The prose now claims only that more than half of what is served is comment, which survives an edit;
+the figures are here, where a date makes them honest.
+
 ## Confirmation
 
 The four guards above are what this change had to keep and could have broken: no word of any page
