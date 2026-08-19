@@ -159,6 +159,16 @@ export type Domain = {
  * Joined here rather than at each page, so a page renders a value instead of reaching for a second
  * answer to complete the first. ADR-0126.
  */
+/**
+ * A contract's name without its domain: `slugify` out of `string/slugify`.
+ *
+ * Here rather than beside one of its readers because there were two private copies of it - one in
+ * `chrome.ts` and one in `domain-page.ts` - and the front page grouping its catalogue by domain
+ * would have been a third. It belongs with `Domain`: it is the half of a name a domain has already
+ * said, and every caller of it is rendering something under a heading that says the other half.
+ */
+export const shortNameOf = (name: string): string => name.slice(name.indexOf('/') + 1)
+
 export type TurnedDown = {
   readonly refusal: ServedRefusal
   /** What the contract was for, in the index's own words. Empty where the index carries none. */

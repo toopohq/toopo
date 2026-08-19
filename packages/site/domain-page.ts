@@ -60,6 +60,7 @@ import { grouped } from './quantity.js'
 import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
 import { domainPageOf, linkTo, pageOf, rootFrom } from './paths.js'
+import { shortNameOf } from './catalogue.js'
 
 const NOTHING = {} as const
 
@@ -136,7 +137,6 @@ const whatIsHere = (domain: Domain): string => {
 }
 
 /** The last segment of a contract's name, which is what tells it apart inside its own domain. */
-const shortNameOf = (name: string): string => name.slice(name.indexOf('/') + 1)
 
 /**
  * One contract as this page lists it: the name, what it does, what it costs, and how to take it.

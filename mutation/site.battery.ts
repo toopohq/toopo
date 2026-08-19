@@ -175,8 +175,7 @@ const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 
 const ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE = `    .entries.filter((entry) => entry.installable)`
 
-const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `                entry.installable
-                  ? \`\${THE_INVOCATION} add \${entry.address.name}\``
+const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `                text(' — turned down'),`
 
 /**
  * The generator's own restatement of the version the registry published. `cli-install.battery.ts`
@@ -247,15 +246,7 @@ const A_PIN_IS_NOT_AN_OBSERVATION = `    paragraph(THE_PINS_ARE_AN_ASSERTION),`
  * sentence it carries goes on being read by `every-figure-on-the-method-page-comes-from-what-it-was-
  * built-from`, which would redden on any edit that touched the figures instead.
  */
-const A_CONTRACT_NAME_IS_A_TITLE = `              el(
-                'h3',
-                { class: 'call' },
-                el(
-                  'a',
-                  { href: linkTo(pageOf(entry.address)) },
-                  text(renderContract(entry.address)),
-                ),
-              ),`
+const A_CONTRACT_NAME_IS_A_TITLE = `                text(' — turned down'),`
 
 const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `        paragraph(silence.reason, { class: 'why' }),`
 
@@ -564,8 +555,7 @@ const mutants: readonly Mutant[] = [
     [
       cataloguePageFile(
         A_REFUSED_CONTRACT_IS_OFFERED_NOTHING,
-        `                true
-                  ? \`\${THE_INVOCATION} add \${entry.address.name}\``,
+        `                text(\` — \${THE_INVOCATION} add \${one.refusal.address.name}\`),`,
       ),
     ],
     killed(['nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed']),
@@ -1371,20 +1361,15 @@ const mutants: readonly Mutant[] = [
    */
   sameOnEveryLens(
     'W-64',
-    'writes a contract name as a bare anchor rather than as the title it is. An anchor is phrasing ' +
-      'content and carries no separator, so every summary on the front page begins mid-line - ' +
-      '`typescript/number/parse@1Convert a string to a finite number` - and the outline of the page ' +
-      'that is this whole site\'s navigation holds not one contract name. Every word is still ' +
-      'present, so the projection guard stays green: two blocks have become one sentence, which a ' +
-      'person reads and a guard about presence cannot',
+    'takes the separator off the mark beside a turned-down contract. An anchor is phrasing content ' +
+      'and carries none of its own, so the front page reads `group-byturned down` - the name of a ' +
+      'contract and the one word about it run into each other, on the page that is this site\'s own ' +
+      'navigation. Every word is still present, so the projection guard stays green: a person reads ' +
+      'two things as one and a guard about presence cannot',
     [
       cataloguePageFile(
         A_CONTRACT_NAME_IS_A_TITLE,
-        `              el(\n` +
-          `                'a',\n` +
-          `                { href: linkTo(pageOf(entry.address)) },\n` +
-          `                text(renderContract(entry.address)),\n` +
-          `              ),`,
+        `                text('turned down'),`,
       ),
     ],
     killed(['no-element-runs-into-the-one-beside-it']),

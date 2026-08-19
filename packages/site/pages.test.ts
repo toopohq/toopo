@@ -568,7 +568,21 @@ describe('the site', () => {
 
     expect(refused).toBeDefined()
     expect(everyPage).not.toContain(`toopo add ${refused?.address.name}`)
-    expect(html(CATALOGUE_PAGE)).toContain(renderContract(refused?.address as never))
+    /**
+     * **The front page links it, which is what findable means and is not what this asked before.**
+     *
+     * It required the rendered address to occur in the page's HTML, and that was satisfied for as
+     * long as the catalogue printed it as the link's own text. The front page now names contracts by
+     * their short name under the domain each belongs to - so the rendered address survives only in
+     * the `href`, the assertion went on passing, and a reader could no longer see the string it was
+     * looking for. The guard was green for a reason that had stopped being its claim.
+     *
+     * A link is the stronger form either way: a string in the markup can be in a script, an
+     * attribute or a comment, and only a link is something a reader can follow.
+     */
+    expect(html(CATALOGUE_PAGE)).toContain(
+      `href="${linkTo(pageOf(refused?.address as never))}"`,
+    )
     expect(toText(page(REFUSALS_PAGE))).toContain(
       renderContract(refused?.address as never),
     )

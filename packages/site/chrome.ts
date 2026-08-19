@@ -39,6 +39,7 @@
 
 import { endpointOf, pathTo } from '../registry/endpoints.js'
 import type { Domain } from './catalogue.js'
+import { shortNameOf } from './catalogue.js'
 import type { WhereTheCatalogueIs } from './searching.js'
 import type { Attributes, Node } from './document.js'
 import { el, text } from './document.js'
@@ -260,4 +261,3 @@ const line = (
     : el(tag, attributes, el('a', { href: `${rootFrom(own)}${linkTo(page)}` }, text(label)))
 
 /** The last segment of a contract's name, which is what tells it apart inside its own domain. */
-const shortNameOf = (name: string): string => name.slice(name.indexOf('/') + 1)

@@ -28,6 +28,7 @@ import { el, text } from './document.js'
 import { paragraph } from './marks.js'
 import { figure, grouped } from './quantity.js'
 import type { Domain } from './catalogue.js'
+import { shortNameOf } from './catalogue.js'
 import type { MenuEntry } from './chrome.js'
 import { masthead } from './chrome.js'
 import {
@@ -138,66 +139,78 @@ export const cataloguePage = (
             'it hands you.',
         ),
 
-        line('h2', `${index.entries.length} contracts`),
+        line(
+          'h2',
+          `${index.entries.length} contracts in ${domains.length} ` +
+            `${domains.length === 1 ? 'domain' : 'domains'}`,
+        ),
         /**
-         * Two abreast where there is room for two and one where there is not, and the floor is what says
-         * which. `--a-contract-in-a-list` is a measure, so the track resolves to two columns exactly
-         * where the content column is two measures wide - no width is written here, and no breakpoint
-         * exists to be wrong about. Whether an index of five reads better in one column or two is a
-         * judgement that will be taken again, and it is taken on that one length.
+         * The catalogue is a list of names under the domain each belongs to, and it stopped carrying
+         * a summary apiece.
+         *
+         * **The front page is a door and not the catalogue.** Somebody searching for a function does
+         * not arrive here - they arrive on a contract page, from outside - so what this list owes a
+         * reader is that the catalogue exists, what is in it, and a way in. A summary under every name
+         * is the page at five contracts and is the whole page at a hundred: measured before it went,
+         * one entry cost 443 bytes of the emitted tree and a name costs a fraction of that.
+         *
+         * One field is added per level and never two. This page names; a domain page names and
+         * summarises; a contract page is the contract. A reader who wants the sentence is one link
+         * away from it, and the search - which is in the masthead of this very page - answers with
+         * summaries for anybody who would rather describe what they need.
+         *
+         * **The names stay and that is a decision deferred rather than taken.** A thousand contracts
+         * is a thousand names here, and the width at which this list stops naming them and names only
+         * their domains is a threshold nobody has had to choose yet. It is written down as owed rather
+         * than guessed at, because a threshold guessed at is one nothing can check.
+         *
+         * Two abreast where there is room for two and one where there is not, and the floor is what
+         * says which. `--a-contract-in-a-list` is a measure, so the track resolves to two columns
+         * exactly where the content column is two measures wide - no width is written here, and no
+         * breakpoint exists to be wrong about.
+         *
+         * A turned-down contract carries a mark and not a sentence. The sentence it used to carry
+         * said where the measurement was; the mark says the one thing a reader needs before they
+         * click, and the page it links to says the rest. ADR-0127.
          */
-        el(
-          'ul',
-          { class: 'plain contracts' },
-          ...index.entries.map((entry) =>
+        ...domains.flatMap((domain) => [
+          el(
+            'h3',
+            { class: 'domain' },
             el(
-              'li',
-              NOTHING,
-              /**
-               * A contract's name is a heading that happens to be a link, and it used to be a bare anchor.
-               *
-               * Read in document order it came out as `typescript/number/parse@1Convert a string to a
-               * finite number` - an anchor is phrasing content and carries no separator, so the summary
-               * began mid-line, on the first screen of the site. **The repair is here rather than in the
-               * separator table, and the measurement is what says so:** across the seven pages there is not
-               * one anchor written inside a sentence, and nine of the fourteen a reader can see are already
-               * the sole child of an element that separates. Giving `a` a separator would state something
-               * about a phrasing element that is false of every other phrasing element beside it, to repair
-               * five places where the mistake is that a title was not written as one.
-               *
-               * The tag is the outline and the class is the look, which is what settles both halves at once.
-               * The tag, because the refusals page already renders this exact pair - an address and the
-               * summary under it - as a heading and a paragraph, and two renderings of one thing drift until
-               * one lies: the front page's outline held its four sections and not one contract name, on the
-               * page that *is* this site's navigation. The class, because 121 of the 126 list items here
-               * open with `.call` and these five are the only departure.
-               *
-               * **The link does not branch.** Every entry goes to the address its contract has,
-               * installable or not: it used to send a refused one to the refusals page, and that branch
-               * went when a refusal became a state of a contract rather than a page of its own. What
-               * still branches is the line under it, which is about a command and is a different
-               * question. ADR-0127.
-               */
+              'a',
+              { href: linkTo(domainPageOf(domain.address)) },
+              text(domain.name),
+            ),
+          ),
+          el(
+            'ul',
+            { class: 'names' },
+            ...domain.held.map((one) =>
               el(
-                'h3',
-                { class: 'call' },
+                'li',
+                NOTHING,
                 el(
                   'a',
-                  { href: linkTo(pageOf(entry.address)) },
-                  text(renderContract(entry.address)),
+                  { href: linkTo(pageOf(one.contract.address)) },
+                  text(shortNameOf(one.contract.address.name)),
                 ),
               ),
-              line('p', entry.summary, { class: 'why' }),
-              line(
-                'p',
-                entry.installable
-                  ? `${THE_INVOCATION} add ${entry.address.name}`
-                  : 'Considered and turned down — the measurement it was refused on is on its page.',
-                { class: 'meta' },
+            ),
+            ...domain.turnedDown.map((one) =>
+              el(
+                'li',
+                NOTHING,
+                el(
+                  'a',
+                  { href: linkTo(pageOf(one.refusal.address)) },
+                  text(shortNameOf(one.refusal.address.name)),
+                ),
+                text(' — turned down'),
               ),
             ),
           ),
-        ),
+        ]),
 
       ),
 
@@ -259,50 +272,15 @@ export const cataloguePage = (
           ),
         ),
 
-        /**
-         * The domains, beside the contracts rather than above them.
+        /*
+         * The domains had a column of their own here and it is gone with the list they summarised.
          *
-         * At five contracts the list is the navigation and this is a second way into the same five,
-         * which is a cost. It is here because the shape that survives a thousand contracts is the one
-         * worth building at five, and because a domain page is now the address a reader lands on from
-         * a search for `slugify javascript` and climbs one level from.
-         *
-         * **Every domain the index files a contract under is here, including the one that publishes
-         * nothing.** This paragraph said the opposite for three commits - *a domain with nothing
-         * installable in it has no page and is not here* - and ADR-0126 had already given `array` a
-         * page and this list a fourth chip. The list is `domains`, so the chip appeared and the
-         * sentence above it did not, which is this repository's own recurring defect committed here by
-         * the unit that fixed it one file over. ADR-0126.
-         *
-         * Chips and not a list, which is the existing look for *a short set of addresses* on this
-         * site. As a list each domain took a rule, a heading and a line to carry one word, so three
-         * domains filled as much of the front page as the five contracts under them - which is a
-         * section shouting over the one it is a summary of.
-         *
-         * No count on a chip, and the mock-up this departs from draws one. It would read `number 1`
-         * in every projection but the visual one, and applied to what is really here every line would
-         * say `1`, `1`, `2` - which makes the catalogue look empty in the one place that summarises
-         * it. The count of a domain is on that domain's page, in a sentence that says what it counts.
+         * It was a second way into the same five, carried knowingly - *the shape that survives a
+         * thousand contracts is the one worth building at five* - and the catalogue itself is now
+         * that shape: the list in the content column is the domains, each naming what it holds. A
+         * summary of a list, beside the list, saying the same words, is the one thing this column was
+         * never allowed to be.
          */
-        block(
-          'Domains',
-          el(
-            'ul',
-            { class: 'chips' },
-            ...domains.map((domain) =>
-              el(
-                'li',
-                NOTHING,
-                el(
-                  'a',
-                  { href: linkTo(domainPageOf(domain.address)) },
-                  text(domain.name),
-                ),
-              ),
-            ),
-          ),
-        ),
-
         ...(refusals.refusals.length === 0
           ? []
           : [
