@@ -19,6 +19,20 @@ confirmed-by:
 
 # What a search may answer, and what it must not
 
+> **One clause of this record is no longer what the code does, and it is the words *in full*.**
+> [ADR-0136](0136-a-rewording-answers-what-the-wording-it-rewords-answers.md) measured what requiring
+> the whole of a field cost - `turn a string into a number` answered nothing while
+> `convert a string to a number` answered - and replaced it with the words of a field that tell the
+> contracts apart. It also found the opposite defect in the same line, which this record's own rule
+> exists to refuse: with every word of the query answered there was no bound at all, and
+> `toopo search a` returned the whole catalogue. Everything else below stands, including the refusal
+> of a list of words to ignore, which ADR-0136 keeps and argues from again.
+>
+> **And the repair this record prescribes for a query only a description could have answered - a
+> missing alias - cannot be carried out on the four published contracts.** `identity.searchAliases` is
+> inside the frozen half. `CLAUDE.md` carries that as an open entry; a reader of the paragraph below
+> should not leave believing the door is open.
+
 ## Context and Problem Statement
 
 `toopo search` is the command that decides whether somebody finds anything in ten seconds. A search over

@@ -1,6 +1,7 @@
 /**
  * From what somebody typed to the contracts that answer it.
- * ADR-0035 is what a search may answer, and the one rule under which it answers nothing.
+ * ADR-0035 is what a search may answer, and the one rule under which it answers nothing; ADR-0136 is
+ * the two bounds that replaced its single one, and the cliff those two sides of it were.
  *
  *
  * ---------------------------------------------------------------------------

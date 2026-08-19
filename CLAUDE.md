@@ -590,6 +590,34 @@ record declares**, which is a worse thing and has never been named here before.
 
 **Still open, and what each one now costs.**
 
+- **That the repair a record prescribes is one somebody can carry out.** ADR-0035 decides what a
+  search may answer, and it names the repair for the case it cannot: *a query only a description could
+  have answered is a **missing alias**, and the repair belongs in `identity.searchAliases`, where it is
+  frozen, reviewed and served.* `contractSnapshot` freezes `identity` whole and four of the five
+  contracts are published, so **that repair is available on `array/group-by@1` and on nothing else** —
+  and `array/group-by@1` is the contract the catalogue refused. A prescription no published contract
+  can follow is not a prescription.
+
+  **It is the alias entry above arriving one level up, and that is why it is a separate entry rather
+  than a clause of it.** That one says the *mechanism* contradicts ADR-0023. This one says a *second*
+  record tells a reader to do something the mechanism forbids, and the two records were written
+  eighteen apart by somebody who knew about the freeze in between. So the population is not
+  `searchAliases`: it is **every repair any record prescribes**, and nothing resolves a prescription
+  against what the freeze allows. `confirmationFaults` resolves the guards a record names and
+  `citationFaults` resolves the records a file names; neither reads a sentence telling somebody what to
+  edit.
+
+  **It is measured rather than hypothetical, and the measurement is what made it visible.** ADR-0136
+  repaired the matching rule and left four descriptions of these five functions answering nothing —
+  `typo tolerance`, `spelling suggestion`, `date maths`, `validate a numeric input`. Every one of them
+  is ADR-0035's own diagnosis, and every one of them is unfixable until a contract can carry a second
+  contract digest under one address. That is the revision ADR-0023 already names and nothing
+  implements, priced there as a unit of the publishing tool.
+
+  **What is cheap and is done instead is that both records now say so** — the head of ADR-0035, and
+  this entry. What would close it is the validation stage reading this repository's own strings, which
+  four entries here already name, already priced and already refused as a lint over prose. ADR-0136.
+
 - **That a comment naming a guard is naming one that exists.** A record may not: `confirmationFaults`
   resolves every pair a `confirmed-by` declares against the guards its suite collects, and
   `citationFaults` resolves the other direction. **A comment is resolved by nothing.** So citing a guard
