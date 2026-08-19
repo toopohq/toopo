@@ -1720,7 +1720,7 @@ const mutants: readonly Mutant[] = [
    * example offered before a reader has typed anything would find nothing.
    */
   sameOnEveryLens(
-    'W-83',
+    'W-88',
     'offers a query the catalogue cannot answer as the invitation to search, so the first thing a ' +
       'reader is shown they might try is the thing that disproves the claim it was put there to make',
     [chromeFile(`  'add days to a date',`, `  'typo tolerance',`)],
