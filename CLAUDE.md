@@ -86,6 +86,30 @@ reds published. ADR-0107.
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
+**What is broken, and it is the published package rather than anything in this tree: `yarn dlx toopo`
+does not run.** Measured on 2026-08-19 against `toopo@1.0.4` as npm serves it, in an empty project
+with a `packageManager` of `yarn@4.6.0` obtained through corepack: `yarn dlx toopo add
+string/slugify` exits 1 with nothing written, and Yarn names its own cause — it applies its builtin
+compatibility patch to `typescript`, `typescript@patch:…#optional!builtin<compat/typescript>`, and
+the patch fails with `ENOENT … lstat '/node_modules/typescript/lib/_tsc.js'` because TypeScript 7
+does not hold that file. **`typescript@7.0.2` is this package's one runtime dependency**, which is
+what puts it in the way.
+
+**The control is what makes the cause believable rather than plausible.** `yarn dlx cowsay` in the
+same shell, the same minute, exits 0 and prints its cow — so Yarn works on this machine and fails on
+this package. Without that reading the failure could have been Yarn's, and a cause named without it
+would be the thing ADR-0042 refuses.
+
+**The three that were measured all work and land the same byte.** `npx`, `pnpm dlx` and `bunx`
+each exit 0 and write `lib/toopo/string/slugify.ts` hashing to `1a8ae9d1…`, which is the blob the
+catalogue announces. `deno` was not measured, because it is not on this machine, and so it is not
+published anywhere either. **The population of forms is four and one of them is red.**
+
+It is not repaired here and it is not this list's class - nothing is unkept, something is broken -
+so it is written where a session reads first rather than filed as a declaration nobody keeps. What
+would close it is a decision about that runtime dependency, which is a unit of its own and touches
+the archive rather than the site.
+
 **`toopo@1.0.0` is on npm, and the way it got there is what the unit before this one replaced.** It was
 published from a keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal
 account, and `dist` carries the registry's own signature and **no attestation at all** — so the archive a
