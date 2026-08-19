@@ -10,12 +10,22 @@ confirmed-by:
   - battery: registry-storage
     guard: every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns
   - battery: site
-    guard: a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence
-  - battery: site
     guard: nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation
 ---
 
 # A contract page publishes what its own suite did not catch
+
+> **One of the two sections below is withdrawn by
+> [ADR-0133](0133-what-a-page-is-long-in-is-measured-and-it-is-not-the-wrapping.md), and on none of
+> the triggers under *What would reopen this*.** *What lands in your project* is gone from the
+> contract page, the licence header it showed with it. *How this contract measured* stands, and
+> everything this record argues about it — the projection, the placement below the line, a contract
+> with no survivor saying so — is unchanged. **What was wrong is not the argument but that nobody had
+> asked the reader**: the section was proposed on the supposition that somebody deciding on a function
+> wants to know what lands, the owner read it on his own screen and did not. Its own confirmation goes
+> with it, so `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` is no longer among the guards
+> above — it kept the file-name list and there is no list. The 74-word reading below is the last state
+> of a page that no longer exists and is not retaken; ADR-0133 measures the same page in lines.
 
 ## Context and Problem Statement
 

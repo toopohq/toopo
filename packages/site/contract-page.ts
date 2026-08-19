@@ -49,7 +49,7 @@
 import { THE_INVOCATION, contractUrl, renderContract } from '../registry/address.js'
 import type { TheMeasurement, WhySurviving } from '../../mutation/published.js'
 import { WHAT_A_SURVIVOR_MEANS_TO_A_READER } from '../../mutation/published.js'
-import { THE_COPIED_LICENCE, licenceHeaderOf } from '../registry/licence.js'
+import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { renderKind } from './survivors.js'
 import type { CaseGroup } from '../catalogue/identifier.js'
 import type {
@@ -490,6 +490,15 @@ export const contractPage = (
 
   const useCases = held.binding.useCases ?? []
 
+  /**
+   * What a reader meets before deciding, and it carries no section about what lands on their disk.
+   *
+   * ADR-0130 put one here - the file names and the licence header, shown rather than described - and
+   * the owner read it and did not want it. What replaced the argument is a measurement: the block
+   * stood beside a taller sibling in this grid on all four pages, so its own 468px cost nothing, and
+   * taking it out moved a contract page by 869px on one and by **zero** on another. A section here is
+   * paid for in a row of the grid and never in its own height. ADR-0133.
+   */
   const summary: readonly Section[] = [
     {
       id: 'what-it-does',
@@ -509,66 +518,6 @@ export const contractPage = (
          */
         marked('h3', 'What it is for, and what it is not', { id: 'what-it-is-for' }),
         paragraph(contract.identity.inputDomain),
-      ],
-    },
-    {
-      id: 'what-lands',
-      title: 'What lands in your project',
-      body: [
-        /**
-         * **The card already carries the figures, so this carries what a figure cannot.** ADR-0116
-         * settled the card as name, sentence, command, figures and signature; *4 299 bytes, one
-         * file* does not say which file, and the licence a reader is handed was imported by this
-         * module for the structured data and shown to nobody.
-         *
-         * **No path, and the reason is that this site cannot know one.** `configuration.ts` answers
-         * `src/lib/toopo` where a `src` folder exists and `lib/toopo` where it does not, so a full
-         * path published here would be right for one reader and wrong for the next. The README
-         * carries that imprecision and nobody has raised it; this states the rule in a clause
-         * instead of drawing a path that is half false. ADR-0130.
-         */
-        /**
-         * `paragraph` and not `line`, because the clause names a directory and an identifier in
-         * prose is written in backticks. ADR-0117 is the unit that found 220 of them reaching
-         * readers as themselves across these four pages; `line` is what puts them there.
-         */
-        paragraph(
-          `${files === 1 ? 'One file' : `${files} files`}, under a folder the installer chooses ` +
-            'from what your project already looks like: inside a `src` directory where you have ' +
-            'one, and at the root of the project where you do not. Nothing else is written, and ' +
-            'nothing is added to your dependencies.',
-        ),
-        /**
-         * The names, and no weight beside them, which a mutant is what settled.
-         *
-         * The first draft wrote the byte count of each file, and that number is the card's. With one
-         * file the two are the same figure, so **W-12 survived** - the cell that points the card's
-         * total at the harness instead of at what lands, whose guard looks for the installed total
-         * anywhere on the page and found it here instead. A figure repeated is a guard satisfied by
-         * the copy.
-         *
-         * So the card states the cost and this states what it is a cost of.
-         * `a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence` is why the name still ends in a
-         * full stop rather than standing alone: an identifier is an address and not prose.
-         */
-        el(
-          'ul',
-          { class: 'plain' },
-          ...implementation.files.map((entry) =>
-            el(
-              'li',
-              NOTHING,
-              paragraph(`\`${entry.path}\`.`),
-            ),
-          ),
-        ),
-        /**
-         * The header every copied file carries, shown rather than described, and read from the one
-         * module that spells it. It answers *what does this oblige me to* with the shortest true
-         * answer there is, and it is the one part of what lands that a byte count cannot imply.
-         */
-        line('p', 'Each of them opens on these two lines:'),
-        line('pre', licenceHeaderOf(contract.address).trimEnd(), { class: 'answer' }),
       ],
     },
     {

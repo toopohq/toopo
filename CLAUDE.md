@@ -311,6 +311,34 @@ and the void beside the card *grows* from 353 to 368, and at the density with no
 reaches 77. **Density is not stationary and a column is two lines wide**, so widening prose to fill a
 column widens the column by more than it fills.
 
+**A page is long in lines, and the line count is the reading this repository had never taken.** The
+owner read a contract page, judged *What lands in your project* useless two days after it was proposed,
+and asked whether the length is the matter at all or *just the line breaks*. Cutting prose is not
+available — 90% of the page is the frozen half of a contract — so the question was answered by
+measurement instead. Every earlier reading counted lines to police a ceiling and answered with a worst
+and a median; **none asked how many lines a reader is handed.** Measured at `00be46c` over the four
+contract pages at 1440, by ADR-0122's own method: `number/parse@1` renders **594 lines of prose and 630
+of every kind**, median 56, worst 69, 0 over 75. The removal is worth **9 lines of 594**. At the widest
+column the declared 75 allows — measured in a browser rather than projected — it is **572, which is
+3.7%**, and at a packing no line-breaker performs, `ceil(characters / 75)` block by block, **511, which
+is 14%**. So the wrapping is not what makes the page long, and that is a negative worth as much as a
+positive: it says the next unit is not a cut. **The two populations are declared in the record** because
+one of them is new here — *prose* is `h1, h2, h3, h4, p, li`, the set the stylesheet bounds, and *every
+rendered line* is what a reader scrolls past. They differ by 5 to 7%: a settled case renders as three
+`p`s, so the case tables were already inside the measure's own population. ADR-0133.
+
+**And what a section costs in height is a row of a grid, never its own height.** The block removed was
+**468px on all four pages and stood beside a taller sibling on all four**, so it occupied no height at
+all: what the removal buys is whichever row the two-column opening drops when it re-packs. Three pages
+lost 676 to 869px; **`string/slugify@1` lost exactly zero**, its rows re-packing without losing one.
+That is ADR-0132's void one floor down — the block was not in the way — and it was measured because the
+zero looked like a broken probe. **The figure worth more than either the cut or the wrapping is
+elsewhere and is not acted on**: by union of vertical extents over `main`, **a quarter of a contract
+page is the gap between one block and the next** — 4 161px of 16 461 on `number/parse@1`, stable within
+1.7 points across four pages — against 707px for the section and 485px for reaching the declared line
+length. The spacing scale is ADR-0115's and this unit was forbidden the layout, so it is written down
+rather than spent.
+
 **A guard of the site suite had been reddened by nothing since it was written, and the battery said so
 to nobody.** `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported
 unaccounted for by `npm run battery site` at `81bf9bc` and at every commit before it — measured both
