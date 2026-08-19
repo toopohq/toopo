@@ -91,10 +91,9 @@
  * what a symmetric prefix admitted and why it is gone.
  */
 
-import type { ContractAddress, Language } from '../registry/address.js'
-import { renderContract, sameContract } from '../registry/address.js'
-import type { ServedIndexEntry, ServedRefusal } from '../registry/response.js'
-import type { HeldRegistry } from './source.js'
+import type { ContractAddress, Language } from './address.js'
+import { renderContract, sameContract } from './address.js'
+import type { ServedIndex, ServedIndexEntry, ServedRefusal, ServedRefusals } from './response.js'
 
 /**
  * The words people type for a language, which are not the identifier an address carries.
@@ -405,7 +404,7 @@ export type Search = {
  * used to be enough on its own, and a summary is a word list nobody chose - so `toopo search a`
  * returned all four contracts, `to` three and `in` two, on a rule whose whole subject is that a
  * search which always answers something is the one nobody believes twice. Measured over eighteen
- * bare function words: **seventeen answered and they returned 37 results between them; four answer
+ * bare function words: **seventeen answered and they returned 37 results between them; five answer
  * now, and nine results.** What is left is five words the catalogue really does declare - `a`, `to`,
  * `by`, `from`, `two` - and killing those costs a legitimate answer, which is measured under
  * `a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias` rather than argued: the
@@ -413,7 +412,7 @@ export type Search = {
  *
  * **The second is `namedByWhatTellsThemApart`, and it is the silence.** Measured over nineteen
  * ordinary descriptions of what these five functions do, six were answered and thirteen were not,
- * several of them a working query with one word changed. Twelve are answered now.
+ * several of them a working query with one word changed. Thirteen are answered now.
  *
  * **Neither bound buys the other's half and together they cost nothing**, which is what says both are
  * load-bearing. On the corpus, on every declared alias, and on the negative half, all four
@@ -439,18 +438,30 @@ const scoreOf = (
 /**
  * Every contract that answers the query, best first.
  *
- * The refusals are fetched whatever the query, because a refused contract is a result like any other
+ * **It takes the two answers rather than a registry, and that is what let it move here.** It read a
+ * port until two consumers needed it - `HeldRegistry`, which is the installer's projection of the
+ * installer's port - so a function over an index and a list of refusals was declared in terms of one
+ * client's type, and the site could not call it without importing that client. What it needs is
+ * `contract-index` and `refusals`, and those are the registry's own answers; asking for them directly
+ * is both narrower and the reason there is one matching rule instead of two.
+ *
+ * The refusals are asked for whatever the query, because a refused contract is a result like any other
  * and its reason is what makes it one - answering `not installable` and nothing else would say the
  * catalogue has no opinion, when publishing the opinion is the point. It is one small answer over a
- * catalogue this size, and the day that stops being true it is fetched for the entries that need it.
+ * catalogue this size, and the day that stops being true it is asked for only where it is needed.
  *
- * Nothing here reads a clock, a process or a directory, which is the property `command.ts` states for
- * this whole folder and which `search` is the first command to hold without even a project.
+ * Nothing here reads a clock, a process, a directory or a transport. That was a property
+ * `packages/cli/command.ts` stated for its whole folder and it is now a property of the function
+ * itself: there is no source to read, so there is nothing for one to do.
  */
-export const search = (source: HeldRegistry, query: string): Search => {
+export const search = (
+  index: ServedIndex,
+  refused: ServedRefusals,
+  query: string,
+): Search => {
   const words = wordsOf(query)
-  const entries = source.contractIndex().entries
-  const refusals = source.refusals().refusals
+  const entries = index.entries
+  const refusals = refused.refusals
   const spread = spreadOverTheCatalogue(entries)
 
   const results = entries

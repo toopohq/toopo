@@ -6,7 +6,7 @@ governs:
   - packages/catalogue/every-contract.ts
   - packages/registry/contract-record.ts
 confirmed-by:
-  - battery: cli-search
+  - battery: registry-storage
     guard: every-declared-alias-finds-its-own-contract-first
 ---
 

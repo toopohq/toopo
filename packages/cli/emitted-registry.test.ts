@@ -15,7 +15,7 @@ import type { InstallOutcome } from './install.js'
 import { localSource } from './local-source.js'
 import { removeDirectory } from './remove-directory.js'
 import { prepareRemoval } from './remove.js'
-import { search } from './search.js'
+import { search } from '../registry/search.js'
 import { servingATree } from './serving-a-tree.js'
 import type { AskedOfTheTree } from './serving-a-tree.js'
 import type { HeldRegistry, RegistrySource } from './source.js'
@@ -150,7 +150,9 @@ describe('every command, against the tree a host serves', () => {
    */
   it('search-decides-the-same-thing-against-the-emitted-tree', async () => {
     for (const query of ['slugify', 'string to number', 'Map.groupBy', 'debounce']) {
-      const { local, served, asked } = await bothWays((held) => search(held, query))
+      const { local, served, asked } = await bothWays((held) =>
+        search(held.contractIndex(), held.refusals(), query),
+      )
 
       expect(served, query).toEqual(local)
       expect(missed(asked), query).toEqual([])

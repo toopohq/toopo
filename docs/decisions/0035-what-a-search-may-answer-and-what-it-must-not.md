@@ -3,17 +3,17 @@ status: accepted
 date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
-  - packages/cli/search.ts
+  - packages/registry/search.ts
 confirmed-by:
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-query-the-catalogue-cannot-answer-answers-nothing
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-corpus-of-real-queries-ranks-the-right-contract-first
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-miss-names-the-words-no-contract-carries
 ---
 
@@ -27,6 +27,14 @@ confirmed-by:
 > exists to refuse: with every word of the query answered there was no bound at all, and
 > `toopo search a` returned the whole catalogue. Everything else below stands, including the refusal
 > of a list of words to ignore, which ADR-0136 keeps and argues from again.
+>
+> **The module also moved, and one paragraph below is about the folder it left.** The matching rule is
+> a function of two of the registry's own answers and of nothing a client holds, so it lives in
+> `packages/registry/search.ts` since a second consumer appeared. The clause refusing to call
+> `string/levenshtein@1` from here still holds and its second reason no longer applies: it is not a
+> question of taking `packages/cli/` across the frontier `source.ts` holds, because this is not in
+> `packages/cli/`. The first reason - that typo tolerance buys the behaviour the whole rule exists to
+> refuse - is the one that decided it and it is untouched.
 >
 > **And the repair this record prescribes for a query only a description could have answered - a
 > missing alias - cannot be carried out on the four published contracts.** `identity.searchAliases` is

@@ -1,63 +1,36 @@
 /**
- * The battery over `toopo search`: what a query matches, what it must not, and the order.
+ * The battery over the screen `toopo search` puts on a terminal.
  *
- * It is the fifteenth, and the third to inject into `packages/cli/`. The other two measure what happens to
- * files; this one measures the only command that touches none - and the one whose failure mode is not
- * a broken project but a lost reader.
+ * **It measured the matching rule as well until ADR-0136, and what is left is the half that is a
+ * screen.** The rule - what a query answers, what it must not, and the order - is a function of
+ * `contract-index` and `refusals` and of nothing a client holds, so it moved to
+ * `packages/registry/search.ts` and its eighteen anchors and twenty-one cells went with it, into
+ * `registry-storage`. **They kept their identifiers**, because a mutant is addressed by the pair
+ * `(battery, id)` and never by the id alone, so `S-01` there and `S-19` here name different things
+ * and always did.
+ *
+ * **They went into an existing battery rather than a new one, and the reason is a duplication rather
+ * than a preference.** A battery accounts for every guard of the suite it runs - witnessed or
+ * declared - and `registry-storage` already carries that accounting for the registry's suite, at 182
+ * guard names. A second battery over the same folder would have to state it again, and a second
+ * statement of what a folder holds is the thing that drifts. So the scope of a battery is the folder
+ * and the suite, never the theme, and that battery's name is now narrower than its contents.
  *
  * ---------------------------------------------------------------------------
- * What the mutants are aimed at
+ * What the mutants here are aimed at
  * ---------------------------------------------------------------------------
- *
- * **The silence, first and hardest.** A search that always answers something is the one nobody
- * believes twice, and every way of weakening the matching rule produces exactly that: dropping the
- * requirement that every word be answered, letting the set-aside rule run without its bound, letting
- * a query *extend* a word instead of shortening it. Each of those is a defect that looks like a
- * feature from the inside - it finds more - and the negative half is the only thing that can see it.
- *
- * **The order, on the two queries there is any order to have.** Measured: nought of the eighty-nine
- * aliases and corpus queries answers more than one contract, so a comparator defect is invisible to
- * both of those trials. S-06 and S-07 are aimed at the one guard that can see it.
- *
- * **The refused contract.** Losing its refusal, or attaching the catalogue's one refusal to
- * everything, are opposite defects with the same look: a search that says something about
- * installability. Both are written.
  *
  * **What the reader is handed.** An install line under a contract that cannot be installed is the
  * defect reading the first draft of this output caught by eye, so it gets a mutant rather than a
- * memory.
+ * memory. Losing the mark that says a contract is not installable is the same defect from the other
+ * side, and a summary cut with nothing saying so reads as the whole of what a contract claims.
  *
- * ---------------------------------------------------------------------------
- * Four that survive, and what each one measures by surviving
- * ---------------------------------------------------------------------------
+ * **Three cells and no more, because three is what a screen is.** Everything else this command does
+ * is a decision, and a decision is measured where the decision lives.
  *
- * S-11 to S-14 are declared `survived`, and none of them is a gap. Each is a rule whose effect is
- * unreachable *because of a fact about this catalogue*, and the fact is what the mutant records: a
- * tokeniser applied to both sides cannot be seen from outside; a summary is a sentence and no query
- * covers one; and the address `1` is set aside by a rule written for something else. They are worth
- * more surviving with a reason than deleted, because the reason is about the data and the data will
- * change.
- *
- * Two constants did not survive that treatment and are gone rather than declared. An exactness
- * multiplier moved no result past another at 2 or at 100 - measured on all seven queries this
- * catalogue can order - and a full-query bonus could not either, because nought of eighty-nine
- * aliases and corpus queries answers more than one contract. A number that cannot change an answer at
- * any value is not a rule. **There is no S-08 for that reason**, and the gap is left rather than
- * closed by renumbering, because the identifiers are addresses and a battery's own history is worth
- * one missing number.
- *
- * ---------------------------------------------------------------------------
- * What is not measured, and why the mutant is not written
- * ---------------------------------------------------------------------------
- *
- * **Whether an alias is one somebody would type.** The alias trial proves every declared alias
- * retrieves its own contract first, and no mutant can make it prove more: whether `atoi` is a phrase
- * a JavaScript developer writes is not a fact about this code. It is a judgement about the
- * catalogue, and it is recorded as one.
- *
- * **That `search` reads no project.** It takes a source and a string and returns a value; there is no
- * root, no configuration and no lockfile to remove. A mutant would have to add a parameter, which is
- * not an edit to a body, and the property is held by the signature rather than by a guard.
+ * The numbering starts at S-19 and the gap below it is left rather than closed. The identifiers are
+ * addresses: renumbering them would make every citation of this battery's history point at something
+ * else, and a battery's own past is worth eighteen missing numbers.
  */
 
 import type { Battery, Mutant } from './run.ts'
@@ -68,295 +41,22 @@ const UNDER: ArmUnderTest = { arm: 'S', asCommitted: 'as-committed', blinded: []
 
 const { sameOnEveryLens } = mutantsOn(UNDER)
 
-const searchFile = (find: string, replace: string) => ({ file: 'search.ts', find, replace })
 const reportFile = (find: string, replace: string) => ({ file: 'report.ts', find, replace })
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
 // ---------------------------------------------------------------------------
 
-const EVERY_WORD_MUST_BE_ANSWERED = `  if (answered.length !== words.length && !namedByWhatTellsThemApart(fields, answered, spread)) {`
-
-const SOMETHING_THE_CONTRACT_CHOSE_MUST_HAVE_ANSWERED = `  if (!hits.some((hit) => hit !== null && DELIBERATE.has(hit.field.kind))) return null`
-
-const A_WORD_TELLS_THEM_APART_BELOW_A_CEILING = `const TELLS_THE_CONTRACTS_APART = 2`
-
-const A_FIELD_KEEPS_ONE_BACK_ONLY_WHEN_IT_HAS_THREE = `const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 3`
-
-const THE_SPREAD_COUNTS_THE_DELIBERATE_FIELDS = `    const declared = fieldsOf(entry).filter((field) => DELIBERATE.has(field.kind))`
-
-const A_SHORTENING_GOES_ONE_WAY = `  (asked.length >= MINIMUM_PREFIX && held.startsWith(asked))`
-
-const A_PLURAL_IS_ONE_TRAILING_S = `  singular(asked) === singular(held) ||`
-
-const A_SHORT_WORD_IS_NOT_SHORTENED = `  word.length > MINIMUM_PREFIX && word.endsWith('s') ? word.slice(0, -1) : word`
-
-const THE_MINIMUM = `const MINIMUM_PREFIX = 4`
-
-const A_NAME_OUTRANKS_AN_ALIAS = `  name: 100,`
-
-const BEST_FIRST = `        : second.score - first.score,`
-
-const ONLY_A_DELIBERATE_FIELD_IS_NAMED_IN_FULL = `const DELIBERATE: ReadonlySet<MatchedField> = new Set<MatchedField>(['name', 'export', 'alias'])`
-
-const THE_NAME_IS_THE_RENDERED_ADDRESS = `    { kind: 'name', text: rendered, words: wordsOf(rendered) },`
-
-const THE_EXPORTS_ARE_A_FIELD = `    ...entry.exports.map((held) => ({`
-
-const THE_ALIASES_ARE_A_FIELD = `    ...entry.searchAliases.map((alias) => ({`
-
-const CAMEL_CASE_IS_SPLIT = `    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')`
-
-/**
- * The refusal moved into `displayed`, which is where the catalogue listing reads it too.
- *
- * Two screens show a contract now - a search result and the whole catalogue - and attaching a
- * refusal to the wrong one is a defect with no symptom, because every result would carry a
- * plausible-looking reason. One of the two would otherwise have to be trusted to have got it right
- * on its own, so the line lives once and this anchor follows it.
- */
-const THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT = `  refusal: refusals.find((refusal) => sameContract(refusal.address, entry.address)) ?? null,`
-
-const AN_UNKNOWN_WORD_IS_ONE_NO_ENTRY_ANSWERS = `    entries.every((entry) => bestHit(word, fieldsOf(entry)) === null),`
-
 const A_REFUSED_CONTRACT_IS_OFFERED_NO_INSTALL_LINE = `      ? first.installable
         ? [\`\${INDENT}\${THE_INVOCATION} add \${first.address.name}\`, '']
         : []`
-
 const THE_MARK_SAYS_IT_IS_NOT_INSTALLABLE = `  \`\${INDENT}\${renderContract(result.address)}\${result.installable ? '' : '   not installable'}\`,`
-
 const A_SUMMARY_IS_CUT_RATHER_THAN_DROPPED = `  return [...lines.slice(0, most - 1), \`\${lines[most - 1] as string}...\`]`
 
-export const mutants: readonly Mutant[] = [
+const mutants: readonly Mutant[] = [
   // -------------------------------------------------------------------------
   // The silence: every way of making a search answer more than it should
   // -------------------------------------------------------------------------
-
-  sameOnEveryLens(
-    'S-01',
-    'drops the rule that every word of the query must be answered, so a contract matches on the ' +
-      'words it happens to share - `sort array` answers `array/group-by@1` to somebody looking for a ' +
-      'sorter, and eleven of the twenty queries the catalogue cannot answer come back with something',
-    [searchFile(EVERY_WORD_MUST_BE_ANSWERED, `  if (false) {`)],
-    killed([
-      'a-query-the-catalogue-cannot-answer-answers-nothing',
-      'a-corpus-of-real-queries-ranks-the-right-contract-first',
-    ]),
-  ),
-
-  sameOnEveryLens(
-    'S-02',
-    'lets a word be set aside without the remainder naming anything in full, which is the same ' +
-      'widening arrived at from the other side: the bound is what stops setting a word aside from ' +
-      'turning every query into its most forgiving reading',
-    [
-      searchFile(
-        EVERY_WORD_MUST_BE_ANSWERED,
-        `  if (answered.length !== words.length && false) {`,
-      ),
-    ],
-    killed(['a-query-the-catalogue-cannot-answer-answers-nothing']),
-  ),
-
-  sameOnEveryLens(
-    'S-03',
-    'answers a query with no words in it, so `toopo search "   "` is the whole catalogue. **The ' +
-      'guard it reddens was written because this mutant survived**: the check is unreachable through ' +
-      'the ordinary path - a query whose words are all unanswered already fails the rule above it - ' +
-      'and the empty query is the one input that reaches it. The line it takes away now carries a ' +
-      'second bound as well, which is why it reddens two guards rather than one',
-    [searchFile(SOMETHING_THE_CONTRACT_CHOSE_MUST_HAVE_ANSWERED, `  if (false) return null`)],
-    killed([
-      'a-query-with-no-words-answers-nothing',
-      'a-word-only-a-summary-carries-answers-nothing-on-its-own',
-    ]),
-  ),
-
-  sameOnEveryLens(
-    'S-04',
-    'lets a query *extend* a word the catalogue carries instead of only shortening it - the ' +
-      'symmetric prefix this file was first written with, which answers `stringify` with all three ' +
-      'contracts carrying `string` and `datepicker` with `date/add@1`',
-    [
-      searchFile(
-        A_SHORTENING_GOES_ONE_WAY,
-        `  (asked.length >= MINIMUM_PREFIX && held.startsWith(asked)) ||\n` +
-          `  (held.length >= MINIMUM_PREFIX && asked.startsWith(held))`,
-      ),
-    ],
-    killed(['a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not']),
-  ),
-
-  sameOnEveryLens(
-    'S-05',
-    'drops the minimum length, so a three-letter word reaches across the catalogue and `add`, `url` ' +
-      'and `key` each answer whatever they happen to start',
-    [searchFile(THE_MINIMUM, `const MINIMUM_PREFIX = 1`)],
-    // Measured rather than predicted: this does *not* widen into the negative half. What it breaks is
-    // the corpus, because a one-letter prefix makes some other contract answer first.
-    killed([
-      'a-corpus-of-real-queries-ranks-the-right-contract-first',
-      'every-declared-alias-finds-its-own-contract-first',
-    ]),
-  ),
-
-  // -------------------------------------------------------------------------
-  // The order, on the two queries there is any order to have
-  // -------------------------------------------------------------------------
-
-  sameOnEveryLens(
-    'S-06',
-    'sorts worst first, which is invisible to the alias trial and to the corpus - measured, nought ' +
-      'of their eighty-nine queries answers more than one contract - and is the whole reason the ' +
-      'ranking guard exists',
-    [searchFile(BEST_FIRST, `        : first.score - second.score,`)],
-    killed(['a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias']),
-  ),
-
-  sameOnEveryLens(
-    'S-07',
-    'puts an alias above a name, so a word a contract carries in passing outranks the same word in ' +
-      'the name of the contract it belongs to',
-    [searchFile(A_NAME_OUTRANKS_AN_ALIAS, `  name: 20,`)],
-    killed(['a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias']),
-  ),
-
-  // -------------------------------------------------------------------------
-  // What is searched
-  // -------------------------------------------------------------------------
-
-  sameOnEveryLens(
-    'S-09',
-    'stops searching the aliases, which is the whole of what the catalogue declares about how it ' +
-      'expects to be looked for - and the one field this unit exists to make executable',
-    [searchFile(THE_ALIASES_ARE_A_FIELD, `    ...[].map((alias: string) => ({`)],
-    killed([
-      'every-declared-alias-finds-its-own-contract-first',
-      'a-corpus-of-real-queries-ranks-the-right-contract-first',
-    ]),
-  ),
-
-  sameOnEveryLens(
-    'S-10',
-    'stops searching the export names, so somebody typing the symbol they already know - ' +
-      '`parseNumber`, the name in their editor - is told the catalogue has nothing',
-    [searchFile(THE_EXPORTS_ARE_A_FIELD, `    ...[].map((held: { name: string }) => ({`)],
-    killed(['a-corpus-of-real-queries-ranks-the-right-contract-first']),
-  ),
-
-  sameOnEveryLens(
-    'S-11',
-    'searches the bare name instead of the rendered address, so `1` in `number/parse@1` is a word ' +
-      'nothing carries. **It survives, and the reason is the other rule**: `1` is set aside, and what ' +
-      'remains - `number`, `parse` - names the bare name in full, so the query answers anyway. The ' +
-      'rendered address changes what the result scores and not whether it is one, and nothing in this ' +
-      'catalogue can order it differently. Recorded rather than deleted: the address a tool prints is ' +
-      'the address it should match, and the argument for that is not the score.',
-    [
-      searchFile(
-        THE_NAME_IS_THE_RENDERED_ADDRESS,
-        `    { kind: 'name', text: rendered, words: wordsOf(entry.address.name) },`,
-      ),
-    ],
-    survived('unreachable-on-this-catalogue'),
-  ),
-
-  sameOnEveryLens(
-    'S-12',
-    'stops splitting camel case, so `groupBy` is one word wherever it appears. **It survived for ' +
-      'three units and it does not any more, and what changed is not this line.** The reading was ' +
-      'that the split is applied to both sides - one tokeniser reads the query and the field, so ' +
-      'removing it removes it from both and they go on agreeing. That was true while the tokeniser ' +
-      'had one consumer. The matching now counts how many contracts declare each word, over the same ' +
-      'tokenised fields, so the split decides which words tell the contracts apart as well as which ' +
-      'words match - and there its effect is not symmetric, because nothing on the query side is ' +
-      'being counted.',
-    [searchFile(CAMEL_CASE_IS_SPLIT, `    .replace(/([a-z0-9])([A-Z])/g, '$1$2')`)],
-    killed(['a-query-the-catalogue-cannot-answer-answers-nothing']),
-  ),
-
-  sameOnEveryLens(
-    'S-13',
-    'counts a summary among the fields a contract chose. **It survived because naming a summary in ' +
-      'full means typing every word of a sentence**, and the shortest of the five is eighty-five ' +
-      'characters - so the exclusion was a statement nothing could reach. It is reachable now, and ' +
-      'by the cheapest input there is: this set decides a second thing, whether anything the ' +
-      'contract chose answered a word at all, and under this edit one word of one summary is enough. ' +
-      '`toopo search the` becomes the whole catalogue. **The guard that catches it is the only one ' +
-      'that does**, which is what a statement being kept for its own sake looks like when it stops ' +
-      'being unreachable.',
-    [
-      searchFile(
-        ONLY_A_DELIBERATE_FIELD_IS_NAMED_IN_FULL,
-        `const DELIBERATE: ReadonlySet<MatchedField> = new Set<MatchedField>([\n` +
-          `  'name',\n  'export',\n  'alias',\n  'summary',\n])`,
-      ),
-    ],
-    killed(['a-word-only-a-summary-carries-answers-nothing-on-its-own']),
-  ),
-
-  sameOnEveryLens(
-    'S-14',
-    'strips a trailing `s` from any word at all, so `is` becomes `i` and `as` becomes `a`. **It ' +
-      'survives because neither `i` nor `a` is carried by anything those two queries would then ' +
-      'reach**: `a` is a word four summaries hold, so `is` would answer them - and no negative query ' +
-      'here contains `is` without another word that already fails. The bound is kept for the same ' +
-      'reason a bound is always kept, and what this records is that the catalogue does not currently ' +
-      'contain the input that would show it.',
-    [
-      searchFile(
-        A_SHORT_WORD_IS_NOT_SHORTENED,
-        `  word.endsWith('s') ? word.slice(0, -1) : word`,
-      ),
-    ],
-    survived('unreachable-on-this-catalogue'),
-  ),
-
-  sameOnEveryLens(
-    'S-15',
-    'stops reading a plural as its singular, so `arrays`, `numbers` and `dates` answer nothing - a ' +
-      'search that is right about every word it was written for and wrong about how people type',
-    [searchFile(A_PLURAL_IS_ONE_TRAILING_S, `  false ||`)],
-    killed(['a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not']),
-  ),
-
-  // -------------------------------------------------------------------------
-  // The refused contract, and the line the reader is handed
-  // -------------------------------------------------------------------------
-
-  sameOnEveryLens(
-    'S-16',
-    'attaches whatever refusal the registry holds to every result, so four installable contracts ' +
-      'come back carrying an argument against a fifth',
-    [searchFile(THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT, `  refusal: refusals[0] ?? null,`)],
-    killed(['an-installable-contract-carries-no-refusal']),
-  ),
-
-  sameOnEveryLens(
-    'S-17',
-    'drops the refusal from every result, so `Map.groupBy` answers a contract marked not ' +
-      'installable and says nothing about why - which tells the reader the catalogue has no opinion, ' +
-      'where publishing the opinion is the point',
-    [searchFile(THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT, `  refusal: null,`)],
-    killed(['a-refused-contract-is-found-with-the-reason-it-was-refused']),
-  ),
-
-  sameOnEveryLens(
-    'S-18',
-    'names as unknown every word of the query rather than the ones no contract carries, so a miss ' +
-      'that should point at one word points at all of them',
-    // Two earlier spellings of this mutant measured nothing. The first dropped the parameter and left
-    // the body reading it, which threw and reddened seven guards - a mutant that breaks the module
-    // says nothing about the decision it was aimed at. The second filtered on `true` first, which is
-    // the same function. This one keeps every word, which is the defect.
-    [
-      searchFile(
-        AN_UNKNOWN_WORD_IS_ONE_NO_ENTRY_ANSWERS,
-        `    entries.every((entry) => bestHit(word, fieldsOf(entry)) !== undefined),`,
-      ),
-    ],
-    killed(['a-miss-names-the-words-no-contract-carries']),
-  ),
 
   sameOnEveryLens(
     'S-19',
@@ -387,73 +87,6 @@ export const mutants: readonly Mutant[] = [
     [reportFile(A_SUMMARY_IS_CUT_RATHER_THAN_DROPPED, `  return lines.slice(0, most)`)],
     killed(['a-cut-summary-says-that-it-was-cut']),
   ),
-
-  sameOnEveryLens(
-    'S-22',
-    'restores the rule this command shipped with, where every word being answered was enough on its ' +
-      'own - so a summary carries a result and `toopo search a` is the whole catalogue. It is the ' +
-      'defect rather than a weakening of the guard: 37 results over eighteen bare function words, on ' +
-      'a command whose subject is that a search which always answers something is not believed twice',
-    [
-      searchFile(
-        SOMETHING_THE_CONTRACT_CHOSE_MUST_HAVE_ANSWERED,
-        `  if (answered.length === 0) return null`,
-      ),
-    ],
-    killed(['a-word-only-a-summary-carries-answers-nothing-on-its-own']),
-  ),
-
-  sameOnEveryLens(
-    'S-23',
-    'puts the bound back on the phrasing the registry chose: every word counts as one that tells ' +
-      'the contracts apart, and no field may keep any of them back. It is the rule this command ' +
-      'shipped with, so `turn a string into a number` answers nothing again while every other trial ' +
-      'here stays green. **Two edits and not one, because either alone is compensated by the other** ' +
-      '- raise the ceiling and a three-word alias may still keep one word back, which is exactly the ' +
-      'word a rewording drops. That was measured rather than reasoned about: each edit on its own is ' +
-      'caught, and by the corpus rather than by the guard the pair is aimed at.',
-    [
-      searchFile(A_WORD_TELLS_THEM_APART_BELOW_A_CEILING, `const TELLS_THE_CONTRACTS_APART = 5`),
-      searchFile(
-        A_FIELD_KEEPS_ONE_BACK_ONLY_WHEN_IT_HAS_THREE,
-        `const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 99`,
-      ),
-    ],
-    killed([
-      'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
-    ]),
-  ),
-
-  sameOnEveryLens(
-    'S-24',
-    'lets a field of any size keep a telling word back rather than one of three or more, which is ' +
-      'the allowance with nothing bounding it: `javascript sort an array` and `parse yaml` are ' +
-      'admitted, and the query that names its own contract in a sentence stops resolving to it',
-    [
-      searchFile(
-        A_FIELD_KEEPS_ONE_BACK_ONLY_WHEN_IT_HAS_THREE,
-        `const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 1`,
-      ),
-    ],
-    killed([
-      'a-query-the-catalogue-cannot-answer-answers-nothing',
-      'a-corpus-of-real-queries-ranks-the-right-contract-first',
-    ]),
-  ),
-
-  sameOnEveryLens(
-    'S-25',
-    'counts the spread over every field instead of the deliberate ones, so a word is measured by how ' +
-      'many contracts happen to *describe* themselves with it - which puts the whole of English into ' +
-      'the count and takes the meaning out of what is left',
-    [
-      searchFile(
-        THE_SPREAD_COUNTS_THE_DELIBERATE_FIELDS,
-        `    const declared = fieldsOf(entry)`,
-      ),
-    ],
-    killed(['a-word-only-a-summary-carries-answers-nothing-on-its-own']),
-  ),
 ]
 
 export const battery: Battery = {
@@ -461,7 +94,7 @@ export const battery: Battery = {
   contractPath: 'packages/cli',
   vitestConfig: 'packages/cli/vitest.config.ts',
   timeZone: 'UTC',
-  calibrationMutant: 'S-01',
+  calibrationMutant: 'S-19',
 
   arms: [
     {
@@ -482,25 +115,27 @@ export const battery: Battery = {
   unreachableGuards: [],
 
   /**
-   * `packages/cli/` is now one folder measured by four batteries, and this is the three quarters the other
-   * three hold.
+   * `packages/cli/` is one folder measured by four batteries, and this is what the other three hold.
    *
    * `toopo remove` and `toopo list` added twenty-five guards and **all twenty-four that touch a
    * project are here**, which is the cleanest division of the four: the other two batteries each
    * absorbed most of that unit, because a removal parses through the same grammar and plans through
-   * the same arithmetic. A query does neither. The one guard of that unit which is *not* here is the
-   * catalogue listing, and it is not here because this battery reddens it - `toopo search` with no
-   * words is a search command, whatever it answers.
+   * the same arithmetic. A query does neither.
    *
-   * The division is clean because `search` shares nothing with them: it writes no file, reads no
-   * project, and touches neither the plan nor the lockfile. Every guard below is over something a
-   * query cannot reach, and every one of them is probed by `cli-install` or `cli-update`, which is
-   * what makes this a declaration of division rather than a debt.
+   * The division is clean because a screen shares nothing with them: it writes no file, reads no
+   * project, and touches neither the plan nor the lockfile. Every guard below is over something the
+   * three cells here cannot reach, and every one of them is probed by `cli-install` or `cli-update`,
+   * which is what makes this a declaration of division rather than a debt.
    *
-   * The two guards of the argument grammar that `search` added are the exception, and they are not
-   * here: S-22 and S-23 would be their mutants, and the reason they are not written is that the
-   * grammar is `cli-install`'s region and splitting a region across batteries is how two batteries
-   * come to disagree about who probes what.
+   * **Nothing was added below when the matching rule left**, and that is a fact about where the
+   * guards went rather than a claim about coverage: the eleven this battery used to redden by
+   * measuring the rule moved out of `packages/cli/` with the module, so they are collected by another
+   * suite entirely and are neither witnessed here nor missing here. The three that stayed are in
+   * `search.test.ts` beside this file's own subject.
+   *
+   * The two guards of the argument grammar that a query added are the exception, and they are not
+   * here: the reason no mutant is written for them is that the grammar is `cli-install`'s region, and
+   * splitting a region across batteries is how two batteries come to disagree about who probes what.
    */
   unprobedRegions: [
     {

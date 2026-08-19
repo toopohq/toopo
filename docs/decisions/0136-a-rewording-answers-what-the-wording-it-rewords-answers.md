@@ -3,15 +3,15 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/cli/search.ts
+  - packages/registry/search.ts
 confirmed-by:
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-word-only-a-summary-carries-answers-nothing-on-its-own
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-query-the-catalogue-cannot-answer-answers-nothing
-  - battery: cli-search
+  - battery: registry-storage
     guard: a-corpus-of-real-queries-ranks-the-right-contract-first
 ---
 

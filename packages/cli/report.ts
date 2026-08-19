@@ -52,7 +52,7 @@ import { commitChangesSomething } from './reconcile.js'
 import type { Relocation } from './relocate.js'
 import type { Removal } from './remove.js'
 import { listed } from './remove.js'
-import type { Displayed, Result, Search } from './search.js'
+import type { Displayed, Result, Search } from '../registry/search.js'
 
 /**
  * Bytes as a person reads them. Decimal thousands, because that is what a file manager shows and this

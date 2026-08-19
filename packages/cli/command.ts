@@ -100,7 +100,7 @@ import {
   renderUpToDate,
   renderUpdate,
 } from './report.js'
-import { displayed, search } from './search.js'
+import { displayed, search } from '../registry/search.js'
 import type { RegistrySource } from './source.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
@@ -335,7 +335,9 @@ export const run = async (theRegistry: () => RegistrySource): Promise<void> => {
       // working directory. It is a property rather than an accident: looking for a feature comes
       // before having somewhere to put it, and `search` is the first command that says so.
       const { query } = parsed.command
-      const { answer } = await deciding(theRegistry(), (held) => search(held, query))
+      const { answer } = await deciding(theRegistry(), (held) =>
+        search(held.contractIndex(), held.refusals(), query),
+      )
 
       out(renderSearch(answer))
     } else if (parsed.command.name === 'catalogue') {
