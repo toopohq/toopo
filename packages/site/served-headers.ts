@@ -21,6 +21,26 @@
  * over the five, and revalidating one on every request is the cost of a declaration nobody served.
  *
  * ---------------------------------------------------------------------------
+ * And the second declaration nobody served, which is what an answer *is*
+ * ---------------------------------------------------------------------------
+ *
+ * `contentTypeOf` has said since the read API was designed that a blob travels as its own octets and
+ * every other answer as JSON. Nothing turned it into a header either. Measured against the declared
+ * origin at `501e32a`, on one address of each class: **every answer of the read API arrived as
+ * `application/octet-stream` and none of them compressed**, where the pages, the modules and
+ * `llms.txt` all arrived `Content-Encoding: br`. An answer with no extension is a file a host has no
+ * opinion about, and the opinion this repository holds was in a function no deployment read.
+ *
+ * The whole of what this second family buys is the twenty answers that are documents - 210 409 B
+ * against 42 488 B in brotli over the five, measured on the emitted tree. The thirty blobs stay
+ * `application/octet-stream`, which is not an omission: it is `contentTypeOf`'s own arm for the one
+ * endpoint that serves bytes rather than a document about them.
+ *
+ * **What this cannot establish is that a declared type is compressed**, which is a fact about
+ * somebody else's software and is settled by a request against the real deployment - the same limit
+ * the host rule below carries, for the same reason. ADR-0137 carries the reading.
+ *
+ * ---------------------------------------------------------------------------
  * A rule is an endpoint's own address with the address left open
  * ---------------------------------------------------------------------------
  *
@@ -87,7 +107,7 @@
  * software; ADR-0099 carries the measurement.
  */
 
-import { ENDPOINTS, pathTo } from '../registry/endpoints.js'
+import { ENDPOINTS, contentTypeOf, pathTo } from '../registry/endpoints.js'
 import { cacheControlOf, cachePolicyFor } from '../registry/response.js'
 
 /** One block of the file: a URL pattern, and what a response matching it carries. */
@@ -135,7 +155,10 @@ export const theHeaderRules = (): readonly HeaderRule[] => [
   })),
   ...ENDPOINTS.map((endpoint) => ({
     url: pathTo(endpoint, EVERY_ADDRESS),
-    headers: [['Cache-Control', cacheControlOf(cachePolicyFor(endpoint.addressing))]] as const,
+    headers: [
+      ['Cache-Control', cacheControlOf(cachePolicyFor(endpoint.addressing))],
+      ['Content-Type', contentTypeOf(endpoint)],
+    ] as const,
   })),
 ]
 

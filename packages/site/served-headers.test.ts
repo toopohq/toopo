@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
-import { ENDPOINTS, askedAt } from '../registry/endpoints.js'
+import { ENDPOINTS, askedAt, pathTo } from '../registry/endpoints.js'
 import { THE_ORIGIN } from './paths.js'
 import type { HeaderRule } from './served-headers.js'
 import { renderHeaders, theHeaderRules } from './served-headers.js'
@@ -71,6 +71,45 @@ describe('the host is told how to serve every answer', () => {
 
     expect(stale.length).toBe(ENDPOINTS.length - 2)
     expect([...new Set(stale)]).toEqual(['public, max-age=0, must-revalidate'])
+  })
+
+  /**
+   * Every endpoint tells the host what its answers are, and the answer is what `contentTypeOf` says.
+   *
+   * **It is the same defect the cache rule above was written for, on the second declaration this file
+   * derives from.** `contentTypeOf` has said since the read API was designed that a blob travels as
+   * its own octets and every other answer as JSON, and no deployment read it: measured against the
+   * declared origin at `501e32a`, every answer arrived `application/octet-stream` - a file with no
+   * extension is one a host has no opinion about - while the pages and the modules arrived
+   * `Content-Encoding: br`. A type nothing declares is a document nothing compresses.
+   *
+   * **The claim is perturbed and not the derivation.** Asking whether the rule holds
+   * `contentTypeOf(endpoint)` would establish that this file agrees with itself and would pass over a
+   * file that declared the octets for everything. So the two arms are named: exactly the endpoint
+   * that serves bytes carries the octets, and every other carries JSON - which is `serves` read
+   * independently of the function that reads it.
+   */
+  it('every-endpoint-tells-the-host-what-its-answers-are', () => {
+    const rules = aboutAPath()
+
+    expect(rules.length).toBe(ENDPOINTS.length)
+    expect(rules.filter((rule) => valueOf(rule, 'Content-Type') === null).map((rule) => rule.url)).toEqual([])
+
+    const octets = ENDPOINTS.filter((endpoint) => endpoint.serves === 'served bytes').map(
+      (endpoint) => pathTo(endpoint, '*'),
+    )
+
+    expect(
+      rules
+        .filter((rule) => valueOf(rule, 'Content-Type') === 'application/octet-stream')
+        .map((rule) => rule.url),
+    ).toEqual(octets)
+    expect(
+      rules
+        .filter((rule) => !octets.includes(rule.url))
+        .filter((rule) => valueOf(rule, 'Content-Type') !== 'application/json')
+        .map((rule) => rule.url),
+    ).toEqual([])
   })
 
   /**
