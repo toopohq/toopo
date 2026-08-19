@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { renderContract } from './address.js'
 import { localReadApi } from './local-read-api.js'
+import type { ServedIndex, ServedIndexEntry, ServedRefusals } from './response.js'
 import type { Search } from './search.js'
 import { answers, search, spreadOverTheCatalogue, wordsOf } from './search.js'
 
@@ -24,26 +25,45 @@ import { answers, search, spreadOverTheCatalogue, wordsOf } from './search.js'
  */
 
 /**
- * The two answers a search reads, taken once for the whole file.
- *
- * `localReadApi()` serialises five contracts and reads their files every time it is called, and these
- * trials ask a few hundred questions - measured on the installer's stand-in, a source per query took
- * the corpus past a thirty-second timeout.
+ * The two answers a search reads, built at the first question and kept.
  *
  * **It is the registry's own reader rather than either client's stand-in**, which is what this file
  * moving here is about: the matching rule is a function of `contract-index` and `refusals` and of
  * nothing else, so the trial holds those two answers and no port at all. There is no warming step and
  * no view that could quietly answer *the catalogue is empty*, because there is nothing between the
  * decision and the data.
+ *
+ * **It is lazy rather than taken at module load, and a battery is what says why.** Built at load,
+ * this file cannot *start* when a mutant breaks the serialisation it reads - so instead of eleven red
+ * guards there are eleven guards that were never collected, which is a report indistinguishable from
+ * a smaller suite. Measured the first time this battery ran here: under `I-01` the registry suite
+ * reported 359 tests where the unmutated arm reported 370, and `assertWholeSuiteRan` refused the run
+ * on exactly that difference. Reached from inside a guard, the same mutant reddens the guard, which
+ * is what a mutant is for.
+ *
+ * `localReadApi()` serialises five contracts and reads their files every time it is called, and these
+ * trials ask a few hundred questions - measured on the installer's stand-in, a source per query took
+ * the corpus past a thirty-second timeout - so it is built once and held.
  */
-const REGISTRY = localReadApi()
-const THE_INDEX = REGISTRY.contractIndex()
-const THE_REFUSALS = REGISTRY.refusals()
+let held: { readonly index: ServedIndex; readonly refusals: ServedRefusals } | null = null
+
+const theAnswers = (): { readonly index: ServedIndex; readonly refusals: ServedRefusals } => {
+  if (held === null) {
+    const registry = localReadApi()
+    held = { index: registry.contractIndex(), refusals: registry.refusals() }
+  }
+
+  return held
+}
 
 /** `search` against those answers, so that each trial reads like the call it measures. */
-const searching = (query: string): Search => search(THE_INDEX, THE_REFUSALS, query)
+const searching = (query: string): Search => {
+  const { index, refusals } = theAnswers()
 
-const INDEX = THE_INDEX.entries
+  return search(index, refusals, query)
+}
+
+const theIndex = (): readonly ServedIndexEntry[] => theAnswers().index.entries
 
 const firstFor = (query: string): string | null => {
   const [best] = searching(query).results
@@ -75,7 +95,7 @@ describe('finding a contract from what somebody typed', () => {
    * needing a new figure.
    */
   it('every-declared-alias-finds-its-own-contract-first', () => {
-    const missed = INDEX.flatMap((entry) =>
+    const missed = theIndex().flatMap((entry) =>
       entry.searchAliases
         .filter((alias) => firstFor(alias) !== renderContract(entry.address))
         .map((alias) => `${renderContract(entry.address)}: "${alias}" -> ${firstFor(alias)}`),
@@ -83,7 +103,7 @@ describe('finding a contract from what somebody typed', () => {
 
     expect(missed).toEqual([])
     expect(
-      INDEX.filter((entry) => entry.searchAliases.length === 0).map((entry) =>
+      theIndex().filter((entry) => entry.searchAliases.length === 0).map((entry) =>
         renderContract(entry.address),
       ),
     ).toEqual([])
@@ -252,9 +272,9 @@ describe('finding a contract from what somebody typed', () => {
    * as loudly as one that swept everything.
    */
   it('a-word-only-a-summary-carries-answers-nothing-on-its-own', () => {
-    const declared = [...spreadOverTheCatalogue(INDEX).keys()]
+    const declared = [...spreadOverTheCatalogue(theIndex()).keys()]
     const onlyDescribed = [
-      ...new Set(INDEX.flatMap((entry) => wordsOf(entry.summary))),
+      ...new Set(theIndex().flatMap((entry) => wordsOf(entry.summary))),
     ].filter((word) => !declared.some((held) => answers(word, held)))
 
     expect(onlyDescribed.length).toBeGreaterThan(20)
