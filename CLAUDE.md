@@ -58,9 +58,11 @@ is 11 236 B and 3 267 B stripped, and across the change the front page goes 11 7
 refused: it buys 3 264 B per page after the first, against a round trip, an address no listing names,
 and a `.css` falling through to the host's four-hour default where pages are served `max-age=0` — a
 stale script is a control that does nothing, a stale stylesheet is the page. **The argument for a file
-was that the sheet is heavy; it is 3 267 B.** Not a pixel moved, and a browser's own parser says so:
-both sheets through `CSSStyleSheet.replaceSync`, `cssRules` compared on serialised `cssText`, **169
-rules each and zero differing**, the probe perturbed twice before it was believed. That is a
+was that the sheet is heavy; it is 3 267 B.** Not a pixel moved, and a browser is what says so, twice:
+both sheets through `CSSStyleSheet.replaceSync` give **169 rules each and zero differing**, and the
+heaviest page rendered at 1440 with the `style` element swapped between them gives **627 elements,
+520 computed properties each, zero differing, 13 128px tall either way** — each probe perturbed twice
+before it was believed. That is a
 verification taken once and never a guard, and ADR-0141 says which of the two it is so nobody promotes
 it. **The blind spot is published**: a removal taking one declaration out of the middle of a rule,
 braces balanced, is invisible to all three guards, and the total form is the parser the browser lent.

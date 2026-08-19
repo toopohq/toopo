@@ -140,6 +140,17 @@ nothing. With one declaration taken out of the middle of `:root` it reports one 
 names `--the-shortest-line: 45;`; with `main.door` removed it reports 168 rules against 169 and eight
 differing; restored, zero.
 
+**And then the same comparison was taken on a rendered page rather than on a parsed sheet**, which is
+the stronger reading and the one that answers *not a pixel*. `string/slugify@1` — the heaviest page —
+was loaded at 1440 with both sheets available, and every element fingerprinted by its bounding box and
+by all 520 of its computed properties, with the `style` element's text swapped between the two:
+**627 elements, zero differing, and a page 13 128px tall either way.** Perturbed twice again — one
+declaration removed from the middle of `:root`, and `--s` moved from `.25rem` to `.26rem` — each
+reports all 627 elements differing, and restoring gives zero.
+
+That second reading is what makes the blind spot below a statement about the *suite* and not about
+this change: the declaration a guard cannot see removed here moves 627 elements, and a browser said so.
+
 **It is a verification and never a guard, and the distinction is the point.** The suite has no browser
 and stage rule 3 admits one only where the mechanism keeping a tool out of the product is executable.
 A reading taken once says the change was sound; a guard says it stays sound, and nothing here can say
