@@ -339,6 +339,50 @@ ul.menu a { color: var(--body); text-decoration: none }
 ul.menu a:hover { color: var(--accent) }
 ul.menu .here { color: var(--dim) }
 
+/* The field is a phrase and never a paragraph, so it is the shortest line this palette declares -
+   a length already argued for as one somebody reads across, rather than a width chosen for a box.
+   It grows to that and stops, which leaves the menu where it was. ADR-0137. */
+.masthead .search { position: relative; flex: 0 1 var(--aside); min-width: 0 }
+.masthead .search input {
+  width: 100%; font-family: var(--mono); font-size: var(--t5); line-height: var(--the-line);
+  color: var(--ink); background: var(--paper); border: 1px solid var(--rule);
+  padding: var(--s1) var(--s2);
+}
+/* The accent means *you can act on this*, which is exactly what a focused field is. ADR-0115. */
+.masthead .search input:focus-visible { outline: none; border-color: var(--accent) }
+.masthead .search input::placeholder { color: var(--dim) }
+
+/* A panel over the page rather than in it: the masthead is sticky, so results that pushed the
+   document down would move the text a reader was reading. Its ceiling is the room under the bar and
+   not a number - the bar's own height, taken off the viewport, with one gap left below. */
+.answers:empty { display: none }
+.answers {
+  position: absolute; top: calc(100% + var(--s1)); left: 0; right: 0; z-index: 30;
+  max-height: calc(100vh - var(--the-sticky-bar) - var(--s6)); overflow-y: auto;
+  background: var(--paper); border: 1px solid var(--rule); padding: var(--s2);
+}
+.answers .why { font-size: var(--t5); color: var(--dim); margin: 0 0 var(--s2) }
+.answers .why:last-child { margin-bottom: 0 }
+ul.examples { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--s1) }
+ul.examples button {
+  font-family: var(--mono); font-size: var(--t5); color: var(--body);
+  background: none; border: 1px solid var(--rule); padding: var(--s1) var(--s2); cursor: pointer;
+}
+ul.examples button:hover { color: var(--accent); border-color: var(--accent) }
+/* A result is one target and not three, so it is a block link with its parts stacked inside it. */
+a.answer { display: block; text-decoration: none; padding: var(--s2); color: var(--body) }
+a.answer:hover { background: var(--wash) }
+a.answer .name { display: block; font-family: var(--mono); font-size: var(--t5); color: var(--ink) }
+a.answer .summary { display: block; font-size: var(--t5); color: var(--body) }
+a.answer .mark { display: block; font-size: var(--t6); color: var(--dim) }
+
+/* A label a screen reader hears and a sighted reader does not, which is what the field's own
+   placeholder cannot be: a placeholder disappears the moment somebody types. */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
 /* The column is placed by the grid and never by source order, because the two answer different
    questions. A reader on a phone gets the page and then the navigation; a reader on a laptop gets the
    navigation on the left of it. Placing it puts the content first in the DOM, which is what a screen

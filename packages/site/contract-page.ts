@@ -67,7 +67,7 @@ import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
 import { literal } from './literal.js'
 import { inline, marked, paragraph } from './marks.js'
-import { THE_ENTRY_POINT, THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
+import { THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
 import type { PlaygroundField } from './playground.js'
 import { playgroundOf, theCallOf, whatATextFieldCannotCarry } from './playground.js'
 
@@ -886,16 +886,6 @@ export const contractPage = (
          */
         beside(own, here, domains, [theRail(halves)]),
       ),
-
-      /**
-       * Last, and carrying no content of its own: a `script` node holds attributes and no children,
-       * so the rule that no node of this document carries raw markup survives the playground intact.
-       * Both projections see an element with nothing in it, which is exactly what it is.
-       */
-      el('script', {
-        type: 'module',
-        src: `${rootFrom(own)}${THE_ENTRY_POINT}`,
-      }),
     ],
   }
 }

@@ -61,10 +61,34 @@ export const asABrowserModule = (typescript: string): string =>
  */
 export const THE_BROWSER_GRAPH: readonly string[] = [
   'packages/site/start.ts',
+  'packages/site/searching.ts',
+  'packages/registry/search.ts',
+  'packages/registry/address.ts',
+  'packages/catalogue/identifier.ts',
   'packages/site/playground.ts',
   'packages/site/read-literal.ts',
   'packages/site/literal.ts',
   'packages/registry/value.ts',
+]
+
+/**
+ * The modules a page loads before a reader has done anything, as against the ones it waits for.
+ *
+ * Every page carries the search, and four of the thirteen carry a playground. `start.ts` reaches the
+ * playground through `await import` for that reason, so the nine pages with no form on them fetch
+ * none of it. A static import would have put both on every page the day the masthead gained a field,
+ * and the playground is the larger half - `build.ts` prints what each module weighs.
+ *
+ * It is declared rather than derived because it is a claim about *when*, and nothing in a module
+ * graph carries that: `every-page-loads-the-search-and-only-a-contract-page-loads-the-playground` is
+ * what holds the two together, by reading which specifiers survive stripping in which file.
+ */
+export const LOADED_BEFORE_A_READER_ACTS: readonly string[] = [
+  'packages/site/start.ts',
+  'packages/site/searching.ts',
+  'packages/registry/search.ts',
+  'packages/registry/address.ts',
+  'packages/catalogue/identifier.ts',
 ]
 
 /**

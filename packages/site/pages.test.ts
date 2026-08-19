@@ -11,7 +11,9 @@ import {
 import { THE_INVOCATION, contractUrl, renderCase, renderContract } from '../registry/address.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
+import { search } from '../registry/search.js'
 import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
+import { THE_EXAMPLES } from './chrome.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import { escapedForMarkdown, readingOf, toHtml, toMarkdown, toText, wordsOf } from './document.js'
 import { literal } from './literal.js'
@@ -793,6 +795,64 @@ describe('the site', () => {
         underEachHeading(page(pageOf(held.contract.address))).get('Try it on your own input'),
       ).toContain('What you type into a field is the value')
     }
+  })
+
+  /**
+   * Every page runs the one module this site has, and serves the search as a slot rather than a
+   * control.
+   *
+   * **It is every page since the masthead gained a field**, where it used to be the four with a
+   * playground - so the claim moved from *a contract page runs something* to *this site runs
+   * something*, and the guard moved with it. What is served is a `div` carrying two addresses and no
+   * children: a reader with no JavaScript meets a masthead with nothing extra in it, which is what
+   * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` asks for one floor up.
+   *
+   * **The `input` is asserted absent on every page and not only where a form is**, which is the
+   * neighbouring claim rather than a repetition: the guard above says a contract page serves no
+   * playground field, and this says no page serves a *search* field. They would come apart the day
+   * somebody served the box instead of building it, and only this one would see it.
+   */
+  it('every-page-runs-the-one-module-and-serves-the-search-as-a-slot', () => {
+    const built = [...pages()]
+
+    expect(built.length).toBeGreaterThan(1)
+    expect(
+      built
+        .filter(([path]) => !/<script type="module" src="[^"]*"><\/script>/.test(html(path)))
+        .map(([path]) => path),
+    ).toEqual([])
+    expect(
+      built
+        .filter(([path]) => !/<div class="search" data-search="[^"]+"><\/div>/.test(html(path)))
+        .map(([path]) => path),
+    ).toEqual([])
+    expect(built.filter(([path]) => html(path).includes('<input')).map(([path]) => path)).toEqual([])
+  })
+
+  /**
+   * The three queries the masthead offers before anybody types are three this catalogue answers.
+   *
+   * **An example that finds nothing is the defect a visitor met on the install command** - found by
+   * them, on the first thing they tried, rather than by a sweep. Here it is worse: the example is this
+   * site's own demonstration that describing a need finds a function, so one that answers nothing
+   * disproves the claim it was put there to make.
+   *
+   * Each is required to reach a *different* contract, which is what the set is for. Three examples
+   * that all landed on `string/slugify@1` would answer this guard's first half and show a reader one
+   * thing three times.
+   */
+  it('every-example-the-masthead-offers-is-answered-by-the-catalogue', () => {
+    const index = source.contractIndex()
+    const refusals = source.refusals()
+    const answered = THE_EXAMPLES.map(
+      (query) => [query, search(index, refusals, query).results] as const,
+    )
+
+    expect(THE_EXAMPLES.length).toBeGreaterThan(0)
+    expect(answered.filter(([, results]) => results.length === 0).map(([query]) => query)).toEqual([])
+    expect(
+      new Set(answered.map(([, results]) => renderContract((results[0] as { address: Parameters<typeof renderContract>[0] }).address))).size,
+    ).toBe(THE_EXAMPLES.length)
   })
 
   /**

@@ -39,6 +39,24 @@ const theTree = (): ReadonlyMap<string, string | Buffer> =>
 
 const paths = (): readonly string[] => (published ??= [...theTree().keys()])
 
+/**
+ * A relative address as a browser resolves it: against the folder of the document that carries it.
+ *
+ * Written here rather than reached for, because `paths.ts` composes addresses and never resolves one -
+ * `rootFrom` climbs and this descends, and a function that inverted the other would be the second
+ * statement neither of them needs.
+ */
+const resolvedFrom = (page: string, at: string): string => {
+  const where = page.split('/').slice(0, -1)
+
+  for (const segment of at.split('/')) {
+    if (segment === '..') where.pop()
+    else if (segment !== '.' && segment !== '') where.push(segment)
+  }
+
+  return where.join('/')
+}
+
 /** The characters no Windows filesystem will open a file with, and the separator of the other one. */
 const FORBIDDEN = new RegExp('[<>:"|?*\\\\]')
 
@@ -145,6 +163,43 @@ describe('what a host is given', () => {
    * coverage half - that every answer falls under the rule for its own endpoint - is one screen down;
    * this is the half that says the file is written at all.
    */
+  /**
+   * Every address a page hands its search resolves to a file this tree writes.
+   *
+   * **The claim is perturbed rather than the derivation**, which is the trap ADR-0087 names: asking
+   * whether `data-search` holds what `pathTo` returns would establish that one function agrees with
+   * itself, and it would be green over a tree that writes neither answer. So the address is resolved
+   * the way a browser resolves it - against the folder of the page that declared it - and looked up
+   * in the keys of the emitted tree.
+   *
+   * Two pages of different depth are the reason it is every page rather than one: the front page asks
+   * for `contract-index` and a contract page asks for `../../../contract-index`, and only one of those
+   * spellings can be got wrong by a constant.
+   */
+  it('every-address-a-page-hands-its-search-is-one-the-tree-writes', () => {
+    const held = theTree()
+    const asked = [...held]
+      .filter(([path]) => path.endsWith('.html'))
+      .flatMap(([path, body]) => {
+        const declared = /<div class="search" data-search="([^"]*)"><\/div>/.exec(String(body))
+        if (declared === null) return []
+
+        const where = JSON.parse((declared[1] as string).replaceAll('&quot;', '"')) as {
+          readonly index: string
+          readonly refusals: string
+        }
+
+        return [where.index, where.refusals].map((at) => [path, at] as const)
+      })
+
+    expect(asked.length).toBeGreaterThan(0)
+    expect(
+      asked
+        .filter(([from, at]) => !held.has(resolvedFrom(from, at)))
+        .map(([from, at]) => `${from} asks for ${at}, which is ${resolvedFrom(from, at)}`),
+    ).toEqual([])
+  })
+
   it('the-tree-carries-the-file-the-host-reads-to-serve-it', () => {
     expect(paths().filter((path) => path === THE_HEADERS_FILE)).toEqual([THE_HEADERS_FILE])
   })

@@ -37,7 +37,7 @@ import { emitted } from '../registry/emit.js'
 import { localReadApi } from '../registry/local-read-api.js'
 import { theReferenceModules } from './browser.js'
 import type { Document } from './document.js'
-import { toHtml, toMarkdown } from './document.js'
+import { el, toHtml, toMarkdown } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
 import { theMenu } from './chrome.js'
 import { contractPage } from './contract-page.js'
@@ -52,10 +52,12 @@ import {
   REFUSALS_PAGE,
   WHAT_A_CONTRACT_IS_PAGE,
   domainPageOf,
+  THE_ENTRY_POINT,
   THE_HEADERS_FILE,
   THE_NOT_FOUND_FILE,
   markdownOf,
   pageOf,
+  rootFrom,
 } from './paths.js'
 import { notFoundPage } from './not-found-page.js'
 import { refusalsPage } from './refusals-page.js'
@@ -83,7 +85,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
    */
   const domains = domainsOf(source, heldByTheRegistry(source))
 
-  return new Map<string, Document>([
+  const pages = new Map<string, Document>([
     [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu, theMeasurement())],
     [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
     [WHAT_A_CONTRACT_IS_PAGE, whatAContractIsPage(menu)],
@@ -127,7 +129,35 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
       ),
     ),
   ])
+
+  return new Map([...pages].map(([at, page]) => [at, running(at, page)]))
 }
+
+/**
+ * One page with the module every page runs appended to it.
+ *
+ * **Here rather than in each page's own builder**, for the reason the menu is decided here: this is
+ * the one place that knows what the set of pages is, and seven builders each remembering to append a
+ * script is seven places for the eighth to forget. It used to be one - a contract page appended it
+ * because a contract page was the only one with anything to run - and the masthead gaining a field
+ * made it every page at once.
+ *
+ * **The 404 is not among them and must not be.** It is rendered outside this map, and the reason is
+ * the one `servedBesideItsMarkdown` already carries: that document is served at whatever address a
+ * reader mistyped, so a relative `src` on it resolves somewhere different on every error. A search
+ * field there would be a control pointing at an address that does not exist.
+ *
+ * The node carries attributes and no children, which is what keeps `document.ts`'s rule that no node
+ * of this document holds raw markup true with a script on the page. Both projections see an element
+ * with nothing in it, which is exactly what it is.
+ */
+const running = (own: string, page: Document): Document => ({
+  ...page,
+  body: [
+    ...page.body,
+    el('script', { type: 'module', src: `${rootFrom(own)}${THE_ENTRY_POINT}` }),
+  ],
+})
 
 /**
  * Everything that is deployed, by the path it is deployed at: the pages as they are served, the

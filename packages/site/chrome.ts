@@ -15,31 +15,31 @@
  * had written a link this module had no way to check.
  *
  * ---------------------------------------------------------------------------
- * What is not here, and will be
+ * The field, and why it is a slot rather than a control
  * ---------------------------------------------------------------------------
  *
- * The mock-up this is derived from carries a search field in the masthead, with a placeholder reading
- * *describe what you need…* and a keyboard hint beside it. Search is not built, and the three ways to
- * ship the control anyway were each considered and each refused.
+ * The masthead carries a search field since ADR-0137, and what is *served* is an empty element
+ * carrying the two addresses the catalogue answers at. `start.ts` builds the field into it, and a
+ * reader with no JavaScript meets a masthead with nothing extra in it rather than a box that does
+ * nothing.
  *
- * **Served and inert** is what `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing`
- * already refuses, so that one is settled by a rule this repository keeps rather than by a preference.
+ * **That is the same arrangement the playground already has, and it settles what this header used to
+ * refuse.** Three ways of shipping the control were considered when search was not built. *Served and
+ * inert* is refused by `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing`.
+ * *Served and disabled* is a promise deferred where a reader sees a fault. *A link wearing a search
+ * field's clothes* was the worst: a box carrying `describe what you need…` that answers a click with a
+ * list is a control lying about what it does, and an inert control disappoints where that one
+ * misleads. All three are still refused; none of them is what this is.
  *
- * **Served and disabled** is a promise deferred where a reader sees a fault: nothing on the page says
- * whether the feature is coming or broken, and a control that cannot be used is read as one that has
- * stopped working.
- *
- * **A link wearing a search field's clothes** is the worst of the three and is the one that looks
- * reasonable. A box carrying *describe what you need…* that answers a click with a list is a control
- * lying about what it does - a reader who typed into it before noticing has been told this site can
- * do something it cannot. An inert control disappoints; this one misleads.
- *
- * So the masthead carries no field. What a reader has instead is real: the wordmark is the catalogue,
- * and at five contracts the catalogue *is* the search - `catalogue-page.ts` says so in its own header,
- * and the domains beside it are the shape that survives the catalogue growing past being read at once.
+ * **The addresses are handed over rather than computed in the browser.** `pathTo` is the one statement
+ * of where an answer lives, and reaching it from a browser module would pull `endpoints.ts` in to read
+ * two strings. So they are resolved here, against this page's own depth, exactly as a contract page
+ * hands over the module its playground runs.
  */
 
+import { endpointOf, pathTo } from '../registry/endpoints.js'
 import type { Domain } from './catalogue.js'
+import type { WhereTheCatalogueIs } from './searching.js'
 import type { Attributes, Node } from './document.js'
 import { el, text } from './document.js'
 import {
@@ -76,9 +76,10 @@ export const theMenu = (refused: number): readonly MenuEntry[] => [
 /**
  * A destination as it is reached from one page, or the plain words where it is the page you are on.
  *
- * A link to the page under the reader's cursor is a control that does nothing, one class down from
- * the search field this masthead does not carry. Marking it instead is what tells somebody where they
- * are, and `aria-current` is the declaration for that rather than a class this repository invented.
+ * A link to the page under the reader's cursor is a control that does nothing, which is the class of
+ * thing this masthead refuses whatever it is made of. Marking it instead is what tells somebody where
+ * they are, and `aria-current` is the declaration for that rather than a class this repository
+ * invented.
  */
 const destination = (own: string, page: string, label: string): Node =>
   own === page
@@ -104,8 +105,41 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
         ? text('toopo')
         : el('a', { href: rootFrom(own) }, text('toopo')),
     ),
+    el('div', { class: 'search', 'data-search': JSON.stringify(whereTheCatalogueIs(own)) }),
     el('ul', { class: 'menu' }, ...menu.map((entry) => destination(own, entry.page, entry.label))),
   )
+
+/**
+ * The three queries offered before a reader has typed anything.
+ *
+ * **Every one is measured to answer, and a guard is what keeps that true rather than this sentence.**
+ * An example that finds nothing is the defect a visitor met on the install command - found on the
+ * first thing they tried, by them and not by a sweep - and it is worse here, because the example is
+ * this site's own claim about what describing a need gets you.
+ *
+ * They are three descriptions rather than three identifiers, which is the promise being demonstrated:
+ * somebody who already knows `slugify` does not need a search. Each goes to a different contract, and
+ * each is a sentence somebody would write rather than a label somebody would guess.
+ */
+export const THE_EXAMPLES: readonly string[] = [
+  'turn a title into a url',
+  'convert a string to a number',
+  'add days to a date',
+]
+
+/**
+ * Where the two answers a search reads live, from this page.
+ *
+ * Both come from `pathTo`, which is the only statement of where an answer lives, and both are made
+ * relative to the page that declares them - so a contract page two levels down and the front page ask
+ * the same host for the same file.
+ */
+const whereTheCatalogueIs = (own: string): WhereTheCatalogueIs => ({
+  index: `${rootFrom(own)}${pathTo(endpointOf('contract-index')).slice(1)}`,
+  refusals: `${rootFrom(own)}${pathTo(endpointOf('refusals')).slice(1)}`,
+  root: rootFrom(own),
+  examples: THE_EXAMPLES,
+})
 
 /**
  * The column beside a page: where you are in the catalogue, and then whatever that page adds.

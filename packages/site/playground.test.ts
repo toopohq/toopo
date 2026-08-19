@@ -352,7 +352,20 @@ describe('the playground, against the catalogue it opens on', () => {
 
     const faults = THE_BROWSER_GRAPH.flatMap((relative) => {
       const js = asABrowserModule(readFileSync(join(ROOT, relative), 'utf8'))
-      const specifiers = [...js.matchAll(/from\s+'([^']+)'/g)].map((found) => found[1] as string)
+      /**
+       * Both spellings, because one of them arrived with a hole in this guard.
+       *
+       * `start.ts` reaches the playground through `await import('./playground.js')` so that nine
+       * pages do not fetch it, and a dynamic import carries no `from` - so the edge it adds was
+       * invisible here the moment it was written, and this guard would have stayed green over a
+       * graph naming a module the site does not write. Measured: with only the first pattern, the
+       * playground's four modules are reachable from the entry point and unreferenced by it as far
+       * as this guard could see.
+       */
+      const specifiers = [
+        ...[...js.matchAll(/from\s+'([^']+)'/g)].map((found) => found[1] as string),
+        ...[...js.matchAll(/\bimport\(\s*'([^']+)'\s*\)/g)].map((found) => found[1] as string),
+      ]
 
       return specifiers
         .map((specifier) => posix.join(posix.dirname(relative.replaceAll('\\', '/')), specifier))
