@@ -43,7 +43,7 @@
  */
 
 import { THE_MARKDOWN_FILE } from './paths.js'
-import { STYLE } from './style.js'
+import { THE_SERVED_STYLESHEET } from './served-stylesheet.js'
 
 export type Attributes = Readonly<Record<string, string>>
 
@@ -331,6 +331,10 @@ const THE_ALTERNATE_LINK = `<link rel="alternate" type="text/markdown" href="${T
  * lives in `style.ts`; what is left of it at this end is the `style` element, which is the whole
  * reason the rest of that record can be true of a page served once from a static host.
  * `a-page-loads-nothing-and-runs-nothing` is what holds it.
+ *
+ * **The sheet arrives here already stripped of its prose, and this file does not know that.** What
+ * `served-stylesheet.ts` hands over is one string, exactly as `style.ts` used to hand one over; the
+ * argument for the removal and what it is worth live there, where the removal is. ADR-0141.
  */
 
 export const toHtml = (document: Document): string =>
@@ -344,7 +348,7 @@ export const toHtml = (document: Document): string =>
     `<meta name="description" content="${escapeAttribute(document.description)}">`,
     ...(document.servedBesideItsMarkdown ? [THE_ALTERNATE_LINK] : []),
     ...(document.structuredData === null ? [] : [asJsonLd(document.structuredData)]),
-    `<style>${STYLE}</style>`,
+    `<style>${THE_SERVED_STYLESHEET}</style>`,
     '</head>',
     '<body>',
     document.body.map(renderNode).join(''),

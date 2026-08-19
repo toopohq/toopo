@@ -230,6 +230,14 @@ describe('a page and its two projections', () => {
    * stylesheet moved out into a file - is refused by the second part rather than by the first, because
    * `/site.css` is relative and no absolute address appears. That is checked below on the mutant's own
    * edit rather than argued.
+   *
+   * **This guard's population lost 25 007 B when ADR-0141 stopped serving the stylesheet's comments,
+   * and the loss is nil.** That is a decision rather than a discovery, because this repository has
+   * already paid for a population that shrank while nobody was told - so it is written here where
+   * somebody can disagree with it. The claim is *this page goes and fetches nothing*, and a comment
+   * fetches nothing: what left the sweep was never in the population for what the sweep asserts. A
+   * real `url(` is CSS, it survives the removal, and it is refused exactly as it was before. What
+   * would make this wrong is a served page carrying prose that is not CSS, and there is none.
    */
   it('a-page-loads-nothing-and-runs-nothing', () => {
     const html = toHtml(page(el('p', {}, text('x'))))

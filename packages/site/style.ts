@@ -6,9 +6,10 @@
  * of it - what a page *is* - and this holds what a page *looks like*. Nothing here knows about a node,
  * and nothing there knows about a rule.
  *
- * `document.ts` is the only importer, and writing the string into one `style` element is the whole of
- * the coupling. The two guards over this stylesheet read it back out of the rendered HTML rather than
- * importing it, so they measure what a reader is served and did not move when this did.
+ * `served-stylesheet.ts` is the only importer, and taking the comments out of this string is the whole
+ * of the coupling; `document.ts` writes what that hands back into one `style` element. The four guards
+ * over this stylesheet read it back out of the rendered HTML rather than importing it, so they measure
+ * what a reader is served and did not move when this did.
  */
 
 /**
@@ -28,6 +29,17 @@
  * of magnitude. It is written here rather than acted on because a copy per page is not a
  * problem at this size and because a file would be a second address with a cache policy nothing here
  * derives.
+ *
+ * **What made that paragraph true was measured rather than believed, and the reading moved the
+ * threshold further away.** What a page carries is this sheet with its comments taken out - the prose
+ * below is a maintainer's and never a reader's - which is 3 267 B in brotli against the 11 236 B the
+ * annotated string weighs. A linked file would buy 3 240 B per page after the first and cost a round
+ * trip before the first paint. `served-stylesheet.ts` carries the whole of that comparison beside the
+ * removal that produced it. ADR-0141.
+ *
+ * **So write the reason down here and keep writing it down.** The prose in this file is the reason a
+ * length holds the value it holds, it is what the header of every section below exists for, and it
+ * costs a reader nothing at all.
  *
  * No image, and no web font: ADR-0115 carries what the second refusal costs and what would reverse
  * it, measured rather than assumed.

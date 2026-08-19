@@ -57,6 +57,11 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
 
 const documentFile = (find: string, replace: string) => ({ file: 'document.ts', find, replace })
 const styleFile = (find: string, replace: string) => ({ file: 'style.ts', find, replace })
+const servedStylesheetFile = (find: string, replace: string) => ({
+  file: 'served-stylesheet.ts',
+  find,
+  replace,
+})
 const literalFile = (find: string, replace: string) => ({ file: 'literal.ts', find, replace })
 const contractPageFile = (find: string, replace: string) => ({ file: 'contract-page.ts', find, replace })
 const cataloguePageFile = (find: string, replace: string) => ({ file: 'catalogue-page.ts', find, replace })
@@ -127,7 +132,16 @@ const A_PROJECTION_CARRIES_WHAT_A_READER_MEETS = `    how.prose(document.descrip
 
 const THE_PAGE_DECLARES_ITS_LANGUAGE = `    '<html lang="en">',`
 
-const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${STYLE}</style>\`,`
+const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${THE_SERVED_STYLESHEET}</style>\`,`
+
+const THE_SHEET_IS_STRIPPED_BEFORE_IT_IS_SERVED = `export const THE_SERVED_STYLESHEET = withoutComments(STYLE)`
+
+const NOTHING_ELSE_IS_TAKEN_OUT_WITH_THEM = `  return kept + css.slice(keptFrom)`
+
+const A_STRING_IS_NOT_READ_FOR_COMMENTS = `    if (character === '"' || character === "'") {
+      at = pastTheString(css, at)
+      continue
+    }`
 
 const THE_LIGHT_PALETTE = `  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;`
 
@@ -733,10 +747,16 @@ const mutants: readonly Mutant[] = [
    * none, so it puts one back - and `78rem` is the exact number ADR-0122 took out, arriving a third
    * time on the same element.
    *
-   * The guard's population is every `max-width` this stylesheet declares, and since ADR-0134 all of
-   * them are `100%`. That is not the guard losing its subject: `100%` is the containing block and
-   * bounds nothing, so the guard now says *no box on this site carries a ceiling at all*, and any
-   * length typed anywhere reddens it.
+   * The guard's population is every `max-width` this stylesheet declares. **This paragraph read
+   * *since ADR-0134 all of them are `100%`* and the sweep contradicts it**: measured at `018a2da`,
+   * the six are `100%` four times, `var(--aside)` and `var(--measure)` once each. It was true when
+   * ADR-0134 landed and two ceilings have arrived since, which is a sentence going stale rather than
+   * one written wrong - and nothing said so, because a cell's prose is read by nobody.
+   *
+   * What it was reaching for survives the correction and is the half worth keeping: **every one of
+   * the six is derived**, `100%` being the containing block and the other two names this stylesheet
+   * declares. So no box on this site carries a ceiling nobody argued for, and any length typed
+   * anywhere reddens the guard.
    */
   sameOnEveryLens(
     'W-85',
@@ -1791,6 +1811,75 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['the-page-a-reader-arrives-at-is-a-name-and-two-doors']),
+  ),
+
+  /**
+   * **Three cells over one removal, and each reddens exactly one of its three guards** - which was
+   * measured rather than arranged, and is the whole reason the three guards are not one.
+   *
+   * The removal is the only thing on this site that stands between what a maintainer reads and what a
+   * reader downloads, and it fails in three unrelated ways: it can not happen, it can take something
+   * with it, or it can be wrong about what a comment is. A single cell would have said the removal is
+   * watched and left two of those unwitnessed. ADR-0141.
+   */
+  sameOnEveryLens(
+    'W-92',
+    'serves the stylesheet with its argument still in it, which is 25 007 B of prose about lengths ' +
+      'and contrast written into every page of the tree - 7 969 B per reader in brotli, and nothing ' +
+      'on the rendered page looks wrong because nothing on it is',
+    [
+      servedStylesheetFile(
+        THE_SHEET_IS_STRIPPED_BEFORE_IT_IS_SERVED,
+        `export const THE_SERVED_STYLESHEET = STYLE`,
+      ),
+    ],
+    killed(['the-stylesheet-a-reader-receives-carries-no-comment']),
+  ),
+
+  /**
+   * **The plausible edit, because this unit built it and refused it on a measurement.** Sweeping the
+   * blank line a comment leaves behind buys 21 B in brotli - and it takes a newline no comment
+   * covers, which is a removal nobody declared arriving through the door marked tidiness.
+   *
+   * It is the one cell here that reddens `what-is-taken-out-of-the-stylesheet-is-comments-and-nothing-else`
+   * alone: no comment survives, so the guard above stays green, and the four crafted rows of the guard
+   * below are each one line, so none of them has a blank to sweep.
+   */
+  sameOnEveryLens(
+    'W-93',
+    'tidies the served stylesheet as well as stripping it, taking blank lines nothing declared out ' +
+      'along with the comments that left them - a removal that is right about every comment and ' +
+      'still not a removal of comments',
+    [
+      servedStylesheetFile(
+        NOTHING_ELSE_IS_TAKEN_OUT_WITH_THEM,
+        `  return (kept + css.slice(keptFrom))\n` +
+          `    .split('\\n')\n` +
+          `    .filter((line, index, all) => line.trim() !== '' || (all[index - 1] ?? '').trim() !== '')\n` +
+          `    .join('\\n')`,
+      ),
+    ],
+    killed(['what-is-taken-out-of-the-stylesheet-is-comments-and-nothing-else']),
+  ),
+
+  /**
+   * **The reader anybody writes first, and the two guards beside it are green on it.** With the string
+   * arm gone, a delimiter is a comment wherever it stands - which is what a regular expression over
+   * `/*` and `*` `/` does, and it is correct on this stylesheet to the byte, because the sheet declares
+   * exactly one string and that string carries no delimiter.
+   *
+   * So the cell measures the guard rather than today's sheet: the defect it injects arrives the day
+   * somebody writes `content: "/* … *` `/"`, and on that day the page loses a rule with every static
+   * check in this repository green. That is the shape ADR-0055 prefers - a guard aimed at the right
+   * future moment rather than at what the data happens to hold.
+   */
+  sameOnEveryLens(
+    'W-94',
+    'reads a comment delimiter as a comment wherever it stands, including inside a value - which is ' +
+      'right about every comment this stylesheet holds today and eats the declaration after the ' +
+      'first one anybody writes into a string',
+    [servedStylesheetFile(A_STRING_IS_NOT_READ_FOR_COMMENTS, ``)],
+    killed(['what-this-reads-as-a-comment-is-what-a-browser-reads-as-one']),
   ),
 ]
 

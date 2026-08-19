@@ -240,6 +240,15 @@
  * one failed to redden it. **The census counts guards and cannot count what a guard covers**, which
  * is the sentence this file's own header is about read one level in. ADR-0140.
  *
+ * A twenty-fourth on the stylesheet a reader receives: **one new file under the site's, carrying
+ * three**, which is the tenth's shape - a module of its own gets a file of its own. It is worth a line
+ * for the count rather than the file. Three guards over one removal looked like two too many until
+ * each was seen red: the removal bypassed reddens the first alone, a removal that also sweeps blank
+ * lines reddens the second alone, and a reader that takes a delimiter for a comment inside a value
+ * reddens the third alone. **A guard that no condition reddens by itself is a guard another one
+ * already makes**, and that is a thing this file can be asked for cheaply - one number, three
+ * measurements. ADR-0141.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -371,6 +380,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/published-tree.test.ts': 9,
     'packages/site/read-literal.test.ts': 10,
     'packages/site/served-headers.test.ts': 8,
+    'packages/site/served-stylesheet.test.ts': 3,
     'packages/site/source.test.ts': 8,
   },
 
