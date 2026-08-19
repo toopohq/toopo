@@ -84,7 +84,32 @@ export const LLMS_TXT = 'llms.txt'
 
 export const REFUSALS_PAGE = 'refused/index.html'
 
-export const CATALOGUE_PAGE = 'index.html'
+/**
+ * The page a reader arrives at, which is a door and no longer the catalogue.
+ *
+ * It holds the name and two ways in, and it is the one page of this site with no install command on
+ * it at all: a command belongs to a contract, and this page is about none of them in particular. The
+ * shape of every command at once used to stand here as `add domain/function`, which is a template and
+ * reads as one.
+ */
+export const FRONT_PAGE = 'index.html'
+
+/**
+ * Where the catalogue lives now that the front page is a door.
+ *
+ * **A new address, so a free one**, and nothing is lost by the move: `/` goes on being served and
+ * goes on being written, which is what ADR-0125 requires of it - it changes role and not existence.
+ *
+ * `/catalogue/` rather than `/contracts/`, and the refused candidate had a real argument.
+ * [ADR-0129](../../docs/decisions/0129-what-a-contract-is-has-a-page-and-its-address-is-the-question.md)
+ * turned `/contracts/` down for the page explaining what a contract is, *because a reader looking for
+ * what is a contract would land on what reads as a list of them* - and this is a list of them, so that
+ * refusal points here. What decides against it is one floor up: this project already has a word for
+ * this thing and uses it in `catalogue.ts`, in `catalogue-page.ts`, in every record and in the link
+ * every page carries back here. A second spelling of one thing is the drift the head of this file
+ * exists to refuse. ADR-0140.
+ */
+export const CATALOGUE_PAGE = 'catalogue/index.html'
 
 /**
  * `/method/`, and the word is chosen against two better-looking ones.

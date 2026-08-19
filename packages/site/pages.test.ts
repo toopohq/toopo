@@ -21,6 +21,7 @@ import { search } from '../registry/search.js'
 import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
 import { THE_EXAMPLES } from './chrome.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
+import type { Element, Node } from './document.js'
 import { escapedForMarkdown, readingOf, toHtml, toMarkdown, toText, wordsOf } from './document.js'
 import { literal } from './literal.js'
 import { localSource } from './local-source.js'
@@ -28,12 +29,15 @@ import { inline } from './marks.js'
 import { theCallOf } from './playground.js'
 import {
   CATALOGUE_PAGE,
+  FRONT_PAGE,
   METHOD_PAGE,
   REFUSALS_PAGE,
   WHAT_A_CONTRACT_IS_PAGE,
   domainPageOf,
   linkTo,
   pageOf,
+  rootFrom,
+  urlOf,
 } from './paths.js'
 import { theSite } from './site.js'
 
@@ -156,6 +160,7 @@ describe('the site', () => {
 
     expect([...pages().keys()].sort()).toEqual(
       [
+        FRONT_PAGE,
         CATALOGUE_PAGE,
         METHOD_PAGE,
         REFUSALS_PAGE,
@@ -581,7 +586,7 @@ describe('the site', () => {
      * attribute or a comment, and only a link is something a reader can follow.
      */
     expect(html(CATALOGUE_PAGE)).toContain(
-      `href="${linkTo(pageOf(refused?.address as never))}"`,
+      `href="${rootFrom(CATALOGUE_PAGE)}${linkTo(pageOf(refused?.address as never))}"`,
     )
     expect(toText(page(REFUSALS_PAGE))).toContain(
       renderContract(refused?.address as never),
@@ -814,6 +819,22 @@ describe('the site', () => {
     }
   })
 
+  /**
+   * A figure of the card is a count, and a proportion belongs beside its breakdown rather than in it.
+   *
+   * **Half of it was disabled for the whole of its life, and a mutant is what said so.** The refusal
+   * of the word reads `/\bof\b|\//`, and the two word boundaries were sitting in the file as literal
+   * backspace characters - the collapse an escape suffers when a source is edited through a shell
+   * heredoc rather than through an editor. The file compiled, the guard collected, it went green on
+   * every run, and it refused a slash and nothing else. It was found while a second guard of this same
+   * session was born the same way and stayed green with the defect it exists for injected.
+   *
+   * **The class is worth more than the instance.** Nothing here reads a source for a control character,
+   * and the only reason this one surfaced is that a `\b` written the same way and perturbed the same
+   * afternoon failed to redden. A guard whose text is quietly narrowed does not look narrowed: it looks
+   * like a guard. Seen red before this note was believed, with ` of ` put into a figure's own rendering:
+   * the fault reads `"4 299 of bytes, one file" is one count and not a proportion`.
+   */
   it('every-figure-of-the-card-is-a-quantity-and-a-proportion-sits-with-its-breakdown', () => {
     const figures = (document: Parameters<typeof toText>[0]): readonly string[] => {
       const found: string[] = []
@@ -838,7 +859,7 @@ describe('the site', () => {
         /** A figure is a number and then what it counts, so what comes first is a number or nothing. */
         const value = (/^[\d ]+/.exec(reading) ?? [''])[0].replaceAll(' ', '')
         expect(value, `"${reading}" opens on a quantity`).toMatch(/^\d+$/)
-        expect(reading, `"${reading}" is one count and not a proportion`).not.toMatch(/of|\//)
+        expect(reading, `"${reading}" is one count and not a proportion`).not.toMatch(/\bof\b|\//)
       }
 
       const properties = held.contract.properties.universal
@@ -1010,31 +1031,130 @@ describe('the site', () => {
   })
 
   /**
-   * Every page the site holds is reachable from the front page, in one click or two.
+   * The page a reader arrives at is a name and two doors, and it tells nobody to run anything.
+   *
+   * **It is the third version of that page and the owner said he would not look at a fourth**, so what
+   * this keeps is the decision rather than a property of it: a static element carrying the name, one
+   * way into the catalogue, one way to understand what is in there. A block added to it is the event,
+   * and the event is cheap to cause - every page of this site grew by somebody having one more true
+   * thing to say, which is exactly how the two rejected versions were built.
+   *
+   * **The second half is the defect a visitor actually met.** The first version printed the shape of
+   * every command at once, `add domain/function`, so that no contract was privileged on the page that
+   * represents them all. The constraint was right and its form was a template, which a reader sees.
+   * A command belongs to a contract, so it is on every contract's page and on none of the pages that
+   * are about the catalogue - and `every-command-the-site-tells-a-reader-to-run-carries-the-invocation`
+   * has no opinion here, because it asks whether a command is *runnable* and this asks that there be
+   * none.
+   *
+   * **Written beside the guard above it**, which is about the site staying connected: that one would be
+   * green with a fourth door, a paragraph and a command on this page, because everything it reaches is
+   * still reached. ADR-0140.
+   */
+  it('the-page-a-reader-arrives-at-is-a-name-and-two-doors', () => {
+    const elementsOf = (nodes: readonly Node[]): readonly Element[] =>
+      nodes.filter((node): node is Element => node.kind === 'element')
+
+    const mainOf = (node: Node): readonly Node[] | null => {
+      if (node.kind === 'text') return null
+      if (node.tag === 'main') return node.children
+
+      for (const child of node.children) {
+        const found = mainOf(child)
+        if (found !== null) return found
+      }
+
+      return null
+    }
+
+    const inside = elementsOf(
+      page(FRONT_PAGE)
+        .body.map(mainOf)
+        .find((found) => found !== null) ?? [],
+    )
+
+    // The name, the line under it, and the doors - and no fourth block.
+    expect(inside.map((node) => node.tag)).toEqual(['h1', 'p', 'div'])
+    expect(elementsOf(inside[2]?.children ?? []).map((node) => node.tag)).toEqual(['a', 'a'])
+
+    // And nothing here tells a reader to run anything: a command belongs to a contract.
+    const commands = /toopo (add|remove|update|init|search|list)\b/g
+
+    expect(toText(page(FRONT_PAGE)).match(commands) ?? []).toEqual([])
+  })
+
+  /**
+   * Every page the site holds is reached from the front page by following links, and no link leaves it.
    *
    * **Asked of the anchors in the body rather than of every `href` in the served string**, and the
    * alternate link is what forced the distinction: a page's head now declares that its own Markdown
    * exists, which is an `href` a reader can never click and which this guard duly counted as
    * navigation. The repair is the discipline `document.ts` is built on - ask the value, not the markup -
    * and it makes the guard say what it always meant: *what can somebody follow from here*.
+   *
+   * **A walk and no longer one hop, and the change is what the front page became.** It used to require
+   * the front page to link every other page, which was true while the front page was the catalogue and
+   * is false of a door: `/` offers two ways in and the masthead a third, and everything else is reached
+   * through them. The claim was never *the front page links everything* - it is *no page of this site
+   * is an orphan* - and one hop was the cheapest way to keep it while the site was flat.
+   *
+   * So it follows links from page to page until nothing new is reached, and its red event is stronger
+   * than the old one: a page nobody links to, from anywhere, rather than a page the front page forgot.
+   * **Seen red on it before it was believed**, by registering a page and pointing nothing at it.
+   *
+   * **The second half is what the one-hop form kept by accident and a walk would have dropped.**
+   * Comparing the front page's hrefs against the list of pages refused an address outside the site,
+   * because such an address was in the first list and not in the second; a walk that skipped what it
+   * could not resolve would have lost that silently. So it is stated: every href of every page, and
+   * not only of the one being walked from, resolves to a page of this site. `catalogue-page.ts` names
+   * this guard for exactly that, and the pages have no absolute address to write. ADR-0140.
    */
   it('every-page-is-reachable-from-the-front-page', () => {
-    const followed: string[] = []
+    const linksOf = (path: string): readonly string[] => {
+      const found: string[] = []
+      const walk = (node: Parameters<typeof readingOf>[0]): void => {
+        if (node.kind === 'text') return
 
-    const walk = (node: Parameters<typeof readingOf>[0]): void => {
-      if (node.kind === 'text') return
+        const href = node.attributes['href']
+        if (node.tag === 'a' && href !== undefined) found.push(href)
 
-      const href = node.attributes['href']
-      if (node.tag === 'a' && href !== undefined) followed.push(href)
+        for (const child of node.children) walk(child)
+      }
 
-      for (const child of node.children) walk(child)
+      for (const node of page(path).body) walk(node)
+
+      return found
     }
 
-    for (const node of page(CATALOGUE_PAGE).body) walk(node)
+    /**
+     * A page's links are written from where it stands, so they are resolved from where it stands -
+     * against this site's own origin, which is where they will be resolved for real.
+     */
+    const byHref = new Map([...pages().keys()].map((path) => [`/${linkTo(path)}`, path]))
+    const reached = new Set([FRONT_PAGE])
+    const waiting = [FRONT_PAGE]
+    const leadingNowhere: string[] = []
 
-    expect([...pages().keys()].filter((path) => path !== CATALOGUE_PAGE).map(linkTo).sort()).toEqual(
-      [...new Set(followed)].sort(),
-    )
+    for (const path of pages().keys())
+      for (const href of linksOf(path))
+        if (!href.startsWith('#') && !byHref.has(new URL(href, urlOf(path)).pathname))
+          leadingNowhere.push(`${path} links ${href}`)
+
+    while (waiting.length > 0) {
+      const from = waiting.pop() as string
+      for (const href of linksOf(from)) {
+        const resolved = byHref.get(new URL(href, urlOf(from)).pathname)
+        if (resolved !== undefined && !reached.has(resolved)) {
+          reached.add(resolved)
+          waiting.push(resolved)
+        }
+      }
+    }
+
+    // No orphan: every page is arrived at from the front page by following links.
+    expect([...pages().keys()].filter((path) => !reached.has(path))).toEqual([])
+    // And no link out: an address that is not a page of this site cannot be written on one.
+    expect(leadingNowhere).toEqual([])
   })
 
   /**

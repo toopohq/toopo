@@ -6,7 +6,7 @@ import { contractUrl } from '../registry/address.js'
 import { robotsOf, sitemapOf } from './indexing.js'
 import { localSource } from './local-source.js'
 import {
-  CATALOGUE_PAGE,
+  FRONT_PAGE,
   LLMS_TXT,
   ROBOTS,
   SITEMAP,
@@ -222,7 +222,7 @@ describe('what a crawler reads', () => {
    * the silent shape every guard in this file is written against.
    */
   it('the-index-a-retriever-reads-opens-on-the-front-pages-own-words', () => {
-    const front = pages().get(CATALOGUE_PAGE) as NonNullable<ReturnType<ReturnType<typeof theSite>['get']>>
+    const front = pages().get(FRONT_PAGE) as NonNullable<ReturnType<ReturnType<typeof theSite>['get']>>
 
     expect(llms()).toContain(`# ${front.title}`)
     expect(llms()).toContain(`> ${front.description}`)

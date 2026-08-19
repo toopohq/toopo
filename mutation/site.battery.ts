@@ -77,6 +77,7 @@ const methodFile = (find: string, replace: string) => ({
 const indexingFile = (find: string, replace: string) => ({ file: 'indexing.ts', find, replace })
 const survivorsFile = (find: string, replace: string) => ({ file: 'survivors.ts', find, replace })
 const siteFile = (find: string, replace: string) => ({ file: 'site.ts', find, replace })
+const frontPageFile = (find: string, replace: string) => ({ file: 'front-page.ts', find, replace })
 const servedHeadersFile = (find: string, replace: string) => ({
   file: 'served-headers.ts',
   find,
@@ -263,13 +264,14 @@ const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import {
   domainPageOf,
   linkTo,
   pageOf,
+  rootFrom,
 } from './paths.js'`
 
 const THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS = `    paragraph(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]),`
 
 const EVERYTHING_IS_READABLE = `  ['User-agent: *', 'Allow: /', '', \`Sitemap: \${THE_ORIGIN}/\${SITEMAP}\`, ''].join('\\n')`
 
-const THE_SITEMAP_IS_THE_PAGES = `  return theCrawlerFiles(listed, root ?? { path: CATALOGUE_PAGE, title: '', description: '' })`
+const THE_SITEMAP_IS_THE_PAGES = `  return theCrawlerFiles(listed, root ?? { path: FRONT_PAGE, title: '', description: '' })`
 
 const A_LINK_IS_THE_FOLDER_AND_NOT_THE_FILE = `export const linkTo = (page: string): string => page.replace(/index\\.html$/, '')`
 
@@ -1205,6 +1207,7 @@ const mutants: readonly Mutant[] = [
   domainPageOf,
   linkTo,
   pageOf,
+  rootFrom,
 } from './paths.js'`,
       ),
     ],
@@ -1249,7 +1252,7 @@ const mutants: readonly Mutant[] = [
         THE_SITEMAP_IS_THE_PAGES,
         `  return theCrawlerFiles(\n` +
           `    listed.filter((page) => !page.path.startsWith('method/')),\n` +
-          `    root ?? { path: CATALOGUE_PAGE, title: '', description: '' },\n` +
+          `    root ?? { path: FRONT_PAGE, title: '', description: '' },\n` +
           `  )`,
       ),
     ],
@@ -1761,6 +1764,33 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['the-ways-a-page-hands-over-are-the-declared-ways-and-the-one-it-prints-runs']),
+  ),
+
+  /**
+   * The page a reader arrives at, given something to run again.
+   *
+   * **It is the version the owner rejected, put back.** The first door printed the shape of every
+   * command at once so that no contract was privileged on the page that stands for all of them; the
+   * constraint was right and a reader sees a template. This edit is that decision reversed in the one
+   * place it was taken, and it is written as a sentence rather than as a block so that it reddens the
+   * half about commands and leaves the half about shape alone - a mutant that broke both would say
+   * which of them is load-bearing for neither.
+   *
+   * `every-command-the-site-tells-a-reader-to-run-carries-the-invocation` has no opinion on it: the
+   * spelling carries the invocation and runs, which is exactly the point - the defect is not that the
+   * command is broken, it is that a command is here at all.
+   */
+  sameOnEveryLens(
+    'W-91',
+    'puts the shape of every command at once back on the page a reader arrives at, where no contract ' +
+      'is named and nothing but a template can be printed',
+    [
+      frontPageFile(
+        `              'is yours.',`,
+        `              'is yours. Start with npx toopo add domain/function.',`,
+      ),
+    ],
+    killed(['the-page-a-reader-arrives-at-is-a-name-and-two-doors']),
   ),
 ]
 

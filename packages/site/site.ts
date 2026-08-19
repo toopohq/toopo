@@ -39,6 +39,7 @@ import { theReferenceModules } from './browser.js'
 import type { Document } from './document.js'
 import { el, toHtml, toMarkdown } from './document.js'
 import { cataloguePage } from './catalogue-page.js'
+import { frontPage } from './front-page.js'
 import { theMenu } from './chrome.js'
 import { contractPage } from './contract-page.js'
 import { domainPage } from './domain-page.js'
@@ -48,6 +49,7 @@ import { localSource } from './local-source.js'
 import { methodologyPage } from './methodology-page.js'
 import {
   CATALOGUE_PAGE,
+  FRONT_PAGE,
   METHOD_PAGE,
   REFUSALS_PAGE,
   WHAT_A_CONTRACT_IS_PAGE,
@@ -86,6 +88,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
   const domains = domainsOf(source, heldByTheRegistry(source))
 
   const pages = new Map<string, Document>([
+    [FRONT_PAGE, frontPage(index, menu)],
     [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu, theMeasurement())],
     [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
     [WHAT_A_CONTRACT_IS_PAGE, whatAContractIsPage(menu)],
@@ -243,7 +246,7 @@ export const theCrawlerFilesOf = (pages: ReadonlyMap<string, Document>): Readonl
    * second statement of it here would be the copy that goes stale.
    * `the-index-a-retriever-reads-opens-on-the-front-pages-own-words` is what says the lookup found it.
    */
-  const root = listed.find((page) => page.path === CATALOGUE_PAGE)
+  const root = listed.find((page) => page.path === FRONT_PAGE)
 
-  return theCrawlerFiles(listed, root ?? { path: CATALOGUE_PAGE, title: '', description: '' })
+  return theCrawlerFiles(listed, root ?? { path: FRONT_PAGE, title: '', description: '' })
 }

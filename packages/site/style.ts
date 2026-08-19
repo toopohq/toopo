@@ -309,8 +309,14 @@ export const STYLE = `
    gutter, so the page is as wide as the screen at every width. The gutter is half the spacing step
    the ceiling used to subtract, so the narrow end of the range is unmoved: at 390 the content was
    335px before this rule changed and is 335px after it. ADR-0134. */
+/* align-content: start, and it is a repair rather than a tidiness. A grid with vertical free
+   space stretches its auto rows into it, so on any page shorter than the window the masthead
+   grows: measured at 1440 on the front page, 247px instead of 56, and growing with the screen
+   because a wider screen makes a shorter page. Every page of this site had been taller than the
+   window until one became a door, which is why nothing had ever seen it. It is a no-op wherever
+   there is no free space, which is every other page. ADR-0140. */
 body {
-  display: grid;
+  display: grid; align-content: start;
   grid-template-columns: var(--s5) minmax(0, 1fr) var(--s5);
   margin: 0; padding: 0 0 var(--s24);
   font: var(--t3)/var(--the-line) var(--sans); color: var(--body); background: var(--paper);
@@ -822,4 +828,34 @@ ul.toc > li.under { padding-left: var(--s3) }
      construction rather than by a constant somebody chose for the right-hand side. */
   .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, var(--measure)) }
 }
+
+/* --- The front page, which is a door: the name, the way in, and the way to understand what is in
+       there. Read from the top like every other page and never centred in the window - centring was
+       tried and refused, because it opens a void whose height is the reader's window rather than
+       anything this page decides. ADR-0140. --- */
+
+main.door { display: grid; align-content: start; gap: var(--s5); padding: var(--s12) 0 var(--s24) }
+main.door h1 { font-family: var(--mono); font-weight: 700; margin: 0 }
+main.door .lede { margin: 0 }
+
+/* Two doors, side by side where there is room for two whole readable lines and stacked where there
+   is not. The floor is --aside, the shortest line this palette declares, which is what a door's
+   second line is: one sentence saying what is behind it. */
+.doors {
+  display: grid; gap: var(--s5); margin: var(--s8) 0 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--aside)), 1fr));
+}
+
+/* A door is the one thing on this page a reader can act on, so it carries the accent - the first of
+   the two things ADR-0115 lets the accent mean. The whole block is the target, so a reader aiming at
+   a door does not have to hit the words. */
+a.door-to {
+  display: grid; gap: var(--s2); align-content: start;
+  text-decoration: none; color: var(--body);
+  border: 1px solid var(--accent); border-left-width: var(--s2);
+  background: var(--target); padding: var(--s5) var(--s6);
+}
+a.door-to:hover { background: var(--paper) }
+a.door-to .name { margin: 0; font-family: var(--mono); font-size: var(--t2); font-weight: 700; color: var(--ink) }
+a.door-to .what { margin: 0; font-size: var(--t4) }
 `.trim()

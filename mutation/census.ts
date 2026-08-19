@@ -231,6 +231,15 @@
  * names and has no opinion about the ones a comment names. It was found by a record naming it in a
  * `confirmed-by`, where the meta suite does look. ADR-0126.
  *
+ * A twenty-third on the door: no new file and one count moved, under the site's - the nineteenth's
+ * shape again. It is worth a line for what the unit found on its way here rather than for what it
+ * cost. The guard it counts was written in the same hour as a second one whose regular expression had
+ * been silently narrowed: a `\b` edited into a source through a shell heredoc lands as a literal
+ * backspace, the file compiles, the guard collects, and it refuses less than it says. Three were in
+ * the tree, two of them committed, and what found them is that a mutant injected against the fresh
+ * one failed to redden it. **The census counts guards and cannot count what a guard covers**, which
+ * is the sentence this file's own header is about read one level in. ADR-0140.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -357,7 +366,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/document.test.ts': 17,
     'packages/site/indexing.test.ts': 11,
     'packages/site/literal.test.ts': 11,
-    'packages/site/pages.test.ts': 39,
+    'packages/site/pages.test.ts': 40,
     'packages/site/playground.test.ts': 15,
     'packages/site/published-tree.test.ts': 9,
     'packages/site/read-literal.test.ts': 10,

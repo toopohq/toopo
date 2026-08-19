@@ -44,7 +44,7 @@ import type { WhereTheCatalogueIs } from './searching.js'
 import type { Attributes, Node } from './document.js'
 import { el, text } from './document.js'
 import {
-  CATALOGUE_PAGE,
+  FRONT_PAGE,
   METHOD_PAGE,
   REFUSALS_PAGE,
   WHAT_A_CONTRACT_IS_PAGE,
@@ -114,7 +114,7 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
     el(
       'p',
       { class: 'wordmark' },
-      own === CATALOGUE_PAGE
+      own === FRONT_PAGE
         ? text('toopo')
         : el('a', { href: rootFrom(own) }, text('toopo')),
     ),

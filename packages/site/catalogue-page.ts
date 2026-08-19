@@ -39,9 +39,22 @@ import {
   domainPageOf,
   linkTo,
   pageOf,
+  rootFrom,
 } from './paths.js'
 
 const NOTHING = {} as const
+
+/**
+ * The href of a page of this site, climbed to from here.
+ *
+ * **It exists because this page moved.** Every link on it used to be `linkTo(page)` and nothing else,
+ * which is right for a document at the root and wrong one folder down - the same six links, unchanged,
+ * became six broken ones the moment the catalogue took an address of its own. It is written once here
+ * rather than at each use for the reason `rootFrom` exists at all: a depth is a consequence of an
+ * address, and a page that repeated the climb six times would be six places to correct if it ever
+ * moved again. ADR-0140.
+ */
+const upTo = (page: string): string => `${rootFrom(CATALOGUE_PAGE)}${linkTo(page)}`
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
@@ -65,7 +78,7 @@ export const cataloguePage = (
   menu: readonly MenuEntry[],
   measured: TheMeasurement,
 ): Document => ({
-  title: 'Toopo — utility functions with a public, executable contract',
+  title: 'The catalogue — Toopo',
   /** A list of contracts is not source code, and the only `@type` this site publishes is. */
   servedBesideItsMarkdown: true,
   structuredData: null,
@@ -87,7 +100,7 @@ export const cataloguePage = (
       el(
         'main',
         NOTHING,
-        line('h1', 'Toopo'),
+        line('h1', 'The catalogue'),
         line(
           'p',
           'Utility functions you copy into your project, each verified against a public, executable ' +
@@ -179,7 +192,7 @@ export const cataloguePage = (
             { class: 'domain' },
             el(
               'a',
-              { href: linkTo(domainPageOf(domain.address)) },
+              { href: upTo(domainPageOf(domain.address)) },
               text(domain.name),
             ),
           ),
@@ -192,7 +205,7 @@ export const cataloguePage = (
                 NOTHING,
                 el(
                   'a',
-                  { href: linkTo(pageOf(one.contract.address)) },
+                  { href: upTo(pageOf(one.contract.address)) },
                   text(shortNameOf(one.contract.address.name)),
                 ),
               ),
@@ -203,7 +216,7 @@ export const cataloguePage = (
                 NOTHING,
                 el(
                   'a',
-                  { href: linkTo(pageOf(one.refusal.address)) },
+                  { href: upTo(pageOf(one.refusal.address)) },
                   text(shortNameOf(one.refusal.address.name)),
                 ),
                 text(' — turned down'),
@@ -268,7 +281,7 @@ export const cataloguePage = (
           el(
             'p',
             NOTHING,
-            el('a', { href: linkTo(METHOD_PAGE) }, text('How we verify, and what it does not prove')),
+            el('a', { href: upTo(METHOD_PAGE) }, text('How we verify, and what it does not prove')),
           ),
         ),
 
@@ -296,7 +309,7 @@ export const cataloguePage = (
                 el(
                   'p',
                   NOTHING,
-                  el('a', { href: linkTo(REFUSALS_PAGE) }, text('What we refuse, and why')),
+                  el('a', { href: upTo(REFUSALS_PAGE) }, text('What we refuse, and why')),
                 ),
               ),
             ]),
@@ -314,9 +327,9 @@ export const cataloguePage = (
          * deferring a paragraph is a gain. ADR-0129.
          *
          * **It carries no link, and that is the page's own guard rather than an omission.**
-         * `every-page-is-reachable-from-the-front-page` compares every `href` here against the set of
-         * pages, so an address outside the site cannot be written on this page at all - and there is
-         * no address to write: this repository has no public remote, and inventing a URL to fill the
+         * `every-page-is-reachable-from-the-front-page` requires every `href` of every page to resolve
+         * to a page of this site, so an address outside the site cannot be written on this page at all
+         * - and there is no address to write: this repository has no public remote, and inventing a URL to fill the
          * gap is the class the whole project spends its length removing. So the file is named and not
          * linked.
          *
@@ -371,7 +384,7 @@ export const cataloguePage = (
             NOTHING,
             el(
               'a',
-              { href: linkTo(WHAT_A_CONTRACT_IS_PAGE) },
+              { href: upTo(WHAT_A_CONTRACT_IS_PAGE) },
               text('A contract is the whole specification of one function'),
             ),
           ),
