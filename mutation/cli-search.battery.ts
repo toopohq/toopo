@@ -140,7 +140,6 @@ export const mutants: readonly Mutant[] = [
     [searchFile(EVERY_WORD_MUST_BE_ANSWERED, `  if (false) {`)],
     killed([
       'a-query-the-catalogue-cannot-answer-answers-nothing',
-      'a-refused-contract-is-found-with-the-reason-it-was-refused',
       'a-corpus-of-real-queries-ranks-the-right-contract-first',
     ]),
   ),
@@ -264,23 +263,28 @@ export const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'S-12',
-    'stops splitting camel case. **It survives because the split is applied to both sides**: the ' +
-      'query and the field go through one tokeniser, so removing it from the tokeniser removes it ' +
-      'from both and they go on agreeing - `groupBy` typed becomes `groupby`, and the alias `groupBy` ' +
-      'becomes `groupby` too. What that measures is the catalogue rather than the code: `array/' +
-      'group-by@1` declares `group by` *and* `groupBy`, so neither spelling depends on the split. A ' +
-      'contract declaring only one of them would, and no mutant here can arrange that.',
+    'stops splitting camel case, so `groupBy` is one word wherever it appears. **It survived for ' +
+      'three units and it does not any more, and what changed is not this line.** The reading was ' +
+      'that the split is applied to both sides - one tokeniser reads the query and the field, so ' +
+      'removing it removes it from both and they go on agreeing. That was true while the tokeniser ' +
+      'had one consumer. The matching now counts how many contracts declare each word, over the same ' +
+      'tokenised fields, so the split decides which words tell the contracts apart as well as which ' +
+      'words match - and there its effect is not symmetric, because nothing on the query side is ' +
+      'being counted.',
     [searchFile(CAMEL_CASE_IS_SPLIT, `    .replace(/([a-z0-9])([A-Z])/g, '$1$2')`)],
-    survived('unreachable-on-this-catalogue'),
+    killed(['a-query-the-catalogue-cannot-answer-answers-nothing']),
   ),
 
   sameOnEveryLens(
     'S-13',
-    'lets a summary be what a query names in full. **It survives because no query covers a summary**: ' +
-      'naming one in full means typing every word of a sentence, and the shortest of the five is ' +
-      'eighty-five characters. The exclusion is a statement about which fields are deliberate, kept ' +
-      'because it is one, and its effect is unreachable on any catalogue whose summaries are ' +
-      'sentences.',
+    'counts a summary among the fields a contract chose. **It survived because naming a summary in ' +
+      'full means typing every word of a sentence**, and the shortest of the five is eighty-five ' +
+      'characters - so the exclusion was a statement nothing could reach. It is reachable now, and ' +
+      'by the cheapest input there is: this set decides a second thing, whether anything the ' +
+      'contract chose answered a word at all, and under this edit one word of one summary is enough. ' +
+      '`toopo search the` becomes the whole catalogue. **The guard that catches it is the only one ' +
+      'that does**, which is what a statement being kept for its own sake looks like when it stops ' +
+      'being unreachable.',
     [
       searchFile(
         ONLY_A_DELIBERATE_FIELD_IS_NAMED_IN_FULL,
@@ -288,7 +292,7 @@ export const mutants: readonly Mutant[] = [
           `  'name',\n  'export',\n  'alias',\n  'summary',\n])`,
       ),
     ],
-    survived('unreachable-on-this-catalogue'),
+    killed(['a-word-only-a-summary-carries-answers-nothing-on-its-own']),
   ),
 
   sameOnEveryLens(
@@ -401,10 +405,20 @@ export const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'S-23',
-    'lets every word count as one that tells the contracts apart, which is the bound stated on the ' +
-      "registry's phrasing again - a reader has to reproduce a label down to its prepositions, and " +
-      '`turn a string into a number` goes back to answering nothing',
-    [searchFile(A_WORD_TELLS_THEM_APART_BELOW_A_CEILING, `const TELLS_THE_CONTRACTS_APART = 5`)],
+    'puts the bound back on the phrasing the registry chose: every word counts as one that tells ' +
+      'the contracts apart, and no field may keep any of them back. It is the rule this command ' +
+      'shipped with, so `turn a string into a number` answers nothing again while every other trial ' +
+      'here stays green. **Two edits and not one, because either alone is compensated by the other** ' +
+      '- raise the ceiling and a three-word alias may still keep one word back, which is exactly the ' +
+      'word a rewording drops. That was measured rather than reasoned about: each edit on its own is ' +
+      'caught, and by the corpus rather than by the guard the pair is aimed at.',
+    [
+      searchFile(A_WORD_TELLS_THEM_APART_BELOW_A_CEILING, `const TELLS_THE_CONTRACTS_APART = 5`),
+      searchFile(
+        A_FIELD_KEEPS_ONE_BACK_ONLY_WHEN_IT_HAS_THREE,
+        `const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 99`,
+      ),
+    ],
     killed([
       'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
     ]),
@@ -438,9 +452,7 @@ export const mutants: readonly Mutant[] = [
         `    const declared = fieldsOf(entry)`,
       ),
     ],
-    killed([
-      'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
-    ]),
+    killed(['a-word-only-a-summary-carries-answers-nothing-on-its-own']),
   ),
 ]
 
