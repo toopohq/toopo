@@ -154,16 +154,8 @@ export const STYLE = `
   --the-methods-drift: 1.04;
   --measure: calc(var(--the-longest-line) * 1ch / (var(--characters-per-ch) * var(--the-methods-drift)));
   --aside: calc(var(--the-shortest-line) * 1ch / (var(--characters-per-ch) * var(--the-methods-drift)));
-  /* What a block of this catalogue may be, for the two that would otherwise take whatever is
-     offered. A column of prose is at most a measure, so a block of two columns of prose is at most
-     two of them and the gap between: a settled case is a call beside an argument, and the use cases
-     are jobs read two abreast. It bounds the use-case grid and, through the shell, the content
-     column. The widest block this catalogue puts on a page is a case row, and measured under these
-     rules it asks for 905px against the 933 this resolves to - so the bound is a ceiling and not a
-     squeeze. */
-  --two-columns: calc(2 * var(--measure) + var(--s10));
-  /* The navigation column, named rather than repeated: the shell's ceiling is the rail plus what
-     stands beside it, and a rail declared in two places is a rail that drifts. */
+  /* The navigation column, named rather than repeated: a rail declared in two places is a rail
+     that drifts. */
   --rail: 15rem;
   /* What one contract of a list needs before another may stand beside it. At a measure a list is two
      abreast exactly where its column is two measures wide and one everywhere else, which is a
@@ -185,16 +177,17 @@ export const STYLE = `
   }
 }
 * { box-sizing: border-box }
-/* A full-bleed column: the track asks its content how wide it wants to be, stops at what a block of
-   this catalogue may be, and the two elements that lay themselves out span the whole width. It is
-   one declaration rather than a wrapper on every page.
+/* A full-bleed column: one gutter, the page, the same gutter, and the two elements that lay
+   themselves out span the whole width. It is one declaration rather than a wrapper on every page.
 
-   It used to ask for a measure, and a measure bounds a line rather than a box - so the four pages
-   with no rail had their card, their code blocks and their lists bound by a rule about prose.
-   Measured at 456ee44: 446px of ink on a 2 560px screen, 17.5% of it. ADR-0122. */
+   The middle track used to stop at two measures, which is a width stated in characters - and a width
+   stated in characters is the thing this site no longer has. What is left is the viewport and the
+   gutter, so the page is as wide as the screen at every width. The gutter is half the spacing step
+   the ceiling used to subtract, so the narrow end of the range is unmoved: at 390 the content was
+   335px before this rule changed and is 335px after it. ADR-0134. */
 body {
   display: grid;
-  grid-template-columns: 1fr fit-content(min(var(--two-columns), calc(100% - var(--s10)))) 1fr;
+  grid-template-columns: var(--s5) minmax(0, 1fr) var(--s5);
   margin: 0; padding: 0 0 var(--s24);
   font: var(--t3)/1.62 var(--sans); color: var(--body); background: var(--paper);
   /* A contract's digest is 64 characters with nothing to break at, and it is prose rather than code:
@@ -210,9 +203,6 @@ body > * { grid-column: 2 }
 body > .masthead, body > .shell { grid-column: 1 / -1 }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 a { color: var(--accent) }
-/* On the element and never on the box around it: a line is counted in the face it is set in. A
-   preformatted block is outside it, because code scrolls rather than wraps. */
-h1, h2, h3, h4, p, li { max-width: var(--measure) }
 h1, h2, h3, h4 { color: var(--ink) }
 h1 { font-size: var(--t1); font-weight: 600; letter-spacing: -.02em; margin: 0 0 var(--s3) }
 /* A page whose title is a direct child of the body has no card and no main to stand it off the
@@ -284,12 +274,13 @@ ul.menu .here { color: var(--dim) }
 /* One shell and three arrangements, each asked for by what the page actually holds rather than by a
    class the page remembers to carry. A shell with a table of contents has a column on both sides of
    the content; one with a column of secondary matter has it on the right; one with neither has the
-   navigation and the content. Every ceiling is its own arrangement's tracks and gutters added up, so
-   the day a track moves the layout follows without a number here being edited.
+   navigation and the content.
 
-   Narrow is one column and has no ceiling to give: the viewport is the bound, and a page that stacks
-   has nothing to centre. ADR-0123. */
-.shell { display: grid; grid-template-columns: minmax(0, 1fr); margin: 0 auto; width: 100% }
+   None of the three has a ceiling. Each carried one until ADR-0134 - its own tracks and gutters added
+   up, which was honest arithmetic over a term stated in characters - and the term is gone, so what
+   bounds every arrangement at every width is the viewport. Narrow is one column and never had a
+   ceiling to give. ADR-0123, ADR-0134. */
+.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }
 .beside { padding: var(--s6) var(--s6) 0 }
 .aside { padding: var(--s6) var(--s6) 0 }
 /* Three blocks in one column, told apart by a line and the space around it. On the adjacent sibling
@@ -333,22 +324,6 @@ ul.siblings > li.here, ul.domains > li.here {
    say - and on the column it said it to everything else too, including the blocks that gain by being
    wide. ADR-0122. */
 main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
-
-/* The half a reader decides on, two abreast where there is room for two.
-
-   The floor is a measure, so a second column appears exactly where it would be a column of prose and
-   never a squeezed one - the same condition ul.contracts folds on, and no width is written for it.
-   The sections are what the grid places; they were flat in the document until this unit, and a run of
-   headings with their bodies between them is not something any layout can put beside anything.
-
-   **A section left alone on its row keeps the measure it has today**, which is what makes this a gain
-   and not an exchange: the arrangement can only ever fill width that was empty. Measured on
-   number/parse@1 at 1440: the opening falls from 2 334px of height to 1 504. ADR-0132. */
-.opening {
-  display: grid; align-items: start; gap: 0 var(--s10);
-  grid-template-columns: repeat(auto-fit, minmax(min(var(--measure), 100%), 1fr));
-}
-.opening > section { min-width: 0 }
 
 /* The column's width, and read across rather than down.
 
@@ -432,13 +407,15 @@ ul.toc > li.under { padding-left: var(--s3) }
    min() is what keeps one column from overflowing a narrow viewport: auto-fit honours the minimum
    even when the container is smaller than it. No backtick in this comment - the whole stylesheet is
    one template literal, and one would end it.
-   The ceiling is the one thing here a track cannot say for itself: auto-fit takes whatever it is
-   offered, so at 2 560 the four cards stood alone in a row 1 892px wide while nothing else on the
-   page passed 950. Two abreast is what the floor was chosen for, and this is that decision holding
-   at every width rather than at 1240. */
+
+   It carried a ceiling of two measures until ADR-0134, and the sentence that argued it is the whole
+   of why it is gone: at 2 560 the four cards stood alone in a row 1 892px wide while nothing else on
+   the page passed 950. What made them stand alone was the page being capped and this block not; with
+   the cap gone the complaint has no subject, and a ceiling whose argument has been withdrawn is a
+   length nobody is deriving any more. */
 .use-cases {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
-  gap: var(--s4); margin: 0 0 var(--s4); max-width: var(--two-columns);
+  gap: var(--s4); margin: 0 0 var(--s4);
 }
 .use-case { border: 1px solid var(--edge); border-radius: 9px; background: var(--card); padding: var(--s5) }
 .use-case h3 { margin: 0 0 var(--s2); font-size: var(--t4) }
@@ -487,35 +464,12 @@ ul.toc > li.under { padding-left: var(--s3) }
   main { padding: var(--s10) 0 0 }
 
   /* Where you are in the catalogue, and then the page. */
-  .shell:has(.beside) {
-    grid-template-columns: var(--rail) minmax(0, 1fr);
-    max-width: calc(var(--rail) + var(--two-columns) + 3 * var(--s6));
-  }
+  .shell:has(.beside) { grid-template-columns: var(--rail) minmax(0, 1fr) }
   .shell:has(.beside) .beside { grid-area: 1 / 1 }
   .shell:has(.beside) main { grid-area: 1 / 2 }
 
-  /* A page whose widest block is a line is bound by the line, and not by the widest block this
-     catalogue is able to hold. The blocks that ask for more than a measure name themselves here,
-     each of them having said so about itself further up; a list of contracts is one of them only
-     where it has a second entry to put in a second column, which is the condition auto-fit itself
-     folds on.
-
-     **fit-content is what asks the content, and it is scoped rather than general for a measured
-     reason.** Under an indefinite constraint repeat(auto-fit, ...) repeats once, so a track that
-     asks a two-abreast list how wide it wants to be is answered *one contract*. Measured at
-     0cec957 with the same declaration unscoped: the string family fell from 909px of ink to 493
-     and the front page from 923 to 505. Every page this selector reaches holds no such list.
-     ADR-0132. */
-  .shell:has(.beside):not(:has(.card, .cases, .chips, .use-cases, .contracts > li:nth-child(2))) {
-    grid-template-columns: var(--rail) fit-content(var(--two-columns));
-    width: fit-content; max-width: 100%;
-  }
-
   /* The page, and then what a reader may skip. */
-  .shell:has(.aside) {
-    grid-template-columns: minmax(0, 1fr) var(--aside);
-    max-width: calc(var(--two-columns) + var(--aside) + 3 * var(--s6));
-  }
+  .shell:has(.aside) { grid-template-columns: minmax(0, 1fr) var(--aside) }
   .shell:has(.aside) main { grid-area: 1 / 1 }
   .shell:has(.aside) .aside { grid-area: 1 / 2 }
 
@@ -539,10 +493,7 @@ ul.toc > li.under { padding-left: var(--s3) }
    The table of contents is what asks for the third column, so a page without one does not declare a
    track it has nothing to put in. */
 @media (min-width: 97rem) {
-  .shell:has(.rail) {
-    grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside);
-    max-width: calc(var(--rail) + var(--two-columns) + var(--aside) + 4 * var(--s6));
-  }
+  .shell:has(.rail) { grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside) }
   /* The column beside the content becomes its two halves, which is the one way a table of contents
      crosses to the other side of the page without leaving its parent in the document. Reparenting is
      what CSS cannot do; dissolving the box around two things already written in order is what it can,
