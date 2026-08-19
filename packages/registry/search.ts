@@ -82,9 +82,16 @@
  *
  * A misspelling answers nothing. Edit distance would answer *something* for every input ever typed,
  * which is the property above given away for a convenience. The catalogue holds a `string/levenshtein`
- * whose reference implementation is three files away, and calling it from here was refused twice
- * over: it would buy the behaviour this file exists to refuse, and it would take `packages/cli/` across the
- * frontier `source.ts` holds, where one module and only one may reach into the working tree.
+ * whose reference implementation is a few folders away, and calling it from here was refused: it would
+ * buy the behaviour this file exists to refuse.
+ *
+ * **That refusal used to have a second reason and this file outlived it.** While the matching rule
+ * lived in `packages/cli/`, reaching for the implementation would also have taken that folder across
+ * the frontier `packages/cli/source.ts` holds, where one module and only one may reach into the
+ * working tree. This is not in that folder any more, so the second reason is gone and the first is
+ * untouched - which is the only one that ever decided it. It is written down rather than deleted,
+ * because a refusal that quietly loses half its argument is one somebody reopens on the half that
+ * remains.
  *
  * What is not a typo is a shortening - `leven` finds `levenshtein` - or an English plural, `arrays`
  * finding `array`. Both are bounded, and the bound was found by measurement: see `answers` below for
