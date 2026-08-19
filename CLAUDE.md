@@ -500,6 +500,28 @@ record declares**, which is a worse thing and has never been named here before.
   is done instead is the convention**: a comment that says a guard keeps something is worth a record's
   `confirmed-by`, and the record is where the citation is resolved. ADR-0126.
 
+- **That a value a guard looks for appears once on the surface it looks at.** A guard that asks
+  whether a figure is *somewhere* on a page is satisfied by any occurrence of it, and a page that
+  states one value twice hands it the copy. Measured at `8038113`:
+  `the-cost-a-page-states-is-what-lands-and-not-what-is-served` requires the installed byte total to
+  appear in a contract page's reading; a new section listed each installed file with its weight, and
+  with one implementation file that weight *is* the total. **W-12 survived** - the cell that points
+  the card's figure at the harness instead of at what lands - while the page read perfectly well.
+
+  **The guard is not too broad and the page is not wrong; what is wrong is that they met.** The
+  defect arrives from a change that does not touch the guard, does not touch what the guard is
+  about, and adds a second true statement of one number somewhere else on the same surface. Nothing
+  reads a page for repeated values, and nothing could sensibly forbid one.
+
+  **It is not the class `assertWholeSuiteRan` is in**, which is a total blind to a composition: there
+  the check is too coarse to see what changed, here the check is exact and a duplicate answers it.
+  **The population is every guard that looks for a value anywhere on a surface where that value can
+  appear more than once**, which today is the figure guards of `pages.test.ts`. What would close it
+  is asking those guards *where* rather than *whether* - the card, not the page - and the price is
+  that a guard about a claim starts naming a block, which is the coupling to a layout that
+  `no-element-runs-into-the-one-beside-it` and its neighbours were written to avoid. Priced and not
+  taken. ADR-0130.
+
 - **That a citation inside a file a published contract freezes ever resolves again.** The two shared
   files carry three identifiers of a history that no longer exists — `3ec99c5…` twice in prose, and
   `THE_ANATOMY_WAS_MEASURED_AT` in `every-contract.ts`, which is a constant and not a comment. They
@@ -844,6 +866,13 @@ record declares**, which is a worse thing and has never been named here before.
   the day it fires. Two instances in two units make it a **cost every unit touching anchored prose
   pays**, and an entry that charges at each passage is treated before one that would charge once.
   The rate is two of two units and the population is unchanged: every cell of every battery.
+
+  **A third unit paid the neighbouring cost and not this one, and the two are worth telling apart.**
+  ADR-0130 moved two renderings into a module of their own and `W-49` and `W-54` stopped applying -
+  reported by `npm run anchors`, because it was their `find` that no longer matched. Their `replace`
+  halves were untouched and still apply. So four anchor failures in three units, of which **two are
+  this entry** and two are the tool doing its job. A count that folded all four together would make
+  this read as twice the rate it has, on an entry whose whole subject is a failure nothing reports.
 
 - **That a battery's disagreement with itself is ever read.** `npm run battery <name>` ends by pairing
   every guard of its suite against the mutants that redden it, and refuses a run where a guard is
@@ -1353,6 +1382,15 @@ of the thesis.
   measured twice, ten units apart, on subjects sharing nothing. It is the cheapest test for a guard
   that cannot fail: ask whether what the guard perturbs is the claim or something computed from it.
   ADR-0087.
+- **Checking that a change does not move what you feared says nothing about what it moves.**
+  ADR-0129 reordered a shared list of seven filenames and checked `npm run freeze`, because the
+  order could have entered a published digest. It had not. What the order *was* load-bearing for was
+  a pin one folder away - `array/group-by@1` had been the only contract whose list was not already
+  sorted, and the reorder made a sort load-bearing for all five - and that declaration went stale
+  with nothing saying so. **What would have caught it is a replay and not a closer reading**, and
+  the replay that did catch it was run a unit later for another reason. So a change that moves a
+  shared declaration replays the batteries of every folder that reads it, and the check that was
+  taken is named beside the one that was not. ADR-0130.
 - **Write the guard beside it.** After ADR-0087's test, this is the cheapest way to find a guard that
   cannot fail, and it is a gesture rather than a rule: naming a *neighbouring* guard forces the first
   one's claim to be said out loud — *this one is about the order, so that one is about something else* —
