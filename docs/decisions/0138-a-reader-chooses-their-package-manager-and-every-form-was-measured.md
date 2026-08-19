@@ -27,7 +27,7 @@ The request is ordinary and the risk in it is not. **This repository has already
 that does not run**, on the surface where somebody is being told to run it: four published surfaces
 printed the bare `toopo`, which answers `command not found` for anybody who has installed nothing —
 which is exactly who a contract page is for. It was the first thing a visitor tried and it failed.
-[ADR-0054](0054-a-rule-in-prose-and-a-rule-a-compiler-keeps.md) is the treatment; `THE_INVOCATION`
+[ADR-0054](0054-make-the-omission-impossible.md) is the treatment; `THE_INVOCATION`
 is the constant that came out of it, and it carries three measured situations in its own comment.
 
 Offering four managers multiplies that surface by four. Three of the four spellings had never been
@@ -58,7 +58,7 @@ dependency, which is what puts it in the way.
 **The control is what makes that a cause rather than a guess.** `yarn dlx cowsay` in the same shell,
 the same minute, exits 0 and prints its cow. Yarn works on that machine and fails on this package.
 Without that reading the failure could have been Yarn's, and a cause named without it is what
-[ADR-0042](0042-a-report-may-not-name-a-cause-it-did-not-measure.md) refuses.
+[ADR-0042](0042-a-diagnostic-may-not-name-a-cause-no-measurement-establishes.md) refuses.
 
 ### Refused: omit yarn
 
