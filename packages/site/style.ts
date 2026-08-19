@@ -375,6 +375,12 @@ ul.menu .here { color: var(--dim) }
 /* A panel over the page rather than in it: the masthead is sticky, so results that pushed the
    document down would move the text a reader was reading. Its ceiling is the room under the bar and
    not a number - the bar's own height, taken off the viewport, with one gap left below. */
+
+/* Empty is the closed state, and it is the whole of the closed state - there is no second way to
+   hide this box. It is where the panel is when nobody is searching, which for most readers of most
+   pages is always. The rule is old and did nothing for its whole life, because the script filled the
+   panel as it built it; start.ts now empties it, and that is what makes this line load-bearing
+   rather than decorative. */
 .answers:empty { display: none }
 .answers {
   position: absolute; top: calc(100% + var(--s)); left: 0; right: 0; z-index: 30;

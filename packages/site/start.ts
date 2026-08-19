@@ -142,17 +142,36 @@ const searchControl = (): void => {
   answers.setAttribute('aria-live', 'polite')
 
   /**
-   * What the reader is shown, and it is never nothing.
+   * What the reader is shown while they are searching, and it is never nothing.
    *
    * An empty query offers the examples, a query the catalogue cannot answer says which words no
    * contract carries, and a query that reaches nobody at all says so - the three shapes
    * `packages/cli/report.ts` prints on a terminal, rendered for a page. **A box that goes blank when
    * a search fails is the failure the whole matching rule is built to avoid**, arriving in the
    * surface instead of in the rule.
+   *
+   * **A reader who is not searching is a different case, and it is `close` below.** This rule is
+   * about a search that answered badly; it was read as being about the panel, and the panel was
+   * therefore never allowed to be empty at all.
    */
   const show = (nodes: readonly Node[]): void => {
     answers.replaceChildren(...nodes)
   }
+
+  /**
+   * What closes the panel, and it is the state the stylesheet has described since the first day.
+   *
+   * `.answers:empty { display: none }` was written for a panel that fills when somebody asks and
+   * empties when they stop, and **nothing ever emptied it**: the control offered the examples as it
+   * was built, so that rule could not apply on any page of this site. Measured at `fccfcc1`, on the
+   * origin and on a local build: a panel of 268 x 157 stood open at rest over the first block of
+   * **ten of the thirteen addresses served** - the title of the front page, of every domain page and
+   * of every contract page, plus the contract's own address - at 390, 768, 1440 and 1920 alike.
+   *
+   * So the repair is the script agreeing with the stylesheet, rather than a second way to hide a box
+   * written beside a first way that was already correct.
+   */
+  const close = (): void => show([])
 
   const line = (tag: string, className: string, words: string): HTMLElement => {
     const node = document.createElement(tag)
@@ -232,8 +251,38 @@ const searchControl = (): void => {
   }
 
   field.addEventListener('input', () => void run())
+  /**
+   * The examples are offered when the field is engaged rather than when the page loads.
+   *
+   * ADR-0137 offers three queries before anybody types, and that is kept whole: a reader who reaches
+   * the field with nothing in it still meets them, and each is still measured to answer. What moves
+   * is that reaching the field is something the reader does. **A panel answering a question nobody
+   * asked, drawn over the name of the page they have just landed on, is not an answer.**
+   *
+   * `run` and not `offerTheExamples`, so that a reader who leaves the field and comes back to a query
+   * they had typed finds its results rather than the examples.
+   */
+  field.addEventListener('focus', () => void run())
+  slot.addEventListener('focusout', (event) => {
+    const moved = event.relatedTarget
+
+    if (!(moved instanceof Node) || !slot.contains(moved)) close()
+  })
+  /**
+   * Escape closes without leaving the field, which is the only dismissal a keyboard has.
+   *
+   * The focus is put back deliberately: an example is a button inside the panel, so closing while one
+   * of them is focused would drop the reader on the document body, a page away from what they were
+   * doing.
+   */
+  slot.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return
+
+    close()
+    field.focus()
+  })
+
   slot.append(label, field, answers)
-  offerTheExamples()
 }
 
 const start = async (): Promise<void> => {
