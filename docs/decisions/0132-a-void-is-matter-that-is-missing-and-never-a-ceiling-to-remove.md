@@ -20,6 +20,22 @@ confirmed-by:
 
 # A void is matter that is missing and never a ceiling to remove
 
+> **The ceiling was removed after all, and by the owner rather than by an argument.**
+> [ADR-0134](0134-a-width-stated-in-characters-and-a-layout-that-follows-the-screen.md) takes out the
+> bound on prose and every length derived from it. That does not retract what is below: this record
+> refused *widening the column* as a repair for a void **while the page was capped**, and it was right
+> — the void moved inside the card, which is measured here and still reproducible. ADR-0134 is a
+> different act, and it is not a repair for a void.
+>
+> **Two things below are now false rather than dated.** The two-abreast opening this record built is
+> gone, so the void it measured has no grid to sit in. And the reopening trigger it wrote for the
+> `97rem` threshold — that the rail cannot share a column with a 905px case row — is unchanged in
+> substance and changed in setting: there is no shell ceiling left for the threshold to be arithmetic
+> against.
+>
+> Its measurements keep their coordinates and were taken at `0cec957`, on a site with a ceiling on
+> prose.
+
 ## Context and Problem Statement
 
 The owner read a contract page on his own screen at 1440 and asked for two things: that the centre

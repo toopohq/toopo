@@ -17,6 +17,20 @@ confirmed-by:
 
 # A wide screen is filled by a column and never by a longer line
 
+> **The title is the half that was overturned.**
+> [ADR-0134](0134-a-width-stated-in-characters-and-a-layout-that-follows-the-screen.md) is the owner
+> deciding, in an inspector and twice, that a wide screen is filled by a longer line: no defined size,
+> the size follows the screen. Measured there at 3840 — the method page's line goes from 69 characters
+> to 663 and its median from 57 to 226, and the same page's ink goes from 13.8% of the screen to 98.9%.
+>
+> **What survives is the column and not the sentence about it.** The two-abreast lists this record
+> built are untouched and now fold at five widths instead of one; `--a-contract-in-a-list` keeps its
+> value and lost its argument, which was arithmetic about a column that no longer has a width. The
+> three shell ceilings tabulated below are gone, `--two-columns` with them.
+>
+> Its reading — 0 of 11 964 prose lines over 75, worst 70 — is true of `81bf9bc` and of no commit after
+> `7c15c69`.
+
 ## Context and Problem Statement
 
 ADR-0122 took every typed ceiling off this site and named, in its own reopening section, the thing it

@@ -13,6 +13,19 @@ confirmed-by:
 
 # A ceiling belongs to the block and never to the column
 
+> **Every ceiling this record derived has been removed, and the sentence in its title is what removed
+> them.** [ADR-0134](0134-a-width-stated-in-characters-and-a-layout-that-follows-the-screen.md)
+> withdrew the bound on prose, and `--two-columns` — twice the same bound, one floor up — went with it,
+> taking the body's middle track, all three shell arrangements and the use-case grid's ceiling. **The
+> rule below is not what was overturned; it is what made the removal legible.** A block owning its own
+> ceiling is exactly why `.use-cases` could lose one: the argument written for it here — *two abreast,
+> which is what the 22rem floor was chosen for* — was a complaint about a block standing wide while the
+> page around it was narrow, and the page is no longer narrow.
+>
+> Every measurement below keeps its coordinate and was taken on a site that had a ceiling on prose. The
+> readings that were **about** that ceiling — 0 of 4 008 prose lines over 75, worst 69 — are true of
+> `456ee44` and are not true now.
+
 ## Context and Problem Statement
 
 The owner opened the site on a wide screen and said everything was centred and squeezed into the

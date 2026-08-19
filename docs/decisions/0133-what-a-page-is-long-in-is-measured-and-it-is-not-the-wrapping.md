@@ -13,6 +13,19 @@ confirmed-by:
 
 # What a page is long in is measured, and it is not the wrapping
 
+> **The wrapping turned out to be worth far more than 3.7%, because what was measured was the wrapping
+> under a ceiling.** This record bounded the repair by widening the column to the declared 75 and
+> re-reading — 594 lines to 572. [ADR-0134](0134-a-width-stated-in-characters-and-a-layout-that-follows-the-screen.md)
+> removed the ceiling instead of widening toward it, and `number/parse@1` at 1440 falls from 580
+> rendered prose lines to 397, its height from 15 901px to 12 081. The 3.7% is exact for the question
+> it was asked and the question had a ceiling in it.
+>
+> **Its prose-line figures are not reproducible and that is recorded rather than repaired.** ADR-0134's
+> probe reproduces every one of the eight heights in the table below **to the pixel**, and the nine-line
+> delta of the removal exactly; it reads the base as 610 → 601 where this record publishes 594 → 585.
+> Neither of the two populations declared in the table above yields 585 — with navigation the count is
+> 601, without it 580. The rendering is identical and the counting differs, and nothing here says how.
+
 ## Context and Problem Statement
 
 [ADR-0130](0130-a-contract-page-publishes-what-its-own-suite-did-not-catch.md) put *What lands in your

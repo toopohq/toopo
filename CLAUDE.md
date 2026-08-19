@@ -209,8 +209,11 @@ change, which is what a derived table of contents buys. ADR-0119.
 **A domain has a page, and every page now says where in the catalogue you are standing.** The level
 between the catalogue and a contract was a 404: `/typescript/string/` is where a reader climbs to from
 a search result, and it is the only unit a navigation can be built on at a thousand contracts. Three
-pages and not four — `array` holds one entry, refused before publication, and a page carrying an empty
-list answers nothing the refusals page answers less well. **Its opening sentence is composed and never
+pages and not four **on the day ADR-0121 landed** — `array` held one entry, refused before publication,
+and a page carrying an empty list answered nothing the refusals page answered less well. **There are
+four now**: ADR-0127 gave the refused contract an address, so `/typescript/array/` has something to
+list and the tree writes 13 pages plus a 404, measured at `ab2765c` off the emission's own count. **Its
+opening sentence is composed and never
 written**: the mock-up's hand-written line would have been a fifth statement of what is in a domain,
 beside the list under it, the index, the sitemap and each contract's summary, and it is the one a
 reader believes. Every term is read off the registry, so a fifth contract lands in that sentence with
@@ -219,15 +222,16 @@ nobody editing it. The column is a *sibling* of the rail rather than a part of i
 a section of the page — and it is placed by the grid rather than reordered, so the document a screen
 reader announces is the one a sighted reader sees. ADR-0121.
 
-**The measure is written in characters and reaches every face, and the ceiling was never held before.**
-Measured at `81bf9bc` over 688 prose elements, one Range per character grouped by line box: **255 lines
-over 75 characters, worst 169**. The rule existed — `body` laid its content out in a 74ch column — and
-`.shell` spanned the whole width by declaration with nothing under it re-establishing one. **The half
-worth keeping is the other one**: `ch` is the advance of `0`, so a container capped in `ch`
-under-constrains anything set smaller than it, and the 169-character line was small print in a wide
-box. The measure is therefore declared on the element that carries the prose. The constant is a
-measurement and not arithmetic, and it carries the method's own drift: density moves when the column
-moves, 1.339 before and 1.393 after, so 1.04 is applied on ADR-0077's rule rather than noted.
+**The measure was written in characters and reached every face, and the ceiling had never been held
+before.** Measured at `81bf9bc` over 688 prose elements, one Range per character grouped by line box:
+**255 lines over 75 characters, worst 169**. The rule existed — `body` laid its content out in a 74ch
+column — and `.shell` spanned the whole width by declaration with nothing under it re-establishing one.
+**The half worth keeping is the other one, and it survives the ceiling's removal**: `ch` is the advance
+of `0`, so a container capped in `ch` under-constrains anything set smaller than it, and the
+169-character line was small print in a wide box. The measure was therefore declared on the element
+that carries the prose, and that declaration is gone — ADR-0134, below. The constant is a measurement
+and not arithmetic, and it carries the method's own drift: density moves when the column moves, 1.339
+before and 1.393 after, so 1.04 is applied on ADR-0077's rule rather than noted.
 
 **It was re-taken when the columns moved, and ADR-0122 holds that reading rather than this line.**
 What is worth carrying here is that the two readings are not the same population: the second sweeps
@@ -269,8 +273,10 @@ bought.** The column of secondary matter needed a width, and the stylesheet had 
 for a year without deriving it: *45 to 75 characters is the span a line stays readable across*, of
 which only the top was a length. **No number entered that file that was not already argued for in
 it.** The same move settled the two-abreast list with no breakpoint at all — `auto-fit` over a floor
-of one measure is two columns exactly where the column is two measures wide — so the value the owner
-will flip is a length in the palette and never a grid to restructure.
+of one measure was two columns exactly where the column was two measures wide — so the value the owner
+will flip is a length in the palette and never a grid to restructure. **The floor is untouched and that
+arithmetic is not**: ADR-0134 took the column's width away, so the list now folds at five widths
+instead of one and the floor keeps its value without keeping its reason.
 
 **Three widths in that stylesheet are typed, and the language is why rather than the author.** `var()`
 is not allowed in a media query's condition, in any browser. The three-column threshold is the
@@ -338,6 +344,37 @@ page is the gap between one block and the next** — 4 161px of 16 461 on `numbe
 1.7 points across four pages — against 707px for the section and 485px for reaching the declared line
 length. The spacing scale is ADR-0115's and this unit was forbidden the layout, so it is written down
 rather than spent.
+
+**A width stated in characters and a layout that follows the screen are contradictory, and the owner
+chose the screen.** He read the site in an inspector and decided twice, with the measurement in front
+of him: no defined size, the size changes with the screen. `h1, h2, h3, h4, p, li { max-width:
+var(--measure) }` is the rule that named it. **What the decision actually reached was four times
+larger, and nobody had ever read it as the same limit**: `--two-columns` was `2 * --measure + gap` —
+the same ceiling stated in characters, one floor up — and it bounded the body's middle track, all
+three shell arrangements and the use-case grid. **A limit derived from a limit that is being removed is
+an orphan**, and this one had survived three units that each added a consumer to it. The two-abreast
+opening ADR-0132 built is gone with it, and the `div` and `section`s that existed only so a grid had
+something to place are gone with that.
+
+**Measured at nine widths over all fourteen files of HTML, in a browser, light and dark.** Before, the
+tree rendered **4 188 prose lines, median 56, worst 69, at 1280 and at 1440 and at 1600 and at 1920 and
+at 2560 and at 3840** — six widths, one reading, because the column was capped and the screen was not.
+After, every width answers differently: at 3840 the tree renders **1 471 lines** and the method page
+falls from 56 665px of height to **16 698**, its ink from 13.8% of the screen to **98.9%**. **Nothing
+breaks**: zero pages scroll sideways and zero blocks overlap at any of the nine widths, and the single
+element painted outside the viewport — the copy control at 390 — reads identically before and after and
+is older than this unit. **What it costs is the line**: the method page's worst goes from 69 characters
+to **663** at 3840 and its median from 57 to 226, and `45 to 75 characters is the span a line stays
+readable across` is still declared in the stylesheet, still true, and now enforced by nothing. Whether
+that wants a ceiling is the owner's to decide and the figures are in the record. ADR-0134.
+
+**Two figures this repository has published cannot be rebuilt, and both were found by trying.**
+ADR-0133's prose-line counts reproduce to neither of the two populations its own table declares — 601
+with navigation, 580 without, against 585 — while every one of its eight heights reproduces **to the
+pixel** and its nine-line delta exactly, so the rendering agrees and the counting does not. And the
+layout debt's *38 geometry declarations* counts three `@media` conditions as declarations. Neither is
+corrected, both being stamped; what replaces them is that the new counts carry the rule they were taken
+by, which is the thing neither of those two had.
 
 **A guard of the site suite had been reddened by nothing since it was written, and the battery said so
 to nobody.** `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported
@@ -623,11 +660,16 @@ record declares**, which is a worse thing and has never been named here before.
   and `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` — and **neither can read
   the one place a width is still typed**, because `var()` is not allowed in a media query's condition
   in any browser and never has been. **The population is the three conditions of `style.ts`**: `52rem`,
-  `64rem` and `97rem`. **Only `97rem` carries the arithmetic it came from**; the other two carry no
-  comment at all, and this entry claimed that each of them did until ADR-0132 went and read them.
-  Nothing compares a threshold with the tracks it separates. The failure is quiet
-  by construction: a threshold that no longer matches its own tracks does not break a page, it moves
-  the width at which the page changes shape, and only a reading at exactly that width would say so.
+  `64rem` and `97rem`. **Not one of the three now carries the arithmetic it came from.** `52rem` and
+  `64rem` never did, and this entry claimed each of them did until ADR-0132 went and read them;
+  `97rem` did, and ADR-0134 removed the term it was summed from — the content column's ceiling, the
+  933 in `240 + 933 + 268 + 96`. The column has no width to add up any more, so the one threshold here
+  that could be checked against its own tracks is now a number with nothing behind it. It is left at
+  its value, because moving it decides when a page gains a third column and that was not ADR-0134's
+  decision. **The entry got worse without moving**, which is the shape rule 3 of this section is
+  about: nothing compares a threshold with the tracks it separates, and the failure is quiet by
+  construction — a threshold that no longer matches its own tracks does not break a page, it moves the
+  width at which the page changes shape, and only a reading at exactly that width would say so.
 
   **What would close it is not a lint and the price is a browser.** Every one of those lengths
   resolves against `ch`, which is a property of the face the reader's own system supplies, so the
@@ -668,11 +710,13 @@ record declares**, which is a worse thing and has never been named here before.
   loses where it matters, **8 548 against the grid's 6 897 at 1240**, which is the ordinary width. That
   is what ADR-0122 chose the grid for, one level down.
 
-  **And the candidate before it was refused on its own principle.** Folding on two measures puts the
-  threshold at `2 * measure + gap`, which is what `--two-columns` *is* by definition — so the fold lands
-  exactly on the container's own ceiling and sub-pixel rounding decides it. **A switch at the micron is
-  not a derived threshold, it is a threshold nobody controls**, and it would have read as the closure of
-  this entry.
+  **And the candidate before it was refused on its own principle.** Folding on two measures put the
+  threshold at `2 * measure + gap`, which is what `--two-columns` *was* by definition — so the fold
+  landed exactly on the container's own ceiling and sub-pixel rounding decided it. **A switch at the
+  micron is not a derived threshold, it is a threshold nobody controls**, and it would have read as the
+  closure of this entry. ADR-0134 deleted `--two-columns`, so that candidate no longer exists to be
+  refused; the refusal is kept because the shape it names — a threshold landing on the length it is
+  derived from — is what the next candidate will be.
 
   **It reopens on the structure and not on a better use of flexbox.** What blocks `97rem` is a property
   of *this* document order, not of CSS: the seven mock-ups of the redesign carry no width condition at
@@ -705,15 +749,25 @@ record declares**, which is a worse thing and has never been named here before.
   a length is derived from a declared one. Neither asks what it renders, and a rule that is derived and
   wrong satisfies both.
 
-  **The population is measured and it is the file.** At `0cec957`, over `packages/site/style.ts`, the
-  six properties that decide geometry occur **38 times**: 10 `grid-template-columns`, 9 `max-width`,
-  6 `width`, 6 `grid-area`, 5 `min-width` and 2 `grid-column`. Every one of them is `one-directional`.
+  **The population is measured, and the rule it was counted by is written down because the last count
+  is not reproducible without it.** Inside the `STYLE` literal, CSS comments stripped, `@media`
+  conditions excluded because a condition is not a declaration: **`ab2765c` had 40 and `7c15c69` has
+  30** — 10 `grid-template-columns`, 4 `max-width`, 4 `min-width`, 6 `grid-area`, 2 `grid-column` and 4
+  `width`. Every one of them is `one-directional`. The entry read **38 at `0cec957`** under a rule it did
+  not state; that figure counts the three `@media (min-width: …)` conditions, which is why it cannot be
+  rebuilt by the sweep above, and it is left where it is rather than corrected, being stamped.
 
-  **It is the class this repository has now paid for four times**, and ADR-0132 is the fourth: five
-  candidate arrangements were built in a browser and three were refused on readings no suite here could
-  have taken — a `fit-content` column that answers *one contract* to a two-abreast list, a card whose
-  void moves inside it, and a rail that would accompany 13.7% of a page. None of those is visible to a
-  check that reads a string.
+  **ADR-0134 shrank the population by a quarter and did not touch the debt**, which is the thing to
+  read twice: ten declarations went because a ceiling stated in characters went with them, and the
+  thirty that remain are as unread as the forty were.
+
+  **It is the class this repository has now paid for five times**, and ADR-0134 is the fifth: the whole
+  of it was decided in an inspector by the owner and settled by a browser sweep at nine widths, and the
+  eight suites were green before the change, after the change, and would have been green had it broken
+  every page in the tree. ADR-0132 was the fourth: five candidate arrangements were built in a browser
+  and three were refused on readings no suite here could have taken — a `fit-content` column that
+  answers *one contract* to a two-abreast list, a card whose void moves inside it, and a rail that would
+  accompany 13.7% of a page. None of those is visible to a check that reads a string.
 
   **What would close it is a headless browser as a dev dependency**, which stage rule 3 admits only
   where the mechanism keeping a tool out of the product is executable — and both halves of that
@@ -995,10 +1049,12 @@ record declares**, which is a worse thing and has never been named here before.
   the entry: it was found because a unit touching another folder happened to replay this one.
 
 - **That a count of this site's own pages is one somebody took.** The stylesheet's header said *seven
-  pages served once each*; the generator writes **ten**, and the tree holds **eleven** files of HTML
-  with the 404. It has been wrong since ADR-0121 added three domain pages, and it did real work: it
-  is where the figure that opened this unit came from, and the session that read it planned against
-  eleven and then twelve before counting. **The population is every statement of a page count in this
+  pages served once each*; at `81bf9bc` the generator wrote **ten** and the tree held **eleven** files
+  of HTML with the 404. It had been wrong since ADR-0121 added three domain pages, and it did real
+  work: it is where the figure that opened that unit came from, and the session that read it planned
+  against eleven and then twelve before counting. **It has drifted again since, in the same direction**
+  — at `ab2765c` the emission reports **13 pages** and the tree holds **14** files of HTML — which is
+  what an entry about a number nobody keeps is for. **The population is every statement of a page count in this
   repository**, and it is not small — `seven pages` occurs fourteen times across ten files, `eight
   pages` once in the stylesheet's own measure paragraph, `ten pages` once here. Most are stamped
   measurements inside records, which do not drift by rule; the two that made a present-tense claim

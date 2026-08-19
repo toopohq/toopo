@@ -473,17 +473,20 @@ ul.toc > li.under { padding-left: var(--s3) }
   .beside { padding: var(--s10) 0 0 }
 }
 
-/* Three columns, and one of the three widths this stylesheet types rather than derives - the only
-   one of them whose arithmetic is written down. The other two are the conditions below and above,
-   64rem and 52rem, and they carry no comment at all; the list in CLAUDE.md holds all three.
+/* Three columns, and one of the three widths this stylesheet types rather than derives. The other two
+   are the conditions below and above, 64rem and 52rem; the list in CLAUDE.md holds all three.
 
    A media query cannot read a custom property - var() is not allowed in the condition, in any
    browser, and no backtick may be written here either because the whole stylesheet is one template
-   literal - so the threshold is the arithmetic of the three tracks and their four gutters, taken on
-   this machine's system font and rounded up to the next whole rem: 240 + 933 + 268 + 96 resolves to
-   1 537px, and 97rem is 1 552. What makes the rounding safe rather than lucky is that the content
-   track is minmax(0, 1fr): a face whose zero is wider than this one squeezes the middle column
-   rather than pushing the page past the viewport.
+   literal - so a threshold here can only ever be a number.
+
+   **This one used to be the arithmetic of its own three tracks and four gutters** - 240 + 933 + 268 +
+   96 resolving to 1 537px against 97rem's 1 552 - and the 933 in that sum was the content column's
+   ceiling, which ADR-0134 removed. The content track is minmax(0, 1fr) and has no width to add up
+   any more, so **the sum no longer exists and the number is now typed with nothing behind it**. It is
+   left at the value it had, because moving it is a decision about when a page gains a third column
+   and this unit was not that decision. Of the three thresholds on that list, this was the one whose
+   arithmetic was written down; it is now the one whose arithmetic was withdrawn.
 
    The table of contents is what asks for the third column, so a page without one does not declare a
    track it has nothing to put in. */
