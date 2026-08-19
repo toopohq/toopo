@@ -838,8 +838,32 @@ export const contractPage = (
               el('p', { class: 'address' }, line('code', name)),
               line('h1', shortName),
               paragraph(contract.identity.summary, { class: 'lede' }),
-              line('pre', `${THE_INVOCATION} add ${contract.address.name}`, { class: 'install' }),
-              line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
+              /**
+               * The command and the signature do different jobs, so each is a block with a label
+               * rather than two `pre`s in a row.
+               *
+               * **They were two monospaced boxes of the same shape, and the owner could not tell
+               * them apart on a page he had just been shown.** One is what a visitor types and the
+               * other is what they read; the stylesheet gives them different weight, ground and
+               * frame, and these labels are what says which is which before either is read.
+               *
+               * The label is a `p` and not an `h3`: it names a field of a card, not a section of
+               * the page, and `the-rail-of-a-page-names-every-section-of-it-and-only-those` would
+               * be right to refuse a heading that no rail entry points at. It costs two words in
+               * the Markdown twin, where they read as well as they do here.
+               */
+              el(
+                'div',
+                { class: 'get' },
+                line('p', 'Install', { class: 'label' }),
+                line('pre', `${THE_INVOCATION} add ${contract.address.name}`, { class: 'install' }),
+              ),
+              el(
+                'div',
+                { class: 'sig' },
+                line('p', 'Signature', { class: 'label' }),
+                line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
+              ),
             ),
             el(
               'div',

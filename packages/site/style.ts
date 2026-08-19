@@ -195,6 +195,11 @@ export const STYLE = `
   /* The navigation column, named rather than repeated: a rail declared in two places is a rail
      that drifts. */
   --rail: 15rem;
+  /* The floor a figure of the card's strip needs before another may stand beside it, which is the
+     widest label one carries set on one line. Measured in a browser over the three of every
+     published contract page: the widest is "bytes, one file" at 116px, and 9rem is 144px, so the
+     three go abreast wherever the card is wider than 27rem and stack under it. */
+  --a-figure: 9rem;
   /* What one contract of a list needs before another may stand beside it: a second column appears
      only where each track is still a whole readable line, and the count follows the screen from
      there. It read, until ADR-0134, that a list is two abreast exactly where its column is two
@@ -481,20 +486,38 @@ main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
 
    The fold is the sum of the two bases and the gap, which is two shortest lines and a gutter: no
    width is written here and none was read off a screen. ADR-0132. */
+/* **A certificate head and not a panel.** The card is ruled at the top, sits on the paper, and puts
+   the three figures in a strip under the identity rather than a column beside it. What a contract
+   page is - a measurement, stated with its method and bound to a digest - is a document with a
+   rule across it, and a rounded box on a tinted ground says panel.
+
+   The arrangement above was two halves side by side, and the reading that produced it is kept in the
+   comment above because it was right about the void it was fixing. What replaced it is not a wider
+   card: it is a card that stops competing with the prose under it for the reader's first look. */
 .card {
-  display: flex; flex-wrap: wrap; gap: var(--s5) var(--s10); align-items: flex-start;
-  border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6);
-  max-width: 100%;
+  display: grid; gap: var(--s6);
+  border: 0; border-top: 2px solid var(--ink); border-radius: 0; background: none;
+  padding: var(--s5) 0 0; max-width: 100%;
 }
 /* The half that carries a signature grows and the half that carries three numbers does not: a pre
    does not wrap at any width, so a signature in the narrow half is a signature a reader scrolls.
    Measured on number/parse@1 at 1440 with the two halves even: 455px of type in a 422px box. */
-.card > .identity { flex: 1 1 var(--measure); min-width: 0 }
-.card > .figures { flex: 0 1 var(--aside); min-width: 0 }
-.address { margin: 0 0 var(--s2); font-size: var(--t5); color: var(--dim) }
+.card > .identity { display: grid; gap: var(--s5); min-width: 0 }
+/* A datasheet strip: what lands on a reader's disk, ruled top and bottom and read across. The
+   registry that leads this distribution model does not state this at all, so it is the one figure
+   on the page that nobody else offers - which is why it stopped being secondary matter in a column. */
+.card > .figures {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--a-figure)), 1fr));
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); min-width: 0;
+}
+/* No bottom margin: the identity is a grid and its gap is what separates these. A shorthand here
+   adds to the gap instead of replacing it, which is the trap this stylesheet already names four
+   times above - it cost 20px between the address and the title the first time the card became a
+   grid. */
+.address { margin: 0; font-size: var(--t5); color: var(--dim) }
 /* The mono face names what the registry addresses - a contract, a command, a value - and never a
    sentence. A contract page's title is a function's name; "Nothing is served at this address" is not. */
-.card h1 { font-family: var(--mono); font-weight: 500; margin: 0 0 var(--s3) }
+.card h1 { font-family: var(--mono); font-weight: 700; margin: 0 }
 /* The ceiling is only what the card's is: the block is as wide as its own command, which the rule
    over every pre already says, and 44ch was a guess at the longest one. It is restated because it is
    more specific than that rule, and 44ch left the block 34px past a 390 viewport once the card
@@ -503,10 +526,24 @@ main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
    every width - nothing here wraps the row. anywhere and not the pre rule's normal, because a
    command is not a signature: its longest token is an address a reader has to be able to read and
    copy in full, and a line break inserts no character. ADR-0135. */
+/* **The one thing on this page a reader can act on, and the only thing carrying the accent.**
+   ADR-0115 gives the accent two meanings and this is the first of them. It is the largest monospace
+   on the page, on a wash, behind a heavy left edge - none of which the signature has, because the
+   two were the same shape in the same box and a visitor arriving from a search could not tell which
+   of them to run. */
 pre.install {
   display: flex; align-items: center; gap: var(--s4);
-  background: var(--paper); max-width: 100%; font-size: var(--t4); overflow-wrap: anywhere;
+  background: var(--target); border: 1px solid var(--accent); border-left-width: var(--s2);
+  padding: var(--s4) var(--s5); color: var(--ink);
+  max-width: 100%; font-size: var(--t3); overflow-wrap: anywhere;
 }
+/* A field of a card and never a section of the page: it names what the block under it is, which is
+   what tells the command from the signature before either is read. A heading here would be a rail
+   entry pointing at nothing. */
+.label {
+  margin: 0; font-size: var(--t6); letter-spacing: .09em; text-transform: uppercase; color: var(--dim);
+}
+.get, .sig { display: grid; gap: var(--s2); min-width: 0 }
 /* As wide as its own label and never narrower: a control is not text that reflows. Left to shrink
    it took the command's anywhere and offered a reader cop over y. */
 pre.install .copy {
@@ -516,7 +553,14 @@ pre.install .copy {
   color: var(--dim); cursor: pointer;
 }
 pre.install .copy:hover { color: var(--accent) }
-pre.answer { margin: var(--s5) 0 0; background: var(--paper); font-size: var(--t4) }
+/* What a reader reads rather than runs, so it takes the frame off instead of putting one on: no
+   ground, no border, one hairline under it. The distance from the command above is the whole point -
+   they carry the same face and must not carry the same weight. */
+pre.answer {
+  margin: 0; padding: 0 0 var(--s3); background: none;
+  border: 0; border-bottom: 1px solid var(--rule); border-radius: 0;
+  font-size: var(--t4);
+}
 /* The shape of a command rather than a command: the front page's, which names every address at once
    and therefore none. It takes the install block's size and not its class, because the class is what
    a copy control looks for and this is the one command on the site that would answer nothing if a
