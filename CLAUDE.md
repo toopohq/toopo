@@ -441,6 +441,46 @@ and never the wordmark's, so giving the name its width back took it from the men
 row further and paid the height straight back — 89.1px to 130.1px at 320, measured, which is why the
 menu's own row gap is in that unit. ADR-0135.
 
+**The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
+name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The
+shape of every command at once stood there as `add domain/function` so that no contract was privileged
+on the page that stands for all of them; the constraint was right and the form is a template, which a
+reader sees. A command belongs to a contract, so it is on every contract's page and on none of the pages
+about the catalogue. The catalogue is at `/catalogue/` with all thirteen of its links; `/` goes on being
+written and served, changing role and not existence, and the packaging suite is green on ADR-0125's eight
+guards. `/contracts/` was refused because this project already spells the thing `catalogue` in five
+places. **What the page does not say is recorded as a cost**: nothing on it is about how this catalogue
+is verified, which is what the whole project rests on, and it is one link away in the masthead.
+ADR-0140.
+
+**The move broke every link on the catalogue and a rewritten guard is what said so.** Its six links were
+`linkTo(page)` - correct at the root, broken one folder down.
+`every-page-is-reachable-from-the-front-page` was one hop, which is right for a flat site and false of a
+door, and rewriting it as a walk over the page graph reddened ten pages at once. **The walk also keeps a
+claim the one-hop form kept by accident**: comparing the front page's hrefs against the list of pages
+refused an address that left the site, and a walk that skipped what it could not resolve would have
+dropped that silently - so it is now stated in its own right, over every page rather than over one.
+
+**And two defects came out of a browser and out of no static check, in one unit.** `body` is a grid, and
+a grid with vertical free space stretches its auto rows into it, so on any page shorter than the window
+the masthead grows - **247px instead of 56 at 1440**, growing with the screen because a wider screen
+makes a shorter page. Every page of this site had been taller than the window, so nothing had ever been
+short enough to show it. Then the door, wrapped in a `.shell`, ran **edge to edge at 320, 390 and 768**:
+a shell spans the body's gutters and re-establishes an inset out of its own tracks, and with one child
+it has none to re-establish. It has no navigation column, so it has no shell - which is what the three
+other pages without one already do. Both found by rendering the emitted tree; the eight suites were green
+either side of both.
+
+**A guard's regular expression had been silently narrowed, and a mutant is what said so.** The guard
+written for the door refused a command on the front page and stayed green with
+`npx toopo add string/slugify` printed on it: a `\b` edited into a source through a shell heredoc lands
+as a literal backspace, `0x08`. The file compiles, the guard collects, it runs green for ever, and it
+refuses less than it says. Swept over the tracked tree: **three, in one file, two of them committed** -
+`/\bof\b|\//` in `every-figure-of-the-card-is-a-quantity-and-a-proportion-sits-with-its-breakdown` had
+been refusing a slash and nothing else for the whole of its life. Repaired and seen red with ` of ` in a
+figure's own rendering. **What found it was the mutant and not the sweep**, and the sweep exists only
+because a perturbation failed to redden something.
+
 **Two figures this repository has published cannot be rebuilt, and both were found by trying.**
 ADR-0133's prose-line counts reproduce to neither of the two populations its own table declares — 601
 with navigation, 580 without, against 585 — while every one of its eight heights reproduces **to the
@@ -697,6 +737,29 @@ record declares**, which is a worse thing and has never been named here before.
   it is citing a guard, which is a convention nothing here has. Priced and not taken. **What is cheap and
   is done instead is the convention**: a comment that says a guard keeps something is worth a record's
   `confirmed-by`, and the record is where the citation is resolved. ADR-0126.
+
+- **That the text of a guard is the text somebody wrote.** A `\b` edited into a source through a shell
+  heredoc lands in the file as a literal backspace, `0x08`. Nothing here reads a source for a control
+  character: it compiles, the suite collects it, and the guard refuses less than its text says while
+  looking exactly like a guard. **Measured at `ccc9cb3` over every tracked file: six control characters
+  in three files.** Three were the collapse - two of them committed, in
+  `every-figure-of-the-card-is-a-quantity-and-a-proportion-sits-with-its-breakdown`, whose
+  `/\bof\b|\//` had been refusing a slash and nothing else since it was written - and are repaired.
+  The other three are `0x00` in `mutation/history.ts` and `packages/registry/round-trip.test.ts`, which
+  are deliberate separators whose behaviour is exactly what `'\0'` means; they are named rather than
+  changed, because changing them is what the closure below would require and this unit did not take it.
+
+  **The population is every tracked source**, and the failure is quiet by construction - a narrowed
+  guard is green, and the only thing that says otherwise is a mutant aimed at exactly what it stopped
+  refusing. This one was found that way and not by anybody reading.
+
+  **What would close it is one of the cheapest guards this repository could hold** - no tracked source
+  carries a control character but tab and newline - and the price is where it would live. The subject is
+  every source and so is nobody's folder; the natural home is the meta suite, which is `mutation/`, which
+  **no battery injects into and the census does not count**. So the guard would be born unwitnessed by
+  construction, which is the shape this repository refuses without an argument. Writing the three `0x00`
+  as `'\0'` first makes the rule total, with no declared exception. Priced and not taken here, because a
+  unit building a page is not where one decides what the meta suite is worth. ADR-0140.
 
 - **That a value a guard looks for appears once on the surface it looks at.** A guard that asks
   whether a figure is *somewhere* on a page is satisfied by any occurrence of it, and a page that
