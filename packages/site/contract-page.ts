@@ -872,10 +872,26 @@ export const contractPage = (
           el(
             'div',
             { class: 'card' },
-            el('p', { class: 'address' }, line('code', name)),
-            line('h1', shortName),
-            paragraph(contract.identity.summary, { class: 'lede' }),
-            line('pre', `${THE_INVOCATION} add ${contract.address.name}`, { class: 'install' }),
+            /**
+             * What it is, how to get it and what it answers, as one block - and what it costs as
+             * another, because the card is read across rather than down once it is the column's
+             * width.
+             *
+             * **The grouping is what lets it be laid out at all**, and that is the whole of why
+             * this exists: five flat children can be stacked and nothing else, and arranging them
+             * would mean a rule that counts them. Which two groups is not arbitrary either - the
+             * signature is a line that must not scroll, so it stays with the widest half and never
+             * beside the narrow one. ADR-0132.
+             */
+            el(
+              'div',
+              { class: 'identity' },
+              el('p', { class: 'address' }, line('code', name)),
+              line('h1', shortName),
+              paragraph(contract.identity.summary, { class: 'lede' }),
+              line('pre', `${THE_INVOCATION} add ${contract.address.name}`, { class: 'install' }),
+              line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
+            ),
             el(
               'div',
               { class: 'figures' },
@@ -883,10 +899,21 @@ export const contractPage = (
               figure(String(imports), imports === 1 ? 'import' : 'imports'),
               figure(String(cases), 'settled cases'),
             ),
-            line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
           ),
 
-          ...halves.summary.flatMap(rendered),
+          /**
+           * The half that answers *is this the one*, as the sections it already is.
+           *
+           * They were flattened into `main` and are wrapped now for one reason: a section is what
+           * the layout puts beside another section, and a run of `h2`s with their bodies between
+           * them is not something a grid can place. The list is the same value the rail is derived
+           * from, so the outline, the reading and the two projections are unmoved. ADR-0132.
+           */
+          el(
+            'div',
+            { class: 'opening' },
+            ...halves.summary.map((section) => el('section', NOTHING, ...rendered(section))),
+          ),
 
           /**
            * The line the page is read in two halves across, rendered from the shape rather than

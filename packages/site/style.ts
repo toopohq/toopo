@@ -17,9 +17,9 @@
  *
  * Inline rather than a file, and that is a measurement about the launch rather than a preference:
  * every page is served once each, where a second request costs a round trip and a cache entry buys
- * nothing until somebody reads a second page. **It counted the pages until this unit and the count
- * was wrong** - it read seven where the generator writes ten and the tree holds eleven files of
- * HTML - and the argument never needed one, which is the form to reach for first.
+ * nothing until somebody reads a second page. **It counted the pages once and the count was wrong**,
+ * as every count of them written into prose here has been within three units of being written; the
+ * argument never needed one, which is the form to reach for first.
  *
  * **The arithmetic that will overturn it is known and is not today's**: this text is repeated in
  * every page of the tree, so a catalogue of a thousand contracts
@@ -89,6 +89,22 @@
  * for its margin, and a margin inside the method's own error has bought nothing. Measured over four
  * candidates: 1.34 leaves 2 lines over the ceiling at a worst of 78, 1.40 leaves none at 73, 1.45
  * leaves none at 70, and 1.50 leaves none at 69 while pulling the typical line down to 61.
+ *
+ * **The pair renders 69 characters and not 75, and the gap is that margin rather than an error.**
+ * Re-measured at `0cec957` over the 4 429 lines of every file of HTML in the tree at 1440, by
+ * ADR-0122's method - one Range per character, grouped into line boxes by vertical overlap: the
+ * densest line in a box of exactly this measure is 1.3342 characters per ch, and the worst line
+ * rendered anywhere is 69. The model is exact rather than indicative - 75 * 1.3342 / (1.393 * 1.04)
+ * is 69.1 - so the 8.6% between the two figures is 4% of declared drift and 4.2% of density that has
+ * fallen since it was taken on eight pages.
+ *
+ * **It cannot be spent, and both reasons are arithmetic.** Measured at the same commit, the same
+ * width and the same population: at 1.3876, the density re-measured with the drift kept, the measure
+ * is 466px, the content column 972 and the worst line 72; at 1.3342, the density with no margin at
+ * all, the measure is 485, the column 1 010 and one line reaches 77. The ceiling breaks because
+ * density is not stationary - a wider box breaks the same sentences at different words and the
+ * density rises to meet it. And the column grows twice as fast as the line, being two of them, so
+ * widening prose to fill a column widens the column by more than it fills. ADR-0132.
  *
  * **The three numbers are declared apart rather than pre-multiplied into one length**, so that each is
  * a fact somebody can re-measure on its own and none of them is a compromise wearing another's name.
@@ -279,11 +295,10 @@ ul.menu .here { color: var(--dim) }
    rather than on every block, so the first one does not open with a rule under the heading it has
    just been given by the column it sits in. */
 .aside > section + section { margin-top: var(--s8); padding-top: var(--s6); border-top: 1px solid var(--rule) }
-/* The figures already have a heading above them, so the rule and the space the card's version draws
-   to stand itself off the sentence before it would be a second separator saying the same thing. The
-   bottom is not symmetry: a figure ends at zero so that its own two lines hold together, and without
-   this the last label touched the sentence under it - measured at 0px in a browser. */
-.aside .figures { margin: var(--s3) 0 var(--s5); padding-top: 0; border-top: 0 }
+/* The bottom is not symmetry: a figure ends at zero so that its own two lines hold together, and
+   without this the last label touched the sentence under it - measured at 0px in a browser. The top
+   is the standing gap off the heading these already have. */
+.aside .figures { margin: var(--s3) 0 var(--s5) }
 .aside p { font-size: var(--t5); color: var(--dim) }
 .aside .figure strong { font-size: var(--t2) }
 .rail-label {
@@ -318,14 +333,46 @@ ul.siblings > li.here, ul.domains > li.here {
    wide. ADR-0122. */
 main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
 
-/* As wide as its widest block needs and not as wide as what is left over - the sentence the content
-   column used to carry, on the element it was always about. The ceiling is what stops it: fit-content
-   has a min-content floor, a pre does not wrap at any width, so a card holding a signature is floored
-   at that line. Measured without it: the four contract pages scrolled sideways at 390. */
-.card {
-  border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6);
-  width: fit-content; max-width: 100%;
+/* The half a reader decides on, two abreast where there is room for two.
+
+   The floor is a measure, so a second column appears exactly where it would be a column of prose and
+   never a squeezed one - the same condition ul.contracts folds on, and no width is written for it.
+   The sections are what the grid places; they were flat in the document until this unit, and a run of
+   headings with their bodies between them is not something any layout can put beside anything.
+
+   **A section left alone on its row keeps the measure it has today**, which is what makes this a gain
+   and not an exchange: the arrangement can only ever fill width that was empty. Measured on
+   number/parse@1 at 1440: the opening falls from 2 334px of height to 1 504. ADR-0132. */
+.opening {
+  display: grid; align-items: start; gap: 0 var(--s10);
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--measure), 100%), 1fr));
 }
+.opening > section { min-width: 0 }
+
+/* The column's width, and read across rather than down.
+
+   It was as wide as its own content, which is right for a block and was wrong for this one: the card
+   is the first thing on the page and the thing that tells a reader how wide the page is, and at 580
+   in a 933 column it said 580 while every table under it said 905. Measured at 0cec957: 353px of
+   nothing to the right of it, identical at 1280, 1440, 1920 and 2560.
+
+   **Widening it alone was measured and refused**: the void moved inside, 727px unused beside the
+   address and 590 beside the command, which is the reading ADR-0122 had already recorded one floor
+   up. So what changed is the arrangement and not the width - what it is, how to get it and what it
+   answers on one side, what it costs on the other.
+
+   The fold is the sum of the two bases and the gap, which is two shortest lines and a gutter: no
+   width is written here and none was read off a screen. ADR-0132. */
+.card {
+  display: flex; flex-wrap: wrap; gap: var(--s5) var(--s10); align-items: flex-start;
+  border: 1px solid var(--edge); border-radius: 10px; background: var(--card); padding: var(--s6);
+  max-width: 100%;
+}
+/* The half that carries a signature grows and the half that carries three numbers does not: a pre
+   does not wrap at any width, so a signature in the narrow half is a signature a reader scrolls.
+   Measured on number/parse@1 at 1440 with the two halves even: 455px of type in a 422px box. */
+.card > .identity { flex: 1 1 var(--measure); min-width: 0 }
+.card > .figures { flex: 0 1 var(--aside); min-width: 0 }
 .address { margin: 0 0 var(--s2); font-size: var(--t5); color: var(--dim) }
 /* The mono face names what the registry addresses - a contract, a command, a value - and never a
    sentence. A contract page's title is a function's name; "Nothing is served at this address" is not. */
@@ -348,9 +395,13 @@ pre.answer { margin: var(--s5) 0 0; background: var(--paper); font-size: var(--t
    reader ran what they had copied. */
 pre.shape { font-size: var(--t4); color: var(--dim) }
 pre.shape code { color: var(--ink) }
+/* No rule above them and no margin off what precedes them: they sit beside the identity rather than
+   under the command, so a separator here would draw a line across half a card. Where they wrap under
+   it, on a narrow screen and in the column beside the front page, the gap is what separates them and
+   it always was. */
 .figures {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: var(--s4);
-  margin: var(--s5) 0 0; padding-top: var(--s5); border-top: 1px solid var(--rule);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(8rem, 100%), 1fr)); gap: var(--s4);
+  margin: 0;
 }
 .figure { margin: 0; font-size: var(--t5); color: var(--dim) }
 .figure strong { display: block; font-family: var(--mono); font-size: var(--t2); font-weight: 500; color: var(--ink) }
@@ -442,6 +493,23 @@ ul.toc > li.under { padding-left: var(--s3) }
   .shell:has(.beside) .beside { grid-area: 1 / 1 }
   .shell:has(.beside) main { grid-area: 1 / 2 }
 
+  /* A page whose widest block is a line is bound by the line, and not by the widest block this
+     catalogue is able to hold. The blocks that ask for more than a measure name themselves here,
+     each of them having said so about itself further up; a list of contracts is one of them only
+     where it has a second entry to put in a second column, which is the condition auto-fit itself
+     folds on.
+
+     **fit-content is what asks the content, and it is scoped rather than general for a measured
+     reason.** Under an indefinite constraint repeat(auto-fit, ...) repeats once, so a track that
+     asks a two-abreast list how wide it wants to be is answered *one contract*. Measured at
+     0cec957 with the same declaration unscoped: the string family fell from 909px of ink to 493
+     and the front page from 923 to 505. Every page this selector reaches holds no such list.
+     ADR-0132. */
+  .shell:has(.beside):not(:has(.card, .cases, .chips, .use-cases, .contracts > li:nth-child(2))) {
+    grid-template-columns: var(--rail) fit-content(var(--two-columns));
+    width: fit-content; max-width: 100%;
+  }
+
   /* The page, and then what a reader may skip. */
   .shell:has(.aside) {
     grid-template-columns: minmax(0, 1fr) var(--aside);
@@ -455,7 +523,9 @@ ul.toc > li.under { padding-left: var(--s3) }
   .beside { padding: var(--s10) 0 0 }
 }
 
-/* Three columns, and the one width in this stylesheet that is typed rather than derived.
+/* Three columns, and one of the three widths this stylesheet types rather than derives - the only
+   one of them whose arithmetic is written down. The other two are the conditions below and above,
+   64rem and 52rem, and they carry no comment at all; the list in CLAUDE.md holds all three.
 
    A media query cannot read a custom property - var() is not allowed in the condition, in any
    browser, and no backtick may be written here either because the whole stylesheet is one template

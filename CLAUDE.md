@@ -272,17 +272,44 @@ it.** The same move settled the two-abreast list with no breakpoint at all — `
 of one measure is two columns exactly where the column is two measures wide — so the value the owner
 will flip is a length in the palette and never a grid to restructure.
 
-**One width in that stylesheet is typed, and the language is why rather than the author.** `var()` is
-not allowed in a media query's condition, in any browser, so the three-column threshold is the
-arithmetic of its own tracks taken on one machine and rounded up. It is written beside that
-arithmetic, it degrades by squeezing rather than overflowing, and it is on the list below as the thing
-nothing keeps.
+**Three widths in that stylesheet are typed, and the language is why rather than the author.** `var()`
+is not allowed in a media query's condition, in any browser. The three-column threshold is the
+arithmetic of its own tracks taken on one machine and rounded up; it is written beside that arithmetic
+and degrades by squeezing rather than overflowing. **This line read *one width* until ADR-0132, and so
+did the comment above that threshold** — both of them saying, of the one condition that carries its
+argument, that it was the only one. `52rem` and `64rem` carry no comment at all. All three are on the
+list below as the thing nothing keeps.
 
 **Four defects came out of a browser and out of no static check**, which is the third time this
 repository has paid for that class. Two rules 13px apart where a list item and the heading inside it
 each drew one; and section gaps of 0, 8 and 16 where the system declares one — every instance a
 `margin` shorthand on a class silently outranking `h2 + p` on specificity. Measured after: 100 section
 headings at 12px and nothing touching.
+
+**A void is matter that is missing and never a ceiling to remove, and that sentence cost two refuted
+repairs to reach.** The owner read a contract page at 1440 and saw the centre column half empty. His
+three figures were exact and his sentence was not — `main` holds twelve case tables at 905 — and the
+measurement that replaces it is worse: at 1440 **the median block of `number/parse@1` reaches 46% of
+its column**, 12 of 71 blocks reach 90%, and on a refused contract and the one-contract family pages
+**no block reaches 90% at all**. Nothing moves between 1280 and 2560. Both repairs he proposed were
+built in a browser and both fail: tightening the column with `fit-content` **breaks the two-abreast
+list**, because under an indefinite constraint `repeat(auto-fit, …)` repeats *once* and a track that
+asks a list how wide it wants to be is told *one contract*; widening the card moves the void inside it,
+which is ADR-0122's own recorded objection one floor down. What fills it instead is the page's own
+matter — the card is the column's width and read across, the opening is its sections two abreast where
+there is room. **The table of contents was measured for that job and refused**: a sticky rail and a
+905px case row cannot share a column, so it would accompany 13.7% of a page instead of all of it. The
+measure held at nine widths, 0 of 4 429 lines over 75, worst 69. **What is not closed is said rather
+than implied**: a contract page's prose is still 447 in 933, and that is arithmetic rather than an
+oversight. ADR-0132.
+
+**The divisor did not move, and the record says why instead of leaving it to look like an oversight.**
+Re-measured over every file of HTML in the tree, the densest line at the measure is 1.3342 characters
+per ch against the 1.393 declared, so the page renders 69 where it allows 75 — an 8.6% gap, not the 15%
+a one-page reading suggested. It cannot be spent: at the density re-measured the worst line goes to 72
+and the void beside the card *grows* from 353 to 368, and at the density with no margin at all one line
+reaches 77. **Density is not stationary and a column is two lines wide**, so widening prose to fill a
+column widens the column by more than it fills.
 
 **A guard of the site suite had been reddened by nothing since it was written, and the battery said so
 to nobody.** `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported
@@ -568,8 +595,9 @@ record declares**, which is a worse thing and has never been named here before.
   and `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` — and **neither can read
   the one place a width is still typed**, because `var()` is not allowed in a media query's condition
   in any browser and never has been. **The population is the three conditions of `style.ts`**: `52rem`,
-  `64rem` and `97rem`. Each is computed from the same declared lengths the rules under it use, each
-  carries that arithmetic in the comment above it, and nothing compares the two. The failure is quiet
+  `64rem` and `97rem`. **Only `97rem` carries the arithmetic it came from**; the other two carry no
+  comment at all, and this entry claimed that each of them did until ADR-0132 went and read them.
+  Nothing compares a threshold with the tracks it separates. The failure is quiet
   by construction: a threshold that no longer matches its own tracks does not break a page, it moves
   the width at which the page changes shape, and only a reading at exactly that width would say so.
 
@@ -620,10 +648,52 @@ record declares**, which is a worse thing and has never been named here before.
 
   **It reopens on the structure and not on a better use of flexbox.** What blocks `97rem` is a property
   of *this* document order, not of CSS: the seven mock-ups of the redesign carry no width condition at
-  all and fold on bases, because their pages are not built out of `main, .where, .rail`. So the day the
-  page structure changes — which is planned — this may close for nothing, by no longer holding the order
-  that causes it. **What is taken again on that day is the measurement and never this argument**, which
-  is about one arrangement and expires with it.
+  all and fold on bases, because their pages are not built out of `main, .where, .rail`. **What is
+  taken again on the day that order changes is the measurement and never this argument**, which is
+  about one arrangement and expires with it.
+
+  **That paragraph ended *which is planned*, and the event it was waiting for has happened otherwise.**
+  ADR-0125 to ADR-0131 are the redesign; they remade the front page, the families, the refused contract
+  and what a contract is, and not one of them touched `main, .where, .rail` — the unit that was to do
+  it was abandoned once two of the three thresholds turned out to close by no flexbox arrangement at
+  all. So the clause announced a future for an event that had already passed, which is precisely the
+  form rule 3 of this section names: **an entry that is false without being stale**, because nothing
+  about it looks old.
+
+  **ADR-0132 then went at the third threshold from the other side and refused it with a measurement.**
+  What would let `97rem` go is the rail standing beside the content column rather than in the shell;
+  the rail is sticky over the whole page and a settled-case table is 905px wide, and the two cannot
+  share a column, so the rail can only accompany the region holding no wide block. Measured by building
+  that arrangement in a browser at `0cec957`: **13.7% of `number/parse@1` and 23.2% of
+  `string/slugify@1`**, against 100% today. So the population is unchanged at three, and what this
+  entry now knows that it did not is what the closure costs.
+
+- **That any layout this site declares is one somebody looked at.** `pages.test.ts` builds documents
+  and reads their text; **nothing in this repository lays a page out.** So every rule of
+  `packages/site/style.ts` that decides a width, a track, a fold or a placement is kept by nothing that
+  runs. The two guards that do read this stylesheet —
+  `every-ceiling-on-a-box-is-derived-and-never-typed` and
+  `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` — read its *text* and ask whether
+  a length is derived from a declared one. Neither asks what it renders, and a rule that is derived and
+  wrong satisfies both.
+
+  **The population is measured and it is the file.** At `0cec957`, over `packages/site/style.ts`, the
+  six properties that decide geometry occur **38 times**: 10 `grid-template-columns`, 9 `max-width`,
+  6 `width`, 6 `grid-area`, 5 `min-width` and 2 `grid-column`. Every one of them is `one-directional`.
+
+  **It is the class this repository has now paid for four times**, and ADR-0132 is the fourth: five
+  candidate arrangements were built in a browser and three were refused on readings no suite here could
+  have taken — a `fit-content` column that answers *one contract* to a two-abreast list, a card whose
+  void moves inside it, and a rail that would accompany 13.7% of a page. None of those is visible to a
+  check that reads a string.
+
+  **What would close it is a headless browser as a dev dependency**, which stage rule 3 admits only
+  where the mechanism keeping a tool out of the product is executable — and both halves of that
+  mechanism already exist, `files: ["dist"]` and `packaging/reachable.ts`. It is priced twice above, at
+  the breakpoint entry and at the `start.ts` entry, and it is refused a third time here for a reason
+  about *where* rather than about the price: **a unit repairing a layout is not where one decides to add
+  a tool to the repository**, because the decision would be taken by whoever most wants the layout to
+  land. ADR-0132.
 
 - **That a paragraph of prose has been read whole by somebody.** ADR-0112 makes it measurable: a
   paragraph has an author when one commit's blame covers every one of its lines, `npm run hands`
