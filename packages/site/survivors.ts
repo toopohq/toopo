@@ -44,6 +44,9 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
  * defect got past would be a second opinion about a measurement, written where nobody would look for
  * one - which is the whole reason `published.ts` is a door rather than an import of whatever is
  * useful.
+ *
+ * The row it renders is an identifier and an argument and never two columns: ADR-0139 carries the
+ * three readings that refused the columns on this page and kept them on a contract's.
  */
 export const renderSurvivor = (survivors: readonly PublishedSurvivor[]): Node => {
   const first = survivors[0]

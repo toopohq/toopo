@@ -729,7 +729,8 @@ ul.toc > li.under { padding-left: var(--s3) }
    carries no height. On a contract page the left half is a call, often folding to several lines,
    and there the columns pay. Same shape, opposite answer, and only the data says which.
 
-   The whole of the gain is that the argument is a cell with a width, which it already had. */
+   The whole of the gain is that the argument is a cell with a width, which it already had.
+   ADR-0139. */
 .stacked { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
 .case {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2) var(--s10);
