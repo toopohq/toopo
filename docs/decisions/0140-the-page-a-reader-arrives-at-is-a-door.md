@@ -70,12 +70,12 @@ The page is three blocks and nothing else. No command, no list, no aside. The li
 catalogue door is **composed and never written** — the contracts, the domains they are filed under and
 how many were turned down are read off the index, so a sixth contract lands in that sentence with
 nobody editing it, which is the treatment
-[ADR-0121](0121-a-domain-has-a-page-and-every-page-says-where-you-are.md) already gave a domain page's
+[ADR-0121](0121-a-domain-has-a-page-and-its-opening-sentence-is-composed.md) already gave a domain page's
 opening.
 
 **Every address this tree has served goes on being served.** `/` is written, served and listed exactly
 as before; it changes role and not existence, which is what
-[ADR-0125](0125-an-address-the-emitted-tree-has-served-goes-on-being-written.md) requires of it.
+[ADR-0125](0125-an-address-this-tree-has-served-goes-on-being-written.md) requires of it.
 `/catalogue/` is new, so it is free. The packaging suite is green on all eight of the guards that
 record it.
 
