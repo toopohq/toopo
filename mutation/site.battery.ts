@@ -246,7 +246,7 @@ const A_PIN_IS_NOT_AN_OBSERVATION = `    paragraph(THE_PINS_ARE_AN_ASSERTION),`
  * sentence it carries goes on being read by `every-figure-on-the-method-page-comes-from-what-it-was-
  * built-from`, which would redden on any edit that touched the figures instead.
  */
-const A_CONTRACT_NAME_IS_A_TITLE = `                text(' — turned down'),`
+const A_CONTRACT_NAME_IS_A_TITLE = `    line('p', held.contract.identity.summary, { class: 'why' }),`
 
 const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `        paragraph(silence.reason, { class: 'why' }),`
 
@@ -1367,9 +1367,9 @@ const mutants: readonly Mutant[] = [
       'navigation. Every word is still present, so the projection guard stays green: a person reads ' +
       'two things as one and a guard about presence cannot',
     [
-      cataloguePageFile(
+      domainPageFile(
         A_CONTRACT_NAME_IS_A_TITLE,
-        `                text('turned down'),`,
+        `    line('code', held.contract.identity.summary, { class: 'why' }),`,
       ),
     ],
     killed(['no-element-runs-into-the-one-beside-it']),
