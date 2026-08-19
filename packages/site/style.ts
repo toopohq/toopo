@@ -369,7 +369,12 @@ pre {
    page is a heading because it titles a section, and must not take the standing margin of one - nor
    its rule, which the list item already draws. Measured: a domain page listing its contracts at h2
    drew two lines 13px apart, one from the item and one from the heading inside it. */
+/* A contract's name is set in the face the registry addresses everything in, wherever it is
+   written. It was the only place on this site where one was not: the card's title, the column
+   beside a page and the front page's catalogue are all mono, and a domain page's list was sans -
+   so the same name read as two different kinds of thing depending on which page you were on. */
 .call { display: block; margin: 0 0 var(--s2); border-top: 0; padding-top: 0 }
+h2.call, h3.call { font-family: var(--mono); font-weight: 500 }
 /* Bottom only, for the reason the lede carries: the shorthand's zero beat the standing gap under a
    heading on specificity, and a section opening on a list touched its own title. */
 ul.plain { list-style: none; padding: 0; margin-bottom: var(--s4) }
