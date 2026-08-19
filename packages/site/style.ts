@@ -428,6 +428,10 @@ a.answer .mark { display: block; font-size: var(--t6); color: var(--dim) }
    bounds every arrangement at every width is the viewport. Narrow is one column and never had a
    ceiling to give. ADR-0123, ADR-0134. */
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }
+/* The container a settled case reads its own width from. Named rather than anonymous, so the
+   query below says which box it is asking about and a second container added later cannot
+   silently answer for this one. */
+main { container-type: inline-size; container-name: the-page; min-width: 0 }
 .beside { padding: var(--s6) var(--s6) 0 }
 .aside { padding: var(--s6) var(--s6) 0 }
 /* Three blocks in one column, told apart by a line and the space around it. On the adjacent sibling
@@ -682,7 +686,23 @@ ul.toc > li.under { padding-left: var(--s3) }
    ways. */
 #playground pre { margin: 0; background: var(--paper); border-color: var(--edge); overflow-wrap: anywhere }
 
-@media (min-width: 64rem) {
+/* **50rem is the sum of the wider of the two arrangements below, and it is a derivation rather than
+   a number somebody liked.** A media query cannot read a custom property - var() is not allowed in
+   the condition, in any browser - so the arithmetic is written here instead of evaluated, which is
+   the treatment this stylesheet's three thresholds owed and none of them had.
+
+     main | aside     --measure + --s6 + --aside + 2 * --s6   =  27.90 + 1.5 + 16.74 + 3  =  49.14rem
+     beside | main    --rail + --s6 + --measure + 2 * --s6    =  15.00 + 1.5 + 27.90 + 3  =  47.40rem
+
+   The floor each arrangement gives its content column is one whole readable line and never two: a
+   settled case splits into two columns on the width of its own container now, so main no longer has
+   to be wide enough for a case row before a navigation may stand beside it. That is what the
+   container query below buys, and it is what let this number be summed at all.
+
+   --measure and --aside resolve against ch, which is a property of the reader's own face, so
+   these sums are taken at the advance this machine measured - 8.625px - and are exact only there. The
+   terms are what is derived; the rounding up to a whole rem is the slack that covers the rest. */
+@media (min-width: 50rem) {
   .shell { gap: var(--s6); padding: 0 var(--s6) }
   main { padding: var(--s10) 0 0 }
 
@@ -701,20 +721,21 @@ ul.toc > li.under { padding-left: var(--s3) }
   .beside { padding: var(--s10) 0 0 }
 }
 
-/* Three columns, and one of the three widths this stylesheet types rather than derives. The other two
-   are the conditions below and above, 64rem and 52rem; the list in CLAUDE.md holds all three.
+/* **Three columns, and the sum this threshold lost has been given back to it.**
 
-   A media query cannot read a custom property - var() is not allowed in the condition, in any
-   browser, and no backtick may be written here either because the whole stylesheet is one template
-   literal - so a threshold here can only ever be a number.
+     --rail + --s6 + (2 * --measure + --s10) + --s6 + --aside + 2 * --s6
+     15.00 + 1.5  + (55.80        + 2.5)    + 1.5  + 16.74   + 3        =  96.04rem
 
-   **This one used to be the arithmetic of its own three tracks and four gutters** - 240 + 933 + 268 +
-   96 resolving to 1 537px against 97rem's 1 552 - and the 933 in that sum was the content column's
-   ceiling, which ADR-0134 removed. The content track is minmax(0, 1fr) and has no width to add up
-   any more, so **the sum no longer exists and the number is now typed with nothing behind it**. It is
-   left at the value it had, because moving it is a decision about when a page gains a third column
-   and this unit was not that decision. Of the three thresholds on that list, this was the one whose
-   arithmetic was written down; it is now the one whose arithmetic was withdrawn.
+   It used to be the arithmetic of its own tracks - 240 + 933 + 268 + 96 - and the 933 was the content
+   column's ceiling, which ADR-0134 removed; the sum stopped existing and the number stood with
+   nothing behind it. What restores it is not that ceiling: it is that **a case row has a width
+   again**, two measures and the gutter between them, so the middle track has a floor that is a sum of
+   declared lengths rather than a fraction of whatever is left.
+
+   The value does not move. It was 97rem when it was typed and it is 97rem when it is derived, which
+   is worth saying plainly: the number was right and its justification was gone, and those are
+   different defects. The third column is where a page is wide enough to put a table of contents
+   beside a case row without squeezing either.
 
    The table of contents is what asks for the third column, so a page without one does not declare a
    track it has nothing to put in. */
@@ -734,11 +755,32 @@ ul.toc > li.under { padding-left: var(--s3) }
     padding: var(--s10) 0 0 var(--s6); border-left: 1px solid var(--rule);
   }
 }
-@media (min-width: 52rem) {
-  /* The call column is as wide as a call may be, and a call here is a paragraph rather than a pre,
-     so that is the measure. It was 34ch, which named nothing: measured at 456ee44, that folded 50 of
-     50 calls on number/parse@1 and 43 of 43 on date/add@1 onto more than one line, and 325 rendered
-     lines carried the 157 calls of the four pages. At the measure it is 223. */
+/* **The row splits on the width of its own container and never on the width of the window**, which
+   is the one of the three thresholds that was not merely underived but unanswerable: a viewport
+   condition cannot know whether a navigation is standing beside the content, so 52rem meant one thing
+   on a domain page and another on a contract page, and no arithmetic could have covered both.
+
+     2 * --measure + --s10  =  55.80 + 2.5  =  58.30rem, rounded DOWN to 58
+
+   The direction of the rounding is the whole of what was measured wrong first. At 59rem the
+   row folded back to one column at exactly the width the third column appears: the shell hands
+   main 933px there, the sum wants 933, and a scrollbar takes 15 of the slack the shell's own
+   rounding had left. So widening a window made the case rows stack, which is a reader dragging
+   an edge and watching the page get worse. Rounded down, the arrangement that gives the row
+   least room still gives it enough, and the two tracks are squeezed by at most 5px rather than
+   folded. A switch that lands on the micron is not a derived threshold, it is one nobody
+   controls - ADR-0134 refused a candidate for exactly that and the refusal applies here.
+
+   main declares the containment, and the sum above is the row's own two tracks and the gutter
+   between them - nothing about the page around it enters. It is also what let 50rem be summed one
+   screen up: a content column no longer has to be wide enough for a case row before a navigation may
+   stand beside it, because the row now folds on its own.
+
+   The call column is as wide as a call may be, and a call here is a paragraph rather than a pre, so
+   that is the measure. It was 34ch, which named nothing: measured at 456ee44, that folded 50 of 50
+   calls on number/parse@1 and 43 of 43 on date/add@1 onto more than one line, and 325 rendered lines
+   carried the 157 calls of the four pages. At the measure it is 223. */
+@container the-page (min-width: 58rem) {
   /* Two measures and not a measure beside whatever is left. The second track was 1fr, so the
      argument grew with the screen and read 354 characters at 2560 - which is an artefact rather
      than a reading, on the half of this page a reader actually reads.
