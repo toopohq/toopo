@@ -544,6 +544,23 @@ pre.install {
   margin: 0; font-size: var(--t6); letter-spacing: .09em; text-transform: uppercase; color: var(--dim);
 }
 .get, .sig { display: grid; gap: var(--s2); min-width: 0 }
+/* The label on the left and the choice on the right, on one baseline. The row wraps rather than
+   squeezing, because four manager names beside a word is the first thing to run out of room. */
+.get-head { display: flex; align-items: baseline; gap: var(--s4); flex-wrap: wrap }
+ul.managers { display: flex; gap: var(--s3); list-style: none; margin: 0 0 0 auto; padding: 0 }
+/* The chosen one is marked by the accent under it, which is *you are here* - the second of the two
+   things ADR-0115 lets the accent mean, and the same mark the catalogue column already uses. */
+ul.managers button {
+  font-family: var(--mono); font-size: var(--t6); letter-spacing: .04em;
+  color: var(--dim); background: none; border: 0; border-bottom: 2px solid transparent;
+  padding: 0 0 1px; cursor: pointer;
+}
+ul.managers button:hover { color: var(--body) }
+ul.managers button[aria-pressed='true'] { color: var(--ink); border-bottom-color: var(--accent) }
+/* Struck through and legible rather than dimmed away: a way that does not run is published, and a
+   reader has to be able to read both the name and the reason under it. */
+ul.managers button[data-refused] { text-decoration: line-through }
+p.refusal { margin: 0; font-size: var(--t5); color: var(--dim) }
 /* As wide as its own label and never narrower: a control is not text that reflows. Left to shrink
    it took the command's anywhere and offered a reader cop over y. */
 pre.install .copy {

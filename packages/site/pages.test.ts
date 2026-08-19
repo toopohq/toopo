@@ -8,7 +8,13 @@ import {
   survivorsByKind,
   theMeasurement,
 } from '../../mutation/published.js'
-import { THE_INVOCATION, contractUrl, renderCase, renderContract } from '../registry/address.js'
+import {
+  THE_INVOCATION,
+  THE_WAYS_TO_RUN_IT,
+  contractUrl,
+  renderCase,
+  renderContract,
+} from '../registry/address.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { search } from '../registry/search.js'
@@ -724,6 +730,72 @@ describe('the site', () => {
               'sig holds pre.answer',
             ]
           : [],
+      )
+    }
+  })
+
+  /**
+   * The ways a page hands over are the registry's own, and the one it prints is one that runs.
+   *
+   * **The defect this is against is the one a visitor already met**, and it was met on the first
+   * thing they tried: four surfaces printed a command that answers `command not found`. Offering a
+   * choice of package manager multiplies that surface by four, and three of the four spellings were
+   * never measured by this repository until they were. `yarn dlx` is the one that does not work.
+   *
+   * So two things are asserted and they fail differently. **The table is handed over rather than
+   * written**, deep-equal to `THE_WAYS_TO_RUN_IT`, so a page cannot carry a fifth manager somebody
+   * typed into a template - which is where an unmeasured form would arrive. And **the spelling the
+   * page prints is one declared to run**, and specifically the invocation, so no edit can make the
+   * served command a refused one.
+   *
+   * What it does not reach: whether a spelling in that table really runs. That is a measurement
+   * against the published package, it is written in the table's own comment with the versions it was
+   * taken at, and no guard here can take it. ADR-0138 says so rather than implying coverage.
+   *
+   * The refused contract has no install block, so it hands over no ways - which is asserted rather
+   * than skipped.
+   */
+  it('the-ways-a-page-hands-over-are-the-declared-ways-and-the-one-it-prints-runs', () => {
+    const installable = new Set(
+      index.entries
+        .filter((entry) => entry.installable)
+        .map((entry) => renderContract(entry.address)),
+    )
+
+    const handedOver = (document: Parameters<typeof toText>[0]): string | null => {
+      let found: string | null = null
+      const walk = (node: Parameters<typeof readingOf>[0]): void => {
+        if (node.kind !== 'element') return
+        if (node.attributes['data-ways'] !== undefined) found = node.attributes['data-ways']
+        for (const child of node.children) walk(child)
+      }
+
+      for (const node of document.body) walk(node)
+
+      return found
+    }
+
+    for (const held of heldByTheRegistry(source)) {
+      const rendered = renderContract(held.contract.address)
+      const document = page(pageOf(held.contract.address))
+      const declared = handedOver(document)
+
+      if (!installable.has(rendered)) {
+        expect(declared, `${rendered} offers nothing to run`).toBeNull()
+        continue
+      }
+
+      expect(declared, `${rendered} hands its ways over`).not.toBeNull()
+      expect(JSON.parse(declared as string), rendered).toEqual(THE_WAYS_TO_RUN_IT)
+
+      const printed = toText(document)
+      const runs = THE_WAYS_TO_RUN_IT.filter((way) => way.refusedBecause === undefined)
+
+      expect(runs.map((way) => way.spelling), 'the invocation is a way that runs').toContain(
+        THE_INVOCATION,
+      )
+      expect(printed, `${rendered} prints a command that runs`).toContain(
+        `${THE_INVOCATION} add ${held.contract.address.name}`,
       )
     }
   })

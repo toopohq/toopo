@@ -28,7 +28,8 @@
  * `signature.ts` and `implementation-record.ts` are both built on, and it decides this too.
  */
 
-import { renderContract } from '../registry/address.js'
+import type { AWayToRunIt } from '../registry/address.js'
+import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { ParameterRecord } from '../registry/contract-record.js'
 import type { PlaygroundField } from './playground.js'
 import type { WhereTheCatalogueIs } from './searching.js'
@@ -66,16 +67,27 @@ const labelled = (field: ThePlayground['fields'][number], at: number): HTMLEleme
 }
 
 /**
+ * The words the install block carries right now, which is its own text node and never its
+ * `textContent`.
+ *
+ * `textContent` is the command *plus every control appended to it* - the word `copy` today - so
+ * reading it after the button lands offers a reader `npx toopo add string/slugifycopy`. That was
+ * avoided by reading the command once, before appending, and reading once is exactly what stopped
+ * being safe when the command became something a reader can change: a control that captured the
+ * string at build time would go on offering the first spelling after somebody had chosen another.
+ *
+ * So it is read at the moment it is used, from the node that holds it.
+ */
+const theCommandIn = (install: Element): Text | null =>
+  [...install.childNodes].find((node): node is Text => node.nodeType === 3) ?? null
+
+/**
  * The copy control beside the install command, built here for the reason the form below is.
  *
  * A button served in the HTML does nothing without this file, and
  * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` is the rule that refuses
  * one. Without JavaScript a reader meets the command as text and selects it, which is what they would
  * have done anyway.
- *
- * The command is read *before* the button is appended, because afterwards the element's text is the
- * command plus the word `copy` - which is the kind of defect that only shows up in somebody else's
- * terminal.
  *
  * What it says after copying is a word and not a colour, which is the rule the stylesheet states for
  * this site's accent and which holds here for a second reason: a reader who cannot tell the two
@@ -85,16 +97,15 @@ const copyControl = (): void => {
   const install = document.querySelector('pre.install')
   if (install === null || !navigator.clipboard) return
 
-  const command = install.textContent ?? ''
   const button = document.createElement('button')
 
   button.type = 'button'
   button.className = 'copy'
   button.textContent = 'copy'
-  button.setAttribute('aria-label', `Copy ${command} to the clipboard`)
+  button.setAttribute('aria-label', `Copy ${theCommandIn(install)?.nodeValue?.trim() ?? ''} to the clipboard`)
 
   button.addEventListener('click', () => {
-    void navigator.clipboard.writeText(command).then(
+    void navigator.clipboard.writeText(theCommandIn(install)?.nodeValue?.trim() ?? '').then(
       () => {
         button.textContent = 'copied'
       },
@@ -105,6 +116,92 @@ const copyControl = (): void => {
   })
 
   install.append(button)
+}
+
+/**
+ * The choice of package manager, built into the block the page serves as prose.
+ *
+ * **This is the fourth thing on this site that needs JavaScript, and the argument for it is a
+ * capability rather than a comfort.** `npx` requires Node, so a reader who has only Bun cannot run
+ * the served spelling at all and `bunx` is the one form that works for them - which is the same kind
+ * of thing the search and the playground are, and not the same kind of thing a preference is. What is
+ * *not* claimed is the reverse: whether `npx` fails in an environment with no Node was not measured
+ * here, so the argument rests on Bun being reachable rather than on npm being unreachable. ADR-0138.
+ *
+ * **The rule holds.** Without JavaScript the page carries one command, it is the one measured to work
+ * whether or not anything is installed, and there is no control that does nothing.
+ *
+ * A refused way is offered struck through and with its reason, never omitted. A manager quietly
+ * missing from a list of four reads as an oversight and sends a reader to try it; this catalogue
+ * publishes the contracts it turned down with the measurement behind each refusal, and the same
+ * treatment applies when the thing refused is its own.
+ */
+const managerControl = (): void => {
+  const block = document.querySelector('.get')
+  const head = block?.querySelector('.get-head')
+  const install = block?.querySelector('pre.install')
+  const declared = block instanceof HTMLElement ? block.dataset['ways'] : undefined
+  if (!(head instanceof HTMLElement) || install === null || install === undefined) return
+  if (declared === undefined) return
+
+  const ways = JSON.parse(declared) as readonly AWayToRunIt[]
+  const command = theCommandIn(install)
+  if (command === null) return
+
+  /** What follows the invocation on this page, which is the same for every way of running it. */
+  const arguments_ = (command.nodeValue ?? '').trim().split(' ').slice(2).join(' ')
+
+  const refusal = document.createElement('p')
+  refusal.className = 'refusal'
+  refusal.hidden = true
+
+  const list = document.createElement('ul')
+  list.className = 'managers'
+  list.setAttribute('role', 'group')
+  list.setAttribute('aria-label', 'Package manager')
+
+  const buttons = ways.map((way) => {
+    const item = document.createElement('li')
+    const button = document.createElement('button')
+
+    button.type = 'button'
+    button.textContent = way.manager
+    /**
+     * The one already chosen is the one the page serves, and `THE_INVOCATION` is that by
+     * declaration - so this compares a spelling against a spelling rather than against the whole
+     * command, which is what it did first and which marked nothing at all.
+     */
+    button.setAttribute('aria-pressed', String(way.spelling === THE_INVOCATION))
+    if (way.refusedBecause !== undefined) button.dataset['refused'] = ''
+
+    button.addEventListener('click', () => {
+      for (const other of buttons) other.setAttribute('aria-pressed', String(other === button))
+
+      /**
+       * A refused way shows the spelling that works rather than the one that does not. The reader
+       * said which manager they use; they did not ask to be handed a command that fails.
+       */
+      const shown = way.refusedBecause === undefined ? way.spelling : THE_INVOCATION
+      command.nodeValue = `${shown} ${arguments_}`
+
+      refusal.textContent = way.refusedBecause ?? ''
+      refusal.hidden = way.refusedBecause === undefined
+
+      const copy = install.querySelector('.copy')
+      if (copy !== null) {
+        copy.textContent = 'copy'
+        copy.setAttribute('aria-label', `Copy ${command.nodeValue.trim()} to the clipboard`)
+      }
+    })
+
+    item.append(button)
+    list.append(item)
+
+    return button
+  })
+
+  head.append(list)
+  install.after(refusal)
 }
 
 /**
@@ -287,6 +384,7 @@ const searchControl = (): void => {
 
 const start = async (): Promise<void> => {
   copyControl()
+  managerControl()
   searchControl()
 
   const container = document.getElementById('playground')

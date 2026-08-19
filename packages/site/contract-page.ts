@@ -46,7 +46,12 @@
  * room for the number, and the number is the argument. `readableBytes` stays where it is.
  */
 
-import { THE_INVOCATION, contractUrl, renderContract } from '../registry/address.js'
+import {
+  THE_INVOCATION,
+  THE_WAYS_TO_RUN_IT,
+  contractUrl,
+  renderContract,
+} from '../registry/address.js'
 import type { TheMeasurement, WhySurviving } from '../../mutation/published.js'
 import { WHAT_A_SURVIVOR_MEANS_TO_A_READER } from '../../mutation/published.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
@@ -852,10 +857,20 @@ export const contractPage = (
                * be right to refuse a heading that no rail entry points at. It costs two words in
                * the Markdown twin, where they read as well as they do here.
                */
+              /**
+               * The ways to run it are handed over as data and never as controls, which is the
+               * arrangement the masthead's search already has: what is served is the one spelling
+               * that works, as prose, and `start.ts` builds the choice into it.
+               *
+               * **A reader without JavaScript is therefore told nothing about yarn**, and that is
+               * right rather than a gap: they are not offered it either, so the page makes no claim
+               * it cannot keep. The refusal is a thing you meet by asking for yarn, and asking is
+               * something only the control can do. ADR-0138.
+               */
               el(
                 'div',
-                { class: 'get' },
-                line('p', 'Install', { class: 'label' }),
+                { class: 'get', 'data-ways': JSON.stringify(THE_WAYS_TO_RUN_IT) },
+                el('div', { class: 'get-head' }, line('p', 'Install', { class: 'label' })),
                 line('pre', `${THE_INVOCATION} add ${contract.address.name}`, { class: 'install' }),
               ),
               el(

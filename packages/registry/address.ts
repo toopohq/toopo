@@ -243,6 +243,60 @@ export const THE_PACKAGE_NAME = 'toopo'
  */
 export const THE_INVOCATION = `npx ${THE_PACKAGE_NAME}`
 
+/** One way of running this, with what running it was measured to do. */
+export type AWayToRunIt = {
+  /** The package manager a reader recognises, which is what a choice between these is labelled by. */
+  readonly manager: string
+  /** The words, whether or not they work. */
+  readonly spelling: string
+  /**
+   * Absent when it runs, and the measurement that refused it when it does not.
+   *
+   * A refusal rather than an omission, because a manager quietly missing from a list of four reads as
+   * an oversight and sends a reader to try it. This catalogue publishes what it turned down with the
+   * measurement each decision rests on; the same treatment applies to itself.
+   */
+  readonly refusedBecause?: string
+}
+
+/**
+ * Every way a reader can run this, each measured against the published package rather than
+ * transcribed from another site.
+ *
+ * **A form displayed and not measured is the defect a visitor already met**, on the first thing they
+ * tried: four published surfaces printed the bare `toopo`, which answers `command not found` for
+ * anybody who has installed nothing. Copying `yarn dlx` off another registry's page would have been
+ * the same defect with a different spelling, and it would have shipped - `yarn dlx` is the one of the
+ * four that does not work.
+ *
+ * **Measured on 2026-08-19 against `toopo@1.0.4` as npm serves it**, each in its own empty project
+ * holding nothing but a `package.json`. `npx`, `pnpm dlx` and `bunx` each exit 0, and the file each
+ * writes hashes to `1a8ae9d1…`, which is the blob this catalogue announces - so the three do not
+ * merely run, they land the same bytes. `yarn dlx` exits 1 with nothing written.
+ *
+ * **`deno` is not here because it was not measured**, not because it fails. It is not on the machine
+ * the readings were taken on, and a fifth entry asserted from the shape of the other four is exactly
+ * what this table exists against.
+ *
+ * ADR-0138 carries the argument, the refusals and what was not measured.
+ *
+ * The versions the readings were taken at, because a manager's behaviour is its own to change:
+ * npm 11.12.1, pnpm 10.24.0, bun 1.3.8, yarn 4.6.0 through corepack 0.34.6.
+ */
+export const THE_WAYS_TO_RUN_IT: readonly AWayToRunIt[] = [
+  { manager: 'npm', spelling: THE_INVOCATION },
+  { manager: 'pnpm', spelling: `pnpm dlx ${THE_PACKAGE_NAME}` },
+  { manager: 'bun', spelling: `bunx ${THE_PACKAGE_NAME}` },
+  {
+    manager: 'yarn',
+    spelling: `yarn dlx ${THE_PACKAGE_NAME}`,
+    refusedBecause:
+      `Yarn 4 applies its builtin compatibility patch to typescript, which ${THE_PACKAGE_NAME} ` +
+      'depends on, and the patch does not apply to TypeScript 7 — the install fails before a file ' +
+      `is written. Use the npm form above: npx ships with Node, so it runs inside a Yarn project.`,
+  },
+]
+
 /**
  * The page a contract is published at, absolute, and the one spelling of it anything may write.
  *

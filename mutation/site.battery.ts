@@ -1746,11 +1746,36 @@ const mutants: readonly Mutant[] = [
       'the same shape and nothing saying which of them is the one to run',
     [
       contractPageFile(
-        `                line('p', 'Install', { class: 'label' }),\n`,
-        ``,
+        `el('div', { class: 'get-head' }, line('p', 'Install', { class: 'label' })),`,
+        `el('div', { class: 'get-head' }),`,
       ),
     ],
     killed(['the-command-and-the-signature-of-a-card-are-two-labelled-blocks']),
+  ),
+
+  /**
+   * A fifth way to run it, typed into the page instead of measured.
+   *
+   * This is the defect a visitor already met, arriving on the surface that multiplies it by four: a
+   * command that does not run, printed where somebody is being told to run it. The edit is the
+   * plausible one - a manager somebody knows about, added to the page because the other four are
+   * there - and it is exactly what the table exists to make impossible.
+   *
+   * It reddens the half about provenance. The half about the printed command is reddened by the
+   * page printing a refused spelling, which `every-command-the-site-tells-a-reader-to-run-carries-
+   * the-invocation` also catches - so that edit measures two guards and this one measures one.
+   */
+  sameOnEveryLens(
+    'W-90',
+    'hands a reader a fifth way to run this that nobody measured, typed into the page beside the ' +
+      'four the registry declares',
+    [
+      contractPageFile(
+        `{ class: 'get', 'data-ways': JSON.stringify(THE_WAYS_TO_RUN_IT) },`,
+        `{ class: 'get', 'data-ways': JSON.stringify([...THE_WAYS_TO_RUN_IT, { manager: 'deno', spelling: 'deno run -A npm:toopo' }]) },`,
+      ),
+    ],
+    killed(['the-ways-a-page-hands-over-are-the-declared-ways-and-the-one-it-prints-runs']),
   ),
 ]
 
