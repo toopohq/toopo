@@ -660,6 +660,74 @@ describe('the site', () => {
    * Seen red before it was believed, on both halves: with the figure put back the card carries
    * `2 / 4`, and with the count taken out of the sentence the section no longer names it.
    */
+  /**
+   * The command and the signature are two labelled blocks, and this keeps the half of that a
+   * document can carry.
+   *
+   * They were two `pre`s of the same size in matching frames, stacked one under the other, and the
+   * owner could not tell which of them to run on a page he had just been shown. A visitor arriving
+   * from a search wants the first.
+   *
+   * **What the stylesheet now does is not readable here, and saying so is the point.** The accent,
+   * the ground, the heavy edge and the larger face are a browser reading; what a document can be
+   * asked is that each block exists, that each is labelled, and that the two labels differ. This
+   * guard does not pretend to the other half.
+   *
+   * Its red event is somebody flattening the card back to two bare `pre`s or dropping a label -
+   * which is the state this page was in, and the one no stylesheet can repair from the outside.
+   *
+   * **The neighbour it is not**:
+   * `nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed` asks whether the
+   * command is there at all and carries no opinion about what stands beside it. This one asks what
+   * the two blocks are, and is blind to whether the command is the right one -
+   * `every-command-the-site-tells-a-reader-to-run-carries-the-invocation` owns that.
+   *
+   * The refused contract is rendered by another page entirely, so the assertion over it is that none
+   * of these four parts is present rather than that some of them are.
+   */
+  it('the-command-and-the-signature-of-a-card-are-two-labelled-blocks', () => {
+    const installable = new Set(
+      index.entries
+        .filter((entry) => entry.installable)
+        .map((entry) => renderContract(entry.address)),
+    )
+
+    const partsOf = (document: Parameters<typeof toText>[0]): readonly string[] => {
+      const found: string[] = []
+      const walk = (node: Parameters<typeof readingOf>[0], within: string | null): void => {
+        if (node.kind !== 'element') return
+
+        const own = node.attributes['class'] ?? ''
+        const block = own === 'get' || own === 'sig' ? own : within
+
+        if (block !== null && own === 'label') found.push(`${block} is labelled ${readingOf(node).trim()}`)
+        if (block !== null && node.tag === 'pre') found.push(`${block} holds pre.${own}`)
+
+        for (const child of node.children) walk(child, block)
+      }
+
+      for (const node of document.body) walk(node, null)
+
+      return found
+    }
+
+    for (const held of heldByTheRegistry(source)) {
+      const rendered = renderContract(held.contract.address)
+      const parts = partsOf(page(pageOf(held.contract.address)))
+
+      expect(parts, rendered).toEqual(
+        installable.has(rendered)
+          ? [
+              'get is labelled Install',
+              'get holds pre.install',
+              'sig is labelled Signature',
+              'sig holds pre.answer',
+            ]
+          : [],
+      )
+    }
+  })
+
   it('every-figure-of-the-card-is-a-quantity-and-a-proportion-sits-with-its-breakdown', () => {
     const figures = (document: Parameters<typeof toText>[0]): readonly string[] => {
       const found: string[] = []

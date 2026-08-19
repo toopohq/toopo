@@ -1726,6 +1726,32 @@ const mutants: readonly Mutant[] = [
     [chromeFile(`  'add days to a date',`, `  'typo tolerance',`)],
     killed(['every-example-the-masthead-offers-is-answered-by-the-catalogue']),
   ),
+
+  /**
+   * The state the card was actually in, injected back.
+   *
+   * The command and the signature were two `pre`s of the same size in matching frames, and the owner
+   * could not tell which of them to run on a page he had just been shown. Taking the label off the
+   * command is the smallest edit that returns the page to that, and it is the edit somebody makes
+   * while tidying markup they think is decorative.
+   *
+   * **It reddens the structural half and nothing else, which is what the guard claims.** The accent,
+   * the ground and the larger face survive this mutant untouched - a stylesheet is not what this cell
+   * perturbs - and the guard it kills says so in as many words rather than implying a coverage it
+   * does not have.
+   */
+  sameOnEveryLens(
+    'W-89',
+    'takes the label off the install command, so the card offers a visitor two monospaced blocks of ' +
+      'the same shape and nothing saying which of them is the one to run',
+    [
+      contractPageFile(
+        `                line('p', 'Install', { class: 'label' }),\n`,
+        ``,
+      ),
+    ],
+    killed(['the-command-and-the-signature-of-a-card-are-two-labelled-blocks']),
+  ),
 ]
 
 export const battery: Battery = {
