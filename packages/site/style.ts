@@ -598,6 +598,13 @@ ul.toc > li.under { padding-left: var(--s3) }
 .case-id { margin: 0; font-size: var(--t6) }
 .case-id a { font-family: var(--mono); color: var(--dim); text-decoration: none }
 .case-id a:hover { color: var(--accent) }
+/* The argument is a cell of a table and a cell has a width, which is what makes it a column. It
+   carries this one whether the row is split or stacked, so a reader gets the same line either side
+   of the threshold below - without it, the stacked row let an argument fill the content column and
+   read 114 characters at 1024.
+
+   Nothing here bounds a line of page prose: ADR-0134 removed that and it stays removed. */
+.argument { max-width: var(--measure) }
 .argument > p { margin: 0 0 var(--s2); font-size: var(--t4) }
 .argument > p:last-child { margin-bottom: 0 }
 
@@ -671,6 +678,15 @@ ul.toc > li.under { padding-left: var(--s3) }
      so that is the measure. It was 34ch, which named nothing: measured at 456ee44, that folded 50 of
      50 calls on number/parse@1 and 43 of 43 on date/add@1 onto more than one line, and 325 rendered
      lines carried the 157 calls of the four pages. At the measure it is 223. */
-  .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, 1fr) }
+  /* Two measures and not a measure beside whatever is left. The second track was 1fr, so the
+     argument grew with the screen and read 354 characters at 2560 - which is an artefact rather
+     than a reading, on the half of this page a reader actually reads.
+
+     The width was arrived at twice and the two agree to a pixel. Measured in a browser over the 41
+     arguments of string/slugify@1 at 1920, the widest column at which no argument line exceeds 75
+     characters is 28rem, or 448px; --measure, which is this stylesheet's own 75 characters taken
+     through its declared density and drift, resolves to 447px. So the row is symmetric by
+     construction rather than by a constant somebody chose for the right-hand side. */
+  .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, var(--measure)) }
 }
 `.trim()
