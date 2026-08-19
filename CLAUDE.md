@@ -68,6 +68,19 @@ it. **The blind spot is published**: a removal taking one declaration out of the
 braces balanced, is invisible to all three guards, and the total form is the parser the browser lent.
 ADR-0141.
 
+**And it named a class this repository had not carried: a false-only region — a part of a guard's
+population where no true verdict is reachable and a false one is.** `a-page-loads-nothing-and-runs-nothing`
+refuses `url(` anywhere in a served page, comments included, so on the 25 007 B of comment it swept
+**a true positive was impossible and a false positive was possible**: a `url(` inside a CSS comment
+fetches nothing, so the guard could never have been right to fire there, and had anybody written one it
+would have fired and been wrong. Measured over the seventy-five comments: zero `url(` and zero `http`.
+**It never reddened because nobody wrote one, not because it had reason not to.** It is neither shape
+already named here — a guard passing vacuously has *no* population, and a population that shrinks in
+silence loses coverage; this one was carrying a region where only a false verdict was reachable, and
+most of it was doing real work. **The repair removed it by accident**, for reasons about bytes, so the
+repository is one region better off and no decision bought that — which is the shape that recurs
+somewhere else unnoticed, nothing looking wrong on either side of it. ADR-0141.
+
 **The same defect is three times larger one door along, and it is measured and not taken.** The browser
 modules a reader downloads carry **80 752 B of comments out of 137 081 — 59 %**, measured at `018a2da`
 by a scan respecting strings, template literals and comments; `search.js` is 76 % comment and
@@ -1824,6 +1837,14 @@ of the thesis.
   hour: a round-trip fixture whose five characters could not disagree, a document check its own
   counter-examples were refused by for another reason, and a page check the column already satisfied.
   ADR-0125, ADR-0126.
+- **Write the sentence that explains the decision, for somebody who may disagree with it.** The same
+  gesture on a second axis: the neighbour makes a guard's claim explicit by naming what it is *not*
+  about, and this makes it explicit by owing a reader an argument. It is what found the false-only
+  region of ADR-0141 — *this population shrank and the loss is nil* had to be defended, and defending
+  it forced *could the guard ever have been right there?*, where a reread of the guard answers **yes,
+  it looks correct**, which it does. **No count is published**, on the rule below that a sentence which
+  can be true without counting does not count: what is claimed is that the gesture works and that it
+  has fired here. ADR-0141.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
 - Report what you left out. Never narrow the scope silently.

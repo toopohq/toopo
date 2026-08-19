@@ -203,7 +203,7 @@ Priced and refused: it is a headless browser as a dev dependency to keep a claim
 repository whose eight suites read strings. **The verification exists and the guard does not, and this
 paragraph is so that a reader knows which of the two they have.**
 
-## The population of a guard beside this one shrank, and the loss is nil
+## The population of a guard beside this one shrank, and what it lost could only have lied
 
 `a-page-loads-nothing-and-runs-nothing` refuses `url(`, `@import` and an absolute address anywhere in
 the served page, comments included. Taking the comments out removes 25 007 B from what it sweeps.
@@ -214,6 +214,54 @@ lost its edge to an `await import` and stayed green. Here the loss is nil, and t
 guard claims rather than what it matches: *this page goes and fetches nothing*, and a comment fetches
 nothing. A real `url()` is CSS, it survives the removal, and it is refused exactly as before. What
 would make this wrong is a served page carrying prose that is not CSS, and there is none.
+
+### The stronger half is about the state before the change, and this record nearly left it out
+
+*The loss is nil* says the removed region held no true positives. The sharper statement is that it
+could hold nothing else: **on those 25 007 B a true positive was impossible and a false positive was
+possible.** A `url(` inside a CSS comment fetches nothing, so the guard could never have been right to
+fire there — and had anybody ever written one, it would have fired and been wrong, on a page that goes
+and fetches nothing. Measured at `018a2da` over the seventy-five comments: zero occurrences of `url(`
+and zero of `http`. **It never reddened because nobody wrote one, and not because it had any reason
+not to.**
+
+Both halves are needed, and a reader given only the first draws the wrong conclusion: that this unit
+took dead weight out of a population. What it took out is a region where only a false verdict was
+reachable.
+
+### Naming the class, which this repository has not carried before
+
+**A false-only region: a part of a guard's population where no true verdict is reachable and a false
+one is.** It is neither of the two shapes already named here, and the distinction is what makes it
+worth a name.
+
+It is not a guard that passes vacuously. That one has *no* population — `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` looping zero times over a
+palette that is not there. This guard's population was real, and most of it was doing real work; one
+region of it was not.
+
+It is not a population that shrinks in silence. That one is a *change* nothing reports, and the harm
+is the coverage lost. Here nothing was lost, and the harm was standing in the population all along.
+
+**And it was removed by accident, which is the half that makes it worth recording rather than merely
+worth knowing.** Nobody set out to remove it. It went because the comments went, for reasons about
+bytes that have nothing to do with what a guard may conclude. So the repository is one region better
+off and no decision here bought that — which is exactly the shape that recurs somewhere else and is
+not noticed, because nothing looks wrong on either side of it.
+
+### How it was found, which is a gesture rather than a rule
+
+It came out of **writing the sentence that explains a decision**, not out of re-reading the guard.
+Saying *this population shrank and the loss is nil* out loud, for a reader who may disagree with it,
+is what forced the question *could it ever have been right there?* — and a reread of the guard answers
+*yes, it looks correct*, which it does.
+
+That is *write the guard beside it* on a different axis — the gesture, not a guard, so it is written as
+words rather than as a backticked token somebody's sweep would take for an address. That one makes a
+guard's claim explicit by naming its neighbour; this one makes it explicit by owing somebody an
+argument. **No count is
+published**, because a sentence that can be true without counting does not count and this one can: the
+owner reports the pattern has fired before, and rebuilding that list is not this unit's work. What is
+claimed is one instance, here, with its cause.
 
 ## What this unit measured and did not take: the modules carry more than the stylesheet did
 
