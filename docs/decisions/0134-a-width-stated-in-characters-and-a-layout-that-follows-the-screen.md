@@ -264,8 +264,16 @@ sweep discarding one full pass before the one it keeps.
 
 Found by this unit's sweep, outside its subject, and left for the redesign:
 
+- **The wordmark breaks mid-word at 390, on every page.** `toopo` renders as `toop` / `o`: the masthead
+  is a flex row and `ul.menu` wraps before the wordmark does, leaving `.wordmark` a 39px box that
+  `overflow-wrap: anywhere` then breaks. Measured on both trees — `lineBoxes` 2, width 39px, height
+  52px at `ab2765c` and at `c375348`, identical — so it is older than this change. It is the most
+  visible thing this unit's sweep found and it is in the masthead, which the decision did not reach.
 - **The copy control overflows at 390 on `string/levenshtein@1`** by 17px, in the install block. Older
   than this change and identical either side of it.
+- **The card's void grew with the column.** ADR-0132 measured 353px of nothing to the right of the card
+  and refused to fix it by widening; the card is now the column's width at every screen, so the void it
+  refused to move is larger. It is the same finding at a new size, not a new one.
 - **`--measure`, `--the-longest-line` and `--a-contract-in-a-list` carry names that describe a line and
   size boxes.** Renaming them touches the case table and the card, both named untouchable here.
 - **The `97rem`, `64rem` and `52rem` thresholds** are now three typed widths with no arithmetic

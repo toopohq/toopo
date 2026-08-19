@@ -297,25 +297,28 @@ repairs to reach.** The owner read a contract page at 1440 and saw the centre co
 three figures were exact and his sentence was not — `main` holds twelve case tables at 905 — and the
 measurement that replaces it is worse: at 1440 **the median block of `number/parse@1` reaches 46% of
 its column**, 12 of 71 blocks reach 90%, and on a refused contract and the one-contract family pages
-**no block reaches 90% at all**. Nothing moves between 1280 and 2560. Both repairs he proposed were
-built in a browser and both fail: tightening the column with `fit-content` **breaks the two-abreast
+**no block reaches 90% at all**. Nothing moved between 1280 and 2560. Both repairs he proposed were
+built in a browser and both failed: tightening the column with `fit-content` **breaks the two-abreast
 list**, because under an indefinite constraint `repeat(auto-fit, …)` repeats *once* and a track that
 asks a list how wide it wants to be is told *one contract*; widening the card moves the void inside it,
-which is ADR-0122's own recorded objection one floor down. What fills it instead is the page's own
-matter — the card is the column's width and read across, the opening is its sections two abreast where
-there is room. **The table of contents was measured for that job and refused**: a sticky rail and a
+which is ADR-0122's own recorded objection one floor down. What filled it instead was the page's own
+matter — the card is the column's width and read across, the opening was its sections two abreast where
+there was room. **The table of contents was measured for that job and refused**: a sticky rail and a
 905px case row cannot share a column, so it would accompany 13.7% of a page instead of all of it. The
-measure held at nine widths, 0 of 4 429 lines over 75, worst 69. **What is not closed is said rather
-than implied**: a contract page's prose is still 447 in 933, and that is arithmetic rather than an
-oversight. ADR-0132.
+measure held at nine widths, 0 of 4 429 lines over 75, worst 69, and a contract page's prose was 447 in
+933. **Every clause of that state has since been withdrawn by ADR-0134** — the ceiling, the two-abreast
+opening and the column that did not move between 1280 and 2560 — and the card being the column's width
+is the one that survives, now at every screen. ADR-0132.
 
 **The divisor did not move, and the record says why instead of leaving it to look like an oversight.**
-Re-measured over every file of HTML in the tree, the densest line at the measure is 1.3342 characters
-per ch against the 1.393 declared, so the page renders 69 where it allows 75 — an 8.6% gap, not the 15%
-a one-page reading suggested. It cannot be spent: at the density re-measured the worst line goes to 72
-and the void beside the card *grows* from 353 to 368, and at the density with no margin at all one line
-reaches 77. **Density is not stationary and a column is two lines wide**, so widening prose to fill a
-column widens the column by more than it fills.
+Re-measured over every file of HTML in the tree, the densest line at the measure was 1.3342 characters
+per ch against the 1.393 declared, so the page rendered 69 where it allowed 75 — an 8.6% gap, not the
+15% a one-page reading suggested. It could not be spent: at the density re-measured the worst line went
+to 72 and the void beside the card *grew* from 353 to 368, and at the density with no margin at all one
+line reached 77. **Density is not stationary and a column is two lines wide**, so widening prose to fill
+a column widens the column by more than it fills. **The whole of that argument was about a ceiling and
+ADR-0134 removed the ceiling**; the divisor still divides, and what it now sizes is a call column and
+half a card.
 
 **A page is long in lines, and the line count is the reading this repository had never taken.** The
 owner read a contract page, judged *What lands in your project* useless two days after it was proposed,
@@ -329,9 +332,12 @@ column the declared 75 allows — measured in a browser rather than projected �
 3.7%**, and at a packing no line-breaker performs, `ceil(characters / 75)` block by block, **511, which
 is 14%**. So the wrapping is not what makes the page long, and that is a negative worth as much as a
 positive: it says the next unit is not a cut. **The two populations are declared in the record** because
-one of them is new here — *prose* is `h1, h2, h3, h4, p, li`, the set the stylesheet bounds, and *every
+one of them is new here — *prose* is `h1, h2, h3, h4, p, li`, the set the stylesheet bounded, and *every
 rendered line* is what a reader scrolls past. They differ by 5 to 7%: a settled case renders as three
-`p`s, so the case tables were already inside the measure's own population. ADR-0133.
+`p`s, so the case tables were already inside the measure's own population. **The next unit was not a cut
+and was not a wrapping either**: ADR-0134 took the ceiling out instead of widening toward it, and the
+same page fell from 580 rendered prose lines at 1440 to 397. The 3.7% is exact for a question that had
+a ceiling in it. ADR-0133.
 
 **And what a section costs in height is a row of a grid, never its own height.** The block removed was
 **468px on all four pages and stood beside a taller sibling on all four**, so it occupied no height at
