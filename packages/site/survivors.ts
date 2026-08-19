@@ -50,18 +50,22 @@ export const renderSurvivor = (survivors: readonly PublishedSurvivor[]): Node =>
 
   return el(
     'div',
-    NOTHING,
+    { class: 'stacked' },
     el(
-      'p',
-      { class: 'call' },
-      line('code', `${first?.battery ?? ''} · ${first?.mutant ?? ''}`),
-      text(
-        survivors.length === 1
-          ? ` on ${first?.cell ?? ''}`
-          : ` on ${survivors.map((one) => one.cell).join(' and ')}`,
+      'div',
+      { class: 'what' },
+      el(
+        'p',
+        { class: 'call' },
+        line('code', `${first?.battery ?? ''} · ${first?.mutant ?? ''}`),
+        text(
+          survivors.length === 1
+            ? ` on ${first?.cell ?? ''}`
+            : ` on ${survivors.map((one) => one.cell).join(' and ')}`,
+        ),
       ),
     ),
-    paragraph(first?.description ?? '', { class: 'why' }),
+    el('div', { class: 'argument' }, paragraph(first?.description ?? '')),
   )
 }
 

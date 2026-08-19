@@ -113,15 +113,26 @@ const renderPopulation = (population: PublishedPopulation, what: string): readon
 
 const renderSilences = (silences: readonly PublishedSilence[], heading: string): readonly Node[] => [
   line('h3', `${silences.length} — ${heading}`),
+  /*
+   * A guard nothing reddens and its reason are an identifier and an argument, which is the shape a
+   * settled case has - so it is the same table. Fifty-five per cent of this page is this list, and
+   * it was stacked prose: measured on a contract page, the same rows read 74 characters a line as a
+   * table against 229 stacked, and forty-one of them became something a reader scans rather than
+   * reads. There are seventy-three here.
+   */
   el(
-    'ul',
-    { class: 'plain' },
+    'div',
+    { class: 'cases' },
     ...silences.map((silence) =>
       el(
-        'li',
-        NOTHING,
-        el('p', { class: 'call' }, line('code', `${silence.battery} · ${silence.what.join(', ')}`)),
-        paragraph(silence.reason, { class: 'why' }),
+        'div',
+        { class: 'stacked' },
+        el(
+          'div',
+          { class: 'what' },
+          el('p', { class: 'call' }, line('code', `${silence.battery} · ${silence.what.join(', ')}`)),
+        ),
+        el('div', { class: 'argument' }, paragraph(silence.reason)),
       ),
     ),
   ),
@@ -157,7 +168,20 @@ export const methodologyPage = (
   body: [
     masthead(METHOD_PAGE, menu),
 
-    line('h1', 'How we verify'),
+    /*
+     * The landmark every page of this site that carries content has, and the one page carrying nine
+     * case tables did not.
+     *
+     * It is not tidiness. A settled case folds into two columns on the width of its own container,
+     * and the container is declared on main - so the seventy-three guards and sixty-two cells here
+     * were the one place on the site where that table could never fold, whatever the screen. The
+     * page has no shell because it has no navigation column; it has content, so it has a main.
+     */
+    el(
+      'main',
+      NOTHING,
+
+      line('h1', 'How we verify'),
     line(
       'p',
       'A test suite that has never failed proves nothing at all. So every contract in this ' +
@@ -320,10 +344,15 @@ export const methodologyPage = (
     line('h2', 'What a signature does not prove'),
     paragraph(methodology.whatASignatureDoesNotProve),
 
-    el(
-      'p',
-      NOTHING,
-      el('a', { href: linkTo(rootFrom(METHOD_PAGE) + CATALOGUE_PAGE) }, text('Back to the catalogue')),
+      el(
+        'p',
+        NOTHING,
+        el(
+          'a',
+          { href: linkTo(rootFrom(METHOD_PAGE) + CATALOGUE_PAGE) },
+          text('Back to the catalogue'),
+        ),
+      ),
     ),
   ],
 })

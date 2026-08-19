@@ -248,7 +248,7 @@ const A_PIN_IS_NOT_AN_OBSERVATION = `    paragraph(THE_PINS_ARE_AN_ASSERTION),`
  */
 const A_CONTRACT_NAME_IS_A_TITLE = `    line('p', held.contract.identity.summary, { class: 'why' }),`
 
-const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `        paragraph(silence.reason, { class: 'why' }),`
+const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `paragraph(silence.reason)`
 
 const A_PAGE_IS_WRITTEN_AT_THE_FILE_IT_IS =
   '    ...[...pages].map(([path, page]) => [path, toHtml(page)] as const),'
@@ -1399,7 +1399,7 @@ const mutants: readonly Mutant[] = [
     [
       methodFile(
         A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
-        `        line('p', silence.reason, { class: 'why' }),`,
+        `line('p', silence.reason)`,
       ),
     ],
     killed(['no-mark-a-sentence-carries-reaches-the-reader-as-itself']),

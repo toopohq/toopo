@@ -720,6 +720,17 @@ ul.toc > li.under { padding-left: var(--s3) }
    for. On the container and not on the row: a row sized to its own content would leave the
    separators ragged, which is the one thing a table of forty-one cases must not be. */
 .cases { margin: 0; width: fit-content; max-width: 100% }
+/* A row whose halves are an identifier and an argument, and which does NOT become two columns.
+
+   Measured at 1440 over the method page's hundred rows, three ways: committed, 283 prose lines
+   over 75 characters at 25 192px; stacked with the argument bounded, 88 at 35 640; and as a case
+   row of two columns, 88 at 41 402. **The columns buy nothing here** - the same reading for 5 762px
+   more - because the left half is one short identifier against a paragraph, so half the width
+   carries no height. On a contract page the left half is a call, often folding to several lines,
+   and there the columns pay. Same shape, opposite answer, and only the data says which.
+
+   The whole of the gain is that the argument is a cell with a width, which it already had. */
+.stacked { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
 .case {
   display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2) var(--s10);
   padding: var(--s5) 0; border-top: 1px solid var(--rule);
