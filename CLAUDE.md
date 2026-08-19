@@ -615,8 +615,10 @@ record declares**, which is a worse thing and has never been named here before.
   implements, priced there as a unit of the publishing tool.
 
   **What is cheap and is done instead is that both records now say so** — the head of ADR-0035, and
-  this entry. What would close it is the validation stage reading this repository's own strings, which
-  four entries here already name, already priced and already refused as a lint over prose. ADR-0136.
+  this entry. What would close it is the validation stage reading this repository's own strings, named
+  by several entries of this list already, already priced and already refused as a lint over prose —
+  and this is the first of them whose subject is a *record* rather than a source, which is a widening
+  of that stage rather than one more customer for it. ADR-0136.
 
 - **That a comment naming a guard is naming one that exists.** A record may not: `confirmationFaults`
   resolves every pair a `confirmed-by` declares against the guards its suite collects, and
