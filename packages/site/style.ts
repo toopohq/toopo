@@ -233,7 +233,7 @@ export const STYLE = `
      is tallest, so it enters the sum as a row and a gap rather than as a maximum. */
   --the-menu-at-its-tallest: 3;
   --the-field-at-its-tallest: calc(
-    var(--t5) * var(--the-line) + var(--s1) * 2 + var(--the-hairline) * 2
+    var(--t5) * var(--the-line) + var(--s) * 2 + var(--the-hairline) * 2
   );
   --the-sticky-bar: calc(
     var(--s3) * 2 +
@@ -366,7 +366,7 @@ ul.menu .here { color: var(--dim) }
 .masthead .search input {
   width: 100%; font-family: var(--mono); font-size: var(--t5); line-height: var(--the-line);
   color: var(--ink); background: var(--paper); border: var(--the-hairline) solid var(--rule);
-  padding: var(--s1) var(--s2);
+  padding: var(--s) var(--s2);
 }
 /* The accent means *you can act on this*, which is exactly what a focused field is. ADR-0115. */
 .masthead .search input:focus-visible { outline: none; border-color: var(--accent) }
@@ -377,16 +377,16 @@ ul.menu .here { color: var(--dim) }
    not a number - the bar's own height, taken off the viewport, with one gap left below. */
 .answers:empty { display: none }
 .answers {
-  position: absolute; top: calc(100% + var(--s1)); left: 0; right: 0; z-index: 30;
+  position: absolute; top: calc(100% + var(--s)); left: 0; right: 0; z-index: 30;
   max-height: calc(100vh - var(--the-sticky-bar) - var(--s6)); overflow-y: auto;
-  background: var(--paper); border: 1px solid var(--rule); padding: var(--s2);
+  background: var(--paper); border: var(--the-hairline) solid var(--rule); padding: var(--s2);
 }
 .answers .why { font-size: var(--t5); color: var(--dim); margin: 0 0 var(--s2) }
 .answers .why:last-child { margin-bottom: 0 }
-ul.examples { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--s1) }
+ul.examples { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--s) }
 ul.examples button {
   font-family: var(--mono); font-size: var(--t5); color: var(--body);
-  background: none; border: 1px solid var(--rule); padding: var(--s1) var(--s2); cursor: pointer;
+  background: none; border: var(--the-hairline) solid var(--rule); padding: var(--s) var(--s2); cursor: pointer;
 }
 ul.examples button:hover { color: var(--accent); border-color: var(--accent) }
 /* A result is one target and not three, so it is a block link with its parts stacked inside it. */
