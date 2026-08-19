@@ -5,7 +5,7 @@ import { deciding, withoutAsking } from './fixpoint.js'
 import { localSource } from './local-source.js'
 import { renderCatalogue, renderSearch } from './report.js'
 import type { Search } from './search.js'
-import { displayed, search } from './search.js'
+import { answers, displayed, search, spreadOverTheCatalogue, wordsOf } from './search.js'
 import type { HeldRegistry } from './source.js'
 
 /**
@@ -195,6 +195,84 @@ describe('finding a contract from what somebody typed', () => {
         .map((query) => [query, searching(query).results] as const)
         .filter(([, results]) => results.length > 0)
         .map(([query, results]) => `"${query}" -> ${results.length} results`),
+    ).toEqual([])
+  })
+
+  /**
+   * The same request, worded another way, answers the same contract.
+   *
+   * **This is the half the corpus above cannot measure, because the corpus is written by whoever
+   * wrote the rule.** Every pair here is one query this catalogue already answers and one rewording
+   * of it that introduces **no word the catalogue has never heard** - which the second assertion
+   * requires rather than trusts, so a pair cannot pass by smuggling in an unknown word and being
+   * excused for it.
+   *
+   * Measured before it was written: thirteen of nineteen ordinary descriptions answered nothing. The
+   * cause was a bound that asked the reader to reproduce a label down to its prepositions -
+   * `string to number` was found by `convert a string to a number` and not by `turn a string into a
+   * number`. All three pairs here answered nothing on the left of that repair.
+   *
+   * **Three pairs and not thirty, and the shortness is the measurement rather than laziness.** Of
+   * nineteen rewordings written for the trial, most bring in a word this catalogue has never heard -
+   * `read`, `strict`, `parsing`, `user`, `onto`, `some` - which puts them outside what this guard
+   * claims, and several of the rest already answered. Three is what was left after the second
+   * assertion below threw out the ones that would have passed by smuggling a word in. **The guard
+   * caught them rather than a reader**: they were written into this file, run, and refused.
+   *
+   * **What it does not claim is that any rewording is answered.** A word this catalogue declares
+   * nowhere - `tolerance`, `spelling`, `maths` - answers nothing and should, and that is a missing
+   * alias rather than a missing rule. The second assertion is what keeps this guard about the rule.
+   */
+  it('a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers', () => {
+    const rewordings: readonly (readonly [string, string])[] = [
+      ['convert string to number', 'turn a string into a number'],
+      ['convert string to number', 'string into number'],
+      ['group array by key', 'group an array with a key'],
+    ]
+
+    expect(
+      rewordings
+        .filter(([first, again]) => firstFor(again) !== firstFor(first))
+        .map(([first, again]) => `"${again}" -> ${firstFor(again)}, as "${first}" -> ${firstFor(first)}`),
+    ).toEqual([])
+
+    expect(
+      rewordings
+        .map(([, again]) => [again, searching(again).unknownWords] as const)
+        .filter(([, unknown]) => unknown.length > 0)
+        .map(([again, unknown]) => `"${again}" brings in ${unknown.join(', ')}`),
+    ).toEqual([])
+  })
+
+  /**
+   * A word only a summary carries answers nothing on its own.
+   *
+   * **The population is read off the index rather than listed here**, which is what makes this a
+   * statement about the rule and not about eighteen words somebody thought of: it is every word some
+   * contract's summary holds and no contract's name, export or alias does. A summary is prose a
+   * contract happens to be described by, and `search.ts` has said since it was written that covering
+   * one is not a statement about anything - it just did not say it about the branch where every word
+   * of the query happened to be answered.
+   *
+   * Measured on what that cost: `toopo search a` returned all four contracts, `to` three, `in` two -
+   * 37 results over eighteen bare function words, on a command whose subject is that a search which
+   * always answers something is the one nobody believes twice.
+   *
+   * The population is asserted non-empty, because a guard that swept nothing would pass here exactly
+   * as loudly as one that swept everything.
+   */
+  it('a-word-only-a-summary-carries-answers-nothing-on-its-own', () => {
+    const declared = [...spreadOverTheCatalogue(INDEX).keys()]
+    const onlyDescribed = [
+      ...new Set(INDEX.flatMap((entry) => wordsOf(entry.summary))),
+    ].filter((word) => !declared.some((held) => answers(word, held)))
+
+    expect(onlyDescribed.length).toBeGreaterThan(20)
+    expect(
+      onlyDescribed
+        .map((word) => [word, searching(word).results] as const)
+        .filter(([, results]) => results.length > 0)
+        .map(([word, results]) => `"${word}" -> ${results.length} results`),
     ).toEqual([])
   })
 

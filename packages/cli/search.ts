@@ -29,13 +29,36 @@
  * carry meaning here, they are in fourteen aliases.
  *
  * So: **a word a contract cannot answer is set aside for that contract, and what remains must then
- * name one of its own names, exports or aliases in full.** Setting a word aside can only widen a
- * query, and this is what the widening is paid for with - the remainder has to *precisely* name
- * something the contract declares, which `array` alone does not do for `array/group-by@1` and
- * `convert string to number` does do for `number/parse@1`.
+ * name one of its own names, exports or aliases.** Setting a word aside can only widen a query, and
+ * this is what the widening is paid for with - the remainder has to name something the contract
+ * declares, which `array` alone does not do for `array/group-by@1` and `convert string to number`
+ * does do for `number/parse@1`.
  *
- * A summary cannot be what is named in full, and that is the same argument again: a summary is prose
- * a contract happens to be described by, so covering it is not a statement about anything.
+ * A summary cannot be what is named, and that is the same argument again: a summary is prose a
+ * contract happens to be described by, so covering it is not a statement about anything.
+ *
+ * ---------------------------------------------------------------------------
+ * *Name it in full* was the wrong half of that sentence, and a reader paid for it
+ * ---------------------------------------------------------------------------
+ *
+ * That rule read *name one of them **in full*** until it was measured against the descriptions
+ * people actually write. It required the query to carry every word of a field, connecting words and
+ * all - so `string to number` was named by `convert a string to a number` and **not** by `turn a
+ * string into a number`, which is the same request with a different verb and not one unknown word in
+ * it. Measured over nineteen ordinary descriptions of these five functions: **six answered, thirteen
+ * did not**, and several of the thirteen were a working query with one word changed.
+ *
+ * The bound was right and its direction was not. It was stated on the registry's phrasing, so a
+ * reader had to have guessed the label down to its prepositions; what it is stated on now is what a
+ * field's words *establish*, which the catalogue itself says by how many contracts declare them. See
+ * `namedByWhatTellsThemApart`. Nothing here is a list of words to ignore - that was refused when this
+ * file was written and it stays refused, because a list decides which words carry meaning and a count
+ * observes it.
+ *
+ * **What it does not repair is a word the catalogue declares nowhere.** `typo tolerance`,
+ * `spelling suggestion` and `date maths` still answer nothing, and under this file's own rule that is
+ * a missing alias rather than a missing rule. The repair is closed: `identity.searchAliases` is
+ * inside the frozen half, and four of the five contracts are published. `CLAUDE.md` carries it.
  *
  * ---------------------------------------------------------------------------
  * What is searched, and why the description is not
@@ -120,7 +143,7 @@ const WORD = /[a-z0-9]+/g
  * typing `groupBy` and a contract spelling its alias `group by` meet in the middle, rather than
  * either one having to anticipate the other.
  */
-const wordsOf = (text: string): readonly string[] =>
+export const wordsOf = (text: string): readonly string[] =>
   text
     .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
     .toLowerCase()
@@ -192,7 +215,7 @@ const singular = (word: string): string =>
  * `singular` buys back explicitly: `arrays`, `numbers` and `dates` are queries people write, and
  * they are a plural rather than a different word. Nothing else about English is claimed.
  */
-const answers = (asked: string, held: string): boolean =>
+export const answers = (asked: string, held: string): boolean =>
   asked === held ||
   singular(asked) === singular(held) ||
   (asked.length >= MINIMUM_PREFIX && held.startsWith(asked))
@@ -214,17 +237,110 @@ const bestHit = (word: string, fields: readonly Field[]): Hit | null => {
 }
 
 /**
- * A field the query names in full: every word the field carries is present in the query.
+ * The fields somebody chose as a way of being found, as against the ones a contract merely has.
  *
- * The deliberate fields only. Covering a summary says nothing, because a summary is not a thing
- * anybody chose as a way of being found.
+ * Covering a summary says nothing, because a summary is not a thing anybody chose; covering the
+ * language says less, because every contract here answers it yes.
  */
 const DELIBERATE: ReadonlySet<MatchedField> = new Set<MatchedField>(['name', 'export', 'alias'])
 
-const namedInFull = (fields: readonly Field[], words: readonly string[]): boolean =>
-  fields.some(
-    (field) => DELIBERATE.has(field.kind) && field.words.every((word) => words.includes(word)),
-  )
+/**
+ * How many contracts declare each word, counted over the deliberate fields and read off the index.
+ *
+ * It is derived from the catalogue rather than typed, which is the whole reason it may exist at all:
+ * a list of words to ignore decides once and invisibly which words carry meaning, and that was
+ * refused. This decides nothing - it counts. A word four contracts declare is a word that separates
+ * none of them, and the catalogue is what says which words those are.
+ */
+export type WordSpread = ReadonlyMap<string, number>
+
+export const spreadOverTheCatalogue = (entries: readonly ServedIndexEntry[]): WordSpread => {
+  const spread = new Map<string, number>()
+
+  for (const entry of entries) {
+    const declared = fieldsOf(entry).filter((field) => DELIBERATE.has(field.kind))
+
+    for (const word of new Set(declared.flatMap((field) => field.words))) {
+      spread.set(word, (spread.get(word) ?? 0) + 1)
+    }
+  }
+
+  return spread
+}
+
+/**
+ * The most contracts a word may be declared by and still say which one is meant.
+ *
+ * **Both sides of it are pinned by a trial rather than chosen.** At one, `parse yaml` is admitted,
+ * which the negative half exists to refuse. At three and above, the silence this constant was
+ * introduced to remove comes straight back, 6 of 19 descriptions answered instead of 12. Two is the
+ * only value the measurement leaves.
+ *
+ * **It is not in a gap of the distribution, and saying so would be the easier sentence.** Over the
+ * five: 68 words are declared by one contract, three by two - `describe`, `failure`, `safe` - three
+ * by three - `from`, `string`, `to` - and two by all five, `1` and `typescript`. The ceiling cuts
+ * between two adjacent classes; the one empty class is four, which is nowhere near it. So what
+ * justifies the value is the trial on either side of it and not the shape of the counts, and the
+ * counts are published here because they are what a later reading is taken against.
+ */
+const TELLS_THE_CONTRACTS_APART = 2
+
+const tellsThemApart = (spread: WordSpread, word: string): boolean =>
+  (spread.get(word) ?? 0) <= TELLS_THE_CONTRACTS_APART
+
+/**
+ * How many telling words a field needs before the query may leave one of them out.
+ *
+ * **Counting what a word establishes is not enough on its own, and one query is what says so.**
+ * `by` is declared by `array/group-by@1` alone, so it separates that contract from every other and is
+ * as telling as a word gets - and in `group array by key` it is doing the work of `with`. So
+ * `group an array with a key` brings in no word the catalogue has never heard, asks for exactly the
+ * thing that contract does, and was answered by nothing.
+ *
+ * **The size condition is what keeps the allowance from being a hole, and it is measured rather than
+ * chosen.** Let a field of any size keep one word back and the negative half breaks in the same
+ * trial: `javascript sort an array` and `parse yaml` are both admitted, and
+ * `convert a string to a number in javascript` stops resolving to the contract it names. Three is
+ * where an allowance of one is still a minority of what was asked for.
+ */
+const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 3
+
+/**
+ * A field the query names: it carries every word of that field which says who is meant.
+ *
+ * **The direction is the repair, and what it drops is a field's connecting words.** This asked, until
+ * it was measured, that the query carry *every* word of a deliberate field - so `string to number`
+ * was found by `convert a string to a number` and not by `turn a string into a number`, which is the
+ * same request with a different verb. The bound existed to stop the setting-aside rule widening a
+ * query for free, and it was written on the registry's phrasing: a reader had to have guessed the
+ * label, down to its prepositions.
+ *
+ * So the field's words are read for what they establish. `to` is declared by three of the five
+ * contracts and separates none of them; `number` is declared by one and separates it from everything.
+ * A query that carries `string` and `number` has named `string to number` whether or not it happened
+ * to spell the preposition, and a query that carries only `array` has not named `array/group-by` -
+ * which is what keeps `sort array` answering nothing.
+ *
+ * A field with nothing that tells the contracts apart names nobody, which is why the emptiness is
+ * refused rather than allowed to pass vacuously.
+ */
+const namedByWhatTellsThemApart = (
+  fields: readonly Field[],
+  asked: readonly string[],
+  spread: WordSpread,
+): boolean =>
+  fields.some((field) => {
+    if (!DELIBERATE.has(field.kind)) return false
+
+    const telling = field.words.filter((word) => tellsThemApart(spread, word))
+    if (telling.length === 0) return false
+
+    const carried = telling.filter((word) => asked.some((one) => answers(one, word)))
+
+    return telling.length >= A_FIELD_MAY_KEEP_ONE_BACK_FROM
+      ? carried.length >= telling.length - 1
+      : carried.length === telling.length
+  })
 
 /**
  * What a screen shows about one contract: everything except why it was ranked.
@@ -278,15 +394,43 @@ export type Search = {
  * What this entry is worth against this query, or `null` when it does not answer it.
  *
  * `null` rather than a score of zero, so that no threshold anywhere has to be tuned: an entry that
- * leaves a word unanswered without naming something in full is not a weak result, it is not a result.
+ * leaves a word unanswered without naming something is not a weak result, it is not a result.
+ *
+ * ---------------------------------------------------------------------------
+ * Two bounds, and each one is bought by exactly one measurement
+ * ---------------------------------------------------------------------------
+ *
+ * **The first is that something the contract chose has to have answered.** Every word being answered
+ * used to be enough on its own, and a summary is a word list nobody chose - so `toopo search a`
+ * returned all four contracts, `to` three and `in` two, on a rule whose whole subject is that a
+ * search which always answers something is the one nobody believes twice. Measured over eighteen
+ * bare function words: **seventeen answered and they returned 37 results between them; four answer
+ * now, and nine results.** What is left is five words the catalogue really does declare - `a`, `to`,
+ * `by`, `from`, `two` - and killing those costs a legitimate answer, which is measured under
+ * `a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias` rather than argued: the
+ * candidate that removed them dropped `number/parse@1` from `string`.
+ *
+ * **The second is `namedByWhatTellsThemApart`, and it is the silence.** Measured over nineteen
+ * ordinary descriptions of what these five functions do, six were answered and thirteen were not,
+ * several of them a working query with one word changed. Twelve are answered now.
+ *
+ * **Neither bound buys the other's half and together they cost nothing**, which is what says both are
+ * load-bearing. On the corpus, on every declared alias, and on the negative half, all four
+ * combinations - neither, each alone, both - answer 27/27, 62/62 and 21/21 alike.
  */
-const scoreOf = (entry: ServedIndexEntry, words: readonly string[]): number | null => {
+const scoreOf = (
+  entry: ServedIndexEntry,
+  words: readonly string[],
+  spread: WordSpread,
+): number | null => {
   const fields = fieldsOf(entry)
   const hits = words.map((word) => bestHit(word, fields))
   const answered = words.filter((_word, at) => hits[at] !== null)
 
-  if (answered.length === 0) return null
-  if (answered.length !== words.length && !namedInFull(fields, answered)) return null
+  if (!hits.some((hit) => hit !== null && DELIBERATE.has(hit.field.kind))) return null
+  if (answered.length !== words.length && !namedByWhatTellsThemApart(fields, answered, spread)) {
+    return null
+  }
 
   return hits.reduce((total, hit) => total + (hit?.value ?? 0), 0)
 }
@@ -306,10 +450,11 @@ export const search = (source: HeldRegistry, query: string): Search => {
   const words = wordsOf(query)
   const entries = source.contractIndex().entries
   const refusals = source.refusals().refusals
+  const spread = spreadOverTheCatalogue(entries)
 
   const results = entries
     .flatMap((entry) => {
-      const score = scoreOf(entry, words)
+      const score = scoreOf(entry, words, spread)
       if (score === null) return []
 
       return [{ ...displayed(entry, refusals), score }]

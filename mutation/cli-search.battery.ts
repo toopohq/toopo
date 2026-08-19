@@ -75,9 +75,15 @@ const reportFile = (find: string, replace: string) => ({ file: 'report.ts', find
 // Anchors - the exact source each edit rewrites
 // ---------------------------------------------------------------------------
 
-const EVERY_WORD_MUST_BE_ANSWERED = `  if (answered.length !== words.length && !namedInFull(fields, answered)) return null`
+const EVERY_WORD_MUST_BE_ANSWERED = `  if (answered.length !== words.length && !namedByWhatTellsThemApart(fields, answered, spread)) {`
 
-const A_QUERY_ANSWERING_NOTHING_IS_NOT_A_RESULT = `  if (answered.length === 0) return null`
+const SOMETHING_THE_CONTRACT_CHOSE_MUST_HAVE_ANSWERED = `  if (!hits.some((hit) => hit !== null && DELIBERATE.has(hit.field.kind))) return null`
+
+const A_WORD_TELLS_THEM_APART_BELOW_A_CEILING = `const TELLS_THE_CONTRACTS_APART = 2`
+
+const A_FIELD_KEEPS_ONE_BACK_ONLY_WHEN_IT_HAS_THREE = `const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 3`
+
+const THE_SPREAD_COUNTS_THE_DELIBERATE_FIELDS = `    const declared = fieldsOf(entry).filter((field) => DELIBERATE.has(field.kind))`
 
 const A_SHORTENING_GOES_ONE_WAY = `  (asked.length >= MINIMUM_PREFIX && held.startsWith(asked))`
 
@@ -131,7 +137,7 @@ export const mutants: readonly Mutant[] = [
     'drops the rule that every word of the query must be answered, so a contract matches on the ' +
       'words it happens to share - `sort array` answers `array/group-by@1` to somebody looking for a ' +
       'sorter, and eleven of the twenty queries the catalogue cannot answer come back with something',
-    [searchFile(EVERY_WORD_MUST_BE_ANSWERED, `  if (false) return null`)],
+    [searchFile(EVERY_WORD_MUST_BE_ANSWERED, `  if (false) {`)],
     killed([
       'a-query-the-catalogue-cannot-answer-answers-nothing',
       'a-refused-contract-is-found-with-the-reason-it-was-refused',
@@ -147,7 +153,7 @@ export const mutants: readonly Mutant[] = [
     [
       searchFile(
         EVERY_WORD_MUST_BE_ANSWERED,
-        `  if (answered.length !== words.length && false) return null`,
+        `  if (answered.length !== words.length && false) {`,
       ),
     ],
     killed(['a-query-the-catalogue-cannot-answer-answers-nothing']),
@@ -158,9 +164,13 @@ export const mutants: readonly Mutant[] = [
     'answers a query with no words in it, so `toopo search "   "` is the whole catalogue. **The ' +
       'guard it reddens was written because this mutant survived**: the check is unreachable through ' +
       'the ordinary path - a query whose words are all unanswered already fails the rule above it - ' +
-      'and the empty query is the one input that reaches it',
-    [searchFile(A_QUERY_ANSWERING_NOTHING_IS_NOT_A_RESULT, `  if (false) return null`)],
-    killed(['a-query-with-no-words-answers-nothing']),
+      'and the empty query is the one input that reaches it. The line it takes away now carries a ' +
+      'second bound as well, which is why it reddens two guards rather than one',
+    [searchFile(SOMETHING_THE_CONTRACT_CHOSE_MUST_HAVE_ANSWERED, `  if (false) return null`)],
+    killed([
+      'a-query-with-no-words-answers-nothing',
+      'a-word-only-a-summary-carries-answers-nothing-on-its-own',
+    ]),
   ),
 
   sameOnEveryLens(
@@ -372,6 +382,65 @@ export const mutants: readonly Mutant[] = [
       'and reads as the whole of what the contract claims',
     [reportFile(A_SUMMARY_IS_CUT_RATHER_THAN_DROPPED, `  return lines.slice(0, most)`)],
     killed(['a-cut-summary-says-that-it-was-cut']),
+  ),
+
+  sameOnEveryLens(
+    'S-22',
+    'restores the rule this command shipped with, where every word being answered was enough on its ' +
+      'own - so a summary carries a result and `toopo search a` is the whole catalogue. It is the ' +
+      'defect rather than a weakening of the guard: 37 results over eighteen bare function words, on ' +
+      'a command whose subject is that a search which always answers something is not believed twice',
+    [
+      searchFile(
+        SOMETHING_THE_CONTRACT_CHOSE_MUST_HAVE_ANSWERED,
+        `  if (answered.length === 0) return null`,
+      ),
+    ],
+    killed(['a-word-only-a-summary-carries-answers-nothing-on-its-own']),
+  ),
+
+  sameOnEveryLens(
+    'S-23',
+    'lets every word count as one that tells the contracts apart, which is the bound stated on the ' +
+      "registry's phrasing again - a reader has to reproduce a label down to its prepositions, and " +
+      '`turn a string into a number` goes back to answering nothing',
+    [searchFile(A_WORD_TELLS_THEM_APART_BELOW_A_CEILING, `const TELLS_THE_CONTRACTS_APART = 5`)],
+    killed([
+      'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'S-24',
+    'lets a field of any size keep a telling word back rather than one of three or more, which is ' +
+      'the allowance with nothing bounding it: `javascript sort an array` and `parse yaml` are ' +
+      'admitted, and the query that names its own contract in a sentence stops resolving to it',
+    [
+      searchFile(
+        A_FIELD_KEEPS_ONE_BACK_ONLY_WHEN_IT_HAS_THREE,
+        `const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 1`,
+      ),
+    ],
+    killed([
+      'a-query-the-catalogue-cannot-answer-answers-nothing',
+      'a-corpus-of-real-queries-ranks-the-right-contract-first',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'S-25',
+    'counts the spread over every field instead of the deliberate ones, so a word is measured by how ' +
+      'many contracts happen to *describe* themselves with it - which puts the whole of English into ' +
+      'the count and takes the meaning out of what is left',
+    [
+      searchFile(
+        THE_SPREAD_COUNTS_THE_DELIBERATE_FIELDS,
+        `    const declared = fieldsOf(entry)`,
+      ),
+    ],
+    killed([
+      'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
+    ]),
   ),
 ]
 
