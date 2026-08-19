@@ -79,6 +79,13 @@ Measured on the emitted tree at `62f2474`, stripped as a browser receives them, 
 | the two answers, on the first search | 3 601 B | 1 262 B |
 | a contract page's playground, on first use | 58 661 B | 15 688 B |
 
+**The brotli column is this machine's and the origin's is not the same number.** Read off a browser's
+own resource timing against the declared origin at `c74cf6c`, after the deployment: `/contract-index`
+transferred **1 145 B** and decoded to 3 025, `/refusals` transferred **377 B** and decoded to 576. So
+a reader's first query costs **1 522 B on the wire** where it cost 3 601 the day before, and the
+figure a host produces is what a reader pays - the column above is what a local compressor produces
+and is kept as the comparison it is.
+
 **The playground is reached through `await import` and that is what the figures are for.** Nine of the
 thirteen pages carry no form, and every page runs this module now where four did - so a static import
 would have put the larger half of the graph on every one of them. Measured in a browser:
@@ -145,6 +152,21 @@ paragraph is deliberately not a second copy of it: what belongs to a record is t
 and with which unit. **What no guard reaches is whether a declared type is compressed** - that is
 somebody else's software, and it is settled by a request against the deployment, exactly as the host
 rule beside it is.
+
+**That request was made and the answer is yes.** Measured at `c74cf6c` against the declared origin,
+on one address of each class:
+
+| | before | after |
+| --- | --- | --- |
+| `/contract-index` | 3 025 B, `application/octet-stream`, no encoding | **1 145 B**, `application/json`, encoded |
+| `/refusals` | 576 B | **377 B** |
+| `/methodology` | 11 889 B | **3 770 B** |
+| a `/snapshot/…` | 48 976 B | **12 252 B** |
+| a `/blob/…` | 3 332 B | 3 332 B, `application/octet-stream`, **no encoding** |
+
+The blob is the reading that makes the other four mean something: it is the one endpoint whose arm
+says octets, it still says octets, and it is still uncompressed - so what moved is what
+`contentTypeOf` says moved, and not everything at once.
 
 ## Confirmation
 
