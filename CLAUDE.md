@@ -1277,6 +1277,22 @@ record declares**, which is a worse thing and has never been named here before.
   the emission does. **Declaring it does not explain the split and does not need to** — it makes the
   split stop deciding anything. Today those ten land on a default; the day the default moves, nothing
   here says so, and that is the failure, not the four hours. ADR-0103.
+
+  **The four hours were dismissed in the line above, and a reading has since cost them.** Measured at
+  `755322f`, over five addresses of the origin: the pages and `contract-index` answer `max-age=0,
+  must-revalidate`, and `start.js` and `search.js` answer `max-age=14400`. So **a reader returning
+  inside four hours is served the repaired HTML and the broken script.** `must-revalidate` does not
+  save them - it forces revalidation once the freshness lifetime has run out, never during it - and the
+  mixture was met rather than predicted: a browser holding the module from earlier in the session went
+  on running it while `curl` showed the origin serving the new one, which read for several minutes as a
+  deployment that had not happened.
+
+  **What it costs is not only a visitor, and that is the half worth carrying.** This site is judged by
+  looking at it just after a deployment, which is precisely the window in which its two halves disagree
+  - so what a reviewer sees can be a mixture of two commits, with neither the page nor the module
+  saying which. A defect read there is attributed to the change that was just made, and a defect
+  repaired there can go on being visible. The entry above is about a default that could move one day;
+  this is the same declaration costing something on the day it was written.
 - **That an address the emitted tree serves and no listing names goes on being written.** The pages are
   kept, by a mechanism and at a price the closed entry never considered: it costed a rebuild of the tree
   at every commit an address was first served from, and what does the work is one fetch of the origin's
