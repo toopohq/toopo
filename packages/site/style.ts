@@ -16,10 +16,11 @@
  * ADR-0115 is the system it declares: the scale, the unit, the roles and the one accent.
  *
  * Inline rather than a file, and that is a measurement about the launch rather than a preference:
- * every page is served once each, where a second request costs a round trip and a cache entry buys
- * nothing until somebody reads a second page. **It counted the pages once and the count was wrong**,
- * as every count of them written into prose here has been within three units of being written; the
- * argument never needed one, which is the form to reach for first.
+ * every page is served once each, so a second request costs a round trip and a cache entry that buys
+ * nothing until somebody reads a second page. **The argument holds without counting the pages**,
+ * which is the form to reach for first - and this paragraph is where that was learnt rather than
+ * where it is asserted: it counted them twice, and both figures were wrong inside three units of
+ * being written.
  *
  * **The arithmetic that will overturn it is known and is not today's**: this text is repeated in
  * every page of the tree, so a catalogue of a thousand contracts
