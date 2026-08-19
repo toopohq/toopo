@@ -851,18 +851,15 @@ export const contractPage = (
           ),
 
           /**
-           * The half that answers *is this the one*, as the sections it already is.
+           * The half that answers *is this the one*, flat in the document.
            *
-           * They were flattened into `main` and are wrapped now for one reason: a section is what
-           * the layout puts beside another section, and a run of `h2`s with their bodies between
-           * them is not something a grid can place. The list is the same value the rail is derived
-           * from, so the outline, the reading and the two projections are unmoved. ADR-0132.
+           * ADR-0132 wrapped it in a `div` of `section`s for one reason - a grid can place a section
+           * beside another section and cannot place a run of `h2`s with their bodies between them -
+           * and ADR-0134 took that grid away, so the wrapper and the sections are boxes nothing
+           * lays out. The list is the same value the rail is derived from either way, which is why
+           * the outline, the reading and the two projections are unmoved in both directions.
            */
-          el(
-            'div',
-            { class: 'opening' },
-            ...halves.summary.map((section) => el('section', NOTHING, ...rendered(section))),
-          ),
+          ...halves.summary.flatMap(rendered),
 
           /**
            * The line the page is read in two halves across, rendered from the shape rather than

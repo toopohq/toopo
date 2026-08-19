@@ -68,47 +68,36 @@
  * and downloads nothing.
  *
  * ---------------------------------------------------------------------------
- * The measure is counted in characters, and it is on the line rather than on the box
+ * No line on this site is bounded, and what the measure still sizes
  * ---------------------------------------------------------------------------
  *
- * 45 to 75 characters is the span a line stays readable across, and 75 is the ceiling held here.
+ * 45 to 75 characters is the span a line stays readable across. The top of that span bounded every
+ * `h1`, `h2`, `h3`, `h4`, `p` and `li` this site served until ADR-0134, where the owner withdrew it:
+ * a width stated in characters and a layout that follows the screen are contradictory, and the layout
+ * is what he wanted. **So no rule here caps a line at anything**, and a paragraph is as wide as
+ * whatever holds it.
  *
- * **`ch` is the advance of `0` and not the average character, so a box capped in `ch` under-constrains
- * everything set smaller than it.** That is not a detail: the worst line this site ever served was 169
- * characters, and it was small print in a wide box - a cap on the box would have left it exactly
- * there. So `--measure` is declared on the element that carries the prose, where `ch` resolves against
- * the face the line is actually set in, and one declaration gives every step of the scale its own 75.
+ * **`--measure` survives, and it is worth being exact about what it is now.** It sizes three boxes,
+ * none of which is a line of prose: the call column of a settled case, the half of the card that
+ * carries a signature, and the floor a list of contracts puts a second column beside the first at.
+ * `--the-longest-line: 75` therefore names the width of a call column, which is not what it says.
+ * ADR-0134 records that as the orphan it is rather than repairing it here, because every one of those
+ * three boxes was named untouchable by the same decision.
  *
  * **The conversion is a measurement, because CSS has no unit for the average character.** Over the 688
  * prose elements of the eight pages at 1240 and at 390, read with one Range per character grouped by
- * line box, the densest line was 1.393 characters per ch.
- *
- * **Density is a property of the text, so it moves when the column moves**: the same sweep answered
- * 1.339 before this measure existed and 1.393 once the column had narrowed to it, because a narrower
- * box breaks the same sentence at different words. It is a fixed point reached by iterating, and 1.04
- * is the drift across one turn. ADR-0077 is why it is applied rather than noted - a repair is chosen
- * for its margin, and a margin inside the method's own error has bought nothing. Measured over four
- * candidates: 1.34 leaves 2 lines over the ceiling at a worst of 78, 1.40 leaves none at 73, 1.45
- * leaves none at 70, and 1.50 leaves none at 69 while pulling the typical line down to 61.
- *
- * **The pair renders 69 characters and not 75, and the gap is that margin rather than an error.**
- * Re-measured at `0cec957` over the 4 429 lines of every file of HTML in the tree at 1440, by
- * ADR-0122's method - one Range per character, grouped into line boxes by vertical overlap: the
- * densest line in a box of exactly this measure is 1.3342 characters per ch, and the worst line
- * rendered anywhere is 69. The model is exact rather than indicative - 75 * 1.3342 / (1.393 * 1.04)
- * is 69.1 - so the 8.6% between the two figures is 4% of declared drift and 4.2% of density that has
- * fallen since it was taken on eight pages.
- *
- * **It cannot be spent, and both reasons are arithmetic.** Measured at the same commit, the same
- * width and the same population: at 1.3876, the density re-measured with the drift kept, the measure
- * is 466px, the content column 972 and the worst line 72; at 1.3342, the density with no margin at
- * all, the measure is 485, the column 1 010 and one line reaches 77. The ceiling breaks because
- * density is not stationary - a wider box breaks the same sentences at different words and the
- * density rises to meet it. And the column grows twice as fast as the line, being two of them, so
- * widening prose to fill a column widens the column by more than it fills. ADR-0132.
+ * line box, the densest line was 1.393 characters per ch. `ch` is the advance of `0` and not the
+ * average character, which is why a conversion is needed at all.
  *
  * **The three numbers are declared apart rather than pre-multiplied into one length**, so that each is
  * a fact somebody can re-measure on its own and none of them is a compromise wearing another's name.
+ *
+ * **Two readings that used to stand here have been withdrawn rather than restated.** That the pair
+ * rendered 69 characters against a declared 75, and that the remaining 8.6% could not be spent, were
+ * both measured at `0cec957` and were both about a ceiling on prose. They were true of the site that
+ * had one. ADR-0132 and ADR-0133 hold them with their coordinates; nothing here re-asserts them,
+ * because a reading kept past the rule it was taken under is the defect this repository names most
+ * often.
  *
  * **The argument is here and not beside the rule, and the reason is bytes.** This stylesheet is inline
  * in every page of the tree, so a comment inside the template literal is served to every reader as
@@ -145,9 +134,10 @@ export const STYLE = `
   --accent: #a0491d; --target: #f6ece4;
 
   /* The span a line stays readable across, both ends of it, and what one character of this face
-     costs. The header has stated that span as 45 to 75 since it was written and derived only its
-     top; a column of secondary matter is what the bottom names, and it is a bound already argued
-     for rather than a constant somebody chose for a sidebar. */
+     costs. Since ADR-0134 neither end bounds a line: the top sizes three boxes that are not lines
+     and the bottom is the column of secondary matter, which is a bound already argued for rather
+     than a constant somebody chose for a sidebar. The header says which boxes and why the top's
+     name outlived its job. */
   --the-longest-line: 75;
   --the-shortest-line: 45;
   --characters-per-ch: 1.393;
@@ -157,11 +147,16 @@ export const STYLE = `
   /* The navigation column, named rather than repeated: a rail declared in two places is a rail
      that drifts. */
   --rail: 15rem;
-  /* What one contract of a list needs before another may stand beside it. At a measure a list is two
-     abreast exactly where its column is two measures wide and one everywhere else, which is a
-     breakpoint nobody has to write and nobody can be wrong about; at a two-columns it is one at every
-     width. Whether an index reads better in one column or two is a judgement that will be taken
-     again, and this is the whole of where it is taken. */
+  /* What one contract of a list needs before another may stand beside it: a second column appears
+     only where each track is still a whole readable line, and the count follows the screen from
+     there. It read, until ADR-0134, that a list is two abreast exactly where its column is two
+     measures wide - which was arithmetic about a column that no longer has a width, so the value is
+     kept and its reason is not. Measured at 7c15c69 on the front page: one column to 1280, then two,
+     three, four and five, with no track ever under 464px.
+
+     It is still spelt as the measure, and that is a coupling rather than a derivation - the two
+     agree on a number and no longer on a meaning. Whether an index reads better in one column or
+     two is a judgement that will be taken again, and this is the whole of where it is taken. */
   --a-contract-in-a-list: var(--measure);
 
   --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;

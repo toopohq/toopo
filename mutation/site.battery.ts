@@ -129,9 +129,9 @@ const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${STYLE}</style>\`,`
 
 const THE_LIGHT_PALETTE = `  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;`
 
-const THE_SHELL_IS_AS_WIDE_AS_WHAT_IT_HOLDS = `  max-width: calc(var(--rail) + var(--two-columns) + 3 * var(--s6));`
+const THE_SHELL_HAS_NO_CEILING = `.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }`
 
-const THE_THREE_COLUMNS_ARE_DECLARED_LENGTHS = `    grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside);`
+const THE_THREE_COLUMNS_ARE_DECLARED_LENGTHS = `  .shell:has(.rail) { grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside) }`
 
 const THE_INVISIBLE_IS_MADE_VISIBLE = `  \`'\${value.replaceAll('\\\\', '\\\\\\\\').replaceAll("'", "\\\\'").replace(INVISIBLE, escaped)}'\``
 
@@ -730,20 +730,37 @@ const mutants: readonly Mutant[] = [
     killed(['every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible']),
   ),
 
+  /**
+   * **The most plausible edit anybody makes after ADR-0134**, which is why this cell reads better now
+   * than it did when it was written. It used to retype a ceiling the shell already had; the shell has
+   * none, so it puts one back - and `78rem` is the exact number ADR-0122 took out, arriving a third
+   * time on the same element.
+   *
+   * The guard's population is every `max-width` this stylesheet declares, and since ADR-0134 all of
+   * them are `100%`. That is not the guard losing its subject: `100%` is the containing block and
+   * bounds nothing, so the guard now says *no box on this site carries a ceiling at all*, and any
+   * length typed anywhere reddens it.
+   */
   sameOnEveryLens(
     'W-85',
-    'types the layout ceiling as a round number instead of deriving it, which is the edit that put ' +
-      'the content of a contract page on 38.7% of a 2 560px screen and every page with no rail on ' +
-      '17.5% of one. Nothing on the rendered page looks wrong: the pages are there, the lines are ' +
-      'inside the measure, and a width nobody derived reads exactly like a width somebody chose',
-    [styleFile(THE_SHELL_IS_AS_WIDE_AS_WHAT_IT_HOLDS, '  max-width: 78rem;')],
+    'gives the shell back the round ceiling ADR-0122 took off it, which is the edit that put the ' +
+      'content of a contract page on 38.7% of a 2 560px screen and every page with no rail on 17.5% ' +
+      'of one. Nothing on the rendered page looks wrong: the pages are there, every line is where it ' +
+      'was on this machine, and a width nobody derived reads exactly like a width somebody chose',
+    [
+      styleFile(
+        THE_SHELL_HAS_NO_CEILING,
+        '.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 78rem; margin: 0 auto }',
+      ),
+    ],
     killed(['every-ceiling-on-a-box-is-derived-and-never-typed']),
   ),
 
   /**
-   * W-85 one door along. That cell types the ceiling; this one types the tracks under it, which is
-   * where the layout moved when it stopped being one column and became three - and the guard W-85
-   * belongs to says in its own comment that it reads `max-width` and nothing else.
+   * W-85 one door along. That cell gives the shell a ceiling it no longer has; this one types the
+   * tracks under it, which is where the layout moved when it stopped being one column and became
+   * three - and the guard W-85 belongs to says in its own comment that it reads `max-width` and
+   * nothing else.
    *
    * The two lengths it writes are the ones this stylesheet derives, to the pixel on the machine the
    * arithmetic was taken on. That is what makes it the plausible edit rather than a vandalism: the
@@ -753,13 +770,13 @@ const mutants: readonly Mutant[] = [
     'W-86',
     'types the two columns beside the content instead of deriving them, on the arrangement that ' +
       'carries a table of contents. Nothing on the rendered page looks wrong on the machine the ' +
-      'numbers were read on - the three columns are there, the measure holds, and the layout is ' +
+      'numbers were read on - the three columns are there and the content column between them is ' +
       'exactly as wide as it was - and on any face whose zero is a different width the rail and the ' +
       'column beside it stop being what they were derived from',
     [
       styleFile(
         THE_THREE_COLUMNS_ARE_DECLARED_LENGTHS,
-        '    grid-template-columns: 240px minmax(0, 1fr) 268px;',
+        '  .shell:has(.rail) { grid-template-columns: 240px minmax(0, 1fr) 268px }',
       ),
     ],
     killed(['every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length']),
