@@ -79,32 +79,38 @@ export const frontPage = (index: ServedIndex, menu: readonly MenuEntry[]): Docum
     `settled. The source is copied into your project.`,
   body: [
     masthead(FRONT_PAGE, menu),
+    /**
+     * No `.shell`, and it is the rule rather than a saving.
+     *
+     * A shell exists to stand a navigation column beside the content, so it spans the body's gutters
+     * and re-establishes its own; this page has no such column, and the three other pages that have
+     * none - the method, the refusals and what a contract is - put their content straight into the
+     * body's middle track. **Measured before it was believed**: wrapped in a shell, the name, the line
+     * and both doors ran from edge to edge of a phone at 320, 390 and 768, because a shell with one
+     * child inherits the full bleed and hands on no inset of its own. ADR-0139, ADR-0140.
+     */
     el(
-      'div',
-      { class: 'shell' },
+      'main',
+      { class: 'door' },
+      el('h1', NOTHING, text('Toopo')),
       el(
-        'main',
-        { class: 'door' },
-        el('h1', NOTHING, text('Toopo')),
-        el(
-          'p',
-          { class: 'lede' },
-          text(
-            'Utility functions you copy into your project, each verified against a public, ' +
-              'executable contract. Not a dependency: the source lands in your repository and it ' +
-              'is yours.',
-          ),
+        'p',
+        { class: 'lede' },
+        text(
+          'Utility functions you copy into your project, each verified against a public, ' +
+            'executable contract. Not a dependency: the source lands in your repository and it ' +
+            'is yours.',
         ),
-        el(
-          'div',
-          { class: 'doors' },
-          door(CATALOGUE_PAGE, 'The catalogue', whatIsInThere(index)),
-          door(
-            WHAT_A_CONTRACT_IS_PAGE,
-            'What a contract is',
-            'The specification every one of them carries, and what it guarantees for the life of ' +
-              'its major version.',
-          ),
+      ),
+      el(
+        'div',
+        { class: 'doors' },
+        door(CATALOGUE_PAGE, 'The catalogue', whatIsInThere(index)),
+        door(
+          WHAT_A_CONTRACT_IS_PAGE,
+          'What a contract is',
+          'The specification every one of them carries, and what it guarantees for the life of ' +
+            'its major version.',
         ),
       ),
     ),

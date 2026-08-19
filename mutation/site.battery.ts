@@ -1786,8 +1786,8 @@ const mutants: readonly Mutant[] = [
       'is named and nothing but a template can be printed',
     [
       frontPageFile(
-        `              'is yours.',`,
-        `              'is yours. Start with npx toopo add domain/function.',`,
+        `            'is yours.',`,
+        `            'is yours. Start with npx toopo add domain/function.',`,
       ),
     ],
     killed(['the-page-a-reader-arrives-at-is-a-name-and-two-doors']),
