@@ -40,12 +40,12 @@ comes from them:
 
 ```
 toopo add imagined-number/round, depth 2      before   after
-  round trips                            8        6
-  requests in all                       14       11
-  named answers, which are believed      5        2
-    of which implementationBindings      4        1
-  content-addressed, checkable           9        9
-  round trips spent on a binding         3        1
+  round trips                                     8        6
+  requests in all                                14       11
+  named answers, which are believed               5        2
+    of which implementationBindings               4        1
+  content-addressed, checkable                    9        9
+  round trips spent on a binding                  3        1
 ```
 
 **And the unit is the guard, because the saving and the check were the same call.** `gatherHoldings`
