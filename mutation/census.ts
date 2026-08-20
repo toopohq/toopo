@@ -303,6 +303,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'contracts/typescript/number/parse/profiles.test.ts': 6,
     'contracts/typescript/number/parse/properties.test.ts': 7,
     'contracts/typescript/number/parse/signature.test-d.ts': 4,
+    'contracts/typescript/number/round/properties.test.ts': 10,
+    'contracts/typescript/number/round/signature.test-d.ts': 4,
     'contracts/typescript/string/levenshtein/edge-cases.test.ts': 28,
     'contracts/typescript/string/levenshtein/profiles.test.ts': 7,
     'contracts/typescript/string/levenshtein/properties.test.ts': 15,
