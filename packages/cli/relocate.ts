@@ -33,7 +33,7 @@
  * Measured at both ends. The same contract installed under two different folders leaves a lockfile that
  * is identical byte for byte once `installedAt` is pinned, and files identical byte for byte. And on
  * the imagined graph - five files, six cross-feature specifiers including the repointed
- * `../../string/pad/digits.js` that deduplication produces - renaming the whole tree and changing
+ * `../../imagined-string/pad/digits.js` that deduplication produces - renaming the whole tree and changing
  * nothing else gives `toopo update`: nothing moved, no file to write, no file to remove, every verdict
  * `unchanged`, lockfile identical. **So this module rewrites no import, recomputes no digest, and asks
  * the registry nothing** - which is what keeps `init` in the pair with `list`, the commands that need

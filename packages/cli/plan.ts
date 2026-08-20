@@ -18,8 +18,8 @@
  * carries beyond that entry lands in a folder of the same name, beside it:
  *
  *     src/lib/toopo/string/slugify.ts
- *     src/lib/toopo/string/pad.ts
- *     src/lib/toopo/string/pad/digits.ts
+ *     src/lib/toopo/imagined-string/pad.ts
+ *     src/lib/toopo/imagined-string/pad/digits.ts
  *
  * The domain stays a folder, so `number/parse` and `string/parse` never collide and no artificial
  * prefix is needed. The entry file is `slugify.ts` and not `reference.ts`, because `reference` names
@@ -36,7 +36,7 @@
  * That the two can sit together was measured rather than assumed, on node v24.15.0 - the version
  * ADR-0032's own reading was taken at - with `pad.ts` and `pad/digits.ts` in one directory:
  *
- *     esm  ./string/pad.js  -> entry+helper       cjs  ./string/pad.cjs -> entry+helper
+ *     esm  ./imagined-string/pad.js  -> entry+helper       cjs  ./imagined-string/pad.cjs -> entry+helper
  *
  * A file and a folder of the same name are not candidates for one specifier: `./pad.js` names the
  * file, and the folder is reached only through a path that says so. The one spelling where both are
@@ -45,9 +45,9 @@
  *
  * **What this costs, stated rather than discovered: every specifier an entry file writes is
  * rewritten.** The catalogue serves its entry file as `reference.ts` - `contractAnatomy` requires that
- * name at five of five - so a published `number/clamp` names its dependency as
- * `../../string/pad/reference.js`, and that specifier is wrong the moment the file lands as
- * `number/clamp.ts`. The entry also sits one level above the folder holding its own files, so even
+ * name at five of five - so a published `imagined-number/clamp` names its dependency as
+ * `../../imagined-string/pad/reference.js`, and that specifier is wrong the moment the file lands as
+ * `imagined-number/clamp.ts`. The entry also sits one level above the folder holding its own files, so even
  * `./digits.js` becomes `./pad/digits.js`. The only specifier left alone is one file of a feature's
  * folder naming another. Naming the file after the feature and needing no rewriting are incompatible,
  * and the first wins because it is the one argued from the user's editor. What softens it is that the

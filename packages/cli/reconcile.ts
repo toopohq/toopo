@@ -64,9 +64,9 @@
  * **False:** that the lockfile describes the installed graph. It does not, and no field would fix it.
  * A shared blob is written once, in the folder of whichever carrier the resolution reached first, and
  * the other carriers are repointed at it - so the second carrier's entry does not mention the file it
- * imports. Measured on the fixture graph: `number/clamp@1`'s entry names one file, and
- * `number/clamp.ts` imports `../../string/pad/digits.js`. A removal decided from the lockfile
- * alone would delete `string/pad/digits.ts` and three files that stay would import something that is
+ * imports. Measured on the fixture graph: `imagined-number/clamp@1`'s entry names one file, and
+ * `imagined-number/clamp.ts` imports `../../imagined-string/pad/digits.js`. A removal decided from the lockfile
+ * alone would delete `imagined-string/pad/digits.ts` and three files that stay would import something that is
  * gone - not an incomplete answer, a wrong and silent one.
  *
  * Recording the edges would not close it either: deduplication is a property of the *plan* and not of
@@ -194,7 +194,7 @@ export type FeatureOutcome = {
  * For every feature the plan holds, the roots whose closure reaches it. A root reaches itself.
  *
  * Keyed by rendered contract address, and it exists for one reader: the refusal `remove` owes somebody
- * who asks to take out a feature they never asked for. *You did not install this, `number/round@1`
+ * who asks to take out a feature they never asked for. *You did not install this, `imagined-number/round@1`
  * imports it* is an answer they can act on; *it is a dependency* is not. The order throws this away -
  * it folds every root's closure into one list so that a shared file is seen once - so it is kept here
  * on the way past rather than resolved a second time.
@@ -848,7 +848,7 @@ const assemble = (
    *
    * A feature leaves the closure because somebody's *new* code stopped importing it. A held-back
    * feature is running its *old* code, which may import it still - measured on the imagined graph,
-   * where `number/round@1.0.1` drops `number/sign` and the held-back `round.ts` on disk goes on
+   * where `imagined-number/round@1.0.1` drops `imagined-number/sign` and the held-back `round.ts` on disk goes on
    * importing `../sign/sign.js`. Removing it there would break a build to tidy a folder.
    *
    * It is the blunt form of the rule on purpose. The exact one - ask the registry for each held-back
@@ -861,7 +861,7 @@ const assemble = (
    *
    * It was written as `held.size > 0`, which counts only the features still *in* the plan - and a
    * feature held back by an edit while leaving is not in the plan. Measured on a removal: editing
-   * `number/round`'s own file kept it on disk, correctly, and removed the three features it imports,
+   * `imagined-number/round`'s own file kept it on disk, correctly, and removed the three features it imports,
    * leaving a file nobody had touched importing `../clamp/clamp.js` with nothing there. The sentence
    * beneath was already the right one; what it was asked about was the wrong set.
    */

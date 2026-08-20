@@ -390,9 +390,9 @@ describe('what breaks for somebody', () => {
   it('a-path-with-a-space-installs-normally', async () => {
     const project = aProject('src/my code/toopo')
     try {
-      committing(project, mustInstall(await installing(imaginedSource(), project, 'number/round')))
+      committing(project, mustInstall(await installing(imaginedSource(), project, 'imagined-number/round')))
 
-      expect(project.installed('number/clamp.ts')).toContain(`from '../string/pad.js'`)
+      expect(project.installed('imagined-number/clamp.ts')).toContain(`from '../imagined-string/pad.js'`)
     } finally {
       project.remove()
     }
@@ -407,7 +407,7 @@ describe('what breaks for somebody', () => {
     try {
       project.write('tsconfig.json', '{ "this": is not even json }')
 
-      const installation = mustInstall(await installing(imaginedSource(), project, 'number/round'))
+      const installation = mustInstall(await installing(imaginedSource(), project, 'imagined-number/round'))
       committing(project, installation)
 
       expect(installation.writes).toHaveLength(5)

@@ -6,6 +6,7 @@ import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { renderContract } from './address.js'
+import { THE_TOY } from './imagined-addresses.js'
 import { rebindingFaults, renderBindings } from './rebinding.js'
 import { ARevisionCannotBeRebuilt, THE_LEDGER_SCRIPT, bindingsAtRevision } from './rebuild.js'
 import { EMPTY_LEDGER, publishContract } from './snapshot.js'
@@ -25,9 +26,6 @@ import { EMPTY_LEDGER, publishContract } from './snapshot.js'
  * when the file really does. `frozen-for-life.test.ts` is where a real contract of the five is really
  * marked published and really edited.
  */
-
-/** The toy's one address, rendered by this repository so that a lookup can actually find it. */
-const THE_TOY = { language: 'typescript' as const, name: 'toy/thing', major: 1 }
 
 /** A `ledger` script with no dependencies, so that a toy repository needs nothing installed. */
 const PRINTS_ITS_OWN_DIGEST = `import { createHash } from 'node:crypto'

@@ -74,6 +74,11 @@ const licenceFile = (find: string, replace: string) => ({ file: 'licence.ts', fi
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
 const addressFile = (find: string, replace: string) => ({ file: 'address.ts', find, replace })
+const imaginedAddressFile = (find: string, replace: string) => ({
+  file: 'imagined-addresses.ts',
+  find,
+  replace,
+})
 const publicationFile = (find: string, replace: string) => ({ file: 'publication.ts', find, replace })
 const emitFile = (find: string, replace: string) => ({ file: 'emit.ts', find, replace })
 const endpointsFile = (find: string, replace: string) => ({ file: 'endpoints.ts', find, replace })
@@ -212,6 +217,12 @@ const PROJECT_THE_SHARED_SURFACE = '    sharedHarness: record.sharedHarness,'
 const REFUSE_A_SURFACE_THAT_IS_NOT_REACHED = `  if (undeclared.length > 0 || missing.length > 0) {
     throw new UndeclaredSharedSurface(folder, undeclared, missing)
   }`
+
+const REFUSE_AN_IMAGINED_ADDRESS =
+  '  if (isImagined(source.address.name)) throw new TheAddressIsImagined(source.address.name)'
+
+const A_NAME_NO_CONTRACT_MAY_TAKE =
+  "export const A_NAME_THE_CATALOGUE_DOES_NOT_HOLD = imagined('string/titlecase')"
 
 const SORT_THE_KEYS = '  return `{${sortedKeys(record)'
 
@@ -941,7 +952,7 @@ const mutants: readonly Mutant[] = [
    *
    * The catalogue cannot express it - the five depend on nothing - so the cell reddens on the imagined
    * graph, where `pad` is reachable only through `clamp` and `sign`. A reader who fetches a snapshot
-   * and sees it depend on `number/clamp@1` can ask that contract for its implementations, and a tree
+   * and sees it depend on `imagined-number/clamp@1` can ask that contract for its implementations, and a tree
    * that learned its contracts from the index answers 404 to a question the artefact itself invited.
    */
   sameOnEveryLens(
@@ -1404,6 +1415,32 @@ const mutants: readonly Mutant[] = [
       'reaches, so a module nobody declared decides a frozen contract\'s verdicts',
     [serialiseFile(REFUSE_A_SURFACE_THAT_IS_NOT_REACHED, '  void undeclared\n  void missing')],
     killed(['the-shared-surface-is-what-the-harness-reaches']),
+  ),
+
+  sameOnEveryLens(
+    'I-63',
+    'puts a fixture back at an address the catalogue could publish, which is the state this ' +
+      'repository was in for nine addresses - and the one that costs is met by somebody writing the ' +
+      'contract, not by anything here',
+    [
+      imaginedAddressFile(
+        A_NAME_NO_CONTRACT_MAY_TAKE,
+        `export const A_NAME_THE_CATALOGUE_DOES_NOT_HOLD: ContractAddress = {
+  language: 'typescript',
+  name: 'string/titlecase',
+  major: 1,
+}`,
+      ),
+    ],
+    killed(['every-address-a-fixture-stands-at-is-one-the-catalogue-refuses']),
+  ),
+
+  sameOnEveryLens(
+    'I-64',
+    'stops refusing a contract offered in the space reserved for fixtures, so the prefix every ' +
+      'fixture stands behind is a convention with nothing keeping it',
+    [serialiseFile(REFUSE_AN_IMAGINED_ADDRESS, '  void isImagined(source.address.name)')],
+    killed(['the-catalogue-refuses-a-contract-offered-at-an-address-a-fixture-stands-at']),
   ),
 
   sameOnEveryLens(

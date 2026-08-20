@@ -71,7 +71,7 @@ see the configured directory — `plan.ts`, `rewrite.ts` and `resolve.ts` never 
 `cli/` is a `join` to reach the disk, a line to print, or a `commit`. Measured at both ends: one contract
 installed under two different folders leaves lockfiles identical byte for byte once `installedAt` is
 pinned; and on the imagined graph — five files, six cross-feature specifiers including the repointed
-`../../string/pad/digits.js` that deduplication produces — renaming the whole tree and changing nothing
+`../../imagined-string/pad/digits.js` that deduplication produces — renaming the whole tree and changing nothing
 else gives `toopo update`: **nothing moved, no file to write, no file to remove, every verdict
 `unchanged`, lockfile identical.** No import is repointed, no digest recomputed, and **no registry is
 asked** — which keeps `init` in the pair with `list`, the commands that need no server.

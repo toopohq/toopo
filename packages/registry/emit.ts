@@ -78,7 +78,7 @@ const blobsNamedBy = (snapshot: Snapshot): readonly Question[] =>
  *
  * One function because there are two doors onto the same pair - the index, and the edges inside an
  * implementation snapshot - and the second was missing until a graph with edges was put through this
- * walk. A reader who fetches `number/round@1` and sees it depend on `number/clamp@1` can ask for that
+ * walk. A reader who fetches `imagined-number/round@1` and sees it depend on `imagined-number/clamp@1` can ask for that
  * contract's implementations, and a tree built from the index alone answers 404.
  */
 const theQuestionsAbout = (address: ContractAddress): readonly Question[] => [

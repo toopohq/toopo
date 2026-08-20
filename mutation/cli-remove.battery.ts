@@ -157,8 +157,8 @@ export const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'R-02',
-    'accepts a removal of something the user never asked for, so `toopo remove string/pad` on a ' +
-      'project that holds it only because `number/round` imports it answers as though it were theirs ' +
+    'accepts a removal of something the user never asked for, so `toopo remove imagined-string/pad` on a ' +
+      'project that holds it only because `imagined-number/round` imports it answers as though it were theirs ' +
       'to take back',
     [removeFile(WHAT_WAS_NEVER_ASKED_FOR_IS_REFUSED, `  if (false) {`)],
     killed(['a-feature-that-was-never-asked-for-is-refused-with-what-imports-it']),

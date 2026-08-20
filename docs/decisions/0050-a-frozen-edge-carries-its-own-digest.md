@@ -39,7 +39,7 @@ thing in this repository that has edges** — the four published contracts have 
 comes from them:
 
 ```
-toopo add number/round, depth 2      before   after
+toopo add imagined-number/round, depth 2      before   after
   round trips                            8        6
   requests in all                       14       11
   named answers, which are believed      5        2
@@ -65,18 +65,18 @@ unit — so this closes it before the door it would arrive through is opened.
 
 **What the check buys was measured, and it is not what it was written believing.** Over the six
 substitutions the imagined graph can express — three at a root binding, three at an edge — taking it out
-leaves **five of six refused anyway**, downstream, under *typescript/string/pad@1/reference@1.0.0 cannot
-be resolved, and the registry holds no such published implementation* and *typescript/number/sign@1
+leaves **five of six refused anyway**, downstream, under *typescript/imagined-string/pad@1/reference@1.0.0 cannot
+be resolved, and the registry holds no such published implementation* and *typescript/imagined-number/sign@1
 publishes no reference.ts*, of contracts this registry publishes and serves. **So the repair is a
 refusal that names the fact instead of one that names a cause no measurement establishes**, which is
 this repository's own worst class rather than a silent wrong install. The claim was corrected in the
 guard's own comment before it was published, which is what a red is for.
 
 **The sixth was silent, and it was found by running all six rather than by reading the loop.** An edge
-naming an address another edge had already resolved was skipped, digest and all: with `number/sign@1`
-published naming `string/pad@1` at `number/clamp@1`'s digest, the honest edge arrived first and the
+naming an address another edge had already resolved was skipped, digest and all: with `imagined-number/sign@1`
+published naming `imagined-string/pad@1` at `imagined-number/clamp@1`'s digest, the honest edge arrived first and the
 install answered five correct files. **The right artefact landed because of the order the walk happened
-to take.** It is not registry hygiene — `number/sign@1` had been published against code the project was
+to take.** It is not registry hygiene — `imagined-number/sign@1` had been published against code the project was
 not getting, which is *a combination nobody published*, the thing `reconcile.ts` already refuses to
 assemble one version at a time. `gatherHoldings` compares now, and roots arrive with the digest they
 were fetched by so that an edge naming a root is compared like any other.
@@ -100,7 +100,7 @@ hand, and leaving it would have left the door beside the lock.
 
 **And that closed a fixture rather than only a hole, which the replay found and no reading had.**
 `sourceWithTwoVersionsOfPad` swapped one record into `HOLDINGS` and served the rest unchanged. That
-worked while an edge named only an address — `number/round@1` resolved `number/clamp@1` by name whatever
+worked while an edge named only an address — `imagined-number/round@1` resolved `imagined-number/clamp@1` by name whatever
 that clamp had become. An edge pins the snapshot, so a clamp carrying a different dependency is a
 different artefact with a different digest, and the round naming the old one names something the source
 no longer serves. **Replacing what an address resolves to while keeping its version is the rebinding

@@ -33,9 +33,9 @@ served.** That is the supply-chain argument of the whole project and it holds en
 
 **False: that it describes the installed graph.** It records what was *written*, never what was
 planned. A shared file is written once and the other carrier is repointed at it, so the second
-carrier's entry does not name the file it imports — measured on the fixture graph, `number/clamp@1`
-records one file and `number/clamp.ts` imports `../string/pad/digits.js`. A removal decided
-from the lockfile alone would delete `string/pad/digits.ts` while three files that stay import it: not
+carrier's entry does not name the file it imports — measured on the fixture graph, `imagined-number/clamp@1`
+records one file and `imagined-number/clamp.ts` imports `../imagined-string/pad/digits.js`. A removal decided
+from the lockfile alone would delete `imagined-string/pad/digits.ts` while three files that stay import it: not
 an incomplete answer, a wrong and silent one.
 
 **And no field would fix it.** Recording the edges closes that instance and not the class:

@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { THE_INVOCATION, renderContract } from '../registry/address.js'
+import { A_MISSPELLING_OF_ROUND } from '../registry/imagined-addresses.js'
 import type { LockedFeature, Lockfile } from '../registry/implementation-record.js'
 import { deciding } from './fixpoint.js'
 import {
@@ -187,20 +188,20 @@ describe('taking a feature out of a project', () => {
   /**
    * The whole shape of a nominal removal: the root goes, and so does everything it alone pulled in.
    *
-   * `number/round@1` is the only root, so its three dependencies have nothing else holding them. What
+   * `imagined-number/round@1` is the only root, so its three dependencies have nothing else holding them. What
    * the assertion is careful about is the folder as well as the lockfile - a removal that emptied the
    * record and left the files would be the mirror of the defect this command exists to fix.
    */
   it('a-feature-nothing-else-holds-leaves-with-everything-it-pulled-in', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
-      const removal = await removing(imaginedSource(), project, lockfile, 'number/round')
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
+      const removal = await removing(imaginedSource(), project, lockfile, 'imagined-number/round')
 
       expect(removal.departure).toBe('leaves')
       expect(leaving(removal)).toEqual([
-        'typescript/number/clamp@1',
-        'typescript/number/round@1',
-        'typescript/number/sign@1',
-        'typescript/string/pad@1',
+        'typescript/imagined-number/clamp@1',
+        'typescript/imagined-number/round@1',
+        'typescript/imagined-number/sign@1',
+        'typescript/imagined-string/pad@1',
       ])
       expect(staying(removal)).toEqual([])
       expect(removal.reconciliation.writes).toEqual([])
@@ -208,9 +209,9 @@ describe('taking a feature out of a project', () => {
       applying(project, removal)
 
       expect(removal.reconciliation.lockfile.features).toEqual([])
-      expect(onDisk(project, 'number/round.ts')).toBe(false)
-      expect(onDisk(project, 'string/pad.ts')).toBe(false)
-      expect(onDisk(project, 'string/pad/digits.ts')).toBe(false)
+      expect(onDisk(project, 'imagined-number/round.ts')).toBe(false)
+      expect(onDisk(project, 'imagined-string/pad.ts')).toBe(false)
+      expect(onDisk(project, 'imagined-string/pad/digits.ts')).toBe(false)
     })
   })
 
@@ -218,24 +219,24 @@ describe('taking a feature out of a project', () => {
    * Only what the removed feature alone pulled in goes with it, and this is the guard that separates a
    * removal from a `rm -rf`.
    *
-   * `number/sign@1` is a root as well as one of `number/round@1`'s dependencies, so removing the round
-   * takes `number/clamp@1` - which nothing else reaches - and must leave `number/sign@1` and the
-   * `string/pad@1` underneath it exactly where they are.
+   * `imagined-number/sign@1` is a root as well as one of `imagined-number/round@1`'s dependencies, so removing the round
+   * takes `imagined-number/clamp@1` - which nothing else reaches - and must leave `imagined-number/sign@1` and the
+   * `imagined-string/pad@1` underneath it exactly where they are.
    */
   it('only-what-the-removed-feature-alone-pulled-in-goes-with-it', async () => {
-    await inProject(imaginedSource(), ['number/round', 'number/sign'], async (project, lockfile) => {
-      const removal = await removing(imaginedSource(), project, lockfile, 'number/round')
+    await inProject(imaginedSource(), ['imagined-number/round', 'imagined-number/sign'], async (project, lockfile) => {
+      const removal = await removing(imaginedSource(), project, lockfile, 'imagined-number/round')
 
-      expect(leaving(removal)).toEqual(['typescript/number/clamp@1', 'typescript/number/round@1'])
-      expect(staying(removal)).toEqual(['typescript/number/sign@1', 'typescript/string/pad@1'])
+      expect(leaving(removal)).toEqual(['typescript/imagined-number/clamp@1', 'typescript/imagined-number/round@1'])
+      expect(staying(removal)).toEqual(['typescript/imagined-number/sign@1', 'typescript/imagined-string/pad@1'])
 
       applying(project, removal)
 
-      expect(onDisk(project, 'number/round.ts')).toBe(false)
-      expect(onDisk(project, 'number/clamp.ts')).toBe(false)
-      expect(onDisk(project, 'number/sign.ts')).toBe(true)
-      expect(onDisk(project, 'string/pad.ts')).toBe(true)
-      expect(onDisk(project, 'string/pad/digits.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-number/round.ts')).toBe(false)
+      expect(onDisk(project, 'imagined-number/clamp.ts')).toBe(false)
+      expect(onDisk(project, 'imagined-number/sign.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-string/pad.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-string/pad/digits.ts')).toBe(true)
     })
   })
 
@@ -248,16 +249,16 @@ describe('taking a feature out of a project', () => {
    * feature that keeps it here.
    */
   it('a-feature-another-root-still-imports-stays-and-stops-being-a-root', async () => {
-    await inProject(imaginedSource(), ['number/round', 'string/pad'], async (project, lockfile) => {
-      const removal = await removing(imaginedSource(), project, lockfile, 'string/pad')
+    await inProject(imaginedSource(), ['imagined-number/round', 'imagined-string/pad'], async (project, lockfile) => {
+      const removal = await removing(imaginedSource(), project, lockfile, 'imagined-string/pad')
 
       expect(removal.departure).toBe('stays-as-a-dependency')
-      expect(removal.stillReachedBy.map(renderContract)).toEqual(['typescript/number/round@1'])
+      expect(removal.stillReachedBy.map(renderContract)).toEqual(['typescript/imagined-number/round@1'])
       expect(removal.reconciliation.writes).toEqual([])
       expect(removal.reconciliation.removals).toEqual([])
 
       const pad = removal.reconciliation.lockfile.features.find(
-        (feature) => feature.contract.name === 'string/pad',
+        (feature) => feature.contract.name === 'imagined-string/pad',
       )
       expect(pad?.askedFor).toBe(false)
 
@@ -267,12 +268,12 @@ describe('taking a feature out of a project', () => {
       // sentence carry it past `paragraph`'s 72 columns, which is where the eleven characters this
       // rendering costs first became visible.
       expect(screen.replace(/\s+/g, ' ')).toContain(
-        'typescript/string/pad@1 stays where it is: typescript/number/round@1 imports it',
+        'typescript/imagined-string/pad@1 stays where it is: typescript/imagined-number/round@1 imports it',
       )
       expect(screen).toContain('no longer something you asked for')
 
       applying(project, removal)
-      expect(onDisk(project, 'string/pad.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-string/pad.ts')).toBe(true)
     })
   })
 
@@ -283,9 +284,9 @@ describe('taking a feature out of a project', () => {
    * they can, and it comes out of the reconciliation's own resolution rather than from a second walk.
    */
   it('a-feature-that-was-never-asked-for-is-refused-with-what-imports-it', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
-      expect(await refusalOf(imaginedSource(), project, lockfile, 'string/pad')).toEqual([
-        'typescript/string/pad@1 is in this project because typescript/number/round@1 imports it, and you never asked for ' +
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
+      expect(await refusalOf(imaginedSource(), project, lockfile, 'imagined-string/pad')).toEqual([
+        'typescript/imagined-string/pad@1 is in this project because typescript/imagined-number/round@1 imports it, and you never asked for ' +
           'it yourself - so there is nothing of yours to take back. Removing that feature is what ' +
           'would take this one with it.',
       ])
@@ -295,13 +296,13 @@ describe('taking a feature out of a project', () => {
      * Two of them, and this half is why the sentence is built rather than joined.
      *
      * One dependent makes every way of writing the list identical, so the assertion above passes on a
-     * report that names the first of them, or the last, or one at random. `string/pad@1` is reached by
+     * report that names the first of them, or the last, or one at random. `imagined-string/pad@1` is reached by
      * both roots here, and a reader told about one of two removes the wrong feature and finds it still
      * there.
      */
-    await inProject(imaginedSource(), ['number/sign', 'number/clamp'], async (project, lockfile) => {
-      expect(await refusalOf(imaginedSource(), project, lockfile, 'string/pad')).toEqual([
-        'typescript/string/pad@1 is in this project because typescript/number/clamp@1 and typescript/number/sign@1 import it, and you ' +
+    await inProject(imaginedSource(), ['imagined-number/sign', 'imagined-number/clamp'], async (project, lockfile) => {
+      expect(await refusalOf(imaginedSource(), project, lockfile, 'imagined-string/pad')).toEqual([
+        'typescript/imagined-string/pad@1 is in this project because typescript/imagined-number/clamp@1 and typescript/imagined-number/sign@1 import it, and you ' +
           'never asked for it yourself - so there is nothing of yours to take back. Removing those ' +
           'features is what would take this one with it.',
       ])
@@ -313,7 +314,7 @@ describe('taking a feature out of a project', () => {
    * import inside that folder is repointed at it.
    *
    * **The defect this refuses leaves a project that looks installed and fails at build.** `trim.ts` is
-   * carried by `text/left@1` and by `text/right@1`, byte for byte and with no edge between them, so a
+   * carried by `imagined-text/left@1` and by `imagined-text/right@1`, byte for byte and with no edge between them, so a
    * plan over both writes it once in the left folder and points the right one at
    * `../left/trim.js`. Take the left out and that file has to move - a removal that only deleted would
    * leave `right.ts` importing something that is gone, in a file nobody edited.
@@ -324,7 +325,7 @@ describe('taking a feature out of a project', () => {
   it('a-shared-file-moves-into-the-folder-of-a-carrier-that-stays', async () => {
     const source = sourceWithIndependentCarriers()
 
-    await inProject(source, ['text/left', 'text/right'], async (project, installed) => {
+    await inProject(source, ['imagined-text/left', 'imagined-text/right'], async (project, installed) => {
       // Two `add` calls are two plans, so each writes its own copy; the first plan that sees both is
       // an update, and that is where the deduplication - and therefore this whole case - begins.
       const { answer: deduplicated } = await deciding(source, (held) =>
@@ -347,23 +348,23 @@ describe('taking a feature out of a project', () => {
       if ('faults' in written) throw new Error(written.faults.join('\n'))
 
       const lockfile = deduplicated.reconciliation.lockfile
-      expect(project.installed('text/right.ts')).toContain("from './left/trim.js'")
-      expect(onDisk(project, 'text/right/trim.ts')).toBe(false)
+      expect(project.installed('imagined-text/right.ts')).toContain("from './left/trim.js'")
+      expect(onDisk(project, 'imagined-text/right/trim.ts')).toBe(false)
 
-      const removal = await removing(source, project, lockfile, 'text/left')
+      const removal = await removing(source, project, lockfile, 'imagined-text/left')
 
-      expect(leaving(removal)).toEqual(['typescript/text/left@1'])
-      expect(staying(removal)).toEqual(['typescript/text/right@1'])
+      expect(leaving(removal)).toEqual(['typescript/imagined-text/left@1'])
+      expect(staying(removal)).toEqual(['typescript/imagined-text/right@1'])
       expect(removal.reconciliation.writes.map((write) => write.path).sort()).toEqual([
-        'text/right.ts',
-        'text/right/trim.ts',
+        'imagined-text/right.ts',
+        'imagined-text/right/trim.ts',
       ])
 
       applying(project, removal)
 
-      expect(onDisk(project, 'text/left/trim.ts')).toBe(false)
-      expect(onDisk(project, 'text/right/trim.ts')).toBe(true)
-      expect(project.installed('text/right.ts')).toContain("from './right/trim.js'")
+      expect(onDisk(project, 'imagined-text/left/trim.ts')).toBe(false)
+      expect(onDisk(project, 'imagined-text/right/trim.ts')).toBe(true)
+      expect(project.installed('imagined-text/right.ts')).toContain("from './right/trim.js'")
     })
   })
 
@@ -380,12 +381,12 @@ describe('taking a feature out of a project', () => {
    * where an update would rewrite two of them.
    */
   it('the-features-that-stay-are-planned-at-the-version-the-lockfile-records', async () => {
-    await inProject(imaginedSource(), ['number/round', 'number/sign'], async (project, lockfile) => {
+    await inProject(imaginedSource(), ['imagined-number/round', 'imagined-number/sign'], async (project, lockfile) => {
       const removal = await removing(
         sourceServingBothPublications(),
         project,
         lockfile,
-        'number/round',
+        'imagined-number/round',
       )
 
       expect(removal.reconciliation.writes).toEqual([])
@@ -394,7 +395,7 @@ describe('taking a feature out of a project', () => {
           .filter((feature) => feature.now !== null)
           .map((feature) => `${renderContract(feature.contract)} ${feature.now?.version}`)
           .sort(),
-      ).toEqual(['typescript/number/sign@1 1.0.0', 'typescript/string/pad@1 1.0.0'])
+      ).toEqual(['typescript/imagined-number/sign@1 1.0.0', 'typescript/imagined-string/pad@1 1.0.0'])
     })
   })
 
@@ -406,15 +407,15 @@ describe('taking a feature out of a project', () => {
    * to go and finds it still there needs to know in one line that it was their own edit that kept it.
    */
   it('a-file-the-user-edited-is-not-deleted-by-a-removal', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
       project.write(
-        `${project.configuration.directory}/number/round.ts`,
+        `${project.configuration.directory}/imagined-number/round.ts`,
         'export const round = 1\n',
       )
 
-      const removal = await removing(imaginedSource(), project, lockfile, 'number/round')
+      const removal = await removing(imaginedSource(), project, lockfile, 'imagined-number/round')
       const round = removal.reconciliation.features.find(
-        (feature) => feature.contract.name === 'number/round',
+        (feature) => feature.contract.name === 'imagined-number/round',
       )
 
       expect(round?.heldBack).toBe('a file of it is not the one toopo wrote, so it stays where it is')
@@ -430,8 +431,8 @@ describe('taking a feature out of a project', () => {
       expect(screen).not.toContain('everything else still updates')
 
       applying(project, removal)
-      expect(onDisk(project, 'number/round.ts')).toBe(true)
-      expect(project.installed('number/round.ts')).toBe('export const round = 1\n')
+      expect(onDisk(project, 'imagined-number/round.ts')).toBe(true)
+      expect(project.installed('imagined-number/round.ts')).toBe('export const round = 1\n')
     })
   })
 
@@ -454,13 +455,13 @@ describe('taking a feature out of a project', () => {
    * been typed rather than off anything having happened.
    */
   it('a-held-back-removal-leaves-the-lockfile-exactly-as-it-was', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
       project.write(
-        `${project.configuration.directory}/number/round.ts`,
+        `${project.configuration.directory}/imagined-number/round.ts`,
         'export const round = 1\n',
       )
 
-      const removal = await removing(imaginedSource(), project, lockfile, 'number/round')
+      const removal = await removing(imaginedSource(), project, lockfile, 'imagined-number/round')
 
       expect(JSON.stringify(removal.reconciliation.lockfile)).toBe(JSON.stringify(lockfile))
 
@@ -482,18 +483,18 @@ describe('taking a feature out of a project', () => {
    * is in nobody's plan.
    */
   it('an-edit-that-keeps-a-leaving-feature-keeps-what-it-imports-too', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
       project.write(
-        `${project.configuration.directory}/number/round.ts`,
+        `${project.configuration.directory}/imagined-number/round.ts`,
         'export const round = 1\n',
       )
 
-      const removal = await removing(imaginedSource(), project, lockfile, 'number/round')
+      const removal = await removing(imaginedSource(), project, lockfile, 'imagined-number/round')
 
       expect(removal.reconciliation.removals).toEqual([])
       expect(
         removal.reconciliation.features
-          .filter((feature) => feature.contract.name !== 'number/round')
+          .filter((feature) => feature.contract.name !== 'imagined-number/round')
           .map((feature) => feature.heldBack),
       ).toEqual([
         'nothing is removed while a feature is held back, because a held-back feature runs its old ' +
@@ -505,8 +506,8 @@ describe('taking a feature out of a project', () => {
       ])
 
       applying(project, removal)
-      expect(onDisk(project, 'number/clamp.ts')).toBe(true)
-      expect(onDisk(project, 'string/pad/digits.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-number/clamp.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-string/pad/digits.ts')).toBe(true)
       expect(removal.reconciliation.lockfile.features).toHaveLength(4)
     })
   })
@@ -520,17 +521,17 @@ describe('taking a feature out of a project', () => {
    * then applies.
    */
   it('a-removal-shows-and-writes-nothing-until-it-is-applied', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
-      const removal = await removing(imaginedSource(), project, lockfile, 'number/round')
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
+      const removal = await removing(imaginedSource(), project, lockfile, 'imagined-number/round')
 
       expect(removal.reconciliation.removals.length).toBeGreaterThan(0)
-      expect(onDisk(project, 'number/round.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-number/round.ts')).toBe(true)
       expect(renderRemoval(removal, lockfile, project.configuration, false)).toContain(
-        `Apply it with  ${THE_INVOCATION} remove number/round --apply`,
+        `Apply it with  ${THE_INVOCATION} remove imagined-number/round --apply`,
       )
 
       applying(project, removal)
-      expect(onDisk(project, 'number/round.ts')).toBe(false)
+      expect(onDisk(project, 'imagined-number/round.ts')).toBe(false)
     })
   })
 
@@ -547,16 +548,16 @@ describe('taking a feature out of a project', () => {
    * and the same command works when the registry answers.
    */
   it('a-removal-that-cannot-reach-the-registry-refuses-and-explains', async () => {
-    await inProject(imaginedSource(), ['number/round', 'number/sign'], async (project, lockfile) => {
-      const faults = await refusalOf(updatedImaginedSource(), project, lockfile, 'number/round')
+    await inProject(imaginedSource(), ['imagined-number/round', 'imagined-number/sign'], async (project, lockfile) => {
+      const faults = await refusalOf(updatedImaginedSource(), project, lockfile, 'imagined-number/round')
 
       expect(faults).toHaveLength(1)
-      expect(faults[0]).toContain('the registry is not serving typescript/number/sign@1/reference@1.0.0')
+      expect(faults[0]).toContain('the registry is not serving typescript/imagined-number/sign@1/reference@1.0.0')
       expect(faults[0]).toContain('A published version is served for life')
       expect(faults[0]).toContain('Nothing was changed.')
 
-      expect(onDisk(project, 'number/round.ts')).toBe(true)
-      expect(onDisk(project, 'number/sign.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-number/round.ts')).toBe(true)
+      expect(onDisk(project, 'imagined-number/sign.ts')).toBe(true)
     })
   })
 
@@ -569,7 +570,7 @@ describe('taking a feature out of a project', () => {
    * about it in prose would be a claim nobody can check; this counts the calls.
    */
   it('taking-out-the-last-root-asks-the-registry-nothing', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
       const asked: string[] = []
       const counted = Object.fromEntries(
         Object.entries(imaginedSource()).map(([method, answer]) => [
@@ -582,7 +583,7 @@ describe('taking a feature out of a project', () => {
         ]),
       ) as RegistrySource
 
-      const removal = await removing(counted, project, lockfile, 'number/round')
+      const removal = await removing(counted, project, lockfile, 'imagined-number/round')
 
       expect(asked).toEqual([])
       expect(leaving(removal)).toHaveLength(4)
@@ -596,13 +597,14 @@ describe('taking a feature out of a project', () => {
    * answer they want is the one they meant to type.
    */
   it('a-name-the-project-does-not-hold-is-refused-with-what-it-does', async () => {
-    await inProject(imaginedSource(), ['number/round'], async (project, lockfile) => {
-      const faults = await refusalOf(imaginedSource(), project, lockfile, 'number/rond')
+    const misspelt = A_MISSPELLING_OF_ROUND.name
+    await inProject(imaginedSource(), ['imagined-number/round'], async (project, lockfile) => {
+      const faults = await refusalOf(imaginedSource(), project, lockfile, misspelt)
 
       expect(faults).toHaveLength(1)
-      expect(faults[0]).toContain('toopo.lock does not record `number/rond`')
-      expect(faults[0]).toContain('typescript/number/round@1')
-      expect(faults[0]).toContain('typescript/string/pad@1')
+      expect(faults[0]).toContain(`toopo.lock does not record \`${misspelt}\``)
+      expect(faults[0]).toContain('typescript/imagined-number/round@1')
+      expect(faults[0]).toContain('typescript/imagined-string/pad@1')
     })
   })
 })

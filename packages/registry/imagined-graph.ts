@@ -41,7 +41,7 @@
  * folders and would be equally the same if the two files differed. It is the shape the installer
  * deduplicates on.
  *
- * `../../string/pad/reference.js` is written by `clamp` and by `sign`, which is how a published feature
+ * `../../imagined-string/pad/reference.js` is written by `clamp` and by `sign`, which is how a published feature
  * names another one: relative to the folder every contract of the catalogue sits in. What the installer
  * does to that specifier is the measurement `packages/cli/` exists to make.
  */
@@ -49,35 +49,8 @@
 import type { ContractAddress } from './address.js'
 import { digestOfBytes, servedBytes } from './canonical.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
+import { CLAMP, LEFT, PAD, RIGHT, ROUND, SIGN } from './imagined-addresses.js'
 import { edgeTo } from './snapshot.js'
-
-const addressOf = (name: string): ContractAddress => ({ language: 'typescript', name, major: 1 })
-
-export const PAD = addressOf('string/pad')
-export const CLAMP = addressOf('number/clamp')
-export const SIGN = addressOf('number/sign')
-export const ROUND = addressOf('number/round')
-
-/**
- * Two contracts that share a file and depend on nothing, which the graph above cannot express.
- *
- * The graph above deduplicates `digits.ts` between `string/pad` and `number/clamp`, and that pair has a
- * property nobody chose: the carrier is a *dependency* of the borrower. Resolution is
- * dependencies-first, so the carrier is always placed first and can never leave the project while the
- * borrower stays - which makes the one thing deduplication has to survive unreachable, and it was
- * unreachable in silence until a removal went looking for it.
- *
- * Deduplication is by digest across the whole plan and never by an edge, so two features that know
- * nothing about each other share a file exactly as readily. Removing the carrier then has to write the
- * blob into the folder of whoever still holds it and repoint that folder's import at it - and a defect
- * that skipped either half would leave the project looking installed and failing at build, on an import
- * inside a file nobody edited.
- *
- * These are kept out of `HOLDINGS` on purpose: adding them there would change the graph two batteries
- * and three suites are already measured against, to reach one shape that wants its own source.
- */
-export const LEFT = addressOf('text/left')
-export const RIGHT = addressOf('text/right')
 
 /**
  * The version every implementation of this graph is published at.
@@ -90,16 +63,16 @@ export const IMAGINED_VERSION = '1.0.0'
 
 const DIGITS_SOURCE = 'export const DIGITS = /^[0-9]+$/\n'
 
-/** Carried by `text/left` and by `text/right`, byte for byte, with no edge between them. */
+/** Carried by `imagined-text/left` and by `imagined-text/right`, byte for byte, with no edge between them. */
 const TRIM_SOURCE = 'export const TRIM = /\\s/\n'
 
 /**
- * The source of `number/round@1`'s reference, which the imagined contract record hashes as its own
+ * The source of `imagined-number/round@1`'s reference, which the imagined contract record hashes as its own
  * harness file. One text, so that the contract and the implementation of it do not describe two
  * different files under one name.
  */
-export const ROUND_SOURCE = `import { clamp } from '../../number/clamp/reference.js'
-import { sign } from '../../number/sign/reference.js'
+export const ROUND_SOURCE = `import { clamp } from '../../imagined-number/clamp/reference.js'
+import { sign } from '../../imagined-number/sign/reference.js'
 
 export const round = (value: number, places: number): number | null =>
   Number.isFinite(value) ? sign(value) * clamp(Math.abs(value), 0, places) : null
@@ -114,38 +87,38 @@ export const round = (value: number, places: number): number | null =>
  * perform deliberately rather than inherit from a data structure.
  */
 export const IMAGINED_SOURCES: Readonly<Record<string, string>> = {
-  'string/pad/digits.ts': DIGITS_SOURCE,
-  'string/pad/reference.ts': `import { DIGITS } from './digits.js'
+  'imagined-string/pad/digits.ts': DIGITS_SOURCE,
+  'imagined-string/pad/reference.ts': `import { DIGITS } from './digits.js'
 
 export const pad = (text: string, width: number): string =>
   DIGITS.test(text) ? text.padStart(width, '0') : text
 `,
 
-  'number/clamp/digits.ts': DIGITS_SOURCE,
-  'number/clamp/reference.ts': `import { DIGITS } from './digits.js'
-import { pad } from '../../string/pad/reference.js'
+  'imagined-number/clamp/digits.ts': DIGITS_SOURCE,
+  'imagined-number/clamp/reference.ts': `import { DIGITS } from './digits.js'
+import { pad } from '../../imagined-string/pad/reference.js'
 
 export const clamp = (value: number, low: number, high: number): number =>
   DIGITS.test(pad(String(value), 1)) ? Math.min(Math.max(value, low), high) : low
 `,
 
-  'number/sign/reference.ts': `import { pad } from '../../string/pad/reference.js'
+  'imagined-number/sign/reference.ts': `import { pad } from '../../imagined-string/pad/reference.js'
 
 export const sign = (value: number): number =>
   pad(String(value), 1).startsWith('-') ? -1 : 1
 `,
 
-  'number/round/reference.ts': ROUND_SOURCE,
+  'imagined-number/round/reference.ts': ROUND_SOURCE,
 
   // Neither names the other. What they share is `trim.ts`, and only its digest says so.
-  'text/left/trim.ts': TRIM_SOURCE,
-  'text/left/reference.ts': `import { TRIM } from './trim.js'
+  'imagined-text/left/trim.ts': TRIM_SOURCE,
+  'imagined-text/left/reference.ts': `import { TRIM } from './trim.js'
 
 export const left = (text: string): string => (TRIM.test(text) ? text.trimStart() : text)
 `,
 
-  'text/right/trim.ts': TRIM_SOURCE,
-  'text/right/reference.ts': `import { TRIM } from './trim.js'
+  'imagined-text/right/trim.ts': TRIM_SOURCE,
+  'imagined-text/right/reference.ts': `import { TRIM } from './trim.js'
 
 export const right = (text: string): string => (TRIM.test(text) ? text.trimEnd() : text)
 `,
@@ -171,19 +144,19 @@ export const IMAGINED_NEXT_VERSION = '1.0.1'
  * Both changes are the shape a real one takes: a guard added to a condition, and a body turned into an
  * early return. A few lines each, in the middle of a file, which is what a diff has to be readable on.
  *
- * **`number/round` also stops importing `number/sign`**, and that one is here for a reason no smaller
+ * **`imagined-number/round` also stops importing `imagined-number/sign`**, and that one is here for a reason no smaller
  * change reaches: a dependency dropped upstream leaves the closure, so the project holds a folder the
  * lockfile claims and nothing imports. Whether that folder is tidied away or accumulates for ever is a
  * decision `toopo update` has to take, and it cannot be measured on a graph where nothing ever leaves.
  */
 export const THE_SECOND_PUBLICATION: Readonly<Record<string, string>> = {
-  'string/pad/reference.ts': `import { DIGITS } from './digits.js'
+  'imagined-string/pad/reference.ts': `import { DIGITS } from './digits.js'
 
 export const pad = (text: string, width: number): string =>
   DIGITS.test(text) && Number.isInteger(width) ? text.padStart(width, '0') : text
 `,
 
-  'number/round/reference.ts': `import { clamp } from '../../number/clamp/reference.js'
+  'imagined-number/round/reference.ts': `import { clamp } from '../../imagined-number/clamp/reference.js'
 
 export const round = (value: number, places: number): number | null => {
   if (!Number.isFinite(value)) return null
@@ -239,10 +212,10 @@ const publicationAt = (version: string, sources: Readonly<Record<string, string>
   tags: ['reference'],
 })
 
-const PAD_FILES = ['string/pad/reference.ts', 'string/pad/digits.ts']
-const CLAMP_FILES = ['number/clamp/reference.ts', 'number/clamp/digits.ts']
-const SIGN_FILES = ['number/sign/reference.ts']
-const ROUND_FILES = ['number/round/reference.ts']
+const PAD_FILES = ['imagined-string/pad/reference.ts', 'imagined-string/pad/digits.ts']
+const CLAMP_FILES = ['imagined-number/clamp/reference.ts', 'imagined-number/clamp/digits.ts']
+const SIGN_FILES = ['imagined-number/sign/reference.ts']
+const ROUND_FILES = ['imagined-number/round/reference.ts']
 
 const first = publicationAt(IMAGINED_VERSION, IMAGINED_SOURCES)
 
@@ -259,13 +232,30 @@ export const HOLDINGS: readonly ImplementationRecord[] = [pad, sign, clamp, roun
 /**
  * The two independent carriers, apart from `HOLDINGS` and never mixed into it.
  *
- * `text/left@1` sorts before `text/right@1`, so a plan over both places `trim.ts` in the left folder
- * and repoints the right one at it. That is what makes removing `text/left@1` the case that matters:
- * the file has to move into `text/right/`, and the import inside `right.ts` has to move with it.
+ * **Two contracts that share a file and depend on nothing, which the graph above cannot express.** It
+ * deduplicates `digits.ts` between `PAD` and `CLAMP`, and that pair has a property nobody chose: the
+ * carrier is a *dependency* of the borrower. Resolution is dependencies-first, so the carrier is
+ * always placed first and can never leave the project while the borrower stays - which makes the one
+ * thing deduplication has to survive unreachable, and it was unreachable in silence until a removal
+ * went looking for it.
+ *
+ * Deduplication is by digest across the whole plan and never by an edge, so two features that know
+ * nothing about each other share a file exactly as readily. Removing the carrier then has to write the
+ * blob into the folder of whoever still holds it and repoint that folder's import at it - and a defect
+ * that skipped either half would leave the project looking installed and failing at build, on an
+ * import inside a file nobody edited.
+ *
+ * These are kept out of `HOLDINGS` on purpose: adding them there would change the graph two batteries
+ * and three suites are already measured against, to reach one shape that wants its own source.
+ *
+ * `imagined-text/left@1` sorts before `imagined-text/right@1`, so a plan over both places `trim.ts` in
+ * the left folder and repoints the right one at it. That is what makes removing `imagined-text/left@1`
+ * the case that matters: the file has to move into `imagined-text/right/`, and the import inside
+ * `right.ts` has to move with it.
  */
 export const INDEPENDENT_CARRIERS: readonly ImplementationRecord[] = [
-  first(LEFT, ['text/left/reference.ts', 'text/left/trim.ts'], []),
-  first(RIGHT, ['text/right/reference.ts', 'text/right/trim.ts'], []),
+  first(LEFT, ['imagined-text/left/reference.ts', 'imagined-text/left/trim.ts'], []),
+  first(RIGHT, ['imagined-text/right/reference.ts', 'imagined-text/right/trim.ts'], []),
 ]
 
 const next = publicationAt(IMAGINED_NEXT_VERSION, IMAGINED_NEXT_SOURCES)
@@ -279,7 +269,7 @@ export const NEXT_HOLDINGS: readonly ImplementationRecord[] = [
   nextSign,
   nextClamp,
   // No edge to `sign` any more, which is the whole point of the second publication being a graph and
-  // not two files: `number/sign@1` is still published and is no longer reachable from `number/round@1`.
+  // not two files: `imagined-number/sign@1` is still published and is no longer reachable from `imagined-number/round@1`.
   next(ROUND, ROUND_FILES, [nextClamp]),
 ]
 

@@ -444,7 +444,7 @@ export const MISSING_FROM_THE_INDICATIVE_LIST: readonly string[] = [
  * believed rather than checked. The walk was verifiable everywhere except at every edge of it.
  *
  * What is true now is smaller and is stated as what it is: one belief, at the root, and it is named
- * rather than counted. A reader has to trust that `number/round@1` resolves to the digest this
+ * rather than counted. A reader has to trust that `imagined-number/round@1` resolves to the digest this
  * registry says it does - which is the registry's single load-bearing assertion, the one
  * `contract-binding` already declares and the one nothing can remove, because a name is what a person
  * types. Every step under it is arithmetic. That is a Merkle tree with one root of trust, which is the

@@ -37,7 +37,7 @@ const installed = async (): Promise<{
       root: project.root,
       configuration: project.configuration,
       lockfile: EMPTY_LOCKFILE,
-      contract: 'number/round',
+      contract: 'imagined-number/round',
       implementation: null,
       at: A_PINNED_INSTANT,
     }),
@@ -72,19 +72,19 @@ describe('what this project holds', () => {
       expect(
         listing.features.map((feature) => [renderContract(feature.contract), feature.askedFor]),
       ).toEqual([
-        ['typescript/number/clamp@1', false],
-        ['typescript/number/round@1', true],
-        ['typescript/number/sign@1', false],
-        ['typescript/string/pad@1', false],
+        ['typescript/imagined-number/clamp@1', false],
+        ['typescript/imagined-number/round@1', true],
+        ['typescript/imagined-number/sign@1', false],
+        ['typescript/imagined-string/pad@1', false],
       ])
       expect(listing.files).toBe(5)
       expect(listing.bytes).toBeGreaterThan(0)
 
       const screen = renderList(listing, project.configuration)
       expect(screen).toContain('4 features · 5 files')
-      expect(screen).toContain('typescript/number/round@1 · reference@1.0.0 · you asked for it')
-      expect(screen).toContain('typescript/string/pad@1 · reference@1.0.0 · pulled in as a dependency')
-      expect(screen).toContain('src/lib/toopo/number/round.ts')
+      expect(screen).toContain('typescript/imagined-number/round@1 · reference@1.0.0 · you asked for it')
+      expect(screen).toContain('typescript/imagined-string/pad@1 · reference@1.0.0 · pulled in as a dependency')
+      expect(screen).toContain('src/lib/toopo/imagined-number/round.ts')
     })
   })
 
@@ -99,7 +99,7 @@ describe('what this project holds', () => {
     await inProject((project, lockfile) => {
       expect(lockfile.features.every((feature) => !feature.locallyModified)).toBe(true)
 
-      project.write('src/lib/toopo/number/round.ts', 'export const round = "mine"\n')
+      project.write('src/lib/toopo/imagined-number/round.ts', 'export const round = "mine"\n')
       const listing = listProject(project.root, project.configuration, lockfile)
 
       expect(
@@ -107,7 +107,7 @@ describe('what this project holds', () => {
           .flatMap((feature) => feature.files)
           .filter((file) => file.standing !== 'as-written')
           .map((file) => [file.path, file.standing]),
-      ).toEqual([['number/round.ts', 'edited']])
+      ).toEqual([['imagined-number/round.ts', 'edited']])
       expect(renderList(listing, project.configuration)).toContain('edited')
     })
   })
@@ -115,7 +115,7 @@ describe('what this project holds', () => {
   /** A file that is gone is named as missing, with the command that puts it back. */
   it('a-file-that-is-gone-is-named-with-what-puts-it-back', async () => {
     await inProject((project, lockfile) => {
-      rmSync(join(project.root, 'src/lib/toopo/string/pad/digits.ts'))
+      rmSync(join(project.root, 'src/lib/toopo/imagined-string/pad/digits.ts'))
 
       const listing = listProject(project.root, project.configuration, lockfile)
       const screen = renderList(listing, project.configuration)
@@ -125,7 +125,7 @@ describe('what this project holds', () => {
           .flatMap((feature) => feature.files)
           .filter((file) => file.standing === 'missing')
           .map((file) => file.path),
-      ).toEqual(['string/pad/digits.ts'])
+      ).toEqual(['imagined-string/pad/digits.ts'])
       expect(screen).toContain('missing')
       // Not `toopo update --apply` and not *puts it back*: a missing file whose feature carries a
       // conflict elsewhere is held back whole and comes back on no run. What that command does first

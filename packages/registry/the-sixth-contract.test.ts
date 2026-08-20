@@ -7,11 +7,11 @@ import { caseAddressFaults, contractAddressFaults, renderImplementation } from '
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
 import type { ContractRecord, Lifecycle } from './contract-record.js'
 import { FIELD_MAP, pathsIn, publicContract } from './field-map.js'
+import { ROUND } from './imagined-addresses.js'
 import {
   HOLDINGS,
   INDEPENDENT_CARRIERS,
   NEXT_HOLDINGS,
-  ROUND,
   ROUND_SOURCE,
   clamp,
   pad,
@@ -38,8 +38,8 @@ import { contractAnatomy } from '../catalogue/every-contract.js'
  * criterion the decision to launch at five imposes: build the machine that serves exactly five
  * contracts and accepts a sixth, not one dimensioned for a catalogue nobody has.
  *
- * **What this file is not, and this matters more.** `number/round@1` **is not in the catalogue and
- * may never be.** There is no `contracts/typescript/number/round` folder, no reference implementation, no
+ * **What this file is not, and this matters more.** `imagined-number/round@1` **is not in the catalogue and
+ * may never be.** There is no `contracts/typescript/imagined-number/round` folder, no reference implementation, no
  * property, no battery and no admission decision - and writing one would be about ninety-seven
  * decisions this unit has no business taking. Nothing here has been verified about rounding, the
  * answers below are plausible rather than settled, and no part of it should ever be copied into a
@@ -407,9 +407,9 @@ describe('what `toopo add` has to be told, and a depth could not tell it', () =>
    */
   it('a-shared-dependency-is-resolved-once :: dependencies before dependents', () => {
     expect(rendered(resolveDependencies(round, HOLDINGS))).toEqual([
-      'typescript/string/pad@1/reference@1.0.0',
-      'typescript/number/clamp@1/reference@1.0.0',
-      'typescript/number/sign@1/reference@1.0.0',
+      'typescript/imagined-string/pad@1/reference@1.0.0',
+      'typescript/imagined-number/clamp@1/reference@1.0.0',
+      'typescript/imagined-number/sign@1/reference@1.0.0',
     ])
   })
 
@@ -525,7 +525,7 @@ describe('what `toopo add` has to be told, and a depth could not tell it', () =>
       )
     })
 
-    // Five: the four of the first graph, three of the second - `number/round@1` drops `number/sign@1`
+    // Five: the four of the first graph, three of the second - `imagined-number/round@1` drops `imagined-number/sign@1`
     // there - and none at all between the two independent carriers, which share a file and no edge.
     expect(edges).toHaveLength(7)
     expect(unresolved).toEqual([])

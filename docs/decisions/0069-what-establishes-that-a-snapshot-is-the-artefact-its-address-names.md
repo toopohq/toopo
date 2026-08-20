@@ -32,7 +32,7 @@ an address in two ways, and neither of them establishes that what arrived is wha
 obtains a snapshot for an address in two ways and neither of them establishes that what arrived is
 what was asked for. Through a *binding*, the registry is asked which digest a name resolves to and is
 believed. Through an *edge*, the digest is carried and the name is not checked against it at all — so
-an edge naming `string/pad@1/reference@1.0.0` while carrying the digest of `number/sign@1`'s snapshot
+an edge naming `imagined-string/pad@1/reference@1.0.0` while carrying the digest of `imagined-number/sign@1`'s snapshot
 is answered honestly by any registry, verified perfectly by `servedSnapshotFaults`, and installs the
 other feature.
 

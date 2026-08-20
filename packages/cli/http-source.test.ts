@@ -40,7 +40,7 @@ const withARegistry = async <T>(
 const installing = (
   root: string,
   held: HeldRegistry,
-  contract = 'number/round',
+  contract = 'imagined-number/round',
 ): InstallOutcome =>
   prepareInstallation(held, {
     root,
@@ -94,11 +94,11 @@ describe('a registry reached over a socket', () => {
       expect(wanted).toEqual([])
       expect(offline).toEqual(networked)
       expect(writesOf(offline)).toEqual([
-        'string/pad.ts',
-        'string/pad/digits.ts',
-        'number/clamp.ts',
-        'number/sign.ts',
-        'number/round.ts',
+        'imagined-string/pad.ts',
+        'imagined-string/pad/digits.ts',
+        'imagined-number/clamp.ts',
+        'imagined-number/sign.ts',
+        'imagined-number/round.ts',
       ])
     } finally {
       project.remove()
@@ -109,7 +109,7 @@ describe('a registry reached over a socket', () => {
    * What a registry over a wire answers is what a registry in this process answers.
    *
    * The comparison is the plan and not the bytes of one file, because a plan is where deduplication,
-   * repointing and ordering all land - `string/pad/digits.ts` is written once and two carriers are
+   * repointing and ordering all land - `imagined-string/pad/digits.ts` is written once and two carriers are
    * pointed at it, and that is a property of the whole answer rather than of any one file in it.
    */
   it('an-install-over-http-plans-exactly-what-the-same-registry-plans-in-process', async () => {
@@ -161,14 +161,14 @@ describe('a registry reached over a socket', () => {
 
       const flat = await withARegistry(async (serving, source) => {
         const walked = await deciding(source, (held) =>
-          installing(project.root, held, 'string/pad'),
+          installing(project.root, held, 'imagined-string/pad'),
         )
 
         return { rounds: walked.fetchedPerRoundTrip, requests: serving.asked.length }
       })
 
       expect(deep).toEqual({ rounds: [1, 1, 1, 2, 1, 5], requests: 11 })
-      // Four round trips and five requests: `string/pad@1` depends on nothing and carries two files,
+      // Four round trips and five requests: `imagined-string/pad@1` depends on nothing and carries two files,
       // which the last round fetches together - the count of files is not the count of round trips.
       expect(flat).toEqual({ rounds: [1, 1, 1, 2], requests: 5 })
     } finally {

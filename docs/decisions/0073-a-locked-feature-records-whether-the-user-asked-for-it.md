@@ -39,8 +39,8 @@ Treating every entry as a root resolves a *dependency* independently, so it clim
 its own binding names today rather than to the one its dependent was published against — and the
 project ends up holding a combination nobody ever published. Deriving the roots instead from "what no
 other locked feature depends on" reads the edges as they are *now*, which is precisely what an update
-is trying to find out has moved; and it gets the ordinary case wrong anyway, because a `string/pad`
-that was installed directly *and* is pulled in by `number/round` would never again be updated on its
+is trying to find out has moved; and it gets the ordinary case wrong anyway, because a `imagined-string/pad`
+that was installed directly *and* is pulled in by `imagined-number/round` would never again be updated on its
 own.
 
 So it is not derivable, and an absent field would produce an unpublished combination rather than a

@@ -33,7 +33,7 @@ edge carrying an address alone names something the registry must then be asked t
 answer is `implementation-bindings` — a named answer, which is the registry's word and nothing a
 reader can check. Carrying the digest makes the step arithmetic: the client fetches a
 content-addressed snapshot and hashes what arrives. Measured on the imagined graph, `toopo add
-number/round` goes from believing five named answers to believing one, and from eight round trips to
+imagined-number/round` goes from believing five named answers to believing one, and from eight round trips to
 six, because the round trips that disappear are exactly the ones spent asking which digest an edge
 resolves to.
 

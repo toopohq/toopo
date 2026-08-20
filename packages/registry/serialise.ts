@@ -24,6 +24,7 @@ import { join, relative } from 'node:path'
 import { closureFrom } from '../../packaging/reachable.js'
 
 import type { ContractAddress, GuardAddress } from './address.js'
+import { THE_IMAGINED_DOMAIN_PREFIX, isImagined } from './address.js'
 import type {
   BenchmarksRecord,
   CaseRecord,
@@ -353,6 +354,29 @@ export class GroupAddressIsTaken extends Error {
         `duplicate is a link that lands on the wrong element.`,
     )
     this.name = 'GroupAddressIsTaken'
+  }
+}
+
+/**
+ * A contract is offered at an address reserved for a fixture.
+ *
+ * **It is what makes the reservation true by construction rather than by convention.** A prefix that
+ * only a comment refuses is a prefix a submission can take; this is the one door a folder becomes a
+ * served contract through, so refusing here is refusing everywhere - the client's local source, the
+ * site's, the read API and the instrument all arrive at this function.
+ *
+ * It is born green and stays green until somebody addresses a contract at `imagined-…`, which is the
+ * event it is written for: the fixtures of this repository hold nine such addresses, and what they
+ * are worth is that nothing can ever be published on top of one. ADR-0142.
+ */
+export class TheAddressIsImagined extends Error {
+  constructor(name: string) {
+    super(
+      `${name} stands in the space reserved for fixtures. A domain beginning with ` +
+        `\`${THE_IMAGINED_DOMAIN_PREFIX}\` is one no contract may be published at, so that a fixture ` +
+        `holding an address holds it against nothing.`,
+    )
+    this.name = 'TheAddressIsImagined'
   }
 }
 
@@ -761,6 +785,8 @@ const surfaceOf = (
 
 export const serialiseContract = (root: string, source: ContractSource): ContractRecord => {
   const surface = surfaceOf(source.exports)
+
+  if (isImagined(source.address.name)) throw new TheAddressIsImagined(source.address.name)
 
   refuseTakenAddresses(source.address.name, source.caseTables)
 

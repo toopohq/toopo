@@ -14,14 +14,14 @@ import { rewrittenSources } from './rewrite.js'
  */
 
 const THE_CATALOGUE_TREE = {
-  'string/pad/reference.ts': 'string/pad.ts',
-  'string/pad/digits.ts': 'string/pad/digits.ts',
-  // A second file of `string/pad`'s own folder, which is the only kind of file this layout leaves
+  'imagined-string/pad/reference.ts': 'imagined-string/pad.ts',
+  'imagined-string/pad/digits.ts': 'imagined-string/pad/digits.ts',
+  // A second file of `imagined-string/pad`'s own folder, which is the only kind of file this layout leaves
   // where the catalogue served it - and therefore the only one a specifier can already be right about.
-  'string/pad/units.ts': 'string/pad/units.ts',
-  'number/clamp/reference.ts': 'number/clamp.ts',
+  'imagined-string/pad/units.ts': 'imagined-string/pad/units.ts',
+  'imagined-number/clamp/reference.ts': 'imagined-number/clamp.ts',
   // The second carrier of the shared blob, pointing at the copy that was kept.
-  'number/clamp/digits.ts': 'string/pad/digits.ts',
+  'imagined-number/clamp/digits.ts': 'imagined-string/pad/digits.ts',
 }
 
 const rewritten = (servedAt: string, text: string): string => {
@@ -33,28 +33,28 @@ const rewritten = (servedAt: string, text: string): string => {
 
 describe('pointing an import at where the file went', () => {
   /**
-   * The cost of naming the entry file after its feature, paid here. A published `number/clamp` names
-   * its dependency as `../../string/pad/reference.js`, which is wrong the moment that file lands as
-   * `string/pad.ts` - a level shallower as well as under another name.
+   * The cost of naming the entry file after its feature, paid here. A published `imagined-number/clamp` names
+   * its dependency as `../../imagined-string/pad/reference.js`, which is wrong the moment that file lands as
+   * `imagined-string/pad.ts` - a level shallower as well as under another name.
    */
   it('a-renamed-entry-file-is-repointed', () => {
     const text = rewritten(
-      'number/clamp/reference.ts',
-      `import { pad } from '../../string/pad/reference.js'\n\nexport const clamp = pad\n`,
+      'imagined-number/clamp/reference.ts',
+      `import { pad } from '../../imagined-string/pad/reference.js'\n\nexport const clamp = pad\n`,
     )
 
-    expect(text).toBe(`import { pad } from '../string/pad.js'\n\nexport const clamp = pad\n`)
+    expect(text).toBe(`import { pad } from '../imagined-string/pad.js'\n\nexport const clamp = pad\n`)
   })
 
   /** The other half of the same rule: a file that was not written because somebody else carries it. */
   it('a-shared-blob-is-repointed-across-features', () => {
     const text = rewritten(
-      'number/clamp/reference.ts',
+      'imagined-number/clamp/reference.ts',
       `import { DIGITS } from './digits.js'\n\nexport const clamp = DIGITS\n`,
     )
 
     expect(text).toBe(
-      `import { DIGITS } from '../string/pad/digits.js'\n\nexport const clamp = DIGITS\n`,
+      `import { DIGITS } from '../imagined-string/pad/digits.js'\n\nexport const clamp = DIGITS\n`,
     )
   })
 
@@ -71,7 +71,7 @@ describe('pointing an import at where the file went', () => {
   it('an-unchanged-specifier-is-left-alone', () => {
     const source = `import { DIGITS } from './digits.js'\n\nexport const UNITS = DIGITS\n`
 
-    expect(rewritten('string/pad/units.ts', source)).toBe(source)
+    expect(rewritten('imagined-string/pad/units.ts', source)).toBe(source)
   })
 
   /**
@@ -80,17 +80,17 @@ describe('pointing an import at where the file went', () => {
    */
   it('every-shape-of-import-is-repointed-and-not-only-the-obvious-one', () => {
     const text = rewritten(
-      'number/clamp/reference.ts',
-      `import type { Pad } from '../../string/pad/reference.js'
-export { pad } from '../../string/pad/reference.js'
-const later = () => import('../../string/pad/reference.js')
-type Held = import('../../string/pad/reference.js').Pad
+      'imagined-number/clamp/reference.ts',
+      `import type { Pad } from '../../imagined-string/pad/reference.js'
+export { pad } from '../../imagined-string/pad/reference.js'
+const later = () => import('../../imagined-string/pad/reference.js')
+type Held = import('../../imagined-string/pad/reference.js').Pad
 
 export const clamp = (value: Pad | Held) => later() ?? value
 `,
     )
 
-    expect(text.match(/\.\.\/string\/pad\.js/g)).toHaveLength(4)
+    expect(text.match(/\.\.\/imagined-string\/pad\.js/g)).toHaveLength(4)
     expect(text).not.toContain('reference.js')
   })
 
@@ -101,12 +101,12 @@ export const clamp = (value: Pad | Held) => later() ?? value
    */
   it('an-import-of-something-outside-the-registry-is-refused', () => {
     const result = rewrittenSources(
-      [{ servedAt: 'string/pad/reference.ts', text: `import { join } from 'node:path'\n` }],
+      [{ servedAt: 'imagined-string/pad/reference.ts', text: `import { join } from 'node:path'\n` }],
       THE_CATALOGUE_TREE,
     )
 
     expect('faults' in result && result.faults).toEqual([
-      'string/pad/reference.ts imports `node:path`, which is not a registry feature. Permanent rule 2 ' +
+      'imagined-string/pad/reference.ts imports `node:path`, which is not a registry feature. Permanent rule 2 ' +
         'forbids a feature from depending on anything else, so there is nowhere for this installer to ' +
         'point it.',
     ])
@@ -115,12 +115,12 @@ export const clamp = (value: Pad | Held) => later() ?? value
   /** A relative import naming a file no snapshot of this install carries would land pointing at nothing. */
   it('an-import-of-a-file-this-install-does-not-carry-is-refused', () => {
     const result = rewrittenSources(
-      [{ servedAt: 'string/pad/reference.ts', text: `import { x } from './missing.js'\n` }],
+      [{ servedAt: 'imagined-string/pad/reference.ts', text: `import { x } from './missing.js'\n` }],
       THE_CATALOGUE_TREE,
     )
 
     expect('faults' in result && result.faults).toEqual([
-      'string/pad/reference.ts imports `./missing.js`, and no file of this install is served at that ' +
+      'imagined-string/pad/reference.ts imports `./missing.js`, and no file of this install is served at that ' +
         'path - so it would land pointing at nothing.',
     ])
   })
@@ -135,8 +135,8 @@ export const clamp = (value: Pad | Held) => later() ?? value
 
     expect(
       spellings.map((specifier) =>
-        rewritten('number/clamp/reference.ts', `export { DIGITS } from '${specifier}'\n`),
+        rewritten('imagined-number/clamp/reference.ts', `export { DIGITS } from '${specifier}'\n`),
       ),
-    ).toEqual(spellings.map(() => `export { DIGITS } from '../string/pad/digits.js'\n`))
+    ).toEqual(spellings.map(() => `export { DIGITS } from '../imagined-string/pad/digits.js'\n`))
   })
 })

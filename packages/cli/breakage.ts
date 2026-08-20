@@ -177,7 +177,7 @@ export const WHAT_BREAKS: readonly Breakage[] = [
     detail:
       'the refusal names the feature that imports it, which is the difference between an answer ' +
       'somebody can act on and one they argue with. "It is a dependency" is a sentence nobody can do ' +
-      'anything about; `number/round@1 imports it` is one they can. It comes out of the same ' +
+      'anything about; `imagined-number/round@1 imports it` is one they can. It comes out of the same ' +
       'resolution the removal was already making rather than from a second walk.',
   },
   {
@@ -211,7 +211,7 @@ export const WHAT_BREAKS: readonly Breakage[] = [
       'import is not in the lockfile - **it never was, and no field would put it there**. A shared ' +
       'file is written once and the other carrier is repointed at it, so that carrier\'s entry does ' +
       'not name the file it imports; deciding from the lockfile alone would delete it. Measured on ' +
-      'the fixture graph: `number/clamp@1` records one file and imports `../../string/pad/digits.js`, ' +
+      'the fixture graph: `imagined-number/clamp@1` records one file and imports `../../imagined-string/pad/digits.js`, ' +
       'and three files that stay would have imported something that was gone. So the refusal explains ' +
       'rather than reports a failure - *this needs to know what the features that stay import, and ' +
       'only the registry knows* - and it degrades without destroying: the files stay, nothing breaks, ' +

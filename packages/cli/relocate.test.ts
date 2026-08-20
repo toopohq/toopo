@@ -46,7 +46,7 @@ const installed = async (): Promise<{
       root: project.root,
       configuration: project.configuration,
       lockfile: EMPTY_LOCKFILE,
-      contract: 'number/round',
+      contract: 'imagined-number/round',
       implementation: null,
       at: A_PINNED_INSTANT,
     }),
@@ -96,7 +96,7 @@ describe('the configured folder moving', () => {
    *
    * The bytes matter more than the paths: nothing that decides a byte in this folder can see the
    * configured directory, so a relocation that rewrote anything would be a defect rather than a
-   * feature. Measured over the shared blob too - `string/pad/digits.ts` is the file two carriers name.
+   * feature. Measured over the shared blob too - `imagined-string/pad/digits.ts` is the file two carriers name.
    */
   it('every-installed-file-moves-and-not-one-byte-changes', async () => {
     await inProject((project, lockfile) => {
@@ -146,10 +146,10 @@ describe('the configured folder moving', () => {
    */
   it('a-file-the-user-edited-moves-with-the-edit-in-it', async () => {
     await inProject((project, lockfile) => {
-      project.write(`${FROM}/number/round.ts`, 'export const round = "mine"\n')
+      project.write(`${FROM}/imagined-number/round.ts`, 'export const round = "mine"\n')
       moveIt(project, lockfile)
 
-      expect(readFileSync(join(project.root, TO, 'number/round.ts'), 'utf8')).toBe(
+      expect(readFileSync(join(project.root, TO, 'imagined-number/round.ts'), 'utf8')).toBe(
         'export const round = "mine"\n',
       )
     })
@@ -165,7 +165,7 @@ describe('the configured folder moving', () => {
    */
   it('a-destination-already-holding-our-bytes-is-a-move-that-happened', async () => {
     await inProject((project, lockfile) => {
-      const path = 'string/pad/digits.ts'
+      const path = 'imagined-string/pad/digits.ts'
       project.write(`${TO}/${path}`, readFileSync(join(project.root, FROM, path), 'utf8'))
 
       const change = whatMoves(project.root, HERE, THERE, lockfile)
@@ -191,15 +191,15 @@ describe('the configured folder moving', () => {
    */
   it('a-destination-holding-something-else-refuses-the-whole-move', async () => {
     await inProject((project, lockfile) => {
-      project.write(`${TO}/number/sign.ts`, 'export const sign = "not ours"\n')
+      project.write(`${TO}/imagined-number/sign.ts`, 'export const sign = "not ours"\n')
 
       const change = whatMoves(project.root, HERE, THERE, lockfile)
 
       expect('faults' in change && change.faults).toHaveLength(1)
-      expect('faults' in change && change.faults[0]).toContain(`${TO}/number/sign.ts`)
+      expect('faults' in change && change.faults[0]).toContain(`${TO}/imagined-number/sign.ts`)
       expect('faults' in change && change.faults[0]).toContain('holds different bytes')
       // Nothing moved, and the file that was there is the one that is there.
-      expect(readFileSync(join(project.root, FROM, 'number/round.ts'), 'utf8')).toContain('round')
+      expect(readFileSync(join(project.root, FROM, 'imagined-number/round.ts'), 'utf8')).toContain('round')
     })
   })
 
@@ -213,7 +213,7 @@ describe('the configured folder moving', () => {
    */
   it('a-file-the-lockfile-claims-and-the-disk-has-not-got-moves-nothing', async () => {
     await inProject((project, lockfile) => {
-      rmSync(join(project.root, FROM, 'number/sign.ts'))
+      rmSync(join(project.root, FROM, 'imagined-number/sign.ts'))
 
       const planned = planRelocation(project.root, FROM, TO, lockfile)
       if (!('relocation' in planned)) throw new Error(JSON.stringify(planned))
@@ -222,8 +222,8 @@ describe('the configured folder moving', () => {
         planned.relocation.moves
           .filter((move) => move.verdict === 'not-on-disk')
           .map((move) => move.path),
-      ).toEqual(['number/sign.ts'])
-      expect(pathsLeftBehind(planned.relocation)).not.toContain('number/sign.ts')
+      ).toEqual(['imagined-number/sign.ts'])
+      expect(pathsLeftBehind(planned.relocation)).not.toContain('imagined-number/sign.ts')
       expect(filesToMove(planned.relocation)).toHaveLength(4)
     })
   })
@@ -285,7 +285,7 @@ describe('the configured folder moving', () => {
   it('a-refused-folder-change-leaves-the-configuration-naming-the-old-folder', async () => {
     await inProject((project) => {
       writeConfiguration(project.root, HERE)
-      project.write(`${TO}/number/sign.ts`, 'export const sign = "not ours"\n')
+      project.write(`${TO}/imagined-number/sign.ts`, 'export const sign = "not ours"\n')
 
       expect(() =>
         execFileSync(process.execPath, [THE_ENTRY_POINT, 'init', '--dir', TO], {

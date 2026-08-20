@@ -83,9 +83,9 @@ export type Installation = {
   /**
    * One entry per feature, and not one entry claiming everything.
    *
-   * An install of `number/round` writes four features, and the lockfile has to say so: a single entry
-   * claiming all five files would leave `string/pad` installed and unrecorded, so a later
-   * `toopo add string/pad` would find a file it did not write and refuse, and `toopo update` would
+   * An install of `imagined-number/round` writes four features, and the lockfile has to say so: a single entry
+   * claiming all five files would leave `imagined-string/pad` installed and unrecorded, so a later
+   * `toopo add imagined-string/pad` would find a file it did not write and refuse, and `toopo update` would
    * have nothing to compare it against.
    */
   readonly features: readonly LockedFeature[]

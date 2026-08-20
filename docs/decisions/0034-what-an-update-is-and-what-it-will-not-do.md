@@ -76,8 +76,8 @@ second carrier is deduplicated away and has no entry, and the old relocation is 
 it. A feature half at one version and half at another is a combination nobody published.
 
 **Nothing is removed while anything is held back**, and that rule was found by reading the report rather
-than the code: the second publication of the imagined graph has `number/round` drop `number/sign`, and a
-held-back `number/round` runs the old code that imports it still — so removing it would break a build in
+than the code: the second publication of the imagined graph has `imagined-number/round` drop `imagined-number/sign`, and a
+held-back `imagined-number/round` runs the old code that imports it still — so removing it would break a build in
 order to tidy a folder. The blunt form is deliberate; the exact one costs a fetch per held-back feature
 and a fallback, to win one run of tidiness in a situation the user is already resolving.
 
@@ -88,7 +88,7 @@ not say which features the user had typed, and an update has two ways to guess, 
 reasons. Treating every entry as a root climbs a dependency to whatever its own binding names today
 rather than to the one its dependent was published against — a combination nobody published. Deriving
 the roots from the edges reads precisely what an update is trying to find out has moved, and gets the
-ordinary case wrong anyway: a `string/pad` installed directly *and* pulled in by `number/round` would
+ordinary case wrong anyway: a `imagined-string/pad` installed directly *and* pulled in by `imagined-number/round` would
 never again be updated on its own. It is **sticky towards true**, and that case found a second defect in
 `add`: asking by name for something already held as a dependency answered "nothing to do" and recorded
 nothing, after which a later update would have removed what the user had asked for. It is smaller than

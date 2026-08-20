@@ -135,6 +135,40 @@ proof's and is stated in the same place**: no mutant reddens those two guards, s
 they are worth, and what stands in for it is that they were seen red on three real conditions with the
 reds published. ADR-0107.
 
+**The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
+contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
+`string/titlecase`, `number/rond`, `toy/thing` — every one two kebab-case segments, which is exactly
+what `CONTRACT_NAME` accepts. **The failure has no event**: nothing reddens, nothing drifts, and the
+collision is met by whoever sets out to write the contract, at which point the choice is between
+renaming forty files and publishing at a name nobody chose. `number/round@1` was decided while three
+fixtures stood on it — the imagined graph's root, the record `the-sixth-contract.test.ts` writes to ask
+whether the schema takes a sixth, and the address every guard of `packages/cli/` installs from. A domain
+beginning with `imagined-` is now one no contract may be published at: `serialiseContract` refuses it,
+`imaginedSource()` refuses anything else, and a pair of guards holds both halves — either alone would be
+a convention with a test in front of it. **The prefix rather than a reserved domain is a measurement**:
+the graph exists to exercise `../../<domain>/<name>/reference.js`, six fixtures in one domain would
+write `../<name>/reference.js`, and the harder shape would stop being written anywhere. It shows in the
+bytes — an install goes 794 → 821 B, and the 27 are three specifiers × nine characters. ADR-0142.
+
+**The count is the argument, not the repair.** Three successive sweeps of this repository counted
+**six, then eight, then nine**, and nothing about the three that were missed looked different from the
+six that were found. A sweep over the text cannot replace the declaration, measured rather than
+assumed: matching `CONTRACT_NAME`'s shape against every quoted literal returns `lib/toopo`,
+`packages/cli`, `application/json` and `vitest/config` beside the real answers, because the shape of an
+address and the shape of a path are one shape. So the guard is total over a **declaration** and the
+population is `imagined-addresses.ts`'s own exports. **What it does not reach is a bare literal typed
+into a future test**, which is on the list below. `Math.clamp` at TC39 stage 2 is what made it urgent:
+the language is coming for `number/clamp`, and a fixture in the way of a *decision* is worse than one
+in the way of a contract.
+
+**And the rename produced a rule this repository did not have.** Ten records name one of the nine.
+Nine were renamed on the precedent of ADR-0095 and ADR-0124 — *both moved every identifier and neither
+moved a single tree, which is what made the stamped measurements survive as renames*. One passage was
+not, and applying the test is what showed the two directions: for text this repository's own fixture
+produced, **renaming is what restores reproducibility**; for a probe taken outside it, on files the
+probe itself named, renaming would make it a transcript of a run nobody performed. ADR-0110's reading of
+node's resolver is left as taken, with the date beside it and what the address became. ADR-0142.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
@@ -789,6 +823,28 @@ record declares**, which is a worse thing and has never been named here before.
   it is citing a guard, which is a convention nothing here has. Priced and not taken. **What is cheap and
   is done instead is the convention**: a comment that says a guard keeps something is worth a record's
   `confirmed-by`, and the record is where the citation is resolved. ADR-0126.
+
+- **That an address written as a bare literal is one the catalogue cannot publish.** ADR-0142 moved
+  every fixture of this repository behind a reserved domain prefix and holds it there with two guards,
+  and the guards read a **declaration** — the exports of `packages/registry/imagined-addresses.ts` — so
+  an address added there enters their population with nobody editing them. **What nothing reaches is an
+  address typed straight into a test**: a future expectation written as `'string/titlecase'` rather than
+  taken from the constant is a fixture standing at an admissible address again, silently, and the
+  failure has no event — it is met by whoever sets out to write that contract.
+
+  **A wider sweep is refused and the refusal is a measurement rather than a price.** Matching
+  `CONTRACT_NAME`'s own shape against every quoted literal of every tracked `.ts` file at `db2d236`
+  returns `lib/toopo`, `packages/cli`, `application/json`, `vitest/config`, `app/toopo`, `arm/lens` and
+  `refs/tags` beside the real answers. **The shape of an address and the shape of a path are one shape**,
+  so no reading of the text separates them, and a guard that tried would need a list of exceptions —
+  which is the convention this whole unit replaced.
+
+  **The population is every user-facing and test-facing string of this repository that could hold an
+  address**, and it is the same population three other entries here already name. What would close it is
+  the validation stage reading this repository's own strings, already priced and already refused as a
+  lint over prose; what is cheap and is done instead is that both never-held addresses are now taken
+  from the declaration rather than typed, so writing a bare one is a deviation rather than the path of
+  least resistance. ADR-0142.
 
 - **That the text of a guard is the text somebody wrote.** A `\b` edited into a source through a shell
   heredoc lands in the file as a literal backspace, `0x08`. Nothing here reads a source for a control
@@ -1864,6 +1920,11 @@ the record beside it.
   ADR-0021.
 - **An address is not a figure**, and it leaves a comparison by both sides or by neither. A run of
   digits is not evidence of a figure; what decides is the rendering. ADR-0030.
+- **A rename may move a name; it may not move a reading.** The test is not *is this a record?* but
+  **would replaying this produce this text?** It points in two directions, which is what makes it a
+  test rather than a preference: for text this repository's own fixture produced, renaming is what
+  restores reproducibility; for a probe taken outside it, on inputs the probe itself named and stamped,
+  renaming makes it a transcript of a run nobody performed. ADR-0142.
 - **A static check passing does not mean the interface works.** A whole class of defect is only visible
   in a real browser, and this repository has paid for that class twice. ADR-0028.
 - **A report may state what it observed; it may not name a cause it did not measure**, and an invented

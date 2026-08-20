@@ -58,7 +58,7 @@ describe('removing a temporary project', () => {
    */
   it('a-project-is-removed-while-another-process-still-holds-it', () => {
     const project = aProject()
-    project.write('src/lib/toopo/number/round.ts', 'export const round = (n: number) => n\n')
+    project.write('src/lib/toopo/imagined-number/round.ts', 'export const round = (n: number) => n\n')
 
     const sentinel = `${project.root}.holding`
     const holder = spawn(process.execPath, ['-e', holderProgram(sentinel)], {

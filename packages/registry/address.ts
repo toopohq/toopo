@@ -49,6 +49,40 @@ export type Language = 'typescript'
  */
 const CONTRACT_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*\/[a-z0-9]+(?:-[a-z0-9]+)*$/
 
+/**
+ * The domain prefix a contract may never carry, so that a fixture can hold an address for good.
+ *
+ * **A fixture standing at an admissible address stands in the catalogue's way.** Nine of them did,
+ * and one was the address of the imagined graph's root, of the record a sixth contract was written
+ * against, and of the contract the catalogue then decided to publish. Nothing reported the collision:
+ * it is found by somebody setting out to write the contract, at which point the choice is between
+ * renaming forty files and publishing at a name nobody chose.
+ *
+ * **A prefix on the domain rather than a reserved domain, and a measurement decides it.** The
+ * imagined graph exists to exercise a specifier of the form `../../<domain>/<name>/reference.js`,
+ * which is how a published feature names another one - relative to the folder every contract sits in.
+ * Six fixtures inside one reserved domain would write `../<name>/reference.js` instead, and the
+ * harder of the two shapes, the one `packages/cli/` exists to measure, would stop being written
+ * anywhere. A prefix keeps three imagined domains and so keeps that edge.
+ *
+ * **A prefix on the domain rather than on the name**, because the domain is what the site's
+ * navigation is built on: a reserved name inside `number` would put a fiction inside a domain a
+ * reader browses, and a reserved domain is a folder nothing walks into.
+ *
+ * The prefix holds no slash, so asking this of the whole `domain/name` is asking it of the domain.
+ *
+ * ADR-0142.
+ */
+export const THE_IMAGINED_DOMAIN_PREFIX = 'imagined-'
+
+/**
+ * Whether `domain/name` stands in the imagined space, which is the space the catalogue refuses.
+ *
+ * It takes the name rather than the address because both sides need it: a record carries a
+ * `ContractAddress`, and a client is handed `domain/name` as the user typed it.
+ */
+export const isImagined = (name: string): boolean => name.startsWith(THE_IMAGINED_DOMAIN_PREFIX)
+
 export type ContractAddress = {
   readonly language: Language
   /** `domain/name`, exactly as `identity.name` carries it. */

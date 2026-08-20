@@ -5,6 +5,7 @@ import { describe, it, expect } from 'vitest'
 
 import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
+import { A_NAME_THE_CATALOGUE_DOES_NOT_HOLD } from '../registry/imagined-addresses.js'
 import { clamp, pad, sign } from '../registry/imagined-graph.js'
 import type { ImplementationRecord, Lockfile } from '../registry/implementation-record.js'
 import { servedSnapshot } from '../registry/response.js'
@@ -60,7 +61,7 @@ const digestOf = (record: ImplementationRecord): string =>
   digestOfSnapshot(implementationSnapshot(record))
 
 /**
- * A registry whose `carrier` was published with its edge to `string/pad@1` carrying `instead`'s digest.
+ * A registry whose `carrier` was published with its edge to `imagined-string/pad@1` carrying `instead`'s digest.
  *
  * Everything else it answers is honest, and the corrupted snapshot hashes to the address it is served
  * at - because it *is* the artefact the registry published. What a wire adds over a local source is not
@@ -104,7 +105,7 @@ const withTheGraph = async <T>(
 ): Promise<T> => {
   const project = aProject()
   try {
-    const installation = mustInstall(await installing(imaginedSource(), project, 'number/round'))
+    const installation = mustInstall(await installing(imaginedSource(), project, 'imagined-number/round'))
     committing(project, installation)
 
     return await use(project, installation)
@@ -121,11 +122,11 @@ describe('installing a feature and what it imports', () => {
   it('the-graph-lands-as-a-tree-of-features', async () => {
     await withTheGraph((_project, installation) => {
       expect(installation.writes.map((write) => write.path)).toEqual([
-        'string/pad.ts',
-        'string/pad/digits.ts',
-        'number/clamp.ts',
-        'number/sign.ts',
-        'number/round.ts',
+        'imagined-string/pad.ts',
+        'imagined-string/pad/digits.ts',
+        'imagined-number/clamp.ts',
+        'imagined-number/sign.ts',
+        'imagined-number/round.ts',
       ])
     })
   })
@@ -146,15 +147,15 @@ describe('installing a feature and what it imports', () => {
    */
   it('an-installed-file-imports-what-was-installed', async () => {
     await withTheGraph((project) => {
-      expect(project.installed('number/clamp.ts')).toBe(
-        `import { DIGITS } from '../string/pad/digits.js'
-import { pad } from '../string/pad.js'
+      expect(project.installed('imagined-number/clamp.ts')).toBe(
+        `import { DIGITS } from '../imagined-string/pad/digits.js'
+import { pad } from '../imagined-string/pad.js'
 
 export const clamp = (value: number, low: number, high: number): number =>
   DIGITS.test(pad(String(value), 1)) ? Math.min(Math.max(value, low), high) : low
 `,
       )
-      expect(project.installed('number/round.ts')).toContain(
+      expect(project.installed('imagined-number/round.ts')).toContain(
         `import { clamp } from './clamp.js'`,
       )
     })
@@ -171,16 +172,16 @@ export const clamp = (value: number, low: number, high: number): number =>
       const files = installation.features.flatMap((feature) => feature.files)
 
       // Four of the five, because ADR-0110 puts an entry file a level above the folder its own files
-      // land in: `string/pad.ts` is repointed at `./pad/digits.js` although it depends on nothing.
+      // land in: `imagined-string/pad.ts` is repointed at `./pad/digits.js` although it depends on nothing.
       // What the registry served untouched is the folder's own file, and only that.
       expect(files.filter((file) => file.sha256 !== file.served.sha256).map((file) => file.path)).toEqual([
-        'string/pad.ts',
-        'number/clamp.ts',
-        'number/sign.ts',
-        'number/round.ts',
+        'imagined-string/pad.ts',
+        'imagined-number/clamp.ts',
+        'imagined-number/sign.ts',
+        'imagined-number/round.ts',
       ])
       expect(files.filter((file) => file.sha256 === file.served.sha256).map((file) => file.path)).toEqual([
-        'string/pad/digits.ts',
+        'imagined-string/pad/digits.ts',
       ])
       expect(
         files.every(
@@ -194,16 +195,16 @@ export const clamp = (value: number, low: number, high: number): number =>
 
   /**
    * One lockfile entry per feature, and every one of them names the file the catalogue served it as.
-   * A single entry claiming all five would leave `string/pad` installed and unrecorded, so a later
-   * `toopo add string/pad` would meet a file it did not write and refuse.
+   * A single entry claiming all five would leave `imagined-string/pad` installed and unrecorded, so a later
+   * `toopo add imagined-string/pad` would meet a file it did not write and refuse.
    */
   it('every-feature-the-install-writes-gets-its-own-lockfile-entry', async () => {
     await withTheGraph((_project, installation) => {
       expect(installation.features.map((feature) => renderContract(feature.contract))).toEqual([
-        'typescript/string/pad@1',
-        'typescript/number/clamp@1',
-        'typescript/number/sign@1',
-        'typescript/number/round@1',
+        'typescript/imagined-string/pad@1',
+        'typescript/imagined-number/clamp@1',
+        'typescript/imagined-number/sign@1',
+        'typescript/imagined-number/round@1',
       ])
       expect(installation.features.map((feature) => feature.files.map((file) => file.served.path))).toEqual([
         ['reference.ts', 'digits.ts'],
@@ -223,10 +224,10 @@ export const clamp = (value: number, low: number, high: number): number =>
       expect(
         installation.features.map((feature) => [renderContract(feature.contract), feature.askedFor]),
       ).toEqual([
-        ['typescript/string/pad@1', false],
-        ['typescript/number/clamp@1', false],
-        ['typescript/number/sign@1', false],
-        ['typescript/number/round@1', true],
+        ['typescript/imagined-string/pad@1', false],
+        ['typescript/imagined-number/clamp@1', false],
+        ['typescript/imagined-number/sign@1', false],
+        ['typescript/imagined-number/round@1', true],
       ])
     })
   })
@@ -243,20 +244,20 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('a-root-stays-one-when-something-else-pulls-it-in', async () => {
     const project = aProject()
     try {
-      const asked = mustInstall(await installing(imaginedSource(), project, 'string/pad'))
+      const asked = mustInstall(await installing(imaginedSource(), project, 'imagined-string/pad'))
       const first = committing(project, asked)
 
-      expect(first.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor).toBe(
+      expect(first.features.find((feature) => feature.contract.name === 'imagined-string/pad')?.askedFor).toBe(
         true,
       )
 
-      const graph = mustInstall(await installing(imaginedSource(), project, 'number/round', first))
+      const graph = mustInstall(await installing(imaginedSource(), project, 'imagined-number/round', first))
       const after = lockfileAfter(first, graph.features)
 
       expect(
-        graph.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor,
+        graph.features.find((feature) => feature.contract.name === 'imagined-string/pad')?.askedFor,
       ).toBe(false)
-      expect(after.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor).toBe(
+      expect(after.features.find((feature) => feature.contract.name === 'imagined-string/pad')?.askedFor).toBe(
         true,
       )
     } finally {
@@ -267,32 +268,32 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('a-feature-pulled-in-and-then-asked-for-becomes-a-root', async () => {
     const project = aProject()
     try {
-      const graph = mustInstall(await installing(imaginedSource(), project, 'number/round'))
+      const graph = mustInstall(await installing(imaginedSource(), project, 'imagined-number/round'))
       const lockfile = committing(project, graph)
 
       expect(
-        lockfile.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor,
+        lockfile.features.find((feature) => feature.contract.name === 'imagined-string/pad')?.askedFor,
       ).toBe(false)
 
       // Not one byte moves - it is already there - and the lockfile still has to. Answering
       // "nothing to do" and stopping is how a feature the user asked for stays a dependency, and
       // gets removed by a later update the day nothing imports it.
-      const directly = await installing(imaginedSource(), project, 'string/pad', lockfile)
-      if (!('unchanged' in directly)) throw new Error('string/pad was not already there')
+      const directly = await installing(imaginedSource(), project, 'imagined-string/pad', lockfile)
+      if (!('unchanged' in directly)) throw new Error('imagined-string/pad was not already there')
 
       const after = lockfileAfter(lockfile, directly.features)
 
-      expect(after.features.find((feature) => feature.contract.name === 'string/pad')?.askedFor).toBe(
+      expect(after.features.find((feature) => feature.contract.name === 'imagined-string/pad')?.askedFor).toBe(
         true,
       )
-      expect(after.features.find((feature) => feature.contract.name === 'number/round')?.askedFor).toBe(
+      expect(after.features.find((feature) => feature.contract.name === 'imagined-number/round')?.askedFor).toBe(
         true,
       )
 
       // The screen says it, and it is the only run on which it may.
       expect(directly.promoted).toBe(true)
       expect(
-        renderUnchanged('typescript/string/pad@1', directly.entry, project.configuration, directly.promoted),
+        renderUnchanged('typescript/imagined-string/pad@1', directly.entry, project.configuration, directly.promoted),
       ).toContain('It was there as a dependency')
     } finally {
       project.remove()
@@ -320,7 +321,7 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('re-adding-what-you-asked-for-changes-nothing-and-claims-nothing', async () => {
     const project = aProject()
     try {
-      const first = mustInstall(await installing(imaginedSource(), project, 'string/pad'))
+      const first = mustInstall(await installing(imaginedSource(), project, 'imagined-string/pad'))
       const lockfile = committing(project, first)
 
       const { answer: again } = await deciding(imaginedSource(), (held) =>
@@ -328,17 +329,17 @@ export const clamp = (value: number, low: number, high: number): number =>
           root: project.root,
           configuration: project.configuration,
           lockfile,
-          contract: 'string/pad',
+          contract: 'imagined-string/pad',
           implementation: null,
           at: '2027-01-01T00:00:00.000Z',
         }),
       )
 
-      if (!('unchanged' in again)) throw new Error('string/pad was not already there')
+      if (!('unchanged' in again)) throw new Error('imagined-string/pad was not already there')
 
       expect(again.promoted).toBe(false)
       expect(
-        renderUnchanged('typescript/string/pad@1', again.entry, project.configuration, again.promoted),
+        renderUnchanged('typescript/imagined-string/pad@1', again.entry, project.configuration, again.promoted),
       ).not.toContain('It was there as a dependency')
 
       // Byte for byte the file that was already there, the instant included.
@@ -407,11 +408,18 @@ export const clamp = (value: number, low: number, high: number): number =>
     }
   })
 
+  /**
+   * The name is `imagined-addresses.ts`'s rather than a literal, and that is the whole of ADR-0142
+   * arriving from the far side: this guard asserts that the catalogue holds *no* contract at a name,
+   * so a name the catalogue could one day hold is a guard that quietly becomes false. It used to read
+   * `string/titlecase`.
+   */
   it('a-name-the-catalogue-does-not-hold-is-refused', async () => {
     const project = aProject()
+    const name = A_NAME_THE_CATALOGUE_DOES_NOT_HOLD.name
     try {
-      expect(await installing(localSource(), project, 'string/titlecase')).toEqual({
-        faults: ['the registry holds no contract called `string/titlecase`'],
+      expect(await installing(localSource(), project, name)).toEqual({
+        faults: [`the registry holds no contract called \`${name}\``],
       })
     } finally {
       project.remove()
@@ -425,7 +433,7 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('two-versions-of-one-feature-are-refused-before-anything-is-written', async () => {
     const project = aProject()
     try {
-      const outcome = await installing(sourceWithTwoVersionsOfPad(), project, 'number/round')
+      const outcome = await installing(sourceWithTwoVersionsOfPad(), project, 'imagined-number/round')
 
       expect('faults' in outcome).toBe(true)
       expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
@@ -451,7 +459,7 @@ export const clamp = (value: number, low: number, high: number): number =>
     }
     const project = aProject()
     try {
-      const outcome = await installing(tampered, project, 'number/round')
+      const outcome = await installing(tampered, project, 'imagined-number/round')
 
       expect('faults' in outcome && outcome.faults.every((fault) => fault.includes('hash to'))).toBe(true)
       expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
@@ -475,7 +483,7 @@ export const clamp = (value: number, low: number, high: number): number =>
     }
     const project = aProject()
     try {
-      const outcome = await installing(tampered, project, 'number/round')
+      const outcome = await installing(tampered, project, 'imagined-number/round')
 
       expect('faults' in outcome && outcome.faults[0]).toContain('canonicalises to')
     } finally {
@@ -495,15 +503,15 @@ export const clamp = (value: number, low: number, high: number): number =>
     const project = aProject()
     try {
       const outcome = await installing(
-        imaginedSource(['typescript/string/pad@1/reference@1.0.0']),
+        imaginedSource(['typescript/imagined-string/pad@1/reference@1.0.0']),
         project,
-        'number/round',
+        'imagined-number/round',
       )
 
       expect('faults' in outcome && outcome.faults).toEqual([
         'the registry serves no snapshot at ' +
-          '96474a493a4f619656928148aefb0e73bdaf19c3ee9c127080a0d118eb437a90, which ' +
-          'typescript/string/pad@1/reference@1.0.0 names',
+          '32dc2b46be62aa96cecea37f31048ca6ef71a8bb66bc97e5768534a5bad76c89, which ' +
+          'typescript/imagined-string/pad@1/reference@1.0.0 names',
       ])
       expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
     } finally {
@@ -524,8 +532,8 @@ export const clamp = (value: number, low: number, high: number): number =>
    * **What this guard buys was measured rather than assumed, and it is not what it was written
    * believing.** Over the six substitutions the imagined graph can express - three at a root binding,
    * three at an edge - taking this check out leaves five of them refused anyway, downstream, under
-   * *typescript/string/pad@1/reference@1.0.0 cannot be resolved, and the registry holds no such
-   * published implementation* and *typescript/number/sign@1 publishes no reference.ts*. Both name a
+   * *typescript/imagined-string/pad@1/reference@1.0.0 cannot be resolved, and the registry holds no such
+   * published implementation* and *typescript/imagined-number/sign@1 publishes no reference.ts*. Both name a
    * cause no measurement establishes: the registry publishes and serves both. So the repair is a
    * refusal that names the fact instead of one that sends its reader hunting for a problem that does
    * not exist, which is the class this repository calls its worst. The sixth is
@@ -541,12 +549,12 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('an-edge-whose-digest-names-another-artefact-is-refused', async () => {
     const project = aProject()
     try {
-      const outcome = await installing(publishedWithALyingEdge('number/clamp', sign), project, 'number/round')
+      const outcome = await installing(publishedWithALyingEdge('imagined-number/clamp', sign), project, 'imagined-number/round')
 
       expect('faults' in outcome && outcome.faults).toEqual([
         `the snapshot served at ${digestOf(sign)}: it declares itself ` +
-          'typescript/number/sign@1/reference@1.0.0, where ' +
-          'typescript/string/pad@1/reference@1.0.0 is what was asked for. A snapshot says which ' +
+          'typescript/imagined-number/sign@1/reference@1.0.0, where ' +
+          'typescript/imagined-string/pad@1/reference@1.0.0 is what was asked for. A snapshot says which ' +
           'artefact it is, so this is the wrong artefact rather than a damaged one.',
       ])
       expect(existsSync(join(project.root, project.configuration.directory))).toBe(false)
@@ -562,22 +570,22 @@ export const clamp = (value: number, low: number, high: number): number =>
    * **The one substitution the guard above does not reach, and it was found by measuring the six
    * rather than by reading the loop.** `gatherHoldings` fetches an address once, so an edge naming
    * something already resolved needs no request - and skipping it outright threw its digest away. With
-   * `number/sign@1` published naming `string/pad@1` at `number/clamp@1`'s digest, the honest edge from
-   * `number/clamp@1` arrives first, the lying one is skipped, and the install answers five correct
+   * `imagined-number/sign@1` published naming `imagined-string/pad@1` at `imagined-number/clamp@1`'s digest, the honest edge from
+   * `imagined-number/clamp@1` arrives first, the lying one is skipped, and the install answers five correct
    * files. **The right artefact lands because of the order the walk happens to take**, and the same
    * corrupt registry refuses when the two arrive the other way round.
    *
-   * It is not registry hygiene. `number/sign@1` was published against `number/clamp@1`'s code and the
-   * project is getting `string/pad@1`'s - a combination nobody published, which is the thing
+   * It is not registry hygiene. `imagined-number/sign@1` was published against `imagined-number/clamp@1`'s code and the
+   * project is getting `imagined-string/pad@1`'s - a combination nobody published, which is the thing
    * `reconcile.ts` already refuses to assemble one version at a time.
    */
   it('two-edges-naming-one-address-at-two-digests-are-refused', async () => {
     const project = aProject()
     try {
-      const outcome = await installing(publishedWithALyingEdge('number/sign', clamp), project, 'number/round')
+      const outcome = await installing(publishedWithALyingEdge('imagined-number/sign', clamp), project, 'imagined-number/round')
 
       expect('faults' in outcome && outcome.faults).toEqual([
-        'typescript/string/pad@1/reference@1.0.0 is named by two edges at two digests, ' +
+        'typescript/imagined-string/pad@1/reference@1.0.0 is named by two edges at two digests, ' +
           `${digestOf(pad)} and ${digestOf(clamp)}. One of the features being installed was ` +
           'published against an artefact the other is not getting, which is a combination nobody ' +
           'published.',
@@ -614,15 +622,15 @@ export const clamp = (value: number, low: number, high: number): number =>
   it('a-refusal-leaves-the-project-exactly-as-it-was', async () => {
     const project = aProject()
     try {
-      project.write('src/lib/toopo/string/pad.ts', 'export const pad = "mine"\n')
+      project.write('src/lib/toopo/imagined-string/pad.ts', 'export const pad = "mine"\n')
 
-      const outcome = await installing(imaginedSource(), project, 'number/round')
+      const outcome = await installing(imaginedSource(), project, 'imagined-number/round')
 
       expect('faults' in outcome).toBe(true)
-      expect(readdirSync(join(project.root, project.configuration.directory, 'string'))).toEqual([
+      expect(readdirSync(join(project.root, project.configuration.directory, 'imagined-string'))).toEqual([
         'pad.ts',
       ])
-      expect(project.installed('string/pad.ts')).toBe('export const pad = "mine"\n')
+      expect(project.installed('imagined-string/pad.ts')).toBe('export const pad = "mine"\n')
     } finally {
       project.remove()
     }
@@ -652,14 +660,14 @@ export const clamp = (value: number, low: number, high: number): number =>
         }),
       }
 
-      const outcome = await installing(midDeployment, project, 'number/round')
+      const outcome = await installing(midDeployment, project, 'imagined-number/round')
       if (!('faults' in outcome)) throw new Error('a mid-deployment install was not refused')
 
       expect(outcome.faults.join('\n')).toContain(A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS)
       expect(outcome.faults.join('\n')).toContain('Run the command again')
       expect(existsSync(join(project.root, 'toopo.lock'))).toBe(false)
 
-      expect(mustInstall(await installing(honest, project, 'number/round')).features.length)
+      expect(mustInstall(await installing(honest, project, 'imagined-number/round')).features.length)
         .toBeGreaterThan(0)
     } finally {
       project.remove()

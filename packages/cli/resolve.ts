@@ -415,7 +415,7 @@ export const heldAt = (
  * learn which digest it resolved to - a named answer, one per contract in the closure, each of them
  * something a reader believes rather than checks. The digest is now inside the frozen snapshot that
  * names the edge, so the step is arithmetic and the closure hangs off the root's digest alone.
- * Measured on the imagined graph, `toopo add number/round` goes from 8 round trips to 6 and from five
+ * Measured on the imagined graph, `toopo add imagined-number/round` goes from 8 round trips to 6 and from five
  * named answers to one. **Both figures were arithmetic over the endpoints when they were written and
  * are now counted at a socket**: `packages/cli/http-source.test.ts` serves this walk over `node:http` and reads
  * six round trips and eleven requests off the server rather than off the client.
@@ -423,8 +423,8 @@ export const heldAt = (
  * **An address already held is still compared, and that was found by measuring rather than by reading
  * the loop.** A second dependent naming an address the walk has resolved needs no fetch - and skipping
  * it outright threw away the one thing that edge carried. Measured on the imagined graph with a
- * `number/sign@1` published naming `string/pad@1` at `number/clamp@1`'s digest: the honest edge from
- * `number/clamp@1` arrived first, the lying one was skipped, and the install answered five correct
+ * `imagined-number/sign@1` published naming `imagined-string/pad@1` at `imagined-number/clamp@1`'s digest: the honest edge from
+ * `imagined-number/clamp@1` arrived first, the lying one was skipped, and the install answered five correct
  * files. The right artefact landed *because of the order the walk happened to take*, and the same
  * corrupt registry refuses when the two edges arrive the other way round.
  *

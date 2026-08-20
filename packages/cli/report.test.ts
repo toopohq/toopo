@@ -44,9 +44,9 @@ const A_RELOCATION: Relocation = {
   from: 'lib/toopo',
   to: 'src/lib/toopo',
   moves: [
-    { path: 'number/round.ts', verdict: 'moved', bytes: Buffer.from('a', 'utf8') },
-    { path: 'string/pad.ts', verdict: 'already-moved', bytes: null },
-    { path: 'number/sign.ts', verdict: 'not-on-disk', bytes: null },
+    { path: 'imagined-number/round.ts', verdict: 'moved', bytes: Buffer.from('a', 'utf8') },
+    { path: 'imagined-string/pad.ts', verdict: 'already-moved', bytes: null },
+    { path: 'imagined-number/sign.ts', verdict: 'not-on-disk', bytes: null },
   ],
 }
 
@@ -58,7 +58,7 @@ const anInstallation = async (): Promise<Installation> => {
         root: project.root,
         configuration: CONFIGURATION,
         lockfile: EMPTY_LOCKFILE,
-        contract: 'number/round',
+        contract: 'imagined-number/round',
         implementation: null,
         at: A_PINNED_INSTANT,
       }),
@@ -82,7 +82,7 @@ describe('what the user reads', () => {
     const cost = lines.findIndex((line) => line.includes('depth'))
     const firstFile = lines.findIndex((line) => line.includes('+ src/lib/toopo/'))
 
-    expect(lines[cost]?.trim()).toBe('5 files · 794 B · depth 2')
+    expect(lines[cost]?.trim()).toBe('5 files · 821 B · depth 2')
     expect(cost).toBeLessThan(firstFile)
   })
 
@@ -100,11 +100,11 @@ describe('what the user reads', () => {
     // and the column width is presentation. Transcribing the alignment would make this guard red on a
     // re-flow and repair it by declaring the layout a second time.
     expect(lines.map((line) => line.trim().replace(/\s+/g, ' '))).toEqual([
-      '+ src/lib/toopo/string/pad.ts import repointed',
-      '+ src/lib/toopo/string/pad/digits.ts shared with typescript/number/clamp@1',
-      '+ src/lib/toopo/number/clamp.ts import repointed',
-      '+ src/lib/toopo/number/sign.ts import repointed',
-      '+ src/lib/toopo/number/round.ts import repointed',
+      '+ src/lib/toopo/imagined-string/pad.ts import repointed',
+      '+ src/lib/toopo/imagined-string/pad/digits.ts shared with typescript/imagined-number/clamp@1',
+      '+ src/lib/toopo/imagined-number/clamp.ts import repointed',
+      '+ src/lib/toopo/imagined-number/sign.ts import repointed',
+      '+ src/lib/toopo/imagined-number/round.ts import repointed',
     ])
     // No line of the screen carries trailing whitespace, padding included. **This fixture no longer
     // exercises the padding**: ADR-0110 put every entry file a level above its own folder, so all five
@@ -183,9 +183,9 @@ describe('what the user reads', () => {
     const screen = renderInit(CONFIGURATION, true, GIT_WAS_NOT_ASKED, A_RELOCATION, null)
 
     expect(screen).toContain('lib/toopo  ->  src/lib/toopo')
-    expect(screen).toContain('~ number/round.ts')
-    expect(screen).toContain('~ string/pad.ts')
-    expect(screen).not.toContain('number/sign.ts')
+    expect(screen).toContain('~ imagined-number/round.ts')
+    expect(screen).toContain('~ imagined-string/pad.ts')
+    expect(screen).not.toContain('imagined-number/sign.ts')
     expect(screen).toContain('2 files moved')
   })
 
@@ -247,7 +247,7 @@ describe('what the user reads', () => {
       .split('\n')
       .find((held) => held.includes('import {'))
 
-    expect(line?.trim()).toBe(`import { round } from './src/lib/toopo/number/round.js'`)
+    expect(line?.trim()).toBe(`import { round } from './src/lib/toopo/imagined-number/round.js'`)
   })
 
   it('the-import-line-follows-the-configured-directory', async () => {
@@ -256,7 +256,7 @@ describe('what the user reads', () => {
       held.includes('import {'),
     )
 
-    expect(line?.trim()).toBe(`import { round } from './lib/toopo/number/round.js'`)
+    expect(line?.trim()).toBe(`import { round } from './lib/toopo/imagined-number/round.js'`)
   })
 
   /**

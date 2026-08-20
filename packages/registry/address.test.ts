@@ -93,6 +93,12 @@ const RENDERINGS: Readonly<Record<keyof typeof ADDRESS, Rendering>> = {
   contractAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
   caseAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
   guardAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
+  THE_IMAGINED_DOMAIN_PREFIX: {
+    holdsNoContract:
+      'it is the domain a contract is refused at rather than one a contract stands at - no address ' +
+      'this registry serves may begin with it',
+  },
+  isImagined: { holdsNoContract: 'it asks whether an address is refused, and renders nothing' },
   THE_ORIGIN: { holdsNoContract: 'it is where this registry is published, and holds no contract' },
   THE_PACKAGE_NAME: { holdsNoContract: 'it is what npm resolves, and npm does not know a contract' },
   THE_INVOCATION: {

@@ -72,8 +72,8 @@ nesting on a single-file feature and the import path never moves again.
 ## Consequences
 
 **The cost, which is that every cross-feature import is rewritten.** The catalogue serves its entry file
-as `reference.ts` — `contractAnatomy` requires that name at five of five — so a published `number/clamp`
-names its dependency as `../../string/pad/reference.js`, and that specifier is wrong the moment the file
+as `reference.ts` — `contractAnatomy` requires that name at five of five — so a published `imagined-number/clamp`
+names its dependency as `../../imagined-string/pad/reference.js`, and that specifier is wrong the moment the file
 lands as `pad.ts`. *Naming the file after the feature and needing no rewriting between features are
 incompatible*, and the first wins because it is the one argued from the user's editor. What softens it
 is that the rewriting mechanism is needed anyway for a shared file, and that both jobs are one rule:

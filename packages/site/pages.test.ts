@@ -604,7 +604,7 @@ describe('the site', () => {
    * **The subject is the install command and nothing else, which is narrower than it first looked and
    * is where two wider readings were measured and refused.** Sweeping every occurrence of a command
    * went red on nine, and sweeping every line that starts with one went red on four: all thirteen are
-   * mutant descriptions the method page publishes - `so \`toopo remove string/pad\` on a …`, and four
+   * mutant descriptions the method page publishes - `so \`toopo remove imagined-string/pad\` on a …`, and four
    * that open a sentence with the command they are about. Those name a command as the subject of a
    * sentence; prefixing them would be false, because nobody is being told to run anything.
    *

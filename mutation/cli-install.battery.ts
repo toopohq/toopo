@@ -1141,8 +1141,8 @@ void theFive`,
    *
    * **It is the one substitution the cell above does not reach, and it was found by running all six
    * rather than by reading the loop.** An address already resolved needs no fetch, and skipping it threw
-   * the second edge's digest away with it. Measured: with `number/sign@1` published naming
-   * `string/pad@1` at `number/clamp@1`'s digest, the honest edge arrives first, the lying one is
+   * the second edge's digest away with it. Measured: with `imagined-number/sign@1` published naming
+   * `imagined-string/pad@1` at `imagined-number/clamp@1`'s digest, the honest edge arrives first, the lying one is
    * skipped, and the install answers five correct files - the right artefact landing because of the
    * order the walk happened to take, on a registry that had published a combination nobody can build.
    *

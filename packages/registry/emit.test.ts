@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest'
 
 import { ENDPOINTS, askedAt, contentTypeOf, endpointOf, pathTo, portFaults } from './endpoints.js'
 import { THE_QUESTIONS_THAT_NEED_NOTHING, emitted, theFileAt, urlAsked } from './emit.js'
-import { CLAMP, HOLDINGS, IMAGINED_BLOBS, IMAGINED_VERSION, ROUND } from './imagined-graph.js'
+import { CLAMP, ROUND } from './imagined-addresses.js'
+import { HOLDINGS, IMAGINED_BLOBS, IMAGINED_VERSION } from './imagined-graph.js'
 import { localReadApi } from './local-read-api.js'
 import type { ReadApi } from './read-api.js'
 import { NOT_ANSWERED, THE_ENDPOINT_BEHIND } from './read-api.js'
@@ -305,7 +306,7 @@ const overTheImaginedGraph = (): ReadApi => {
           address: ROUND,
           summary: 'the only root of the imagined graph',
           searchAliases: [],
-          domain: 'number',
+          domain: 'imagined-number',
           installable: true,
           exports: [],
         },
@@ -356,7 +357,7 @@ describe('a graph with edges, which the catalogue has not got', () => {
     // `pad` is named by no binding at all: it is reached through `clamp` and `sign`, which is what
     // makes this an assertion about following an edge rather than about listing a catalogue.
     expect(
-      ['typescript/number/round@1', 'typescript/number/clamp@1', 'typescript/string/pad@1'].map(
+      ['typescript/imagined-number/round@1', 'typescript/imagined-number/clamp@1', 'typescript/imagined-string/pad@1'].map(
         (contract) => graph.has(`snapshot/${digestOf(contract)}`),
       ),
     ).toEqual([true, true, true])

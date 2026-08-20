@@ -49,12 +49,12 @@ describe('where every file lands', () => {
    */
   it('an-entry-file-is-named-after-its-feature', () => {
     expect(planned().files.map((file) => file.path)).toEqual([
-      'string/pad.ts',
-      'string/pad/digits.ts',
-      'number/clamp.ts',
-      'string/pad/digits.ts',
-      'number/sign.ts',
-      'number/round.ts',
+      'imagined-string/pad.ts',
+      'imagined-string/pad/digits.ts',
+      'imagined-number/clamp.ts',
+      'imagined-string/pad/digits.ts',
+      'imagined-number/sign.ts',
+      'imagined-number/round.ts',
     ])
   })
 
@@ -67,11 +67,11 @@ describe('where every file lands', () => {
    * written.
    */
   it('a-shared-file-is-written-once-and-still-appears-in-the-plan', () => {
-    const digits = planned().files.filter((file) => file.path === 'string/pad/digits.ts')
+    const digits = planned().files.filter((file) => file.path === 'imagined-string/pad/digits.ts')
 
     expect(digits.map((file) => file.servedAt)).toEqual([
-      'string/pad/digits.ts',
-      'number/clamp/digits.ts',
+      'imagined-string/pad/digits.ts',
+      'imagined-number/clamp/digits.ts',
     ])
     expect(digits.map((file) => file.written)).toEqual([true, false])
   })
@@ -91,9 +91,9 @@ describe('where every file lands', () => {
     if ('faults' in result) throw new Error(result.faults.join('\n'))
 
     expect(result.plan.files.filter((file) => file.written).map((file) => file.path)).toEqual([
-      'string/pad.ts',
-      'string/pad/digits.ts',
-      'number/sign.ts',
+      'imagined-string/pad.ts',
+      'imagined-string/pad/digits.ts',
+      'imagined-number/sign.ts',
     ])
   })
 
@@ -108,8 +108,8 @@ describe('where every file lands', () => {
     const result = planInstall([frozen(pad), frozen(newer), frozen(clamp)])
 
     expect('faults' in result && result.faults).toEqual([
-      `typescript/string/pad@1 is asked for at two versions in one install - typescript/string/pad@1/reference@${IMAGINED_VERSION} ` +
-        `and typescript/string/pad@1/reference@1.0.1. One feature lands in one place, so the second ` +
+      `typescript/imagined-string/pad@1 is asked for at two versions in one install - typescript/imagined-string/pad@1/reference@${IMAGINED_VERSION} ` +
+        `and typescript/imagined-string/pad@1/reference@1.0.1. One feature lands in one place, so the second ` +
         `would overwrite the first and whichever dependent asked for it would silently get the other ` +
         `one's code.`,
     ])
@@ -118,7 +118,7 @@ describe('where every file lands', () => {
   /**
    * The other collision, and ADR-0110 changed which case reaches it. Two majors of one feature are two
    * contracts - `seenContracts` is keyed on the rendering, which carries the major - and the path
-   * deliberately is not, so both entry files want `string/pad.ts`. `name@2` beside `name@1` is
+   * deliberately is not, so both entry files want `imagined-string/pad.ts`. `name@2` beside `name@1` is
    * permanent rule 6's own repair, which makes this the collision the design actually admits.
    *
    * **The case this fixture used to carry is unreachable now and was not replaced by a contrivance.**
@@ -142,8 +142,8 @@ describe('where every file lands', () => {
     const result = planInstall([frozen(pad), frozen(asTwo)])
 
     expect('faults' in result && result.faults).toEqual([
-      'two different files would both be written to string/pad.ts: the one served as ' +
-        'string/pad/reference.ts and another with a different digest. An install that overwrote one ' +
+      'two different files would both be written to imagined-string/pad.ts: the one served as ' +
+        'imagined-string/pad/reference.ts and another with a different digest. An install that overwrote one ' +
         'with the other would leave the project holding code no lockfile describes.',
     ])
   })
@@ -155,10 +155,10 @@ describe('where every file lands', () => {
    */
   it('the-plan-is-in-the-resolutions-order', () => {
     expect(planned().features.map((feature) => feature.implementation.contract.name)).toEqual([
-      'string/pad',
-      'number/clamp',
-      'number/sign',
-      'number/round',
+      'imagined-string/pad',
+      'imagined-number/clamp',
+      'imagined-number/sign',
+      'imagined-number/round',
     ])
   })
 })

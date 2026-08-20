@@ -62,8 +62,8 @@ and a project never receives.
 
 ```
 lib/toopo/string/slugify.ts
-lib/toopo/string/pad.ts
-lib/toopo/string/pad/digits.ts
+lib/toopo/imagined-string/pad.ts
+lib/toopo/imagined-string/pad/digits.ts
 ```
 
 ### It keeps ADR-0032's own requirement, and keeps it better
@@ -90,6 +90,14 @@ directory. Taken on node v24.15.0 — the version ADR-0032's own reading was tak
 esm  ./string/pad.js  -> entry+helper
 cjs  ./string/pad.cjs -> entry+helper
 ```
+
+**That block is the probe's own output and is left as it was taken.** On 2026-08-20 the fixture it
+borrowed its names from moved to `imagined-string/pad`, and every other mention of it in this record
+moved with it — the layout diagram above included, where the rename is what now tells a reader which
+of the two examples is a published contract and which is not. This block did not, because renaming it
+would make it a transcript of a run nobody performed: the probe named its own scratch files, node was
+asked about `pad.ts` beside `pad/`, and re-running it under any other pair of names is a fresh reading
+rather than this one. A rename may move a name; it may not move a reading. ADR-0142.
 
 **They are not candidates for one specifier.** `./pad.js` names the file; the folder is reached only
 through a path that says so. The one spelling where both are candidates is the extensionless `./pad`,

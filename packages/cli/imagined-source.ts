@@ -21,7 +21,7 @@
  */
 
 import type { ContractAddress } from '../registry/address.js'
-import { renderContract, renderImplementation, sameContract } from '../registry/address.js'
+import { isImagined, renderContract, renderImplementation, sameContract } from '../registry/address.js'
 import {
   HOLDINGS,
   IMAGINED_BLOBS,
@@ -44,18 +44,18 @@ import type { RegistrySource } from './source.js'
 /**
  * What the index says about each imagined contract.
  *
- * `number/round` is marked installable and the other three are too, because every one of them is
+ * `imagined-number/round` is marked installable and the other three are too, because every one of them is
  * something a dependent imports. A refused contract that is nonetheless a dependency would be a
  * catalogue contradicting itself, and the installer's refusal of an uninstallable contract is measured
  * against the five - where `array/group-by@1` is genuinely refused.
  */
 const SUMMARIES: Readonly<Record<string, string>> = {
-  'string/pad': 'Pad a run of digits on the left, or answer the text unchanged.',
-  'number/clamp': 'Hold a number between a low and a high bound.',
-  'number/sign': 'Answer -1 or 1 for the sign of a number.',
-  'number/round': 'Round a number to a given number of decimal places.',
-  'text/left': 'Trim the start of a text that holds whitespace.',
-  'text/right': 'Trim the end of a text that holds whitespace.',
+  'imagined-string/pad': 'Pad a run of digits on the left, or answer the text unchanged.',
+  'imagined-number/clamp': 'Hold a number between a low and a high bound.',
+  'imagined-number/sign': 'Answer -1 or 1 for the sign of a number.',
+  'imagined-number/round': 'Round a number to a given number of decimal places.',
+  'imagined-text/left': 'Trim the start of a text that holds whitespace.',
+  'imagined-text/right': 'Trim the end of a text that holds whitespace.',
 }
 
 const indexEntryOf = (record: ImplementationRecord) => {
@@ -63,6 +63,10 @@ const indexEntryOf = (record: ImplementationRecord) => {
   const action = name.slice(name.indexOf('/') + 1)
   const summary = SUMMARIES[name]
   if (summary === undefined) throw new Error(`the imagined index has no summary for ${name}`)
+
+  // The second door of ADR-0142, and the one that catches an address added here rather than declared:
+  // a fixture may only stand where the catalogue refuses to, and this registry is a fixture entire.
+  if (!isImagined(name)) throw new Error(`${name} is an address the catalogue could publish`)
 
   return {
     address: record.contract,
@@ -192,8 +196,8 @@ export const sourceServingBothPublications = (): RegistrySource =>
  * the one the main graph cannot produce.
  *
  * There, the carrier of a shared blob is always a dependency of its borrower, so it can never leave
- * while the borrower stays. Here it can: removing `text/left@1` has to move `trim.ts` into
- * `text/right/` and repoint the import inside `right.ts` at it, or the project is left holding a file
+ * while the borrower stays. Here it can: removing `imagined-text/left@1` has to move `trim.ts` into
+ * `imagined-text/right/` and repoint the import inside `right.ts` at it, or the project is left holding a file
  * that imports one that is gone.
  */
 export const sourceWithIndependentCarriers = (): RegistrySource =>
@@ -202,7 +206,7 @@ export const sourceWithIndependentCarriers = (): RegistrySource =>
 export const TWO_VERSIONS_OF_ONE_FEATURE = IMAGINED_NEXT_VERSION
 
 /**
- * A source whose `string/pad@1` is held at two versions at once, which is the collision no fixture of
+ * A source whose `imagined-string/pad@1` is held at two versions at once, which is the collision no fixture of
  * the schema produced and every real catalogue eventually will.
  *
  * Two dependents may legitimately have been published against two versions of one feature - `sign`
@@ -213,7 +217,7 @@ export const TWO_VERSIONS_OF_ONE_FEATURE = IMAGINED_NEXT_VERSION
  *
  * **The graph is rebuilt from the changed artefact upwards, and an edge carrying a digest is what forced
  * that.** This fixture used to swap one record into `HOLDINGS` and serve the rest unchanged, which
- * worked while an edge named only an address: `number/round@1`'s edge to `number/clamp@1` resolved by
+ * worked while an edge named only an address: `imagined-number/round@1`'s edge to `imagined-number/clamp@1` resolved by
  * name whatever that clamp had become. An edge now pins the snapshot, so a clamp with a different
  * dependency is a different artefact with a different digest, and the round that names the old one names
  * something this source does not serve.
@@ -240,6 +244,6 @@ export const sourceWithTwoVersionsOfPad = (): RegistrySource => {
 /** The contract the imagined graph is rooted at, so that a caller does not transcribe the name. */
 export const THE_IMAGINED_ROOT = renderContract({
   language: 'typescript',
-  name: 'number/round',
+  name: 'imagined-number/round',
   major: 1,
 })

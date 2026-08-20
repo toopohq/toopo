@@ -173,7 +173,7 @@ reading of the narrowed regime broke an ordering that two readings could only fa
 now the edge that carries its own digest, which is the last irreversible thing this repository can still
 do for free — and the first unit here whose own saving removed the only check it had.** A client walking
 a dependency graph asked the registry which digest each edge resolved to, one named answer per contract
-in the closure; carrying the digest inside the frozen snapshot takes `toopo add number/round` from eight
+in the closure; carrying the digest inside the frozen snapshot takes `toopo add imagined-number/round` from eight
 round trips to six and from five believed answers to one. That same lookup was what established that
 what arrived was what the edge named, so the field and the hole are the same call, and the guard is the
 unit rather than the field. Measured over the six substitutions the imagined graph can express, five
