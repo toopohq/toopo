@@ -169,6 +169,20 @@ produced, **renaming is what restores reproducibility**; for a probe taken outsi
 probe itself named, renaming would make it a transcript of a run nobody performed. ADR-0110's reading of
 node's resolver is left as taken, with the date beside it and what the address became. ADR-0142.
 
+**A sixth contract is written and is in no catalogue, and the stopping line was decided by a guard
+rather than by taste.** `contracts/typescript/number/round/` holds all seven files plus the
+divergence replay, and every guard of its own suite was seen red on a perturbation before it was
+believed. It is not in `theFive`, nothing serves it, nothing installs it and no digest covers a byte
+of it — so nothing here is frozen and every decision in it is still reversible. **There is no
+intermediate state between that and publication**: `every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns`
+is bidirectional, so a battery cannot name the folder until the contract is in the catalogue, and
+`local-read-api.ts` sends anything that is not `never-published` through `publishContract`, so
+entering the catalogue *is* publishing. Measured at `92537d9`: adding the two batteries alone leaves
+that guard naming `contracts/typescript/number/round` twice. The publication is its own unit, and it
+is two commits rather than one for ADR-0106's reason arriving on a second act — `PUBLISHED_FROM` is
+one constant for every binding, no commit can name itself as the commit it was published from, and
+`nothing-this-tree-binds-escapes-the-freeze-check` refuses the unanchored alternative. ADR-0143.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
@@ -1307,8 +1321,12 @@ record declares**, which is a worse thing and has never been named here before.
   fence. Neither is a sweep for the word, and a rule that swept for the word would be wrong.
 
 - **That a decision can name what confirms it, when what confirms it is a guard over the five.**
-  ADR-0001 requires `confirmed-by` present and non-empty, and a guard is addressed by the pair
-  `(suite, guard)`. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the
+  ADR-0001 requires `confirmed-by` present, and a guard is addressed by the pair `(suite, guard)`.
+  **This entry read *present and non-empty* until ADR-0143 went and read the code**, which is rule 3
+  of this section on the entry's own text: `declarationFaults` tests `governs` for emptiness and
+  `confirmedBy` only for absence, ADR-0001 discusses an empty one as a legitimate state rather than
+  forbidding it, and nineteen records carry `confirmed-by: []`. Nothing about the sentence looked
+  old; it was wrong on the day it was written, in the file whose subject is declarations that hold. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the
   catalogue is collected as `…-%s`; `guardAddressFaults` requires a frozen identifier and `%s` is not
   one. **So a decision whose subject is per-contract has no citable guard at all**, and nothing says
   so — the author discovers it as nine faults from
