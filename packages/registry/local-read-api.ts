@@ -103,24 +103,44 @@ import { servedMethodology } from './verifiability.js'
  */
 
 /**
- * The commit whose registry minted every binding below, and the one transcription this file carries.
+ * A publication, named by the commit that carried it out.
  *
  * **A commit cannot contain its own identifier, so the commit that mints a digest can never record
- * where it was minted.** Publishing and anchoring are two acts. `d3a5166` marked the four contracts
- * published and bound their implementations at `1.0.0`; this commit is the one that can name it, and
- * it moves no digest of its own - neither snapshot carries anything from this module, so rebuilding
- * `d3a5166` produces exactly what this tree produces, for all eight addresses.
- *
- * **It is transcribed and it is not trusted.** `packages/registry/against-what-was-published/` checks
- * this commit out, runs *its* `ledger` script and compares, so a coordinate pointing at the wrong
- * commit is a red rather than a note - measured, and the reds are in ADR-0107. ADR-0093 is why the
- * past is rebuilt rather than recorded, and ADR-0106 is why there are two commits rather than one.
- *
- * One constant for eight bindings because one publication minted all eight. A catalogue that publishes
- * a sixth contract later anchors it at a different commit, and this becomes a map keyed by address -
- * which is a change this file should take on the day it happens and not before.
+ * where it was minted.** Publishing and anchoring are two acts: `d3a5166` marked the first four
+ * contracts published and bound their implementations at `1.0.0`, and the commit after it is the one
+ * that could name it. That second commit moved no digest of its own - neither snapshot carries
+ * anything from this module - so rebuilding `d3a5166` produces exactly what this tree produces for
+ * those eight addresses, which is what makes a coordinate written afterwards a true statement rather
+ * than a convenient one. ADR-0106.
  */
-const PUBLISHED_FROM = 'd3a5166347cf334ee699097673ada179e8f06b60'
+const THE_FIRST_PUBLICATION = 'd3a5166347cf334ee699097673ada179e8f06b60'
+
+/**
+ * The commit each published address was minted at, and the only transcriptions this file carries.
+ *
+ * **It was one constant until the day its own comment named.** That comment read *one constant for
+ * eight bindings because one publication minted all eight; a catalogue that publishes a sixth
+ * contract later anchors it at a different commit, and this becomes a map keyed by address - which is
+ * a change this file should take on the day it happens and not before.* A second publication mints
+ * its bindings at its own commit, and one string could only ever have answered for one of them.
+ *
+ * **An address this map does not hold falls back to `THE_UNPUBLISHED_REVISION`, and that is a door
+ * rather than a default.** It is the state a contract stands in between the commit that publishes it
+ * and the commit that can say where - the one window this repository cannot close, because no commit
+ * names itself - and `nothing-this-tree-binds-escapes-the-freeze-check` is what refuses to let a tree
+ * be pushed while standing in it.
+ *
+ * **They are transcribed and they are not trusted.** `packages/registry/against-what-was-published/`
+ * checks each commit out, runs *its* `ledger` script and compares, so a coordinate naming the wrong
+ * commit is a red rather than a note - measured, and the reds are in ADR-0107. ADR-0093 is why the
+ * past is rebuilt rather than recorded.
+ */
+const PUBLISHED_FROM: Readonly<Record<string, string | undefined>> = {
+  'typescript/number/parse@1': THE_FIRST_PUBLICATION,
+  'typescript/date/add@1': THE_FIRST_PUBLICATION,
+  'typescript/string/levenshtein@1': THE_FIRST_PUBLICATION,
+  'typescript/string/slugify@1': THE_FIRST_PUBLICATION,
+}
 
 type Holding = {
   readonly address: ContractAddress
@@ -158,6 +178,7 @@ const gather = (): {
 
     const contractShot = contractSnapshot(record)
     const implementationShot = implementationSnapshot(implementation)
+    const publishedFrom = PUBLISHED_FROM[renderContract(record.address)] ?? THE_UNPUBLISHED_REVISION
 
     snapshots.set(digestOfSnapshot(contractShot), servedSnapshot(contractShot))
     snapshots.set(digestOfSnapshot(implementationShot), servedSnapshot(implementationShot))
@@ -180,7 +201,7 @@ const gather = (): {
           address: record.address,
           digest: digestOfSnapshot(contractShot),
           publishedAt: THE_PUBLICATION_INSTANT,
-          publishedFrom: PUBLISHED_FROM,
+          publishedFrom,
           standing: {
             lifecycle: record.lifecycle,
             ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
@@ -194,7 +215,7 @@ const gather = (): {
           },
           digest: digestOfSnapshot(implementationShot),
           publishedAt: THE_PUBLICATION_INSTANT,
-          publishedFrom: PUBLISHED_FROM,
+          publishedFrom,
           standing: { status: implementation.status },
         },
       )
