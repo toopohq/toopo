@@ -135,11 +135,27 @@ const THE_FIRST_PUBLICATION = 'd3a5166347cf334ee699097673ada179e8f06b60'
  * commit is a red rather than a note - measured, and the reds are in ADR-0107. ADR-0093 is why the
  * past is rebuilt rather than recorded, and ADR-0144 is the publication that made this a map.
  */
+/**
+ * The commit that published `number/round@1`, and the second publication this catalogue has had.
+ *
+ * It is the same shape as the first and for the same reason: that commit minted two addresses no
+ * earlier commit binds, so it could not name itself, and this is the commit that can. It moves no
+ * digest of its own - measured, the ledger is byte-identical either side - which is what makes a
+ * coordinate written afterwards a true statement rather than a convenient one.
+ *
+ * **One commit sits between the two and it is not this coordinate's business.** `35d7115` corrected
+ * four pins the replay disagreed with, and a pin is not in `contractSnapshot`'s frozen half: the
+ * ledger it prints is byte-identical to the ledger `50ff990` prints, so rebuilding there still
+ * produces what this tree produces. ADR-0144.
+ */
+const THE_SIXTH_CONTRACT = '50ff9906be9a00e033cb41b5443a3b5a08e96e8f'
+
 const PUBLISHED_FROM: Readonly<Record<string, string | undefined>> = {
   'typescript/number/parse@1': THE_FIRST_PUBLICATION,
   'typescript/date/add@1': THE_FIRST_PUBLICATION,
   'typescript/string/levenshtein@1': THE_FIRST_PUBLICATION,
   'typescript/string/slugify@1': THE_FIRST_PUBLICATION,
+  'typescript/number/round@1': THE_SIXTH_CONTRACT,
 }
 
 type Holding = {
