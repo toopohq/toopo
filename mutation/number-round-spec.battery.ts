@@ -105,6 +105,7 @@ const A_CASE_PER_REASON = 'names-a-case-for-every-reason'
 const ANSWERED_OR_REFUSED = 'every-answered-case-answers-a-number'
 
 const UNIVERSAL_PROPERTIES = 'universal-properties-answered'
+const DIAGNOSTIC_TYPE = 'signature-publishes-the-diagnostic'
 
 const EVERY_PROFILE_POPULATED = 'every-profile-has-samples'
 const EVERY_CLASS_SAMPLED = 'every-class-the-vocabulary-declares-is-sampled'
@@ -149,7 +150,7 @@ const mutants: readonly Mutant[] = [
         `export const failureReasons = ['value-not-finite', 'places-not-whole', 'places-negative', 'places-too-large'] as const`,
       ),
     ],
-    killed([A_CASE_PER_REASON]),
+    killed([A_CASE_PER_REASON, DIAGNOSTIC_TYPE]),
   ),
 
   sameOnEveryLens(
@@ -307,7 +308,30 @@ export const battery: Battery = {
     },
   ],
 
-  unreachableGuards: [],
+  unreachableGuards: [
+    {
+      /**
+       * The three assertions of block 4.2 about the *answer*, which this battery cannot reach.
+       *
+       * It injects into `contract.ts` and `edge-cases.ts`, and these three compare `round` against
+       * `Round`. Widening `failureReasons` reaches the fourth - `signature-publishes-the-diagnostic`
+       * is red on RS-03, because the declared reason set *is* the diagnostic's return type - and
+       * nothing here touches the answer's. A declaration mutant that rewrote `Round` would be S-26,
+       * S-27 and S-28 of the reference battery read from the mirror: the same failure, stated on the
+       * other side of a comparison whose whole content is that the two sides agree.
+       */
+      reason:
+        'over the implementation rather than over the contract\'s declarations. This battery ' +
+        'injects into `contract.ts` and `edge-cases.ts`, and these three compare the reference\'s ' +
+        'own type against the type written beside it - a comparison the reference battery is where ' +
+        'to perturb, and does, on S-26, S-27 and S-28.',
+      guards: [
+        'signature-is-the-declared-type',
+        'signature-takes-two-numbers',
+        'signature-returns-a-number-or-null',
+      ],
+    },
+  ],
 
   unprobedRegions: [
     {
