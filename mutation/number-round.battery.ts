@@ -32,11 +32,17 @@
  * The prefix is `RD-`, two letters, on the rule `CLAUDE.md` records: `F-`, `S-` and `X-` are global
  * counters because they were not once, and the collision cost a rename. Signature mutants continue
  * the global `S-` counter and probes the global `F-`.
+ *
+ * **The four signature cells are `killed` and not `killed-by-typecheck`, and the replay is what said
+ * so.** A cell reddening no guard at all is what earns that verdict; this battery typechecks its own
+ * suite, so a broken declaration reddens `signature.test-d.ts` by name. An out-of-band `tsc` over the
+ * whole tree says the tree does not compile, which is a different question, and a pin does not move
+ * on a measurement that asks the wrong one.
  */
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
-import { killed, killedByTypecheck, mutantsOn, probe, reference, survived } from './mutants.ts'
+import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: [] }
 
@@ -77,6 +83,11 @@ const FAILURE_COUPLING = 'p7-failure-coupling'
 
 const DETERMINISTIC = 'determinism'
 const CALL_HISTORY = 'no-ambient-input-from-history'
+
+const TYPE_IDENTITY = 'signature-is-the-declared-type'
+const TAKES_TWO_NUMBERS = 'signature-takes-two-numbers'
+const RETURNS_NUMBER_OR_NULL = 'signature-returns-a-number-or-null'
+const PUBLISHES_THE_DIAGNOSTIC = 'signature-publishes-the-diagnostic'
 
 /**
  * The corpus every survival claim below was measured over, named once because three cells rest on
@@ -333,7 +344,7 @@ const signatures: readonly Mutant[] = [
         `export const round = (value: number | string, places: number): number | null => {`,
       ),
     ],
-    killedByTypecheck,
+    killed([TYPE_IDENTITY, TAKES_TWO_NUMBERS]),
   ),
 
   sameOnEveryLens(
@@ -342,7 +353,7 @@ const signatures: readonly Mutant[] = [
       'major for life. `round(x)` then says *round x* without saying which way, which is the ' +
       'ambiguity `Math.round` already occupies',
     [reference(ENTRY, `export const round = (value: number, places = 2): number | null => {`)],
-    killedByTypecheck,
+    killed([TYPE_IDENTITY, TAKES_TWO_NUMBERS]),
   ),
 
   sameOnEveryLens(
@@ -350,7 +361,7 @@ const signatures: readonly Mutant[] = [
     'drops `null` from the return type, which is the shape that makes a loss silent - the whole ' +
       'argument of this contract\'s block 4.1 arriving in the type',
     [reference(ENTRY, `export const round = (value: number, places: number): number => {`)],
-    killedByTypecheck,
+    killed([TYPE_IDENTITY, RETURNS_NUMBER_OR_NULL]),
   ),
 
   sameOnEveryLens(
@@ -363,7 +374,9 @@ const signatures: readonly Mutant[] = [
         `export const describeRoundFailure = (\n  value: number,\n  places: number,\n): string | null => refusalFor(value, places)`,
       ),
     ],
-    killedByTypecheck,
+    // The only red on this mutant, which the replay reports as load-bearing: nothing else in the
+    // suite notices a diagnostic that stops naming the reason set the contract freezes.
+    killed([PUBLISHES_THE_DIAGNOSTIC]),
   ),
 ]
 
