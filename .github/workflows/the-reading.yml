@@ -1,0 +1,181 @@
+# The reading that `suites.yml` refuses the batteries on, taken rather than argued.
+#
+# **THIS FILE IS A THROWAWAY.** It exists on one branch, is pushed once, is read once, and the branch is
+# deleted afterwards. Nothing here is proposed for `main`: what lands there is decided by what this run
+# says, and a workflow written before its own reading would be the thing this run exists to stop.
+#
+# It does not touch `suites.yml`, deliberately. A branch runs its own copy of every workflow, so editing
+# that file here would edit the gate that keeps this branch from deploying and from publishing.
+#
+# ---------------------------------------------------------------------------
+# What it is for
+# ---------------------------------------------------------------------------
+#
+# `suites.yml` states that the batteries do not run in continuous integration, and the reason it gives is
+# not the minutes: a pin is calibrated against runs on the machine that wrote it, so a replay on another
+# platform is said to produce disagreements nobody can attribute to a defect rather than to the platform -
+# a red on which no action is possible.
+#
+# **That argument has never been tested.** One battery of the twenty-one has run on `ubuntu-latest` on
+# every push since `fc41c4e`: `mutation/instrument.test.ts` spawns `measure.ts fixture` as a child, and
+# the `meta` step of `suites.yml` collects it. Read in the log of run 32422810866, at `7c9906c`:
+#
+#     calibration C/as-committed   control green (3 tests)
+#     FX-1   C/as-committed        killed      as expected
+#     FX-2   C/as-committed        survived    as expected
+#
+# The fixture has two mutants, one arm and no property-based guard. What it establishes is that the
+# *mechanism* works on Linux - git's own state, the injection, the restore, the calibration, the census -
+# and never that the instrument agrees with itself in front of a real folder.
+#
+# **This run is the twenty others.** Its output is three facts this repository does not hold: whether they
+# pass on Linux at all, what a replay costs there, and which cells - if any - disagree across platforms.
+#
+# ---------------------------------------------------------------------------
+# The criterion, written before the run and committed before its result exists
+# ---------------------------------------------------------------------------
+#
+# A cell that disagrees here is classified by **reproduction** and never by reading the cell. Inspecting a
+# disagreement and judging it platform-shaped is exactly how the criterion ends up written by what was
+# found, which is the failure this section exists against.
+#
+#   1. Re-run that battery on this image at this commit. **If it agrees the second time it is a DRAW.**
+#      `seedsAreFrozen` is false by decision - `packages/registry/evidence.ts` argues it and the method
+#      page publishes it - so a pin is checked against one draw wherever it runs, and a disagreement that
+#      does not reproduce says nothing about the platform. ADR-0077 is why no rate read off a generator is
+#      trustworthy to better than an order of magnitude.
+#
+#   2. If it disagrees twice here, run that battery on Windows at this commit. **If Windows agrees and
+#      Linux disagrees twice, it is a PLATFORM difference.**
+#
+#   3. **If Windows disagrees too, it is a DEFECT or a stale pin of this repository**, found by this run
+#      rather than caused by it - which is the shape `92537d9` repaired on three batteries of the client.
+#
+# What each verdict does, written now so that none of them is decided by how many there turn out to be:
+#
+#   DRAW      the battery is admissible in a gate. The gate will occasionally be red on a good tree, and
+#             that is a cost this repository already names - ADR-0053, ADR-0076, ADR-0077 - rather than a
+#             new hole. It is not repaired here.
+#   PLATFORM  that battery is named, kept out of the gates, and the exclusion is written into the list of
+#             what this repository declares and nothing keeps, in the same commit that excludes it.
+#   DEFECT    repaired, and any gate lands after the repair rather than around it.
+#
+# **The threshold, so that it is not chosen afterwards: more than two batteries in the PLATFORM bucket, or
+# any contract battery in it, and the two-gate form does not survive this reading.** What gets written in
+# that case is the reading, and not a workflow.
+#
+# ---------------------------------------------------------------------------
+# What is deliberately not measured, said here rather than left to be assumed covered
+# ---------------------------------------------------------------------------
+#
+# **One runtime and not the matrix's two.** `suites.yml` carries two floors because the question there is
+# which runtimes pass. A battery measures what a suite catches and not which runtime ran it, which is the
+# argument the `site` job already makes for itself one job down. So `22.18.0` is unread here, and any
+# gate written against this reading inherits that absence.
+#
+# **No duration is printed.** One job per battery makes the per-battery cost the timing of that job's own
+# step, which `gh run view --json jobs` answers from the outside. Printing it would be a second copy of a
+# figure the run already holds, free to disagree with it.
+#
+# **The population is every battery and not a selection.** A selection is what a gate would do; a reading
+# that selected would be unable to say anything about what it left out.
+
+name: the reading
+
+on:
+  push:
+    branches: ['the-batteries-on-linux']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # The list is read off `THE_BATTERIES` rather than typed here. A list of twenty-one names in this file
+  # would be a declaration nothing keeps - the defect this repository refuses one floor down - and it
+  # would go stale the day a twenty-second battery is written.
+  #
+  # No install, for the reason the `version` job of `suites.yml` has none: `published.ts` and its whole
+  # import closure reach nothing outside node's own modules.
+  which:
+    runs-on: ubuntu-latest
+
+    outputs:
+      batteries: ${{ steps.list.outputs.batteries }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+
+      - name: every battery this repository declares
+        id: list
+        run: |
+          node --input-type=module -e "
+            const { THE_BATTERIES } = await import('./mutation/published.ts')
+            const names = THE_BATTERIES.map((one) => one.name)
+            console.error(\`\${names.length} batteries: \${names.join(' ')}\`)
+            console.log(JSON.stringify(names))
+          " > batteries.json
+          echo "batteries=$(cat batteries.json)" >> "$GITHUB_OUTPUT"
+
+  replay:
+    needs: which
+
+    runs-on: ubuntu-latest
+
+    # A hung cell must not hold a runner for six hours. The longest battery on the machine that wrote the
+    # pins is `cli-install` at 9 min 46 s, and this allows four times that before it is called a hang.
+    timeout-minutes: 40
+
+    strategy:
+      # Every battery reports. The question is which of them agree on this platform, not whether one does -
+      # and a first disagreement stopping the matrix would answer a different question than the one asked.
+      fail-fast: false
+      matrix:
+        battery: ${{ fromJSON(needs.which.outputs.batteries) }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # `registry-storage` reaches `frozen-for-life.test.ts`, which checks past commits out under
+          # `.rebuilt/`, and a shallow clone holds nothing to check out. Every arm of every battery is
+          # `HEAD`, so no arm needs this line - that suite does.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The three coordinates a reading of this run needs and that the log would otherwise not carry.
+      # `git` is here because the instrument manages worktrees with it, and a worktree's behaviour is a
+      # property of the version installed rather than of this repository.
+      - name: what this reading was taken on
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      # `assertCleanTree` refuses a working tree carrying uncommitted changes, and `assertNoStrayWorktree`
+      # refuses a checkout registered beside the root. Both are preconditions of every cell, so what the
+      # checkout and the install left behind is read before the battery rather than out of its refusal.
+      - name: the tree the instrument requires
+        run: |
+          git status --porcelain
+          git worktree list
+
+      # `npm run` and not `node mutation/measure.ts`, for the reason the header of `suites.yml` gives:
+      # `packaging/the-archive.ts` finds npm through `npm_execpath`, and the `packaging` battery injects
+      # into the folder that holds it. Started any other way, that battery would measure the launcher.
+      - name: ${{ matrix.battery }}
+        run: npm run battery ${{ matrix.battery }}
