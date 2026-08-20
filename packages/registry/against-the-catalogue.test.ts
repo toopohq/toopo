@@ -13,7 +13,7 @@ import {
   REPOSITORY_ROOT,
   serialiseContract,
 } from './serialise.js'
-import { eachContract, theFive } from './the-five.js'
+import { eachContract, theCatalogue } from './the-catalogue.js'
 import { THE_BATTERIES, theFolderOf } from '../../mutation/published.js'
 
 /**
@@ -136,7 +136,7 @@ describe('the five, read against their own source', () => {
    * reader of the registry should be able to see that number without counting the table by hand.
    */
   it('every-mutation-provenance-resolves :: four cases of the five cite a battery cell', () => {
-    const cited = theFive.flatMap((source) =>
+    const cited = theCatalogue.flatMap((source) =>
       serialiseContract(REPOSITORY_ROOT, source)
         .caseTables.flatMap((table) => table.cases)
         .filter((entry) => entry.provenance.kind === 'found-by-mutation'),
@@ -161,10 +161,10 @@ describe('the five, read against their own source', () => {
    *
    * The population is the batteries under `contracts/`. The eight that inject into `packages/` and
    * into `mutation/fixture` measure this repository's machinery rather than a contract, which
-   * `the-five.ts` already says in as many words about the record it makes of them.
+   * `the-catalogue.ts` already says in as many words about the record it makes of them.
    */
   it('every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns', () => {
-    const owned = new Set(theFive.map((source) => theFolderOf(source.address.language, source.address.name)))
+    const owned = new Set(theCatalogue.map((source) => theFolderOf(source.address.language, source.address.name)))
     const injected = THE_BATTERIES.map((battery) => battery.contractPath).filter((path) =>
       path.startsWith('contracts/'),
     )
@@ -202,7 +202,7 @@ describe('the five, read against their own source', () => {
   )
 
   it('no-two-contracts-share-an-address :: an address is what the whole registry is keyed on', () => {
-    const rendered = theFive.map((source) => renderContract(source.address))
+    const rendered = theCatalogue.map((source) => renderContract(source.address))
 
     expect(new Set(rendered).size).toBe(rendered.length)
   })
@@ -213,7 +213,7 @@ describe('the five, read against their own source', () => {
    * Same discipline as a declared type, for the same reason and with the same normalisation: a
    * contract that stopped producing its samples would take the expression out of `contract.ts` and
    * redden this. What it cannot see is a text that survives for another reason, which is why the
-   * field is `one-directional` and why `the-five.ts` names the one instance in the five.
+   * field is `one-directional` and why `the-catalogue.ts` names the one instance in the five.
    */
   it.each(eachContract)(
     'every-produced-expression-occurs-in-the-contract-%s',
@@ -256,7 +256,7 @@ describe('the five, read against their own source', () => {
    * likeliest: a sixth contract's author writing the answer before the argument.
    */
   it('a-case-that-is-not-a-call-is-refused', () => {
-    const [first] = theFive as readonly ContractSource[]
+    const [first] = theCatalogue as readonly ContractSource[]
     const reordered: ContractSource = {
       ...(first as ContractSource),
       caseTables: [
@@ -295,7 +295,7 @@ describe('the five, read against their own source', () => {
    * between the cases is only the fault.
    */
   it('a-grouping-that-is-not-a-partition-is-refused', () => {
-    const [first] = theFive as readonly ContractSource[]
+    const [first] = theCatalogue as readonly ContractSource[]
     const withTable = (table: CaseTableSource): ContractSource => ({
       ...(first as ContractSource),
       caseTables: [table],
@@ -346,7 +346,7 @@ describe('the five, read against their own source', () => {
    * rather than the possibility being assumed away.
    */
   it('a-group-that-takes-a-case-address-is-refused', () => {
-    const [first] = theFive as readonly ContractSource[]
+    const [first] = theCatalogue as readonly ContractSource[]
     const contract = first as ContractSource
     const [table] = contract.caseTables as readonly CaseTableSource[]
     const taken = (table as CaseTableSource).cases[0]?.['id'] as string

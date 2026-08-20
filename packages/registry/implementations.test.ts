@@ -5,7 +5,7 @@ import type { LockedFeature, Lockfile } from './implementation-record.js'
 import { LOCKFILE_VERSION, dependencyDepthOf } from './implementation-record.js'
 import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
-import { eachContract, theFive } from './the-five.js'
+import { eachContract, theCatalogue } from './the-catalogue.js'
 
 /**
  * The implementation half of the schema, filled from the only implementations that exist.
@@ -78,7 +78,7 @@ describe('the implementations under the five contracts', () => {
    * answers zero on an empty graph rather than throwing on it.
    */
   it('every-reference-has-no-dependencies :: permanent rule 2, as edges and as a number', () => {
-    const implementations = theFive.map((source) =>
+    const implementations = theCatalogue.map((source) =>
       referenceImplementationOf(REPOSITORY_ROOT, source),
     )
 
@@ -95,7 +95,7 @@ describe('the implementations under the five contracts', () => {
    * one is quietly filled with a number nobody produced.
    */
   it('nothing-is-measured-yet :: no minified size, no benchmark figure, no version', () => {
-    const implementations = theFive.map((source) =>
+    const implementations = theCatalogue.map((source) =>
       referenceImplementationOf(REPOSITORY_ROOT, source),
     )
 
@@ -126,7 +126,7 @@ describe('the implementations under the five contracts', () => {
   it('a-lockfile-is-json :: it lives on the user disk and nothing decodes it', () => {
     const lockfile: Lockfile = {
       version: LOCKFILE_VERSION,
-      features: theFive.map((source) =>
+      features: theCatalogue.map((source) =>
         lockedFeatureOf(
           referenceImplementationOf(REPOSITORY_ROOT, source),
           '1.0.0',

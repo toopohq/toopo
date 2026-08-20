@@ -41,10 +41,10 @@ node refuses to strip types under `node_modules` — `ERR_UNSUPPORTED_NODE_MODUL
 v24.15.0, for a `bin` entry point exactly as for an import. And the CLI's runtime graph reached
 **vitest**: `toopo search slugify`, a command that installs nothing, loaded 147 modules including
 vitest, the TypeScript compiler API and twelve of `mutation/`, through
-`the-five.ts` → a contract module → `packages/catalogue/every-contract.ts`. Cutting `local-source.ts` out drops
+`the-catalogue.ts` → a contract module → `packages/catalogue/every-contract.ts`. Cutting `local-source.ts` out drops
 it from 55 repository modules to 26 and removes vitest entirely.
 
-**The archive carries a frozen artefact, and that was forced rather than chosen.** `the-five.ts` must
+**The archive carries a frozen artefact, and that was forced rather than chosen.** `the-catalogue.ts` must
 go on importing live modules — its own header refuses a transcription — so it cannot be in a published
 graph; `packages/cli/source.ts` already said serialising this repository *is not a source of distribution and
 must never become one*. What decides it beyond both is the supply chain: a `toopo` that serialised

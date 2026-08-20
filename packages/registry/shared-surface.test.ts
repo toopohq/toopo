@@ -10,7 +10,7 @@ import {
   servedFilesOf,
   sharedHarnessOf,
 } from './serialise.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 import { specifiersIn } from '../../packaging/reachable.js'
 
 /**
@@ -43,7 +43,7 @@ describe('the shared surface a contract reaches', () => {
    * contract does not depend on, so an edit somewhere it never reads rebinds its address for nothing.
    */
   it('the-shared-surface-is-what-the-harness-reaches', () => {
-    const faults = theFive.flatMap((source) => {
+    const faults = theCatalogue.flatMap((source) => {
       const reached = sharedHarnessOf(REPOSITORY_ROOT, source.folder, source.files, source.shared)
 
       return [
@@ -76,7 +76,7 @@ describe('the shared surface a contract reaches', () => {
    * substitution can be a no-op and leave this red for a reason it was not written for.
    */
   it('a-changed-shared-file-moves-the-digest', () => {
-    const faults = theFive.flatMap((source) => {
+    const faults = theCatalogue.flatMap((source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const [first, ...rest] = record.sharedHarness
       if (first === undefined) {
@@ -108,7 +108,7 @@ describe('the shared surface a contract reaches', () => {
    * exactly the hole, and a walk over the working tree could not see it.
    */
   it('a-fetched-harness-resolves-every-import-it-carries', () => {
-    const faults = theFive.flatMap((source) => {
+    const faults = theCatalogue.flatMap((source) => {
       const served = servedFilesOf(source.folder, serialiseContract(REPOSITORY_ROOT, source))
       const held = new Set(served.map((file) => file.path))
 
@@ -133,7 +133,7 @@ describe('the shared surface a contract reaches', () => {
    * ADR-0105 records, naming ten blobs the registry could not have served.
    */
   it('the-snapshot-names-no-blob-the-registry-cannot-serve', () => {
-    const faults = theFive.flatMap((source) => {
+    const faults = theCatalogue.flatMap((source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
       const servable = new Set(servedFilesOf(source.folder, record).map((file) => file.sha256))
 

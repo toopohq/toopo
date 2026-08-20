@@ -6,10 +6,10 @@
  * The list and its meanings are one constant, because they were about to be two
  * ---------------------------------------------------------------------------
  *
- * `the-five.ts` held these seven names as a private list and nothing said what any of them was. The
+ * `the-catalogue.ts` held these seven names as a private list and nothing said what any of them was. The
  * page that explains a contract needs both halves, and writing the meanings on the page would have put
  * the list of files a reader **receives** and the list a page **describes** in two folders, free to
- * disagree the day a contract's anatomy changes. So the meaning is a field, `the-five.ts` reads the
+ * disagree the day a contract's anatomy changes. So the meaning is a field, `the-catalogue.ts` reads the
  * names off it, and there is nothing for the page to restate.
  *
  * ---------------------------------------------------------------------------

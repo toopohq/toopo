@@ -77,7 +77,7 @@ nothing behind it, while the generator consumed `contract-index` anyway.
 
 ## Confirmation
 
-`a-case-that-is-not-a-call-is-refused` in `packages/registry/against-the-five.test.ts` holds the
+`a-case-that-is-not-a-call-is-refused` in `packages/registry/against-the-catalogue.test.ts` holds the
 refusal; `packages/registry/signature.test.ts` holds the reading, down to the cases that would break a
 naive parse — a comma inside a generic, an arrow inside a type parameter, a trailing comma, an
 optional or rest mark. `a-case-is-rendered-as-the-call-its-signature-declares` in

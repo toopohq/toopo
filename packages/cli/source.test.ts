@@ -22,7 +22,7 @@ import { THE_ENDPOINT_BEHIND } from './source.js'
 
 const HERE = import.meta.dirname
 
-const THE_SERIALISATION = ['registry/the-five', 'registry/serialise']
+const THE_SERIALISATION = ['registry/the-catalogue', 'registry/serialise']
 
 describe('where an installer gets what it installs', () => {
   it('every-method-of-the-port-answers-an-endpoint-that-exists', () => {

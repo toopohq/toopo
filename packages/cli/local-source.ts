@@ -77,7 +77,7 @@ import {
   servedFileOf,
   servedFilesOf,
 } from '../registry/serialise.js'
-import { theFive } from '../registry/the-five.js'
+import { theCatalogue } from '../registry/the-catalogue.js'
 import type { RegistrySource } from './source.js'
 
 /**
@@ -123,7 +123,7 @@ const gather = (): {
   const holdings: Holding[] = []
   let ledger = EMPTY_LEDGER
 
-  for (const source of theFive) {
+  for (const source of theCatalogue) {
     const record = serialiseContract(REPOSITORY_ROOT, source)
     const implementation: ImplementationRecord = {
       ...referenceImplementationOf(REPOSITORY_ROOT, source),

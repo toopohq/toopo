@@ -5,7 +5,7 @@ decision-makers: Mathis Perron
 governs:
   - packages/registry/serialise.ts
   - packages/registry/contract-record.ts
-  - packages/registry/the-five.ts
+  - packages/registry/the-catalogue.ts
   - packaging/reachable.ts
 confirmed-by:
   - battery: registry-storage
@@ -105,7 +105,7 @@ avoid modelling one field.
 
 ### The declaration and the walk are two statements, and the disagreement is the guard
 
-`THE_SHARED_FILES` in `the-five.ts` names the files; `sharedHarnessOf` takes the transitive closure of
+`THE_SHARED_FILES` in `the-catalogue.ts` names the files; `sharedHarnessOf` takes the transitive closure of
 the relative specifiers written in the declared files, keeps what lands outside the folder, and refuses
 either direction. A list derived from the walk could not disagree with the walk — the shape `files` and
 the folder listing already have one level down, and the reason `harnessOf` is written as it is.

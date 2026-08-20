@@ -83,7 +83,7 @@ export const THE_COPYRIGHT = `Copyright (c) 2026 ${THE_AUTHOR.name}`
  * The two lines that head every file the installer copies, and the only place they are spelled.
  *
  * The files themselves carry a transcription of this, checked byte for byte by
- * `every-file-the-installer-copies-is-marked-mit-0`. That is the shape `the-five.ts` already has for a
+ * `every-file-the-installer-copies-is-marked-mit-0`. That is the shape `the-catalogue.ts` already has for a
  * transcribed signature: one declaration, N transcriptions, a guard resolving them - rather than a
  * build step, which would put a byte of an installed file behind something no reader can see.
  */

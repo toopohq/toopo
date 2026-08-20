@@ -6,7 +6,7 @@ governs:
   - packages/validation/analyse.ts
 confirmed-by:
   - battery: meta
-    guard: every-figure-in-contributing-is-the-one-the-five-contracts-declare
+    guard: every-figure-in-contributing-is-one-the-contracts-declare
   - battery: meta
     guard: the-ratio-contributing-argues-from-is-the-one-the-counts-give
   - battery: meta

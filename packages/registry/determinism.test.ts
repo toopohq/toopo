@@ -4,7 +4,7 @@ import { describe, it, expect } from 'vitest'
 
 import { UncanonicalValue, canonical, digestOfBytes, servedBytes } from './canonical.js'
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 
 /**
  * The same content produces the same digest, on any machine.
@@ -138,7 +138,7 @@ describe('the bytes the registry serves', () => {
    * both are kept.
    */
   it('the-served-bytes-are-the-committed-bytes', () => {
-    const differing = theFive.flatMap((source) =>
+    const differing = theCatalogue.flatMap((source) =>
       serialiseContract(REPOSITORY_ROOT, source)
         .harness.map((file) => {
           const blob = execFileSync('git', ['show', `HEAD:${source.folder}/${file.path}`], {

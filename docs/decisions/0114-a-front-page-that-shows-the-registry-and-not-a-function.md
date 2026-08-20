@@ -171,7 +171,7 @@ page is still wrapped where the rest of this repository is.
 - `every-answer-the-readme-shows-is-a-case-the-contract-settles` is deleted with the block it read, in
   the same commit, and ADR-0113's `confirmed-by` loses that line. A guard whose subject has gone would
   have been worse than never having had one.
-- `theCatalogueRecordIn` joins `theCatalogueRecords` in `mutation/root-documents.ts`, so `theFive` is
+- `theCatalogueRecordIn` joins `theCatalogueRecords` in `mutation/root-documents.ts`, so `theCatalogue` is
   still read from exactly one place under `mutation/` — which is the whole reason that module exists.
 - The licence section no longer describes the two-line header, because the page now shows it. One
   duplication removed and none created.

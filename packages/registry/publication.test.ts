@@ -14,7 +14,7 @@ import {
   THE_SOURCE_REPOSITORY,
 } from './publication.js'
 import { REPOSITORY_ROOT, referenceImplementationOf } from './serialise.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 
 /**
  * What this repository states about itself to the outside world, and the one rule all of it obeys.
@@ -25,7 +25,7 @@ import { theFive } from './the-five.js'
  * `LICENSE` is prose, and an installed file may import nothing at all - and every transcription is
  * resolved against its declaration below.
  *
- * That is `against-the-five.test.ts`'s shape on a second subject, and it is here rather than beside
+ * That is `against-the-catalogue.test.ts`'s shape on a second subject, and it is here rather than beside
  * each transcription because the declarations are what the guards share. Splitting them would put four
  * one-guard files in four folders, each holding a copy of how to find the repository root.
  *
@@ -46,7 +46,7 @@ const textOf = (path: string): string =>
  * this list before anybody has decided anything about it.
  */
 const copiedFiles = (): readonly { readonly path: string; readonly header: string }[] =>
-  theFive.flatMap((source) =>
+  theCatalogue.flatMap((source) =>
     referenceImplementationOf(REPOSITORY_ROOT, source).files.map((file) => ({
       path: `${source.folder}/${file.path}`,
       header: licenceHeaderOf(source.address),
@@ -191,7 +191,7 @@ describe('what this repository publishes about itself', () => {
    * **The sentence read *Five contracts, four of them installable* and nothing kept it.** Spelled out,
    * it could not be resolved against anything without a table mapping words to integers - which is a
    * second statement of the arithmetic, free to be wrong in its own way - so it was written in digits
-   * and pointed at `theFive`. That is the same repair `mutation/readme.test.ts` already applies to
+   * and pointed at `theCatalogue`. That is the same repair `mutation/readme.test.ts` already applies to
    * every figure the README publishes about the instrument, arriving on the one figure it publishes
    * about the catalogue.
    *
@@ -200,12 +200,12 @@ describe('what this repository publishes about itself', () => {
    * states about itself is resolved.
    */
   it('the-readme-counts-the-catalogue-the-registry-declares', () => {
-    const refused = theFive.filter((source) => source.lifecycle.state === 'never-published')
+    const refused = theCatalogue.filter((source) => source.lifecycle.state === 'never-published')
     const readme = readFileSync(join(REPOSITORY_ROOT, 'README.md'), 'utf8').replace(/\s+/g, ' ')
 
     expect(refused.length).toBeGreaterThan(0)
     expect(readme).toContain(
-      `**${theFive.length} contracts, ${theFive.length - refused.length} of them installable and ` +
+      `**${theCatalogue.length} contracts, ${theCatalogue.length - refused.length} of them installable and ` +
         `${refused.length} refused.**`,
     )
   })
@@ -220,7 +220,7 @@ describe('what this repository publishes about itself', () => {
    */
   it('the-licence-file-quotes-a-header-a-contract-really-carries', () => {
     const quoted = [...textOf('LICENSE').matchAll(/^\s+(\/\/ .*)$/gm)].map((match) => match[1])
-    const real = theFive.map((source) => ({
+    const real = theCatalogue.map((source) => ({
       address: renderContract(source.address),
       lines: licenceHeaderOf(source.address).split('\n').filter(Boolean),
     }))

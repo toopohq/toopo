@@ -144,7 +144,7 @@ and survived; it now moves a case to a group that is not its neighbour.
 ## Confirmation
 
 `a-grouping-that-is-not-a-partition-is-refused` and `a-group-that-takes-a-case-address-is-refused` in
-`packages/registry/against-the-five.test.ts` hold the two refusals;
+`packages/registry/against-the-catalogue.test.ts` hold the two refusals;
 `every-group-is-a-heading-and-its-cases-follow-it` in `packages/site/pages.test.ts` holds the rendering
 the grouping exists for. `every-case-is-grouped` is one of the four guards the catalogue owns, in
 `packages/catalogue/every-contract.ts`.

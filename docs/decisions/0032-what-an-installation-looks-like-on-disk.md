@@ -8,7 +8,7 @@ confirmed-by:
   - battery: cli-install
     guard: an-entry-file-is-named-after-its-feature
   - battery: cli-install
-    guard: each-of-the-five-installs-one-file-named-after-itself
+    guard: every-contract-of-the-catalogue-installs-one-file-named-after-itself
   - battery: cli-install
     guard: the-graph-lands-as-a-tree-of-features
   - battery: cli-install
@@ -105,7 +105,7 @@ inspect their build.
 
 ## Confirmation
 
-`an-entry-file-is-named-after-its-feature` and `each-of-the-five-installs-one-file-named-after-itself`
+`an-entry-file-is-named-after-its-feature` and `every-contract-of-the-catalogue-installs-one-file-named-after-itself`
 hold the naming over the catalogue as it is; `the-graph-lands-as-a-tree-of-features` holds the shape on
 the imagined graph, which is the only thing in this repository with cross-feature edges.
 `an-entry-file-is-never-deduplicated` holds the exemption, which is the half a deduplication by digest

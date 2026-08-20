@@ -13,7 +13,7 @@ confirmed-by:
   - battery: freeze
     guard: nothing-this-tree-binds-escapes-the-freeze-check
   - battery: registry-storage
-    guard: the-five-anchor-a-commit-and-the-check-reaches-all-of-them
+    guard: every-binding-anchors-a-commit-and-the-check-reaches-all-of-them
 ---
 
 # The freeze check lives where nothing replays it, and a green that is right by accident is a green that lies later
@@ -84,7 +84,7 @@ read rather than assumed.
 ## Consequences
 
 **`the-five-anchor-nothing-and-the-check-says-which` reddened on the event its own comment had named**
-and became `the-five-anchor-a-commit-and-the-check-reaches-all-of-them`. The prediction is kept in
+and became `every-binding-anchors-a-commit-and-the-check-reaches-all-of-them`. The prediction is kept in
 ADR-0093 word for word and the retirement is recorded there: a guard that writes down in advance what
 will falsify it, and is then falsified by exactly that, is worth more than the assertion it carried.
 

@@ -32,7 +32,7 @@ reach.
 The instance that established it: `read` inverts `literal`, and the obvious guard was the round trip
 over every case of block 4.4. Measured, that guard cannot exist in `site/` —
 `packages/site/source.test.ts` refuses every module of the folder but one, tests included and its own comment says *every other module
-of this folder*, the right to reach `the-five` or `serialise`, so a guard there sees exactly what the
+of this folder*, the right to reach `the-catalogue` or `serialise`, so a guard there sees exactly what the
 port serves. **157 of the 187 cases sit on contracts that have a page, and all 30 that print a word
 with no JavaScript spelling sit on `array/group-by@1`, which has none.** One half of that partition
 would have been empty by construction, which is the shape of a guard that quietly stops asking

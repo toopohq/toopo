@@ -22,7 +22,7 @@ import { NOT_THIS_UNIT, THE_ENDPOINT_BEHIND } from './source.js'
 
 const HERE = import.meta.dirname
 
-const THE_SERIALISATION = ['registry/the-five', 'registry/serialise']
+const THE_SERIALISATION = ['registry/the-catalogue', 'registry/serialise']
 
 describe('where the generator gets what it publishes', () => {
   it('every-method-of-the-port-answers-an-endpoint-that-exists', () => {

@@ -27,7 +27,7 @@ One export of a contract, with the type it must expose.
 
 `text` is TypeScript source and it is transcribed rather than derived, because a type is not a value
 and nothing at run time can read it. Transcription drifts, so it is guarded:
-`against-the-five.test.ts` requires this exact declaration to occur in the contract's own
+`against-the-catalogue.test.ts` requires this exact declaration to occur in the contract's own
 `contract.ts`, whitespace normalised. A signature is the first thing a reader of a contract page looks
 at, so it has to be in the record; being in the record it has to be checkable, and it is.
 

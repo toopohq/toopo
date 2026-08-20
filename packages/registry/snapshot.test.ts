@@ -18,7 +18,7 @@ import {
   withContractStanding,
 } from './snapshot.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from './serialise.js'
-import { eachContract, theFive } from './the-five.js'
+import { eachContract, theCatalogue } from './the-catalogue.js'
 
 /**
  * A snapshot is what an installation receives for ever, and its digest is the only thing anyone has
@@ -85,7 +85,7 @@ const perturbedAt = (value: unknown, path: readonly string[]): unknown => {
   return { ...record, [head]: perturbedAt(record[head], rest) }
 }
 
-const NUMBER_PARSE = theFive[0]
+const NUMBER_PARSE = theCatalogue[0]
 if (NUMBER_PARSE === undefined) throw new Error('the five are not five')
 
 const anAddress = (name: string, major: number): ContractAddress => ({
@@ -134,7 +134,7 @@ describe('what a snapshot freezes, and what it may not', () => {
    * every contract would simply not carry it.
    */
   it('every-standing-field-a-contract-declares-is-carried-by-one :: nothing is declared unfilled', () => {
-    const records = theFive.map((source) => serialiseContract(REPOSITORY_ROOT, source))
+    const records = theCatalogue.map((source) => serialiseContract(REPOSITORY_ROOT, source))
     const unfilled = CONTRACT_STANDING_FIELDS.map((entry) => entry.field).filter(
       (field) => !records.some((record) => field in record),
     )
@@ -279,7 +279,7 @@ describe('what the digest covers', () => {
   )
 
   it('no-two-contracts-share-a-digest :: a digest is an identity', () => {
-    const digests = theFive.map((source) =>
+    const digests = theCatalogue.map((source) =>
       digestOfSnapshot(contractSnapshot(serialiseContract(REPOSITORY_ROOT, source))),
     )
 
@@ -297,7 +297,7 @@ describe('what the digest covers', () => {
 })
 
 describe('the ledger, where a name is bound to a digest', () => {
-  const entryFor = (source: (typeof theFive)[number], digest: string) => ({
+  const entryFor = (source: (typeof theCatalogue)[number], digest: string) => ({
     address: source.address,
     digest,
     publishedAt: PUBLISHED_AT,

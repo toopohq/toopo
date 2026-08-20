@@ -204,7 +204,7 @@ describe('the population this check runs over, named rather than counted', () =>
    * cheap half - a statement about the population, in memory, that a battery may replay sixty times
    * without spawning anything.
    */
-  it('the-five-anchor-a-commit-and-the-check-reaches-all-of-them :: the population is not empty', () => {
+  it('every-binding-anchors-a-commit-and-the-check-reaches-all-of-them :: the population is not empty', () => {
     const ledger = theLocalLedger()
 
     expect(unanchoredBindings(ledger)).toEqual([])

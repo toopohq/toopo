@@ -163,7 +163,7 @@ in `packages/site/pages.test.ts` takes every string this record carries and asks
 the whole reading of a paragraph - 212 of them today, derived from the page and the record, so a prose
 field added tomorrow is covered with nothing edited here.
 `a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands` in
-`packages/registry/against-the-five.test.ts` takes the other half: a value the catalogue shares between
+`packages/registry/against-the-catalogue.test.ts` takes the other half: a value the catalogue shares between
 contracts is composed into a longer string, so no field-shaped guard can see its seam.
 
 ## What would reopen this

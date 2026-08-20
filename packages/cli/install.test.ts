@@ -350,7 +350,7 @@ export const clamp = (value: number, low: number, high: number): number =>
   })
 
   /** Every one of the five installs its reference, whole, under the name of the feature. */
-  it('each-of-the-five-installs-one-file-named-after-itself', async () => {
+  it('every-contract-of-the-catalogue-installs-one-file-named-after-itself', async () => {
     const source = localSource()
     const project = aProject()
     try {

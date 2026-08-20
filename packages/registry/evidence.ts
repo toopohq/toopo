@@ -23,7 +23,7 @@ import { guardAddressFaults, renderContract, renderGuard, renderMutant, sameCont
  * claims to kill a defect, and the claim is the whole difference between a contract that has been
  * closing its gaps and a contract that never had any.
  *
- * So the registry carries an address rather than a string, and `against-the-five.test.ts` resolves
+ * So the registry carries an address rather than a string, and `against-the-catalogue.test.ts` resolves
  * every one of them against the battery that holds it. A provenance naming a mutant no battery
  * declares fails at serialisation, which is what "controlled at publication" means when the
  * publishing tool arrives.

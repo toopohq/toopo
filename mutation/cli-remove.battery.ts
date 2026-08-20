@@ -569,7 +569,7 @@ export const battery: Battery = {
         'an-update-keeps-the-implementation-the-lockfile-names',
         'an-update-writes-the-bytes-the-registry-now-serves',
         'bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that',
-        'each-of-the-five-installs-one-file-named-after-itself',
+        'every-contract-of-the-catalogue-installs-one-file-named-after-itself',
         'each-side-says-for-itself-that-it-has-no-final-newline',
         'every-breakage-is-classified',
         'every-clean-refusal-resolves-to-the-guard-it-names',

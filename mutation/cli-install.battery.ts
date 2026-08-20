@@ -326,7 +326,7 @@ const A_SPECIFIER_THAT_NAMES_NOTHING = `            if (servedAt === null) {
 const THE_TREE = 'the-graph-lands-as-a-tree-of-features'
 const THE_IMPORTS = 'an-installed-file-imports-what-was-installed'
 const THE_TWO_DIGESTS = 'the-lockfile-holds-what-was-served-and-what-was-written'
-const THE_FIVE_LAND = 'each-of-the-five-installs-one-file-named-after-itself'
+const THE_CONTRACTS_LAND = 'every-contract-of-the-catalogue-installs-one-file-named-after-itself'
 
 // ---------------------------------------------------------------------------
 // The defects
@@ -346,7 +346,7 @@ const mutants: readonly Mutant[] = [
     ],
     // Nine guards redden; the four named are the ones written for the layout, and they are what a
     // single edit to this function takes away.
-    killed(['an-entry-file-is-named-after-its-feature', THE_TREE, THE_IMPORTS, THE_FIVE_LAND]),
+    killed(['an-entry-file-is-named-after-its-feature', THE_TREE, THE_IMPORTS, THE_CONTRACTS_LAND]),
   ),
 
   sameOnEveryLens(
@@ -543,9 +543,9 @@ const mutants: readonly Mutant[] = [
       planFile(
         THE_LAST_IMPORT_OF_THE_PLAN,
         `import type { FrozenImplementation } from '../registry/snapshot.js'
-import { theFive } from '../registry/the-five.js'
+import { theCatalogue } from '../registry/the-catalogue.js'
 
-void theFive`,
+void theCatalogue`,
       ),
     ],
     killed(['nothing-but-the-local-adapter-reaches-the-serialisation']),

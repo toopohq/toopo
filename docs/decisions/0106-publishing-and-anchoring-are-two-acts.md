@@ -4,7 +4,7 @@ date: 2026-08-17
 decision-makers: Mathis Perron
 governs:
   - packages/registry/publication.ts
-  - packages/registry/the-five.ts
+  - packages/registry/the-catalogue.ts
   - packages/registry/local-read-api.ts
   - packages/cli/local-source.ts
   - packages/site/local-source.ts
@@ -147,7 +147,7 @@ back would make every publication fail.
 **Four contracts are frozen from this commit.** Every byte of their declared files, comments included,
 plus the two shared files [ADR-0105](0105-a-contract-freezes-what-its-guards-call.md) added. A repair is
 `name@2` beside them rather than in place of them. The sentence lives on `publishContract` and on
-`PUBLISHED` in `the-five.ts`, where somebody is about to take the decision.
+`PUBLISHED` in `the-catalogue.ts`, where somebody is about to take the decision.
 
 **`frozen-for-life.test.ts` stopped building its subject and started finding it.** It marked a contract
 published in a clone because a freeze check over a catalogue where nothing was published computes every

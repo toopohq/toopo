@@ -17,7 +17,7 @@
  * wrong value fail to compile, that shape is reached for before a sentence is written. A third root
  * document adds a member here and nothing else.
  *
- * **`theFive` is read here and nowhere else under `mutation/`**, which is the whole of why this module
+ * **`theCatalogue` is read here and nowhere else under `mutation/`**, which is the whole of why this module
  * exists and is why the second reader below sits beside the first rather than in the guard that wants
  * it. One asks the catalogue a question about all of it and the other about one member of it; both are
  * questions a root document asks, and answering them from two copies of the same import is how the two
@@ -29,7 +29,7 @@ import { join } from 'node:path'
 
 import type { ContractRecord } from '../packages/registry/contract-record.ts'
 import { REPOSITORY_ROOT, serialiseContract } from '../packages/registry/serialise.ts'
-import { theFive } from '../packages/registry/the-five.ts'
+import { theCatalogue } from '../packages/registry/the-catalogue.ts'
 import { THE_REPOSITORY } from './paths.ts'
 
 /** The Markdown documents at the root of this repository that a guard here resolves. */
@@ -46,7 +46,7 @@ export const rootDocument = (name: RootDocument): string =>
  * count taken off `contract.ts` would be counting something no reader can ask the registry for.
  */
 export const theCatalogueRecords = (): readonly ContractRecord[] =>
-  theFive.map((source) => serialiseContract(REPOSITORY_ROOT, source))
+  theCatalogue.map((source) => serialiseContract(REPOSITORY_ROOT, source))
 
 /**
  * One contract of the catalogue, addressed by the folder it lives in.
@@ -58,7 +58,7 @@ export const theCatalogueRecords = (): readonly ContractRecord[] =>
  * upstream of that.
  */
 export const theCatalogueRecordIn = (folder: string): ContractRecord | undefined => {
-  const source = theFive.find((entry) => entry.folder === folder)
+  const source = theCatalogue.find((entry) => entry.folder === folder)
 
   return source === undefined ? undefined : serialiseContract(REPOSITORY_ROOT, source)
 }

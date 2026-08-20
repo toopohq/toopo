@@ -8,7 +8,7 @@ import { renderContract } from './address.js'
 import { rebindingFaults } from './rebinding.js'
 import { THE_REBUILD_FOLDER, bindingsAtRevision } from './rebuild.js'
 import { REPOSITORY_ROOT } from './serialise.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 import { EMPTY_LEDGER, publishContract } from './snapshot.js'
 
 /**
@@ -35,7 +35,7 @@ import { EMPTY_LEDGER, publishContract } from './snapshot.js'
  * asked here over all three states a contract of this catalogue can carry.
  */
 
-const SLUGIFY = theFive.find((source) => source.address.name === 'string/slugify')
+const SLUGIFY = theCatalogue.find((source) => source.address.name === 'string/slugify')
 if (SLUGIFY === undefined) throw new Error('the catalogue holds no string/slugify')
 
 const WHAT = renderContract(SLUGIFY.address)
@@ -147,14 +147,14 @@ beforeAll(() => {
   afterTheComment = commit('one comment of a declared harness file is reworded')
 
   rewrite(A_COMMENT.path, A_COMMENT.replace, A_COMMENT.find)
-  rewrite('packages/registry/the-five.ts', PUBLISHED, ABSORBED)
+  rewrite('packages/registry/the-catalogue.ts', PUBLISHED, ABSORBED)
   rewrite('README.md', '# Toopo', '# Toopo\n\nA sentence outside every declared file.')
   afterTheStanding = commit('the standing moves and so does prose outside the seven files')
 
   // The third state, reached from the second, so that what moves between these two commits is the
   // lifecycle and nothing else. The prose of the commit before it stays where it is: it reaches no
   // digest, which is what the guard above this one has just established.
-  rewrite('packages/registry/the-five.ts', ABSORBED, NOT_YET_PUBLISHED)
+  rewrite('packages/registry/the-catalogue.ts', ABSORBED, NOT_YET_PUBLISHED)
   beforeTheDecision = commit('the subject is put back to the state it was published from')
 
   for (const revision of [asPublished, afterTheComment, afterTheStanding, beforeTheDecision]) {

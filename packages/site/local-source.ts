@@ -73,7 +73,7 @@ import {
 import { THE_PUBLICATION_INSTANT } from '../registry/publication.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
-import { theFive } from '../registry/the-five.js'
+import { theCatalogue } from '../registry/the-catalogue.js'
 import { servedMethodology } from '../registry/verifiability.js'
 import type { RegistrySource } from './source.js'
 
@@ -122,7 +122,7 @@ const gather = (): {
   const holdings: Holding[] = []
   let ledger = EMPTY_LEDGER
 
-  for (const source of theFive) {
+  for (const source of theCatalogue) {
     const record = serialiseContract(REPOSITORY_ROOT, source)
     const implementation = {
       ...referenceImplementationOf(REPOSITORY_ROOT, source),

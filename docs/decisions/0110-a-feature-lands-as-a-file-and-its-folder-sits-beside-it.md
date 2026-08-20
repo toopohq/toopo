@@ -8,7 +8,7 @@ confirmed-by:
   - battery: cli-install
     guard: an-entry-file-is-named-after-its-feature
   - battery: cli-install
-    guard: each-of-the-five-installs-one-file-named-after-itself
+    guard: every-contract-of-the-catalogue-installs-one-file-named-after-itself
   - battery: cli-install
     guard: the-graph-lands-as-a-tree-of-features
   - battery: cli-install
@@ -43,7 +43,7 @@ one such repository.
 **The folder is paying for a case that does not exist, and the case cannot arrive by accident.**
 Measured at `2efc482`: four of the five contracts are installable — `array/group-by@1` is
 `never-published` — and each installs exactly one file, which
-`each-of-the-five-installs-one-file-named-after-itself` pins. That is not a coincidence of the
+`every-contract-of-the-catalogue-installs-one-file-named-after-itself` pins. That is not a coincidence of the
 catalogue. `referenceImplementationOf` in `packages/registry/serialise.ts` filters a contract's harness
 to `reference.ts` alone, so no contract *can* install a second file without an edit one floor above the
 path. A contract declares seven files; six of them are the harness, which the registry serves for audit

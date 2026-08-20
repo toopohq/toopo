@@ -320,7 +320,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 
   'packages/registry/vitest.config.ts': {
     'packages/registry/address.test.ts': 3,
-    'packages/registry/against-the-five.test.ts': 51,
+    'packages/registry/against-the-catalogue.test.ts': 51,
     'packages/registry/attestation.test.ts': 3,
     'packages/registry/coverage.test.ts': 20,
     'packages/registry/determinism.test.ts': 20,
@@ -350,7 +350,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/validation/source.test.ts': 3,
     'packages/validation/states-its-own-signature.test.ts': 3,
     'packages/validation/the-boundary.test.ts': 3,
-    'packages/validation/the-five.test.ts': 7,
+    'packages/validation/the-catalogue.test.ts': 7,
     'packages/validation/typescript-api.test.ts': 2,
   },
 

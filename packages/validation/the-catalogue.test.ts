@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path'
 import { analyseImplementation, requirementsOf } from './analyse.js'
 import { renderFinding } from './finding.js'
 import { readSources } from './source.js'
-import { eachContract, theFive } from '../registry/the-five.js'
+import { eachContract, theCatalogue } from '../registry/the-catalogue.js'
 
 /**
  * The catalogue, put through its own filter.
@@ -14,7 +14,7 @@ import { eachContract, theFive } from '../registry/the-five.js'
  * are the only submissions this repository has, they were written by hand over five units with no
  * static analysis in existence, and none of them was written to satisfy this.
  *
- * The list of five is imported from `packages/registry/the-five.ts` rather than restated. It is the one place
+ * The list of five is imported from `packages/registry/the-catalogue.ts` rather than restated. It is the one place
  * the catalogue's membership is declared, and a second list here would be a second statement that can
  * drift - which is the failure this repository has now found in a count, in a stratum and in a guard
  * identifier.
@@ -48,7 +48,7 @@ describe('the five reference implementations pass stage 1', () => {
    *
    * `date/add@1` has published twenty forbidden local-time methods since it was written, and until
    * this folder existed the only guard over them required their reason to be non-empty.
-   * `the-five.ts` classified the field `one-directional` and said why in as many words: nothing
+   * `the-catalogue.ts` classified the field `one-directional` and said why in as many words: nothing
    * refused an implementation that called `getMonth`, because the check was the pipeline's and the
    * pipeline did not exist.
    *
@@ -57,7 +57,7 @@ describe('the five reference implementations pass stage 1', () => {
    * `date/add@1` forbids would have taken the declaration away from the contract.
    */
   it('a-published-requirement-reaches-the-analyser', () => {
-    const withRequirements = theFive.filter((source) => requirementsOf(source.module).length > 0)
+    const withRequirements = theCatalogue.filter((source) => requirementsOf(source.module).length > 0)
 
     expect(withRequirements.map((source) => source.address.name)).toEqual(['date/add'])
 
@@ -82,7 +82,7 @@ describe('the five reference implementations pass stage 1', () => {
     'an-implementation-that-calls-a-forbidden-method-is-refused',
     () => {
       const file = join(import.meta.dirname, 'fixtures', 'refused.ts')
-      const dateAdd = theFive.find((source) => source.address.name === 'date/add')!
+      const dateAdd = theCatalogue.find((source) => source.address.name === 'date/add')!
       const requirements = requirementsOf(dateAdd.module)
 
       const findings = readSources(

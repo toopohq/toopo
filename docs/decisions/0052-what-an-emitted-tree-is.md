@@ -93,7 +93,7 @@ closure. The guard names both numbers.
 **`ReadApi` is the first port here that is the whole read API, which makes the totality an equality.** A
 client's port can only ever be checked for naming endpoints that exist; this one is checked for naming
 all of them, and `attestations` — the one nothing answers — carries the event that would close it rather
-than a reason that ages. `packages/registry/local-read-api.ts` is the third reader of `the-five.ts` and is neither
+than a reason that ages. `packages/registry/local-read-api.ts` is the third reader of `the-catalogue.ts` and is neither
 client's stand-in: the installer's serves the harness and carries no binding, the generator's carries the
 binding and serves one file per contract, and the emission needs both halves. The frontier is unchanged
 and this is the side of it the frontier is about — no client may serialise this working tree, and the

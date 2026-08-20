@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'vitest'
 
 import { REPOSITORY_ROOT, UndeclaredHarness, harnessOf } from './serialise.js'
-import { eachContract } from './the-five.js'
+import { eachContract } from './the-catalogue.js'
 
 /**
  * A contract is made of exactly the files it declares, and nothing else is served.
  *
- * These guards sit apart from `against-the-five.test.ts` because they answer a different question.
+ * These guards sit apart from `against-the-catalogue.test.ts` because they answer a different question.
  * That file asks whether a record can drift from the contract it describes; this one asks what an
  * installation receives, which is a property of the storage rather than of the schema - and the
  * battery that probes it is `registry-storage`, not a schema battery that does not exist yet.

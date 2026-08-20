@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { FIELD_MAP, pathsIn, publicContract } from './field-map.js'
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
-import { eachContract, theFive } from './the-five.js'
+import { eachContract, theCatalogue } from './the-catalogue.js'
 
 /**
  * A public projection may not carry a field the map marks private, and may not carry one the map
@@ -23,7 +23,7 @@ import { eachContract, theFive } from './the-five.js'
 
 const servedPaths = (): ReadonlySet<string> => {
   const paths = new Set<string>()
-  for (const source of theFive) {
+  for (const source of theCatalogue) {
     pathsIn(publicContract(serialiseContract(REPOSITORY_ROOT, source)), '', paths)
   }
 
@@ -118,7 +118,7 @@ describe('the public/private frontier', () => {
    */
   it('the-strata-are-populated :: each one is held by a field of the five', () => {
     const held = new Set(Object.values(FIELD_MAP).map((entry) => entry.verification))
-    for (const source of theFive) {
+    for (const source of theCatalogue) {
       for (const declaration of source.ownDeclarations) held.add(declaration.verification)
     }
 
@@ -143,7 +143,7 @@ describe('the public/private frontier', () => {
 
     expect(deferring).toEqual(['ownDeclarations[].value'])
 
-    const unanswered = theFive.flatMap((source) =>
+    const unanswered = theCatalogue.flatMap((source) =>
       source.ownDeclarations
         .filter((declaration) => declaration.verification === 'stated-per-declaration')
         .map((declaration) => `${source.address.name}:${declaration.name}`),

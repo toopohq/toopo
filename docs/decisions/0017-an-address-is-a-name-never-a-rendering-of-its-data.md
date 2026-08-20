@@ -126,7 +126,7 @@ asymmetry and the trap that hides a wrong alias.
 ## Confirmation
 
 `every-case-is-addressable-across-the-whole-contract` in
-`packages/registry/against-the-five.test.ts` holds the half a guard can hold: that every case
+`packages/registry/against-the-catalogue.test.ts` holds the half a guard can hold: that every case
 identifier is well formed and that no two cases of one contract answer to one address, across both
 tables where a contract carries two. `isFrozenIdentifier` in `packages/catalogue/identifier.ts` is the
 one statement of what the shape is, and the registry, the catalogue and the instrument all read it from

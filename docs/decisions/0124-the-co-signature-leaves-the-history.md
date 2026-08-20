@@ -120,7 +120,7 @@ Considered:
   here; it is permanent rule 6.
 
 - **Chosen: the citation guard's population becomes the tracked sources this repository may still
-  edit.** `theEditableSources` subtracts what a published contract freezes, derived from `theFive` and
+  edit.** `theEditableSources` subtracts what a published contract freezes, derived from `theCatalogue` and
   never typed, so a sixth published contract narrows it without anybody editing a list.
 
 **It is a category and not an exemption, which is the whole of why it is acceptable.** A citation goes

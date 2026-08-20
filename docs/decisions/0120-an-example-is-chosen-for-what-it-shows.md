@@ -3,7 +3,7 @@ status: accepted
 date: 2026-08-18
 decision-makers: Mathis Perron
 governs:
-  - packages/registry/the-five.ts
+  - packages/registry/the-catalogue.ts
 confirmed-by:
   - battery: site
     guard: a-use-case-shows-its-call-its-answer-and-its-caveat

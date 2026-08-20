@@ -4,7 +4,7 @@ import type { ContractAddress } from './address.js'
 import { contractAddressFaults, isImagined, renderContract } from './address.js'
 import * as IMAGINED from './imagined-addresses.js'
 import { REPOSITORY_ROOT, TheAddressIsImagined, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 import type { ContractSource } from './serialise.js'
 
 /**
@@ -78,7 +78,7 @@ describe('the space a fixture stands in and a contract may not', () => {
    * from it: the same source serialises without complaint at its own address, one line up.
    */
   it('the-catalogue-refuses-a-contract-offered-at-an-address-a-fixture-stands-at', () => {
-    const [first] = theFive
+    const [first] = theCatalogue
     const contract = first as ContractSource
 
     expect(() => serialiseContract(REPOSITORY_ROOT, contract)).not.toThrow()

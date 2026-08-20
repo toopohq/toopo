@@ -38,7 +38,7 @@ a repair.
 worth. Correct untouched, the folder having stayed at the root: `packaging/the-archive.ts`,
 `packaging/build.ts`, `packaging/archive.test.ts`, and `mutation/paths.ts`. Repaired to two levels:
 `packages/registry/serialise.ts`, `packages/validation/source.test.ts`,
-`packages/validation/the-five.test.ts`, `packages/site/build.ts`, `packages/site/playground.test.ts`.
+`packages/validation/the-catalogue.test.ts`, `packages/site/build.ts`, `packages/site/playground.test.ts`.
 And one that was correct *because it was not about the source tree at all*:
 `packages/cli/published.ts` resolved the archive's artefact at
 `join(import.meta.dirname, '..', ARTEFACT_FILE)`, which is a fact about the compiled layout under

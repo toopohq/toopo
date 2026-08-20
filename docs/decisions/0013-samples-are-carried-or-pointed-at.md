@@ -76,7 +76,7 @@ The class every sample of this profile must belong to, from the vocabulary above
 ## Consequences
 
 The one transcribed thing in this arm, and therefore the only one that can be wrong.
-`against-the-five.test.ts` requires it to occur in that file, whitespace normalised - the discipline a
+`against-the-catalogue.test.ts` requires it to occur in that file, whitespace normalised - the discipline a
 declared type already carries - so a contract that replaced `range(50_000)` with fifty thousand
 literals would take the text with it and redden the guard. What that does not catch is a text that
 survives for another reason: the same expression written twice, or left behind in a comment. Recorded
@@ -94,7 +94,7 @@ occurrence is materially weaker than it is on a signature.
 
 ## Confirmation
 
-`packages/registry/against-the-five.test.ts` resolves the transcribed expression against the
+`packages/registry/against-the-catalogue.test.ts` resolves the transcribed expression against the
 contract's own `contract.ts`. Nothing resolves it against the samples it claims to have produced, and
 the paragraph above is the declaration of that gap rather than a promise to close it.
 
@@ -121,7 +121,7 @@ text of a whole record in bytes, divided by 1000, measured at `1db7dfb`** - the 
 that is the form a digest is taken over, and 1000 because `packages/cli/report.ts` prints a kilobyte
 that way and one repository holds one kilobyte.
 
-The five records are 35.7, 53.7, 47.5, 34.6 and 45.0 kB, in the order `theFive` holds them, and block
+The five records are 35.7, 53.7, 47.5, 34.6 and 45.0 kB, in the order `theCatalogue` holds them, and block
 4.5 is between 6.9 and 34.0 per cent of each. `array/group-by@1` writes `range(50_000)` three times,
 and carrying its six profiles rather than pointing at them takes its record to 5479.9 kB, of which 99.2
 per cent is this block. The one that would otherwise be a hundred times the size of the others is the
@@ -129,7 +129,7 @@ second largest of the five.
 
 What the six omit: 7.1, 1772.2, 1772.2, 1771.8, 102.9 and 14.1 kB. Two of those digests are equal -
 `one-group-per-element` and `single-group` really do draw the same three ranges - which is the same
-fact from underneath as the transcription gap `the-five.ts` names beside them.
+fact from underneath as the transcription gap `the-catalogue.ts` names beside them.
 
 **This paragraph has been wrong twice, and the two failures are why the coordinates are listed rather
 than left to be assumed.**

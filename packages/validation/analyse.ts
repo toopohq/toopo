@@ -11,7 +11,7 @@
  * `date/add@1` declares twenty forbidden local-time methods in `staticAnalysisRequirements`, in
  * public, *because a requirement that lives only inside a tool nobody can read is not part of a
  * contract whose whole product is auditability*. Until this module existed nothing read that
- * declaration - `the-five.ts` classified it `one-directional` and said so in as many words: *nothing
+ * declaration - `the-catalogue.ts` classified it `one-directional` and said so in as many words: *nothing
  * refuses an implementation that calls `getMonth`, because the check is the validation pipeline's and
  * the pipeline does not exist.*
  *

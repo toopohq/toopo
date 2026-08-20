@@ -30,7 +30,7 @@ import { UnreadableLiteral, read } from './read-literal.js'
  * ---------------------------------------------------------------------------
  *
  * `packages/site/source.test.ts` refuses every module of this folder but one - tests included, and its own
- * comment says *every other module of this folder* - the right to reach `the-five` or `serialise`. So
+ * comment says *every other module of this folder* - the right to reach `the-catalogue` or `serialise`. So
  * a guard here sees exactly what the port serves, and the port resolves no binding for a contract the
  * catalogue refused. Measured over the five: **157 of the 187 cases sit on contracts that have a page,
  * and all 30 that print a word with no spelling sit on `array/group-by@1`, which has none.**

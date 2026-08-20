@@ -1,6 +1,6 @@
 /**
  * This working tree, answering the whole read API, so that the tree a host serves can be written from
- * ADR-0052 is why this third reader of the-five.ts exists beside the two clients' stand-ins.
+ * ADR-0052 is why this third reader of the-catalogue.ts exists beside the two clients' stand-ins.
  *
  * it.
  *
@@ -17,7 +17,7 @@
  *
  * What this answers is not a consumer's slice at all. It is every question, because what it feeds
  * writes down every answer - and the closure proves that only if the thing being closed over holds
- * everything. The three are readers of one source: `the-five.ts` is the only statement of what the
+ * everything. The three are readers of one source: `the-catalogue.ts` is the only statement of what the
  * catalogue is, `serialiseContract` the only statement of how a folder becomes a record, and
  * `packages/registry/snapshot.ts` the only statement of what freezing one means. What differs between the three
  * is which questions they will be asked.
@@ -84,7 +84,7 @@ import {
   THE_PUBLISHED_IMPLEMENTATION_VERSION,
 } from './publication.js'
 import { THE_UNPUBLISHED_REVISION } from './revision.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 import { servedMethodology } from './verifiability.js'
 
 /**
@@ -149,7 +149,7 @@ const gather = (): {
   const holdings: Holding[] = []
   let ledger = EMPTY_LEDGER
 
-  for (const source of theFive) {
+  for (const source of theCatalogue) {
     const record = serialiseContract(REPOSITORY_ROOT, source)
     const implementation: ImplementationRecord = {
       ...referenceImplementationOf(REPOSITORY_ROOT, source),

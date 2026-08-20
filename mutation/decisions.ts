@@ -350,7 +350,7 @@ export const declarationFaults = (decisions: readonly Decision[]): readonly stri
  *
  * A test file under `governs` states, in a form nothing can resolve, what `confirmed-by` states as a
  * pair. Two statements of one fact drift, and this one already had: ADR-0010 named
- * `against-the-five.test.ts` there while declaring that no guard confirmed it.
+ * `against-the-catalogue.test.ts` there while declaring that no guard confirmed it.
  */
 export const guardFileFaults = (decisions: readonly Decision[]): readonly string[] =>
   decisions.flatMap((decision) =>

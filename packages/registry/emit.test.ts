@@ -13,7 +13,7 @@ import { servedBlob, servedSnapshot } from './response.js'
 import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { contractSnapshot, digestOfSnapshot, implementationSnapshot } from './snapshot.js'
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 
 /**
  * What a client can ask for, and whether it is there.
@@ -72,7 +72,7 @@ type Holding = {
 const gather = (): Holding => {
   const registry = localReadApi()
   const tree = emitted(registry)
-  const records = theFive.map((source) => ({
+  const records = theCatalogue.map((source) => ({
     folder: source.folder,
     record: serialiseContract(REPOSITORY_ROOT, source),
   }))

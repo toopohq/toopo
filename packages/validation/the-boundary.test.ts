@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { analyseImplementation, requirementsOf } from './analyse.js'
 import { readSources } from './source.js'
-import { theFive } from '../registry/the-five.js'
+import { theCatalogue } from '../registry/the-catalogue.js'
 
 /**
  * Where the filter stops.
@@ -27,7 +27,7 @@ const BOUNDARY = join(FIXTURES, 'the-boundary.ts')
 
 const ANALYSIS_TIMEOUT_MS = 15_000
 
-const dateAdd = theFive.find((source) => source.address.name === 'date/add')!
+const dateAdd = theCatalogue.find((source) => source.address.name === 'date/add')!
 const REQUIREMENTS = requirementsOf(dateAdd.module)
 
 /** The evasions the reader sees, as the line each was written on. */

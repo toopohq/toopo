@@ -239,7 +239,7 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
    * The third `one-directional` field in the catalogue, and the same shape as GS-11 and as
    * `staticAnalysisRequirements`. The guard requires this text to occur in the contract's own
    * `contract.ts`; nothing establishes that it is the expression that produced *these* samples. The
-   * concrete gap is named in `the-five.ts`: `one-group-per-element` and `single-group` transcribe the
+   * concrete gap is named in `the-catalogue.ts`: `one-group-per-element` and `single-group` transcribe the
    * same three ranges, so either could become literal while the other kept the text alive.
    */
   'benchmarks.profiles[].samples.producedBy': {

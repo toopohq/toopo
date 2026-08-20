@@ -32,7 +32,7 @@ input and never a contract. Not similar sentences: the same ones.
 field*, composed from `FIELD_MAP` — every field of a contract record with the stratum it is verified at.
 
 **One was new, and nothing published it.** The seven files. `THE_SEVEN_FILES` was a private list of
-names in `the-five.ts`, and nothing anywhere said what any of them was.
+names in `the-catalogue.ts`, and nothing anywhere said what any of them was.
 
 ## Decision Outcome
 
@@ -44,7 +44,7 @@ in a box beside a list, on the surface a stranger meets first, and what they gai
 rather than words.
 
 **The seven files are one constant, and that is what makes the page safe to write.**
-`packages/registry/the-seven-files.ts` carries the name and the meaning together; `the-five.ts` reads
+`packages/registry/the-seven-files.ts` carries the name and the meaning together; `the-catalogue.ts` reads
 the names off it. So the list an installation is checked against and the list this page describes are
 the same value, and there is nothing to drift. Writing the meanings on the page would have put them in
 two folders.
@@ -107,7 +107,7 @@ saying the definition three times before the reader reaches it.
 
 **No new guard**, and that is a decision rather than an omission. Everything this unit adds is either a
 page the existing set-of-pages guard already covers, or prose composed from a constant that
-`the-five.ts` reads back — so a defect here is either a page appearing that nothing named, which
+`the-catalogue.ts` reads back — so a defect here is either a page appearing that nothing named, which
 reddens, or a sentence read by a person, which no guard on this site has ever been able to check.
 
 ## What would reopen this

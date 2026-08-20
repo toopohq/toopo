@@ -5,7 +5,7 @@ import { WHAT_A_SIGNATURE_DOES_NOT_PROVE } from './attestation.js'
 import { ENDPOINTS } from './endpoints.js'
 import { FIELD_MAP } from './field-map.js'
 import { THE_UNPUBLISHED_REVISION } from './revision.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 import {
   MUST_BE_BELIEVED,
   VERIFIABLE,
@@ -150,7 +150,7 @@ describe('the field-level axis the schema already carried', () => {
    */
   it('every-stratum-is-translated-and-no-translation-is-orphaned', () => {
     const used = new Set(Object.values(FIELD_MAP).map((entry) => entry.verification))
-    for (const source of theFive) {
+    for (const source of theCatalogue) {
       for (const declaration of source.ownDeclarations) used.add(declaration.verification)
     }
 

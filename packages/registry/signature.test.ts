@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest'
 import type { ParameterRecord } from './contract-record.js'
 import { UnreadableSignature, parametersOf } from './signature.js'
 import { serialiseContract, REPOSITORY_ROOT } from './serialise.js'
-import { eachContract } from './the-five.js'
+import { eachContract } from './the-catalogue.js'
 
 /**
  * Reading a declared type without a compiler, and the shapes that decide whether it is readable.

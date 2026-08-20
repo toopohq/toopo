@@ -4,7 +4,7 @@ import type { Attestation } from './attestation.js'
 import { WHAT_A_SIGNATURE_DOES_NOT_PROVE, attestationFaults } from './attestation.js'
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
 import { contractSnapshot, digestOfSnapshot } from './snapshot.js'
-import { theFive } from './the-five.js'
+import { theCatalogue } from './the-catalogue.js'
 
 /**
  * An attestation is about one snapshot, and about nothing else.
@@ -15,7 +15,7 @@ import { theFive } from './the-five.js'
  * not about, which is the cheapest possible way to make an unsigned artefact look signed.
  */
 
-const NUMBER_PARSE = theFive[0]
+const NUMBER_PARSE = theCatalogue[0]
 if (NUMBER_PARSE === undefined) throw new Error('the five are not five')
 
 const bundleOf = (subject: string): Attestation => ({

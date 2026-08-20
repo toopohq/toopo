@@ -114,7 +114,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { theFive } from '../packages/registry/the-five.ts'
+import { theCatalogue } from '../packages/registry/the-catalogue.ts'
 import { THE_REPOSITORY, answered, git, strayWorktrees, trackedSources } from './paths.ts'
 import { THE_COMMITS_QUOTED } from './published.ts'
 
@@ -133,7 +133,7 @@ export const theHistory = (): readonly string[] => answered(git('rev-list', '--a
  * one character changed in either shared file rebinds every published address at once.
  */
 const frozenByAPublishedContract = (): readonly string[] =>
-  theFive
+  theCatalogue
     .filter((source) => source.lifecycle.state === 'published')
     .flatMap((source) => [...source.files.map((file) => `${source.folder}/${file}`), ...source.shared])
 

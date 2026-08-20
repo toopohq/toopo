@@ -121,7 +121,7 @@ slug would make a reworded title a broken link, which is the failure the whole r
 
 **`governs` names code and never a guard, and the division is kept rather than described.** A test file
 under `governs` states, as a path, what `confirmed-by` states as a resolvable pair — and two statements
-of one fact drift. This one already had: ADR-0010 named `against-the-five.test.ts` under `governs` while
+of one fact drift. This one already had: ADR-0010 named `against-the-catalogue.test.ts` under `governs` while
 declaring `confirmed-by: []`, so the record said in an unresolvable form that a guard kept it and in a
 resolvable one that none did. `no-decision-governs-a-guard-file` is what refuses it now.
 

@@ -28,7 +28,7 @@ import type { InstalledArchive } from './the-archive.js'
  *
  * **The CLI reached vitest.** `toopo search slugify` loaded 147 modules, among them vitest, the
  * TypeScript compiler API and twelve modules of `mutation/`, through
- * `the-five.ts` -> a contract module -> `packages/catalogue/every-contract.ts`. vitest is a dev
+ * `the-catalogue.ts` -> a contract module -> `packages/catalogue/every-contract.ts`. vitest is a dev
  * dependency a user never receives, so the first command anybody ran would have ended in
  * `ERR_MODULE_NOT_FOUND`.
  *
@@ -201,7 +201,7 @@ describe('the archive somebody installs', () => {
    *
    * It is asserted over the tarball and over the one door the catalogue could come back through. Every
    * carried path is a compiled module of the tool, its manifest, or a file npm adds; and no carried
-   * module reaches the serialisation, which is what `the-five.js` and `packages/catalogue/` are. A
+   * module reaches the serialisation, which is what `the-catalogue.js` and `packages/catalogue/` are. A
    * contract added to `contracts/` changes neither, which is the sentence *the archive does not grow
    * with the catalogue* said in a form something can fail.
    */
@@ -229,9 +229,9 @@ describe('the archive somebody installs', () => {
      * `packages/catalogue/identifier.js` ships and always has: it is the vocabulary a frozen identifier
      * is checked against, imported by `address.js`, and it holds no contract. `every-contract.js` is
      * the one beside it that does - it imports vitest, which is how the whole catalogue used to come
-     * into the archive behind `the-five.js`.
+     * into the archive behind `the-catalogue.js`.
      */
-    const theSerialisation = /(^|\/)(the-five|serialise|every-contract)\.js$/
+    const theSerialisation = /(^|\/)(the-catalogue|serialise|every-contract)\.js$/
 
     const reachingIt = archive.carries
       .filter((path) => path.endsWith('.js'))

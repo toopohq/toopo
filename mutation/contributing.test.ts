@@ -84,7 +84,7 @@ describe('what the contributing guide publishes about the catalogue', () => {
    * A table of claims rather than one assertion per figure, so that the guard names which one drifted
    * instead of failing on the first.
    */
-  it('every-figure-in-contributing-is-the-one-the-five-contracts-declare', () => {
+  it('every-figure-in-contributing-is-one-the-contracts-declare', () => {
     const held = theCatalogueRecords()
     const text = CONTRIBUTING()
 

@@ -60,7 +60,7 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
 
 /**
  * A guard of this folder is written once with `it.each` over the five and answers to five addresses.
- * `the-five.ts` says why the slug is there; here it is what lets a pin name the contract a defect was
+ * `the-catalogue.ts` says why the slug is there; here it is what lets a pin name the contract a defect was
  * caught on, which `I-06` needs - it reddens on one of the five and on no other.
  */
 const THE_FIVE = ['number-parse', 'date-add', 'array-group-by', 'string-levenshtein', 'string-slugify']
@@ -1776,7 +1776,7 @@ export const battery: Battery = {
      *
      * It joins a battery's declared `contractPath` to a contract's composed folder, and the
      * composition is `theFolderOf` in `published.ts`. No edit this battery can make reaches it; the
-     * half it *can* reach is a contract's address in `the-five.ts`, and moving one of those is a
+     * half it *can* reach is a contract's address in `the-catalogue.ts`, and moving one of those is a
      * defect this battery has no cell for because it would redden dozens of guards at once and
      * measure none of them. ADR-0130.
      */
@@ -1889,10 +1889,10 @@ export const battery: Battery = {
         'writes that edit without also moving the partition several mutants already measure',
     },
     /**
-     * The sentence the README publishes about the size of this catalogue, against what `theFive`
+     * The sentence the README publishes about the size of this catalogue, against what `theCatalogue`
      * declares. It is reachable from here and no mutant reaches it.
      *
-     * `the-five.ts` is in this folder, so an edit that moved `array/group-by@1` out of
+     * `the-catalogue.ts` is in this folder, so an edit that moved `array/group-by@1` out of
      * `never-published` would take the refused count to zero and redden it - which is the mutant this
      * region asks for. It is not written here because that edit reddens the refusals page, the index
      * and the installability of a contract the catalogue turned down, so the cell would attribute its
@@ -1902,7 +1902,7 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
-        'an edit to `the-five.ts` that changed how many contracts are refused would redden it, and ' +
+        'an edit to `the-catalogue.ts` that changed how many contracts are refused would redden it, and ' +
         'every such edit also reddens the refusals page and the index - so no mutant here names this ' +
         'guard rather than a dozen',
       guards: ['the-readme-counts-the-catalogue-the-registry-declares'],

@@ -209,7 +209,7 @@ export const THE_ENDPOINT_BEHIND: Readonly<Record<keyof RegistrySource, string>>
  * nobody imports.
  *
  * A guard requires the local adapter to be the only module of this folder that reaches the
- * serialisation. Without it the frontier above is a comment: any file could read `the-five.ts`, an
+ * serialisation. Without it the frontier above is a comment: any file could read `the-catalogue.ts`, an
  * installer would grow a second way of obtaining a contract, and the day a server exists there would
  * be two sources of truth with no line between them.
  */

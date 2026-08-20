@@ -5,7 +5,7 @@ decision-makers: Mathis Perron
 governs:
   - packages/registry/contract-record.ts
   - packages/registry/snapshot.ts
-  - packages/registry/the-five.ts
+  - packages/registry/the-catalogue.ts
 confirmed-by:
   - battery: site
     guard: a-use-case-shows-its-call-its-answer-and-its-caveat

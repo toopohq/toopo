@@ -45,7 +45,7 @@ describe('what a decision record declares', () => {
    * A guard belongs to `confirmed-by`, where it is a resolvable pair, and never to `governs`, where it
    * is a path.
    *
-   * Demonstrated by an instance rather than argued: ADR-0010 named `against-the-five.test.ts` under
+   * Demonstrated by an instance rather than argued: ADR-0010 named `against-the-catalogue.test.ts` under
    * `governs` while declaring `confirmed-by: []`, so the record said in an unresolvable form that a
    * guard kept it and in a resolvable one that none did. That is the drift, arrived, in the first
    * batch of records this repository wrote.

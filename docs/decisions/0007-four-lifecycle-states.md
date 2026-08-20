@@ -8,7 +8,7 @@ confirmed-by:
   - battery: registry-storage
     guard: the-absorbed-state-is-constructible
   - battery: registry-storage
-    guard: fills-the-fields-none-of-the-five-fills
+    guard: fills-the-fields-no-published-contract-fills
 ---
 
 # Four lifecycle states, and two retirements that are not one
@@ -83,7 +83,7 @@ allows, and it names its authority above.
 ## Confirmation
 
 `the-absorbed-state-is-constructible` in `packages/registry/the-sixth-contract.test.ts` builds the
-state no contract fills, and `fills-the-fields-none-of-the-five-fills` is the guard that would notice
+state no contract fills, and `fills-the-fields-no-published-contract-fills` is the guard that would notice
 it becoming unreachable.
 
 ## What would reopen this

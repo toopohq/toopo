@@ -22,7 +22,7 @@
  * ---------------------------------------------------------------------------
  *
  * The obvious repair is a `parameters` field beside the transcribed type, filled by hand in
- * `the-five.ts` where every other transcription lives. It was refused for the reason
+ * `the-catalogue.ts` where every other transcription lives. It was refused for the reason
  * `implementation-record.ts` refuses a declared depth and `serialise.ts` refuses a declared sample
  * count: a value read off what it describes is a fact with no second statement to disagree with, and a
  * value written beside it is a claim that can be wrong. A transcribed parameter list would also have
@@ -40,7 +40,7 @@
  * `packages/validation/typescript-api.ts` records that a hand-written lexical reading is refused where the
  * security filter is concerned, because there an approximation is evaded. This is not that: the text
  * read here is written by this repository, pinned to the contract's own `contract.ts` by
- * `against-the-five.test.ts`, and a misreading cannot be silent - the case fields stop lining up and the
+ * `against-the-catalogue.test.ts`, and a misreading cannot be silent - the case fields stop lining up and the
  * serialisation refuses the contract. The direction of failure is what makes the reading affordable.
  *
  * It counts brackets rather than recognising syntax, so what it cannot read it refuses by name. The

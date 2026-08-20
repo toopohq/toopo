@@ -38,7 +38,7 @@ import {
   publishImplementation,
   refuseContract,
 } from './snapshot.js'
-import { eachContract, theFive } from './the-five.js'
+import { eachContract, theCatalogue } from './the-catalogue.js'
 
 /**
  * The response shapes, built from the five and checked on them.
@@ -65,9 +65,9 @@ const PUBLISHED_FROM = 'a'.repeat(40)
  * the one that was refused, from its own `catalogueAdmission` rather than from a sentence written
  * here.
  */
-const theCatalogue = (): Ledger => {
-  const refused = theFive.filter((source) => source.lifecycle.state === 'never-published')
-  const published = theFive.filter((source) => source.lifecycle.state !== 'never-published')
+const theCatalogueAsALedger = (): Ledger => {
+  const refused = theCatalogue.filter((source) => source.lifecycle.state === 'never-published')
+  const published = theCatalogue.filter((source) => source.lifecycle.state !== 'never-published')
 
   const withRefusals = refused.reduce(
     (ledger, source) =>
@@ -108,8 +108,8 @@ const theCatalogue = (): Ledger => {
 const theServedIndex = () =>
   servedIndex(
     SERVED_FROM,
-    theCatalogue(),
-    theFive.map((source) => {
+    theCatalogueAsALedger(),
+    theCatalogue.map((source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
 
       return {
@@ -152,7 +152,7 @@ describe('a content-addressed answer carries its own proof', () => {
    * body that was altered anywhere at all stops hashing to the address it arrived under.
    */
   it('a-snapshot-answer-that-was-altered-is-refused', () => {
-    const source = theFive[0]
+    const source = theCatalogue[0]
     if (source === undefined) throw new Error('the five are not five')
 
     const response = servedSnapshot(contractSnapshot(serialiseContract(REPOSITORY_ROOT, source)))
@@ -171,7 +171,7 @@ describe('a content-addressed answer carries its own proof', () => {
    * about it. It is only safe because the declarative half was encoded before it was serialised.
    */
   it('a-snapshot-answer-survives-a-transport-that-re-encodes-it', () => {
-    const source = theFive[0]
+    const source = theCatalogue[0]
     if (source === undefined) throw new Error('the five are not five')
 
     const response = servedSnapshot(contractSnapshot(serialiseContract(REPOSITORY_ROOT, source)))
@@ -185,7 +185,7 @@ describe('a content-addressed answer carries its own proof', () => {
   })
 
   it('a-snapshot-answer-under-another-format-version-means-nothing-here', () => {
-    const source = theFive[0]
+    const source = theCatalogue[0]
     if (source === undefined) throw new Error('the five are not five')
 
     const snapshot = contractSnapshot(serialiseContract(REPOSITORY_ROOT, source))
@@ -296,7 +296,7 @@ describe('which registry answered, and where that may be written down', () => {
     )
 
     const answers = named.flatMap(([method]) => {
-      const answer = registry[method as keyof ReadApi](theFive[0]?.address as never)
+      const answer = registry[method as keyof ReadApi](theCatalogue[0]?.address as never)
 
       return (Array.isArray(answer) ? answer : [answer])
         .filter((one): one is { readonly servedFrom?: unknown } => one !== null)
@@ -330,7 +330,7 @@ describe('which registry answered, and where that may be written down', () => {
     const one = localReadApi('a'.repeat(40))
     const other = localReadApi('b'.repeat(40))
 
-    const binding = one.implementationBindings(theFive[0]?.address as never)[0]
+    const binding = one.implementationBindings(theCatalogue[0]?.address as never)[0]
     if (binding === undefined) throw new Error('the first of the five publishes no implementation')
 
     const snapshot = one.snapshot(binding.digest)
@@ -369,8 +369,8 @@ describe('which registry answered, and where that may be written down', () => {
    * stale.
    */
   it('a-named-answer-moves-when-the-revision-does-and-the-policy-says-so', () => {
-    const ledger = theCatalogue()
-    const identities = theFive.map((source) => {
+    const ledger = theCatalogueAsALedger()
+    const identities = theCatalogue.map((source) => {
       const record = serialiseContract(REPOSITORY_ROOT, source)
 
       return {
@@ -493,7 +493,7 @@ describe('the index, the refusals, and what update compares', () => {
    * an export name is not derivable from an address - `number/parse` exports `parseNumber`.
    *
    * The answer comes first and the diagnostic after it, which is the order the printed line uses; and
-   * the answer is the export the identity names, which `against-the-five.test.ts` holds one level down.
+   * the answer is the export the identity names, which `against-the-catalogue.test.ts` holds one level down.
    */
   it('the-index-names-what-a-caller-imports', () => {
     const index = theServedIndex()
@@ -548,7 +548,7 @@ describe('the index, the refusals, and what update compares', () => {
    * catalogue's most-cited act of honesty was the one thing it could not serve.
    */
   it('the-refusals-page-has-a-source :: and it is the contract own admission', () => {
-    const refusals = servedRefusals(SERVED_FROM, theCatalogue())
+    const refusals = servedRefusals(SERVED_FROM, theCatalogueAsALedger())
 
     expect(refusals.refusals.map((entry) => entry.address.name)).toEqual(['array/group-by'])
     expect(refusals.refusals[0]?.measurement).toBe(groupBy.catalogueAdmission.measurement)
@@ -557,8 +557,8 @@ describe('the index, the refusals, and what update compares', () => {
   })
 
   it('a-contract-is-refused-or-published-and-never-both', () => {
-    const ledger = theCatalogue()
-    const numberParse = theFive[0]
+    const ledger = theCatalogueAsALedger()
+    const numberParse = theCatalogue[0]
     if (numberParse === undefined) throw new Error('the five are not five')
 
     expect(() =>
@@ -587,7 +587,7 @@ describe('the index, the refusals, and what update compares', () => {
    * A comparison of documents could not tell a change from a re-serialisation.
    */
   it('update-compares-two-digests-and-nothing-else', () => {
-    const source = theFive[0]
+    const source = theCatalogue[0]
     if (source === undefined) throw new Error('the five are not five')
 
     const implementation = referenceImplementationOf(REPOSITORY_ROOT, source)

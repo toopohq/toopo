@@ -1438,7 +1438,7 @@ describe('the site', () => {
    * `identity.relationToTheLanguage`, and `NO_AMBIENT_OUTPUT_FINDING` opening a reason on four pages.
    *
    * The other half of the class is `a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands`
-   * in `packages/registry/against-the-five.test.ts`. A value is standing alone or it is embedded; this guard
+   * in `packages/registry/against-the-catalogue.test.ts`. A value is standing alone or it is embedded; this guard
    * cannot see an embedded one, because the string it lands in is a sentence whatever the seam does.
    */
   it('a-value-rendered-as-a-paragraph-of-its-own-is-a-sentence', () => {

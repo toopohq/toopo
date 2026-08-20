@@ -172,7 +172,7 @@ node's resolver is left as taken, with the date beside it and what the address b
 **A sixth contract is written and is in no catalogue, and the stopping line was decided by a guard
 rather than by taste.** `contracts/typescript/number/round/` holds all seven files plus the
 divergence replay, and every guard of its own suite was seen red on a perturbation before it was
-believed. It is not in `theFive`, nothing serves it, nothing installs it and no digest covers a byte
+believed. It is not in `theCatalogue`, nothing serves it, nothing installs it and no digest covers a byte
 of it — so nothing here is frozen and every decision in it is still reversible. **There is no
 intermediate state between that and publication**: `every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns`
 is bidirectional, so a battery cannot name the folder until the contract is in the catalogue, and

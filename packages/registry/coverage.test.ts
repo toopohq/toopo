@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { REPOSITORY_ROOT, serialiseContract } from './serialise.js'
-import { eachContract } from './the-five.js'
+import { eachContract } from './the-catalogue.js'
 
 /**
  * Nothing a contract declares is silently absent from its record.

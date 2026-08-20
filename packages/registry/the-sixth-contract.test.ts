@@ -296,7 +296,7 @@ describe('a sixth contract enters without a migration', () => {
     expect(untriaged.map((entry) => entry.requirement)).toEqual([])
   })
 
-  it('fills-the-fields-none-of-the-five-fills', () => {
+  it('fills-the-fields-no-published-contract-fills', () => {
     const paths = new Set<string>()
     pathsIn(publicContract(theSixth), '', paths)
 

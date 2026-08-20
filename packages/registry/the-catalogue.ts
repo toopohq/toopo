@@ -1,13 +1,27 @@
 /**
- * The five contracts of the catalogue, described to the serialiser.
+ * The catalogue, described to the serialiser.
+ *
+ * **It is `theCatalogue` and it was `theFive`, and the count is why it moved.** A name that renders
+ * the data it names is false on the day that data moves, and this one held for as long as the
+ * catalogue held five contracts: the module, two suites and four guard addresses all said *five*,
+ * and none of them would have reddened on a sixth. That is ADR-0017's own test - falsifying the name
+ * and reddening the guard are the same event, or the name is carrying data - applied to the list
+ * rather than to a case.
+ *
+ * **The word is not a second spelling of `packages/catalogue/`.** That folder opens on *what every
+ * contract in this catalogue shares*: it is named after the collection whose shared surface it
+ * carries, and this list is the collection. The alternative considered was a compound naming these
+ * entries by their type, and it was refused for the reason `/contracts/` was refused as an address:
+ * a second spelling of something this project already names in one word is the drift
+ * `packages/site/paths.ts` names at its own head. ADR-0140.
  *
  * What is here is everything the builder cannot read from a module, and nothing else. Three kinds of
  * thing qualify, and each one is guarded rather than trusted.
  *
  * A *declared type* is not a value, so nothing at run time can read one. The texts below are
- * transcribed from `contract.ts` and `against-the-five.test.ts` requires each one to occur there,
- * whitespace normalised. A signature is the first thing a reader of a contract page looks at, so it
- * has to be in the record; being in the record, it has to be checkable.
+ * transcribed from `contract.ts` and `against-the-catalogue.test.ts` requires each one to occur
+ * there, whitespace normalised. A signature is the first thing a reader of a contract page looks at,
+ * so it has to be in the record; being in the record, it has to be checkable.
  *
  * A *profile vocabulary* is a union type, so the same applies. The guard is different because the
  * data is: every class a profile uses must be declared here, and every class declared here must be
@@ -73,8 +87,9 @@ const SLUGIFY = addressOf('string/slugify')
 const PUBLISHED: Lifecycle = { state: 'published' }
 
 /**
- * The two guards an `executable` declaration of the five names, written once because two declarations
- * each rest on the same one. A string repeated here is a rename away from being wrong twice.
+ * The two guards an `executable` declaration of the catalogue names, written once because two
+ * declarations each rest on the same one. A string repeated here is a rename away from being wrong
+ * twice.
  */
 const ZONE_PROPERTY = 'no-ambient-input-from-the-time-zone'
 const A_PROFILE_KEEPS_ITS_SHAPE = 'profile-one-group-per-element'
@@ -140,7 +155,7 @@ const THE_SEVEN_FILES = THE_SEVEN_FILE_NAMES
 /**
  * What every contract's own files reach outside their folder, and what is therefore frozen with it.
  *
- * The same list for all five, because `packages/catalogue/` is what the contracts share and ADR-0080
+ * The same list for every contract, because `packages/catalogue/` is what they share and ADR-0080
  * is the bar for putting anything there. That record already said this in prose - *whatever lives in
  * this file is part of the public surface of every contract that imports it, and inherits their
  * discipline of freezing* - and nothing computed it; ADR-0105 is the unit that made it executable.
@@ -148,14 +163,15 @@ const THE_SEVEN_FILES = THE_SEVEN_FILE_NAMES
  * **Written out rather than read off the walk**, which is the whole mechanism: `sharedHarnessOf`
  * derives the same set from what the seven files import and refuses any disagreement, and a list
  * derived from that walk could not disagree with it. The consequence is deliberate and is the price
- * of the freeze holding in substance - editing either file below rebinds all five addresses at once.
+ * of the freeze holding in substance - editing either file below rebinds every published address
+ * at once.
  */
 const THE_SHARED_FILES = [
   'packages/catalogue/every-contract.ts',
   'packages/catalogue/identifier.ts',
 ] as const
 
-export const theFive: readonly ContractSource[] = [
+export const theCatalogue: readonly ContractSource[] = [
   {
     address: NUMBER_PARSE,
     lifecycle: PUBLISHED,
@@ -201,7 +217,7 @@ export const theFive: readonly ContractSource[] = [
         'long-inputs': `['0.' + '1'.repeat(1000), '0'.repeat(5000) + '1', ' '.repeat(1000) + '42']`,
       },
     },
-    // The only contract of the five that publishes nothing beyond the shared seven.
+    // The one contract of the catalogue that publishes nothing beyond the shared seven.
     ownDeclarations: [],
     batteries: [
       batteryRecord(NUMBER_PARSE, numberParseBattery),
@@ -318,8 +334,8 @@ export const theFive: readonly ContractSource[] = [
   {
     address: GROUP_BY,
     /**
-     * The one contract of the five that carries a retirement, and it is the retirement that happens
-     * *before* publication. Read from its own `catalogueAdmission` rather than transcribed.
+     * The one contract of the catalogue that carries a retirement, and it is the retirement that
+     * happens *before* publication. Read from its own `catalogueAdmission` rather than transcribed.
      */
     lifecycle: {
       state: 'never-published',
@@ -392,8 +408,8 @@ export const theFive: readonly ContractSource[] = [
        * cannot see.** `one-group-per-element` and `single-group` genuinely draw the same three
        * ranges and differ only in the key function, so if one of them became literal tomorrow the
        * other would keep the text alive in `contract.ts` and the guard would stay green. It is the
-       * only instance in the five, it is named here rather than left for a reader to find, and it is
-       * why `benchmarks.profiles[].samples.producedBy` is classified `one-directional`.
+       * only instance in the catalogue, it is named here rather than left for a reader to find, and
+       * it is why `benchmarks.profiles[].samples.producedBy` is classified `one-directional`.
        */
       producedBy: {
         'one-group-per-element': '[range(10), range(1_000), range(50_000)]',
@@ -602,18 +618,18 @@ export const theFive: readonly ContractSource[] = [
 ]
 
 /**
- * The five as rows for a parameterised guard, each with a kebab-case slug of its name.
+ * The catalogue as rows for a parameterised guard, each with a kebab-case slug of its name.
  *
  * The slug is not decoration. `mutation/run.ts` refuses two guards of one contract answering to one
  * identifier, because attribution addresses a guard by its identifier and would read each of them as
- * reddening the others - and a guard written with `it.each` over the five hands all five instances
- * the same name. Measured: the storage battery would not calibrate, with 28 identifiers of this
- * folder addressing five guards apiece.
+ * reddening the others - and a guard written with `it.each` over this list hands every instance the
+ * same name. Measured when the catalogue held five: the storage battery would not calibrate, with 28
+ * identifiers of this folder addressing five guards apiece.
  *
  * A contract's own suite never needs this, because a contract's suite is one contract. This folder is
- * the first place in the repository where one file guards five of them, and the slug is what makes
- * each instance an address rather than one name shared by five.
+ * the first place in the repository where one file guards all of them, and the slug is what makes
+ * each instance an address rather than one name shared by the whole catalogue.
  */
-export const eachContract = theFive.map(
+export const eachContract = theCatalogue.map(
   (source) => [source.address.name.replaceAll('/', '-'), source] as const,
 )

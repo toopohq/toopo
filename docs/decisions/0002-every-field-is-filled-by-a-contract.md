@@ -8,7 +8,7 @@ confirmed-by:
   - battery: registry-storage
     guard: needs-no-field-the-schema-does-not-have
   - battery: registry-storage
-    guard: fills-the-fields-none-of-the-five-fills
+    guard: fills-the-fields-no-published-contract-fills
 ---
 
 # Every field of the record is filled by a contract, and the two that are not name their authority
@@ -44,7 +44,7 @@ schema does not have would be a finding rather than an inconvenience.
 
 `the-sixth-contract.test.ts` is the guard, and it asks the question in both directions:
 `needs-no-field-the-schema-does-not-have` over an imagined sixth contract, and
-`fills-the-fields-none-of-the-five-fills` over the fields no published contract exercises.
+`fills-the-fields-no-published-contract-fills` over the fields no published contract exercises.
 
 ## What would reopen this
 
