@@ -484,7 +484,7 @@ describe('the index, the refusals, and what update compares', () => {
 
     expect(groupByEntry?.installable).toBe(false)
     expect(groupByEntry?.domain).toBe('array')
-    expect(index.entries.filter((entry) => entry.installable)).toHaveLength(4)
+    expect(index.entries.filter((entry) => entry.installable)).toHaveLength(5)
     expect(index.entries.every((entry) => entry.searchAliases.length > 0)).toBe(true)
   })
 
@@ -507,6 +507,7 @@ describe('the index, the refusals, and what update compares', () => {
       'number/parse': ['parseNumber', 'describeParseFailure'],
       'string/levenshtein': ['levenshtein'],
       'string/slugify': ['slugify'],
+      'number/round': ['round', 'describeRoundFailure'],
     })
     expect(
       index.entries.every((entry) => entry.exports[0]?.role === 'the-answer'),
@@ -536,9 +537,9 @@ describe('the index, the refusals, and what update compares', () => {
     const before = canonical(withoutExports, 'index').length
 
     expect({ before, grown, added: grown - before }).toEqual({
-      before: 2650,
-      grown: 3025,
-      added: 375,
+      before: 3070,
+      grown: 3550,
+      added: 480,
     })
   })
 

@@ -1,3 +1,6 @@
+// typescript/number/round@1 - https://toopo.dev/typescript/number/round@1/
+// Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
+
 /**
  * Reference implementation of `number/round@1`.
  *
@@ -32,7 +35,14 @@
  * the final `Number(...)`, which is the caller's own conversion and not ours.
  */
 
-import type { DescribeRoundFailure, Round, RoundFailureReason } from './contract.js'
+/**
+ * The reasons this implementation refuses a call, declared here rather than imported.
+ *
+ * The contract publishes the same three literals and `signature.test-d.ts` is what compares them. A
+ * reference that read them from `contract.ts` would make the compiler agree with itself, and the
+ * import would dangle the moment this file is copied into a project that holds no contract.
+ */
+type RoundFailureReason = 'value-not-finite' | 'places-not-whole' | 'places-negative'
 
 /**
  * The refusal both exports consult, so that the coupling in block 4.2 holds by construction here.
@@ -100,7 +110,7 @@ const shortestDecimalOf = (value: number): { readonly digits: string; readonly s
  * The sign is taken before anything else because `String(-0)` is `"0"`: the one place in this module
  * where a value's sign is not recoverable from its text.
  */
-export const round: Round = (value, places) => {
+export const round = (value: number, places: number): number | null => {
   if (refusalFor(value, places) !== null) return null
 
   const negative = value < 0 || Object.is(value, -0)
@@ -121,5 +131,7 @@ export const round: Round = (value, places) => {
   return Number(`${negative ? '-' : ''}${carried}e${-places}`)
 }
 
-export const describeRoundFailure: DescribeRoundFailure = (value, places) =>
-  refusalFor(value, places)
+export const describeRoundFailure = (
+  value: number,
+  places: number,
+): RoundFailureReason | null => refusalFor(value, places)

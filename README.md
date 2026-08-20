@@ -78,7 +78,7 @@ so *is this the code I was given* is a question your own checkout answers with n
 
 ## What is in the catalogue
 
-**5 contracts, 4 of them installable and 1 refused.** The refused one was measured against what the
+**6 contracts, 5 of them installable and 1 refused.** The refused one was measured against what the
 language now does and turned down, and it is published here rather than deleted, because a catalogue
 that only shows what it accepted is a catalogue you cannot check.
 
@@ -88,9 +88,10 @@ that only shows what it accepted is a catalogue you cannot check.
 | `typescript/date/add@1` | Calendar arithmetic, including what a fractional month means |
 | `typescript/string/levenshtein@1` | Edit distance, over code points rather than code units |
 | `typescript/string/slugify@1` | Text to a URL-safe identifier, Unicode rather than ASCII |
+| `typescript/number/round@1` | Rounding the decimal a caller wrote, not the double a machine stored |
 | `typescript/array/group-by@1` | **Refused.** ES2024 shipped `Map.groupBy` and it answers the contract |
 
-Between them the four installable contracts settle **157 named edge cases**, each identifier frozen
+Between them the five installable contracts settle **188 named edge cases**, each identifier frozen
 for the life of the major version.
 
 - [toopo.dev](https://toopo.dev) — the catalogue, one page per contract, with a playground that runs
@@ -100,16 +101,16 @@ for the life of the major version.
 
 ## Why you can believe any of it
 
-19 mutation batteries inject **694 deliberate defects** into this repository — each one a committed
+21 mutation batteries inject **730 deliberate defects** into this repository — each one a committed
 file naming the exact edit it makes and the verdict it must produce — and re-run the whole suite once
-per defect. **661 are caught.** The 33 that survive are each classified, because a survivor count
-alone reads as a count of holes: 12 are equivalent mutants, 6 are behaviour the contract declines to
+per defect. **694 are caught.** The 36 that survive are each classified, because a survivor count
+alone reads as a count of holes: 15 are equivalent mutants, 6 are behaviour the contract declines to
 specify, 2 are unreachable on this catalogue, 12 exist only where a lens deliberately took the
 suite's sight away, and **exactly one is a debt**.
 
 ```sh
 pnpm install
-pnpm run mutation    # tens of minutes; replays all 694 cells and prints the total
+pnpm run mutation    # tens of minutes; replays all 730 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 

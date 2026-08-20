@@ -57,6 +57,8 @@ import { battery as dateAdd } from './date-add.battery.ts'
 import { battery as fixture } from './fixture.battery.ts'
 import { battery as numberParseSpec } from './number-parse-spec.battery.ts'
 import { battery as numberParse } from './number-parse.battery.ts'
+import { battery as numberRoundSpec } from './number-round-spec.battery.ts'
+import { battery as numberRound } from './number-round.battery.ts'
 import { battery as packaging } from './packaging.battery.ts'
 import { battery as registryStorage } from './registry-storage.battery.ts'
 import { battery as site } from './site.battery.ts'
@@ -87,6 +89,8 @@ export const THE_BATTERIES: readonly Battery[] = [
   fixture,
   numberParseSpec,
   numberParse,
+  numberRoundSpec,
+  numberRound,
   packaging,
   registryStorage,
   site,

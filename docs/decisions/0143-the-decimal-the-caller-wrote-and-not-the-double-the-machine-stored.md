@@ -5,7 +5,29 @@ decision-makers: Mathis Perron
 governs:
   - contracts/typescript/number/round/contract.ts
   - contracts/typescript/number/round/reference.ts
-confirmed-by: []
+confirmed-by:
+  - battery: number-round
+    guard: p1-finite-or-absent
+  - battery: number-round
+    guard: p2-the-written-decimal-and-not-the-stored-double
+  - battery: number-round
+    guard: p3-idempotent
+  - battery: number-round
+    guard: p4-nothing-to-drop-is-the-value
+  - battery: number-round
+    guard: p5-order-preserving
+  - battery: number-round
+    guard: p6-sign-symmetric
+  - battery: number-round
+    guard: p7-failure-coupling
+  - battery: number-round
+    guard: determinism
+  - battery: number-round
+    guard: no-ambient-input-from-history
+  - battery: number-round-spec
+    guard: every-case-the-language-cannot-be-asked-is-refused-or-past-a-hundred-places
+  - battery: number-round-spec
+    guard: every-answered-case-answers-a-number
 ---
 
 # The decimal the caller wrote, and not the double the machine stored
@@ -161,21 +183,53 @@ negative zero is a count of zero: `Number.isInteger(-0)` is true and `-0 < 0` is
 one of the ten guards. That is ADR-0021's division arriving as a measurement rather than as a
 principle: the decision is not in any property's alphabet, so it is owed a named case.
 
-## Why `confirmed-by` is empty
+## What confirms it now, and what that cost
 
-The guards that keep this decision exist — the ten of `properties.test.ts`, every one of them seen
-red below. They are not citable.
+**The field was empty and it named the event that would fill it.** It read: *a `confirmed-by` entry is
+the pair `(battery, guard)`, and `THE_SUITES` resolves a battery's name to the folder whose guards it
+collects. No battery names `contracts/typescript/number/round` yet, and none can... It is filled by the
+unit that writes the two batteries, and that is the event this record reopens on.* The unit wrote them
+and the field is filled.
 
-A `confirmed-by` entry is the pair `(battery, guard)`, and `THE_SUITES` resolves a battery's name to
-the folder whose guards it collects. No battery names `contracts/typescript/number/round` yet, and
-none can: `every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns` refuses a
-battery injecting where no contract of the catalogue is, and this contract enters `theCatalogue` in
-the publication unit rather than in this one.
+The ten properties are cited against `number-round`, which injects into `reference.ts`. Nine were
+already reachable; **`p7-failure-coupling` was not, until a cell was written for it.** The reference
+consults one private check from both exports, so no edit to that check can part them - RD-17 gives the
+diagnostic its own weaker check instead, which is the implementation the property governs and the
+reason it is not decorative.
 
-So the field is empty rather than pointing at something that does not resolve, which is the failure
-ADR-0001 already records of its own first batch. It is filled by the unit that writes the two
-batteries, and that is the event this record reopens on.
+**Three guards this record wanted to cite are not citable, and the reason is a debt this repository
+already carries.** `confirmationFaults` resolves a pair against `guardsCollectedIn`, which reads a
+guard's *written* title - so a guard titled by the row it tests is invisible to it. The three are
+`a-place-count-of-negative-zero`, which F-13 reddens and which this record's own measurement is about,
+and the two guards of `language.test.ts` that replay `toFixed` over the declared sweep. All three run,
+all three are witnessed by a cell, and none of them can be named in the field above. `CLAUDE.md`
+carries the entry; this is an instance of it, met by writing the record it describes.
 
+What is cited from `number-round-spec` instead is the pair of that file's guards whose titles are
+written rather than composed, and the division is real either way: nothing in `language.test.ts` calls
+the implementation, so all twenty-nine of its guards are declared unreachable from the reference
+battery and are witnessed here or nowhere.
+
+## What writing the batteries found in this file
+
+**Two defects in `reference.ts`, both hours before it was frozen for life.**
+
+It carried no licence marking, and `every-file-the-installer-copies-is-marked-mit-0` named it.
+
+Worse in kind: it annotated its exports with the contract's own types - `export const round: Round` -
+which `states-its-own-signature` refuses in as many words, because the compiler then enforces
+conformance at authoring time and `signature.test-d.ts` becomes unable to fail. A guard that cannot
+fail, in the file whose subject is proving things. The reference now declares its own signature and
+its own reason set. **The repair is measured rather than asserted**: RS-03 widens `failureReasons` and
+was accepted by the compiler before it and is rejected after.
+
+**And three cells survive, each inert for every input rather than unreached.** RD-05, RD-09 and RD-11
+remove three defensive constructs - the `Object.is(value, -0)` disjunct in the sign, the leading-zero
+strip, and the explicit zero past the left edge of the digit string - and redden nothing. Each was
+measured differentially against the reference over 2 000 001 values at four place counts and
+twenty-five traps at twenty-one, zero disagreements, and each has a structural argument beside the
+measurement. They state an intent and carry no behaviour, which is worth knowing about a file nothing
+may edit again.
 ## Consequences
 
 The contract exists on disk, complete and measured by its own suite, and **nothing published says it
@@ -189,8 +243,9 @@ argument a reader will be handed when they ask why `round(2.5, 0)` is 3.
 
 ## What would reopen this
 
-- A battery names this contract's folder, at which point `confirmed-by` is owed and this record is
-  amended rather than replaced.
+- ~~A battery names this contract's folder, at which point `confirmed-by` is owed and this record is
+  amended rather than replaced.~~ **It fired.** `number-round` and `number-round-spec` were written by
+  the publication unit, and this record was amended rather than replaced.
 - A runtime changes what `toFixed`, `Math.round` or `Intl.NumberFormat` answer, at which point every
   figure above is wrong. They are declared in `theTraps` so that the guard replaying them recomputes
   the number rather than reading a sentence, and that guard is what says so.

@@ -113,7 +113,7 @@ is the closure: the files a contract reaches outside its folder are declared, de
 walk over what the seven really import, refused on any disagreement, frozen with the contract and served
 beside it — so a reader who fetches every file a snapshot names can now resolve every import those files
 carry, which is the auditor's half of the same hole. The bill is stated rather than discovered: editing
-either shared file rebinds all five addresses at once. ADR-0105.
+either shared file rebinds every published address at once. ADR-0105.
 
 **The catalogue is marked published, and that is the act this repository was built to be able to take.**
 Four contracts carry `published`, their reference implementations are bound at `1.0.0`, the manifest is
@@ -169,19 +169,32 @@ produced, **renaming is what restores reproducibility**; for a probe taken outsi
 probe itself named, renaming would make it a transcript of a run nobody performed. ADR-0110's reading of
 node's resolver is left as taken, with the date beside it and what the address became. ADR-0142.
 
-**A sixth contract is written and is in no catalogue, and the stopping line was decided by a guard
-rather than by taste.** `contracts/typescript/number/round/` holds all seven files plus the
-divergence replay, and every guard of its own suite was seen red on a perturbation before it was
-believed. It is not in `theCatalogue`, nothing serves it, nothing installs it and no digest covers a byte
-of it — so nothing here is frozen and every decision in it is still reversible. **There is no
-intermediate state between that and publication**: `every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns`
+**The sixth contract is published, and it is the first time this repository grew a catalogue rather
+than founded one.** `number/round@1` carries `published`, its reference is bound at `1.0.0`, and
+`contracts/typescript/number/round/` is frozen whole — the seven files, `language.test.ts`, comments
+and blank lines included. Two batteries name its folder: `number-round` injects into `reference.ts`
+and `number-round-spec` into `contract.ts` and `edge-cases.ts`. **There was no intermediate state and
+that is a mechanism rather than a preference**: `every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns`
 is bidirectional, so a battery cannot name the folder until the contract is in the catalogue, and
 `local-read-api.ts` sends anything that is not `never-published` through `publishContract`, so
-entering the catalogue *is* publishing. Measured at `92537d9`: adding the two batteries alone leaves
-that guard naming `contracts/typescript/number/round` twice. The publication is its own unit, and it
-is two commits rather than one for ADR-0106's reason arriving on a second act — `PUBLISHED_FROM` is
-one constant for every binding, no commit can name itself as the commit it was published from, and
-`nothing-this-tree-binds-escapes-the-freeze-check` refuses the unanchored alternative. ADR-0143.
+entering the catalogue *is* publishing. Two commits rather than one, for ADR-0106's reason arriving a
+second time: `PUBLISHED_FROM` is now a map keyed by address, and the commit that mints a digest can
+never name itself. ADR-0143, ADR-0144.
+
+**Writing the batteries found two defects in `reference.ts` hours before it was frozen for life.** It
+carried no licence marking. And it annotated its exports with the contract's own types, which
+`states-its-own-signature` refuses in as many words: the compiler then enforces conformance at
+authoring time and `signature.test-d.ts` becomes **unable to fail** — a guard that cannot fail, in the
+file whose subject is proving things. The repair is measured rather than asserted: RS-03 widens
+`failureReasons` and was accepted by the compiler before it and is rejected after. **Neither was found
+by reading**; both were found by a guard that had never had an instance to fire on.
+
+**Three cells of `number-round` survive, and each is inert for every input rather than unreached.**
+They remove the `Object.is(value, -0)` disjunct from the sign, the leading-zero strip from the digit
+string, and the explicit zero past its left edge — measured differentially over 2 000 001 values at
+four place counts and twenty-five traps at twenty-one, zero disagreements, each with a structural
+argument beside the measurement. They state an intent and carry no behaviour, in a file nothing may
+edit again.
 
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
@@ -605,8 +618,10 @@ contract pages, 110 of them on `string/slugify@1` beside 51 `code` elements prod
 same page. What settled the register ADR-0026 said nothing mechanical could settle is that **every one
 of the 220 is paired**, so there is nothing to guess at. ADR-0117.
 
-**The catalogue is five contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
-`string/levenshtein@1`, `string/slugify@1`. The third is a format prototype that will not be published,
+**The catalogue is six contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
+`string/levenshtein@1`, `string/slugify@1`, `number/round@1`. The sixth is the first published after
+the founding four, the first whose call takes a number, and the first whose reference was caught
+annotating itself with the contract's own types. The third is a format prototype that will not be published,
 because ES2024 shipped `Map.groupBy` and it answers what the contract specifies; the refusal and the
 rule it establishes are recorded. The fourth is the first whose properties are strong by nature — the
 axioms of a metric — and its table is a third the size of the first's as a result. The fifth is the
@@ -780,10 +795,38 @@ record declares**, which is a worse thing and has never been named here before.
 
 **Still open, and what each one now costs.**
 
+- **That the matching rule keeps its precision as the catalogue grows.** It does not, and the sixth
+  contract is the first reading of by how much. `number/round@1` gives the catalogue a third
+  `describe…Failure` export, so `describe` and `failure` go from two contracts to three and cross
+  `TELLS_THE_CONTRACTS_APART`; `number/parse@1`'s exports field drops from three telling words to one,
+  and a field with one telling word is named by a query carrying that word whatever else it carries.
+
+  **Both readings, because a trade with one figure is not a trade.** At the ceiling of two this
+  repository keeps, `parse yaml` answers `number/parse@1` at a score of 100 with `yaml` reported in
+  `unknownWords` — *Convert a string to a finite number* — where it answered nothing before. At a
+  ceiling of three, `parse yaml` is silent again and `remove accents from string` answers
+  `number/parse@1` at a score of 80, which is a real request wrongly answered and the one the alias
+  review had already been run to stop. **Both values break exactly one query of the negative corpus,
+  and three breaks the better one**, so the ceiling stays at two and `parse yaml` leaves the corpus
+  with its measurement written beside it.
+
+  **The population is every query the catalogue cannot answer**, and what nothing keeps is the rate:
+  one negative query of twenty broke at six contracts, and nothing says what breaks at ten. It does
+  not improve by growing — the whole mechanism is a word ceasing to tell contracts apart, which is
+  monotone in the size of the catalogue — and this repository already carries a neighbouring entry
+  about the index becoming monolithic at scale.
+
+  **What would close it is not a constant.** The allowance exists for a word a query *leaves out* — a
+  preposition it did not spell — and it is being spent on a word the query *adds* that the catalogue
+  has never heard. Separating those two is a change to the matching rule and a unit of its own. What
+  is cheap and is done instead is that both readings are written where the rule is, in
+  `packages/registry/search.test.ts`, so the next reading is taken against them rather than against a
+  memory. ADR-0144.
+
 - **That the repair a record prescribes is one somebody can carry out.** ADR-0035 decides what a
   search may answer, and it names the repair for the case it cannot: *a query only a description could
   have answered is a **missing alias**, and the repair belongs in `identity.searchAliases`, where it is
-  frozen, reviewed and served.* `contractSnapshot` freezes `identity` whole and four of the five
+  frozen, reviewed and served.* `contractSnapshot` freezes `identity` whole and every published contract of the
   contracts are published, so **that repair is available on `array/group-by@1` and on nothing else** —
   and `array/group-by@1` is the contract the catalogue refused. A prescription no published contract
   can follow is not a prescription.
@@ -1320,7 +1363,7 @@ record declares**, which is a worse thing and has never been named here before.
   fact that **it names a contract of this catalogue**, and the README's is over what sits inside a shell
   fence. Neither is a sweep for the word, and a rule that swept for the word would be wrong.
 
-- **That a decision can name what confirms it, when what confirms it is a guard over the five.**
+- **That a decision can name what confirms it, when what confirms it is a guard over every contract.**
   ADR-0001 requires `confirmed-by` present, and a guard is addressed by the pair `(suite, guard)`.
   **This entry read *present and non-empty* until ADR-0143 went and read the code**, which is rule 3
   of this section on the entry's own text: `declarationFaults` tests `governs` for emptiness and
@@ -1658,11 +1701,11 @@ record declares**, which is a worse thing and has never been named here before.
   recorded with the measurement that closed the wider reading. *A contract is the folder and not a
   file* is kept, in both directions: `harnessOf` refuses any disagreement between a contract's
   declared `files` and what is on disk, and a stray file dropped into `contracts/typescript/date/add`
-  reddens **50 guards** under `UndeclaredHarness: … present and not served: stray.ts`. The five are
-  not the same list — four carry seven files and `array/group-by@1` carries nine — and that is
-  declared rather than drifted: `THE_SEVEN_FILES` is spread into all five, the two extras are written
-  beside it as `[...THE_SEVEN_FILES, 'language.test.ts', 'outcome.ts']`, and the constant's own comment
-  says they are its own. What nothing keeps is one level up: **the declaration is checked against the
+  reddens **50 guards** under `UndeclaredHarness: … present and not served: stray.ts`. They are not
+  all the same list — most carry the seven, `array/group-by@1` carries nine and `number/round@1`
+  eight — and that is declared rather than drifted: `THE_SEVEN_FILES` is spread into every entry, the
+  extras are written beside it as `[...THE_SEVEN_FILES, 'language.test.ts']`, and the constant's own
+  comment says they are its own. What nothing keeps is one level up: **the declaration is checked against the
   folder, and nothing checks the declaration.** A sixth contract may name a tenth file and put it
   there, and both halves will agree. Closed by the same thing the entry above it closes by — a
   validation stage reading a submission's folder against what `contractAnatomy` requires of one —
@@ -1696,7 +1739,7 @@ record declares**, which is a worse thing and has never been named here before.
    decision to launch at five rests on: every remaining uncertainty is on the user's side, and none of
    them is answerable in private. Continuing the pipeline first would have been acting against the
    reason that decision was taken — the pipeline judges submissions, in a closed phase there are none,
-   and the five contracts are already measured by their own batteries.
+   and every contract of the catalogue is already measured by its own batteries.
 
    A second argument decided it, and it is a lesson from this repository rather than a preference:
    **a defect in this schema has never once been found by looking at the schema.** Every one was found
@@ -1730,7 +1773,10 @@ record declares**, which is a worse thing and has never been named here before.
    Only the piece currently under way exists; the others do not, because each one constrains the next.
    Everything lives in this one repository, in folders — releases are independent, the history is not.
 
-   **The catalogue ships at five contracts.** The showcase domain moves to after the launch: every
+   **The catalogue ships at five contracts, and it holds six.** The fifth installable one is
+   `number/round@1`, published after that line was written and before the launch it names - which is
+   the shape the sentence always allowed, because what it settles is that the *showcase domain* waits
+   and not that the catalogue is closed. The showcase domain moves to after the launch: every
    remaining uncertainty is on the user's side — whether `toopo add` feels good, whether search
    finds something in ten seconds, whether a contract page convinces — and none of them is
    answerable in private. Anything published freezes for life, so the known debts close before the

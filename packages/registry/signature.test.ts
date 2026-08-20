@@ -110,6 +110,7 @@ describe('the call a declared signature declares', () => {
       ],
       'string-levenshtein': [{ name: 'a', type: 'string' }, { name: 'b', type: 'string' }],
       'string-slugify': [{ name: 'text', type: 'string' }],
+      'number-round': [{ name: 'value', type: 'number' }, { name: 'places', type: 'number' }],
     }
 
     const record = serialiseContract(REPOSITORY_ROOT, source)

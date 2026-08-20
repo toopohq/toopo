@@ -135,6 +135,6 @@ describe('where an installer gets what it installs', () => {
     const refused = entries.find((entry) => entry.address.name === 'array/group-by')
 
     expect(refused?.installable).toBe(false)
-    expect(entries.filter((entry) => entry.installable)).toHaveLength(4)
+    expect(entries.filter((entry) => entry.installable)).toHaveLength(5)
   })
 })

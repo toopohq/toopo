@@ -378,7 +378,11 @@ describe('the site', () => {
    * so a guard that only checked the field was carried would be checking the thing that was already
    * true. What has to hold is that a reader sees it, and where.
    *
-   * Four of the forty-eight carry one, and the count is not asserted: it is a number that grows
+   * **The note is compared through `asRead`, like the rationale one line below it.** It was compared
+   * raw until a note carried a mark: every note that existed happened to be plain prose, so a guard
+   * that searched a converted reading for unconverted text was green for want of an instance.
+   *
+   * A minority of groups carry one, and the count is not asserted: it is a number that grows
    * whenever somebody has something to say, which is exactly the shape a guard must not pin.
    */
   it('a-group-note-is-read-between-the-heading-and-the-first-case', () => {
@@ -391,7 +395,7 @@ describe('the site', () => {
 
           const first = table.cases.find((entry) => entry.group === group.id)
           const title = reading.indexOf(`\n${group.title}\n`)
-          const note = reading.indexOf(group.note)
+          const note = reading.indexOf(asRead(group.note))
 
           expect(note, `${group.id}: the note is not in the reading`).toBeGreaterThan(-1)
           expect(note, `${group.id}: the note reads before its heading`).toBeGreaterThan(title)

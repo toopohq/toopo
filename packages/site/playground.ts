@@ -97,7 +97,30 @@ const natureOf = (value: unknown): string => {
  * true and nowhere else.
  */
 type Reading =
-  | { readonly kind: 'the-text-itself' }
+  | {
+      readonly kind: 'the-text-itself'
+      /**
+       * The declared value of the case the form opens on, as the text the field holds - or `null`
+       * where this type cannot spell it, which stops the build.
+       *
+       * It is the inverse of `build` and it is required rather than optional, on the same rule as
+       * the reading itself: a type added here decides how it opens, and there is no member to leave
+       * out. Coercing instead would be the silent `[object Object]` this module refuses one function
+       * below.
+       */
+      readonly opensOn: (value: unknown) => string | null
+      /**
+       * The text a reader typed, as the value a case row would print - which is the half a page
+       * prints, because a case row two centimetres higher prints the declared value and not the
+       * argument.
+       *
+       * It is the inverse of `opensOn` and the step before `build`: text, then declared, then
+       * argument. For the two types the catalogue spells as text the first step is the identity;
+       * for `number` it is where the conversion belongs, so that a page prints `round(1.005, 2)`
+       * and not `round('1.005', '2')`.
+       */
+      readonly declares: (text: string) => unknown
+    }
   | {
       readonly kind: 'a-literal'
       /** Whether the value the field spells is one this type can be built from. */
@@ -111,13 +134,14 @@ type Reading =
 /**
  * How a field becomes an argument, by the type the signature declares.
  *
- * Measured over the five: three types, two readings, and one `build` that is not the identity. Nothing
- * speculative is listed - a `number` parameter is not here because no contract has one, and adding it
- * in advance would be the speculative field `field-map.ts` deletes.
+ * Four types, two readings, and two `build`s that are not the identity. Nothing speculative is
+ * listed: each entry is here because a contract declares that type, which is the discipline
+ * `field-map.ts` deletes a speculative field for.
  *
  * **A type added here has to choose a reading, and there is no member to leave out.** That is the rule
  * ADR-0054 asks for before a rule is written in prose: a sixth contract declaring a fourth type does
- * not compile until somebody has decided whether that type is typed or spelled.
+ * not compile until somebody has decided whether that type is typed or spelled. `number` is that
+ * fourth type and the decision is recorded on it.
  */
 type Argument = {
   readonly readAs: Reading
@@ -127,9 +151,20 @@ type Argument = {
   readonly note: string | null
 }
 
+/** A value that already is the text a field opens on, which is what two of the four spell. */
+const THE_TEXT_AS_WRITTEN = (value: unknown): string | null =>
+  typeof value === 'string' ? value : null
+
+/** And its inverse for those two: what was typed is already the value a row would print. */
+const THE_TEXT_DECLARES_ITSELF = (text: string): unknown => text
+
 const AS_AN_ARGUMENT: Readonly<Record<string, Argument>> = {
   string: {
-    readAs: { kind: 'the-text-itself' },
+    readAs: {
+      kind: 'the-text-itself',
+      opensOn: THE_TEXT_AS_WRITTEN,
+      declares: THE_TEXT_DECLARES_ITSELF,
+    },
     build: (value) => value,
     note: null,
   },
@@ -144,19 +179,52 @@ const AS_AN_ARGUMENT: Readonly<Record<string, Argument>> = {
     note: null,
   },
   Date: {
-    readAs: { kind: 'the-text-itself' },
+    readAs: {
+      kind: 'the-text-itself',
+      opensOn: THE_TEXT_AS_WRITTEN,
+      declares: THE_TEXT_DECLARES_ITSELF,
+    },
     build: (value) => new Date(value as string),
     note: 'the text, then new Date(…) — the only place this site makes a Date',
+  },
+  /**
+   * **The fourth type, and the decision the header above asked for in advance.**
+   *
+   * It is `the-text-itself` and not `a-literal`, on the pattern `Date` already sets: a number spells
+   * on one line, so nothing about it forces a reader into a literal.
+   *
+   * **What settles it is what a typo does.** `Number` answers `NaN` for text that is not a number,
+   * and `number/round@1` declares `value-not-finite` and refuses it - so a mistyped field is answered
+   * by the contract's own refusal, which is the one thing this page exists to show. A field that
+   * refused first would put an unverified refusal in front of a verified one, on the page whose whole
+   * subject is the contract answering. **A contract refusing is the contract answering**, and showing
+   * it refuse is worth more than keeping it from being called. ADR-0144.
+   */
+  number: {
+    readAs: {
+      kind: 'the-text-itself',
+      /**
+       * `String(-0)` is `"0"`, and `Number("0")` is not negative zero - so the one value this
+       * contract settles a case on precisely because its sign is not recoverable from its text is
+       * the one value the identity would lose. It is spelled the way the case table spells it.
+       */
+      opensOn: (value) =>
+        typeof value !== 'number' ? null : Object.is(value, -0) ? '-0' : String(value),
+      declares: (text) => Number(text),
+    },
+    build: (value) => value,
+    note: 'the text, then Number(…) — so 1.005 is the double a caller who typed it would hold',
   },
 }
 
 /**
  * A live answer, back in the declarative form the registry models.
  *
- * The single non-identity entry above, inverted, and nothing else: everything the four contracts
- * answer is already something `encode` carries. An *invalid* Date is deliberately left alone rather
- * than given a spelling of its own - it falls through to `encode`, which refuses it by name, which is
- * the refusal that already exists for exactly this.
+ * One entry above needs inverting and it is not both of the two that build something: `number`
+ * builds a number and answers a number, which `encode` already carries, and `Date` answers a `Date`,
+ * which it does not. An *invalid* Date is deliberately left alone rather than given a spelling of its
+ * own - it falls through to `encode`, which refuses it by name, which is the refusal that already
+ * exists for exactly this.
  */
 const asADeclaredValue = (answer: unknown): unknown =>
   answer instanceof Date && !Number.isNaN(answer.getTime()) ? answer.toISOString() : answer
@@ -362,16 +430,16 @@ const theTextFor = (
   if (reading.kind === 'a-literal') return written
 
   const value = opening === undefined ? undefined : decode(opening.value)
-  if (typeof value !== 'string') {
+  const text = reading.opensOn(value)
+  if (text === null) {
     throw new ThePlaygroundCannotBeBuilt(
       what,
       `its parameter \`${parameter.name}\` is declared \`${parameter.type}\` and read as text, and ` +
-        `the case it opens on writes ${natureOf(value)} there - a text field can open on a string ` +
-        `and on nothing else`,
+        `the case it opens on writes ${natureOf(value)} there - which this type has no spelling for`,
     )
   }
 
-  return value
+  return text
 }
 
 /**
@@ -425,7 +493,7 @@ export const declaredBy = (
   parameters.map((parameter, index) => {
     const known = theArgumentFor(parameter, parameter.name)
     const text = typed[index] ?? ''
-    if (known.readAs.kind === 'the-text-itself') return text
+    if (known.readAs.kind === 'the-text-itself') return known.readAs.declares(text)
 
     const declared = read(text)
     if (!known.readAs.spelledBy(declared)) {

@@ -16,18 +16,18 @@ creates `name@2` beside `name@1`, and `name@1` goes on being served for ever. So
 contract publishes is either something we can put right the day it reads badly, or something we are
 stuck with.
 
-Counted over the five contracts in this repository:
+Counted over the six contracts in this repository:
 
-**279 frozen.** 187 case identifiers, 48 group identifiers, 27 benchmark profile names,
-9 failure-reason literals, 7 export names and 1 supporting type name.
+**327 frozen.** 218 case identifiers, 55 group identifiers, 32 benchmark profile names,
+12 failure-reason literals, 9 export names and 1 supporting type name.
 
-**82 corrigible.** 62 search aliases, and the 20 reasons a contract gives for whether each universal
+**96 corrigible.** 72 search aliases, and the 24 reasons a contract gives for whether each universal
 property applies to it.
 
 More than three frozen for every one that can be put right.
 
 Those figures carry no date, because they are not a transcription: `mutation/contributing.test.ts`
-derives every one of them from the five contract records and requires this file to publish it. If a
+derives every one of them from the contract records and requires this file to publish it. If a
 case is added tomorrow, this page goes red rather than stale.
 
 Those families are frozen for two different reasons, and the difference is worth knowing before you
@@ -40,14 +40,14 @@ evolution creates `name@2`.
 
 Two things are deliberately not in either column.
 
-The **verdict** beside each of those 20 reasons — whether a universal property is applicable — can be
+The **verdict** beside each of those 24 reasons — whether a universal property is applicable — can be
 weakened and not strengthened. Declaring an applicable property inapplicable narrows what the
 contract claims and breaks nobody; the other direction turns a conformant implementation into a
 non-conformant one, which is exactly what permanent rule 6 forbids.
 
-And **20 declarations belong to one contract and to no other** — `metricAxioms`, `theRule`,
-`outputAlphabet`, `keyFunctionRules` among them. The registry carries them and does not
-interpret them, by construction: a vocabulary that fitted all twenty would be a vocabulary invented
+And **22 declarations belong to one contract and to no other** — `metricAxioms`, `theRule`,
+`outputAlphabet`, `keyFunctionRules`, `theTraps` among them. The registry carries them and does not
+interpret them, by construction: a vocabulary that fitted all of them would be a vocabulary invented
 here rather than found in the contracts. Whether one of them is right is a judgement no tool in this
 repository takes, and no reviewer can take it quickly.
 
@@ -179,7 +179,8 @@ say anything about your change. Measured at `4dc8a69` on one machine:
 | `packaging/`, `mutation/` | `packaging`, `fixture` | under a minute |
 
 A contributor adding a contract runs two batteries and waits about two minutes. The ten batteries the
-five contracts carry cost 8 min 26 s together — less than `cli-install` alone, which is 9 min 46 s.
+catalogue carried at that commit cost 8 min 26 s together — less than `cli-install` alone, which is
+9 min 46 s.
 **The expensive batteries are the client's and the registry's, and nothing you do to a contract
 requires running them.**
 

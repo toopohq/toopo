@@ -82,9 +82,9 @@ describe('the implementations under the five contracts', () => {
       referenceImplementationOf(REPOSITORY_ROOT, source),
     )
 
-    expect(implementations.map((entry) => entry.dependsOn)).toEqual([[], [], [], [], []])
+    expect(implementations.map((entry) => entry.dependsOn)).toEqual([[], [], [], [], [], []])
     expect(implementations.map((entry) => dependencyDepthOf(entry, implementations))).toEqual([
-      0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0,
     ])
   })
 

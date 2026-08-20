@@ -133,7 +133,7 @@ const THE_FIRST_PUBLICATION = 'd3a5166347cf334ee699097673ada179e8f06b60'
  * **They are transcribed and they are not trusted.** `packages/registry/against-what-was-published/`
  * checks each commit out, runs *its* `ledger` script and compares, so a coordinate naming the wrong
  * commit is a red rather than a note - measured, and the reds are in ADR-0107. ADR-0093 is why the
- * past is rebuilt rather than recorded.
+ * past is rebuilt rather than recorded, and ADR-0144 is the publication that made this a map.
  */
 const PUBLISHED_FROM: Readonly<Record<string, string | undefined>> = {
   'typescript/number/parse@1': THE_FIRST_PUBLICATION,

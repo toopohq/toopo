@@ -50,6 +50,8 @@ import * as levenshtein from '../../contracts/typescript/string/levenshtein/cont
 import * as levenshteinCases from '../../contracts/typescript/string/levenshtein/edge-cases.js'
 import * as slugify from '../../contracts/typescript/string/slugify/contract.js'
 import * as slugifyCases from '../../contracts/typescript/string/slugify/edge-cases.js'
+import * as round from '../../contracts/typescript/number/round/contract.js'
+import * as roundCases from '../../contracts/typescript/number/round/edge-cases.js'
 
 import { battery as numberParseBattery } from '../../mutation/number-parse.battery.js'
 import { battery as numberParseSpec } from '../../mutation/number-parse-spec.battery.js'
@@ -61,6 +63,8 @@ import { battery as levenshteinBattery } from '../../mutation/string-levenshtein
 import { battery as levenshteinSpec } from '../../mutation/string-levenshtein-spec.battery.js'
 import { battery as slugifyBattery } from '../../mutation/string-slugify.battery.js'
 import { battery as slugifySpec } from '../../mutation/string-slugify-spec.battery.js'
+import { battery as roundBattery } from '../../mutation/number-round.battery.js'
+import { battery as roundSpec } from '../../mutation/number-round-spec.battery.js'
 import { battery as validationStageOne } from '../../mutation/validation-stage-1.battery.js'
 
 const addressOf = (name: string): ContractAddress => ({ language: 'typescript', name, major: 1 })
@@ -70,6 +74,7 @@ const DATE_ADD = addressOf('date/add')
 const GROUP_BY = addressOf('array/group-by')
 const LEVENSHTEIN = addressOf('string/levenshtein')
 const SLUGIFY = addressOf('string/slugify')
+const ROUND = addressOf('number/round')
 
 /**
  * The state the four installable contracts entered on the day this catalogue was published.
@@ -614,6 +619,90 @@ export const theCatalogue: readonly ContractSource[] = [
       { name: 'outputAlphabet', verification: 'one-directional' },
     ],
     batteries: [batteryRecord(SLUGIFY, slugifyBattery), batteryRecord(SLUGIFY, slugifySpec)],
+  },
+
+  {
+    address: ROUND,
+    lifecycle: PUBLISHED,
+    folder: 'contracts/typescript/number/round',
+    /**
+     * The sixth contract, published by ADR-0144.
+     *
+     * The eight `contractAnatomy` records: the seven, plus the language suite this contract
+     * invented. `array/group-by@1` has the same shape and two extras; the constant's own comment
+     * says an extra file is the contract's own.
+     */
+    files: [...THE_SEVEN_FILES, 'language.test.ts'],
+    shared: THE_SHARED_FILES,
+    module: round as unknown as Readonly<Record<string, unknown>>,
+    declares: [round, roundCases] as unknown as Readonly<Record<string, unknown>>[],
+    notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
+    exports: [
+      {
+        name: 'round',
+        typeName: 'Round',
+        text: '(value: number, places: number) => number | null',
+        role: 'the-answer',
+      },
+      {
+        name: 'describeRoundFailure',
+        typeName: 'DescribeRoundFailure',
+        text: '(value: number, places: number) => RoundFailureReason | null',
+        role: 'the-diagnostic',
+      },
+    ],
+    supportingTypes: [],
+    caseTables: [
+      {
+        name: 'edge-cases',
+        purpose:
+          'the calls this contract settles, every answer computed in integer arithmetic beforehand',
+        groups: roundCases.edgeCaseGroups,
+        cases: roundCases.edgeCases,
+      },
+    ],
+    benchmarks: {
+      classField: 'roundingClass',
+      vocabulary: [
+        { name: 'already-exact', meaning: 'the value carries no more decimals than were asked for' },
+        { name: 'at-a-tie', meaning: 'the value sits exactly on a half, where the rule is the answer' },
+        { name: 'shortened', meaning: 'digits are dropped and a carry may run' },
+        { name: 'refused', meaning: 'every sample is refused, which is a different path' },
+      ],
+      profiles: round.benchmarkProfiles,
+      // Every sample here is a pair of small numbers, so the whole of block 4.5 encodes to under a
+      // kilobyte and the value tells a reader more than the call would.
+    },
+    ownDeclarations: [
+      /**
+       * The population every figure in `theTraps` is a count over, read by two files for two
+       * purposes: `language.test.ts` replays the spellings across it, and `properties.test.ts`
+       * bounds its thousandth arbitrary by it. RS-13 narrows it and three guards redden.
+       */
+      {
+        name: 'THE_SWEEP',
+        verification: 'executable',
+        executableBy: {
+          battery: roundSpec.name,
+          guard: 'the-stored-double-and-not-the-written-decimal-over-the-sweep',
+        },
+      },
+      /**
+       * The three spellings this contract parts from, with the rows and the count that say where.
+       * The guard runs each spelling rather than reading the sentence beside it, so a figure that
+       * drifts is a red - RS-11 moves one by a round number and RS-12 adds a row on which the
+       * spelling is right.
+       */
+      {
+        name: 'theTraps',
+        verification: 'executable',
+        executableBy: {
+          battery: roundSpec.name,
+          guard: 'the-stored-double-and-not-the-written-decimal-parts-from-this-contract',
+        },
+      },
+    ],
+    batteries: [batteryRecord(ROUND, roundBattery), batteryRecord(ROUND, roundSpec)],
   },
 ]
 
