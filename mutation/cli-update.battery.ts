@@ -636,20 +636,12 @@ export const battery: Battery = {
       reason:
         '`toopo search`, which is the third battery of this folder and shares nothing with either of ' +
         'the other two: it writes no file, reads no project, and touches neither the plan nor the ' +
-        'lockfile. `cli-search` carries twenty-one defects over what a query matches, what it must ' +
-        'not, the order and the screen the reader gets.',
+        'lockfile. `cli-search` carries three defects over the screen a reader is handed. What a query ' +
+        'matches moved to `registry-storage` with `packages/registry/search.ts` - ADR-0136 - and this ' +
+        'declaration named its guards for three units after they had left this suite.',
       guards: [
-        'a-corpus-of-real-queries-ranks-the-right-contract-first',
         'a-cut-summary-says-that-it-was-cut',
-        'a-miss-names-the-words-no-contract-carries',
-        'a-query-the-catalogue-cannot-answer-answers-nothing',
-        'a-query-with-no-words-answers-nothing',
-        'a-refused-contract-is-found-with-the-reason-it-was-refused',
         'a-refused-contract-is-offered-no-install-line',
-        'a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not',
-        'a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias',
-        'an-installable-contract-carries-no-refusal',
-        'every-declared-alias-finds-its-own-contract-first',
         'the-catalogue-lists-every-contract-and-marks-the-one-it-refuses',
       ],
     },

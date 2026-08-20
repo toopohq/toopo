@@ -427,7 +427,7 @@ export const battery: Battery = {
    *
    * The division follows the commands rather than the files: `cli-install` holds what happens when
    * files arrive in a project that has none, `cli-update` what happens when they arrive on top of
-   * files already there, `cli-search` what a query matches, and this what happens when files leave.
+   * files already there, `cli-search` the screen a query puts on a terminal, and this what happens when files leave.
    * Every guard below belongs to one of the first three and is probed there.
    *
    * Two of them are worth naming because they look like this battery's and are not.
@@ -477,7 +477,6 @@ export const battery: Battery = {
         'a-configuration-round-trips-through-the-file',
         'a-conflicted-feature-is-held-back-whole',
         'a-contract-the-catalogue-refused-is-not-installable',
-        'a-corpus-of-real-queries-ranks-the-right-contract-first',
         'a-count-is-read-off-the-lines-it-summarises',
         'a-cut-summary-says-that-it-was-cut',
         'a-dependency-that-left-the-closure-is-removed',
@@ -517,7 +516,6 @@ export const battery: Battery = {
         'a-lockfile-from-before-the-revision-is-refused-with-the-command-to-run',
         'a-lockfile-with-no-configuration-is-refused-with-the-folder-to-name',
         'a-lockfile-with-no-root-has-nowhere-to-start',
-        'a-miss-names-the-words-no-contract-carries',
         'a-missing-final-newline-is-said-rather-than-lost',
         'a-name-the-catalogue-does-not-hold-is-refused',
         'a-path-with-a-space-installs-normally',
@@ -525,13 +523,10 @@ export const battery: Battery = {
         'a-project-that-was-never-initialised-answers-nothing',
         'a-project-with-no-package-json-installs-normally',
         'a-project-with-nothing-in-it-is-configured-rather-than-refused',
-        'a-query-the-catalogue-cannot-answer-answers-nothing',
-        'a-query-with-no-words-answers-nothing',
         'a-refusal-leaves-no-staged-file-behind',
         'a-refusal-leaves-the-project-exactly-as-it-was',
         'a-refusal-says-nothing-was-written-before-it-says-why',
         'a-refused-commit-does-not-touch-the-file-it-would-replace',
-        'a-refused-contract-is-found-with-the-reason-it-was-refused',
         'a-refused-contract-is-in-the-index-and-is-not-installable',
         'a-refused-contract-is-offered-no-install-line',
         'a-refused-folder-change-leaves-the-configuration-naming-the-old-folder',
@@ -544,7 +539,6 @@ export const battery: Battery = {
         'a-root-stays-one-when-something-else-pulls-it-in',
         'a-shared-blob-is-repointed-across-features',
         'a-shared-file-is-written-once-and-still-appears-in-the-plan',
-        'a-shortening-or-a-plural-is-answered-and-a-longer-word-is-not',
         'a-size-is-read-the-way-a-file-manager-shows-it',
         'a-snapshot-that-is-not-what-its-digest-names-is-refused',
         'a-source-carrying-more-than-the-port-declares-is-refused',
@@ -552,7 +546,6 @@ export const battery: Battery = {
         'a-switch-takes-no-value-and-swallows-nothing',
         'a-version-that-moved-with-no-byte-changing-is-recorded-anyway',
         'a-version-this-toopo-does-not-write-is-refused',
-        'a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias',
         'add-with-a-lockfile-and-no-configuration-writes-nothing',
         'add-with-no-configuration-writes-one-and-says-so',
         'add-without-a-contract-is-refused',
@@ -568,7 +561,6 @@ export const battery: Battery = {
         'an-import-of-something-outside-the-registry-is-refused',
         'an-install-over-http-plans-exactly-what-the-same-registry-plans-in-process',
         'an-install-records-the-revision-the-registry-answered-from',
-        'an-installable-contract-carries-no-refusal',
         'an-installation-is-the-same-with-git-and-without',
         'an-installed-file-imports-what-was-installed',
         'an-unchanged-specifier-is-left-alone',
@@ -581,7 +573,6 @@ export const battery: Battery = {
         'each-side-says-for-itself-that-it-has-no-final-newline',
         'every-breakage-is-classified',
         'every-clean-refusal-resolves-to-the-guard-it-names',
-        'every-declared-alias-finds-its-own-contract-first',
         'every-feature-the-install-writes-gets-its-own-lockfile-entry',
         'every-installed-file-moves-and-not-one-byte-changes',
         'every-method-of-the-port-answers-an-endpoint-that-exists',
