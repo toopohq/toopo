@@ -127,6 +127,20 @@ const imaginedAddressFile = (find: string, replace: string) => ({
 })
 const publicationFile = (find: string, replace: string) => ({ file: 'publication.ts', find, replace })
 const emitFile = (find: string, replace: string) => ({ file: 'emit.ts', find, replace })
+/**
+ * The one helper here that edits registry *data* rather than registry code.
+ *
+ * Every other cell of this battery injects a defect into a function; this one injects it into what the
+ * catalogue declares, because the guard it exercises is about a declaration and there is nowhere else
+ * for the defect to live. `the-catalogue.ts` is a production source in the folder under measurement, so
+ * it is inside this battery's reach - the unreachable-guard entry about a contract's address already
+ * says so.
+ */
+const catalogueFile = (find: string, replace: string) => ({
+  file: 'the-catalogue.ts',
+  find,
+  replace,
+})
 const endpointsFile = (find: string, replace: string) => ({ file: 'endpoints.ts', find, replace })
 const searchFile = (find: string, replace: string) => ({ file: 'search.ts', find, replace })
 const readApiFile = (find: string, replace: string) => ({ file: 'read-api.ts', find, replace })
@@ -322,6 +336,16 @@ const A_BINDING_IS_ONLY_STANDING = `  readonly againstTheLanguage?: readonly Lan
 
 const A_BINDING_IS_BUILT_FROM_STANDING = `    : { againstTheLanguage: entry.standing.againstTheLanguage }),
 })`
+
+/**
+ * The coordinate on the one re-examination the catalogue declares. ADR-0150.
+ *
+ * It quotes the sentence around the stamp rather than the stamp alone, so that the cell reads as the
+ * defect it is - a re-examination written without a coordinate - instead of as a string edit that
+ * happens to remove seven characters.
+ */
+const A_RE_EXAMINATION_IS_STAMPED =
+  "'Block 4.4 was replayed against Temporal at `ee2d1c1` - all forty-three cases of both '"
 
 // --- The licence perimeter, which is derived from what the installer copies ---
 
@@ -1572,6 +1596,21 @@ const mutants: readonly Mutant[] = [
       'the-snapshot-names-no-blob-the-registry-cannot-serve',
       'the-emitted-tree-is-closed',
     ]),
+  ),
+
+  sameOnEveryLens(
+    'I-68',
+    'writes a re-examination with no commit beside it, so the one claim this catalogue makes about a ' +
+      'language it does not own becomes unfalsifiable: a reader is told what Temporal answered and ' +
+      'given no state of this repository to replay it against. It is the defect ADR-0018 names, on ' +
+      'the field ADR-0150 added - a reading published without the coordinate that makes it one.',
+    [
+      catalogueFile(
+        A_RE_EXAMINATION_IS_STAMPED,
+        "'Block 4.4 was replayed against Temporal - all forty-three cases of both '",
+      ),
+    ],
+    killed(['every-re-examination-carries-the-commit-it-was-taken-at']),
   ),
 
   sameOnEveryLens(

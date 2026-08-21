@@ -109,9 +109,16 @@ duration field that is not integral to be rejected, so a runtime answering zero 
 rather than different. The first two causes are the two this contract already knew about and wrote down
 when it was authored.
 
-**The two directions are not symmetrical and the record says which is which.** That the contract stands
-is robust to the caveat — a later Temporal that rejects `NaN` parts from this contract on *more* rows,
-never fewer, since this contract refuses `NaN` too. What the caveat threatens is only the count.
+**The caveat can only move the count one way, and it is worth saying which.** This contract refuses
+`NaN` as well, so a Temporal that rejects it *agrees* with this contract on that row: the five partings
+would become four, not six. The conclusion does not rest on the count anyway — it rests on the two
+causes the contract knowingly chose and on the signature, neither of which any Temporal version
+touches — but the count is the figure a reader will quote, and the direction it can move in is down.
+
+**That sentence said the opposite in the first draft of this record**, and it is left recorded rather
+than quietly replaced: the claim was that a stricter Temporal would part on *more* rows, which is
+reasoning past the measurement in exactly the way ADR-0042 refuses. What caught it was writing out the
+argument for somebody who might disagree, which is the gesture ADR-0141 named.
 
 ### A finding about the replay debt, from inside it
 
@@ -195,6 +202,13 @@ mutant was injected by hand to check it still means what it says: it reddens exa
 `every-re-examination-carries-the-commit-it-was-taken-at` in
 `packages/registry/against-the-catalogue.test.ts` refuses a re-examination with no coordinate; seen red
 at `ee2d1c1` with the stamp taken out of `date/add@1`, naming the contract.
+
+**It has a cell rather than an excuse, and the instrument is what insisted.** The first replay of
+`registry-storage` reported it *unaccounted for* — no mutant reddened it and the battery did not say
+why — which is the state this repository refuses in either direction: a guard is witnessed, or its
+silence is declared. `I-68` writes the re-examination without its coordinate, and it is the one cell of
+this battery that injects into registry *data* rather than into registry code, because a guard about a
+declaration has nowhere else for its defect to live.
 `a-re-examination-reaches-the-reader` in `packages/site/pages.test.ts` refuses a rendering that drops
 any of the three; seen red with `whatItEstablishes` removed from the page, naming the field.
 
