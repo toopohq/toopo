@@ -28,7 +28,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { THE_REPOSITORY, git, trackedSources } from './paths.ts'
+import { THE_REPOSITORY, git, trackedProse } from './paths.ts'
 
 /** A run of prose read as one unit: a paragraph of a record, or one of a comment block. */
 export type Paragraph = {
@@ -238,7 +238,7 @@ export const handsOn = (path: string): readonly HandedParagraph[] => {
 }
 
 /** Every paragraph of every tracked source, with the count of commits that wrote it. */
-export const readHands = (paths: readonly string[] = trackedSources()): HandsReading => ({
+export const readHands = (paths: readonly string[] = trackedProse()): HandsReading => ({
   visited: paths,
   paragraphs: paths.flatMap((path) => handsOn(path)),
 })

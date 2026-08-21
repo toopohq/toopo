@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 
 import { handsOn, proseOf } from './hands.ts'
-import { THE_REPOSITORY, trackedSources } from './paths.ts'
+import { THE_REPOSITORY, trackedProse } from './paths.ts'
 
 /**
  * What `npm run hands` swept, asked of something other than the sweep.
@@ -16,7 +16,7 @@ import { THE_REPOSITORY, trackedSources } from './paths.ts'
  * anything that counts a total.
  *
  * **So neither guard below reads `HandsReading.visited`.** That field is the list of paths the
- * reading was handed, so comparing it against `trackedSources()` would establish that the derivation
+ * reading was handed, so comparing it against `trackedProse()` would establish that the derivation
  * is self-consistent, which is true of a derivation with a hole in it. ADR-0087. What is compared
  * instead is the extractor's answer against a statement of *does this file hold prose at all* that
  * shares no code with it.
@@ -39,7 +39,7 @@ describe('the prose every reading of hands claims to have swept', () => {
    * the first cannot empty the second.
    */
   it('every-source-that-holds-prose-yields-a-paragraph', () => {
-    const missed = trackedSources().filter((path) => {
+    const missed = trackedProse().filter((path) => {
       const source = readFileSync(join(THE_REPOSITORY, path), 'utf8')
 
       return looksLikeProse(path, source) && proseOf(path).length === 0

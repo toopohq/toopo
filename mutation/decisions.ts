@@ -108,7 +108,7 @@ import { join } from 'node:path'
 import { guardIdOf } from '../packages/catalogue/identifier.ts'
 import type { GuardAddress } from '../packages/registry/address.ts'
 import { guardAddressFaults, renderGuard } from '../packages/registry/address.ts'
-import { THE_REPOSITORY, trackedSources } from './paths.ts'
+import { THE_REPOSITORY, trackedFiles } from './paths.ts'
 import { THE_BATTERIES } from './published.ts'
 
 /** Where the records live, which is MADR's own convention and ADR-0001 follows it rather than one of ours. */
@@ -412,7 +412,7 @@ export const confirmationFaults = (decisions: readonly Decision[]): readonly str
 export const citationFaults = (decisions: readonly Decision[]): readonly string[] => {
   const held = new Set(decisions.map((decision) => decision.id))
 
-  return trackedSources().flatMap((path) => {
+  return trackedFiles().flatMap((path) => {
     const cited = [...readFileSync(join(THE_REPOSITORY, path), 'utf8').matchAll(/ADR-(\d{4})/g)]
 
     return [...new Set(cited.map((match) => match[1] as string))]

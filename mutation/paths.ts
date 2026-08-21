@@ -40,9 +40,9 @@
  *
  * `trackedFiles` is here because guards in three folders ask one question about one set of bytes, and
  * none of them owns it: `packages/registry/publication.test.ts` asks which files carry a licence
- * header, and `trackedSources` below narrows the same answer for the two guards that resolve a
- * citation. *Two functions answering two questions about different data are not a duplication; two
- * answering one question about one set are.*
+ * header, and the two guards that resolve a citation sweep it whole. `trackedProse` below narrows it
+ * for the one reading that blames what it sweeps. *Two functions answering two questions about
+ * different data are not a duplication; two answering one question about one set are.*
  *
  * git is asked rather than a walk written, for the reason `packages/cli/ignored.ts` gives about
  * `.gitignore`: a second statement of what this repository contains drifts from the first, and the
@@ -91,19 +91,40 @@ export const answered = (text: string): readonly string[] =>
 export const trackedFiles = (): readonly string[] => answered(git('ls-files'))
 
 /**
- * The tracked files this repository reads as text of its own, which is its TypeScript and its prose.
+ * The tracked prose this repository blames paragraph by paragraph: its TypeScript and its Markdown.
  *
- * Both citation guards start from this set and for the same reason, so it is stated once:
- * `decisions.ts` resolves an `ADR-NNNN` written anywhere, `history.ts` resolves a commit identifier,
- * and neither may reach `dist/` - a compiled copy of every comment in `packages/`, where a citation
- * surviving a build would stand in for one in the source it was built from.
+ * `readHands` runs `git blame` over every path it is handed and groups the answer into populations,
+ * so what belongs here is text somebody wrote a paragraph of. `pnpm-lock.yaml` is tracked, is
+ * generated, holds no paragraph at all, and would be blamed on every run of `npm run hands`.
  *
- * **Only one of them sweeps all of it.** A record is never deleted, so an `ADR-NNNN` written into a
- * file a published contract freezes goes on resolving for ever; a commit identifier written there
- * dies the day the history is rewritten and cannot be repaired, because the repair is the edit
- * permanent rule 6 forbids. `theEditableSources` is where that narrowing is argued. ADR-0124.
+ * ---------------------------------------------------------------------------
+ * Why the two citation guards no longer start here, which is where the damage was
+ * ---------------------------------------------------------------------------
+ *
+ * They did until `9d05552`, on the argument that this is *the text this repository reads as its own*.
+ * The argument was right and the filter was not: an extension test written when the only text here
+ * was `.ts` and `.md` excludes, in silence, every format that arrives afterwards. Measured over the
+ * tracked tree at that commit, two files hold a citation and are outside it -
+ * `.github/workflows/suites.yml` with twelve `ADR-NNNN` and four commit identifiers, and
+ * `wrangler.jsonc` with three and one. **Twenty citations that both guards reported as resolved by
+ * never looking at them**, in the file where this repository's own continuous integration is defined.
+ *
+ * The asymmetry is what makes it a defect rather than a gap: `backCitationFaults` reads a governed
+ * file directly, so `suites.yml` is held to citing the record that governs it, while nothing holds
+ * the records and commits it cites to existing. One direction of one relationship, kept.
+ *
+ * **The event is not hypothetical.** `suites.yml` cites `26e2000`, which no branch of this repository
+ * reaches; deleting the branch that carried it would have killed that citation with `npm run meta`
+ * green, and the tag that saved it was posted for another reason entirely. What replaces the
+ * extension test is no test at all - both guards now sweep `trackedFiles`, so a format this
+ * repository has not met yet is inside their reach on the day it arrives, and `dist/` stays out
+ * because it is not tracked rather than because it is not named here.
+ *
+ * What one of them still narrows, and why the narrowing is a category rather than an exemption, is
+ * argued at `theEditableSources`: a citation inside a file a published contract freezes cannot be
+ * repaired, because the repair is the edit permanent rule 6 forbids. ADR-0124.
  */
-export const trackedSources = (): readonly string[] =>
+export const trackedProse = (): readonly string[] =>
   trackedFiles().filter((path) => path.endsWith('.ts') || path.endsWith('.md'))
 
 const A_REGISTERED_WORKTREE = 'worktree '

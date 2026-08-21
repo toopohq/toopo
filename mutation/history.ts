@@ -115,7 +115,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { theCatalogue } from '../packages/registry/the-catalogue.ts'
-import { THE_REPOSITORY, answered, git, strayWorktrees, trackedSources } from './paths.ts'
+import { THE_REPOSITORY, answered, git, strayWorktrees, trackedFiles } from './paths.ts'
 import { THE_COMMITS_QUOTED } from './published.ts'
 
 // ---------------------------------------------------------------------------
@@ -138,7 +138,11 @@ const frozenByAPublishedContract = (): readonly string[] =>
     .flatMap((source) => [...source.files.map((file) => `${source.folder}/${file}`), ...source.shared])
 
 /**
- * The tracked sources this repository may still edit, which is the population a citation guard has.
+ * The tracked files this repository may still edit, which is the population a citation guard has.
+ *
+ * **Every tracked file and not the prose ones**, which `trackedProse` argues one module over: a
+ * workflow and a configuration file both cite, both are editable, and an extension test kept twenty
+ * such citations outside every guard here until `9d05552`.
  *
  * ---------------------------------------------------------------------------
  * This is a category and not an exemption, and the difference is what it can promise
@@ -164,7 +168,7 @@ const frozenByAPublishedContract = (): readonly string[] =>
 export const theEditableSources = (): readonly string[] => {
   const frozen = new Set(frozenByAPublishedContract())
 
-  return trackedSources().filter((path) => !frozen.has(path))
+  return trackedFiles().filter((path) => !frozen.has(path))
 }
 
 // ---------------------------------------------------------------------------
