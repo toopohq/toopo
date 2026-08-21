@@ -216,6 +216,35 @@ The partition guards of `snapshot.test.ts` are what forced the field to be decla
 than frozen, and `every-standing-field-a-contract-declares-is-carried-by-one` is what stops it being
 declared and left unfilled.
 
+### The page was never looked at, and this says what stands in place of looking
+
+**Nobody rendered this change in a browser.** The Chrome profile was locked on both machines available
+when it landed, and the Playwright bridge was not installed. That is recorded rather than passed over,
+because this repository has paid six times for the class of defect only a browser sees — ADR-0132's
+`fit-content` column that answers *one contract* to a two-abreast list, ADR-0134's whole reading, and
+ADR-0135's four phone defects among them — and a seventh instance must not be the silent one.
+
+What was measured instead, on the built tree at `d00f033`:
+
+| | |
+| --- | --- |
+| element types introduced | none |
+| classes the stylesheet does not declare | none |
+| `overflow-wrap` on `body` | `anywhere` |
+| longest unbreakable run of visible text on the page | 65 characters |
+| longest this change introduces | 32 characters |
+
+The 65 is this contract's own digest with its trailing comma, under *What you can check yourself*, and
+it has been on the page since the page existed — so the page is known to survive 65 characters of
+unbreakable text at every width it has ever been read at, and this change brings half that, inside a
+section that already renders paragraphs, with no element and no class added. Two longer runs exist in
+the source and are excluded on purpose: they are JSON-LD inside a `<script>`, which lays nothing out.
+
+**None of that is a rendering, and it is not offered as one.** It bounds the one risk that could be
+bounded by arithmetic — a long token overflowing its column, which is what ADR-0135 repaired — and says
+nothing about the rest. The reading that would settle it is the nine-width sweep ADR-0134 took, and it
+was not taken here.
+
 ## What would reopen this
 
 **The executable replay, which is blocked on a runtime and not on a decision.** The suite matrix is
