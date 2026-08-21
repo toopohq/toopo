@@ -32,9 +32,16 @@
  *
  * `packages/registry/serialise.ts` asks the same question of a contract folder - *what does this reach
  * that it does not own* - and ADR-0026 forbids the second copy of a parser. So the parser and the walk
- * are exported and reached rather than restated, and what differs between the two callers is supplied
- * as an argument: this one walks compiled output, where a specifier is already a file, and the
- * registry walks sources, where a `.js` specifier names a `.ts` file.
+ * are exported and reached rather than restated, and what differs between the callers is supplied as
+ * an argument: this one walks compiled output, where a specifier is already a file, and the others
+ * walk sources, where a `.js` specifier names a `.ts` file.
+ *
+ * **There are three callers now and only two resolutions, which is why `sourceNamedBy` is exported
+ * beside the walk rather than written at each source-walking call site.** `mutation/selection.ts`
+ * declares what a battery's run reads and a guard derives it by walking from `measure.ts`; that walk
+ * and the registry's are the same question asked of two entry points. Two copies of a four-line
+ * resolver are ADR-0026's own subject one size down - not a second opinion, the same statement written
+ * where nobody will maintain it.
  *
  * **It stays under `packaging/` although two folders read it, and that is a choice rather than an
  * oversight.** The layering would read better one folder up; what decides against moving it is the
@@ -93,3 +100,20 @@ export const closureFrom = (entry: string, resolve: ResolveSpecifier): ReadonlyS
 /** The compiled files the entry point reaches, where a specifier is already the name of a file. */
 export const reachableFrom = (entry: string): ReadonlySet<string> =>
   closureFrom(entry, (file, specifier) => join(dirname(file), specifier))
+
+/**
+ * A `.js` specifier written in a source file names the `.ts` file beside it.
+ *
+ * `verbatimModuleSyntax` is why a walk over sources is a different question from the walk above rather
+ * than a cheaper spelling of it: a type-only import is erased from the output and is *not* erased from
+ * what a source file means. So the two resolutions are kept apart and both are named here, and a
+ * caller says which question it is asking by which one it hands to `closureFrom`.
+ *
+ * Why each source-walking caller wants the input rather than the output is its own, and is argued
+ * where the walk is taken.
+ */
+export const sourceNamedBy = (from: string, specifier: string): string => {
+  const resolved = join(from, '..', specifier)
+
+  return resolved.endsWith('.js') ? `${resolved.slice(0, -3)}.ts` : resolved
+}

@@ -21,7 +21,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'
 
-import { closureFrom } from '../../packaging/reachable.js'
+import { closureFrom, sourceNamedBy } from '../../packaging/reachable.js'
 
 import type { ContractAddress, GuardAddress } from './address.js'
 import { THE_IMAGINED_DOMAIN_PREFIX, isImagined } from './address.js'
@@ -564,24 +564,16 @@ export class UndeclaredSharedSurface extends Error {
 }
 
 /**
- * A `.js` specifier written in a source file names the `.ts` file beside it.
- *
- * `verbatimModuleSyntax` is why the walk below reads sources rather than the compiler's output, which
- * is what `packaging/reachable.ts` reads for the opposite reason. A type-only import is erased from
- * the output and is *not* erased from what a contract's guards check: thirteen `@ts-expect-error`
- * directives sit in the five `signature.test-d.ts`, `npm test` runs with `--typecheck`, and a type
- * this repository could widen is one that decides those verdicts. So the closure is taken over what
- * is written, not over what survives compilation.
- */
-const sourceNamedBy = (from: string, specifier: string): string => {
-  const resolved = join(from, '..', specifier)
-
-  return resolved.endsWith('.js') ? `${resolved.slice(0, -3)}.ts` : resolved
-}
-
-/**
  * Everything a contract's own files import from outside its folder, transitively, hashed - and
  * exactly what it declares.
+ *
+ * **The walk reads sources rather than the compiler's output, and that is a decision about
+ * contracts.** `packaging/reachable.ts` reads the output for the opposite reason and owns both
+ * resolutions; `sourceNamedBy` is the one this asks for. A type-only import is erased from the output
+ * and is *not* erased from what a contract's guards check: thirteen `@ts-expect-error` directives sit
+ * in the five `signature.test-d.ts`, `npm test` runs with `--typecheck`, and a type this repository
+ * could widen is one that decides those verdicts. So the closure is taken over what is written, not
+ * over what survives compilation.
  *
  * **The freeze was letter-only without this, and it was measured rather than argued.** Emptying
  * `expectUniversalPropertiesAnswered` in `packages/catalogue/every-contract.ts` left all eight ledger
