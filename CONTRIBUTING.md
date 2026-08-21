@@ -190,6 +190,13 @@ wrong verdict is still correctable. Read every figure here as one run on one mac
 page publishes the spread this repository has measured between replays of identical work, and it is
 minutes rather than seconds.
 
+**You do not have to remember either of those, and you no longer have to run the batteries at all.**
+Since ADR-0146 continuous integration replays, on every push, the batteries that answer for the
+folders that push touched — so a pull request tells you what your change moved without your having
+typed anything — and replays every one of them before the package is published. The commands above
+are what you reach for when you want the answer now rather than in ten minutes, and when you want to
+read the attribution rather than a pass or a fail.
+
 **One thing that will cost you half an hour if nobody says it: if you add or remove a test file, add
 it to `mutation/census.ts` in the same change.** The instrument compares what a run collected against
 what the repository declares, and the comparison happens at the *calibration* of each battery — so an

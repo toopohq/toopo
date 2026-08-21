@@ -23,7 +23,8 @@ generator, ten static pages, four of them with a playground that runs this repos
 with their types removed. The archive: compiled JavaScript and nothing else, whose size is no longer a
 function of how many contracts exist. The emitted tree, which is every answer the read API can give,
 written as files at the addresses a client asks. The instrument: a battery per folder anything injects into, their pinned
-verdicts, and one command that replays them. And permanent rule 6, executable: a binding records the
+verdicts, one command that replays them, and two gates that replay them without being asked - the
+batteries a push can be answered by on every push, and all of them before anything reaches npm. And permanent rule 6, executable: a binding records the
 commit it was published from, and the frozen half is rebuilt at that commit and compared rather than
 transcribed anywhere. What this repository says about its own history now resolves against what git
 holds rather than against what somebody checked: a commit identifier in the prose names a commit of
@@ -608,8 +609,10 @@ unaccounted for by `npm run battery site` at `81bf9bc` and at every commit befor
 ways, by checking the base out and running the battery there. W-24 looks as though it covers it,
 because it replaces the inline stylesheet with a link; it does not, because **with no style element the
 guard finds no palette, its loop runs zero times and it passes**. A guard passing vacuously, in the one
-folder whose subject is that a page can be read. W-24b closes it. **The finding to carry is that no
-battery is replayed in CI**, so a battery's disagreement with itself waits for somebody to run it.
+folder whose subject is that a page can be read. W-24b closes it. **The finding to carry was that no
+battery was replayed in CI**, so a battery's disagreement with itself waited for somebody to run it -
+which is what ADR-0146 closed, on the push that touches the folder and on everything before a
+publication.
 
 **And the catalogue's own prose is parsed by the function that already parsed the method page's.**
 ADR-0026 scoped that guard to one page and named the event that would reopen it — a second page taking
@@ -706,6 +709,8 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   without resolving;
 - the address the emitted tree never loses — ADR-0125, over the pages a listing names, leaving behind
   it the addresses no listing names and the chain of runs the reading is inductive over.
+- a battery's disagreement with itself, read on every push and before every publication — ADR-0146,
+  leaving behind it the change no cheap selection answers for;
 - the declaration of what an answer *is*, which no deployment read — ADR-0137, closed where the cache
   policy closed and for the reason a search gave it: the document every query fetches was the one
   paying for it.
@@ -1415,36 +1420,37 @@ record declares**, which is a worse thing and has never been named here before.
   this entry** and two are the tool doing its job. A count that folded all four together would make
   this read as twice the rate it has, on an entry whose whole subject is a failure nothing reports.
 
-- **That a battery's disagreement with itself is ever read.** `npm run battery <name>` ends by pairing
-  every guard of its suite against the mutants that redden it, and refuses a run where a guard is
-  neither witnessed nor declared unreachable. **Almost nothing runs it**: `meta` collects
-  `instrument.test.ts`, which spawns `measure.ts fixture` and requires every cell to agree, so one
-  battery of the twenty-one replays on every push - two mutants, one arm, no property-based guard. The
-  other twenty fire when somebody happens to type the command.
+- **That a change is answered by every battery that could say something about it.** The gates of
+  ADR-0146 answer it for the folder a change touches and for the battery file it edits, and that is
+  the only cheap rule there is. Measured at `66cdb3f` over every tracked `.ts`, folder by folder,
+  source edges and test edges together: `packages/cli`, `packages/registry`, `packages/site`,
+  `packages/validation`, `packaging` and `mutation` are **one strongly connected component**, each
+  reaching every other transitively in both directions. **The transitive closure of any one of them is
+  all of them**, so an import-following selection selects everything on every push, which is not a
+  selection.
 
-  **This entry read *No workflow runs it … and not one battery* and that was false on the day it was
-  published**, eleven days after `fc41c4e` added the guard that runs the fixture. It is rule 3 of this
-  section on this section's own text: written from an assumption rather than from a reading, in a
-  commit called *a battery nobody runs*, and nothing about it looked old. ADR-0145.
+  **Three populations, and they fail differently.** A guard reddened from a neighbouring folder is
+  bounded by the second gate, which is to say by the cadence of publication rather than by *never*.
+  `packages/catalogue/` is reached by all six and injected into by none, so it is at once where the
+  rule answers *no battery* and where an edit reaches furthest. And the shared modules of `mutation/` -
+  `run.ts`, `published.ts`, `mutants.ts`, `attribution.ts` - are what every battery is built out of,
+  and a change to one selects nothing.
 
-  **It is not hypothetical and the population is not zero**, and there are four instances rather than
-  two. `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was unaccounted for by the
-  site battery from the commit that wrote it until `916b9f4`. `every-standing-field-a-contract-declares-is-carried-by-one`
-  was written at `70cfb22` and its name had never appeared in `registry-storage.battery.ts`, so it was
-  unaccounted **from the day it existed** rather than made so later - the first *became* unaccounted,
-  the second never was accounted, and nothing distinguishes them while nobody runs the battery. Three
-  batteries of the client could not start for three units after ADR-0136 moved guards out from under
-  them, repaired at `92537d9`. And the sixth contract brought **eighteen** guards into
-  `registry-storage`'s suite that its battery accounted for in neither direction, found by ADR-0145's
-  reading and repaired with it. **Every one of the four was found by somebody replaying for another
-  reason.**
+  **It is not hypothetical and it arrived inside the closure's own demonstration**: replaying the push
+  `bc88230..7c9906c`, seven of its twenty changed files selected no battery, and two of them are
+  `mutation/census.ts` and `mutation/published.ts`.
 
-  **What closes it is not a guard but a job, and the price is now measured rather than estimated.**
-  Read at `26e2000`, one job per battery on `ubuntu-latest`: **89.8 minutes of runner time and 25.1 of
-  wall clock** for all twenty-one, against 2.5 minutes for what `suites.yml` runs today. Priced per
-  push over 38 pushes of `main`, selecting only the batteries whose folder a change touched: **median
-  578 s, worst 1 497 s of wall clock**, which is 20 % of replaying everything. **The population is
-  every battery of this repository.**
+  **What is done rather than declared is that the selection prints what it passed over**, and a guard
+  keeps it printing - so the gap is in a reader's face on every run instead of being a paragraph here.
+  What would close it is a selection that follows what a folder is *reached by* rather than what it
+  contains, which `sharedHarnessOf` already does for one contract's harness and which is a unit of its
+  own. Priced there and not taken.
+
+  **A cost rather than a hole, and it is new.** `seedsAreFrozen` is false by decision, so a pin is
+  checked against one draw wherever it runs; twenty replays a day is twenty times the draws, and a thin
+  pin will redden a healthy tree more often than it does today. **The asymmetry is what to plan for**:
+  a draw on the first gate is a red somebody re-runs, and a draw on the second is a publication that
+  waits. ADR-0146 carries the criterion that classifies one.
 
 - **That what this repository would publish is what git holds, read end to end.** The promise is kept
   and its *assembly* is not witnessed. `a-crlf-source-is-served-as-its-lf-form`,
