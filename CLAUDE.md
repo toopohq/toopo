@@ -713,7 +713,10 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   leaving behind it the change no cheap selection answers for;
 - the declaration of what an answer *is*, which no deployment read — ADR-0137, closed where the cache
   policy closed and for the reason a search gave it: the document every query fetches was the one
-  paying for it.
+  paying for it;
+- the end-to-end reading of what would be published against what git holds — ADR-0148, leaving behind
+  it a witness that rests on three code points the catalogue happens to spell, and the half of a
+  fourth guard that its own name is about.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1452,33 +1455,37 @@ record declares**, which is a worse thing and has never been named here before.
   a draw on the first gate is a red somebody re-runs, and a draw on the second is a publication that
   waits. ADR-0146 carries the criterion that classifies one.
 
-- **That what this repository would publish is what git holds, read end to end.** The promise is kept
-  and its *assembly* is not witnessed. `a-crlf-source-is-served-as-its-lf-form`,
-  `a-byte-order-mark-is-not-content` and `normalising-changes-the-digest` call `servedBytes` on
-  constructed buffers, so they have teeth on every platform and no checkout can make them vacuous.
-  `the-served-bytes-are-the-committed-bytes` is the one that reads every harness file of every contract
-  against `git show`, and **on any checkout git produces, no mutant of this repository reddens it.**
+- **That the witness the end-to-end claim now has is one the code earns rather than the catalogue.**
+  The entry this replaces asked for a mutant and ADR-0148 wrote it: `I-65` re-encodes a source in
+  Latin-1 after reading it as UTF-8, `the-served-bytes-are-the-committed-bytes` reddens on seven
+  files, and the three unit guards stay green - measured at `8b6aa89` on a checkout `git ls-files
+  --eol` reports as 454 files `i/lf w/lf`, with the control green at 407 tests. **What nothing keeps
+  is the ground it stands on.** Its teeth are the files carrying a code point in **U+0080-U+00FF**,
+  and this catalogue has three of them across two contracts: the `±` of `date/add@1`'s summary and
+  nine of `string/slugify@1`'s fifty-eight. `string/levenshtein@1`'s single `U+1F600` is above U+00FF
+  and is already a `?` after one pass, so it survives the second unchanged and witnesses nothing.
 
-  **It had two witnesses for two years and neither could be reproduced anywhere.** `I-01` and `I-08`
-  of `registry-storage` were pinned `killed` by it at `c12b979`, one hundred and four seconds after
-  `ec5c712` gave `.gitattributes` its `eol=lf` - and that attribute does not renormalise a working
-  directory already on disk, so the machine those pins were written on kept nine tracked files of 451
-  carrying CRLF and saw them red. Measured on that machine in both directions with the control green
-  at 407 tests either way, and on two hosted runners of different platforms: on a normalised tree both
-  survive. They are survivors now, classified `a-declared-open-class`, which is what puts this entry
-  here. ADR-0145.
+  **The population is those three code points**, and the failure is quiet by construction: a contract
+  whose harness lost its last Latin-1 supplement character would take a pin with it, nothing would
+  look wrong, and only a replay would say so. **If the catalogue were pure ASCII the mutant survives
+  and the guard is back where ADR-0145 left it** - so what was bought is a witness resting on what the
+  catalogue happens to contain rather than on a property of `servedBytes`.
 
-  **The guard itself declared where its teeth were and nobody carried that to its pins**, which is the
-  half worth reading twice: its own comment carries a heading that reads *Where this guard has teeth,
-  said out loud*, and says a checkout already in LF cannot redden it. The limit was published; the
-  inheritance was not.
+  **A second half, narrower and named rather than folded in.** `a-blob-answer-hashes-to-its-address`
+  has two halves and the guard is named after the dead one: `addressedBy === file.sha256` compares two
+  evaluations of one expression on one file, so **no edit to `servedBytes` can separate them** - 0 of
+  47 files, measured. What has teeth is `servedBlobFaults` beside it, which applies that expression
+  twice and therefore reads idempotence. Whether the named half is dead under *everything* reachable
+  is a different sentence and it is open: it can only differ if the record's path-to-digest
+  association is wrong, and **I looked at `harnessOf`'s single `map` and found no plausible mutant,
+  which is not the same as none existing.** Four blob addresses stay in the region for the same
+  arithmetic - the four contracts carrying no code point in that range.
 
-  **The population is one guard, and what would close it is one mutant nobody has written.** It would
-  have to make the serialised bytes differ from the committed ones on a tree that agrees with its
-  index - an edit inside `canonical.ts` deciding what normalisation *means* rather than one choosing
-  which bytes to read - and whether any such edit exists that the three unit guards above do not catch
-  first is the question, not the writing of it. **Priced as its own unit and deliberately not taken
-  here**, because a unit repairing pins is not where one decides what a guard is worth.
+  **What would close the first half is not a guard**: nothing can require a catalogue to keep a
+  character. What would close it is a mutant whose teeth are independent of what the contracts spell,
+  and the search that produced `I-65` says where it is not - the three unit guards constrain
+  `servedBytes` completely on ASCII, so any such mutant must break something other than the bytes.
+  Priced as its own unit and not taken. ADR-0148.
 
 - **That a count of this site's own pages is one somebody took.** The stylesheet's header said *seven
   pages served once each*; at `81bf9bc` the generator wrote **ten** and the tree held **eleven** files
