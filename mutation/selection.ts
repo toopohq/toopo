@@ -38,7 +38,7 @@
  * `WHAT_A_RUN_OF_ANY_BATTERY_READS` is the list; the guard beside it derives the same set from the
  * imports and refuses any disagreement, so the two are independent statements in the sense
  * `sharedHarnessOf` gives that phrase: the walk notices the instrument reaching somewhere new, the
- * declaration notices the walk going quiet.
+ * declaration notices the walk going quiet. ADR-0149.
  *
  * ---------------------------------------------------------------------------
  * Why a path that selects nothing is reported rather than dropped

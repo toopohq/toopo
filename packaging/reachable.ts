@@ -41,7 +41,7 @@
  * declares what a battery's run reads and a guard derives it by walking from `measure.ts`; that walk
  * and the registry's are the same question asked of two entry points. Two copies of a four-line
  * resolver are ADR-0026's own subject one size down - not a second opinion, the same statement written
- * where nobody will maintain it.
+ * where nobody will maintain it. ADR-0149.
  *
  * **It stays under `packaging/` although two folders read it, and that is a choice rather than an
  * oversight.** The layering would read better one folder up; what decides against moving it is the

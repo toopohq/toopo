@@ -4,7 +4,6 @@ date: 2026-08-21
 decision-makers: Mathis Perron
 governs:
   - mutation/selection.ts
-  - mutation/instrument.test.ts
   - packaging/reachable.ts
 confirmed-by:
   - battery: meta
