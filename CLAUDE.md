@@ -247,6 +247,24 @@ the page had never been looked at, and it argued the placement from an adjacency
 `identity.relationToTheLanguage` that `date/add@1` does not declare — true of the code's shape, false of
 every rendering of it. Six contract digests unmoved to the byte. ADR-0151.
 
+**And the last known instance of the class this week was spent closing is closed: a guard that could
+not see its own population shrink.** `every-source-that-holds-prose-yields-a-paragraph` built its
+population by calling `trackedProse()`, the very function a defect would narrow - measured at
+`879ac08`, reducing that filter to `.ts` takes the population **from 438 files to 284** and leaves the
+guard green, with `tsc` green beside it. Thirty-five per cent gone and nothing said. **The comment
+above it defends the other axis in as many words** and is right about it: the two byte-readers are
+independent, and that sentence is about what they read rather than about what they are run over.
+**The three obvious repairs are refused on measurement rather than on taste**, including the one that
+looked strongest: sweeping every tracked file with the guard's own prose test answers true on
+`LICENSE`, `wrangler.jsonc` and a `tsconfig.json`, and misses `suites.yml` whose comments are in `#` -
+red on its first day for a reason that is not the defect. What replaces it is the reading's own five
+**populations** as the expectation, with `trackedProse()` as the answer judged against them, which is
+the way round the old guard has not got. **The pair is the evidence and not the red**: on `.md`
+removed, the new guard names `records` and `prose` and the old one passes through it, which is what
+says they are two claims. The compiler holds the other direction - a population returned and not
+declared is `TS2322`. **Its own thinness is published**: it is total over five populations and never
+over files, and the thinnest is `prose` at **three**. ADR-0152.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
@@ -766,7 +784,9 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   paying for it;
 - the end-to-end reading of what would be published against what git holds — ADR-0148, leaving behind
   it a witness that rests on three code points the catalogue happens to spell, and the half of a
-  fourth guard that its own name is about.
+  fourth guard that its own name is about;
+- a guard that could not see its own population shrink — ADR-0152, leaving behind it a guard total
+  over populations and never over files, and the reading half of the entry it closed.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1564,25 +1584,42 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   waits. ADR-0146 carries the criterion that classifies one. **It is now two pushes in forty-three that
   pay a full replay rather than none**, which is where that cost first arrives in fact.
 
-- **That a guard whose population is a function it does not control notices that population
-  shrinking.** `hands.test.ts` builds its population by calling `trackedProse()` - the very function a
-  defect would narrow. Measured at `341f86c` by committing the narrowing: `trackedProse` reduced to
-  `.ts`, dropping every Markdown file this repository holds, leaves `npm run meta` green at 94 of 94
-  and `tsc -p tsconfig.json` green. **It is ADR-0087 word for word** - a guard perturbing the object
-  derived from the claim rather than the claim - in a guard about who has read this repository's prose.
+- **That the reading of who has read this repository's prose is one anything executes.** `npm run
+  hands` is in no workflow, and this is the half of the entry ADR-0152 did not close. It is not the
+  guard's half: `hands.test.ts` is collected by `mutation/vitest.config.ts` and `npm run meta` is a
+  step of `suites.yml`, so the guard over the reading runs on every push. **The two were one entry
+  until the closure separated them**, and the sentence that joined them - *the narrowing is seen by no
+  suite, no gate and no battery* - was a true measurement with a conclusion about another population
+  beside it, which is exactly what this section's rule 3 is for.
 
-  **The other half is what makes it invisible rather than merely weak**: `npm run hands` is in no
-  workflow. So the narrowing is seen by no suite, no gate and no battery, and the reading it feeds -
-  the paragraphs carrying three hands or more - would simply get smaller with nothing saying so.
+  **What nothing executes is `readHands` and `renderHands`.** The guards reach `proseOf` and `handsOn`;
+  `every-paragraph-a-reading-reports-is-attributed-to-a-commit` reads one file, so a blame that failed
+  to parse on a different file would surface only in the command. **The population is those two
+  exports.**
 
-  **The population is `trackedProse`'s two callers**, `hands.ts` and `hands.test.ts`. What would close
-  the guard's half is a population stated independently of the function under measurement - the shape
-  `every-file-a-run-of-a-battery-reads-is-declared` now has one folder over, where a declaration and a
-  walk refuse to disagree. What would close the other half is a decision about whether a reading nobody
-  runs is worth a job, which is the same question the entry about `npm run hands` being a command and
-  not a number already asks. Found by perturbing the five modules of the instrument for ADR-0149 and
-  left standing there, because a unit closing a gate is not where one decides what `npm run hands` is
-  worth. ADR-0149.
+  **It is priced and refused rather than unbuilt.** ADR-0112 refuses a guard over hands, its cheapest
+  satisfaction being a reflow, so a job running the reading is either a step nobody reads or the guard
+  that record refused - for 438 `git blame` child processes per run. What would close it is a decision
+  about whether a reading nobody runs is worth a job, which is the question the entry about `npm run
+  hands` being a command and not a number already asks one floor up. ADR-0152.
+
+- **That a guard total over a declaration is total over what the declaration is about.** The guard
+  that closed the entry above it is total over the reading's five **populations** and never over its
+  files, so a narrowing of `trackedProse` that keeps one file in each of the five passes. **The
+  thinnest is `prose` at three** - `CLAUDE.md`, `CONTRIBUTING.md`, `README.md` - measured at
+  `879ac08`, so dropping the other 151 Markdown files while keeping those three is invisible to it.
+  The number is here rather than *it does not see everything*, because the second is not a
+  measurement.
+
+  **The failure is quiet by construction and the shape recurs**: a declaration is a good expectation
+  exactly insofar as its rows are hard to satisfy by accident, and nothing here reads how thin a row
+  has become. `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS` one folder over has the same property and has
+  never been asked it either.
+
+  **What would close it is a claim about files rather than about populations**, which is the thing
+  this repository has no second statement for - the three candidates ADR-0152 refused are refused for
+  the same reason at any granularity, and a fourth is not in sight. Written down rather than priced,
+  because there is nothing yet to price. ADR-0152.
 
 - **That the witness the end-to-end claim now has is one the code earns rather than the catalogue.**
   The entry this replaces asked for a mutant and ADR-0148 wrote it: `I-65` re-encodes a source in

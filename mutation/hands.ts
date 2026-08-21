@@ -49,13 +49,33 @@ export type HandsReading = {
 }
 
 /**
+ * Every body of prose this repository holds, declared so that a guard has something to expect.
+ *
+ * This is a list of **populations** and never of files, which is what keeps it clear of the rule
+ * `paths.ts` states against a second statement of what this repository contains: it has five rows
+ * whatever the tree holds, and git still answers the inventory once.
+ *
+ * It exists because a guard drawing its population from `trackedProse()` cannot see that function
+ * narrow - the sweep supplies the iteration, so a filter that drops a format drops the guard's own
+ * subject and the guard stays green. These five supply the *expectation* instead, and what
+ * `trackedProse()` answers is the thing judged against them. ADR-0152.
+ */
+export const THE_POPULATIONS = ['instrument', 'records', 'prose', 'guards', 'production'] as const
+
+export type Population = (typeof THE_POPULATIONS)[number]
+
+/**
  * Which of this repository's bodies of prose a file belongs to.
  *
  * Derived from the path rather than listed, for the reason `paths.ts` gives about asking git: a
  * typed list of what this repository contains is a second statement of it, free to drift from the
  * first. A new folder therefore lands in a named population without anybody choosing one.
+ *
+ * The return type is what holds one direction of the pair: a population this returns and the tuple
+ * above does not name is a type error, so only the other direction - a name declared that nothing
+ * reaches - needs a guard.
  */
-export const populationOf = (path: string): string => {
+export const populationOf = (path: string): Population => {
   if (path.startsWith('mutation/')) return 'instrument'
   if (path.startsWith('docs/decisions/')) return 'records'
   if (path.endsWith('.md')) return 'prose'
@@ -256,8 +276,8 @@ export const THE_REPORTING_DEPTH = 3
 
 const byPopulation = (
   paragraphs: readonly HandedParagraph[],
-): ReadonlyMap<string, HandedParagraph[]> => {
-  const gathered = new Map<string, HandedParagraph[]>()
+): ReadonlyMap<Population, HandedParagraph[]> => {
+  const gathered = new Map<Population, HandedParagraph[]>()
   for (const paragraph of paragraphs) {
     const population = populationOf(paragraph.path)
     gathered.set(population, [...(gathered.get(population) ?? []), paragraph])
