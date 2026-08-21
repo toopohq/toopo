@@ -67,6 +67,13 @@ same population ADR-0145 read. Verdicts are read from vitest's json reporter wit
 named beside it, for the reason `mutation/run.ts` measured: the json reporter alone under
 `--typecheck` collects a fraction of the suite and says nothing.
 
+**The pins are read on two platforms, because that is the whole of what ADR-0145 was about.** A red on
+the machine that wrote a pin is what `I-01` and `I-08` had for two years. The full battery was replayed
+here on Windows at 80 of 85 killed, every cell agreeing with its pin and no guard unaccounted for; the
+gate ADR-0146 built then selected `registry-storage` on the push of `c58c8cd` and replayed all 85 on
+`ubuntu-latest`, unfiltered, green. So the three cells are red on two operating systems rather than on
+the one that wrote them.
+
 ### The mutant, and why the escape is one-sided
 
 `servedBytes` decodes UTF-8, drops a byte-order mark, replaces CRLF, and re-encodes. `I-65` names the
