@@ -138,11 +138,25 @@ ADR-0146 can be green on `ubuntu-latest`.
 `694`. That was named as ADR-0018 on this project's central measurement, and the number was corrected
 without the class being corrected.
 
-**Bad, and it is the honest limit of this unit.** The skip is measured here only through `expectedHere`,
-because this machine is `windows` and nothing can make `measureCell` believe otherwise without a seam
-written for a test. **The end-to-end reading - `cli-install` green on `ubuntu-latest` with `C-64`
-reported `not applicable` - is the first gate's own first run, and it has not been taken yet.** It is
-named here rather than left to be assumed covered.
+### The skip observed in a real run, with the families swapped
+
+The obvious limit of a decision like this is that the machine writing it is `windows`, so the branch
+that matters cannot be reached here. **It was reached by exchanging the two families rather than by
+faking the platform**, which needs no seam written for a test and exercises `measureCell` exactly as a
+`ubuntu-latest` run would. At `8d4e7d5`, `C-64` declared `posix` on this Windows machine:
+
+    calibration C/as-committed   control green (178 tests)
+    calibration C/as-committed   C-01 killed
+    C-64   C/as-committed        not-applicable   as expected
+    column C/as-committed        defects killed 0/0
+
+The cell was not injected, answered `not-applicable`, agreed with its pin, and left the score at `0/0`
+- which is `score.ts` already excluding it rather than a second rule written here. Declared `windows`
+again, the same command answers `killed as expected` and `1/1`.
+
+**Bad, and it is what stays open.** That is the mechanism observed, and it is not the reading: nothing
+here says the `cli-install` **suite** is green on `ubuntu-latest` with `C-64` skipped, because no run
+of it on that platform has happened since ADR-0145's. That reading is the first gate's own first run.
 
 **Bad.** `PlatformFamily` has two values, and that is a claim about filesystems rather than about
 `process.platform`. A rule that split three ways would need a third, and nothing here would say so
