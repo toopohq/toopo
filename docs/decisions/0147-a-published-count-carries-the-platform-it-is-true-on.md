@@ -154,9 +154,48 @@ The cell was not injected, answered `not-applicable`, agreed with its pin, and l
 - which is `score.ts` already excluding it rather than a second rule written here. Declared `windows`
 again, the same command answers `killed as expected` and `1/1`.
 
-**Bad, and it is what stays open.** That is the mechanism observed, and it is not the reading: nothing
-here says the `cli-install` **suite** is green on `ubuntu-latest` with `C-64` skipped, because no run
-of it on that platform has happened since ADR-0145's. That reading is the first gate's own first run.
+### What the first run of the gate found, which was this decision's own hole
+
+The reading above is the mechanism and not the whole: nothing in it said the `cli-install` **battery**
+was green off Windows with `C-64` skipped. That reading was the first gate's own first run, at
+`f465660`, and it came back **red** - `batteries (cli-install)` on `ubuntu-latest`, 1 392 s, exit 1:
+
+    1 guard(s) disagree with the battery:
+      C/as-committed: nothing reddens "a-project-is-removed-while-another-process-still-holds-it",
+      and the battery does not say why. Either it is out of this battery's reach, or it is a debt -
+      both are declared, neither is silence.
+
+`C-64` is the only cell that reddens that guard. Off Windows it is not injected, so the guard has no
+witness there, and `attribution.ts` refuses a silence nobody accounts for. **The applicability was
+carried to the cell and stopped there** - which is exactly the shape `CLAUDE.md` names about a
+closure: the mechanism was built and what it did not reach was not asked for.
+
+**The obvious repair is the one refused one level down.** Declaring the guard in `unreachableGuards`
+would be false where the defect does exist and would redden `wronglyDeclaredSilent` on Windows. So the
+account is the fact the cell already carries rather than a second declaration free to disagree with
+it: a silent guard whose only naming cells were skipped by the platform is accounted for by the
+battery's own `because`, in a bucket of its own. It reads the **pin** and not the run, because a run
+off that family carries the resolved expectation - `not-applicable`, with neither the guards it names
+nor the reason.
+
+**One skipped cell naming it is enough, and that is not a shortcut.** A guard reaching that check is
+already silent, so nothing reddened it, and a cell that named it and ran without reddening it would
+have disagreed with its own pin one check earlier.
+
+Replayed whole on both sides at `fae0482`, which is the reading that was missing:
+
+    C-64 declared posix      C-64 not-applicable as expected
+                             not measured on this platform (1), with the battery's own reason
+                             UNACCOUNTED FOR (0), exit 0
+    C-64 as committed        C-64 killed as expected
+                             a-project-is-removed-... red on C-64, alone on C-64
+                             not measured on this platform (0), UNACCOUNTED FOR (0), exit 0
+
+So the repair explains a verdict rather than moving one, which is the whole of what this record
+refused to do in the first place.
+
+**What it says about the decision is worth more than the repair.** Every guard here was green - on this
+machine and on the runner - and the defect was found by the gate on the first push it ever ran on.
 
 **Bad.** `PlatformFamily` has two values, and that is a claim about filesystems rather than about
 `process.platform`. A rule that split three ways would need a third, and nothing here would say so
