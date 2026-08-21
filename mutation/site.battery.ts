@@ -303,6 +303,8 @@ const A_USE_CASE_CARRIES_ITS_WARNING = `    paragraph(entry.caveat, { class: 'wh
 
 const A_USE_CASE_SHOWS_WHAT_CAME_BACK = `  const result = answered.map((field) => literal(field.value)).join(', ')`
 
+const WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN = `        marked('h3', 'What it is for, and what it is not', { id: 'what-it-is-for' }),`
+
 const A_NUMBER_IS_READ_AS_ITSELF = `  if (number !== null) return Number(number)`
 
 const A_WORD_WITH_NO_SPELLING_IS_REFUSED = `  for (const word of Object.values(WITHOUT_A_SPELLING)) {`
@@ -625,6 +627,38 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['a-use-case-shows-its-call-its-answer-and-its-caveat']),
+  ),
+
+  /**
+   * The registry's own prose put back beside the contract's, which is where it was until ADR-0151.
+   *
+   * **It is the plausible edit and not an attack**: somebody with a re-examination to render reaches
+   * for the section that already answers *what does this function do*, and the page that comes out is
+   * not broken - it reads well, every sentence on it is true, and the block simply arrives before the
+   * one nobody skips. What is lost is that a reader can no longer tell which half of that heading is
+   * frozen for the life of the major and which half the registry may rewrite tomorrow.
+   *
+   * **`a-re-examination-reaches-the-reader` is green under it**, and that is the reason this cell is
+   * worth its line: the three statements still arrive on the page, twice over. A guard about arrival
+   * cannot see a defect about company.
+   */
+  sameOnEveryLens(
+    'W-95',
+    'renders the re-examination beside the frozen description again, so one heading carries a ' +
+      'sentence a reader may rely on for the life of the major and one the registry may rewrite, ' +
+      'with nothing on the page telling them apart',
+    [
+      contractPageFile(
+        WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN,
+        `        ...reExaminations.flatMap((entry) => [
+          paragraph(entry.whatMoved),
+          paragraph(entry.measurement),
+          paragraph(entry.whatItEstablishes),
+        ]),
+${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
+      ),
+    ],
+    killed(['what-is-frozen-and-what-the-registry-may-rewrite-are-never-one-section']),
   ),
 
   sameOnEveryLens(

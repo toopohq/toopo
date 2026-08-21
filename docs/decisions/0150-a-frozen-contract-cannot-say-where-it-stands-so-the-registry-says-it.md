@@ -171,6 +171,23 @@ field already answer it — so the re-examination costs no rail entry and no sec
 [ADR-0119](0119-the-page-is-read-in-two-halves.md) drew the line between what a reader needs
 before deciding and the evidence below it; *is this still the thing to use* is above it.
 
+**That paragraph is superseded by
+[ADR-0151](0151-what-a-contract-freezes-and-what-the-registry-may-rewrite-are-two-sections.md), and it
+is left standing rather than rewritten because the half of it that decided the question was right.**
+The line is where this record put it: a re-examination answers *is this still the thing to use*, which
+is above it. What was wrong is everything after that. The block is a section of its own now, last in
+the summary half, at `#against-the-language` — because a reader travelled 2 584px at 320 through
+somebody else's specification before reaching *What it is for, and what it is not*, and because
+`identity.description` is frozen inside the digest and a re-examination is not, and one heading carried
+both with nothing telling them apart.
+
+**And the clause about `relationToTheLanguage` was false when it was written.** `date/add@1` does not
+declare that field — nor does `number/parse@1`; the four that do are `array/group-by@1`,
+`number/round@1`, `string/levenshtein@1` and `string/slugify@1` — so the adjacency this paragraph
+argues from does not exist on the only page in the tree that renders a re-examination. It is true of
+the code's shape and false of every rendering of it, which is the same defect as the one recorded below
+and is what a reading of a source rather than of a page produces.
+
 **Three fields, because they are three kinds of statement.** What moved is a fact about somebody else's
 specification; the measurement is a reading with its coordinates and its limits; what it establishes is
 a conclusion. [ADR-0042](0042-a-diagnostic-may-not-name-a-cause-no-measurement-establishes.md) is why the last two
@@ -216,7 +233,25 @@ The partition guards of `snapshot.test.ts` are what forced the field to be decla
 than frozen, and `every-standing-field-a-contract-declares-is-carried-by-one` is what stops it being
 declared and left unfilled.
 
-### The page was never looked at, and this says what stands in place of looking
+### The page was not looked at when this landed, and it has been looked at since
+
+**It was rendered on 2026-08-22, and this heading is the repair rather than the record of a gap.** The
+owner loaded `https://toopo.dev/typescript/date/add@1/` once the Chrome profile came free and read it
+at four widths: 320 and 390 emulated as a phone, 768 and 1440 in a window. **`scrollWidth` equals the
+viewport at all four — 320, 390, 753, 1425 — with zero elements painted outside the frame and no
+sideways scrolling anywhere**, and the first of the three paragraphs sits at 24 · 296 in a 320
+viewport, inside the body's own gutters. The arithmetic below held. It is now replaced by a rendering,
+which is the only thing that was ever going to settle it.
+
+**The reading also refuted the placement this record decided**, which the arithmetic could not have
+done and which is the whole argument for looking:
+[ADR-0151](0151-what-a-contract-freezes-and-what-the-registry-may-rewrite-are-two-sections.md) carries
+what replaced it. So the paragraph below was right that a bound is not a rendering, and wrong to imply
+that what a rendering would add was a risk of overflow. What it added was that the block was in the
+wrong place.
+
+**What stood in place of looking, left as it was taken.** The sentences under this paragraph are the
+state of this record on the day it was accepted, and they are the thing the sentence above corrects.
 
 **Nobody rendered this change in a browser.** The Chrome profile was locked on both machines available
 when it landed, and the Playwright bridge was not installed. That is recorded rather than passed over,

@@ -503,12 +503,19 @@ export const contractPage = (
 
   /**
    * What the registry has measured about this contract since it was frozen, which the contract
-   * itself cannot say. ADR-0150.
+   * itself cannot say. ADR-0150, ADR-0151.
    *
-   * Under *What it does* and not in a section of its own, because the question it answers is the one
-   * a reader arriving from a search asks first - *is this still the thing to use?* - and that
-   * question is answered above the line ADR-0119 drew, not below it among the evidence. It costs no
-   * rail entry, which is what a derived table of contents buys.
+   * **A section of its own, last above the line.** ADR-0150 put these three paragraphs at the tail of
+   * *What it does*, on the argument that a reader arriving from a search asks *is this still the thing
+   * to use?* before anything else. The half was right and the position was not: every reader asks what
+   * the function is for, and only a reader who already knows the language moved asks this - so it was
+   * conditional matter standing in front of the sentence nobody can skip.
+   *
+   * **What it repairs is not only an order.** `identity.description` is frozen inside the contract's
+   * digest and a re-examination is standing prose the registry may rewrite, and under one heading they
+   * rendered as consecutive paragraphs of one weight with nothing saying which was which. A heading
+   * names the question for the reader looking for it, and the lede names the author for the reader who
+   * is not.
    */
   const reExaminations = held.binding.againstTheLanguage ?? []
 
@@ -530,11 +537,6 @@ export const contractPage = (
         ...(contract.identity.relationToTheLanguage === undefined
           ? []
           : [paragraph(contract.identity.relationToTheLanguage)]),
-        ...reExaminations.flatMap((entry) => [
-          paragraph(entry.whatMoved),
-          paragraph(entry.measurement),
-          paragraph(entry.whatItEstablishes),
-        ]),
         /**
          * Under *What it does* rather than beside it, which is the one section this cut merged.
          *
@@ -603,6 +605,51 @@ export const contractPage = (
                   `the guarantee gets used.`,
               ),
               el('div', { class: 'use-cases' }, ...useCases.map((entry) => renderedUseCase(entry, answer))),
+            ],
+          },
+        ]),
+    /**
+     * Last above the line, which is the seam and not the bottom of a pile. ADR-0151.
+     *
+     * The divider's own lede draws the two halves: everything above answers *whether this function
+     * does what you need*, everything below is *what it is bound to do*. A re-examination is the
+     * first of those and never the second - Temporal existing changes nothing this contract is bound
+     * to, and the binding it would have to move is frozen for life - so the half ADR-0150 chose is
+     * kept and only the position inside it moves. What that buys is a register that climbs: what the
+     * function does, then a form to try it on, then a measurement carrying a commit and the limits of
+     * the runtime it was read on, and then the reference half, which is denser still.
+     *
+     * Absent on a contract that declares none, for the reason the section above it is: the registry
+     * serves the field only when it holds something, so no page renders this heading with nothing
+     * under it.
+     */
+    ...(reExaminations.length === 0
+      ? []
+      : [
+          {
+            id: 'against-the-language',
+            title: 'Where it stands against the language',
+            body: [
+              /**
+               * The one thing the three statements cannot say about themselves: who wrote them.
+               *
+               * It is `in-practice`'s lede arriving on the second standing field, and ADR-0118 is the
+               * argument in both places - a reader who cannot tell frozen prose from revisable prose
+               * reads the whole page as one promise. The sentence counts nothing, so a second
+               * re-examination lands under it with nobody editing it. ADR-0018.
+               */
+              line(
+                'p',
+                `What the registry has measured about this contract since it was published, which ` +
+                  `the contract itself cannot say. Nothing here is part of what the function is ` +
+                  `bound to do — the definition below is frozen, and a re-examination reports on it ` +
+                  `rather than changing it.`,
+              ),
+              ...reExaminations.flatMap((entry) => [
+                paragraph(entry.whatMoved),
+                paragraph(entry.measurement),
+                paragraph(entry.whatItEstablishes),
+              ]),
             ],
           },
         ]),

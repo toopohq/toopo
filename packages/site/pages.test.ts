@@ -611,6 +611,61 @@ describe('the site', () => {
   })
 
   /**
+   * What the contract freezes and what the registry may rewrite are never read under one heading.
+   *
+   * A contract page carries two kinds of prose that look identical on screen. `identity.description`
+   * and `identity.inputDomain` are inside `contractSnapshot`, so they are frozen for the life of the
+   * major and a reader may rely on them. A use case and a re-examination are standing, which is the
+   * mechanism ADR-0118 built precisely so the registry could change its mind about them. A heading
+   * that carries both makes one promise out of two, and it is the weaker one that a reader is left
+   * believing about the whole.
+   *
+   * **It was red before ADR-0151 and it names what was wrong there.** `againstTheLanguage` rendered as
+   * three paragraphs at the tail of *What it does*, immediately after the frozen description and in the
+   * same weight, so the page said *this function adds a duration to a Date* and *Temporal parts from it
+   * on five rows* in one breath, with nothing telling a reader which of the two is bound.
+   *
+   * **The neighbour is `a-re-examination-reaches-the-reader`, and neither can see the other's defect.**
+   * That one asks whether all three statements arrive on the page and is indifferent to where; this one
+   * asks nothing about arrival and everything about company. Moving the block back under *What it does*
+   * leaves that guard green and reddens this one; dropping `whatItEstablishes` does the reverse.
+   */
+  it('what-is-frozen-and-what-the-registry-may-rewrite-are-never-one-section', () => {
+    const faults: string[] = []
+    const declaring: string[] = []
+
+    for (const held of heldByTheRegistry(source)) {
+      const what = renderContract(held.contract.address)
+      const { identity } = held.contract
+      const frozen = [identity.description, identity.inputDomain, identity.relationToTheLanguage]
+      const standing = [
+        ...(held.binding.useCases ?? []).flatMap((entry) => [entry.situation, entry.caveat]),
+        ...(held.binding.againstTheLanguage ?? []).flatMap((entry) => [
+          entry.whatMoved,
+          entry.measurement,
+          entry.whatItEstablishes,
+        ]),
+      ]
+
+      if (standing.length > 0) declaring.push(what)
+
+      for (const [heading, reading] of underEachHeading(page(pageOf(held.contract.address)))) {
+        const carries = (prose: readonly (string | undefined)[]): boolean =>
+          prose.some((one) => one !== undefined && reading.includes(asRead(one)))
+
+        if (carries(frozen) && carries(standing)) {
+          faults.push(`${what}: "${heading}" reads a frozen sentence and a revisable one as one`)
+        }
+      }
+    }
+
+    // Without a contract declaring standing prose there is no pair to separate, and a guard whose
+    // population is empty passes for the reason ADR-0087 refuses.
+    expect(declaring.length).toBeGreaterThan(0)
+    expect(faults).toEqual([])
+  })
+
+  /**
    * A contract the catalogue refused must be findable and must never be offered - the rule
    * `toopo search` already follows on the terminal, arriving on the page where somebody would click.
    */

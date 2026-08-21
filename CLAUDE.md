@@ -230,6 +230,23 @@ is *does its frozen half already say so*, never *has its language moved*. What t
 the list below: the debt is unpayable by either symptom, in a sentence frozen with the contracts it
 describes. ADR-0150.
 
+**That answer is a section of its own now, and what put it in the wrong place was a reading of the code
+rather than of the page.** ADR-0150 rendered the three statements at the tail of *What it does*, so a
+reader met `ZonedDateTime.add` under `constrain`, V8 13.6 and a forty-three-case comparison before
+*What it is for, and what it is not* — **2 584px of it at 320 and 713 at 1440**, measured. It is
+`#against-the-language` now, last above the line, and the distance to the job falls by more than half at
+every width: 2 584 → 1 099 at 320, 713 → 321 at 1440, for a page 1.2 % longer at all four. **The order
+is what was noticed and the mixture is what was wrong**: `identity.description` is inside the digest and
+a re-examination is standing, and one heading carried both as consecutive paragraphs of one weight with
+nothing telling a reader which of the two is frozen for the life of the major — the sentence `In
+practice` has carried since ADR-0118, missing from the second standing field. A guard refuses that now
+over every contract page, seen red on `57afaa7`'s own shape, and
+`a-re-examination-reaches-the-reader` stayed green through the red, which is the neighbour measured
+rather than asserted. **Two sentences of ADR-0150 were false and one rendering found both**: it declared
+the page had never been looked at, and it argued the placement from an adjacency to
+`identity.relationToTheLanguage` that `date/add@1` does not declare — true of the code's shape, false of
+every rendering of it. Six contract digests unmoved to the byte. ADR-0151.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
