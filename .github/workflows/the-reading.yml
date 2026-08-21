@@ -127,6 +127,16 @@ jobs:
   replay:
     needs: which
 
+    # **Off, because this reading is taken.** Run 32425759814 answered it at `26e2000` - nineteen of the
+    # twenty-one agreed, and the two that did not were re-run at the same commit and disagreed on exactly
+    # the same cells. A third Linux reading would buy a third identical answer, and the two legs of this
+    # file together are forty-two jobs against a ceiling of twenty, so it would buy it by making the
+    # reading below queue behind it.
+    #
+    # It is left here rather than deleted so that the file still says what was run, beside the criterion
+    # it was run under.
+    if: false
+
     runs-on: ubuntu-latest
 
     # A hung cell must not hold a runner for six hours. The longest battery on the machine that wrote the
@@ -177,5 +187,89 @@ jobs:
       # `npm run` and not `node mutation/measure.ts`, for the reason the header of `suites.yml` gives:
       # `packaging/the-archive.ts` finds npm through `npm_execpath`, and the `packaging` battery injects
       # into the folder that holds it. Started any other way, that battery would measure the launcher.
+      - name: ${{ matrix.battery }}
+        run: npm run battery ${{ matrix.battery }}
+
+  # ---------------------------------------------------------------------------
+  # The second reading, which the first one asked for
+  # ---------------------------------------------------------------------------
+  #
+  # The first reading came back 19 of 21, and the criterion above classified what disagreed: `I-01` and
+  # `I-08` of `registry-storage` and `C-64` of `cli-install` are PLATFORM - twice red on Linux, and
+  # `killed as expected` on the machine that wrote the pins. `S-12` is a DEFECT and is not this job's
+  # subject.
+  #
+  # **The criterion prescribes excluding a platform battery from the gates, and that prescription cannot
+  # be carried out here.** Three of the four known instances of the debt those gates exist for live in
+  # `packages/cli` and `packages/registry`, which are exactly the two folders that would be excluded.
+  # Keeping the gate and throwing away what justifies it is not a repair.
+  #
+  # So the platform difference is measured from the other side before anything is written. Every pin in
+  # this repository was calibrated on Windows; a Windows runner is the environment that makes the
+  # difference disappear rather than the one that declares it.
+  #
+  # **All twenty-one and not the two that disagreed**, because the question is not only whether those
+  # three cells agree here. If they do, the form to reach for is every gate on `windows-latest` rather
+  # than a mixed matrix - a mixed matrix would need a list of which battery runs where, and no
+  # declaration in this repository derives one. That form needs to know the whole instrument runs here,
+  # which two batteries cannot say.
+  #
+  # **The steps repeat the job above rather than being factored**, and that is deliberate rather than
+  # careless: what would remove the repetition is a composite action, which is a committed file, and
+  # this whole workflow is deleted with the branch. A throwaway that grows a dependency is one that
+  # stops being a throwaway.
+  #
+  # The two readings are not a matrix over the operating system, which would have re-run the nineteen
+  # that already answered. What Linux says is taken and does not need taking again.
+  on-the-platform-the-pins-were-calibrated-on:
+    needs: which
+
+    runs-on: windows-latest
+
+    # The two longest batteries cost 840 s and 633 s on the machine that wrote the pins. A hosted Windows
+    # runner is another machine again, so this is the Linux allowance with room rather than a reading.
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        # So that every step below is the same text as the job above rather than its PowerShell
+        # translation. A reading whose two halves are spelled differently is one where a difference can
+        # come from the spelling.
+        shell: bash
+
+    strategy:
+      fail-fast: false
+      matrix:
+        battery: ${{ fromJSON(needs.which.outputs.batteries) }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: what this reading was taken on
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      # The drive letter is why this is read here and not only above. `paths.ts` pins a lower-case one to
+      # upper case because an unnormalised path collapses vitest's collection on this platform, and a
+      # hosted runner checks out under a drive this repository has never been read from.
+      - name: the tree the instrument requires
+        run: |
+          pwd
+          git status --porcelain
+          git worktree list
+
       - name: ${{ matrix.battery }}
         run: npm run battery ${{ matrix.battery }}
