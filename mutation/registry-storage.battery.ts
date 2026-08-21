@@ -53,19 +53,55 @@
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
 import { killed, mutantsOn, survived } from './mutants.ts'
+import { trackedFiles } from './paths.ts'
 
 const UNDER: ArmUnderTest = { arm: 'R', asCommitted: 'as-committed', blinded: [] }
 
 const { sameOnEveryLens } = mutantsOn(UNDER)
 
 /**
- * A guard of this folder is written once with `it.each` over the five and answers to five addresses.
- * `the-catalogue.ts` says why the slug is there; here it is what lets a pin name the contract a defect was
- * caught on, which `I-06` needs - it reddens on one of the five and on no other.
+ * A guard of this folder is written once with `it.each` over the catalogue and answers to one address
+ * per contract. `the-catalogue.ts` says why the slug is there; here it is what lets a pin name the
+ * contract a defect was caught on, which `I-06` needs - it reddens on one of them and on no other.
+ *
+ * **This was five names typed here, and the day the catalogue became six it went stale in silence.**
+ * `number/round@1` entered at `50ff990` and brought eighteen guards into this suite that this battery
+ * accounted for in neither direction; nothing was red anywhere - not the eight suites, not `meta`, not
+ * the typecheck - and it was found by a replay taken for another reason. ADR-0145.
+ *
+ * **The repair is a subtraction rather than a sixth copy.** Sixteen guard addresses were written out
+ * once per contract by hand, eighty strings, beside an `onEach` that existed to spell exactly that and
+ * was used six times. Adding the sixth contract by hand would have made it ninety-six.
+ *
+ * **It is derived from the folders and never from `the-catalogue.ts`, and that is the whole of why it
+ * reads the disk.** This battery injects into `packages/registry/`, so a list imported from a module of
+ * that folder is one a mutant of this battery could move - the expectation and the subject would then
+ * be the same object, and a defect that emptied the catalogue would empty what the battery expects to
+ * find. `contracts/` is outside everything this battery edits, so what is read here cannot be perturbed
+ * by what is measured.
  */
-const THE_FIVE = ['number-parse', 'date-add', 'array-group-by', 'string-levenshtein', 'string-slugify']
+const THE_CONTRACTS: readonly string[] = [
+  ...new Set(
+    trackedFiles().flatMap((path) => {
+      const hit = /^contracts\/typescript\/([^/]+)\/([^/]+)\//.exec(path)
 
-const onEach = (guard: string): readonly string[] => THE_FIVE.map((slug) => `${guard}-${slug}`)
+      return hit === null ? [] : [`${hit[1]}-${hit[2]}`]
+    }),
+  ),
+].sort()
+
+/**
+ * One address per contract, spelled by the caller because the slug is not always the last segment.
+ *
+ * Sorted, and that is safe rather than incidental: a pin's `by` is compared with
+ * `every((id) => failedGuards.includes(id))` and a declaration's `guards` with `includes`, so neither
+ * reads the order. ADR-0130 is why that is stated instead of assumed - a shared list reordered one
+ * folder away had made a sort load-bearing with nothing saying so.
+ */
+const perContract = (spell: (slug: string) => string): readonly string[] => THE_CONTRACTS.map(spell)
+
+/** The common shape, where the slug is the address's last segment. */
+const onEach = (guard: string): readonly string[] => perContract((slug) => `${guard}-${slug}`)
 
 const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts', find, replace })
 const signatureFile = (find: string, replace: string) => ({ file: 'signature.ts', find, replace })
@@ -349,9 +385,15 @@ const mutants: readonly Mutant[] = [
   sameOnEveryLens(
     'I-01',
     'hashes the bytes in the working tree rather than the bytes the registry serves, so the digest ' +
-      'depends on the reader\'s git configuration - the defect this repository had',
+      "depends on the reader's git configuration - the defect this repository had. **It was pinned " +
+      'killed for two years and it is caught on no clone anybody makes.** `the-served-bytes-are-the-' +
+      'committed-bytes` compares what would be published against what git holds, and on a checkout ' +
+      'that agrees with its index there is nothing for this edit to differ on. Measured on one ' +
+      'machine in both directions, control green at 407 tests either way: with the nine tracked files ' +
+      'that carried CRLF where `.gitattributes` declares LF, killed; normalised, survived. Both ' +
+      'hosted runners agree with the normalised reading and not with the machine that wrote this pin.',
     [serialiseFile(READ_A_FILE, 'const bytes = readFileSync(join(base, path))')],
-    killed(['the-served-bytes-are-the-committed-bytes']),
+    survived('a-declared-open-class'),
   ),
 
   sameOnEveryLens(
@@ -412,11 +454,7 @@ const mutants: readonly Mutant[] = [
     // every contract - so the declaration went stale and the guard got stronger. Five is the count
     // ADR-0076 says a pin names in full.
     killed([
-      'the-harness-is-in-one-order-array-group-by',
-      'the-harness-is-in-one-order-date-add',
-      'the-harness-is-in-one-order-number-parse',
-      'the-harness-is-in-one-order-string-levenshtein',
-      'the-harness-is-in-one-order-string-slugify',
+      ...onEach('the-harness-is-in-one-order'),
     ]),
   ),
 
@@ -442,7 +480,9 @@ const mutants: readonly Mutant[] = [
   sameOnEveryLens(
     'I-08',
     'reads the file a second time for its size, so the digest and the byte count of one record ' +
-      'describe two different reads of one file',
+      'describe two different reads of one file. **`I-01` carries the story and this cell shares it**: ' +
+      'the second read only differs from the first where the working tree differs from what is served, ' +
+      'so on any checkout git produces the two reads agree and there is nothing to catch.',
     [
       serialiseFile(
         ONE_READ,
@@ -453,7 +493,7 @@ const mutants: readonly Mutant[] = [
   }`,
       ),
     ],
-    killed(['the-served-bytes-are-the-committed-bytes']),
+    survived('a-declared-open-class'),
   ),
 
   sameOnEveryLens(
@@ -1581,9 +1621,17 @@ const mutants: readonly Mutant[] = [
       'had one consumer. The matching now counts how many contracts declare each word, over the same ' +
       'tokenised fields, so the split decides which words tell the contracts apart as well as which ' +
       'words match - and there its effect is not symmetric, because nothing on the query side is ' +
-      'being counted.',
+      'being counted. **It has gone silent a second time, and this time the cause is a decision.** ' +
+      '`parse yaml` was the one query of the negative corpus that made this edit detectable; at six ' +
+      'contracts that query answers `number/parse@1` unmutated, so ADR-0144 took it out - the control ' +
+      'is red with it in - and this pin went with it. Measured: five contracts with it, killed; five ' +
+      'without it, survives; six with it, the control is red; six as committed, survives on three ' +
+      'environments. Restoring detection was tried against a list of fifteen real queries frozen ' +
+      'before any was run, and none of the twelve the catalogue answers nothing to changes anything ' +
+      'here - so at six contracts, removing this split changes nothing the registry suite observes. ' +
+      'ADR-0145.',
     [searchFile(CAMEL_CASE_IS_SPLIT, `    .replace(/([a-z0-9])([A-Z])/g, '$1$2')`)],
-    killed(['a-query-the-catalogue-cannot-answer-answers-nothing']),
+    survived('unreachable-on-this-catalogue'),
   ),
 
   sameOnEveryLens(
@@ -1867,6 +1915,46 @@ export const battery: Battery = {
    */
   unprobedRegions: [
     /**
+     * **Nine guards that had a witness for two years and never had one anybody could reproduce.**
+     * ADR-0145.
+     *
+     * They were reddened by `I-01` and `I-08`, and both of those cells only differ from the reference
+     * where the working tree differs from what the registry serves. `.gitattributes` declares
+     * `eol=lf` and it does not renormalise a working directory that is already there, so the machine
+     * those pins were written on kept nine files carrying CRLF and the cells were seen red - one
+     * hundred and four seconds after the commit that abolished the condition for every clone made
+     * afterwards. Measured on that machine in both directions with the control green at 407 tests
+     * either way, and on two hosted runners of different platforms: on any checkout git produces,
+     * both cells survive.
+     *
+     * So the pins are honest now and this region is what that costs. **What lost its witness is the
+     * assembly and not the promise**: `a-crlf-source-is-served-as-its-lf-form`,
+     * `a-byte-order-mark-is-not-content` and `normalising-changes-the-digest` call `servedBytes` on
+     * constructed buffers, so they have teeth on every platform and cannot go quiet. What has none is
+     * the end-to-end claim - and `the-served-bytes-are-the-committed-bytes` says where its own teeth
+     * are, in its own comment, under a heading that reads *Where this guard has teeth, said out loud*.
+     * What nobody had declared is that its pins inherited that limit.
+     *
+     * **It is reachable and the mutant that would reach it is not written here.** It would have to
+     * make the serialised bytes differ from the committed ones on a tree that agrees with its index -
+     * an edit inside `canonical.ts` rather than one that chooses which bytes to read - and whether one
+     * exists that the three unit guards above do not already catch first is a question of its own.
+     * `CLAUDE.md` carries it as an open entry with that price.
+     */
+    {
+      guards: [
+        'the-served-bytes-are-the-committed-bytes',
+        'a-rendered-set-of-bindings-reads-back-as-itself',
+        'a-fetched-harness-resolves-every-import-it-carries',
+        ...onEach('a-blob-answer-hashes-to-its-address'),
+      ],
+      nature: 'claims detection',
+      reason:
+        'the end-to-end reading of what this repository would publish against what git holds. Its ' +
+        'two witnesses were retired for claiming a kill that no clone can reproduce, and the mutant ' +
+        'that would redden it on a tree agreeing with its index is not written. ADR-0145',
+    },
+    /**
      * **Unaccounted for since the day it was written, and found by a replay rather than by a
      * reader.** It arrived at `70cfb22` with the standing, and its name has never appeared in this
      * file - so from that commit until this one the battery measured a suite one guard larger than
@@ -1934,11 +2022,7 @@ export const battery: Battery = {
         'the-parameters-of-a-parameter-are-not-parameters',
         'a-trailing-comma-leaves-no-parameter-behind-it',
         'an-arrow-inside-a-type-parameter-does-not-close-it',
-        'the-call-of-number-parse-is-read-from-its-own-signature',
-        'the-call-of-date-add-is-read-from-its-own-signature',
-        'the-call-of-array-group-by-is-read-from-its-own-signature',
-        'the-call-of-string-levenshtein-is-read-from-its-own-signature',
-        'the-call-of-string-slugify-is-read-from-its-own-signature',
+        ...perContract((slug) => `the-call-of-${slug}-is-read-from-its-own-signature`),
       ],
     },
     {
@@ -1985,57 +2069,21 @@ export const battery: Battery = {
        * something going wrong.
        */
       guards: [
-        'every-declared-type-occurs-in-the-contract-number-parse',
-        'every-declared-type-occurs-in-the-contract-date-add',
-        'every-declared-type-occurs-in-the-contract-array-group-by',
-        'every-declared-type-occurs-in-the-contract-string-levenshtein',
-        'every-declared-type-occurs-in-the-contract-string-slugify',
-        'the-answer-is-the-export-the-identity-names-number-parse',
-        'the-answer-is-the-export-the-identity-names-date-add',
-        'the-answer-is-the-export-the-identity-names-array-group-by',
-        'the-answer-is-the-export-the-identity-names-string-levenshtein',
-        'the-answer-is-the-export-the-identity-names-string-slugify',
-        'the-profile-vocabulary-and-the-profiles-agree-number-parse',
-        'the-profile-vocabulary-and-the-profiles-agree-date-add',
-        'the-profile-vocabulary-and-the-profiles-agree-array-group-by',
-        'the-profile-vocabulary-and-the-profiles-agree-string-levenshtein',
-        'the-profile-vocabulary-and-the-profiles-agree-string-slugify',
+        ...onEach('every-declared-type-occurs-in-the-contract'),
+        ...onEach('the-answer-is-the-export-the-identity-names'),
+        ...onEach('the-profile-vocabulary-and-the-profiles-agree'),
         'every-mutation-provenance-resolves',
-        'every-case-is-addressable-across-the-whole-contract-number-parse',
-        'every-case-is-addressable-across-the-whole-contract-date-add',
-        'every-case-is-addressable-across-the-whole-contract-array-group-by',
-        'every-case-is-addressable-across-the-whole-contract-string-levenshtein',
-        'every-case-is-addressable-across-the-whole-contract-string-slugify',
-        'the-address-is-well-formed-number-parse',
-        'the-address-is-well-formed-date-add',
-        'the-address-is-well-formed-array-group-by',
-        'the-address-is-well-formed-string-levenshtein',
-        'the-address-is-well-formed-string-slugify',
+        ...onEach('every-case-is-addressable-across-the-whole-contract'),
+        ...onEach('the-address-is-well-formed'),
         'no-two-contracts-share-an-address',
-        'every-produced-expression-occurs-in-the-contract-number-parse',
-        'every-produced-expression-occurs-in-the-contract-date-add',
-        'every-produced-expression-occurs-in-the-contract-array-group-by',
-        'every-produced-expression-occurs-in-the-contract-string-levenshtein',
-        'every-produced-expression-occurs-in-the-contract-string-slugify',
-        'every-produced-profile-exists-number-parse',
-        'every-produced-profile-exists-date-add',
-        'every-produced-profile-exists-array-group-by',
-        'every-produced-profile-exists-string-levenshtein',
-        'every-produced-profile-exists-string-slugify',
+        ...onEach('every-produced-expression-occurs-in-the-contract'),
+        ...onEach('every-produced-profile-exists'),
         'a-case-that-is-not-a-call-is-refused',
-        'every-harness-file-is-hashed-number-parse',
-        'every-harness-file-is-hashed-date-add',
-        'every-harness-file-is-hashed-array-group-by',
-        'every-harness-file-is-hashed-string-levenshtein',
-        'every-harness-file-is-hashed-string-slugify',
+        ...onEach('every-harness-file-is-hashed'),
         // `the implementations under the five contracts`, named guard by guard since I-26 and I-27
         // reached ten of its eighteen. These eight are what is left silent: the perimeter mutants move
         // which files an implementation carries, and none of these reads that.
-        'the-implementation-belongs-to-its-contract-number-parse',
-        'the-implementation-belongs-to-its-contract-date-add',
-        'the-implementation-belongs-to-its-contract-array-group-by',
-        'the-implementation-belongs-to-its-contract-string-levenshtein',
-        'the-implementation-belongs-to-its-contract-string-slugify',
+        ...onEach('the-implementation-belongs-to-its-contract'),
         'every-reference-has-no-dependencies',
         'nothing-is-measured-yet',
         'a-lockfile-is-json',
@@ -2052,18 +2100,10 @@ export const battery: Battery = {
         'a-bundle-that-is-not-addressed-like-a-blob-is-refused',
         'a-byte-order-mark-is-not-content',
         'a-crlf-source-is-served-as-its-lf-form',
-        'a-snapshot-invents-no-field-array-group-by',
-        'a-snapshot-invents-no-field-date-add',
-        'a-snapshot-invents-no-field-number-parse',
-        'a-snapshot-invents-no-field-string-levenshtein',
-        'a-snapshot-invents-no-field-string-slugify',
+        ...onEach('a-snapshot-invents-no-field'),
         'a-standing-cannot-be-set-on-something-unpublished',
         'a-standing-changes-and-the-digest-does-not',
-        'a-standing-field-does-not-move-the-digest-array-group-by',
-        'a-standing-field-does-not-move-the-digest-date-add',
-        'a-standing-field-does-not-move-the-digest-number-parse',
-        'a-standing-field-does-not-move-the-digest-string-levenshtein',
-        'a-standing-field-does-not-move-the-digest-string-slugify',
+        ...onEach('a-standing-field-does-not-move-the-digest'),
         'a-value-json-would-lose-is-refused-a-bigint',
         'a-value-json-would-lose-is-refused-a-function',
         'a-value-json-would-lose-is-refused-a-hole',
@@ -2079,11 +2119,7 @@ export const battery: Battery = {
         'every-standing-field-says-why-it-cannot-be-frozen',
         'no-two-contracts-share-a-digest',
         'normalising-changes-the-digest',
-        'the-frozen-half-and-the-standing-half-partition-an-implementation-array-group-by',
-        'the-frozen-half-and-the-standing-half-partition-an-implementation-date-add',
-        'the-frozen-half-and-the-standing-half-partition-an-implementation-number-parse',
-        'the-frozen-half-and-the-standing-half-partition-an-implementation-string-levenshtein',
-        'the-frozen-half-and-the-standing-half-partition-an-implementation-string-slugify',
+        ...onEach('the-frozen-half-and-the-standing-half-partition-an-implementation'),
         'the-limit-of-a-signature-is-published',
         'two-majors-of-one-name-coexist',
       ],
@@ -2109,11 +2145,7 @@ export const battery: Battery = {
         'an-unpublished-implementation-cannot-be-depended-on',
         'every-claim-is-about-an-endpoint-that-exists',
         'every-endpoint-answers-a-need-somebody-has',
-        'every-field-a-snapshot-serves-is-classified-array-group-by',
-        'every-field-a-snapshot-serves-is-classified-date-add',
-        'every-field-a-snapshot-serves-is-classified-number-parse',
-        'every-field-a-snapshot-serves-is-classified-string-levenshtein',
-        'every-field-a-snapshot-serves-is-classified-string-slugify',
+        ...onEach('every-field-a-snapshot-serves-is-classified'),
         'every-identifier-is-an-address',
         'every-need-is-answered-exactly-once',
         'every-stratum-is-translated-and-no-translation-is-orphaned',
@@ -2143,20 +2175,12 @@ export const battery: Battery = {
         'a-blob-answer-with-one-byte-changed-is-refused',
         'a-shared-file-is-recognised-by-its-digest-and-never-by-its-path',
         'a-translation-is-addressed-to-a-reader',
-        'an-implementation-binding-carries-no-frozen-field-array-group-by',
-        'an-implementation-binding-carries-no-frozen-field-date-add',
-        'an-implementation-binding-carries-no-frozen-field-number-parse',
-        'an-implementation-binding-carries-no-frozen-field-string-levenshtein',
-        'an-implementation-binding-carries-no-frozen-field-string-slugify',
+        ...onEach('an-implementation-binding-carries-no-frozen-field'),
         'every-claim-is-an-address',
         'every-entry-became-an-endpoint-that-exists',
         'every-entry-says-why',
         'every-verifiable-claim-says-what-it-does-not-establish',
-        'no-private-field-reaches-a-snapshot-answer-array-group-by',
-        'no-private-field-reaches-a-snapshot-answer-date-add',
-        'no-private-field-reaches-a-snapshot-answer-number-parse',
-        'no-private-field-reaches-a-snapshot-answer-string-levenshtein',
-        'no-private-field-reaches-a-snapshot-answer-string-slugify',
+        ...onEach('no-private-field-reaches-a-snapshot-answer'),
         'the-believed-natures-are-the-declared-ones-and-none-is-withholding',
         'the-checks-that-need-nothing-from-the-registry',
         'the-methodology-answer-carries-both-columns-and-the-seeding-policy',
