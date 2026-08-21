@@ -1,19 +1,27 @@
 import { execFileSync } from 'node:child_process'
 import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, relative, sep } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
+import { closureFrom, sourceNamedBy } from '../packaging/reachable.ts'
+
 import { THE_REPOSITORY } from './paths.ts'
 import { THE_BATTERIES } from './published.ts'
-import { selectionFor, theFileOf } from './selection.ts'
+import {
+  selectionFor,
+  theFileOf,
+  THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS,
+  WHAT_A_RUN_OF_ANY_BATTERY_READS,
+} from './selection.ts'
 
 /**
- * What a push has to answer for, resolved against what each battery injects into.
+ * What a push has to answer for, resolved against what each battery injects into and what each one is
+ * built out of.
  *
  * ---------------------------------------------------------------------------
- * Two subjects, and they are deliberately not one guard
+ * Three subjects, and they are deliberately not one guard
  * ---------------------------------------------------------------------------
  *
  * The **rule** is total over `THE_BATTERIES` and is checked by construction: every battery answers
@@ -21,12 +29,18 @@ import { selectionFor, theFileOf } from './selection.ts'
  * enters this population with nobody editing anything here, which is the property a typed list of
  * twenty-one names would not have.
  *
- * The **entry point** is what the workflow runs, and none of the rule's guards reach it: reading a
+ * The **instrument** is the other half of what a push can move, and it is not total over anything: it
+ * is a declaration, so its guard is a second, independent statement rather than a reading of the
+ * first. The walk is what notices the instrument reaching somewhere new; the declaration is what
+ * notices the walk going quiet - which is the pair `sharedHarnessOf` is built on, and the reason
+ * neither half alone would do.
+ *
+ * The **entry point** is what the workflow runs, and none of the guards above reach it: reading a
  * range out of git, deciding that an unreadable one selects everything, and writing the two outputs a
  * matrix is built from are its own and are only exercised by starting it. So it is started, the way
  * `instrument.test.ts` starts `measure.ts fixture` - the neighbouring guard's argument said out loud,
- * because a reader who saw only the first three would take the rule's totality for coverage of the
- * thing the workflow actually invokes.
+ * because a reader who saw only the rule's guards would take its totality for coverage of the thing
+ * the workflow actually invokes.
  */
 
 /** A folder no battery injects into, so a change there selects nothing. It is not a hypothetical. */
@@ -100,6 +114,94 @@ describe('which batteries a change has to answer for', () => {
     const backwards = [...THE_BATTERIES].reverse().map((battery) => `${battery.contractPath}/x.ts`)
 
     expect(selectionFor(backwards, THE_BATTERIES).batteries).toEqual(declared)
+  })
+})
+
+/**
+ * Every file the imports say a run of a battery reads, repository-relative and forward-slashed.
+ *
+ * Two kinds of entry point, because `measure.ts` reaches no battery: it resolves one through a
+ * templated `import()` that `specifiersIn` cannot see, so each declaration is walked from as well. The
+ * battery files themselves are dropped from the answer - `theFileOf` already answers for those, one
+ * battery each, and folding them in here would make every battery answer for every other.
+ */
+const whatTheImportsSay = (): readonly string[] => {
+  const reached = new Set<string>()
+
+  for (const entry of ['mutation/measure.ts', ...THE_BATTERIES.map(theFileOf)]) {
+    for (const file of closureFrom(join(THE_REPOSITORY, entry), sourceNamedBy)) reached.add(file)
+  }
+
+  return [...reached]
+    .map((file) => relative(THE_REPOSITORY, file).split(sep).join('/'))
+    .filter((path) => !path.endsWith('.battery.ts'))
+    .sort()
+}
+
+describe('what every battery is built out of', () => {
+  /**
+   * The declaration against the walk, in both directions and in one guard because one disagreement is
+   * one event: a file the instrument started reading and a file it stopped reading are the same
+   * failure of the pair to agree, and reporting them apart would say the second is a different kind of
+   * thing than the first.
+   *
+   * Seen red both ways: with `mutation/attribution.ts` taken out of the declaration, and with
+   * `mutation/replay.ts` - a real file no run reads - put into it.
+   */
+  it('every-file-a-run-of-a-battery-reads-is-declared', () => {
+    expect([...WHAT_A_RUN_OF_ANY_BATTERY_READS].sort()).toEqual(whatTheImportsSay())
+  })
+
+  /**
+   * The rule the declaration exists for. It is written over `THE_BATTERIES` rather than over a count,
+   * so a battery added to the instrument enters this claim with nobody editing anything here.
+   *
+   * Seen red by leaving `theInstrumentMoved` out of the filter in `selectionFor`, which is the state
+   * every push of this repository was in until this guard was written: `f465660` moved `run.ts`,
+   * `paths.ts` and `mutants.ts` and replayed two batteries of twenty-one, and `8b6aa89` moved
+   * `attribution.ts` and replayed none.
+   */
+  it('a-change-to-what-every-battery-is-built-out-of-selects-every-battery', () => {
+    const selects = WHAT_A_RUN_OF_ANY_BATTERY_READS.filter(
+      (path) => !THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS.includes(path),
+    )
+    const missed = selects.filter(
+      (path) =>
+        selectionFor([path], THE_BATTERIES).batteries.length !== THE_BATTERIES.length,
+    )
+
+    expect(missed).toEqual([])
+    expect(selects.length).toBeGreaterThan(0)
+  })
+
+  /**
+   * The neighbour of the guard above, and it is about the other half of the same declaration. That one
+   * says a shared file selects everything; this one says the exception is real rather than a name
+   * somebody left behind - a file that stopped being read by a run would sit here selecting nothing
+   * for a reason that had expired, and nothing else in this file would notice.
+   *
+   * Seen red by naming `mutation/replay.ts`, which no run reads.
+   */
+  it('a-declaration-left-to-its-own-rows-is-one-a-run-really-reads', () => {
+    const stale = THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS.filter(
+      (path) => !WHAT_A_RUN_OF_ANY_BATTERY_READS.includes(path),
+    )
+
+    expect(stale).toEqual([])
+  })
+
+  /**
+   * The residue, kept where a reader of the job's log meets it rather than in a paragraph. `census.ts`
+   * is a table keyed by suite file, so a row of it moving is already addressed to a folder; the
+   * argument is at `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS` and the measurement with it.
+   *
+   * Seen red by taking the exception out of `everyBatteryAnswersFor`, which selects all twenty-one.
+   */
+  it('a-change-to-a-declaration-left-to-its-own-rows-selects-nothing-and-is-reported', () => {
+    const selection = selectionFor([...THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS], THE_BATTERIES)
+
+    expect(selection.batteries).toEqual([])
+    expect(selection.unaccounted).toEqual([...THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS])
   })
 })
 
