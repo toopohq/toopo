@@ -44,6 +44,7 @@
  */
 
 import type { Battery, Calibration, GuardIdentity, RunResult, SilentGuards } from './run.ts'
+import { thePlatformFamily } from './run.ts'
 
 export type GuardAttribution = {
   readonly guard: string
@@ -66,6 +67,17 @@ export type ColumnAttribution = {
   readonly unprobedClaims: readonly AccountedGuard[]
   /** Never red, documents a decision, and no mutant probes its region. The case still stands. */
   readonly unprobedDecisions: readonly AccountedGuard[]
+  /**
+   * Never red here, because the only cells that name it are ones this platform does not measure.
+   *
+   * **It is the cell's applicability arriving one level up, and it was missed once.** A cell carrying
+   * `onlyOn` is not injected off its family, so a guard whose only witness is that cell goes silent
+   * there - and a silence nobody accounts for is what this file refuses. Declaring it in
+   * `unreachableGuards` instead would be false where the defect does exist and would redden
+   * `wronglyDeclaredSilent` on that platform, so the account has to be the same fact the cell carries
+   * rather than a second declaration beside it. ADR-0147.
+   */
+  readonly notMeasuredHere: readonly AccountedGuard[]
   /** Never red, and nothing says why: a guard nobody has shown able to fail. */
   readonly unaccountedFor: readonly string[]
   /** Declared silent, and a mutant reddened it anyway, so the declaration is stale. */
@@ -92,6 +104,32 @@ const reasonIn = (
 const accountFor = (battery: Battery, guard: GuardIdentity, lens: string): string | undefined =>
   reasonIn(battery.unreachableGuards, guard, lens) ??
   reasonIn(battery.unprobedRegions, guard, lens)
+
+/**
+ * The battery's own sentence about why a guard has no witness on this platform, or `undefined`.
+ *
+ * It reads the **pin** rather than the run, because a run off that family carries the resolved
+ * expectation - `not-applicable`, with neither the guards it names nor the reason it was skipped for.
+ * Reading the declaration is also what makes this a fact about the battery rather than about what
+ * happened to be measured.
+ *
+ * A guard reaching here is already silent, so no cell reddened it; and a cell that had named it and
+ * run without reddening it would have disagreed with its own pin one check earlier. So one skipped
+ * cell naming it is enough.
+ */
+const skippedOnThisPlatform = (
+  battery: Battery,
+  guard: GuardIdentity,
+  column: string,
+): string | undefined =>
+  battery.mutants
+    .map((mutant) => mutant.expected[column])
+    .find(
+      (pinned) =>
+        pinned?.onlyOn !== undefined &&
+        pinned.onlyOn.family !== thePlatformFamily() &&
+        (pinned.by ?? []).includes(guard.id),
+    )?.onlyOn?.because
 
 const namedIn = (
   groups: readonly SilentGuards[],
@@ -141,8 +179,16 @@ const attributeColumn = (
       silent,
       lens,
     ),
-    unaccountedFor: silent
+    notMeasuredHere: silent
       .filter((guard) => accountFor(battery, guard, lens) === undefined)
+      .map((guard) => ({ guard: guard.id, reason: skippedOnThisPlatform(battery, guard, column) }))
+      .filter((entry): entry is AccountedGuard => entry.reason !== undefined),
+    unaccountedFor: silent
+      .filter(
+        (guard) =>
+          accountFor(battery, guard, lens) === undefined &&
+          skippedOnThisPlatform(battery, guard, column) === undefined,
+      )
       .map((guard) => guard.id),
     wronglyDeclaredSilent: speaking
       .filter((guard) => accountFor(battery, guard, lens) !== undefined)
@@ -189,6 +235,9 @@ export const renderAttribution = (columns: readonly ColumnAttribution[]): string
       `  never red, a region this battery does not probe - documents a decision, which stands ` +
         `whether or not a mutant violates it (${column.unprobedDecisions.length})`,
       ...groupedByReason(column.unprobedDecisions),
+      `  never red, not measured on this platform - the cells that name it are not injected here ` +
+        `(${column.notMeasuredHere.length})`,
+      ...groupedByReason(column.notMeasuredHere),
       `  never red, UNACCOUNTED FOR (${column.unaccountedFor.length})`,
       ...column.unaccountedFor.map((id) => `    ${id}`),
       ...(column.wronglyDeclaredSilent.length === 0
