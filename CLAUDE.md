@@ -211,6 +211,25 @@ four place counts and twenty-five traps at twenty-one, zero disagreements, each 
 argument beside the measurement. They state an intent and carry no behaviour, in a file nothing may
 edit again.
 
+**The language moved under a published contract for the first time, and the catalogue can now say so.**
+Temporal reached stage 4 in March 2026 and Node 26 ships it unflagged; `date/add@1` is frozen for life.
+**The field a contract says this with is shut**: `identity.relationToTheLanguage` is inside the digest,
+and so is the divergence replay, because a declared file enters `harness` — measured at `ee2d1c1`, both
+move `date/add@1` off `94c5acc7…`. So the answer goes in the standing, as `againstTheLanguage`, which is
+the **second of two candidates `CONTRACT_STANDING_FIELDS` named on paper before either existed** —
+*anything a later measurement attaches to an artefact published without it*. Somebody wrote that sentence
+in advance and what filled it was an event nobody here controls. **The contract stands, and a replay says
+so rather than a reading of the news**: block 4.4 against Temporal, all forty-three cases of both tables,
+**thirty-eight agree and five part for three causes** — and Temporal parts before it can be asked, since
+the declared signature takes a `Date` and Temporal offers a replacement type instead. Every figure carries
+its limit: the reading is V8 13.6's, which predates stage 4 and still exposes the `TimeZone` and `Calendar`
+the specification removed, so the `NaN` cause is published as a suspicion. **`number/parse@1` owes the same
+debt and does not get the field**, because ADR-0128 refuses a standing field that restates the frozen half
+and its description already enumerates what `Number` and `parseFloat` do — so the test for the next contract
+is *does its frozen half already say so*, never *has its language moved*. What the unit could not buy is on
+the list below: the debt is unpayable by either symptom, in a sentence frozen with the contracts it
+describes. ADR-0150.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
@@ -814,6 +833,45 @@ record declares**, which is a worse thing and has never been named here before.
   revision, which is the word ADR-0023 already uses and which nothing implements. Priced as a unit of
   the publishing tool and not built. What is done instead is that both places a reader meets the claim
   now say it is not kept: the head of ADR-0023, and this entry.
+
+**A second entry is not of this list's class either, and it is the same shape one floor down: a debt
+this repository recorded, in a file it may no longer edit, naming two repairs it may no longer make.**
+
+- **That the divergence debt `contractAnatomy` records can ever be paid.** It cannot, by either of the
+  two symptoms it names, and the day it became unpayable is the day the catalogue was published.
+  `packages/catalogue/every-contract.ts` calls it *one debt with two symptoms* — a missing
+  `relationToTheLanguage`, and a missing divergence replay — on `date/add@1` and `number/parse@1`.
+  Measured at `ee2d1c1`: the field is inside `identity` and moves `date/add@1` from `94c5acc7…` to
+  `043afd7d…`; the replay is a file, a declared file enters `harness`, and `harness` is inside the
+  snapshot, so declaring `language.test.ts` moves `date/add@1` to `ed7f8eeb…` and `number/parse@1`
+  from `d5071a58…` to `c8ca3819…`. Both are permanent rule 6 firing correctly.
+
+  **And the sentence describing the debt is frozen with the contracts it describes.**
+  `every-contract.ts` is one of `THE_SHARED_FILES`, so a byte in it moves every contract digest at
+  once — measured, all six. What saves it from being false is that it is stamped, at
+  `THE_ANATOMY_WAS_MEASURED_AT`; what nothing can do is correct it. Today's reading of the field is
+  **four of six** where the frozen sentence says three of five, and the set of contracts still owing
+  it has not moved.
+
+  **The population is the four founding contracts, and it will not grow.** `number/round@1` carries
+  its `language.test.ts` because it declared it *before* it was published, and every contract
+  published after it can do the same — so the window shut once, on the day of the first publication,
+  rather than closing a little further with each contract. That is what makes this an entry to read
+  and not one to act on.
+
+  **What it costs is stated rather than smoothed: two published contracts, two levels of
+  verifiability, for a reason of calendar.** An auditor fetching the snapshot of `number/round@1`
+  receives a replay of what it claims about the language; one fetching `date/add@1` receives seven
+  files and no replay.
+
+  **What is done instead is the half that was reachable.** ADR-0150 puts the re-examination in the
+  standing, where no digest moves, so the catalogue can at least say it looked — and the rule
+  `array/group-by@1` established stops being one whose only expressible outcome is the rare one.
+  What that does not buy is the executable replay, which is blocked on a runtime rather than on a
+  decision: the matrix is `['22.18.0', '24']`, neither has Temporal, and a replay following
+  `array/group-by@1`'s own rule — *a runtime without the function fails loudly instead of skipping* —
+  reddens both legs today. It reopens the day the matrix reaches Node 26, and it will have to live
+  outside the frozen folder. ADR-0150.
 
 **Still open, and what each one now costs.**
 

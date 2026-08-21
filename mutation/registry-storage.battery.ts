@@ -309,11 +309,18 @@ const SERVE_THE_CANONICAL_TEXT = `  canonicalText: canonical(snapshot, 'snapshot
  * Both anchor on the last member of the binding rather than on `lifecycle`, which is where they were
  * until the standing gained a second field. The mutant adds one member to the type and one to the
  * builder, so what it has to attach to is the end of each - and `lifecycle` stopped being that.
+ *
+ * **They have now moved twice for one reason, which makes it a cost rather than an accident.** The
+ * standing gained `useCases` and then `againstTheLanguage`, and each time the end of the type and the
+ * end of the builder were somewhere else. Anchoring on the *last* member is what makes this mutant
+ * mean what it says - it adds a member, so it has to attach where a member is added - and the price of
+ * that is a move per field the standing ever gains. The alternative is anchoring on the closing brace
+ * alone, which occurs everywhere and would attach the defect to whichever one came first.
  */
-const A_BINDING_IS_ONLY_STANDING = `  readonly useCases?: readonly UseCaseRecord[]
+const A_BINDING_IS_ONLY_STANDING = `  readonly againstTheLanguage?: readonly LanguageReExamination[]
 }`
 
-const A_BINDING_IS_BUILT_FROM_STANDING = `  ...(entry.standing.useCases === undefined ? {} : { useCases: entry.standing.useCases }),
+const A_BINDING_IS_BUILT_FROM_STANDING = `    : { againstTheLanguage: entry.standing.againstTheLanguage }),
 })`
 
 // --- The licence perimeter, which is derived from what the installer copies ---
@@ -578,13 +585,13 @@ const mutants: readonly Mutant[] = [
         // Written with a structural type rather than by naming `HarnessFile`, so that the defect is
         // caught by the guard that exists for it and not by an import this file does not have. A
         // mutant killed by the typechecker would measure the import and not the projection.
-        `  readonly useCases?: readonly UseCaseRecord[]
+        `  readonly againstTheLanguage?: readonly LanguageReExamination[]
   readonly harness: readonly { readonly path: string }[]
 }`,
       ),
       responseFile(
         A_BINDING_IS_BUILT_FROM_STANDING,
-        `  ...(entry.standing.useCases === undefined ? {} : { useCases: entry.standing.useCases }),
+        `    : { againstTheLanguage: entry.standing.againstTheLanguage }),
   harness: [],
 })`,
       ),

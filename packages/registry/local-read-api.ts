@@ -221,6 +221,9 @@ const gather = (): {
           standing: {
             lifecycle: record.lifecycle,
             ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
+            ...(record.againstTheLanguage === undefined
+              ? {}
+              : { againstTheLanguage: record.againstTheLanguage }),
           },
         }),
         {

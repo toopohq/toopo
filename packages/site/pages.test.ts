@@ -569,6 +569,48 @@ describe('the site', () => {
   })
 
   /**
+   * A re-examination reaches the reader whole, all three statements of it.
+   *
+   * The registry can hold this and the page can drop it, and the failure would be silent in the worst
+   * way available here: a contract page that says nothing about the language is exactly what a contract
+   * page said before ADR-0150, so nothing would look wrong. What a reader loses is the answer to the
+   * question they arrived with.
+   *
+   * **All three are asserted rather than the block being counted**, because they are three different
+   * kinds of statement and losing any one of them leaves something worse than silence. Without
+   * `whatMoved` the measurement has no subject; without `measurement` the conclusion is the assertion
+   * ADR-0042 refuses; without `whatItEstablishes` a reader is handed a divergence count and left to
+   * infer that the contract is obsolete, which is the opposite of what it says.
+   *
+   * `a-use-case-shows-its-call-its-answer-and-its-caveat` is the same guard one section along, and the
+   * neighbour worth naming is `every-re-examination-carries-the-commit-it-was-taken-at`: that one is
+   * about what the registry holds, this one about what arrives on screen, and neither can see the
+   * other's defect.
+   */
+  it('a-re-examination-reaches-the-reader', () => {
+    const faults: string[] = []
+    const declaring = heldByTheRegistry(source).filter(
+      (held) => held.binding.againstTheLanguage !== undefined,
+    )
+
+    for (const held of declaring) {
+      const what = renderContract(held.contract.address)
+      const reading = toText(page(pageOf(held.contract.address)))
+
+      for (const entry of held.binding.againstTheLanguage ?? []) {
+        for (const [field, prose] of Object.entries(entry)) {
+          if (!reading.includes(asRead(prose))) {
+            faults.push(`${what}: the ${field} of a re-examination does not reach the reader`)
+          }
+        }
+      }
+    }
+
+    expect(declaring.length).toBeGreaterThan(0)
+    expect(faults).toEqual([])
+  })
+
+  /**
    * A contract the catalogue refused must be findable and must never be offered - the rule
    * `toopo search` already follows on the terminal, arriving on the page where somebody would click.
    */

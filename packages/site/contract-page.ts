@@ -502,6 +502,17 @@ export const contractPage = (
   const useCases = held.binding.useCases ?? []
 
   /**
+   * What the registry has measured about this contract since it was frozen, which the contract
+   * itself cannot say. ADR-0150.
+   *
+   * Under *What it does* and not in a section of its own, because the question it answers is the one
+   * a reader arriving from a search asks first - *is this still the thing to use?* - and that
+   * question is answered above the line ADR-0119 drew, not below it among the evidence. It costs no
+   * rail entry, which is what a derived table of contents buys.
+   */
+  const reExaminations = held.binding.againstTheLanguage ?? []
+
+  /**
    * What a reader meets before deciding, and it carries no section about what lands on their disk.
    *
    * ADR-0130 put one here - the file names and the licence header, shown rather than described - and
@@ -519,6 +530,11 @@ export const contractPage = (
         ...(contract.identity.relationToTheLanguage === undefined
           ? []
           : [paragraph(contract.identity.relationToTheLanguage)]),
+        ...reExaminations.flatMap((entry) => [
+          paragraph(entry.whatMoved),
+          paragraph(entry.measurement),
+          paragraph(entry.whatItEstablishes),
+        ]),
         /**
          * Under *What it does* rather than beside it, which is the one section this cut merged.
          *

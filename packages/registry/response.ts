@@ -51,7 +51,12 @@ import type { ContractAddress, ImplementationAddress } from './address.js'
 import { renderContract, renderImplementation } from './address.js'
 import type { Attestation } from './attestation.js'
 import { DIGEST, canonical, digestOfBytes, servedBytes } from './canonical.js'
-import type { ExportRole, Lifecycle, UseCaseRecord } from './contract-record.js'
+import type {
+  ExportRole,
+  LanguageReExamination,
+  Lifecycle,
+  UseCaseRecord,
+} from './contract-record.js'
 import type { BenchmarkFigure, ImplementationStatus } from './implementation-record.js'
 import type {
   Ledger,
@@ -262,6 +267,15 @@ export type ServedContractBinding = NamedAnswer & {
    * about a field that exists rather than about a field nobody added.
    */
   readonly useCases?: readonly UseCaseRecord[]
+  /**
+   * Where the contract stands against a language that moved after it was published. ADR-0150.
+   *
+   * It travels in the binding for the reason a use case does, and with a sharper edge: the whole
+   * point of the field is that the snapshot *cannot* carry it, so a reader who wants to know whether
+   * a frozen contract has been looked at since has to be told by the registry rather than by the
+   * artefact.
+   */
+  readonly againstTheLanguage?: readonly LanguageReExamination[]
 }
 
 /**
@@ -315,6 +329,7 @@ export const CONTRACT_BINDING_NATURES: Readonly<Record<keyof ServedContractBindi
   publishedAt: 'bound-for-life',
   lifecycle: 'revisable',
   useCases: 'revisable',
+  againstTheLanguage: 'revisable',
 }
 
 export const IMPLEMENTATION_BINDING_NATURES: Readonly<
@@ -350,6 +365,9 @@ export const servedContractBinding = (
   publishedAt: entry.publishedAt,
   lifecycle: entry.standing.lifecycle,
   ...(entry.standing.useCases === undefined ? {} : { useCases: entry.standing.useCases }),
+  ...(entry.standing.againstTheLanguage === undefined
+    ? {}
+    : { againstTheLanguage: entry.standing.againstTheLanguage }),
 })
 
 /**

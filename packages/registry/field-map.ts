@@ -135,6 +135,17 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
    */
   'useCases[].data': { visibility: 'public', verification: 'executable' },
 
+  /**
+   * A re-examination is prose the registry writes about somebody else's specification, so all three
+   * are documentary - and that is a statement about what this repository *can* check rather than
+   * about what it would like to. The reading behind it is executable and is not here: the runtimes
+   * this suite runs on have no Temporal, so the replay that would settle it cannot be a guard yet.
+   * ADR-0150 carries what that costs.
+   */
+  'againstTheLanguage[].whatMoved': { visibility: 'public', verification: 'documentary' },
+  'againstTheLanguage[].measurement': { visibility: 'public', verification: 'documentary' },
+  'againstTheLanguage[].whatItEstablishes': { visibility: 'public', verification: 'documentary' },
+
   'identity.exportName': { visibility: 'public', verification: 'executable' },
   'identity.summary': { visibility: 'public', verification: 'documentary' },
   'identity.description': { visibility: 'public', verification: 'documentary' },
@@ -335,6 +346,10 @@ export const publicContract = (record: ContractRecord): unknown => ({
    * classification can sensibly carry, since what would be classified is the absence.
    */
   ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
+  /** Omitted rather than served as an `undefined`, for the reason the line above is. */
+  ...(record.againstTheLanguage === undefined
+    ? {}
+    : { againstTheLanguage: record.againstTheLanguage }),
   identity: record.identity,
   surface: record.surface,
   environments: record.environments,

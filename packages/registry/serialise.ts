@@ -40,6 +40,7 @@ import type {
   ProfileSamples,
   SupportingTypeRecord,
   UniversalPropertyRecord,
+  LanguageReExamination,
   UseCaseRecord,
 } from './contract-record.js'
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
@@ -135,6 +136,15 @@ export type ContractSource = {
    * typed: a declared shape and an encoded value would be two statements of one thing.
    */
   readonly useCases?: readonly Readonly<Record<string, unknown>>[]
+  /**
+   * Where the contract stands against a language that moved under it. ADR-0150.
+   *
+   * Typed directly rather than read as a bag the way `useCases` is, and the difference is that a use
+   * case carries an encoded call - a declared shape beside an encoded value would be two statements
+   * of one thing. A re-examination is three sentences and nothing else, so it is declared the way its
+   * sibling `lifecycle` is.
+   */
+  readonly againstTheLanguage?: readonly LanguageReExamination[]
   /** The folder, relative to the repository root, as the instrument already addresses one. */
   readonly folder: string
   /**
@@ -793,6 +803,10 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
             useCaseOf(entry, source.address.name, surface.call),
           ),
         }),
+    // The same treatment one field along, and absent for the same reason.
+    ...(source.againstTheLanguage === undefined
+      ? {}
+      : { againstTheLanguage: source.againstTheLanguage }),
     identity: identityOf(source.module),
     surface: {
       exports: surface.exports,

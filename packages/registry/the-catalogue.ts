@@ -233,6 +233,42 @@ export const theCatalogue: readonly ContractSource[] = [
   {
     address: DATE_ADD,
     lifecycle: PUBLISHED,
+    /**
+     * The one contract of the catalogue whose language moved under it after it was frozen. ADR-0150.
+     *
+     * It is declared here rather than in `contract.ts` for the reason a use case is, and for a
+     * sharper one: every door inside the folder is hashed into the digest, so the contract cannot be
+     * the thing that says this.
+     */
+    againstTheLanguage: [
+      {
+        whatMoved:
+          'Temporal reached TC39 stage 4 in March 2026, is part of ES2026, and Node 26 ships it ' +
+          'unflagged. It is the first date and time API the language has ever had, and this ' +
+          'contract is the one standing next to it.',
+        measurement:
+          'Block 4.4 was replayed against Temporal at `ee2d1c1` - all forty-three cases of both ' +
+          'tables, the call bridged through `Date.prototype.toTemporalInstant` and ' +
+          '`ZonedDateTime.add` under `constrain`. **Thirty-eight agree and five part, for three ' +
+          'causes.** The empty duration: Temporal refuses `{}` and `{ days: undefined }`, which ' +
+          'this contract answers as the neutral element, and that cause carries three of the five ' +
+          'rows. Fields of opposite sign: Temporal rejects `{ months: 1, days: -1 }` outright. And ' +
+          'a field carrying `NaN`, which this contract refuses and Temporal answered as zero. ' +
+          '**The reading was taken on V8 13.6**, which predates stage 4 and still exposes the ' +
+          '`Temporal.TimeZone` and `Temporal.Calendar` the specification removed, so the third ' +
+          'cause is a suspicion and not an established divergence: the specification requires a ' +
+          'field that is not integral to be rejected, and a runtime that answered zero was wrong ' +
+          'rather than different. The first two are the two this contract already knew about.',
+        whatItEstablishes:
+          'The contract stands, and it is not the news that says so. Temporal does not answer what ' +
+          'this contract specifies: the declared signature takes a `Date` and returns a `Date`, ' +
+          'Temporal takes neither and offers a replacement type instead, so the bridge the ' +
+          'measurement went through had to be built by hand. Permanent rule 7 is therefore cleared ' +
+          'again rather than assumed, and `absorbed-by-the-language` is not reached. What would ' +
+          'reach it is the language answering block 4.4 of this contract the way `Map.groupBy` ' +
+          'answers block 4.4 of `array/group-by@1` - on every case, with nothing bridged.',
+      },
+    ],
     folder: 'contracts/typescript/date/add',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,

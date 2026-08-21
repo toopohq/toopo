@@ -232,6 +232,55 @@ export type UseCaseRecord = WrittenAsACall & {
   readonly caveat: string
 }
 
+// --- The language moving under a contract that cannot answer ---
+
+/**
+ * One re-examination of a published contract against a language that moved under it.
+ *
+ * `array/group-by@1` established the rule and `CLAUDE.md` records it: *the language moves, so the
+ * catalogue re-examines itself against it. Clearing rule 7 is not a property a contract acquires once
+ * and keeps.* That rule has an outcome the schema already carries - `absorbed-by-the-language`, for
+ * the day the language answers a published contract outright. **What it had no shape for at all is
+ * the other outcome**, which is the ordinary one: the language moved, the catalogue looked, and the
+ * contract stands. A rule whose only expressible result is the rare one is a rule a reader meets as
+ * silence in every case but that one.
+ *
+ * ---------------------------------------------------------------------------
+ * Why it is here and not in `identity`
+ * ---------------------------------------------------------------------------
+ *
+ * `identity.relationToTheLanguage` is where a contract says where it stands, and `contractSnapshot`
+ * freezes `identity` whole - measured, adding that field to `date/add@1` moves its digest from
+ * `94c5acc7…` to `043afd7d…`, which permanent rule 6 forbids. So the field a contract would use to
+ * answer is shut on exactly the contracts that need to: the ones published before their language
+ * moved. This is the second of the two candidates `CONTRACT_STANDING_FIELDS` named on paper -
+ * *anything a later measurement attaches to an artefact published without it* - and a re-examination
+ * is that, literally.
+ *
+ * ---------------------------------------------------------------------------
+ * The three fields are three different kinds of statement, and that is ADR-0042
+ * ---------------------------------------------------------------------------
+ *
+ * What moved is a fact about somebody else's specification. The measurement is a reading, with its
+ * coordinates and its limits. What it establishes is a conclusion, and a conclusion offered without
+ * its premise is assertion. Folding the last two together is how a report comes to name a cause no
+ * measurement carries.
+ */
+export type LanguageReExamination = {
+  /** What moved, named precisely enough that a reader can go and check it themselves. */
+  readonly whatMoved: string
+  /**
+   * The reading, with the commit it was taken at and what it does not cover.
+   *
+   * The commit is written into the prose in backticks rather than carried in a field of its own,
+   * because that is the spelling `mutation/history.ts` already sweeps: a stamp in a field nothing
+   * resolves is a coordinate that stops naming anything the day the history moves.
+   */
+  readonly measurement: string
+  /** What the reading establishes, which is never the reading itself. ADR-0042. */
+  readonly whatItEstablishes: string
+}
+
 // --- The record ---
 
 export type ContractRecord = {
@@ -251,6 +300,14 @@ export type ContractRecord = {
    * it. The same treatment `surface.failureReasons` gets, one block along.
    */
   readonly useCases?: readonly UseCaseRecord[]
+  /**
+   * Where the contract stands against a language that moved after it was published. ADR-0150.
+   *
+   * Beside `useCases` and outside `identity` for the same measured reason, and absent rather than
+   * empty on a contract whose language has not moved under it - which is every contract of the
+   * catalogue but one.
+   */
+  readonly againstTheLanguage?: readonly LanguageReExamination[]
   readonly identity: IdentityRecord
   readonly surface: SurfaceRecord
   readonly environments: readonly string[]

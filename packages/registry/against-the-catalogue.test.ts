@@ -376,4 +376,30 @@ describe('the five, read against their own source', () => {
       expect(wrong.map((file) => file.path)).toEqual([])
     },
   )
+
+  /**
+   * A re-examination says when it was taken, in the spelling something already resolves.
+   *
+   * ADR-0018's rule is that a count which survives carries its coordinates, and a re-examination is
+   * the shape that rule was written for: it is a reading of somebody else's specification on a
+   * runtime that moves, so a sentence about it with no commit beside it is true on the morning it is
+   * written and unfalsifiable afterwards. Without this, a re-examination declaring nothing but prose
+   * passes every other guard here.
+   *
+   * **What it does not check is that the identifier names a commit, and the neighbour is why.**
+   * `citationFaults` in `mutation/history.ts` sweeps `theEditableSources()` for exactly this pattern
+   * and refuses one that resolves to no commit or to more than one; `the-catalogue.ts` is tracked and
+   * frozen by nothing, so it is inside that population already. Repeating the resolution here would
+   * be a second statement of one fact, and the cheaper half of it. This guard is about *presence*
+   * and that one is about *reference*.
+   */
+  it('every-re-examination-carries-the-commit-it-was-taken-at', () => {
+    const unstamped = theCatalogue.flatMap((source) =>
+      (source.againstTheLanguage ?? [])
+        .filter((entry) => !/`[0-9a-f]{7}`/.test(entry.measurement))
+        .map((entry) => `${renderContract(source.address)}: ${entry.whatMoved.slice(0, 60)}…`),
+    )
+
+    expect(unstamped).toEqual([])
+  })
 })
