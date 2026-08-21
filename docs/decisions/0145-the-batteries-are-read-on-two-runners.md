@@ -76,12 +76,28 @@ the two-gate form does not survive* - was written in the same commit.
 ### The coordinates
 
     Linux    run 32425759814   ubuntu24 20260816.277.1   node v24.19.0   git 2.55.0
+             at 26e2000, which is 7c9906c plus one workflow file
     Windows  run 32431274756   windows-latest            node v24.19.0
-    commit   26e2000, which is 7c9906c plus one workflow file
+             at 92f60d8, which is 26e2000 plus the job that runs it
     21 batteries, 758 cells, one job each, all started within 32 s of one another
 
     Linux    19 of 21 agree   89.8 min of battery time    25.1 min of wall clock
     Windows  20 of 21 agree  117.7 min of battery time    33.6 min of wall clock
+
+**This block published `commit 26e2000` for both legs, and it was wrong on the day it was written.**
+`gh run view 32431274756 --json headSha` answers `92f60d8`, and at `26e2000` the Windows job does not
+exist - so no replay there could produce the column the coordinate sat under.
+
+**It is not a figure that moved.** `git diff --numstat 26e2000 92f60d8` reports
+`94 0 .github/workflows/the-reading.yml` and nothing else, so both legs measured the same bytes and every number
+above stands exactly as it is. What was wrong is the coordinate, and a coordinate that was never the
+measurement's is a defect ADR-0018 has no clause for: its rules are written against a stamp going
+stale, and this one was false at birth. **It is the second such in one week**, the first being the
+sentence *and not one battery* this record repairs above - published eleven days after `fc41c4e`
+refuted it.
+
+Both commits are reachable from the annotated tag `evidence/the-batteries-on-two-runners`, which is
+what let the branch be deleted without killing the five citations of `26e2000` this repository holds.
 
 `22.18.0` is deliberately unread. `suites.yml` carries two runtime floors because the question there
 is which runtimes pass; a battery measures what a suite catches and not which runtime ran it, which is
@@ -151,6 +167,19 @@ camel-case splitting from the tokeniser and pins `killed(['a-query-the-catalogue
     six contracts, `parse yaml` in the corpus               the unmutated control is RED
     six contracts, as committed                             S-12 survives, on three environments
 
+**The four states, named so that a reader can rebuild each of them, which this record did not say and
+had to.** *Five contracts* is `50ff990^`, and the corpus is the array inside
+`a-query-the-catalogue-cannot-answer-answers-nothing` in `packages/registry/search.test.ts`, whose
+last entry there is `'parse yaml',`. So the first row is that commit as committed; the second is that
+commit with the one line removed; the third is `50ff990` with the same line put back; the fourth is
+`50ff990` as committed. **Two of the four are trees no commit of this repository holds**, which is
+why the file and the line are written out here rather than a commit identifier being offered for each
+row. The throwaway commit that carried the second was deleted with the branch, and nothing cited it.
+
+`parse yaml` did not leave the file at the sixth contract, it left the array: `50ff990` takes the
+entry out and writes two paragraphs about why, so a reader grepping the name at the tip finds the
+argument and not the corpus.
+
 So `parse yaml` was the one query in that corpus which made the mutant detectable; the sixth contract
 forced it out - ADR-0144 removed it because the control is red with it - and the pin went with it, with
 nothing saying so. It is [ADR-0130](0130-a-contract-page-publishes-what-its-own-suite-did-not-catch.md)'s
@@ -203,7 +232,14 @@ what unit B's gates exist to answer.
 ## What would reopen this
 
 - A reading at a second commit disagreeing with this one, which is the only thing that could show the
-  four disagreements to be less stable than they look. Every figure here is of `26e2000`.
+  four disagreements to be less stable than they look.
+
+  **This clause read *Every figure here is of `26e2000`* and that was false twice.** The Windows
+  column is of `92f60d8`, which the coordinates above now say; and the causal chain that identified
+  `S-12` is **four trees, three of which are neither** - `bc88230` with the corpus, `bc88230` with
+  `parse yaml` taken out of it, `50ff990` with the corpus, and `50ff990` as committed. So the
+  populations are three and not one: the battery table and the agreement counts, of one tree read on
+  two legs; the four disagreements, of the same; and the `S-12` chain, of four.
 - `22.18.0` being read, which this deliberately did not do. A disagreement on that leg would say the
   runtime floor is a coordinate of a pin as well, which nothing here claims either way.
 - A pin whose verdict depends on the environment arriving a second time, which is what would turn the
@@ -214,10 +250,17 @@ what unit B's gates exist to answer.
 
 ## More Information
 
-The reading was taken on a throwaway branch carrying one workflow file and nothing else, deleted after
-this record was written. It never touched `suites.yml`, because a branch runs its own copy of every
-workflow and editing that file there would have edited the gate that keeps a branch from deploying and
-from publishing.
+The reading was taken on a throwaway branch carrying one workflow file and nothing else. It never
+touched `suites.yml`, because a branch runs its own copy of every workflow and editing that file there
+would have edited the gate that keeps a branch from deploying and from publishing.
+
+**The branch is gone and the two commits are not.** `evidence/the-batteries-on-two-runners` is
+annotated at `92f60d8` and reaches `26e2000` by ascent, which is the fourth use of a mechanism this
+repository already had rather than an exception to anything - `CLAUDE.md` struck the clause forbidding
+tags when the two rewrites refuted it. What the tag keeps readable beyond the criterion is
+`the-reading.yml` itself: a job reading `THE_BATTERIES` with no install and handing the names to a
+matrix through `fromJSON` is the shape the gates in `suites.yml` are built on, and it had already run
+twice before either of them existed.
 
 `confirmed-by` is empty, and that is a state ADR-0001 admits rather than an omission: this record is a
 reading, and what it decides is what the next unit builds. The guards that would confirm it do not
