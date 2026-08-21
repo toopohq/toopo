@@ -3,7 +3,13 @@ import { execFileSync, spawnSync } from 'node:child_process'
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { Battery, Calibration, Mutant, RunResult } from './run.ts'
-import { calibrate, restoreAfterAnInterruption, restoringOnSignal, runBattery } from './run.ts'
+import {
+  calibrate,
+  expectedHere,
+  restoreAfterAnInterruption,
+  restoringOnSignal,
+  runBattery,
+} from './run.ts'
 import { THE_REBUILD_FOLDER } from '../packages/registry/rebuild.ts'
 import { THE_INSTRUMENT_FOLDER, THE_REPOSITORY, strayWorktrees } from './paths.ts'
 import { withCanonicalDriveLetter } from '../vitest-entry-point.ts'
@@ -11,7 +17,7 @@ import { CENSUS, censusFor, THE_CONTRACTS_SUITE } from './census.ts'
 import { attributionOf, disagreementsIn } from './attribution.ts'
 import type { MeasuredBattery } from './score.ts'
 import { renderScore, scoreFaults, theScore } from './score.ts'
-import { killed, mutantsOn, reference, survived, survivesOnlyBlinded } from './mutants.ts'
+import { killed, mutantsOn, onlyOn, reference, survived, survivesOnlyBlinded } from './mutants.ts'
 import { battery, DOUBLED, DOUBLES_A_POSITIVE, DOUBLES_ZERO } from './fixture.battery.ts'
 import { THE_BATTERIES, survivorFaults, theMeasurement } from './published.ts'
 
@@ -937,6 +943,63 @@ describe('what this repository publishes about its own defect detection', () => 
    */
   it('every-survivor-is-accounted-for-by-a-nature-or-by-a-lens', () => {
     expect(survivorFaults(THE_BATTERIES)).toEqual([])
+  })
+
+  /**
+   * A cell whose defect one family of platforms cannot have is not measured off that family.
+   *
+   * The resolution is asked of the same function a run asks, which is what makes this a guard over the
+   * rule rather than over a second statement of it: `measureCell` skips exactly what `expectedHere`
+   * calls `not-applicable`, so a cell can never be measured here and judged by another platform's pin.
+   */
+  it('a-cell-the-platform-decides-is-not-measured-off-its-family', () => {
+    const pinned = onlyOn('windows', 'because a held file cannot be unlinked there', killed(['g']))
+
+    expect(expectedHere(pinned, 'windows')).toEqual(pinned)
+    expect(expectedHere(pinned, 'posix')).toEqual({ verdict: 'not-applicable' })
+  })
+
+  /**
+   * Every such cell says why, and the sentence is the battery's own.
+   *
+   * **A cell whose two answers differ and which does not say why is a pin nobody can check**, and it
+   * is the shape somebody reaches for to silence a red they have not understood. Total over the
+   * batteries, so a second one entering the catalogue is held to the same thing with nobody editing
+   * this.
+   */
+  it('every-cell-the-platform-decides-says-why-the-defect-is-not-there', () => {
+    const mute = THE_BATTERIES.flatMap((one) =>
+      one.mutants.flatMap((mutant) =>
+        Object.entries(mutant.expected)
+          .filter(([, pinned]) => pinned.onlyOn !== undefined && pinned.onlyOn.because.trim() === '')
+          .map(([cell]) => `${one.name}: ${mutant.id} on ${cell} names a platform and no reason`),
+      ),
+    )
+
+    expect(mute).toEqual([])
+  })
+
+  /**
+   * A count may not claim such a cell as caught everywhere without publishing that it is not.
+   *
+   * **This is the figure's coordinate and not a footnote to it.** `populationOf` reads the pin as
+   * written, so `C-64` is one of the 691 on every machine - which is right, because *caught* means
+   * caught wherever the defect exists. What would make that reading false is the cell being counted
+   * and named nowhere, and this is what forbids it.
+   */
+  it('every-cell-the-platform-decides-is-published-beside-the-count-it-enters', () => {
+    const measured = theMeasurement()
+    const named = new Set(measured.whereThePlatformDecides.map((one) => `${one.mutant} ${one.cell}`))
+
+    const unpublished = THE_BATTERIES.flatMap((one) =>
+      one.mutants.flatMap((mutant) =>
+        Object.entries(mutant.expected)
+          .filter(([cell, pinned]) => pinned.onlyOn !== undefined && !named.has(`${mutant.id} ${cell}`))
+          .map(([cell]) => `${one.name}: ${mutant.id} on ${cell} is counted and named nowhere`),
+      ),
+    )
+
+    expect(unpublished).toEqual([])
   })
 
   it('a-survivor-with-no-nature-and-no-blinded-lens-is-refused', () => {

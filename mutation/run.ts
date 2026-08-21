@@ -92,6 +92,37 @@ export type SurvivalNature =
   | 'a-declared-open-class'
 
 /**
+ * The two families of platform an operating-system defect can belong to, as this instrument splits
+ * them.
+ *
+ * Two and not `process.platform`'s whole list, because what a cell of this kind turns on is a rule of
+ * the operating system rather than the name of a distribution: a file another process holds cannot be
+ * removed on Windows and can be everywhere else. The split is therefore total by construction - a
+ * platform is `windows` or it is not - and a third value would be a family nobody has a rule for.
+ */
+export type PlatformFamily = 'windows' | 'posix'
+
+/**
+ * That the defect a cell injects exists on one family of platforms and not on the other.
+ *
+ * **It is an applicability and never a nature.** A `SurvivalNature` explains why a survivor is not a
+ * hole; a cell carrying this never survives anywhere - it is caught where its defect exists and is not
+ * measured where the defect cannot occur. Classifying it as a survivor of any kind would publish a
+ * hole this repository does not have, and classifying it as caught everywhere would publish a verdict
+ * no run off that family can produce.
+ *
+ * `because` is required. A cell whose two verdicts differ and which does not say why is a pin nobody
+ * can check, and it is the shape somebody reaches for to silence a red they have not understood.
+ *
+ * ADR-0147 is the decision, including why no fifth `SurvivalNature` was added and what the two-value
+ * split claims about filesystems rather than about `process.platform`.
+ */
+export type OnlyOnePlatform = {
+  readonly family: PlatformFamily
+  readonly because: string
+}
+
+/**
  * What a cell must produce. `by` names guard identifiers that must be among the reddened, which is
  * what makes a guard replayable rather than merely counted: a defect killed by a different guard
  * than the one that used to catch it is a silent loss of coverage, and naming the guard turns it
@@ -99,12 +130,38 @@ export type SurvivalNature =
  *
  * `nature` is read by nothing this file does - a verdict is a verdict - and exists because a
  * surviving cell is published. `mutation/published.ts` says what a bare count of survivors costs.
+ *
+ * `onlyOn` is read by two things and they are deliberately not the same. **A run resolves it**: off
+ * that family the cell is not injected at all and answers `not-applicable`, which is the word this
+ * instrument already uses for a cell it did not measure and which `score.ts` already excludes.
+ * **A published figure does not**: `mutation/published.ts` reads the verdict as written, so a count is
+ * the same object on every machine and the platform is published as a term of it rather than as an
+ * argument nobody can see in the answer.
  */
 export type Expectation = {
   readonly verdict: Verdict
   readonly by?: readonly string[]
   readonly nature?: SurvivalNature
+  readonly onlyOn?: OnlyOnePlatform
 }
+
+/** Which family this machine belongs to. Node spells exactly one of them `win32`. */
+export const thePlatformFamily = (platform: string = process.platform): PlatformFamily =>
+  platform === 'win32' ? 'windows' : 'posix'
+
+/**
+ * The verdict a cell must produce *here*, which is the pin unless the platform decides otherwise.
+ *
+ * Separate from the pin rather than replacing it, because the two are read by different things: this
+ * is what a run has to agree with, and the pin is what a figure is derived from.
+ */
+export const expectedHere = (
+  pinned: Expectation,
+  family: PlatformFamily = thePlatformFamily(),
+): Expectation =>
+  pinned.onlyOn === undefined || pinned.onlyOn.family === family
+    ? pinned
+    : { verdict: 'not-applicable' }
 
 /**
  * `defect` counts towards the mutation score; `probe` does not. Probes ask questions about the
@@ -757,6 +814,18 @@ const measureCell = (
   const edits = mutant.arms[arm.id]
   if (edits === undefined) return { verdict: 'not-applicable', failedGuards: [] }
 
+  // A cell whose defect this family of platforms cannot have is not injected here. It is the same
+  // refusal as the line above arriving from the operating system instead of from the arm: there the
+  // mutant cannot express the defect, here the platform cannot exhibit it, and in both cases running
+  // the suite would produce a verdict about something other than the defect.
+  //
+  // It asks `expectedHere` rather than comparing the family itself, so that what a run skips and what
+  // a run is held to are one decision. Two statements of it would be free to disagree, and the shape
+  // of that disagreement is a cell measured here and judged by another platform's pin.
+  if (expectedHere(expectationFor(mutant, arm, lens)).verdict === 'not-applicable') {
+    return { verdict: 'not-applicable', failedGuards: [] }
+  }
+
   restore(battery.contractPath)
   checkoutArm(battery.contractPath, arm.ref)
   applyEdits(battery.contractPath, lens.edits, `lens ${lens.id}`)
@@ -1033,7 +1102,7 @@ export const runBattery = (
       }
 
       for (const mutant of selected) {
-        const expected = expectationFor(mutant, arm, lens)
+        const expected = expectedHere(expectationFor(mutant, arm, lens))
         const { verdict, failedGuards } = measureCell(battery, arm, lens, mutant, expectedTests)
         const agrees = agreesWith(expected, verdict, failedGuards)
 

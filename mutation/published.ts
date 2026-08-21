@@ -44,7 +44,7 @@
  * `theMeasurement` returns the two together and there is no export that gives the total alone.
  */
 
-import type { Battery, Mutant, SurvivalNature } from './run.ts'
+import type { Battery, Mutant, PlatformFamily, SurvivalNature } from './run.ts'
 
 import { battery as arrayGroupBySpec } from './array-group-by-spec.battery.ts'
 import { battery as arrayGroupBy } from './array-group-by.battery.ts'
@@ -159,6 +159,16 @@ export type PublishedSilence = {
   readonly reason: string
 }
 
+/** A cell whose defect one family of platforms cannot have, with the battery's own reason. */
+export type PublishedPlatformCell = {
+  readonly battery: string
+  readonly mutant: string
+  readonly cell: string
+  readonly description: string
+  readonly family: PlatformFamily
+  readonly because: string
+}
+
 export type TheMeasurement = {
   readonly batteries: number
   readonly lenses: number
@@ -168,6 +178,16 @@ export type TheMeasurement = {
   readonly outOfReach: readonly PublishedSilence[]
   /** Regions a mutant could reach and none does. */
   readonly unprobed: readonly PublishedSilence[]
+  /**
+   * Cells counted above that are caught only where their defect exists.
+   *
+   * **It is the coordinate of the count and not an appendix to it.** Every figure here is derived from
+   * the pins as written, so it is the same object on any machine - but *caught* means caught wherever
+   * the defect exists, and for these cells that is one family of platforms. A count that did not say
+   * so would be a platform's number published bare, which is exactly what ADR-0018 forbids and what
+   * this instrument's central figure had been doing. ADR-0147.
+   */
+  readonly whereThePlatformDecides: readonly PublishedPlatformCell[]
 }
 
 /** The lens of an arm that reads it exactly as its commit left it: the one that edits nothing. */
@@ -288,6 +308,34 @@ const populationOf = (
   return { cells, killed, surviving }
 }
 
+/**
+ * Every cell a battery declares as belonging to one family of platforms, read off the pins.
+ *
+ * **Read off the pins and never off a run**, for the reason the header of this file gives about every
+ * other figure here: a value derived from what happened on one machine could not be rebuilt from a
+ * clean clone, and this is the one figure whose whole subject is that machines differ.
+ */
+const platformCellsOf = (batteries: readonly Battery[]): readonly PublishedPlatformCell[] =>
+  batteries.flatMap((battery) =>
+    battery.mutants.flatMap((mutant) =>
+      cellsOf(mutant).flatMap(({ cell }) => {
+        const decided = mutant.expected[cell]?.onlyOn
+        if (decided === undefined) return []
+
+        return [
+          {
+            battery: battery.name,
+            mutant: mutant.id,
+            cell,
+            description: mutant.description,
+            family: decided.family,
+            because: decided.because,
+          },
+        ]
+      }),
+    ),
+  )
+
 const silencesOf = (
   batteries: readonly Battery[],
   which: 'unreachableGuards' | 'unprobedRegions',
@@ -314,6 +362,7 @@ export const theMeasurement = (batteries: readonly Battery[] = THE_BATTERIES): T
   probes: populationOf(batteries, 'probe'),
   outOfReach: silencesOf(batteries, 'unreachableGuards'),
   unprobed: silencesOf(batteries, 'unprobedRegions'),
+  whereThePlatformDecides: platformCellsOf(batteries),
 })
 
 /**
@@ -370,6 +419,23 @@ export const THE_PINS_ARE_AN_ASSERTION =
   'every figure here is read off the batteries in this repository, where each cell carries the ' +
   'verdict it must produce. That is what this project asserts about its own tests. It is not yet ' +
   'something you have seen happen.'
+
+/**
+ * What *caught* means, where a defect does not exist on every machine.
+ *
+ * Exported so that both surfaces transcribe one sentence rather than each wording it, which is the
+ * treatment `THE_PINS_ARE_AN_ASSERTION` already gets and for the same reason: this is an admission,
+ * and two spellings of one admission are two things that can come apart.
+ *
+ * **It is what stops the count being a platform's number published bare.** Nothing here is resolved
+ * against the machine reading it - `whereThePlatformDecides` lists the cells and this says what the
+ * list means, so the figure and its coordinate arrive together or neither does. ADR-0147.
+ */
+export const CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS =
+  'a few of these defects cannot occur on every operating system, because what they break is a rule ' +
+  'of the filesystem rather than of this code. Each is caught where it exists and is not measured ' +
+  'where it cannot occur, so the count is the same wherever you read it and a replay elsewhere ' +
+  'reports those cells as not applicable rather than as missed.'
 
 /**
  * What turns it into an observation, and what that costs.

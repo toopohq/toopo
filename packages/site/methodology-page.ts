@@ -61,6 +61,7 @@ import type {
   WhySurviving,
 } from '../../mutation/published.js'
 import {
+  CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS,
   THE_PINS_ARE_AN_ASSERTION,
   THE_REPLAY,
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
@@ -230,6 +231,39 @@ export const methodologyPage = (
         `${THE_REPLAY.reprintedBy} ${THE_REPLAY.reprintedWhy}.`,
     ),
     ...renderPopulation(measured.defects, 'defect'),
+
+    /*
+     * The coordinate of the count above, rendered only where there is one.
+     *
+     * `caught` means caught wherever the defect exists, and for a handful of these cells that is one
+     * family of operating system. Every figure on this page is derived from the pins as written, so
+     * none of them moves with the machine the site was built on - and a count that did not say which
+     * cells those are would be a platform's number published bare. ADR-0147.
+     *
+     * The cells are named and never counted, on the rule this repository applies everywhere else: a
+     * rank is checked only by rebuilding the whole list, and a list is checked line by line.
+     */
+    ...(measured.whereThePlatformDecides.length === 0
+      ? []
+      : [
+          paragraph(CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS),
+          el(
+            'div',
+            { class: 'cases' },
+            ...measured.whereThePlatformDecides.map((one) =>
+              el(
+                'div',
+                { class: 'stacked' },
+                el(
+                  'div',
+                  { class: 'what' },
+                  el('p', { class: 'call' }, line('code', `${one.battery} · ${one.mutant}`)),
+                ),
+                el('div', { class: 'argument' }, paragraph(one.because)),
+              ),
+            ),
+          ),
+        ]),
 
     line('h2', 'Questions rather than defects'),
     line(

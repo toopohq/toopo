@@ -6,7 +6,7 @@
  * the rate is then worth, and how a repair is chosen from it.
  */
 
-import type { Edit, Expectation, Mutant, SurvivalNature } from './run.ts'
+import type { Edit, Expectation, Mutant, PlatformFamily, SurvivalNature } from './run.ts'
 
 /** Almost every edit rewrites the reference implementation; the lenses are what edit a test file. */
 export const reference = (find: string, replace: string): Edit => ({
@@ -41,6 +41,23 @@ export const survivesOnlyBlinded: Expectation = { verdict: 'survived' }
 
 /** Killed by the compiler and by nothing else, and counted apart for that reason. ADR-0078. */
 export const killedByTypecheck: Expectation = { verdict: 'killed-by-typecheck' }
+
+/**
+ * That the defect this cell injects exists on one family of platforms and cannot occur on the other.
+ *
+ * It wraps a verdict rather than replacing one, which is the whole of what it is for: the verdict
+ * stays what the cell really produces where its defect exists, and a run off that family does not
+ * inject at all. **There is no second verdict to write**, because there is no second measurement -
+ * the alternative is `not-applicable`, and the instrument reaches that without being told.
+ *
+ * ADR-0147 is why this is an applicability and not a fifth `SurvivalNature`, and why a figure derived
+ * from it is the same on every machine.
+ */
+export const onlyOn = (
+  family: PlatformFamily,
+  because: string,
+  expectation: Expectation,
+): Expectation => ({ ...expectation, onlyOn: { family, because } })
 
 /** The arm a battery declares its mutants against, and how its lenses read it. ADR-0079. */
 export type ArmUnderTest = {

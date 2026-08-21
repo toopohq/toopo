@@ -4,6 +4,7 @@ import {
   THE_COMMITS_QUOTED,
   THE_PINS_ARE_AN_ASSERTION,
   THE_REPLAY,
+  CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS,
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
   survivorsByKind,
   theMeasurement,
@@ -1676,6 +1677,33 @@ describe('the page that says how we verify', () => {
     )
 
     for (const why of used) expect(shown).toContain(asRead(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]))
+  })
+
+  /**
+   * The count on this page says what *caught* means where a defect does not exist on every machine.
+   *
+   * Every figure here is derived from the pins as written, so none of them moves with the machine the
+   * site was built on - and that is exactly what makes the coordinate necessary rather than optional:
+   * a number that is the same everywhere and is only true of one platform is the shape ADR-0018 names,
+   * on the measurement this project rests on. ADR-0147.
+   *
+   * **Asserted in both directions rather than skipped when the list is empty.** A guard that returned
+   * early on an empty list would pass vacuously the day the last such cell leaves, which is the
+   * population-shrinks-in-silence shape this repository keeps an entry for. So the sentence must be on
+   * the page exactly when there is something for it to be about.
+   */
+  it('the-method-page-says-what-caught-means-where-a-defect-is-not-everywhere', () => {
+    const measured = theMeasurement()
+    const shown = reading()
+
+    expect(shown.includes(asRead(CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS))).toBe(
+      measured.whereThePlatformDecides.length > 0,
+    )
+
+    for (const one of measured.whereThePlatformDecides) {
+      expect(shown).toContain(`${one.battery} · ${one.mutant}`)
+      expect(shown).toContain(asRead(one.because))
+    }
   })
 
   /**

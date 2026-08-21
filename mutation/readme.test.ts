@@ -8,6 +8,7 @@ import { licenceHeaderOf } from '../packages/registry/licence.ts'
 import { THE_SUITES, guardsCollectedIn } from './decisions.ts'
 import { rootDocument, theCatalogueRecordIn, theCatalogueRecords } from './root-documents.ts'
 import {
+  CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS,
   THE_PINS_ARE_AN_ASSERTION,
   WHAT_A_SURVIVOR_MEANS_TO_A_READER,
   survivorsByKind,
@@ -91,6 +92,32 @@ describe('what the readme publishes about the measurement', () => {
     ]
 
     expect(claims.filter((claim) => !text.includes(claim))).toEqual([])
+  })
+
+  /**
+   * And the count says what *caught* means where a defect does not exist on every machine.
+   *
+   * **`691 are caught` is a figure with a coordinate, and this is the coordinate.** Every number above
+   * is derived from the pins as written, so it is the same object on any platform - but one of those
+   * cells is caught only where its defect can occur, and a count that did not say so would be a
+   * platform's number published bare. That is ADR-0018 arriving on the measurement this whole project
+   * rests on, which is where it costs most.
+   *
+   * Two halves, and neither carries the other. The sentence is transcribed rather than reworded, on
+   * the treatment `THE_PINS_ARE_AN_ASSERTION` already gets one guard below. And **every such cell is
+   * named**, so the page cannot go on carrying one sentence while the instrument grows a second cell -
+   * which would be a rank nobody rebuilds, refused here the way it is refused everywhere else.
+   */
+  it('the-readme-says-what-caught-means-where-a-defect-is-not-everywhere', () => {
+    const text = README()
+
+    expect(text).toContain(CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS)
+
+    const unnamed = theMeasurement()
+      .whereThePlatformDecides.filter((one) => !text.includes(`${one.battery} · ${one.mutant}`))
+      .map((one) => `${one.battery} · ${one.mutant}`)
+
+    expect(unnamed).toEqual([])
   })
 
   /**

@@ -46,7 +46,7 @@
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
-import { killed, mutantsOn } from './mutants.ts'
+import { killed, mutantsOn, onlyOn } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'C', asCommitted: 'as-committed', blinded: [] }
 
@@ -1101,13 +1101,27 @@ void theCatalogue`,
    * reddened a calibration control of this battery with nothing injected, at three runs in 139, which
    * is how it was found: a teardown that throws reddens whichever guard is running, and this
    * instrument reads a red guard as a verdict.
+   *
+   * **And it is the one cell of this repository whose defect does not exist everywhere.** Measured on
+   * three environments at `26e2000` and `92f60d8`: killed on `windows-latest` and on the machine that
+   * wrote this pin, survived twice on `ubuntu-latest`. The cause is not a weakness of the suite on
+   * Linux and is not a difference in the guard - it is that POSIX unlinks a directory another process
+   * is standing in, so the removal wins on the first attempt, the retry is never entered, and there is
+   * no defect for anything to catch. ADR-0147 is why that is an applicability rather than a survival,
+   * and why no figure this repository publishes moves because of it.
    */
   sameOnEveryLens(
     'C-64',
     'stops asking again when the operating system refuses a removal, so a folder held for an instant ' +
       'throws out of a `finally` and an install fails on a rewrite that had already succeeded',
     [removalFile('const REMOVAL_ATTEMPTS = 10', 'const REMOVAL_ATTEMPTS = 0')],
-    killed(['a-project-is-removed-while-another-process-still-holds-it']),
+    onlyOn(
+      'windows',
+      'the removal this retry exists for is refused only where a held file cannot be unlinked. POSIX ' +
+        'removes a directory another process is standing in, so `rmSync` returns on the first attempt ' +
+        'and the attempt count the mutant sets to zero is never read.',
+      killed(['a-project-is-removed-while-another-process-still-holds-it']),
+    ),
   ),
 
   /**
