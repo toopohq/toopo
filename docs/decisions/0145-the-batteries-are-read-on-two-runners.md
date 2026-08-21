@@ -217,8 +217,16 @@ everything else in that file, and the whole cost of doing so is one cell.
 that eight green suites, a green `meta`, a green `tsc` and a green run of continuous integration did
 not: `S-12`'s pin, `I-01` and `I-08`'s pins, and eighteen guards named `…-number-round` that
 `registry-storage` accounts for in neither direction. All three arrived with `50ff990`, which touches
-six files under `packages/registry/`, so the gate this reading was taken for would have been red on
-that push.
+six files under `packages/registry/`.
+
+**This paragraph went on to say *so the gate this reading was taken for would have been red on that
+push*, and `50ff990` was not a push.** `gh run list` holds no run for it, nor for the two commits
+after it: the five from `50ff990` to `7c9906c` were pushed together, and GitHub starts one run per
+push on the tip. A gate sees `github.event.before .. github.sha`, so the range it would have seen is
+`bc88230..7c9906c`. The claim is true at that tip and ADR-0146 carries the replay that shows it -
+selection, control green at 407 tests, `S-12` disagreeing, exit 1, against a run of `suites.yml` that
+concluded `success`. Corrected here rather than left, because a commit named as a push is a
+coordinate that was never the event's.
 
 **Bad, and stated rather than smoothed.** A count this repository publishes as a fact had never been
 compared with a reading on any machine. `README.md` says **694 are caught**, derived from what the

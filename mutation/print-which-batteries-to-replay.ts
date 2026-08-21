@@ -90,6 +90,11 @@ const output = process.env['GITHUB_OUTPUT']
 if (output !== undefined && output !== '') {
   appendFileSync(
     output,
-    `batteries=${JSON.stringify(selection.batteries)}\nany=${selection.batteries.length > 0}\n`,
+    `batteries=${JSON.stringify(selection.batteries)}\n` +
+      `any=${selection.batteries.length > 0}\n` +
+      // The second gate replays everything, and it takes that list from here rather than from a
+      // second reading of `THE_BATTERIES`. One job answers *which batteries*, in both senses, so the
+      // two matrices cannot come to disagree about what the instrument holds.
+      `everything=${JSON.stringify(everything)}\n`,
   )
 }

@@ -194,6 +194,12 @@ const A_CREDENTIAL_FOR_NPM = /secrets\.\w*NPM\w*|NODE_AUTH_TOKEN|_authToken/i
 const jobsThatPublish = (): readonly Job[] =>
   jobs().filter((job) => A_PUBLICATION.test(declarationOf(job)))
 
+/** The command a battery is started by, which is the one the header of `suites.yml` argues for. */
+const A_REPLAY = /\bnpm run battery\b/
+
+const jobsThatReplayABattery = (): readonly Job[] =>
+  jobs().filter((job) => A_REPLAY.test(declarationOf(job)))
+
 /**
  * The jobs a job waits for, in both spellings the format allows for one key.
  *
@@ -313,6 +319,36 @@ describe('what the continuous integration is allowed to run', () => {
           : [`${job.file}:${job.name} reads ${name}, which is no job of ${job.file}`]),
       ])
     })
+
+    expect(ungated).toEqual([])
+  })
+
+  /**
+   * The fifth coordinate, and the one a published version being frozen for life is what buys.
+   *
+   * `CONTRIBUTING.md` names the occasion in as many words - *a full replay is worth its price on
+   * exactly two occasions: before a release, and before anything is published to a registry, because
+   * that is the last commit at which a wrong verdict is still correctable.* This is that sentence made
+   * executable in the one direction it can be: nothing publishes without having waited for a job that
+   * replays a battery.
+   *
+   * **The population is derived and never typed.** A job that replays is one whose declaration runs
+   * `npm run battery`, so renaming the gate does not weaken this and deleting it reddens it. What it
+   * deliberately does not read is *how many* batteries that job replays: a matrix comes from an
+   * expression evaluated by GitHub, and a guard claiming to know its length would be reading a string
+   * as though it were data. `the-entry-point-answers-for-the-whole-instrument-as-well-as-for-the-selection`
+   * is where that half is kept, one folder over and against the declaration itself. ADR-0146.
+   */
+  it('nothing-publishes-to-npm-without-waiting-for-a-battery-to-be-replayed', () => {
+    const replaying = new Set(jobsThatReplayABattery().map((job) => `${job.file}:${job.name}`))
+
+    expect(replaying.size).toBeGreaterThan(0)
+
+    const ungated = jobsThatPublish()
+      .filter(
+        (job) => !jobsWaitedForBy(job).some((name) => replaying.has(`${job.file}:${name}`)),
+      )
+      .map((job) => `${job.file}:${job.name} publishes without waiting for any replay`)
 
     expect(ungated).toEqual([])
   })

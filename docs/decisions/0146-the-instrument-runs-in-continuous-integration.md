@@ -5,6 +5,7 @@ decision-makers: Mathis Perron
 governs:
   - mutation/selection.ts
   - mutation/print-which-batteries-to-replay.ts
+  - .github/workflows/suites.yml
 confirmed-by:
   - battery: meta
     guard: every-battery-answers-for-the-folder-it-injects-into
@@ -14,6 +15,10 @@ confirmed-by:
     guard: a-changed-file-no-battery-answers-for-is-reported-and-never-dropped
   - battery: meta
     guard: a-first-push-selects-every-battery-rather-than-none
+  - battery: meta
+    guard: the-entry-point-answers-for-the-whole-instrument-as-well-as-for-the-selection
+  - battery: meta
+    guard: nothing-publishes-to-npm-without-waiting-for-a-battery-to-be-replayed
 ---
 
 # The instrument runs in continuous integration, selectively on every push and wholly before a publication
@@ -118,6 +123,47 @@ not hold. The population is therefore every push since the rewrite, which is wha
 
 **The second gate is 21 jobs against a ceiling of 20**, so one of them queues behind the rest and its
 wall clock is above the 1497 s of the longest battery rather than equal to it.
+
+### The gate seen red on a push of this history, and the correction that came out of it
+
+A gate believed before it has been red is the thing this repository refuses everywhere else, so it was
+replayed against a push that should have reddened it.
+
+**ADR-0145 names `50ff990` as that push and it was not one.** `gh run list` holds no run for
+`50ff990`, nor for `35d7115`, nor for `aa94e33`: the five commits from `50ff990` to `7c9906c` were
+pushed together, and GitHub starts one run per push on the tip. So the gate would never have seen
+`50ff990` as a range end - it sees `github.event.before .. github.sha`, which for that push is
+`bc88230..7c9906c`.
+
+That distinction is not pedantry, and replaying `50ff990` is what showed it. At that commit the
+unmutated registry suite is **red** - `every-binding-anchors-a-commit-and-the-check-reaches-all-of-them`,
+because ADR-0106's rule means the commit that publishes cannot anchor and the anchoring arrives at
+`7c9906c`. A gate pointed there would refuse to calibrate rather than report a disagreement, and it
+would be right to: *the unmutated arm is red, so every verdict from this battery would be noise.*
+
+**At the tip, which is where the gate really fires, it is red for the right reason.** Replayed by hand
+at `7c9906c`:
+
+    node mutation/print-which-batteries-to-replay.ts bc88230 7c9906c
+      20 files changed, 8 of 21 batteries answer for them
+      cli-install cli-remove cli-search cli-update number-round-spec number-round
+      registry-storage site
+      7 changed files no battery answers for, among them mutation/census.ts and mutation/published.ts
+
+    npm run battery -- registry-storage --only=S-12
+      calibration R/as-committed   control green (407 tests)
+      calibration R/as-committed   I-05 killed
+      S-12   R/as-committed        survived   DISAGREES
+      S-12 on R/as-committed: expected killed, measured survived
+        no longer caught by: a-query-the-catalogue-cannot-answer-answers-nothing
+
+Exit 1, with the control green at 407 tests either side of it - so the apparatus is sound and the
+disagreement is the battery's. **The run of `suites.yml` at `7c9906c` concluded `success`**, which is
+the whole claim of this record in one line: eight green suites, a green `meta`, a green `tsc` and a
+green continuous integration, and a battery that had stopped agreeing with itself.
+
+The seven files no battery answers for include `mutation/census.ts` and `mutation/published.ts`, which
+is the third gap below arriving in the demonstration itself rather than in a paragraph about it.
 
 ### Consequences
 

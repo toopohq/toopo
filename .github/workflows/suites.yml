@@ -99,10 +99,22 @@
 # distinct causes, and exactly one of them is the platform. ADR-0145 carries the table, the durations
 # and the criterion, which was committed before either run existed.
 #
-# **What replaces the refusal is not written yet.** The reading found three defects at the tip that
-# every suite here was green on, so a gate landing before they are repaired would redden `main` on its
-# first push. Until it is written, the replay stays one command, run by a person who then reads the
-# result.
+# **What replaces it is two gates, and ADR-0146 carries them.** On every push, the batteries that can
+# say something about the change - derived from `THE_BATTERIES` rather than listed here, because a list
+# of twenty-one names in this file is the declaration nothing keeps. Before a publication, all of them,
+# because a published version is frozen for life and that is the last commit at which a wrong verdict is
+# still correctable.
+#
+# The price is stated where it is decided rather than here, and it is not small: read at `b20a678` over
+# the 39 pushes of `main` since ADR-0124's rewrite, the first gate is 578 s of wall clock at the median
+# and 1 497 s at worst, 8 of the 39 selecting nothing at all. It roughly quadruples the time a verdict
+# takes to arrive on the commonest push. The second gate is 21 jobs against a ceiling of 20, so one of
+# them queues and a publication waits for the whole of it.
+#
+# **One cell of the instrument is not measured on this platform**, and it is not a weakness of the suite
+# here: `C-64` of `cli-install` removes a retry that repairs a failure only Windows has, so on POSIX
+# there is no defect for anything to catch and the cell answers `not applicable`. ADR-0147 is why that
+# is an applicability rather than a survival, and why no figure this repository publishes moves for it.
 
 name: suites
 
@@ -432,6 +444,167 @@ jobs:
         run: node packaging/print-whether-to-publish.ts
 
   # ---------------------------------------------------------------------------
+  # The instrument, on every push and before every publication
+  # ---------------------------------------------------------------------------
+  #
+  # ADR-0146 is the decision, the price and what these gates do not reach.
+  #
+  # This job needs neither the suites nor an install: `published.ts` and its whole import closure reach
+  # nothing outside node's own modules, which is the property the `version` job above is built on too.
+  # `fetch-depth: 0` is what it does need - the selection is a diff, and a shallow clone holds neither
+  # end of one.
+  #
+  # The base is the pull request's when there is one and the commit before the push otherwise. Either
+  # can be absent or unresolvable, and the module answers *every battery* rather than *none* in both
+  # cases: a gate whose failure mode is silence is worse than no gate, because a green run is what a
+  # reader takes it for.
+  which-batteries:
+    runs-on: ubuntu-latest
+
+    outputs:
+      batteries: ${{ steps.selection.outputs.batteries }}
+      any: ${{ steps.selection.outputs.any }}
+      everything: ${{ steps.selection.outputs.everything }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+
+      # Both sides are printed, for the reason the `version` job's step gives: this log is the only
+      # place a reader can afterwards see why a battery did or did not run, and a selection with only
+      # one of its two sides beside it is a selection nobody can check.
+      - name: which batteries this push has to answer for
+        id: selection
+        run: |
+          node mutation/print-which-batteries-to-replay.ts \
+            "${{ github.event.pull_request.base.sha || github.event.before }}" \
+            "${{ github.sha }}"
+
+  # The first gate. It waits for the suites because a battery calibrates against its own suite's
+  # control, so on a red tree every calibration fails at once with a message about the apparatus rather
+  # than about the change - and the selection above does not wait, so it is computed while they run.
+  #
+  # `if` reads the boolean and never the array: GitHub fails a job whose matrix is an empty list rather
+  # than skipping it, and 8 of the 39 pushes this was priced over select nothing.
+  batteries:
+    needs: [suites, which-batteries]
+
+    if: needs.which-batteries.outputs.any == 'true'
+
+    runs-on: ubuntu-latest
+
+    # A hung cell must not hold a runner for six hours. The longest battery on `ubuntu-latest` is
+    # `cli-install` at 1 497 s, and this allows rather more than that before it is called a hang.
+    timeout-minutes: 40
+
+    strategy:
+      # Every selected battery reports. A first disagreement stopping the matrix would answer a
+      # different question than the one asked, which is *which of these still agree with themselves*.
+      fail-fast: false
+      matrix:
+        battery: ${{ fromJSON(needs.which-batteries.outputs.batteries) }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          # `registry-storage` reaches `frozen-for-life.test.ts`, which checks past commits out under
+          # `.rebuilt/`, and a shallow clone holds nothing to check out. Every arm of every battery is
+          # `HEAD`, so no arm needs this line - that suite does.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The coordinates a reading of a disagreement needs and that the log would otherwise not carry.
+      # `git` is here because the instrument manages worktrees with it, and a worktree's behaviour is a
+      # property of the version installed rather than of this repository.
+      - name: what this reading was taken on
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      # `assertCleanTree` refuses a working tree carrying uncommitted changes and `assertNoStrayWorktree`
+      # refuses a checkout registered beside the root. Both are preconditions of every cell, so what the
+      # checkout and the install left behind is read before the battery rather than out of its refusal.
+      - name: the tree the instrument requires
+        run: |
+          git status --porcelain
+          git worktree list
+
+      # `npm run` and not `node mutation/measure.ts`, for the reason the header above gives:
+      # `packaging/the-archive.ts` finds npm through `npm_execpath`, and the `packaging` battery injects
+      # into the folder that holds it. Started any other way, that battery would measure the launcher.
+      - name: ${{ matrix.battery }}
+        run: npm run battery ${{ matrix.battery }}
+
+  # The second gate, and it is the one `CONTRIBUTING.md` already named: *a full replay is worth its
+  # price on exactly two occasions: before a release, and before anything is published to a registry,
+  # because that is the last commit at which a wrong verdict is still correctable.*
+  #
+  # **Its condition is the publishing job's own expression and not a second copy of it.** A gate written
+  # beside another gate is free to drift from it, and the shape of that drift here is a publication that
+  # happens without the replay it was supposed to wait for. The publishing job takes this in `needs`, so
+  # a skipped replay skips the publication rather than releasing it.
+  #
+  # The matrix is `everything` from the job above rather than a second reading of `THE_BATTERIES`, for
+  # the reason that job's own comment gives.
+  every-battery:
+    needs: [suites, version, which-batteries]
+
+    if: >-
+      github.ref == 'refs/heads/main'
+      && needs.version.outputs.unpublished == 'true'
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 40
+
+    strategy:
+      fail-fast: false
+      matrix:
+        battery: ${{ fromJSON(needs.which-batteries.outputs.everything) }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: what this reading was taken on
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      - name: the tree the instrument requires
+        run: |
+          git status --porcelain
+          git worktree list
+
+      - name: ${{ matrix.battery }}
+        run: npm run battery ${{ matrix.battery }}
+
+  # ---------------------------------------------------------------------------
   # The publication, and the only thing this repository does that cannot be
   # undone
   # ---------------------------------------------------------------------------
@@ -464,7 +637,10 @@ jobs:
   # any of this existed. What cannot happen is the other way round: a version npm holds cannot be
   # published over, so a stale reading costs a red run and never a wrong archive.
   publish:
-    needs: [site, version]
+    # `every-battery` carries this job's own condition, so a publication that this gate would not fire
+    # for cannot happen: a skipped dependency skips its dependent, and the two are skipped together.
+    # ADR-0146.
+    needs: [site, version, every-battery]
     if: >-
       github.ref == 'refs/heads/main'
       && needs.version.outputs.unpublished == 'true'

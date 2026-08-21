@@ -193,4 +193,19 @@ describe('the entry point the continuous integration runs', () => {
     expect(printed).toContain('batteries answer for them')
     expect(printed).toContain('no battery answers for')
   })
+
+  /**
+   * The second gate's matrix comes from the same job as the first's.
+   *
+   * It replays everything, and taking that list from a second reading of `THE_BATTERIES` in the
+   * workflow would be the declaration this repository refuses one floor down: two statements of what
+   * the instrument holds, free to disagree, in the file where a disagreement means a battery silently
+   * not replaying before a publication.
+   */
+  it('the-entry-point-answers-for-the-whole-instrument-as-well-as-for-the-selection', () => {
+    const { outputs } = runTheEntryPoint('HEAD', 'HEAD')
+
+    expect(JSON.parse(outputs['everything'] as string)).toEqual(everyBattery)
+    expect(outputs['batteries']).toBe('[]')
+  })
 })
