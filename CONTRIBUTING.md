@@ -163,7 +163,7 @@ is the reason the mutation batteries exist.
 
 ```sh
 pnpm run battery <name>  # replay one battery
-pnpm run mutation        # replay all nineteen
+pnpm run mutation        # replay every battery
 ```
 
 **Which of the two you want depends on what you touched, and the answer is almost never the second

@@ -103,10 +103,10 @@ for the life of the major version.
 
 21 mutation batteries inject **730 deliberate defects** into this repository — each one a committed
 file naming the exact edit it makes and the verdict it must produce — and re-run the whole suite once
-per defect. **694 are caught.** The 36 that survive are each classified, because a survivor count
+per defect. **691 are caught.** The 39 that survive are each classified, because a survivor count
 alone reads as a count of holes: 15 are equivalent mutants, 6 are behaviour the contract declines to
-specify, 2 are unreachable on this catalogue, 12 exist only where a lens deliberately took the
-suite's sight away, and **exactly one is a debt**.
+specify, 3 are unreachable on this catalogue, 12 exist only where a lens deliberately took the
+suite's sight away, and **3 are a limit this repository declares with its price**.
 
 ```sh
 pnpm install

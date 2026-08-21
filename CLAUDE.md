@@ -22,7 +22,7 @@ each feature was resolved against, and a port whose four implementations are asy
 generator, ten static pages, four of them with a playground that runs this repository's own modules
 with their types removed. The archive: compiled JavaScript and nothing else, whose size is no longer a
 function of how many contracts exist. The emitted tree, which is every answer the read API can give,
-written as files at the addresses a client asks. The instrument: nineteen batteries, their pinned
+written as files at the addresses a client asks. The instrument: a battery per folder anything injects into, their pinned
 verdicts, and one command that replays them. And permanent rule 6, executable: a binding records the
 commit it was published from, and the frozen half is rebuilt at that commit and compared rather than
 transcribed anywhere. What this repository says about its own history now resolves against what git
@@ -1417,25 +1417,62 @@ record declares**, which is a worse thing and has never been named here before.
 
 - **That a battery's disagreement with itself is ever read.** `npm run battery <name>` ends by pairing
   every guard of its suite against the mutants that redden it, and refuses a run where a guard is
-  neither witnessed nor declared unreachable. **No workflow runs it.** `suites.yml` runs the eight
-  suites, the deployment, the proof against the origin and the publication, and not one battery - so
-  that check fires when somebody happens to type it.
+  neither witnessed nor declared unreachable. **Almost nothing runs it**: `meta` collects
+  `instrument.test.ts`, which spawns `measure.ts fixture` and requires every cell to agree, so one
+  battery of the twenty-one replays on every push - two mutants, one arm, no property-based guard. The
+  other twenty fire when somebody happens to type the command.
 
-  **It is not hypothetical and the population is not zero**:
-  `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was unaccounted for by the site
-  battery from the commit that wrote it until `916b9f4`, measured at `81bf9bc` and at HEAD by running
-  the battery at both. Nothing was red anywhere, and the guard passed vacuously the whole time. What
-  closes it is not a guard but a job, and the price is what stage rule 1 says about the replay: the
-  full instrument is tens of minutes, one battery is minutes, and nineteen of them in a matrix leg is
-  the whole run again. **The population is every battery of this repository.**
+  **This entry read *No workflow runs it … and not one battery* and that was false on the day it was
+  published**, eleven days after `fc41c4e` added the guard that runs the fixture. It is rule 3 of this
+  section on this section's own text: written from an assumption rather than from a reading, in a
+  commit called *a battery nobody runs*, and nothing about it looked old. ADR-0145.
 
-  **A second instance, on a second battery, and it differs from the first in the way that matters.**
-  `every-standing-field-a-contract-declares-is-carried-by-one` was written at `70cfb22` and its name
-  had never appeared in `registry-storage.battery.ts` - so it was unaccounted for **from the day it
-  existed** rather than made so by a later change, and the battery measured a suite one guard larger
-  than it accounted for from that commit until `e0c5133`. The first instance *became* unaccounted;
-  this one never was accounted. Nothing distinguishes them while nobody runs the battery, which is
-  the entry: it was found because a unit touching another folder happened to replay this one.
+  **It is not hypothetical and the population is not zero**, and there are four instances rather than
+  two. `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was unaccounted for by the
+  site battery from the commit that wrote it until `916b9f4`. `every-standing-field-a-contract-declares-is-carried-by-one`
+  was written at `70cfb22` and its name had never appeared in `registry-storage.battery.ts`, so it was
+  unaccounted **from the day it existed** rather than made so later - the first *became* unaccounted,
+  the second never was accounted, and nothing distinguishes them while nobody runs the battery. Three
+  batteries of the client could not start for three units after ADR-0136 moved guards out from under
+  them, repaired at `92537d9`. And the sixth contract brought **eighteen** guards into
+  `registry-storage`'s suite that its battery accounted for in neither direction, found by ADR-0145's
+  reading and repaired with it. **Every one of the four was found by somebody replaying for another
+  reason.**
+
+  **What closes it is not a guard but a job, and the price is now measured rather than estimated.**
+  Read at `26e2000`, one job per battery on `ubuntu-latest`: **89.8 minutes of runner time and 25.1 of
+  wall clock** for all twenty-one, against 2.5 minutes for what `suites.yml` runs today. Priced per
+  push over 38 pushes of `main`, selecting only the batteries whose folder a change touched: **median
+  578 s, worst 1 497 s of wall clock**, which is 20 % of replaying everything. **The population is
+  every battery of this repository.**
+
+- **That what this repository would publish is what git holds, read end to end.** The promise is kept
+  and its *assembly* is not witnessed. `a-crlf-source-is-served-as-its-lf-form`,
+  `a-byte-order-mark-is-not-content` and `normalising-changes-the-digest` call `servedBytes` on
+  constructed buffers, so they have teeth on every platform and no checkout can make them vacuous.
+  `the-served-bytes-are-the-committed-bytes` is the one that reads every harness file of every contract
+  against `git show`, and **on any checkout git produces, no mutant of this repository reddens it.**
+
+  **It had two witnesses for two years and neither could be reproduced anywhere.** `I-01` and `I-08`
+  of `registry-storage` were pinned `killed` by it at `c12b979`, one hundred and four seconds after
+  `ec5c712` gave `.gitattributes` its `eol=lf` - and that attribute does not renormalise a working
+  directory already on disk, so the machine those pins were written on kept nine tracked files of 451
+  carrying CRLF and saw them red. Measured on that machine in both directions with the control green
+  at 407 tests either way, and on two hosted runners of different platforms: on a normalised tree both
+  survive. They are survivors now, classified `a-declared-open-class`, which is what puts this entry
+  here. ADR-0145.
+
+  **The guard itself declared where its teeth were and nobody carried that to its pins**, which is the
+  half worth reading twice: its own comment carries a heading that reads *Where this guard has teeth,
+  said out loud*, and says a checkout already in LF cannot redden it. The limit was published; the
+  inheritance was not.
+
+  **The population is one guard, and what would close it is one mutant nobody has written.** It would
+  have to make the serialised bytes differ from the committed ones on a tree that agrees with its
+  index - an edit inside `canonical.ts` deciding what normalisation *means* rather than one choosing
+  which bytes to read - and whether any such edit exists that the three unit guards above do not catch
+  first is the question, not the writing of it. **Priced as its own unit and deliberately not taken
+  here**, because a unit repairing pins is not where one decides what a guard is worth.
 
 - **That a count of this site's own pages is one somebody took.** The stylesheet's header said *seven
   pages served once each*; at `81bf9bc` the generator wrote **ten** and the tree held **eleven** files

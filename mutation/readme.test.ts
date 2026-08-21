@@ -84,6 +84,10 @@ describe('what the readme publishes about the measurement', () => {
       `${byKind['outside-what-the-contract-specifies']} are behaviour the contract declines to specify`,
       `${byKind['unreachable-on-this-catalogue']} are unreachable on this`,
       `${byKind['only-where-a-lens-blinded-the-suite']} exist only where a lens`,
+      // The ninth, and it used to be the one figure of this paragraph nobody derived: the split's last
+      // term was asserted as the literal `exactly one is a debt` while the eight beside it were read
+      // off the instrument. It went from one to three with nothing saying so. ADR-0145.
+      `${byKind['a-declared-open-class']} are a limit this repository declares`,
     ]
 
     expect(claims.filter((claim) => !text.includes(claim))).toEqual([])
@@ -142,12 +146,12 @@ describe('what the readme publishes about the measurement', () => {
 
   it('the-readme-never-gives-a-survivor-total-without-its-split', () => {
     const text = README()
-    const named = Object.keys(WHAT_A_SURVIVOR_MEANS_TO_A_READER).filter(
-      (why) => why !== 'a-declared-open-class',
-    )
+    // Total over the five, where it used to except `a-declared-open-class` so that the README could
+    // spell that one in words. It is a count like the other four now, and the exception went with the
+    // sentence that needed it. ADR-0145.
+    const named = Object.keys(WHAT_A_SURVIVOR_MEANS_TO_A_READER)
     const counted = survivorsByKind(theMeasurement().defects)
 
-    expect(text).toContain('exactly one is a debt')
     expect(named.filter((why) => !text.includes(String(counted[why as keyof typeof counted])))).toEqual(
       [],
     )
