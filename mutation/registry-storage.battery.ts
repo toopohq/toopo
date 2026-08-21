@@ -103,6 +103,16 @@ const perContract = (spell: (slug: string) => string): readonly string[] => THE_
 /** The common shape, where the slug is the address's last segment. */
 const onEach = (guard: string): readonly string[] => perContract((slug) => `${guard}-${slug}`)
 
+/**
+ * The contracts whose harness carries a code point in U+0080-U+00FF, which is the region a Latin-1
+ * re-encoding stops being idempotent on. Measured at `8b6aa89` over all 47 files of the harness and
+ * the shared surface: `date/add@1` carries one such point and `string/slugify@1` carries nine.
+ *
+ * **It names the reason rather than the answer, so a seventh contract lands outside it by default** -
+ * which is the correct default, a guard being unwitnessed until something measures it. ADR-0148.
+ */
+const REACHED_BY_A_LATIN_1_RE_ENCODING = ['date-add', 'string-slugify']
+
 const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts', find, replace })
 const signatureFile = (find: string, replace: string) => ({ file: 'signature.ts', find, replace })
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
@@ -151,6 +161,21 @@ const implementationFile = (find: string, replace: string) => ({
  */
 const READ_A_FILE = 'const bytes = servedBytes(readFileSync(join(base, path)))'
 
+/**
+ * The encode side of `servedBytes`, and the one axis its three unit guards leave free.
+ *
+ * Measured at `8b6aa89`: all three assert an ASCII result - `'a\\nb\\n'` twice and `'const a = 1\\n'` -
+ * so any edit agreeing with the reference on ASCII passes every one of them. Only
+ * `a-byte-order-mark-is-not-content` carries a non-ASCII byte at all and it carries it on the
+ * *input*, which is why it constrains the decode side and why nothing constrains this one. The
+ * sibling edit on the decode side was measured and is caught: it reddens that guard. ADR-0148.
+ */
+const THE_SERVED_TEXT_IS_ENCODED_AS_IT_WAS_READ =
+  `  return Buffer.from(withoutMark.replace(/\\r\\n/g, '\\n'), 'utf8')`
+
+/** What a reader receives is the contract's own files *and* what those files import. ADR-0105. */
+const WHAT_IS_SERVED_IS_THE_HARNESS_AND_WHAT_IT_REACHES = '  ...record.sharedHarness,'
+
 // --- The freeze, and the seven places a check of it stops being one ---
 
 const THE_DIGEST_IS_THE_ONE_IT_WAS_PUBLISHED_AS = '  if (held === entry.digest) return null'
@@ -164,6 +189,9 @@ const A_RENDERING_ADDRESSES_ONE_BINDING =
   '    if (bindings.has(what)) throw new RenderingsCollide(what)'
 
 const A_PAST_COMMIT_ANSWERS_DIGESTS = '        if (!DIGEST.test(digest)) {'
+
+/** The separator the two processes agree on, on the writing side. `readBindings` splits on it. */
+const A_BINDING_IS_SEPARATED_BY_ONE_TAB = '`${what}\\t${digest}\\n`'
 
 const THE_COMMIT_A_BINDING_NAMES_IS_THE_ONE_CHECKED_OUT =
   `  git(root, 'worktree', 'add', '--detach', '--quiet', worktree, revision)`
@@ -1483,6 +1511,62 @@ const mutants: readonly Mutant[] = [
     killed(['the-catalogue-refuses-a-contract-offered-at-an-address-a-fixture-stands-at']),
   ),
 
+  /**
+   * **The mutant `I-01` and `I-08` stopped being.** Both were retired to survivors because they only
+   * differ from the reference where the working tree differs from what is served, and no clone git
+   * produces has such a tree. This one differs where the *contract* does, so it is caught on every
+   * checkout - which is what gives the end-to-end claim a witness anybody can reproduce. ADR-0148.
+   */
+  sameOnEveryLens(
+    'I-65',
+    're-encodes a source in Latin-1 after reading it as UTF-8, so every code point above U+007F is ' +
+      'served as bytes the contract does not carry - and the digest a lockfile would hold is a digest ' +
+      'of something this repository never committed. **The three unit guards over `servedBytes` stay ' +
+      'green and that is measured rather than expected**: all three assert an ASCII result, so an ' +
+      'edit agreeing with the reference on ASCII passes every one of them, and the sibling edit one ' +
+      'line up on the decode side is caught by `a-byte-order-mark-is-not-content`. Its teeth are the ' +
+      'files carrying a code point in U+0080-U+00FF - `date/add@1` through the `±` of its summary, ' +
+      '`string/slugify@1` through nine of its fifty-eight - where `string/levenshtein@1`\'s single ' +
+      '`U+1F600` is already a `?` after one pass and survives the second unchanged.',
+    [
+      canonicalFile(
+        THE_SERVED_TEXT_IS_ENCODED_AS_IT_WAS_READ,
+        `  return Buffer.from(withoutMark.replace(/\\r\\n/g, '\\n'), 'latin1')`,
+      ),
+    ],
+    killed([
+      'the-served-bytes-are-the-committed-bytes',
+      'a-blob-answer-hashes-to-its-address-date-add',
+      'a-blob-answer-hashes-to-its-address-string-slugify',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-66',
+    'writes a binding with a space where the format declares one tab, so what one process renders ' +
+      'the next cannot read at all - and the freeze check crossing that boundary refuses every line ' +
+      'instead of comparing a single digest. It is the round trip and not the parser: every guard ' +
+      'over `readBindings` alone stays green, because each one hands it a line written by hand.',
+    [rebindingFile(A_BINDING_IS_SEPARATED_BY_ONE_TAB, '`${what} ${digest}\\n`')],
+    killed([
+      'a-rendered-set-of-bindings-reads-back-as-itself',
+      'a-rendered-binding-is-what-a-past-commit-prints',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-67',
+    "serves a contract's own files and not the files they import, which is the state ADR-0105 closed: " +
+      'an auditor who fetches everything a snapshot names receives a suite that cannot resolve its ' +
+      'own imports, and a snapshot that names blobs the registry has no way to hand over',
+    [serialiseFile(WHAT_IS_SERVED_IS_THE_HARNESS_AND_WHAT_IT_REACHES, '')],
+    killed([
+      'a-fetched-harness-resolves-every-import-it-carries',
+      'the-snapshot-names-no-blob-the-registry-cannot-serve',
+      'the-emitted-tree-is-closed',
+    ]),
+  ),
+
   sameOnEveryLens(
     'S-01',
     'drops the rule that every word of the query must be answered, so a contract matches on the ' +
@@ -1927,32 +2011,31 @@ export const battery: Battery = {
      * either way, and on two hosted runners of different platforms: on any checkout git produces,
      * both cells survive.
      *
-     * So the pins are honest now and this region is what that costs. **What lost its witness is the
+     * So the pins are honest now and this region is what that cost. **What lost its witness is the
      * assembly and not the promise**: `a-crlf-source-is-served-as-its-lf-form`,
      * `a-byte-order-mark-is-not-content` and `normalising-changes-the-digest` call `servedBytes` on
-     * constructed buffers, so they have teeth on every platform and cannot go quiet. What has none is
-     * the end-to-end claim - and `the-served-bytes-are-the-committed-bytes` says where its own teeth
-     * are, in its own comment, under a heading that reads *Where this guard has teeth, said out loud*.
-     * What nobody had declared is that its pins inherited that limit.
+     * constructed buffers, so they have teeth on every platform and cannot go quiet. What had none
+     * was the end-to-end claim - and `the-served-bytes-are-the-committed-bytes` says where its own
+     * teeth are, in its own comment, under a heading that reads *Where this guard has teeth, said out
+     * loud*. What nobody had declared is that its pins inherited that limit.
      *
-     * **It is reachable and the mutant that would reach it is not written here.** It would have to
-     * make the serialised bytes differ from the committed ones on a tree that agrees with its index -
-     * an edit inside `canonical.ts` rather than one that chooses which bytes to read - and whether one
-     * exists that the three unit guards above do not already catch first is a question of its own.
-     * `CLAUDE.md` carries it as an open entry with that price.
+     * **That paragraph asked for a mutant and named the wrong place to look for one. ADR-0148.** It
+     * read *an edit inside `canonical.ts` rather than one that chooses which bytes to read*, and that
+     * sentence is true of the first guard and false of the other three: the bindings round trip never
+     * touches a served byte, and no edit to `canonical.ts` of any kind can redden it. Five of the nine
+     * are witnessed now - `I-65`, `I-66` and `I-67` - and what is left is the four below.
      */
     {
-      guards: [
-        'the-served-bytes-are-the-committed-bytes',
-        'a-rendered-set-of-bindings-reads-back-as-itself',
-        'a-fetched-harness-resolves-every-import-it-carries',
-        ...onEach('a-blob-answer-hashes-to-its-address'),
-      ],
+      guards: onEach('a-blob-answer-hashes-to-its-address').filter(
+        (address) => !REACHED_BY_A_LATIN_1_RE_ENCODING.some((slug) => address.endsWith(slug)),
+      ),
       nature: 'claims detection',
       reason:
-        'the end-to-end reading of what this repository would publish against what git holds. Its ' +
-        'two witnesses were retired for claiming a kill that no clone can reproduce, and the mutant ' +
-        'that would redden it on a tree agreeing with its index is not written. ADR-0145',
+        'the four contracts `I-65` does not move. The guard compares two evaluations of one ' +
+        'expression on one file, so no edit to `servedBytes` can separate them; what has teeth is ' +
+        '`servedBlobFaults` beside it, which applies that expression twice and therefore reads ' +
+        'idempotence. A Latin-1 re-encoding loses idempotence only on a code point in U+0080-U+00FF, ' +
+        'and these four carry none. ADR-0148',
     },
     /**
      * **Unaccounted for since the day it was written, and found by a replay rather than by a
