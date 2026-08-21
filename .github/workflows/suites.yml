@@ -45,8 +45,19 @@
 # ---------------------------------------------------------------------------
 #
 # Seven jobs would run in parallel and finish sooner in wall clock. They would also pay for seven
-# checkouts and seven installations, and this repository is private on a free plan where the minutes are
-# metered. Seven *steps* cost one checkout and name the failing suite in the log just as precisely.
+# checkouts and seven installations. Seven *steps* cost one checkout and name the failing suite in the
+# log just as precisely.
+#
+# **This argument used to end *and this repository is private on a free plan where the minutes are
+# metered*, and that half is gone.** The repository is public - `gh repo view --json isPrivate` answers
+# false - and GitHub does not meter standard runners for a public one. So what is left is one checkout
+# against seven, which is a reason about simplicity and no longer one about money.
+#
+# **It is left standing on the weaker half deliberately, and the contrast is worth a reader's
+# attention.** ADR-0145 took its reading as twenty-one jobs of one battery each, which is precisely the
+# shape refused here - and it was right there, because the question was wall clock over a run of
+# twenty-five minutes rather than over one of two and a half. The shape is chosen per job by what it
+# costs, not once by a rule.
 #
 # ---------------------------------------------------------------------------
 # What is deliberately not here
@@ -71,12 +82,27 @@
 # there because forty hexadecimal digits tell a reader nothing and an unreadable pin is one nobody
 # raises.
 #
-# **The nineteen batteries do not run here, and the reason is not the minutes.** A pin is calibrated
-# against runs on the machine that wrote it: ADR-0053 is why a draw count and a rate are read together,
-# and ADR-0077 is why no rate obtained by reproducing a generator is trustworthy to better than an order
-# of magnitude. A replay on another platform therefore produces disagreements nobody can attribute to a
-# defect rather than to the platform - a red on which no action is possible. The replay stays one
-# command, run by a person who then reads the result.
+# **One battery runs here and the rest do not, and the reason this file used to give has been measured
+# and is not confirmed.** ADR-0145.
+#
+# `meta` collects `mutation/instrument.test.ts`, which spawns `measure.ts fixture` as a child and
+# requires every cell to agree - so the `fixture` battery has replayed on `ubuntu-latest`, on both legs
+# of the matrix, on every push since `fc41c4e`. Any sentence here that counted the batteries that run
+# as none was wrong about that, and it was wrong on the day it was written rather than made so later.
+#
+# What this file used to say is that a pin is calibrated against runs on the machine that wrote it -
+# ADR-0053 for why a draw count and a rate are read together, ADR-0077 for why no rate read off a
+# generator is trustworthy to better than an order of magnitude - and that a replay elsewhere therefore
+# produces disagreements nobody can attribute to a defect rather than to the platform. **Read on both
+# platforms at `26e2000`, that is not what happens.** Nineteen of twenty-one agree on `ubuntu-latest`
+# and twenty of twenty-one on `windows-latest`; the four cells that disagree attribute to three
+# distinct causes, and exactly one of them is the platform. ADR-0145 carries the table, the durations
+# and the criterion, which was committed before either run existed.
+#
+# **What replaces the refusal is not written yet.** The reading found three defects at the tip that
+# every suite here was green on, so a gate landing before they are repaired would redden `main` on its
+# first push. Until it is written, the replay stays one command, run by a person who then reads the
+# result.
 
 name: suites
 
@@ -90,7 +116,10 @@ on:
   # onto the version number, which nobody writes by accident. Anything added back here would be a second
   # way to ask for the one thing this repository cannot undo.
 
-# A superseded run measures a tree nobody will merge, and the minutes are metered.
+# A superseded run measures a tree nobody will merge. **The clause that used to follow - *and the
+# minutes are metered* - is gone with the one above it**: this repository is public and GitHub does not
+# meter standard runners for a public one. What a cancelled run still saves is a place in the
+# concurrency ceiling, which a reading of twenty-one jobs at once made visible rather than theoretical.
 #
 # **`main` is never cancelled, and this line is where the publication is protected.** `npm publish` is
 # the one step of this repository that cannot be undone, and a push arriving while it runs must not be
@@ -207,10 +236,15 @@ jobs:
   #
   # **This job exists to measure one thing, and it deploys nothing.** `packages/site/build.ts` calls
   # `theRevision`, which refuses a working tree that disagrees with its commit and asks git for the
-  # head - so a build is either reproducible from the revision it stamps or it does not happen. Whether
-  # a checkout on a runner satisfies that has never been measured here: `revision.test.ts` builds a
-  # temporary repository on purpose, precisely so it can be dirtied, so the seven green suites say
-  # nothing about the tree they ran in.
+  # head - so a build is either reproducible from the revision it stamps or it does not happen.
+  #
+  # **This used to read *whether a checkout on a runner satisfies that has never been measured here*,
+  # and every green run of this job had already answered it.** `revision.test.ts` builds a temporary
+  # repository on purpose, precisely so it can be dirtied, so the suites above still say nothing about
+  # the tree they ran in - but `theRevision` refuses on `git status --porcelain`, which covers untracked
+  # files and is therefore stricter than the instrument's own `assertCleanTree`, and the step below has
+  # printed nothing on every run. A declared absence carries the date it was true; this one outlived it.
+  # ADR-0145.
   #
   # ADR-0097 chose this over letting a build service clone and build, on exactly that: neither
   # environment is proven, and only this one can be measured before anything is served. A failure here
@@ -241,7 +275,8 @@ jobs:
 
       # Printed before the build rather than read out of its failure. `theRevision` names the offending
       # paths when it refuses, but it refuses on the first one; this says what the whole checkout and
-      # the install left behind, which is the question nobody here has an answer to yet.
+      # the install left behind. It has printed nothing on every run so far, which is the reading the
+      # header above used to say nobody had.
       - name: what the checkout and the install left behind
         run: git status --porcelain
 
