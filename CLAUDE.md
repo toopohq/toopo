@@ -31,6 +31,20 @@ holds rather than against what somebody checked: a commit identifier in the pros
 this graph, no object of it carries an address the project refuses to publish, and the only checkout
 registered here is its root.
 
+**The gate now answers for the instrument as well as for what the instrument measures, and the exit
+code it reads has a failing direction that is exercised.** A battery *measures* a folder and is *built
+out of* the runner; the second half selected nothing, and ADR-0146 refused it on the price of a walk it
+was not going to take - following what a *suite* imports selects everything, following what a *run*
+reads closes on eight files and costs 5.2 % of wall clock. **The four names that entry gave were one
+too many and three short**, `published.ts` being on no battery's execution path and `census.ts`,
+`measure.ts` and `paths.ts` being read by every run: nothing had derived that list. What replaces it is
+a declaration a walk refuses to disagree with, and a blind spot published rather than discovered - a
+templated `import()` is invisible to the walk, so the declaration is what notices the walk going quiet.
+`8b6aa89` goes from 0 batteries to 21 and `f465660` from 2 to 21. **And the foundation under all of it
+was unproven**: both gates read an exit code whose only assertion was `toBe(0)` on a battery pinned
+green, so dropping the guard-disagreement term printed every disagreement and exited 0 across
+twenty-one batteries at once. Three exit codes, three guards, each seen red alone. ADR-0149.
+
 **The site has a search, and it is the one the client has rather than a second one.** A page fetches
 `contract-index` and `refusals` — the two answers it already serves — and runs `packages/registry/search.ts`
 against them, so a reader typing into the masthead and a reader typing into a terminal get one answer by
@@ -1432,12 +1446,22 @@ record declares**, which is a worse thing and has never been named here before.
   all of them**, so an import-following selection selects everything on every push, which is not a
   selection.
 
-  **Three populations, and they fail differently.** A guard reddened from a neighbouring folder is
+  **Two populations now, and they fail differently.** A guard reddened from a neighbouring folder is
   bounded by the second gate, which is to say by the cadence of publication rather than by *never*.
-  `packages/catalogue/` is reached by all six and injected into by none, so it is at once where the
-  rule answers *no battery* and where an edit reaches furthest. And the shared modules of `mutation/` -
-  `run.ts`, `published.ts`, `mutants.ts`, `attribution.ts` - are what every battery is built out of,
-  and a change to one selects nothing.
+  And `packages/catalogue/every-contract.ts` is reached by every injection folder and injected into by
+  none, so it is at once where the rule answers *no battery* and where an edit reaches furthest.
+
+  **The third closed, and what it was is worth more than that it closed.** It read *the shared modules
+  of `mutation/` - `run.ts`, `published.ts`, `mutants.ts`, `attribution.ts`*. One name too many and
+  three missing: `published.ts` is on no battery's execution path, because `measure.ts` resolves its
+  battery through a templated `import()` and never reads `THE_BATTERIES`; `census.ts`, `measure.ts` and
+  `paths.ts` are read by every run and were named nowhere. **Nothing had derived that list** - it was
+  written from a reading of what the instrument looked like, which is rule 3 of this section arriving
+  on an entry of it. What replaces it is a declaration a walk refuses to disagree with. ADR-0149.
+
+  **`packages/catalogue/` narrowed by one file at the same time.** `identifier.ts` is read by every run
+  and is answered for; `every-contract.ts` is read by the contract suites and by no run, which is why
+  the entry above names the file rather than the folder now.
 
   **It is not hypothetical and it arrived inside the closure's own demonstration**: replaying the push
   `bc88230..7c9906c`, seven of its twenty changed files selected no battery, and two of them are
@@ -1445,15 +1469,45 @@ record declares**, which is a worse thing and has never been named here before.
 
   **What is done rather than declared is that the selection prints what it passed over**, and a guard
   keeps it printing - so the gap is in a reader's face on every run instead of being a paragraph here.
-  What would close it is a selection that follows what a folder is *reached by* rather than what it
-  contains, which `sharedHarnessOf` already does for one contract's harness and which is a unit of its
-  own. Priced there and not taken.
+  What would close what remains is a selection that follows what a folder is *reached by* rather than
+  what it contains, which `sharedHarnessOf` already does for one contract's harness and which is a unit
+  of its own. Priced there and not taken.
+
+  **One residue is declared rather than closed, with its measurement.** `mutation/census.ts` is read by
+  every run and selects nothing, because it is a table keyed by suite file: a row of it moving is
+  already addressed to a folder, and repairing that in the selection would put the correction in the
+  mechanism beside the one that has the defect. Measured over the 43 pushes from `694a7a6` to
+  `341f86c`: 13 touched it, 12 needed nothing, and `7c9906c` left `validation-stage-1` unselected. Its
+  cause recurs - a guard written with `it.each` over the catalogue changes count when a contract is
+  published, in files nobody edited - so it belongs to the entry above about a parameterised guard
+  having no citable address. ADR-0149.
 
   **A cost rather than a hole, and it is new.** `seedsAreFrozen` is false by decision, so a pin is
   checked against one draw wherever it runs; twenty replays a day is twenty times the draws, and a thin
   pin will redden a healthy tree more often than it does today. **The asymmetry is what to plan for**:
   a draw on the first gate is a red somebody re-runs, and a draw on the second is a publication that
-  waits. ADR-0146 carries the criterion that classifies one.
+  waits. ADR-0146 carries the criterion that classifies one. **It is now two pushes in forty-three that
+  pay a full replay rather than none**, which is where that cost first arrives in fact.
+
+- **That a guard whose population is a function it does not control notices that population
+  shrinking.** `hands.test.ts` builds its population by calling `trackedProse()` - the very function a
+  defect would narrow. Measured at `341f86c` by committing the narrowing: `trackedProse` reduced to
+  `.ts`, dropping every Markdown file this repository holds, leaves `npm run meta` green at 94 of 94
+  and `tsc -p tsconfig.json` green. **It is ADR-0087 word for word** - a guard perturbing the object
+  derived from the claim rather than the claim - in a guard about who has read this repository's prose.
+
+  **The other half is what makes it invisible rather than merely weak**: `npm run hands` is in no
+  workflow. So the narrowing is seen by no suite, no gate and no battery, and the reading it feeds -
+  the paragraphs carrying three hands or more - would simply get smaller with nothing saying so.
+
+  **The population is `trackedProse`'s two callers**, `hands.ts` and `hands.test.ts`. What would close
+  the guard's half is a population stated independently of the function under measurement - the shape
+  `every-file-a-run-of-a-battery-reads-is-declared` now has one folder over, where a declaration and a
+  walk refuse to disagree. What would close the other half is a decision about whether a reading nobody
+  runs is worth a job, which is the same question the entry about `npm run hands` being a command and
+  not a number already asks. Found by perturbing the five modules of the instrument for ADR-0149 and
+  left standing there, because a unit closing a gate is not where one decides what `npm run hands` is
+  worth. ADR-0149.
 
 - **That the witness the end-to-end claim now has is one the code earns rather than the catalogue.**
   The entry this replaces asked for a mutant and ADR-0148 wrote it: `I-65` re-encodes a source in
@@ -1533,6 +1587,14 @@ record declares**, which is a worse thing and has never been named here before.
   a private repository, which means a credential on a runner for a question that stops being private the
   day the repository is public. That is the event to write it against, and it is why it is not written
   now. ADR-0104.
+
+  **That event has happened and this paragraph did not notice, which is rule 3 of this section on an
+  entry that names its own trigger.** `gh repo view --json visibility` answers `PUBLIC`, read at
+  `341f86c`. So the half of the price that was a credential is gone, and what remains of the refusal is
+  the network dependency alone. It is written here rather than acted on - the entry is somebody's to
+  take with the reading in front of them, and this is not that unit. **It also moves an argument two
+  entries up**, where the npm trusted-publisher entry refuses its own reading *for the same reason*:
+  that reason is now one reason rather than two, in both places.
 - **That the bytes an archive installs are the catalogue's own bytes**, which is the third of the three
   guards ADR-0092 lost and the one ADR-0104 did not bring back. The other two returned, one of them
   stronger; this one was refused rather than approximated, because comparing what a real install wrote
@@ -2015,6 +2077,28 @@ of the thesis.
   it looks correct**, which it does. **No count is published**, on the rule below that a sentence which
   can be true without counting does not count: what is claimed is that the gesture works and that it
   has fired here. ADR-0141.
+- **A guard that is green while its subject is broken is not one form, and the five instances this
+  repository has found are five mechanisms.** The list was rebuilt rather than remembered, because it
+  reads at a glance like one shape and is not:
+  - `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` derives its population from the
+    served `<style>`, so **no style element means no iterations**. Still true of the guard today; what
+    closes it is the battery cell W-24b and not the guard's shape.
+  - `a-first-push-selects-every-battery-rather-than-none` asserted an **outcome two causes reach**.
+    Repaired by asserting the cause.
+  - a `\b` written through a shell heredoc landed as `0x08`, so the **predicate matched less than its
+    text said**. Re-swept at `9b48c5a` over every tracked file: two carry a control character other than
+    tab and newline, both the deliberate `0x00` separators this file already names, and no backspace.
+  - `expect(done.status).toBe(0)` on a battery pinned green: **the failing input class was never
+    supplied**. ADR-0149.
+  - and its neighbour, found by the first two of that pair not reddening a perturbation of the filtered
+    exit code: **a third claim mistaken for a restatement of one already guarded**.
+
+  **No rank is published and no entry is opened**, because there is no form here to sweep for: an empty
+  population, a weak assertion, a narrowed predicate, a missing direction and an unnoticed third branch
+  are five different defects. What they share is not a mechanism but a discovery: **a reread of every
+  one of them says it looks correct**, and not one was found by rereading - they were found by a mutant,
+  by a neighbouring guard naming its own cause, by a character sweep, and twice by perturbing a module
+  to see what noticed. That is evidence for the two gestures above rather than a sixth rule.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
 - Report what you left out. Never narrow the scope silently.

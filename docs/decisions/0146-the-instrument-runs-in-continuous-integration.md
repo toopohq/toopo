@@ -197,9 +197,26 @@ rather than dropped, and a guard keeps it printed. `sharedHarnessOf` already der
 the files its harness imports outside its folder; turning that into a selection is a unit of its own
 and is not taken here.
 
+> [ADR-0149](0149-a-change-to-the-instrument-selects-the-batteries-it-is-read-by.md) narrowed this by
+> one file. `identifier.ts` is read by every run of a battery and is now answered for;
+> `every-contract.ts` is read by the contract suites and by no run, so the gap is what remains of this
+> paragraph rather than the whole of it.
+
 **The shared modules of `mutation/`.** `run.ts`, `published.ts`, `mutants.ts` and `attribution.ts` are
 what every battery is built out of, and a change to one of them selects nothing. Refused on the price -
 it is a full replay by another name - and not overlooked.
+
+> **Both halves of that sentence were wrong, and
+> [ADR-0149](0149-a-change-to-the-instrument-selects-the-batteries-it-is-read-by.md) closed it.** The
+> four names are one too many and three short: `published.ts` is on no battery's execution path, and
+> `census.ts`, `measure.ts` and `paths.ts` are read by every run. **Nothing had derived that list** - it
+> was written from a reading of what the instrument looked like, and it is left standing above with this
+> beside it rather than corrected in place, because what it says about the gate's population at
+> `9d05552` is what a reader of that gate needs.
+>
+> And the price was a different walk's. Following what a suite imports does select everything, which is
+> the measurement above; following what a *run* reads closes on eight files and costs +5.2 % of wall
+> clock over the same population.
 
 **A runtime.** `suites.yml` carries two floors because the question there is which runtimes pass. A
 battery measures what a suite catches and not which runtime ran it, so the gates run one runtime, and
