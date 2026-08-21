@@ -798,6 +798,10 @@ describe('what is pinned rather than inherited', () => {
        * On a platform with no drive letter the spelling below is unchanged and this reduces to
        * running the fixture battery. That is stated rather than guarded around: the door it is
        * written for cannot exist there.
+       *
+       * **This is the green direction and it is half of a pair.** `expect(done.status).toBe(0)` on a
+       * battery pinned green cannot fail when the exit code stops carrying a failure, which is the
+       * whole of what both gates read. The two guards below are the other half.
        */
       const asALauncherWould = join(THE_INSTRUMENT_FOLDER, 'measure.ts').replace(
         /^[A-Z]:/,
@@ -813,6 +817,101 @@ describe('what is pinned rather than inherited', () => {
       expect(output).toContain('control green (3 tests)')
       expect(output).toContain('every cell agrees with the verdict this battery pins for it')
       expect(done.status).toBe(0)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  /**
+   * The fixture, with one thing about it made untrue, run through `measure.ts` as a battery of its own.
+   *
+   * **A battery declaration has to be on disk for this, and that is why the red direction was never
+   * written.** `measure.ts` resolves its battery through `./<name>.battery.ts` and `calibrate` refuses
+   * a working tree carrying uncommitted changes, so a disagreement cannot be arranged by editing
+   * anything tracked. What it can be arranged by is a file git was never told about:
+   * `assertCleanTree` reads `--untracked-files=no`, so an untracked declaration leaves the tree clean
+   * to every check that matters and is gone before the guard returns.
+   *
+   * **A leftover announces itself rather than rotting.** If this process dies between the write and
+   * the removal, `every-battery-of-this-folder-is-published` reads the directory and reddens on a name
+   * beginning `throwaway-`. That is the direction to fail in, and it is why the names are spelled the
+   * way they are.
+   *
+   * Running beside another reader of this folder would be a race; the meta suite sets
+   * `fileParallelism: false` for a measured reason of its own, and the directory guard is in this
+   * file, which runs its guards in order.
+   */
+  const theFixtureExcept = (name: string, override: string): string =>
+    `import { battery as theFixture } from './fixture.battery.ts'\n\n` +
+    `export const battery = { ...theFixture, name: '${name}', ${override} }\n`
+
+  const measuring = (name: string, override: string): { output: string; status: number | null } => {
+    const declaration = join(THE_INSTRUMENT_FOLDER, `${name}.battery.ts`)
+    const artefact = join(THE_INSTRUMENT_FOLDER, 'results', `${name}.json`)
+
+    try {
+      writeFileSync(declaration, theFixtureExcept(name, override))
+
+      const done = spawnSync(
+        process.execPath,
+        [join(THE_INSTRUMENT_FOLDER, 'measure.ts'), name],
+        { cwd: THE_REPOSITORY, encoding: 'utf8' },
+      )
+
+      return { output: `${done.stdout}${done.stderr}`, status: done.status }
+    } finally {
+      rmSync(declaration, { force: true })
+      rmSync(artefact, { force: true })
+    }
+  }
+
+  /**
+   * The first of the two terms the exit code is built from. `FX-2` is an equivalent mutant - it adds
+   * the value to itself instead of doubling it - so it survives, and pinning it `killed` is a battery
+   * claiming a catch that did not happen.
+   *
+   * Seen red by writing `process.exitCode = 0` in place of the line under measurement, which is what
+   * both gates would then read on every battery of a push.
+   */
+  it(
+    'a-cell-disagreeing-with-its-pin-reaches-the-exit-code',
+    () => {
+      const { output, status } = measuring(
+        'throwaway-a-cell-that-disagrees',
+        `mutants: theFixture.mutants.map((mutant) => mutant.id === 'FX-2' ? ` +
+          `{ ...mutant, expected: { 'C/as-committed': { verdict: 'killed' } } } : mutant)`,
+      )
+
+      expect(output).toContain('cell(s) disagree with the battery')
+      expect(status).not.toBe(0)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  /**
+   * The neighbour of the guard above, and it is the term that guard cannot reach. A run whose every
+   * cell agrees still fails when a guard of the suite is silent and the battery accounts for it
+   * nowhere - which is the half of `measure.ts` that only a complete run computes, and the half a
+   * reading of `cellsDisagree` alone would leave unwatched.
+   *
+   * `DOUBLES_ZERO` is reddened by neither of the fixture's mutants and is declared under
+   * `unprobedRegions` for exactly that reason. Taking the declaration away leaves the silence and
+   * removes the account of it, so every cell agrees and the battery does not.
+   *
+   * Seen red by dropping `|| disagreements.length > 0` from the exit code, which leaves this guard's
+   * sentence printed and the process exiting 0 - the defect this pair exists for, and one no battery
+   * of the twenty-one can witness, because a battery cannot read its own exit code.
+   */
+  it(
+    'a-guard-disagreeing-with-its-battery-reaches-the-exit-code',
+    () => {
+      const { output, status } = measuring(
+        'throwaway-a-guard-nothing-accounts-for',
+        'unprobedRegions: []',
+      )
+
+      expect(output).toContain('every cell agrees with the verdict this battery pins for it')
+      expect(output).toContain('guard(s) disagree with the battery')
+      expect(status).not.toBe(0)
     },
     META_TIMEOUT_MS,
   )
