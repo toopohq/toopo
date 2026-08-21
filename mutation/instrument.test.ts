@@ -844,23 +844,29 @@ describe('what is pinned rather than inherited', () => {
     `import { battery as theFixture } from './fixture.battery.ts'\n\n` +
     `export const battery = { ...theFixture, name: '${name}', ${override} }\n`
 
-  const measuring = (name: string, override: string): { output: string; status: number | null } => {
+  const measuring = (
+    name: string,
+    override: string,
+    ...flags: readonly string[]
+  ): { output: string; status: number | null } => {
     const declaration = join(THE_INSTRUMENT_FOLDER, `${name}.battery.ts`)
-    const artefact = join(THE_INSTRUMENT_FOLDER, 'results', `${name}.json`)
+    const results = join(THE_INSTRUMENT_FOLDER, 'results')
 
     try {
       writeFileSync(declaration, theFixtureExcept(name, override))
 
       const done = spawnSync(
         process.execPath,
-        [join(THE_INSTRUMENT_FOLDER, 'measure.ts'), name],
+        [join(THE_INSTRUMENT_FOLDER, 'measure.ts'), name, ...flags],
         { cwd: THE_REPOSITORY, encoding: 'utf8' },
       )
 
       return { output: `${done.stdout}${done.stderr}`, status: done.status }
     } finally {
       rmSync(declaration, { force: true })
-      rmSync(artefact, { force: true })
+      // Both spellings, because a filtered run writes the second and a complete one the first.
+      rmSync(join(results, `${name}.json`), { force: true })
+      rmSync(join(results, `${name}.partial.json`), { force: true })
     }
   }
 
@@ -911,6 +917,36 @@ describe('what is pinned rather than inherited', () => {
 
       expect(output).toContain('every cell agrees with the verdict this battery pins for it')
       expect(output).toContain('guard(s) disagree with the battery')
+      expect(status).not.toBe(0)
+    },
+    META_TIMEOUT_MS,
+  )
+
+  /**
+   * The third exit code, and it was found by the two guards above failing to redden a perturbation of
+   * it. `measure.ts` sets its status in two places: a complete run reads both terms, and a filtered
+   * one reads only the cells, because attribution over `--only` would report a coverage hole that is
+   * an artefact of the command line.
+   *
+   * **Neither gate ever takes this branch** - `suites.yml` runs `npm run battery <name>` with no
+   * filter - so this guard is written for the person at a keyboard, who is the reader most likely to
+   * believe a green run of the one cell they were investigating.
+   *
+   * Seen red by writing `process.exitCode = 0` in the filtered branch, which leaves the two guards
+   * above green: that is the measurement that says this is a third claim and not a restatement.
+   */
+  it(
+    'a-filtered-run-carries-a-cell-disagreement-into-the-exit-code-too',
+    () => {
+      const { output, status } = measuring(
+        'throwaway-a-filtered-run-that-disagrees',
+        `mutants: theFixture.mutants.map((mutant) => mutant.id === 'FX-2' ? ` +
+          `{ ...mutant, expected: { 'C/as-committed': { verdict: 'killed' } } } : mutant)`,
+        '--only=FX-2',
+      )
+
+      expect(output).toContain('this run was filtered')
+      expect(output).toContain('cell(s) disagree with the battery')
       expect(status).not.toBe(0)
     },
     META_TIMEOUT_MS,
