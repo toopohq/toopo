@@ -388,12 +388,18 @@ const carriedFrom = (field: Field, asked: readonly string[]): number =>
  * a query reaching a contract through a single word of a single field is in exactly that position.
  *
  * **Both sides are pinned by a trial, and the value is the only one the measurement leaves.** At one
- * - which is to say with no floor at all, the rule as it stood - twelve requests a person types are
- * answered by a contract that has nothing to do with them: `parse yaml`, `parse json`, `round robin`,
- * `add to cart`, `add an event listener`, `float left`, `fixed header`,
- * `distance between two cities`, `levenshtein automaton`, `number formatting`, `slugify a blog post`,
- * `slug from an object id`. At three, `how do I round a number` stops resolving and two of the three
- * rewordings break. At four, three corpus queries and all three rewordings break.
+ * - which is to say with no floor at all, the rule as it stood - eight requests a person types are
+ * answered by a contract that holds nothing for them: `parse yaml`, `parse json`, `round robin`,
+ * `add to cart`, `add an event listener`, `float left`, `fixed header` and
+ * `distance between two cities`. At three, `how do I round a number` stops resolving and two of the
+ * three rewordings break. At four, three corpus queries and all three rewordings break.
+ *
+ * **What it silences beside them is published rather than left to be found**: `number formatting`,
+ * `levenshtein automaton`, `slugify a blog post` and `slug from an object id` are the same shape and
+ * this catalogue could have answered them. Nothing here separates the two sets - `blog` and `robin`
+ * are both words no contract carries - so the choice was never which to keep but which way both go,
+ * and a wrong answer is worse than a silence that names the word it could not place. ADR-0154 holds
+ * the reading and says whose call it is to revisit.
  *
  * **It is not a threshold on how much of the query was understood**, and that was measured before
  * this was written: requiring the contract to have answered more words than it set aside leaves four
@@ -419,9 +425,9 @@ const A_SET_ASIDE_WORD_IS_PAID_FOR_WITH = 2
  * words fall away until one is left and that one word opens the contract to any query carrying it.
  *
  * Measured over this catalogue's own six publications, the count of deliberate fields left with a
- * single telling word runs **0, 0, 0, 2, 15, 21**, and the twelve requests above are answered
- * **0, 1, 1, 2, 6, 12**. The sixth contract doubled it, and nothing about that was the sixth
- * contract's doing.
+ * single telling word runs **0, 0, 0, 2, 15, 21**, the eight requests above are answered
+ * **0, 1, 1, 1, 2, 8**, and the four beside them **0, 0, 0, 1, 4, 4**. The sixth contract doubled the
+ * total, and nothing about that was the sixth contract's doing.
  *
  * So the two questions are asked separately here. `namedByWhatTellsThemApart` decides which of the
  * field's words may be missing; `carriedFrom` decides how many had to be there. The conjunction is

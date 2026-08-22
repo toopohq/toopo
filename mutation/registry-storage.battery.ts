@@ -1619,7 +1619,7 @@ const mutants: readonly Mutant[] = [
     'S-01',
     'drops the rule that every word of the query must be answered, so a contract matches on the ' +
       'words it happens to share - `sort array` answers `array/group-by@1` to somebody looking for a ' +
-      'sorter, and twenty-two of the thirty-two queries the catalogue cannot answer come back with ' +
+      'sorter, and eighteen of the twenty-eight queries the catalogue cannot answer come back with ' +
       'something. **Its pin used to name two guards where four reddened**, and the two it left out ' +
       'were the alias property and the rewording - measured at `a705977` by injecting it there. ' +
       'ADR-0076 asks a pin naming five or fewer to name all of them, and this is what a pin that ' +
@@ -1920,9 +1920,9 @@ const mutants: readonly Mutant[] = [
     'takes the price off a word set aside, which is the rule exactly as it stood before ADR-0154: ' +
       'naming a field falls back to the words that tell the contracts apart, that set shrinks as the ' +
       'catalogue grows, and a field down to one of them opens its contract to anything typed beside ' +
-      'it. Twelve requests a person types come back with a function that has nothing to do with ' +
-      'them - `parse yaml` answers a string-to-number converter, `round robin` a rounder, `add to ' +
-      'cart` a date - and eleven of the ninety-one words this catalogue declares do it',
+      'it. Eight requests a person types come back with a function that holds nothing for them - ' +
+      '`parse yaml` answers a string-to-number converter, `round robin` a rounder, `add to cart` a ' +
+      'date - and eleven of the ninety-one words this catalogue declares open a contract that way',
     [
       searchFile(
         A_SET_ASIDE_WORD_COSTS_A_SECOND_WORD_OF_THE_FIELD,

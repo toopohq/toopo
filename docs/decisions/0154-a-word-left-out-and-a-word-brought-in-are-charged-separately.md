@@ -51,20 +51,29 @@ whatever else the reader typed is set aside for free.
 
 Over this catalogue's own six publications, in the order they happened:
 
-| after | deliberate fields with one telling word | distinct words that open one | of twelve requests, answered |
-| --- | --- | --- | --- |
-| `number/parse@1` | 0 | 0 | 0 |
-| `date/add@1` | 0 | 0 | 1 |
-| `array/group-by@1` | 0 | 0 | 1 |
-| `string/levenshtein@1` | 2 | 1 | 2 |
-| `string/slugify@1` | 15 | 7 | 6 |
-| `number/round@1` | 21 | 11 | 12 |
+| after | deliberate fields with one telling word | distinct words that open one | of eight requests, answered | of four beside them |
+| --- | --- | --- | --- | --- |
+| `number/parse@1` | 0 | 0 | 0 | 0 |
+| `date/add@1` | 0 | 0 | 1 | 0 |
+| `array/group-by@1` | 0 | 0 | 1 | 0 |
+| `string/levenshtein@1` | 2 | 1 | 1 | 1 |
+| `string/slugify@1` | 15 | 7 | 2 | 4 |
+| `number/round@1` | 21 | 11 | 8 | 4 |
 
 The eleven words at the sixth contract are `add`, `distance`, `fixed`, `float`, `int`, `levenshtein`,
-`number`, `parse`, `round`, `slug` and `slugify`. The twelve requests are `parse yaml`, `parse json`,
-`round robin`, `add to cart`, `add an event listener`, `float left`, `fixed header`,
-`distance between two cities`, `levenshtein automaton`, `number formatting`, `slugify a blog post`
-and `slug from an object id` — each one a thing somebody types and this catalogue does not hold.
+`number`, `parse`, `round`, `slug` and `slugify`.
+
+**The requests split in two and the split is the honest part of this record.** Eight are things
+somebody types that this catalogue holds nothing for: `parse yaml`, `parse json`, `round robin`,
+`add to cart`, `add an event listener`, `float left`, `fixed header`, `distance between two cities`.
+Four more are the same one-word doors and this catalogue **could** have answered them:
+`number formatting`, `levenshtein automaton`, `slugify a blog post`, `slug from an object id`.
+
+The four were written into the negative half of the trial first, and taking them out is the corpus
+rule holding against the person applying it: that list says *the catalogue cannot answer this*, and
+somebody typing `slugify a blog post` wants the function this catalogue holds. A query belongs there
+because a person would type it **and** because there is nothing here for them — never because it
+happens to fire the mechanism under repair.
 
 ### The rate does not improve by growing, and it does not only get worse either
 
@@ -155,8 +164,8 @@ Measured at `a705977` over the alias property, the corpus, the negative half and
 
 | words of the field required | what breaks |
 | --- | --- |
-| 1 — no floor, the rule as it stood | twelve requests answered by a contract that has nothing to do with them |
-| **2** | nothing |
+| 1 — no floor, the rule as it stood | eight requests answered by a contract that holds nothing for them |
+| **2** | nothing in the trial; four requests it could have answered go silent |
 | 3 | `how do I round a number`, and `turn a string into a number` and `string into number` |
 | 4 | three corpus queries, and all three rewordings |
 
@@ -180,6 +189,16 @@ thing that makes the first look like a loss is that the trial built it by mutati
 — that is the first option's finding — so the choice was never which of the two to keep. It was which
 way both go, and this product sends both to silence with the word it could not place named in
 `unknownWords`.
+
+**The four this catalogue could have answered are the same trade with a face on it**, and they are
+named rather than folded into the twenty-six. `slugify a blog post` was a right answer and is a
+silence; the reader is told `blog` and `post` are words no contract carries, and `slugify`,
+`slugify a title` and `url slug` all still reach `string/slugify@1`, so what it costs them is a
+retype rather than a dead end. `slug from an object id` is the odd one: it brings in **no unknown
+word at all** — `object` is declared by `array/group-by@1` and `id` by `string/slugify@1` — so it is
+the one case here where the word set aside is one the catalogue can place and the bound refuses it
+anyway. **Whether that trade is right is the owner's and it is not settled here**; what this record
+claims is only that no reading available to the rule separates those four from the eight.
 
 One realistic request moved that is worth naming: `parse a string into an integer` is silent now,
 because `integer` does not reach `int` — a shortening goes one way only, measured and decided long

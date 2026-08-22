@@ -69,9 +69,13 @@ omit.** A query that sets a word aside now has to carry more than one word of th
 because one word is not a name — which is `sort array` one floor down. **It was twelve requests and
 not the one the corpus happened to hold**: a deliberate field whose telling words fall to one opens
 its contract to anything typed beside it, and measured at `a705977` over this catalogue's six
-publications those fields ran **0, 0, 0, 2, 15, 21** while the twelve requests answered **0, 1, 1, 2,
-6, 12**. `parse json`, `round robin`, `add to cart`, `float left`, `fixed header` — each a thing
-somebody types that this catalogue does not hold. **The rate is not monotone and this file said it
+publications those fields ran **0, 0, 0, 2, 15, 21**. **Eight of the twelve are requests this
+catalogue holds nothing for** — `parse json`, `round robin`, `add to cart`, `float left`,
+`fixed header` among them, answered **0, 1, 1, 1, 2, 8** — **and four are requests it could have
+answered**, `slugify a blog post` among them, answered **0, 0, 0, 1, 4, 4**. Only the eight are in
+the negative half of the trial, because that list says *the catalogue cannot answer this*: **the four
+were written into it first and taken out**, which is the corpus rule holding against the person
+applying it rather than a distinction the rule can make. **The rate is not monotone and this file said it
 was**: the negative half had one query answered at one, two, three and four contracts, **none at
 five**, and one again at six, because growth took `string` to three contracts, so it stopped telling
 them apart and `remove accents from string` lost the field it had been naming. **The repair that

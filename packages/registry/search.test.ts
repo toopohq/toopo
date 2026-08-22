@@ -191,13 +191,21 @@ describe('finding a contract from what somebody typed', () => {
    * else the query carries. It came back because the setting-aside rule now costs a second word of
    * the field, so one word names nobody.
    *
-   * **The eleven beside it are the same defect and were found by looking for it.** `parse` was one
+   * **The seven beside it are the same defect and were found by looking for it.** `parse` was one
    * of eleven words that had become the sole telling word of some field - measured at `a705977`, the
    * count of such fields ran **0, 0, 0, 2, 15, 21** over this catalogue's six publications - and
-   * every one of them opened its contract to any query carrying it. Each query here is a request a
-   * person types and this catalogue does not hold; none was written to make a measurement pass.
-   * Answered before the repair and silent after: **0, 1, 1, 2, 6, 12** over those same six
-   * publications.
+   * every one of them opened its contract to any query carrying it. Answered before the repair and
+   * silent after: **0, 1, 1, 1, 2, 8** over those same six publications.
+   *
+   * **Four more were found with them and are not in this list, which is the entry rule holding
+   * against its author.** `number formatting`, `levenshtein automaton`, `slugify a blog post` and
+   * `slug from an object id` are the same one-word doors and they were about to be written here
+   * because they are - but this list says *the catalogue cannot answer this*, and of those four it
+   * can: somebody typing `slugify a blog post` wants the function this catalogue holds. A query
+   * enters here because a person would type it **and** because the catalogue has nothing for them,
+   * never because it happens to fire the mechanism under repair. They are published as the cost in
+   * ADR-0154 instead, where the reading is that the bound cannot tell them from the eight above and
+   * silences both.
    *
    * **The ceiling was measured on both sides and left alone.** At three, `parse yaml` answers
    * nothing again and `remove accents from string` answers `number/parse@1` at a score of 80 - a
@@ -236,10 +244,6 @@ describe('finding a contract from what somebody typed', () => {
       'float left',
       'fixed header',
       'distance between two cities',
-      'levenshtein automaton',
-      'number formatting',
-      'slugify a blog post',
-      'slug from an object id',
     ]
 
     expect(
