@@ -111,14 +111,14 @@ exists and is not measured where it cannot occur, so the count is the same where
 replay elsewhere reports those cells as not applicable rather than as missed. Today that is
 `cli-install · C-64`, whose defect only Windows can have.
 
-The 39 that survive are each classified, because a survivor count
+The 40 that survive are each classified, because a survivor count
 alone reads as a count of holes: 15 are equivalent mutants, 6 are behaviour the contract declines to
-specify, 3 are unreachable on this catalogue, 12 exist only where a lens deliberately took the
+specify, 4 are unreachable on this catalogue, 12 exist only where a lens deliberately took the
 suite's sight away, and **3 are a limit this repository declares with its price**.
 
 ```sh
 pnpm install
-pnpm run mutation    # tens of minutes; replays all 740 cells and prints the total
+pnpm run mutation    # tens of minutes; replays all 746 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 

@@ -1930,14 +1930,14 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
 
   /**
    * **Taking the argument out of a module fails in the same three ways taking it out of the
-   * stylesheet does**, and W-95 to W-97 are those three: it can not happen, it can be wrong about
+   * stylesheet does**, and W-96 to W-98 are those three: it can not happen, it can be wrong about
    * what a comment is, and it can take something with it. What differs is that the third is not the
    * cheap one here - a CSS comment is whitespace and a JavaScript comment is not, so a removal that
    * is right about every comment and wrong about one byte beside it changes what a browser runs.
    * ADR-0156.
    */
   sameOnEveryLens(
-    'W-95',
+    'W-96',
     'serves the modules of this repository with their argument still in them, which is 92 562 B of ' +
       'prose a reader cannot use - 19 475 B in brotli on every page of the tree, two and a half ' +
       'times what taking the prose out of the stylesheet bought, and nothing a browser runs is any ' +
@@ -1963,7 +1963,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * that guard was green on exactly this cell.
    */
   sameOnEveryLens(
-    'W-96',
+    'W-97',
     'stops resuming a template literal after a substitution, so the reader loses its place at the ' +
       'first substitution in a module and reads the code that follows as prose - leaving comments ' +
       'in what is served while reporting that it removed them all',
@@ -1977,7 +1977,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * survives, so the guard above stays green, and what changes is the program.
    */
   sameOnEveryLens(
-    'W-97',
+    'W-98',
     'takes two bytes past the end of every comment, which is right about where each one starts and ' +
       'wrong about where it stops - a removal no reading of the served bytes would call a comment, ' +
       'in a language where a byte beside a comment decides where a statement ends',
@@ -1993,7 +1993,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * between what an auditor fetches and what the digest covers.
    */
   sameOnEveryLens(
-    'W-98',
+    'W-99',
     'strips the reference of a contract of its argument as well as its types, so the page promises ' +
       'a reader one artefact and hands them another - on a file frozen for the life of the major, ' +
       'and with 15 417 B of the reasoning this catalogue publishes gone from what an auditor receives',
@@ -2015,7 +2015,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * The cell writes one into a module, which is the event that guard is born green waiting for.
    */
   sameOnEveryLens(
-    'W-99',
+    'W-100',
     'writes a directive comment into a browser module, which the removal takes out like any other ' +
       'and whose absence no comparison of syntax trees can see - the one comment on this site whose ' +
       'meaning is not for a reader',
@@ -2044,7 +2044,7 @@ export const escaped = (character: string): string => {`,
    * input this catalogue holds, and worth naming so that the day one arrives it is already named.
    */
   sameOnEveryLens(
-    'W-100',
+    'W-101',
     'replaces every comment with a space, never with the line terminator the comment it removed was ' +
       'carrying - which is what a reader of CSS writes, and which moves where a statement ends in a ' +
       'language that ends statements at a line',
