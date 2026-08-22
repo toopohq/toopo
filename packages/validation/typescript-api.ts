@@ -92,7 +92,7 @@ export const TYPESCRIPT_SURFACE = {
    * because the only route to one spawns the compiler. It comes through this object rather than
    * through a second import so that the sentence at the head of this file stays true: one module here
    * imports a compiler API, and a package that moved this path is discovered by `undefined` at one
-   * door instead of by a wrong answer at two.
+   * door instead of by a wrong answer at two. ADR-0156.
    */
   createScanner: ast.createScanner,
 

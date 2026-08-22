@@ -54,6 +54,9 @@
  * functions.** This repository's own modules lose their argument as well as their types, because a
  * reader who cannot use the reasoning was downloading all of it. A contract's reference loses nothing
  * but its types, because the page makes a promise about that file and an auditor fetches it.
+ *
+ * ADR-0156 is the proof that the first of those two is safe, and why it is a guard here where the same
+ * question about the stylesheet could only ever be a reading somebody took once.
  */
 
 import { stripTypeScriptTypes } from 'node:module'
