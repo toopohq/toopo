@@ -997,6 +997,18 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   contract digest under one address. That is the revision ADR-0023 already names and nothing
   implements, priced there as a unit of the publishing tool.
 
+  **A fifth instance is a family rather than a phrase, and it is on the contract this catalogue is
+  most asked for.** `number/parse@1` declares `int` and not `integer`, `answers` lets a query shorten
+  a word and never extend one, so `integer` reaches nothing. Measured at `643bf7e` over eight ordinary
+  ways of asking for that function: written with `integer`, **five were silent before ADR-0154 and all
+  eight are now**; written with `int`, **nought of the eight are silent**. One alias — `string to
+  integer` — would answer seven of them, and `identity` is frozen on a published contract, so nobody
+  may declare it. **It is separated from ADR-0154's own costs deliberately**: that record silences four
+  requests this catalogue could have answered, and this is not one of them — the floor moved three of
+  these eight and *revealed* the other five, which the setting-aside allowance had been masking.
+  Folding it in would hide a defect behind another decision, which is the move this list exists to
+  refuse. ADR-0154.
+
   **What is cheap and is done instead is that both records now say so** — the head of ADR-0035, and
   this entry. What would close it is the validation stage reading this repository's own strings, named
   by several entries of this list already, already priced and already refused as a lint over prose —

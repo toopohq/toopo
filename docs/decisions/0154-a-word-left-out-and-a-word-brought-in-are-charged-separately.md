@@ -200,10 +200,19 @@ the one case here where the word set aside is one the catalogue can place and th
 anyway. **Whether that trade is right is the owner's and it is not settled here**; what this record
 claims is only that no reading available to the rule separates those four from the eight.
 
-One realistic request moved that is worth naming: `parse a string into an integer` is silent now,
-because `integer` does not reach `int` — a shortening goes one way only, measured and decided long
-before this — and without it no field of `number/parse@1` is carried by two words. It was answered
-before **through the door this record closes**, which is to say correctly and for the wrong reason.
+**`parse a string into an integer` is silent now and it is not this bound's cost**, which is worth
+separating rather than folding in. Its cause is that `integer` does not reach `int` — a shortening
+goes one way only, decided long before this — and that the repair for a word the catalogue does not
+carry is an alias, inside a frozen `identity`, on a published contract. Measured at `643bf7e` over
+eight ordinary phrasings of what `number/parse@1` does, written with `integer` rather than `int`:
+**five were already silent before this unit and eight are now**, while **nought of the same eight
+written with `int` are silent**. One declared alias would answer seven of the eight, and nothing may
+declare it.
+
+So the floor moved three of those eight and revealed the other five, which the setting-aside
+allowance had been masking. It belongs to the debt `CLAUDE.md` carries as *the repair a record
+prescribes is one somebody can carry out* — ADR-0136 — and it is written there rather than counted
+here, because attributing it to this bound would hide one defect behind another decision.
 
 ### The reading that was nearly published, and was the wrong population
 
