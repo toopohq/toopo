@@ -187,9 +187,10 @@ describe('a reader receives the module and not the argument for it', () => {
    *
    * Measured at `43db0c2`, on the built tree, by the compiler's parser read over the served bytes:
    * the fourteen served modules carry **107 979 B of comment out of 175 400 - 62 %**. What one reader
-   * pays is the smaller and truer figure: the five modules every page loads go from **25 569 B to
-   * 6 090 B in brotli**, which is 2.46 times what taking the prose out of the stylesheet bought.
-   * ADR-0156 carries the reading.
+   * pays is the smaller and truer figure, and it is read off the tree this change ships rather than
+   * off a simulation of it: the five modules every page loads go from **25 569 B to 6 094 B in
+   * brotli**, which is 2.46 times what taking the prose out of the stylesheet bought, and a contract
+   * page saves **28 683 B**. ADR-0156 carries the reading.
    *
    * **The source is asserted to carry comments first**, because a sweep whose population has left is a
    * sweep that passes by having nothing to look at.

@@ -49,7 +49,7 @@
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
-import { killed, mutantsOn } from './mutants.ts'
+import { killed, mutantsOn, survived } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'W', asCommitted: 'as-committed', blinded: [] }
 
@@ -57,6 +57,11 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
 
 const documentFile = (find: string, replace: string) => ({ file: 'document.ts', find, replace })
 const styleFile = (find: string, replace: string) => ({ file: 'style.ts', find, replace })
+const servedModulesFile = (find: string, replace: string) => ({
+  file: 'served-modules.ts',
+  find,
+  replace,
+})
 const servedStylesheetFile = (find: string, replace: string) => ({
   file: 'served-stylesheet.ts',
   find,
@@ -134,6 +139,12 @@ const THE_PAGE_DECLARES_ITS_LANGUAGE = `    '<html lang="en">',`
 
 const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${THE_SERVED_STYLESHEET}</style>\`,`
 
+const THE_MODULES_ARE_STRIPPED_BEFORE_THEY_ARE_SERVED = `  withoutItsArgument(stripTypeScriptTypes(typescript, { mode: 'strip' }))`
+const THE_TEMPLATE_IS_RESUMED = `        token = scanner.reScanTemplateToken(false)`
+const A_COMMENT_ENDS_WHERE_IT_ENDS = `to: scanner.getTokenEnd()`
+const A_REFERENCE_KEEPS_ITS_ARGUMENT = `  return asAContractsReference(blob.bytes.toString('utf8'))`
+const A_MODULE_CARRIES_NO_DIRECTIVE = `export const escaped = (character: string): string => {`
+const A_COMMENT_THAT_SPANNED_A_LINE_STILL_DOES = `A_LINE_TERMINATOR.test(body)`
 const THE_SHEET_IS_STRIPPED_BEFORE_IT_IS_SERVED = `export const THE_SERVED_STYLESHEET = withoutComments(STYLE)`
 
 const NOTHING_ELSE_IS_TAKEN_OUT_WITH_THEM = `  return kept + css.slice(keptFrom)`
@@ -1915,6 +1926,130 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'first one anybody writes into a string',
     [servedStylesheetFile(A_STRING_IS_NOT_READ_FOR_COMMENTS, ``)],
     killed(['what-this-reads-as-a-comment-is-what-a-browser-reads-as-one']),
+  ),
+
+  /**
+   * **Taking the argument out of a module fails in the same three ways taking it out of the
+   * stylesheet does**, and W-95 to W-97 are those three: it can not happen, it can be wrong about
+   * what a comment is, and it can take something with it. What differs is that the third is not the
+   * cheap one here - a CSS comment is whitespace and a JavaScript comment is not, so a removal that
+   * is right about every comment and wrong about one byte beside it changes what a browser runs.
+   * ADR-0156.
+   */
+  sameOnEveryLens(
+    'W-95',
+    'serves the modules of this repository with their argument still in them, which is 92 562 B of ' +
+      'prose a reader cannot use - 19 475 B in brotli on every page of the tree, two and a half ' +
+      'times what taking the prose out of the stylesheet bought, and nothing a browser runs is any ' +
+      'different for it',
+    [
+      browserFile(
+        THE_MODULES_ARE_STRIPPED_BEFORE_THEY_ARE_SERVED,
+        `  stripTypeScriptTypes(typescript, { mode: 'strip' })`,
+      ),
+    ],
+    killed(['every-module-a-reader-runs-carries-no-comment']),
+  ),
+
+  /**
+   * **The defect this whole unit exists because of, measured before a line of it was written.** A
+   * scan loop that never asks the scanner to resume a template reads the closing backtick of a
+   * substitution as an opening one, and from there reads prose as code and code as prose. On
+   * `packages/registry/address.js` it finds 10 comments and 9 644 bytes where the parser finds 25 and
+   * 16 358, and the prose of this repository is full of backticks, so it never resynchronises.
+   *
+   * **It raises no error and returns a plausible number**, which is why the guard it reddens reads
+   * the compiler instead of asking the reader how much it left behind. Written the other way first,
+   * that guard was green on exactly this cell.
+   */
+  sameOnEveryLens(
+    'W-96',
+    'stops resuming a template literal after a substitution, so the reader loses its place at the ' +
+      'first substitution in a module and reads the code that follows as prose - leaving comments ' +
+      'in what is served while reporting that it removed them all',
+    [servedModulesFile(THE_TEMPLATE_IS_RESUMED, `        braces -= 1`)],
+    killed(['every-module-a-reader-runs-carries-no-comment']),
+  ),
+
+  /**
+   * **A removal that is right about every comment and takes one byte too many with it.** It is the
+   * off-by-one anybody writes, and it is the cell that reddens the total comparison alone: no comment
+   * survives, so the guard above stays green, and what changes is the program.
+   */
+  sameOnEveryLens(
+    'W-97',
+    'takes two bytes past the end of every comment, which is right about where each one starts and ' +
+      'wrong about where it stops - a removal no reading of the served bytes would call a comment, ' +
+      'in a language where a byte beside a comment decides where a statement ends',
+    [servedModulesFile(A_COMMENT_ENDS_WHERE_IT_ENDS, `to: scanner.getTokenEnd() + 2`)],
+    killed(['a-module-a-reader-runs-is-the-program-its-source-declares']),
+  ),
+
+  /**
+   * **The shorter name, reached for.** The two erasures differ by one removal, and a contract page
+   * publishes a sentence about the second: *the JavaScript this runs is that contract own
+   * reference.ts with its types stripped*. Taking the comments out of a reference makes that sentence
+   * false on the one page whose subject is that this catalogue can be checked, and widens the gap
+   * between what an auditor fetches and what the digest covers.
+   */
+  sameOnEveryLens(
+    'W-98',
+    'strips the reference of a contract of its argument as well as its types, so the page promises ' +
+      'a reader one artefact and hands them another - on a file frozen for the life of the major, ' +
+      'and with 15 417 B of the reasoning this catalogue publishes gone from what an auditor receives',
+    [
+      browserFile(
+        A_REFERENCE_KEEPS_ITS_ARGUMENT,
+        `  return asABrowserModule(blob.bytes.toString('utf8'))`,
+      ),
+    ],
+    killed(['a-contracts-reference-reaches-a-reader-with-its-argument-intact']),
+  ),
+
+  /**
+   * **The comment a comparison of syntax trees cannot see removed.** A source-map directive or a
+   * purity annotation leaves the tree identical, so the total guard is blind exactly where the
+   * consequence is not syntactic. The answer is the one `a-page-loads-nothing-and-runs-nothing` gives
+   * about an address in a stylesheet: refuse the shape rather than detect the loss.
+   *
+   * The cell writes one into a module, which is the event that guard is born green waiting for.
+   */
+  sameOnEveryLens(
+    'W-99',
+    'writes a directive comment into a browser module, which the removal takes out like any other ' +
+      'and whose absence no comparison of syntax trees can see - the one comment on this site whose ' +
+      'meaning is not for a reader',
+    [
+      literalFile(
+        A_MODULE_CARRIES_NO_DIRECTIVE,
+        `//# sourceURL=probe
+export const escaped = (character: string): string => {`,
+      ),
+    ],
+    killed(['no-module-a-reader-runs-carries-a-comment-a-tool-reads']),
+  ),
+
+  /**
+   * **The cell this unit most wanted and cannot have, published rather than dressed up.** A comment
+   * carrying a line terminator is a line terminator for automatic semicolon insertion, so replacing
+   * one with a space can change what a program answers - measured, a `return` separated from its
+   * value by such a comment answers `undefined`, and answers 42 once that comment is a space.
+   *
+   * **No module of this catalogue carries that shape.** Measured over 9 637 nodes at `43db0c2`: all
+   * three candidate rules - a line terminator, a space always, nothing at all - leave every tree
+   * identical. So this states an intent and carries no behaviour, which is exactly why the rule it
+   * perturbs is argued from the specification and not from the corpus.
+   *
+   * It is the shape `number/round@1` already carries three of: a defect that is real, inert for every
+   * input this catalogue holds, and worth naming so that the day one arrives it is already named.
+   */
+  sameOnEveryLens(
+    'W-100',
+    'replaces every comment with a space, never with the line terminator the comment it removed was ' +
+      'carrying - which is what a reader of CSS writes, and which moves where a statement ends in a ' +
+      'language that ends statements at a line',
+    [servedModulesFile(A_COMMENT_THAT_SPANNED_A_LINE_STILL_DOES, `false`)],
+    survived('unreachable-on-this-catalogue'),
   ),
 ]
 
