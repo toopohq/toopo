@@ -155,20 +155,49 @@ most of it was doing real work. **The repair removed it by accident**, for reaso
 repository is one region better off and no decision bought that — which is the shape that recurs
 somewhere else unnoticed, nothing looking wrong on either side of it. ADR-0141.
 
-**The same defect is three times larger one door along, and it is measured and not taken.** The browser
-modules a reader downloads carry **80 752 B of comments out of 137 081 — 59 %**, measured at `018a2da`
-by a scan respecting strings, template literals and comments; `search.js` is 76 % comment and
-`address.js` 77 %. It is not a declaration nobody keeps, so it is written here rather than on the list
-below: nothing is unkept, something is unpaid. **What refuses it is not scope but a difference in
-kind** — a CSS comment is whitespace-equivalent and a JavaScript comment is not, a comment spanning a
-line break being a line terminator for automatic semicolon insertion, so a mis-reading costs executed
-code where the CSS one cost bytes. `stripTypeScriptTypes` takes `mode` and a source map and offers
-nothing for it, so it means a JavaScript reader handling regular-expression literals as well. **And the
-verification does not transfer, which is what settles it**: `CSSStyleSheet.replaceSync` and a rule-by-rule
-comparison have no JavaScript equivalent, so the second half would land without the check that makes
-the first defensible. Taking it needs a way to establish that two modules mean the same thing — parsing
-both and comparing, which is a dependency, or a suite exercising all nine files, where the playground
-suite reaches four functions.
+**The debt one door along is paid, and the refusal named the wrong obstacle.** ADR-0141 wrote that
+*the verification does not transfer* — `CSSStyleSheet.replaceSync` and a rule-by-rule comparison have no
+JavaScript equivalent — and that is true of the form and inverted as a conclusion. **The CSS comparison
+could never be a guard**, because it needs a browser, refused three times on the list below. **This one
+needs a parser**, which is already a runtime dependency and which a suite here already spawns: seven
+project loads in 0.645 s, against the 4.02 s the site suite took. So the second half is not the first
+half without its check — it is the first half with a better one, and ADR-0141's own published blind spot
+does not recur.
+
+**What stands where `cssRules` stood is both syntax trees walked and compared on kind, child count and
+leaf value.** Measured at `43db0c2` over **9 637 nodes: zero differing** — perturbed to 375 by a deleted
+statement, 4 by a renamed identifier and 3 by the hazard planted. **The price is that the parser is not
+the consumer**, which CSS did not pay: V8 exposes no tree, and no normal form at all — `Function.prototype.toString`
+returns source text with the comments in it, `name` and `length` are equal for different bodies, a module
+namespace carries no body and the code cache is not canonical. What makes a third party's reading
+acceptable is that stage 1 already trusts this parser to decide what enters the catalogue; and it was
+checked against V8 on automatic semicolon insertion, case for case.
+
+**What a reader stops paying is 19 475 B in brotli on every page and 28 683 B on a contract page** —
+2.46 and 3.62 times what taking the prose out of the stylesheet bought. The tree figure is 34 194 B and
+**no reader pays it**, because nobody loads fourteen modules. **The five `reference.js` keep their
+argument**, by a guard rather than by care: a contract page promises *that contract's own `reference.ts`
+with its types stripped*, so the real seam was 92 562 B and not 107 979, and the refusal costs a reader
+nothing because no reference is among the five modules a page loads.
+
+**The reader is the compiler's scanner driven, and a measurement is why.** A bare scan loop finds **10
+comments and 9 644 bytes in `address.js` where the parser finds 25 and 16 358** — it loses template
+parity at line 204 and never resynchronises, because this prose is full of backticks. **It raised no
+error and returned a plausible number.** A reader written from scratch is worse: one written for this
+unit agreed with the parser on the six files it finished and looped for ever on the seventh. **And the
+premise the old refusal rested on was false** — `browser.ts` claimed `typescript@7.0.2` ships no
+JavaScript API, offering `lib/` as evidence; the API is under `dist/`, and `typescript-api.ts` had said so
+correctly the whole time. Two files, one fact, and the wrong one was the file somebody opens to ask this
+exact question. ADR-0156.
+
+**Three things this unit could not buy are written down rather than smoothed.** The cell it most wanted
+survives: on the fourteen real modules all three replacement rules leave every tree identical, because
+no module here separates a `return` from its value with a comment spanning a line — so W-101 states an
+intent and carries no behaviour, which is `number/round@1`'s shape three times over. A coverage reading
+was attempted and failed — 1 027 scripts captured under `NODE_V8_COVERAGE`, two of them this
+repository's, **none of the nine modules**, and a probe reporting *100 % executed* that was the absence
+of data. And the figures in the commit are the simulated ones where the record's are the shipped ones,
+which is ADR-0141's own lesson arriving one unit later: 6 090 predicted, 6 094 served.
 
 **Two things it broke are worth more than what it built.** A stylesheet can be green and broken: the
 first repair of the sticky bar used a spacing step the scale does not declare, which makes the whole
@@ -1028,6 +1057,30 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   whose subject is a *contract's* prose rather than a source's or a record's. Priced and not taken.
   ADR-0154.
 
+- **That a module a browser loads is one this repository's guards can see.** ADR-0156 takes the
+  argument out of every module of `THE_BROWSER_GRAPH` and keeps the removal with four guards whose
+  population is that list. The list is a declaration, and its keeper —
+  `every-import-a-browser-module-keeps-is-a-module-the-site-writes` — **cannot see an `await import`**:
+  it matches `from '...'` and a dynamic import carries no `from`, which is how it lost the playground's
+  four edges in silence the day `start.ts` was written to defer them.
+
+  **So a tenth module arriving through a dynamic import is served with its argument still in it and
+  with none of the four guards looking at it**, and nothing reports either half. The failure is quiet
+  by construction: the page works, the module works, and what is wrong is that a file a reader
+  downloads left the population of every guard that has an opinion about it.
+
+  **Where this looked**, because an entry describing what the code does not have names it: the guard
+  itself, which already carries a comment saying it reads both spellings and was written after that
+  hole was found; `THE_BROWSER_GRAPH` and `LOADED_BEFORE_A_READER_ACTS` in `packages/site/browser.ts`;
+  and `packages/site/served-modules.test.ts`, whose four guards read the first of those two.
+
+  **The population is one declaration and the guards that read it**, which is four today and grows with
+  each guard written over the served modules. What would close it is a walk that follows what a page
+  really fetches rather than what a list says — which is the emitted tree read as a graph, priced
+  nowhere and not taken here. What is cheap and is done instead is that the guards derive their
+  population from the declaration rather than restating it, so the day the declaration is repaired they
+  are repaired with it. ADR-0156.
+
 - **That the repair a record prescribes is one somebody can carry out.** ADR-0035 decides what a
   search may answer, and it names the repair for the case it cannot: *a query only a description could
   have answered is a **missing alias**, and the repair belongs in `identity.searchAliases`, where it is
@@ -1608,8 +1661,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   not is the file that touches a document. `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing`
   asserts the *absence* of a served control and says nothing about the built one.
 
-  **The population is `packages/site/start.ts`**, and the event is worth stating because it is not the
-  obvious one: `copyControl` runs first in `start`, so an edit that throws there takes the playground
+  **The population is `packages/site/start.ts`, and it is measured now rather than described.** It
+  **exports zero names**, so nothing can import it and nothing can call into it; of the 72 names the
+  nine browser modules export, **51 appear in some test file and its own are none of them**, because it
+  has none. Its **7 532 bytes of executable text are 17.7 %** of the 42 530 the nine modules carry.
+  ADR-0156 measured it while answering a different question and deliberately did not repair it.
+
+  The event is worth stating because it is not the obvious one: `copyControl` runs first in `start`, so an edit that throws there takes the playground
   with it — and the section does not look broken, because the prose that stands in for a missing form
   is exactly what a reader sees when the form was never built. What would close it is a document in
   the site suite, which means a DOM environment, which means a sixth dev dependency for one file of
