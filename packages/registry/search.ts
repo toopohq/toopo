@@ -73,16 +73,22 @@
  * What is searched, and why the description is not
  * ---------------------------------------------------------------------------
  *
- * The index and nothing else: the rendered address, the export names, the search aliases, the summary
- * and the language. `ServedIndexEntry` is the answer fetched before a query is answered and says of
- * itself that it is deliberately small - measured, the five contracts index to 3 106 bytes while
- * their descriptions alone are 6 187, so carrying them would triple the one document every search
- * pays for.
+ * The index and nothing else: the rendered address, the export names, the search aliases, the terms
+ * the registry learned, the summary and the language. `ServedIndexEntry` is the answer fetched
+ * before a query is answered and says of itself that it is deliberately small - measured, the five
+ * contracts indexed to 3 106 bytes while their descriptions alone are 6 187, so carrying them would
+ * triple the one document every search pays for.
  *
  * That is not a limit accepted grudgingly. **The aliases are the searchable surface of the
  * description**: a query only the description could have answered is an alias the contract is
- * missing, and the repair belongs in `identity.searchAliases`, where it is frozen, reviewed and
- * served, rather than in an index that grew to hide the gap.
+ * missing, and the repair belongs where an alias belongs.
+ *
+ * **Where that is depends on whether the contract is published, and until ADR-0155 there was one
+ * answer and it was wrong for five of the six.** `identity.searchAliases` is inside
+ * `contractSnapshot`, so on a published contract the repair this file prescribed could not be
+ * carried out by anybody - which is a prescription and not a repair. What a contract cannot say,
+ * the registry now says beside it: `alsoFoundBy` is standing, so a phrase can be learned under a
+ * frozen address, and it is read here as an alias because that is what it is.
  *
  * ---------------------------------------------------------------------------
  * No tolerance for a typo, deliberately
@@ -127,9 +133,17 @@ type MatchedField = 'name' | 'export' | 'alias' | 'summary' | 'language'
 /**
  * What a match in each field is worth.
  *
- * A name is what the contract *is*, an export is what a caller writes, an alias is what the contract
- * says people look for, a summary is prose that happens to contain the word. The ladder is the order
- * of how deliberate the field is, and nothing subtler than that is claimed for it.
+ * A name is what the contract *is*, an export is what a caller writes, an alias is a phrase somebody
+ * chose as a way of being found, a summary is prose that happens to contain the word. The ladder is
+ * the order of how deliberate the field is, and nothing subtler than that is claimed for it.
+ *
+ * **`alias` is two fields and not one, deliberately.** A contract's own `searchAliases` and the terms
+ * the registry learned afterwards are read here as one kind, because the ladder ranks how deliberate
+ * a field is and both are exactly as deliberate - somebody chose the phrase either way. A kind of
+ * its own would need a value here, a decision in `DELIBERATE` and a row in the spread, and all three
+ * would have to equal `alias`'s to be right: a distinction that must never make a difference is not
+ * a distinction. What tells them apart is *who wrote it and when*, which is a question about the
+ * catalogue and not about a query. ADR-0155.
  */
 const AUTHORITY: Readonly<Record<MatchedField, number>> = {
   name: 100,
@@ -179,6 +193,10 @@ type Field = {
  * would otherwise be a word nothing answers. There is no separate domain field because the rendered
  * address already carries it.
  *
+ * The learned terms sit beside the aliases rather than in a field of their own, for the reason
+ * `AUTHORITY` gives: a query meets them as the same kind of thing. `phrasesOfferedBy` below is what
+ * reads them back out, and it is the only statement of what this function treats as an alias.
+ *
  * The rendering gaining the language put `typescript` into this field as well as into the one below,
  * and that is worth a sentence rather than a repair. The two are not one fact restated: the name field
  * answers somebody who pasted an address off a contract page, the language field answers `js` and
@@ -199,6 +217,11 @@ const fieldsOf = (entry: ServedIndexEntry): readonly Field[] => {
       kind: 'alias' as const,
       text: alias,
       words: wordsOf(alias),
+    })),
+    ...(entry.alsoFoundBy ?? []).map((learned) => ({
+      kind: 'alias' as const,
+      text: learned,
+      words: wordsOf(learned),
     })),
     { kind: 'summary', text: entry.summary, words: wordsOf(entry.summary) },
     { kind: 'language', text: entry.address.language, words: THE_WORDS_FOR[entry.address.language] },
@@ -234,6 +257,21 @@ export const answers = (asked: string, held: string): boolean =>
   asked === held ||
   singular(asked) === singular(held) ||
   (asked.length >= MINIMUM_PREFIX && held.startsWith(asked))
+
+/**
+ * Every phrase of this entry a query meets as one somebody chose the contract to be found by.
+ *
+ * Exported so that a guard can ask the search what it reads and compare that with what the answer
+ * declares, which are two statements and not one -
+ * `every-phrase-an-entry-offers-is-a-phrase-the-search-reads` is their disagreement. Without it the
+ * alias trial would build its population out of the very function a defect would narrow, which is
+ * the shape ADR-0152 closed one folder over and the shape this file would have grown three days
+ * later.
+ */
+export const phrasesOfferedBy = (entry: ServedIndexEntry): readonly string[] =>
+  fieldsOf(entry)
+    .filter((field) => field.kind === 'alias')
+    .map((field) => field.text)
 
 type Hit = { readonly value: number; readonly field: Field }
 

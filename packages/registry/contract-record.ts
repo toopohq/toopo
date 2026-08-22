@@ -281,6 +281,68 @@ export type LanguageReExamination = {
   readonly whatItEstablishes: string
 }
 
+// --- A word the registry learned about a contract it may no longer edit ---
+
+/**
+ * One phrase the registry found people ask by, on a contract whose own aliases are frozen. ADR-0155.
+ *
+ * `identity.searchAliases` is what a contract says people look for, and ADR-0023 decides in as many
+ * words that it is the one field of `identity` that is not frozen - *nobody links to an alias, no
+ * answer cites one, and correcting one breaks nobody's code*. `contractSnapshot` freezes `identity`
+ * whole, so on a published contract that decision is unkept: measured, adding one alias to
+ * `string/slugify@1` moves its digest from `855107da…` to `5fe0ecfa…`. Five of the six contracts are
+ * published, so the cheapest contribution this project invites is the one it cannot accept.
+ *
+ * ---------------------------------------------------------------------------
+ * Why this is curation and not a second statement of the frozen half
+ * ---------------------------------------------------------------------------
+ *
+ * ADR-0128 refuses a standing field that restates something the frozen half already publishes, and it
+ * refuses it on the content: `identity.inputDomain` carries the *it is not…* clauses in prose, so a
+ * field for them would be one half of a duplicate that permanent rule 6 makes unremovable. Nothing
+ * here restates anything. A frozen alias is a phrase the contract's author wrote at publication; a
+ * phrase nobody wrote is in no field at all, and there is no half of the contract that could be
+ * pointed at instead.
+ *
+ * The genus is the other one. **What the registry measures is not what the contract is held to**, and
+ * how somebody finds a function is not part of what the function is obliged to do. That is why
+ * `againstTheLanguage` is standing rather than frozen, and it is why this is - the family is
+ * `useCases`, and `tags` one level down.
+ *
+ * **What a query reaches is a fact about the catalogue and never about one contract, which is what
+ * settles it.** ADR-0154 measured `slugify a blog post` against this catalogue's own six
+ * publications and it answered **0, 0, 0, 1, 4, 4** while no contract moved at all, because a word
+ * stops telling the contracts apart as contracts arrive. A field inside the digest would be
+ * promising, for the life of a major, something no contract has ever been able to promise.
+ *
+ * ---------------------------------------------------------------------------
+ * Three fields, because this is standing in for a review
+ * ---------------------------------------------------------------------------
+ *
+ * An alias is reviewed once, at publication, against the contract's own description - ADR-0023 is
+ * that review, and it caught eight phrases naming something their contract refuses to do. A term
+ * added under a frozen address arrives at a moment nothing marks, so the review has no occasion. What
+ * stands in its place is that the two questions the review asks are written down separately and kept.
+ *
+ * A false alias answers `howItIsAsked` truthfully and `whyThisContract` falsely - somebody does type
+ * `remove accents from string`, and `string/slugify@1` leaves `Straße` as `straße`. A term nobody
+ * types answers the second and fails the first, and costs the bytes of the one document every search
+ * fetches. Folded into one paragraph, it is the failing half that goes unwritten.
+ *
+ * The reading that the catalogue does not already answer the term is **not** a field, and that is
+ * ADR-0043 rather than an omission: `a-learned-term-is-one-the-contract-was-not-already-found-by`
+ * re-takes it on every run against the catalogue as it stands today, where a sentence would be true
+ * on the morning it was written. It is the one half of this record a guard can compute.
+ */
+export type LearnedTerm = {
+  /** The phrase, as somebody types it. `wordsOf` reads it exactly as it reads an alias. */
+  readonly term: string
+  /** That people ask this way, with the reading that says so. */
+  readonly howItIsAsked: string
+  /** That this contract is their best answer - the half a false alias passes over. ADR-0023. */
+  readonly whyThisContract: string
+}
+
 // --- The record ---
 
 export type ContractRecord = {
@@ -308,6 +370,13 @@ export type ContractRecord = {
    * catalogue but one.
    */
   readonly againstTheLanguage?: readonly LanguageReExamination[]
+  /**
+   * Phrases the registry learned people ask by, after the contract's own aliases were frozen.
+   *
+   * Beside its two siblings and outside `identity` for the reason they are, and absent rather than
+   * empty on a contract nobody has had to teach the registry a word for.
+   */
+  readonly alsoFoundBy?: readonly LearnedTerm[]
   readonly identity: IdentityRecord
   readonly surface: SurfaceRecord
   readonly environments: readonly string[]

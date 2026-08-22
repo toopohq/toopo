@@ -54,6 +54,7 @@ import { DIGEST, canonical, digestOfBytes, servedBytes } from './canonical.js'
 import type {
   ExportRole,
   LanguageReExamination,
+  LearnedTerm,
   Lifecycle,
   UseCaseRecord,
 } from './contract-record.js'
@@ -276,6 +277,16 @@ export type ServedContractBinding = NamedAnswer & {
    * artefact.
    */
   readonly againstTheLanguage?: readonly LanguageReExamination[]
+  /**
+   * Phrases the registry learned people ask this contract by, with the argument for each. ADR-0155.
+   *
+   * **The binding carries the argument and the index carries the phrase**, and the split is the whole
+   * of what an index is for: `ServedIndexEntry` is fetched before every query and says of itself that
+   * it is deliberately small, so putting two sentences of curation per term into it would be the
+   * mistake `search.ts` refuses about descriptions, one field along. A reader who wants to know why
+   * the registry believes a term asks for the binding, which is one contract rather than all of them.
+   */
+  readonly alsoFoundBy?: readonly LearnedTerm[]
 }
 
 /**
@@ -330,6 +341,7 @@ export const CONTRACT_BINDING_NATURES: Readonly<Record<keyof ServedContractBindi
   lifecycle: 'revisable',
   useCases: 'revisable',
   againstTheLanguage: 'revisable',
+  alsoFoundBy: 'revisable',
 }
 
 export const IMPLEMENTATION_BINDING_NATURES: Readonly<
@@ -368,6 +380,9 @@ export const servedContractBinding = (
   ...(entry.standing.againstTheLanguage === undefined
     ? {}
     : { againstTheLanguage: entry.standing.againstTheLanguage }),
+  ...(entry.standing.alsoFoundBy === undefined
+    ? {}
+    : { alsoFoundBy: entry.standing.alsoFoundBy }),
 })
 
 /**
@@ -463,6 +478,20 @@ export type ServedIndexEntry = {
   readonly address: ContractAddress
   readonly summary: string
   readonly searchAliases: readonly string[]
+  /**
+   * Phrases the registry learned people ask by, which the contract's frozen half cannot hold.
+   * ADR-0155.
+   *
+   * The term alone and never the argument for it: the argument travels in `contract-binding`,
+   * which is one contract, and this document is every contract and is fetched before every query.
+   *
+   * **A second field rather than a longer `searchAliases`, and the reason is on somebody else's
+   * disk.** Folding the two would make one list of what a contract declares and what the registry
+   * added, which reads well here and is a lie about the field's name one level down - and it
+   * would be a *rename* in effect, on a document `toopo@1.0.4` is out there parsing. A field
+   * added is ignored by a client that has never heard of it; a field whose meaning moved is not.
+   */
+  readonly alsoFoundBy?: readonly string[]
   /** `domain/name` split, because the site's navigation is built on the domain. */
   readonly domain: string
   readonly installable: boolean
@@ -527,6 +556,7 @@ export const servedIndex = (
     readonly address: ContractAddress
     readonly summary: string
     readonly searchAliases: readonly string[]
+    readonly alsoFoundBy?: readonly string[]
     readonly exports: readonly ServedExport[]
   }[],
 ): ServedIndex => {
@@ -539,6 +569,8 @@ export const servedIndex = (
       address: identity.address,
       summary: identity.summary,
       searchAliases: identity.searchAliases,
+      // Absent rather than empty, so an entry declaring none is one byte and not four.
+      ...(identity.alsoFoundBy === undefined ? {} : { alsoFoundBy: identity.alsoFoundBy }),
       domain: domainOf(identity.address.name),
       installable: published.has(renderContract(identity.address)),
       exports: identity.exports,

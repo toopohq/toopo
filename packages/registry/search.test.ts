@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
 
-import { renderContract } from './address.js'
+import { renderContract, sameContract } from './address.js'
 import { localReadApi } from './local-read-api.js'
 import type { ServedIndex, ServedIndexEntry, ServedRefusals } from './response.js'
 import type { Search } from './search.js'
-import { answers, search, spreadOverTheCatalogue, wordsOf } from './search.js'
+import { answers, phrasesOfferedBy, search, spreadOverTheCatalogue, wordsOf } from './search.js'
 
 /**
  * How a ranking is put to the test when it has five things to rank.
@@ -65,6 +65,39 @@ const searching = (query: string): Search => {
 
 const theIndex = (): readonly ServedIndexEntry[] => theAnswers().index.entries
 
+/**
+ * Which fields of an index entry hold a phrase somebody chose the contract to be found by.
+ *
+ * **This is the population of the alias trial, and it is declared rather than written out because a
+ * hand-written union is what the next field falls out of.** Until ADR-0155 the trial swept
+ * `entry.searchAliases`, which was every such phrase there was; that record gave the registry a
+ * second place to put one, and a guard whose population is half its subject is green about the half
+ * it kept. It is the class ADR-0152 closed three days earlier, and this is it arriving again on the
+ * change that would have caused it.
+ *
+ * Keyed by `keyof`, so a field added to `ServedIndexEntry` does not compile until somebody has said
+ * whether it is one - the shape `CONTRACT_BINDING_NATURES`, `FIELD_MAP` and `THE_ENDPOINT_BEHIND`
+ * already take. **What the compiler cannot do is judge the answer**: a field marked `null` that
+ * really holds phrases leaves this population short and every guard below green, which is why
+ * `every-phrase-an-entry-offers-is-a-phrase-the-search-reads` compares this with what `search.ts`
+ * reads rather than trusting either alone.
+ */
+const A_WAY_OF_BEING_FOUND: Readonly<
+  Record<keyof ServedIndexEntry, ((entry: ServedIndexEntry) => readonly string[]) | null>
+> = {
+  address: null,
+  summary: null,
+  domain: null,
+  installable: null,
+  /** An export name is a phrase a query meets, and not one chosen as a way of being found. */
+  exports: null,
+  searchAliases: (entry) => entry.searchAliases,
+  alsoFoundBy: (entry) => entry.alsoFoundBy ?? [],
+}
+
+const waysOfBeingFound = (entry: ServedIndexEntry): readonly string[] =>
+  Object.values(A_WAY_OF_BEING_FOUND).flatMap((read) => read?.(entry) ?? [])
+
 const firstFor = (query: string): string | null => {
   const [best] = searching(query).results
 
@@ -96,16 +129,115 @@ describe('finding a contract from what somebody typed', () => {
    */
   it('every-declared-alias-finds-its-own-contract-first', () => {
     const missed = theIndex().flatMap((entry) =>
-      entry.searchAliases
-        .filter((alias) => firstFor(alias) !== renderContract(entry.address))
-        .map((alias) => `${renderContract(entry.address)}: "${alias}" -> ${firstFor(alias)}`),
+      waysOfBeingFound(entry)
+        .filter((phrase) => firstFor(phrase) !== renderContract(entry.address))
+        .map((phrase) => `${renderContract(entry.address)}: "${phrase}" -> ${firstFor(phrase)}`),
     )
 
     expect(missed).toEqual([])
     expect(
-      theIndex().filter((entry) => entry.searchAliases.length === 0).map((entry) =>
+      theIndex().filter((entry) => waysOfBeingFound(entry).length === 0).map((entry) =>
         renderContract(entry.address),
       ),
+    ).toEqual([])
+  })
+
+  /**
+   * What the answer offers as a way of being found and what the search reads as one are the same set.
+   *
+   * **It exists because the guard above builds its population, and a population built out of the thing
+   * under test cannot see itself shrink.** `A_WAY_OF_BEING_FOUND` is total over `ServedIndexEntry` by
+   * the compiler, which forces a *row* for every field and can say nothing about whether the row is
+   * right; `fieldsOf` in `search.ts` decides, separately and in another module, what a query actually
+   * meets. Two statements, and this is their disagreement - which is the shape ADR-0152 arrived at one
+   * folder over, and the reason it is written the same day the second source of phrases exists rather
+   * than the day somebody notices the trial went quiet.
+   *
+   * **Both directions are a real event.** A field that holds phrases and is marked `null` here leaves
+   * the trial sweeping less than it says while every result stays green - the silent shrink. A field
+   * `fieldsOf` stops reading leaves the answer carrying phrases that reach nobody, which is dead weight
+   * in the one document every query fetches and a term the registry learned for nothing.
+   *
+   * The neighbour is `a-word-only-a-summary-carries-answers-nothing-on-its-own`, and the two cannot see
+   * each other's defect: that one is about which fields *count*, this one about which fields are *read*.
+   */
+  it('every-phrase-an-entry-offers-is-a-phrase-the-search-reads', () => {
+    const ordered = (phrases: readonly string[]): readonly string[] => [...phrases].sort()
+
+    const faults = theIndex().flatMap((entry) => {
+      const offered = ordered(waysOfBeingFound(entry))
+      const read = ordered(phrasesOfferedBy(entry))
+      const what = renderContract(entry.address)
+
+      return [
+        ...offered
+          .filter((phrase) => !read.includes(phrase))
+          .map((phrase) => `${what}: "${phrase}" is offered and the search does not read it`),
+        ...read
+          .filter((phrase) => !offered.includes(phrase))
+          .map((phrase) => `${what}: "${phrase}" is read and this trial does not sweep it`),
+      ]
+    })
+
+    expect(faults).toEqual([])
+
+    /**
+     * And no row of the declaration is a claim nothing exercises, which is the other way it goes
+     * thin: a field marked as a way of being found that every entry leaves empty is a row nobody
+     * could ever have got wrong.
+     */
+    const unexercised = Object.entries(A_WAY_OF_BEING_FOUND)
+      .filter(([, read]) => read !== null)
+      .filter(([, read]) => !theIndex().some((entry) => (read?.(entry) ?? []).length > 0))
+      .map(([field]) => field)
+
+    expect(unexercised).toEqual([])
+  })
+
+  /**
+   * A term the registry learned is one the catalogue did not already answer with that contract.
+   *
+   * **It is the executable half of `LearnedTerm.howItIsAsked`**, and the reason that reading is not a
+   * field: a sentence saying *the catalogue answers nothing for this* is true on the morning somebody
+   * writes it and unfalsifiable afterwards, where this re-takes it against the catalogue as it stands
+   * on every run. ADR-0043 is the rule - compute it from the thing it claims, rather than asserting it
+   * beside.
+   *
+   * The event is a term that buys nothing: the phrase already resolved to this contract, so the
+   * registry curated a word it had, and the index - the one document every query fetches - grew for
+   * it. It reddens on a publication as readily as on a bad term, which is the point: a seventh
+   * contract can bring a word that makes a learned term redundant, and nobody would look.
+   *
+   * The catalogue-without-it is built by emptying that one entry's list rather than by rebuilding a
+   * source, so `spreadOverTheCatalogue` sees the same catalogue a reader would have had - a word
+   * stops telling the contracts apart as words arrive, and dropping the term has to drop it from the
+   * spread as well.
+   */
+  it('a-learned-term-is-one-the-contract-was-not-already-found-by', () => {
+    const { index, refusals } = theAnswers()
+    const learned = theIndex().flatMap((entry) =>
+      (entry.alsoFoundBy ?? []).map((term) => ({ entry, term })),
+    )
+
+    const bought = learned.filter(({ entry, term }) => {
+      const without: ServedIndex = {
+        ...index,
+        entries: index.entries.map((one) =>
+          one === entry
+            ? { ...one, alsoFoundBy: (one.alsoFoundBy ?? []).filter((held) => held !== term) }
+            : one,
+        ),
+      }
+      const [best] = search(without, refusals, term).results
+
+      return best === undefined || !sameContract(best.address, entry.address)
+    })
+
+    expect(learned.length).toBeGreaterThan(0)
+    expect(
+      learned
+        .filter((one) => !bought.includes(one))
+        .map(({ entry, term }) => `${renderContract(entry.address)}: "${term}" was already answered`),
     ).toEqual([])
   })
 
@@ -118,6 +250,18 @@ describe('finding a contract from what somebody typed', () => {
    *
    * The last three are sentences with words no alias carries - `how`, `do`, `I`, `for`, `in` - and
    * they are the ones that measure the setting-aside rule rather than the matching.
+   *
+   * **The last eight are one request spelled eight ways, and they are here because all eight were
+   * silent.** `number/parse@1` declares `int` and not `integer`, and `answers` lets a query shorten a
+   * word and never extend one, so `integer` reached nothing at all. Measured at `91b7314`: written
+   * with `int`, nought of the eight answered nothing; written with `integer`, **all eight did**. The
+   * repair is `alsoFoundBy`, and it could not have been an alias - `identity` is frozen on a contract
+   * published at `d3a5166`, which is the state ADR-0155 exists for.
+   *
+   * They are eight rather than one because the defect is a *family*: what these sentences share is
+   * the word, and what they do not share is anything else, so a corpus carrying one of them would
+   * measure the term and eight measure the word. Each is a sentence with the word in it, and
+   * `string to int` two lines above is the pair that says it was ever a spelling.
    */
   it('a-corpus-of-real-queries-ranks-the-right-contract-first', () => {
     const corpus: readonly (readonly [string, string])[] = [
@@ -153,6 +297,15 @@ describe('finding a contract from what somebody typed', () => {
       ['javascript round decimal', 'typescript/number/round@1'],
       ['round a price to cents', 'typescript/number/round@1'],
       ['how do I round a number', 'typescript/number/round@1'],
+
+      ['string to integer', 'typescript/number/parse@1'],
+      ['convert a string to an integer', 'typescript/number/parse@1'],
+      ['parse a string as an integer', 'typescript/number/parse@1'],
+      ['turn a string into an integer', 'typescript/number/parse@1'],
+      ['how do I convert a string to an integer', 'typescript/number/parse@1'],
+      ['javascript string to integer', 'typescript/number/parse@1'],
+      ['safely convert a string to an integer', 'typescript/number/parse@1'],
+      ['read an integer from a string', 'typescript/number/parse@1'],
     ]
 
     expect(

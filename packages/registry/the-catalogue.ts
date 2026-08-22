@@ -180,6 +180,33 @@ export const theCatalogue: readonly ContractSource[] = [
   {
     address: NUMBER_PARSE,
     lifecycle: PUBLISHED,
+    /**
+     * The first word this registry learned about a contract it may no longer edit. ADR-0155.
+     *
+     * It is declared here rather than in `identity.searchAliases` because it cannot be declared
+     * there: `contractSnapshot` freezes `identity` whole and this contract has been published
+     * since `d3a5166`, so an alias added to it rebinds an address permanent rule 6 froze for life.
+     */
+    alsoFoundBy: [
+      {
+        term: 'string to integer',
+        howItIsAsked:
+          'This contract declares `int` and not `integer`, and `answers` lets a query shorten a ' +
+          'word the catalogue carries and never extend one - so `integer` reaches nothing at all ' +
+          'while `int` reaches this contract. Measured at `91b7314` over eight ordinary ways of ' +
+          'asking for this function: written with `int`, **nought of the eight are silent**; ' +
+          'written with `integer`, **all eight are**. The two spellings are the same request and ' +
+          'the longer one is the one a person writing a sentence reaches for.',
+        whyThisContract:
+          '`parseNumber` is what somebody asking this wants: it takes a string and answers the ' +
+          'number it denotes or `null`, and `describeParseFailure` says which of the four ' +
+          'refusals it was. What it does **not** promise is the word `integer` itself - it ' +
+          'answers `4.5` for `"4.5"` and does not round, truncate or refuse a fraction - and ' +
+          '`identity.inputDomain` is where a reader is told so. It is the best answer this ' +
+          'catalogue holds and the only one, which is what an alias claims; it is not a claim ' +
+          'that the function returns an integer.',
+      },
+    ],
     folder: 'contracts/typescript/number/parse',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,

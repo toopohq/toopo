@@ -99,6 +99,14 @@ type Holding = {
   readonly address: ContractAddress
   readonly summary: string
   readonly searchAliases: readonly string[]
+  /**
+   * What the registry learned people ask by, which this stand-in serves and does not curate.
+   *
+   * The standing below is `lifecycle` and nothing else, because an installer never asks for a
+   * contract binding - but the index is a different answer and this one carries it, so a search
+   * against this source answers what a search against the origin answers. ADR-0155.
+   */
+  readonly alsoFoundBy?: readonly string[]
   readonly exports: readonly ServedExport[]
   readonly contractDigest: string
   readonly implementation: ImplementationRecord
@@ -186,6 +194,9 @@ const gather = (): {
       address: record.address,
       summary: record.identity.summary,
       searchAliases: record.identity.searchAliases,
+      ...(record.alsoFoundBy === undefined
+        ? {}
+        : { alsoFoundBy: record.alsoFoundBy.map((learned) => learned.term) }),
       exports: servedExportsOf(record.surface.exports),
       contractDigest,
       implementation,

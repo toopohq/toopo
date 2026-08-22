@@ -146,6 +146,26 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   'againstTheLanguage[].measurement': { visibility: 'public', verification: 'documentary' },
   'againstTheLanguage[].whatItEstablishes': { visibility: 'public', verification: 'documentary' },
 
+  /**
+   * The term is `executable` and the two sentences beside it are not, which is the whole shape of
+   * this row rather than a nicety.
+   *
+   * `every-declared-alias-finds-its-own-contract-first` runs the catalogue's own search over the
+   * phrase and requires it to rank this contract first, and
+   * `a-learned-term-is-one-the-contract-was-not-already-found-by` requires the catalogue without
+   * it to answer something else - so a term that finds the wrong contract, or that the contract
+   * was already found by, reddens. It is the first standing field with an executable half, and the
+   * reason it can have one is that what it claims is about this repository rather than about
+   * somebody else's specification.
+   *
+   * The two sentences are the review ADR-0023 does at publication, written down because a term
+   * added under a frozen address has no publication to be reviewed at. No guard reads prose, and
+   * `documentary` is what says so.
+   */
+  'alsoFoundBy[].term': { visibility: 'public', verification: 'executable' },
+  'alsoFoundBy[].howItIsAsked': { visibility: 'public', verification: 'documentary' },
+  'alsoFoundBy[].whyThisContract': { visibility: 'public', verification: 'documentary' },
+
   'identity.exportName': { visibility: 'public', verification: 'executable' },
   'identity.summary': { visibility: 'public', verification: 'documentary' },
   'identity.description': { visibility: 'public', verification: 'documentary' },
@@ -350,6 +370,8 @@ export const publicContract = (record: ContractRecord): unknown => ({
   ...(record.againstTheLanguage === undefined
     ? {}
     : { againstTheLanguage: record.againstTheLanguage }),
+  /** And once more, for the third field of the standing. */
+  ...(record.alsoFoundBy === undefined ? {} : { alsoFoundBy: record.alsoFoundBy }),
   identity: record.identity,
   surface: record.surface,
   environments: record.environments,

@@ -224,6 +224,7 @@ const gather = (): {
             ...(record.againstTheLanguage === undefined
               ? {}
               : { againstTheLanguage: record.againstTheLanguage }),
+            ...(record.alsoFoundBy === undefined ? {} : { alsoFoundBy: record.alsoFoundBy }),
           },
         }),
         {
@@ -244,6 +245,9 @@ const gather = (): {
       address: record.address,
       summary: record.identity.summary,
       searchAliases: record.identity.searchAliases,
+      ...(record.alsoFoundBy === undefined
+        ? {}
+        : { alsoFoundBy: record.alsoFoundBy.map((learned) => learned.term) }),
       exports: servedExportsOf(record.surface.exports),
       implementation,
     })

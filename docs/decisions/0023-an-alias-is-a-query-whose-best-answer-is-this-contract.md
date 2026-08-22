@@ -29,6 +29,15 @@ confirmed-by:
 > taking it out is itself the change permanent rule 6 forbids. It is on the list in `CLAUDE.md` of what
 > this repository declares and nothing keeps, as the first entry there where the mechanism does the
 > opposite of the record rather than merely failing to enforce it.
+>
+> **Half of it is closed and the half that is closed is the one this record invites.**
+> [ADR-0155](0155-the-registry-can-learn-a-word-about-a-contract-it-may-no-longer-edit.md) gives the
+> registry `alsoFoundBy`, a standing field carrying phrases learned after a contract's own aliases were
+> frozen — so *here is a phrase you are missing* is a contribution the catalogue can now accept on a
+> published contract, and `number/parse@1` carries the first one. **Correcting or removing a declared
+> alias is still impossible**: the eight aliases of the published contracts are inside four digests and
+> the entry stays open for them. Adding is not unfreezing, and the difference is the whole of what is
+> left.
 
 ## Context and Problem Statement
 

@@ -87,6 +87,7 @@ import type {
   ContractRecord,
   IdentityRecord,
   LanguageReExamination,
+  LearnedTerm,
   Lifecycle,
   OwnDeclaration,
   PropertiesRecord,
@@ -199,6 +200,15 @@ export type StandingField = {
  * be a second statement **one half of which permanent rule 6 makes unremovable for the life of the
  * majors** - which is not the duplication this repository accepts as a test, because neither side could
  * ever be repaired. ADR-0128.
+ *
+ * **A fourth arrived, and it is the first that neither candidate above had named.** `alsoFoundBy`
+ * carries the phrases the registry learned people ask a contract by, after that contract's own
+ * aliases were frozen. It is not *a later measurement attached to an artefact* - it is not about the
+ * artefact at all - and it is not *curation the way `tags` are*, quite: `tags` were always the
+ * registry's, where an alias is a field the contract owns and this sits beside it. What put it here is
+ * the test this list actually asks - *may the registry change its mind about this after publication?* -
+ * and ADR-0023 answers yes about an alias in as many words. The digest is what stopped it being
+ * kept. ADR-0155.
  */
 export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
   {
@@ -225,6 +235,18 @@ export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
       'changes a published contract\'s digest - which permanent rule 6 forbids - or the catalogue ' +
       'can never record that it looked, which is the rule `array/group-by@1` established with no ' +
       'consequence a reader can see. It is the second candidate this comment named on paper.',
+  },
+  {
+    field: 'alsoFoundBy',
+    reason:
+      'how somebody finds a function is not part of what the function is obliged to do, and ' +
+      'ADR-0023 decides in as many words that an alias is the one field of `identity` the registry ' +
+      'may correct - being wrong about one costs a revision and not a major. What a query reaches ' +
+      'is a fact about the whole catalogue rather than about one contract: measured over this ' +
+      'catalogue\'s six publications, `slugify a blog post` answered 0, 0, 0, 1, 4, 4 while no ' +
+      'contract moved. Inside the digest, a phrase added on a Tuesday rebinds every address the ' +
+      'contract has, which permanent rule 6 forbids - so the catalogue could never learn a word ' +
+      'about anything it had published, which is five of its six contracts.',
   },
 ]
 
@@ -341,6 +363,8 @@ export type ContractStanding = {
   readonly useCases?: readonly UseCaseRecord[]
   /** Absent on a contract whose language has not moved under it since it was published. ADR-0150. */
   readonly againstTheLanguage?: readonly LanguageReExamination[]
+  /** Absent on a contract nobody has had to teach the registry a word for. ADR-0155. */
+  readonly alsoFoundBy?: readonly LearnedTerm[]
 }
 
 export type ImplementationStanding = { readonly status: ImplementationStatus }

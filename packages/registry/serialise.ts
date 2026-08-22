@@ -41,6 +41,7 @@ import type {
   SupportingTypeRecord,
   UniversalPropertyRecord,
   LanguageReExamination,
+  LearnedTerm,
   UseCaseRecord,
 } from './contract-record.js'
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
@@ -145,6 +146,15 @@ export type ContractSource = {
    * sibling `lifecycle` is.
    */
   readonly againstTheLanguage?: readonly LanguageReExamination[]
+  /**
+   * Phrases the registry learned people ask by, declared here and never in `contract.ts`.
+   * ADR-0155.
+   *
+   * Typed directly for the reason a re-examination is - three sentences and nothing encoded - and
+   * outside the folder for the reason both its siblings are: every file of the folder is hashed
+   * into the digest, so the contract cannot be the thing that says this.
+   */
+  readonly alsoFoundBy?: readonly LearnedTerm[]
   /** The folder, relative to the repository root, as the instrument already addresses one. */
   readonly folder: string
   /**
@@ -807,6 +817,8 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
     ...(source.againstTheLanguage === undefined
       ? {}
       : { againstTheLanguage: source.againstTheLanguage }),
+    // And once more, on the third field of the standing.
+    ...(source.alsoFoundBy === undefined ? {} : { alsoFoundBy: source.alsoFoundBy }),
     identity: identityOf(source.module),
     surface: {
       exports: surface.exports,

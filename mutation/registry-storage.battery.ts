@@ -324,17 +324,23 @@ const SERVE_THE_CANONICAL_TEXT = `  canonicalText: canonical(snapshot, 'snapshot
  * until the standing gained a second field. The mutant adds one member to the type and one to the
  * builder, so what it has to attach to is the end of each - and `lifecycle` stopped being that.
  *
- * **They have now moved twice for one reason, which makes it a cost rather than an accident.** The
- * standing gained `useCases` and then `againstTheLanguage`, and each time the end of the type and the
- * end of the builder were somewhere else. Anchoring on the *last* member is what makes this mutant
- * mean what it says - it adds a member, so it has to attach where a member is added - and the price of
- * that is a move per field the standing ever gains. The alternative is anchoring on the closing brace
- * alone, which occurs everywhere and would attach the defect to whichever one came first.
+ * **They have now moved three times for one reason, which makes it a rate rather than a cost.** The
+ * standing gained `useCases`, then `againstTheLanguage`, then `alsoFoundBy`, and each time the end of
+ * the type and the end of the builder were somewhere else. Anchoring on the *last* member is what
+ * makes this mutant mean what it says - it adds a member, so it has to attach where a member is
+ * added - and the price of that is a move per field the standing ever gains. The alternative is
+ * anchoring on the closing brace alone, which occurs everywhere and would attach the defect to
+ * whichever one came first.
+ *
+ * **Three of three fields have charged it, and both halves were reported.** `npm run anchors` named
+ * this cell and this file on the change that moved it, which is the tool doing its job rather than
+ * the entry `CLAUDE.md` carries about a `replace` half nothing reads - here the `find` is what
+ * stopped matching, so nothing was silent. ADR-0155.
  */
-const A_BINDING_IS_ONLY_STANDING = `  readonly againstTheLanguage?: readonly LanguageReExamination[]
+const A_BINDING_IS_ONLY_STANDING = `  readonly alsoFoundBy?: readonly LearnedTerm[]
 }`
 
-const A_BINDING_IS_BUILT_FROM_STANDING = `    : { againstTheLanguage: entry.standing.againstTheLanguage }),
+const A_BINDING_IS_BUILT_FROM_STANDING = `    : { alsoFoundBy: entry.standing.alsoFoundBy }),
 })`
 
 /**
@@ -430,6 +436,17 @@ const ONLY_A_DELIBERATE_FIELD_IS_NAMED_IN_FULL = `const DELIBERATE: ReadonlySet<
 const THE_NAME_IS_THE_RENDERED_ADDRESS = `    { kind: 'name', text: rendered, words: wordsOf(rendered) },`
 const THE_EXPORTS_ARE_A_FIELD = `    ...entry.exports.map((held) => ({`
 const THE_ALIASES_ARE_A_FIELD = `    ...entry.searchAliases.map((alias) => ({`
+const THE_LEARNED_TERMS_ARE_A_FIELD = `    ...(entry.alsoFoundBy ?? []).map((learned) => ({`
+const THE_LEARNED_TERM = `        term: 'string to integer',`
+/**
+ * The one contract of the catalogue whose frozen half is still open, anchored at its folder.
+ *
+ * `S-30` teaches the registry a word about a contract that could have declared it as an alias, which
+ * is where the review ADR-0023 does at publication is still available and is being walked past. The
+ * anchor is the folder rather than the lifecycle above it, because the lifecycle is what makes the
+ * cell mean something and a mutant may not edit its own premise.
+ */
+const THE_REFUSED_CONTRACT = `    folder: 'contracts/typescript/array/group-by',`
 const CAMEL_CASE_IS_SPLIT = `    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')`
 /**
  * The refusal moved into `displayed`, which is where the catalogue listing reads it too.
@@ -611,13 +628,13 @@ const mutants: readonly Mutant[] = [
         // Written with a structural type rather than by naming `HarnessFile`, so that the defect is
         // caught by the guard that exists for it and not by an import this file does not have. A
         // mutant killed by the typechecker would measure the import and not the projection.
-        `  readonly againstTheLanguage?: readonly LanguageReExamination[]
+        `  readonly alsoFoundBy?: readonly LearnedTerm[]
   readonly harness: readonly { readonly path: string }[]
 }`,
       ),
       responseFile(
         A_BINDING_IS_BUILT_FROM_STANDING,
-        `    : { againstTheLanguage: entry.standing.againstTheLanguage }),
+        `    : { alsoFoundBy: entry.standing.alsoFoundBy }),
   harness: [],
 })`,
       ),
@@ -1730,6 +1747,56 @@ const mutants: readonly Mutant[] = [
       'every-declared-alias-finds-its-own-contract-first',
       'a-corpus-of-real-queries-ranks-the-right-contract-first',
     ]),
+  ),
+
+  sameOnEveryLens(
+    'S-28',
+    'stops searching what the registry learned, which is every phrase a published contract could ' +
+      'not put in its own frozen half - so `string to integer` answers nothing again and the ' +
+      'catalogue is back to the state ADR-0155 was written for. **It is `S-09` on the other half of ' +
+      'one field**: an alias and a learned term are read as one kind, so a mutant that reaches only ' +
+      'one of the two is what says the trial above sweeps both',
+    [searchFile(THE_LEARNED_TERMS_ARE_A_FIELD, `    ...[].map((learned: string) => ({`)],
+    killed([
+      'every-declared-alias-finds-its-own-contract-first',
+      'every-phrase-an-entry-offers-is-a-phrase-the-search-reads',
+      'a-corpus-of-real-queries-ranks-the-right-contract-first',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'S-29',
+    'learns a phrase the contract was already found by, so the index - the one document every query ' +
+      'fetches - grows for a word the registry had. It is the cheapest way a curated field rots: ' +
+      'nothing is wrong on the page, nothing is wrong in the answer, and the catalogue is paying ' +
+      'bytes to say twice what it said once',
+    [catalogueFile(THE_LEARNED_TERM, `        term: 'string to number',`)],
+    killed([
+      'a-learned-term-is-one-the-contract-was-not-already-found-by',
+      'a-corpus-of-real-queries-ranks-the-right-contract-first',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'S-30',
+    'teaches the registry a word about the one contract that could still have declared it as an ' +
+      'alias, so a phrase enters the catalogue without ever passing the review ADR-0023 does at ' +
+      'publication - and passes it up on the one contract where it was still on offer. The term is ' +
+      'true and finds its contract; what is wrong is the door it came through',
+    [
+      catalogueFile(
+        THE_REFUSED_CONTRACT,
+        `    alsoFoundBy: [
+      {
+        term: 'group by key',
+        howItIsAsked: 'People ask for grouping by a key.',
+        whyThisContract: 'This contract groups by a key.',
+      },
+    ],
+    folder: 'contracts/typescript/array/group-by',`,
+      ),
+    ],
+    killed(['a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare']),
   ),
 
   sameOnEveryLens(

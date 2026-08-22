@@ -37,9 +37,14 @@ confirmed-by:
 > refuse - is the one that decided it and it is untouched.
 >
 > **And the repair this record prescribes for a query only a description could have answered - a
-> missing alias - cannot be carried out on the four published contracts.** `identity.searchAliases` is
-> inside the frozen half. `CLAUDE.md` carries that as an open entry; a reader of the paragraph below
-> should not leave believing the door is open.
+> missing alias - names the wrong field on a published contract.** `identity.searchAliases` is inside
+> the frozen half, so on five of the catalogue's six contracts nobody may edit it.
+> [ADR-0155](0155-the-registry-can-learn-a-word-about-a-contract-it-may-no-longer-edit.md) is where the
+> prescription becomes carryable: the phrase goes in `alsoFoundBy`, which is standing, and the search
+> reads it as an alias because that is what it is. **What the repair loses on that route is the review**
+> - ADR-0023's, which happens at publication and caught eight liars - and that cost is written where the
+> field is rather than smoothed. The four phrases this record's own diagnosis names, `typo tolerance`
+> among them, are reachable now and are not repaired; `CLAUDE.md` carries why.
 
 ## Context and Problem Statement
 

@@ -88,6 +88,38 @@ side**, and the twenty-six lost are the same shape as the twelve closed. **And t
 published was the wrong population**: a second sweep of 198 queries with one word *left out* showed no
 change at all, and **nought of them reach the branch the unit changed**. ADR-0154.
 
+**And the registry can now learn a word about a contract it may no longer edit, which is the first
+thing this catalogue has ever been able to say about a published contract that the contract itself
+could not.** `number/parse@1` declares `int` and not `integer`, `answers` lets a query shorten a word
+and never extend one, and measured at `91b7314` over eight ordinary ways of asking for that
+function - `read an integer from a string`, `how do I convert a string to an integer` - **written
+with `int`, nought of the eight are silent; written with `integer`, all eight are.** One alias would
+answer them and `contractSnapshot` freezes `identity` whole, so nobody may declare it. `alsoFoundBy`
+is standing: three fields per phrase, the term read by the search as an alias, and **the six contract
+digests identical to the byte** with `npm run freeze` green beside them. **The argument that was
+given for freezing it was reversed by this repository's own week**: ADR-0154 measured
+`slugify a blog post` at **0, 0, 0, 1, 4, 4** over six publications with no contract moving, so what
+a query reaches is a fact about the whole catalogue and the frozen half was never the complete
+account of what a contract answers. What the registry measures is not what the contract is held to,
+which is `againstTheLanguage`'s argument arriving on retrieval. ADR-0155.
+
+**The guard whose population it would have halved was repaired before it could, and the shrink was
+seen green.** `every-declared-alias-finds-its-own-contract-first` swept `entry.searchAliases`, which
+was every phrase there was; a second place to put one takes half its subject with nothing saying so,
+three days after ADR-0152 closed that class. The population is a declaration keyed by
+`keyof ServedIndexEntry` now, so a field added to the answer does not compile until somebody classes
+it - and **the compiler forces a row and cannot judge it**, so a second guard compares that
+declaration with what `search.ts` really reads. Marking the new field `null` reddens the second guard
+alone: **411 of 412 green, and the guard whose whole subject is the aliases reported nothing.** ADR-0155.
+
+**What it does not buy is written where somebody reaching for it arrives.** Correcting or removing a
+declared alias is still impossible - the eight aliases of the published contracts are inside four
+digests - so ADR-0023's entry below closes by half and stays open. And the alias review is
+ADR-0023's, it happens at publication, it caught eight liars, and a learned term arrives at a moment
+nothing marks: two of the three fields exist to write that review down, a guard computes the half
+that can be computed, and a third refuses a learned term on a contract whose `identity` is still
+open. **The judgement itself is recovered by nothing**, and it is on the list below. ADR-0155.
+
 **A reader receives the rules and not the argument for them, and the reason to link a stylesheet went
 with the prose.** `style.ts` keeps its reasoning beside the declaration it explains and every word of it
 was being downloaded by every visitor: 75 comments, 25 007 B of a 41 540 B sheet, inlined into fifteen
@@ -910,6 +942,23 @@ record declares**, which is a worse thing and has never been named here before.
   the publishing tool and not built. What is done instead is that both places a reader meets the claim
   now say it is not kept: the head of ADR-0023, and this entry.
 
+  **Half of it closed, and the half that closed is the one ADR-0023 invites.** ADR-0155 gives the
+  registry `alsoFoundBy`, a standing field carrying a phrase learned after a contract's aliases were
+  frozen, so *here is a phrase you are missing* is a contribution the catalogue can accept on a
+  published contract — measured, the six digests are identical to the byte with one declared.
+  **Adding is not unfreezing**, and the entry is unchanged for everything else: the population is
+  still those eight aliases, correcting one still reddens
+  `every-published-binding-still-hashes-to-what-it-was-published-as`, and removing one still cannot
+  be done at all. The revision is still what would close it.
+
+  **What the open half now costs is worse than it was, and that is worth reading twice.** Before
+  ADR-0155 a lying alias was unfixable and so was everything else, so the entry read as one debt. Now
+  the registry can add a phrase and cannot withdraw one, which means the only repair available for
+  `remove accents from string` — the liar ADR-0023 removed before publication — would be to add a
+  second phrase beside it. **A field that grows and never shrinks is a field whose defects
+  accumulate**, and nothing here bounds that. It is the same closure, priced against a population
+  that is now unbounded rather than eight.
+
 **A second entry is not of this list's class either, and it is the same shape one floor down: a debt
 this repository recorded, in a file it may no longer edit, naming two repairs it may no longer make.**
 
@@ -993,27 +1042,97 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **It is measured rather than hypothetical, and the measurement is what made it visible.** ADR-0136
   repaired the matching rule and left four descriptions of these five functions answering nothing —
   `typo tolerance`, `spelling suggestion`, `date maths`, `validate a numeric input`. Every one of them
-  is ADR-0035's own diagnosis, and every one of them is unfixable until a contract can carry a second
-  contract digest under one address. That is the revision ADR-0023 already names and nothing
-  implements, priced there as a unit of the publishing tool.
+  is ADR-0035's own diagnosis.
 
-  **A fifth instance is a family rather than a phrase, and it is on the contract this catalogue is
-  most asked for.** `number/parse@1` declares `int` and not `integer`, `answers` lets a query shorten
-  a word and never extend one, so `integer` reaches nothing. Measured at `643bf7e` over eight ordinary
-  ways of asking for that function: written with `integer`, **five were silent before ADR-0154 and all
-  eight are now**; written with `int`, **nought of the eight are silent**. One alias — `string to
-  integer` — would answer seven of them, and `identity` is frozen on a published contract, so nobody
-  may declare it. **It is separated from ADR-0154's own costs deliberately**: that record silences four
-  requests this catalogue could have answered, and this is not one of them — the floor moved three of
-  these eight and *revealed* the other five, which the setting-aside allowance had been masking.
-  Folding it in would hide a defect behind another decision, which is the move this list exists to
-  refuse. ADR-0154.
+  **They stopped being unfixable at ADR-0155 and they are not fixed**, and the two are worth keeping
+  apart. `alsoFoundBy` is a standing field, so the phrase can be declared on a published contract with
+  no digest moving — the prescription is carryable now, which is what this entry asked for. What it is
+  not is carried out: each of the four needs an alias review of its own, and **one of them probably
+  fails it**. Somebody typing `spelling suggestion` would be handed an edit-distance function, which
+  is the shape of `remove accents from string` on `string/slugify@1` — the liar ADR-0023 removed
+  because the result did not keep the promise. Making four judgements inside a unit whose subject was
+  the mechanism is the move this list exists to refuse, so they are named here as **reachable and not
+  taken** rather than struck off. ADR-0155.
+
+  **A fifth instance was a family rather than a phrase, it was on the contract this catalogue is most
+  asked for, and it is closed.** `number/parse@1` declares `int` and not `integer`, `answers` lets a
+  query shorten a word and never extend one, so `integer` reached nothing. Measured at `643bf7e` over
+  eight ordinary ways of asking for that function: written with `integer`, **five were silent before
+  ADR-0154 and all eight were after**; written with `int`, **nought of the eight are silent**. It was
+  separated from ADR-0154's own costs deliberately — that record silences four requests this catalogue
+  could have answered and this was not one of them, the floor having moved three of these eight and
+  *revealed* the other five. **`string to integer` is declared now**, as the first learned term this
+  registry holds, and re-measured at `91b7314` the eight `integer` forms all answer `number/parse@1`
+  first. They are in the corpus, so the claim is a guard rather than a reading. ADR-0154, ADR-0155.
 
   **What is cheap and is done instead is that both records now say so** — the head of ADR-0035, and
   this entry. What would close it is the validation stage reading this repository's own strings, named
   by several entries of this list already, already priced and already refused as a lint over prose —
   and this is the first of them whose subject is a *record* rather than a source, which is a widening
   of that stage rather than one more customer for it. ADR-0136.
+
+- **That every phrase a contract is found by has been read against what the contract does.** ADR-0023's
+  alias review happens at publication: somebody reads each phrase against the contract's own
+  description and asks whether it promises something the contract refuses to do, and it caught eight
+  that did. A learned term arrives at a moment **nothing marks** — no publication, no digest, no
+  ceremony — so there is no occasion at which that review runs, and the field is where the cheapest
+  contribution this project invites now lands.
+
+  **No guard can stand in for it and this is not a gap somebody could close by writing one.**
+  `search.test.ts` has said since it was written that `every-declared-alias-finds-its-own-contract-first`
+  *reviews the search and never the aliases* — an alias is in the index, so it retrieves the contract
+  that declares it by construction, and a phrase promising something the contract refuses passes as
+  comfortably as a true one. That sentence is now true of a wider population by exactly one field.
+
+  **Where this looked**, because an entry describing what the code does not have names it: the three
+  guards ADR-0155 added, `identity.searchAliases`'s own review in ADR-0023, and `field-map.ts`, where
+  `alsoFoundBy[].term` is `executable` and the two sentences beside it are `documentary` — which is the
+  classification saying in the schema's own vocabulary that nothing reads them.
+
+  **The population is every learned term the catalogue holds, which is one**, and it grows with each
+  contribution accepted. What is done rather than declared is the half that is computable:
+  `a-learned-term-is-one-the-contract-was-not-already-found-by` refuses a term the contract was already
+  found by, and `a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare` refuses one on a
+  contract whose `identity` is still open — so the cost is confined to where it is unavoidable rather
+  than being a shorter route past a review that was on offer. **What would close it is a convention with
+  a mechanism under it**: the next publication's alias review sweeping the learned terms of every
+  contract as well as the frozen ones, which needs something marking when each was last read — and that
+  is the validation stage reading this repository's own strings, already named by four entries here,
+  already priced and already refused as a lint over prose. ADR-0155.
+
+- **That a name the catalogue freezes is one a reader can ask for.** `ServedIndexEntry` carries the
+  address, the summary, the aliases, the learned terms, the domain, whether it is installable and the
+  export names — and `contract-index` is the only document a search reads. **Every other address the
+  catalogue declares is invisible to it.** `small-integers` is `benchmarks.profiles[0].name` of
+  `number/parse@1`, it is inside the frozen half, it is rendered on that contract's page, and
+  `toopo search small-integers` answers nothing.
+
+  **Measured at `91b7314`, by the rule that a name is counted once however many contracts declare it,
+  over the six serialised records, each asked as its own words**:
+
+  | what the catalogue declares | total | distinct | answered |
+  | --- | --- | --- | --- |
+  | settled case | 218 | 217 | 9 |
+  | case group | 55 | 53 | 2 |
+  | benchmark profile | 32 | 31 | 3 |
+  | universal property | 24 | 4 | 0 |
+  | own declaration | 22 | 22 | 0 |
+  | profile class | 21 | 19 | 1 |
+  | case table | 8 | 2 | 0 |
+  | **all seven** | **380** | **348** | **15** |
+
+  **The fifteen are coincidence and not coverage**, which is why the column is there rather than a
+  round zero: a case identifier answers when its words happen to be words some contract's name or
+  alias already carries, so what is answered is the *word* and never the address. Distinct rather than
+  total, because two contracts naming a group the same way is one thing a reader can ask for.
+
+  **It is true whether or not anything else on this list is done**, and it is not this list's usual
+  class: nothing is unkept, something is unserved. **It is not taken here**, and the reason is one
+  entry away — `benchmarks.profiles[].name` is on this list precisely because *no guard reads a
+  declared name against what it describes*, so serving those names would put 348 addresses into the
+  one document every query fetches on the strength of a field nothing verifies. What it would cost is
+  measurable and is not measured: `contract-index` is 3 586 canonical bytes today, and the population
+  above is larger than everything now in it. Priced as its own unit and not taken. ADR-0155.
 
 - **That a comment naming a guard is naming one that exists.** A record may not: `confirmationFaults`
   resolves every pair a `confirmed-by` declares against the guards its suite collects, and

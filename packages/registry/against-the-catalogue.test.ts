@@ -4,6 +4,7 @@ import { describe, it, expect } from 'vitest'
 
 import * as catalogue from '../catalogue/every-contract.js'
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
+import type { Lifecycle } from './contract-record.js'
 import { isASentence, stringsIn } from './contract-record.js'
 import type { CaseTableSource, ContractSource } from './serialise.js'
 import {
@@ -34,6 +35,21 @@ const sourceOf = (folder: string, file: string): string =>
   readFileSync(join(REPOSITORY_ROOT, folder, file), 'utf8').replace(/\r\n/g, '\n')
 
 const flattened = (text: string): string => text.replace(/\s+/g, ' ').trim()
+
+/**
+ * Whether a contract in this state can still put a phrase in `identity.searchAliases`.
+ *
+ * `contractSnapshot` freezes `identity` whole, so the answer is whether the contract has a
+ * binding: a published one - and one the language has since absorbed, which is a state entered
+ * *after* publication - is frozen for life by permanent rule 6. The other two have no digest to
+ * break.
+ */
+const THE_FROZEN_HALF_IS_STILL_OPEN: Readonly<Record<Lifecycle['state'], boolean>> = {
+  'not-yet-published': true,
+  'never-published': true,
+  published: false,
+  'absorbed-by-the-language': false,
+}
 
 describe('the five, read against their own source', () => {
   it.each(eachContract)(
@@ -401,5 +417,39 @@ describe('the five, read against their own source', () => {
     )
 
     expect(unstamped).toEqual([])
+  })
+
+  /**
+   * A term the registry learned belongs to a contract that can no longer declare an alias itself.
+   *
+   * **The standing is the door for a contract that is frozen, and it is not a shorter route past the
+   * review for one that is not.** ADR-0023's alias review happens at publication - it is what caught
+   * eight phrases naming something their contract refuses to do - and a term added to `alsoFoundBy`
+   * arrives at a moment nothing marks. On a contract whose `identity` is still open that cost is being
+   * paid for nothing: the phrase can go in `identity.searchAliases`, where it is reviewed, frozen and
+   * served, and the whole argument of ADR-0155 is that it goes elsewhere only because it *cannot* go
+   * there.
+   *
+   * Total over `Lifecycle['state']` by the compiler, so a state added to the union has to answer
+   * whether a contract in it can still edit its own frozen half - which is the question, rather than
+   * the two names that answer it today.
+   *
+   * `array/group-by@1` is the one contract this can fire on: it was refused before publication, so it
+   * has no digest and its aliases are as editable as they were the day they were written.
+   */
+  it('a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare', () => {
+    const early = theCatalogue
+      .filter((source) => THE_FROZEN_HALF_IS_STILL_OPEN[source.lifecycle.state])
+      .filter((source) => (source.alsoFoundBy ?? []).length > 0)
+      .flatMap((source) =>
+        (source.alsoFoundBy ?? []).map(
+          (learned) =>
+            `${renderContract(source.address)} is ${source.lifecycle.state} and learned ` +
+            `"${learned.term}", which belongs in identity.searchAliases`,
+        ),
+      )
+
+    expect(early).toEqual([])
+    expect(theCatalogue.some((source) => (source.alsoFoundBy ?? []).length > 0)).toBe(true)
   })
 })
