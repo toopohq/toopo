@@ -130,6 +130,12 @@ and crossed the threshold [ADR-0112](0112-the-prose-that-no-commit-authored.md) 
 rewritten whole, which is what that record asks for and not a reflow performed to satisfy a counter:
 the passage's entire conditioning changed.
 
+**It is still at two afterwards, and the reason is worth keeping.** Blame is per line, and the
+rewrite reproduced the paragraph's opening line byte for byte, so ten of its eleven lines are this
+unit's and the eleventh is still `50ff990`'s. **Rewriting a paragraph whole does not return it to one
+hand where one line comes out unchanged** — which is a property of the reading rather than a defect
+in it, and it is measured here because *rewritten whole* would otherwise be read as *now at one*.
+
 ### Every record keeps, and the reason is not that it is a record
 
 Seven lines in the records are conditioned on this event: ADR-0013's *It does not close before the
