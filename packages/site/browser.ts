@@ -49,6 +49,11 @@
  * digest covers - it is that file with its types removed. `contract-page.ts` says so on the playground
  * itself and nowhere else, because that is the one place where somebody is looking at an answer this
  * transformation produced.
+ *
+ * **That sentence is about a contract's reference, and it is why the two erasures below are two
+ * functions.** This repository's own modules lose their argument as well as their types, because a
+ * reader who cannot use the reasoning was downloading all of it. A contract's reference loses nothing
+ * but its types, because the page makes a promise about that file and an auditor fetches it.
  */
 
 import { stripTypeScriptTypes } from 'node:module'
@@ -58,10 +63,33 @@ import { servedBlobFaults } from '../registry/response.js'
 import type { Held } from './catalogue.js'
 import { ThePageCannotBeBuilt } from './catalogue.js'
 import { THE_REFERENCE_MODULE } from './paths.js'
+import { withoutItsArgument } from './served-modules.js'
 import type { RegistrySource } from './source.js'
 
-/** One module of this repository, as a browser runs it. */
+/**
+ * One module of this repository, as a browser runs it: the types erased and the argument taken out.
+ *
+ * The two happen in this order because the artefact is the type-stripped module, and erasure blanks a
+ * comment that lived inside a type annotation - so asking for the comments first would be asking about
+ * a file nobody is served.
+ */
 export const asABrowserModule = (typescript: string): string =>
+  withoutItsArgument(stripTypeScriptTypes(typescript, { mode: 'strip' }))
+
+/**
+ * One contract's reference implementation, as a browser runs it: the types erased and nothing else.
+ *
+ * **The argument stays**, and this is the one place in the folder where that is a rule rather than a
+ * preference. `contract-page.ts` tells the reader, in as many words, that what runs is *that contract's
+ * own `reference.ts` with its types stripped*; a second removal makes that sentence false on the one
+ * page whose subject is that this catalogue can be checked. The file is also frozen for the life of the
+ * major, and the further the served artefact drifts from the one the digest covers, the less an
+ * auditor's fetch establishes.
+ *
+ * `a-contracts-reference-reaches-a-reader-with-its-argument-intact` is what makes it a mechanism, so
+ * the distinction cannot be lost by somebody reaching for the shorter name.
+ */
+export const asAContractsReference = (typescript: string): string =>
   stripTypeScriptTypes(typescript, { mode: 'strip' })
 
 /**
@@ -137,7 +165,7 @@ const referenceOf = (source: RegistrySource, held: Held): string => {
     )
   }
 
-  return asABrowserModule(blob.bytes.toString('utf8'))
+  return asAContractsReference(blob.bytes.toString('utf8'))
 }
 
 /** Every contract's implementation, at the path its own page loads it from. */
