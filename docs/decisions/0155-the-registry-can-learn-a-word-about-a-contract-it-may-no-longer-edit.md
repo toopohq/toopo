@@ -85,7 +85,7 @@ eight would be a repair of the wrong size.
   `search.ts` is shaped around and it is not traded for a convenience.
 - **The cheapest contribution this project invites has to be one it can accept.** ADR-0023 invites it
   by name.
-- **No guard may quietly stop covering half its subject.** ADR-0152 closed that class three days ago,
+- **No guard may quietly stop covering half its subject.** ADR-0152 closed that class hours ago,
   and the change contemplated here is exactly what would open it again.
 
 ## Considered Options
@@ -190,8 +190,8 @@ what this repository declares and nothing keeps.
 
 `every-declared-alias-finds-its-own-contract-first` swept `entry.searchAliases`, which was every
 phrase a contract was offered as. Giving the registry a second place to put one takes half its
-subject away with nothing saying so — which is precisely the class ADR-0152 closed three days before
-this record, arriving on the change that would have caused it.
+subject away with nothing saying so — which is precisely the class ADR-0152 closed at `f776a43`, the
+same day as this record, arriving on the change that would have caused it.
 
 The population is now a **declaration**, `A_WAY_OF_BEING_FOUND`, keyed by `keyof ServedIndexEntry`, so
 a field added to the answer does not compile until somebody has said whether it holds phrases. **The
@@ -278,7 +278,7 @@ to.
 - ADR-0128 refuses the third standing field, and its test — content, not genus — is the one applied
   here.
 - ADR-0150 put a re-examination in the standing on the argument this record generalises.
-- ADR-0152 closed the class of guard that cannot see its own population shrink, three days before the
+- ADR-0152 closed the class of guard that cannot see its own population shrink, hours before the
   change that would have opened it again.
 - ADR-0154 measured what a query reaches across six publications, which is the reading that reverses
   the argument for freezing this.

@@ -89,8 +89,11 @@ published was the wrong population**: a second sweep of 198 queries with one wor
 change at all, and **nought of them reach the branch the unit changed**. ADR-0154.
 
 **And the registry can now learn a word about a contract it may no longer edit, which is the first
-thing this catalogue has ever been able to say about a published contract that the contract itself
-could not.** `number/parse@1` declares `int` and not `integer`, `answers` lets a query shorten a word
+standing field a *mechanism* reads rather than a reader.** This line read *the first thing this
+catalogue has ever been able to say about a published contract that the contract itself could not*,
+and that was false on two counts already in the schema: `useCases` and `againstTheLanguage` are both
+exactly that. What is true of this one and of neither of those is that it changes **what a query
+reaches** rather than what a page says. `number/parse@1` declares `int` and not `integer`, `answers` lets a query shorten a word
 and never extend one, and measured at `91b7314` over eight ordinary ways of asking for that
 function - `read an integer from a string`, `how do I convert a string to an integer` - **written
 with `int`, nought of the eight are silent; written with `integer`, all eight are.** One alias would
@@ -106,7 +109,7 @@ which is `againstTheLanguage`'s argument arriving on retrieval. ADR-0155.
 **The guard whose population it would have halved was repaired before it could, and the shrink was
 seen green.** `every-declared-alias-finds-its-own-contract-first` swept `entry.searchAliases`, which
 was every phrase there was; a second place to put one takes half its subject with nothing saying so,
-three days after ADR-0152 closed that class. The population is a declaration keyed by
+hours after ADR-0152 closed that class - `f776a43`, the same day. The population is a declaration keyed by
 `keyof ServedIndexEntry` now, so a field added to the answer does not compile until somebody classes
 it - and **the compiler forces a row and cannot judge it**, so a second guard compares that
 declaration with what `search.ts` really reads. Marking the new field `null` reddens the second guard
@@ -936,7 +939,11 @@ record declares**, which is a worse thing and has never been named here before.
   **ADR-0118 built the mechanism and deliberately did not use it here.** A field of the standing is of
   a contract and outside the digest, which is exactly what ADR-0023 describes; moving `searchAliases`
   there would move four published digests, which is the change permanent rule 6 forbids. **The
-  population is the eight aliases of the four published contracts.** What would close it is not a
+  population is measured rather than remembered: at `62bdcc2` the six contracts declare 13, 13, 12,
+  12, 12 and 10 aliases — 72 in all, of which the 60 on the five published contracts are frozen.**
+  This sentence read *the eight aliases of the four published contracts* until ADR-0155 went and
+  counted: *four* was true on the day it was written and *eight* reproduces under no rule this
+  repository can state. What would close it is not a
   guard: it is a way for the registry to bind a *second* contract digest under one address — a
   revision, which is the word ADR-0023 already uses and which nothing implements. Priced as a unit of
   the publishing tool and not built. What is done instead is that both places a reader meets the claim
@@ -946,10 +953,9 @@ record declares**, which is a worse thing and has never been named here before.
   registry `alsoFoundBy`, a standing field carrying a phrase learned after a contract's aliases were
   frozen, so *here is a phrase you are missing* is a contribution the catalogue can accept on a
   published contract — measured, the six digests are identical to the byte with one declared.
-  **Adding is not unfreezing**, and the entry is unchanged for everything else: the population is
-  still those eight aliases, correcting one still reddens
-  `every-published-binding-still-hashes-to-what-it-was-published-as`, and removing one still cannot
-  be done at all. The revision is still what would close it.
+  **Adding is not unfreezing**, and the entry is unchanged for everything else: correcting a declared
+  alias still reddens `every-published-binding-still-hashes-to-what-it-was-published-as`, and removing
+  one still cannot be done at all. The revision is still what would close it.
 
   **What the open half now costs is worse than it was, and that is worth reading twice.** Before
   ADR-0155 a lying alias was unfixable and so was everything else, so the entry read as one debt. Now
@@ -1097,8 +1103,8 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   than being a shorter route past a review that was on offer. **What would close it is a convention with
   a mechanism under it**: the next publication's alias review sweeping the learned terms of every
   contract as well as the frozen ones, which needs something marking when each was last read — and that
-  is the validation stage reading this repository's own strings, already named by four entries here,
-  already priced and already refused as a lint over prose. ADR-0155.
+  is the validation stage reading this repository's own strings, which other entries here already
+  name, already price and already refuse as a lint over prose. ADR-0155.
 
 - **That a name the catalogue freezes is one a reader can ask for.** `ServedIndexEntry` carries the
   address, the summary, the aliases, the learned terms, the domain, whether it is installable and the

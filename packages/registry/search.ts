@@ -265,8 +265,8 @@ export const answers = (asked: string, held: string): boolean =>
  * declares, which are two statements and not one -
  * `every-phrase-an-entry-offers-is-a-phrase-the-search-reads` is their disagreement. Without it the
  * alias trial would build its population out of the very function a defect would narrow, which is
- * the shape ADR-0152 closed one folder over and the shape this file would have grown three days
- * later.
+ * the shape ADR-0152 closed one folder over the same day, and the shape this file would have grown
+ * hours later.
  */
 export const phrasesOfferedBy = (entry: ServedIndexEntry): readonly string[] =>
   fieldsOf(entry)

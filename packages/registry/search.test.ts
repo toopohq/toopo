@@ -72,8 +72,8 @@ const theIndex = (): readonly ServedIndexEntry[] => theAnswers().index.entries
  * hand-written union is what the next field falls out of.** Until ADR-0155 the trial swept
  * `entry.searchAliases`, which was every such phrase there was; that record gave the registry a
  * second place to put one, and a guard whose population is half its subject is green about the half
- * it kept. It is the class ADR-0152 closed three days earlier, and this is it arriving again on the
- * change that would have caused it.
+ * it kept. It is the class ADR-0152 closed hours earlier at `f776a43`, arriving again on the change
+ * that would have caused it.
  *
  * Keyed by `keyof`, so a field added to `ServedIndexEntry` does not compile until somebody has said
  * whether it is one - the shape `CONTRACT_BINDING_NATURES`, `FIELD_MAP` and `THE_ENDPOINT_BEHIND`

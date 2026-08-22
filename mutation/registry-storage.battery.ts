@@ -1741,10 +1741,17 @@ const mutants: readonly Mutant[] = [
   sameOnEveryLens(
     'S-09',
     'stops searching the aliases, which is the whole of what the catalogue declares about how it ' +
-      'expects to be looked for - and the one field this unit exists to make executable',
+      'expects to be looked for - and the one field this unit exists to make executable. **Its pin ' +
+      'named two guards and three redden**, which the replay found and no reading did: ADR-0155 gave ' +
+      'the search a second source of aliases and a guard comparing what an answer offers with what ' +
+      'the search reads, and emptying `searchAliases` separates those two as surely as emptying the ' +
+      'new field does. A pin naming five or fewer names all of them, so this is the second instance ' +
+      'of what `S-01` records: a subset passes, and a reader takes the named ones for the whole ' +
+      'account',
     [searchFile(THE_ALIASES_ARE_A_FIELD, `    ...[].map((alias: string) => ({`)],
     killed([
       'every-declared-alias-finds-its-own-contract-first',
+      'every-phrase-an-entry-offers-is-a-phrase-the-search-reads',
       'a-corpus-of-real-queries-ranks-the-right-contract-first',
     ]),
   ),
@@ -1782,7 +1789,9 @@ const mutants: readonly Mutant[] = [
     'teaches the registry a word about the one contract that could still have declared it as an ' +
       'alias, so a phrase enters the catalogue without ever passing the review ADR-0023 does at ' +
       'publication - and passes it up on the one contract where it was still on offer. The term is ' +
-      'true and finds its contract; what is wrong is the door it came through',
+      'true and finds its contract; what is wrong is the door it came through. It reddens a second ' +
+      'guard as well, and that was measured rather than predicted: `groupBy` already answers ' +
+      '`group by key`, so the term this cell writes is one its contract was found by anyway',
     [
       catalogueFile(
         THE_REFUSED_CONTRACT,
@@ -1796,7 +1805,10 @@ const mutants: readonly Mutant[] = [
     folder: 'contracts/typescript/array/group-by',`,
       ),
     ],
-    killed(['a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare']),
+    killed([
+      'a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare',
+      'a-learned-term-is-one-the-contract-was-not-already-found-by',
+    ]),
   ),
 
   sameOnEveryLens(
