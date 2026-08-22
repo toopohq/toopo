@@ -725,13 +725,26 @@ file carried a second, shorter copy of them for a year; ADR-0062 is why it no lo
 **What is below is what a session needs before it writes a line**: what is still open, the rules of
 this stage, the permanent rules, the conventions, and the verification discipline.
 
-## What the repository declares and nothing keeps — closes before the launch
+## What the repository declares and nothing keeps
 
 One form, found four times in a single sweep and certain to be found again: **a thing that behaves
 like a rule, with nothing making it hold.** The vocabulary for it already exists — `one-directional`
 — and the list is kept here rather than scattered, because it is what the publishing tool has to
-close. A published version is frozen for life, so a declaration that is decorative at launch is
-decorative for ever.
+close. A published version is frozen for life, so a declaration that is decorative on the day a
+version is published is decorative for ever.
+
+**This heading read ` — closes before the launch` until ADR-0153, and the deadline in it passed
+rather than being met.** There is no event left to wait for: the manifest declares a version npm
+holds, the origin serves the catalogue and the client installs from it. So what is below is the
+maintenance backlog of a running product and never a list of things blocking a release — the same
+entries, read at a different urgency, in an order that still says nothing about which one is taken
+next. **What replaces the deadline is no deadline**, and that is the decision rather than an
+omission: ADR-0017's rule is that an address may not render the data it addresses, and a heading is
+an address. A condition written into one expires with nothing noticing, which is what happened here,
+in the first words of the section every session reads before it writes a line. Measured at `f776a43`
+over the tracked tree: **nineteen citations of this list, in thirteen records and two sources, and
+every one of them names what the list is; not one names when it closes.** The half that was doing
+the work was never the conditional half. ADR-0153.
 
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
@@ -1998,13 +2011,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
    Everything lives in this one repository, in folders — releases are independent, the history is not.
 
    **The catalogue ships at five contracts, and it holds six.** The fifth installable one is
-   `number/round@1`, published after that line was written and before the launch it names - which is
-   the shape the sentence always allowed, because what it settles is that the *showcase domain* waits
-   and not that the catalogue is closed. The showcase domain moves to after the launch: every
-   remaining uncertainty is on the user's side — whether `toopo add` feels good, whether search
-   finds something in ten seconds, whether a contract page convinces — and none of them is
-   answerable in private. Anything published freezes for life, so the known debts close before the
-   launch, not after.
+   `number/round@1`, published after that line was written, and what the line settles is that the
+   *showcase domain* waits rather than that the catalogue is closed. **What it was waiting for is
+   behind it and not ahead.** The deferral was to *after the launch*, on the argument that the
+   uncertainties left are the user's — whether `toopo add` feels good, whether search finds something
+   in ten seconds, whether a contract page convinces — and that none of them is answerable in
+   private. The product is in front of users, so all three are answerable now. **The clause was wrong
+   about its own order as well**: `number/round@1` was published on 2026-08-20 and `toopo@1.0.0`
+   reached npm on 2026-08-17, so the contract it placed before the launch arrived three days after
+   it. Whether the showcase domain is built is a decision nobody has taken, and what is settled is
+   only that nothing stands in front of it. ADR-0153.
 2. **The no-abstraction suspension has ended**, having done its job: three contracts were written by
    hand with no shared code, and what they turned out to repeat *identically* now lives in
    `packages/catalogue/`, under the freeze discipline stated at the top of that file. The bar for adding
