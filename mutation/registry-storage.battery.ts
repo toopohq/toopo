@@ -413,7 +413,9 @@ const THE_REVISION_IS_THE_COMMIT = `  const head = git(root, 'rev-parse', 'HEAD'
 // Anchors of the matching rule - moved here with the module, ADR-0136
 // ---------------------------------------------------------------------------
 
-const EVERY_WORD_MUST_BE_ANSWERED = `  if (answered.length !== words.length && !namedByWhatTellsThemApart(fields, answered, spread)) {`
+const EVERY_WORD_MUST_BE_ANSWERED = `    !namedWellEnoughToSetAWordAside(fields, answered, spread)`
+const A_FIELD_IS_NAMED_BY_WHAT_TELLS_THEM_APART = `      namedByWhatTellsThemApart(field, asked, spread) &&`
+const A_SET_ASIDE_WORD_COSTS_A_SECOND_WORD_OF_THE_FIELD = `const A_SET_ASIDE_WORD_IS_PAID_FOR_WITH = 2`
 const SOMETHING_THE_CONTRACT_CHOSE_MUST_HAVE_ANSWERED = `  if (!hits.some((hit) => hit !== null && DELIBERATE.has(hit.field.kind))) return null`
 const A_WORD_TELLS_THEM_APART_BELOW_A_CEILING = `const TELLS_THE_CONTRACTS_APART = 2`
 const A_FIELD_KEEPS_ONE_BACK_ONLY_WHEN_IT_HAS_THREE = `const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 3`
@@ -1617,26 +1619,39 @@ const mutants: readonly Mutant[] = [
     'S-01',
     'drops the rule that every word of the query must be answered, so a contract matches on the ' +
       'words it happens to share - `sort array` answers `array/group-by@1` to somebody looking for a ' +
-      'sorter, and eleven of the twenty queries the catalogue cannot answer come back with something',
-    [searchFile(EVERY_WORD_MUST_BE_ANSWERED, `  if (false) {`)],
+      'sorter, and twenty-two of the thirty-two queries the catalogue cannot answer come back with ' +
+      'something. **Its pin used to name two guards where four reddened**, and the two it left out ' +
+      'were the alias property and the rewording - measured at `a705977` by injecting it there. ' +
+      'ADR-0076 asks a pin naming five or fewer to name all of them, and this is what a pin that ' +
+      'does not costs: a reader takes the two named for the whole account of what the rule holds up',
+    [searchFile(EVERY_WORD_MUST_BE_ANSWERED, `    false`)],
     killed([
-      'a-query-the-catalogue-cannot-answer-answers-nothing',
+      'every-declared-alias-finds-its-own-contract-first',
       'a-corpus-of-real-queries-ranks-the-right-contract-first',
+      'a-query-the-catalogue-cannot-answer-answers-nothing',
+      'a-word-the-catalogue-declares-beside-one-it-has-never-heard-answers-nothing',
+      'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
     ]),
   ),
 
   sameOnEveryLens(
     'S-02',
-    'lets a word be set aside without the remainder naming anything in full, which is the same ' +
-      'widening arrived at from the other side: the bound is what stops setting a word aside from ' +
-      'turning every query into its most forgiving reading',
-    [
-      searchFile(
-        EVERY_WORD_MUST_BE_ANSWERED,
-        `  if (answered.length !== words.length && false) {`,
-      ),
-    ],
-    killed(['a-query-the-catalogue-cannot-answer-answers-nothing']),
+    'lets a word be set aside without the remainder naming what tells the contracts apart, keeping ' +
+      'only the price ADR-0154 put on the setting-aside: any deliberate field will do, so long as ' +
+      'two of its words were carried. **It is a different defect from `S-01` and it was the same one ' +
+      'until ADR-0154 split the gate.** That gate is a conjunction, and either operand made false ' +
+      'kills the whole branch - so `if (false)` and `if (answered.length !== words.length && false)` ' +
+      'are one mutant written twice, which is what these two cells were. What makes them two now is ' +
+      'that the test on the right has two clauses that can be taken away separately, and they catch ' +
+      'different things: `a-word-the-catalogue-declares-beside-one-it-has-never-heard-answers-nothing` ' +
+      'is red under `S-01` and **green** under this one, because the price is still being charged',
+    [searchFile(A_FIELD_IS_NAMED_BY_WHAT_TELLS_THEM_APART, `      true &&`)],
+    killed([
+      'every-declared-alias-finds-its-own-contract-first',
+      'a-corpus-of-real-queries-ranks-the-right-contract-first',
+      'a-query-the-catalogue-cannot-answer-answers-nothing',
+      'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
+    ]),
   ),
 
   sameOnEveryLens(
@@ -1897,6 +1912,45 @@ const mutants: readonly Mutant[] = [
     killed([
       'a-query-the-catalogue-cannot-answer-answers-nothing',
       'a-corpus-of-real-queries-ranks-the-right-contract-first',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'S-26',
+    'takes the price off a word set aside, which is the rule exactly as it stood before ADR-0154: ' +
+      'naming a field falls back to the words that tell the contracts apart, that set shrinks as the ' +
+      'catalogue grows, and a field down to one of them opens its contract to anything typed beside ' +
+      'it. Twelve requests a person types come back with a function that has nothing to do with ' +
+      'them - `parse yaml` answers a string-to-number converter, `round robin` a rounder, `add to ' +
+      'cart` a date - and eleven of the ninety-one words this catalogue declares do it',
+    [
+      searchFile(
+        A_SET_ASIDE_WORD_COSTS_A_SECOND_WORD_OF_THE_FIELD,
+        `const A_SET_ASIDE_WORD_IS_PAID_FOR_WITH = 1`,
+      ),
+    ],
+    killed([
+      'a-query-the-catalogue-cannot-answer-answers-nothing',
+      'a-word-the-catalogue-declares-beside-one-it-has-never-heard-answers-nothing',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'S-27',
+    'charges a third word of the field for a word set aside, which is the same bound overshot rather ' +
+      'than removed - and it is the half that says the value is pinned instead of chosen. A reader ' +
+      'who leaves a word out *and* brings one in is asked for more of the label than they typed: ' +
+      '`turn a string into a number` and `string into number` stop resolving to the contract they ' +
+      'name, which is ADR-0136 undone, and `how do I round a number` goes silent',
+    [
+      searchFile(
+        A_SET_ASIDE_WORD_COSTS_A_SECOND_WORD_OF_THE_FIELD,
+        `const A_SET_ASIDE_WORD_IS_PAID_FOR_WITH = 3`,
+      ),
+    ],
+    killed([
+      'a-corpus-of-real-queries-ranks-the-right-contract-first',
+      'a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers',
     ]),
   ),
 

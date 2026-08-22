@@ -64,6 +64,26 @@ tree does; ADR-0137 holds the reading it was, with the commit it was taken at. T
 catalogue's own search over each of them, because an example that finds nothing is the defect a visitor
 met on the install command. ADR-0137.
 
+**And that search stopped spending on a word a reader adds the allowance written for a word they
+omit.** A query that sets a word aside now has to carry more than one word of the field it names,
+because one word is not a name — which is `sort array` one floor down. **It was twelve requests and
+not the one the corpus happened to hold**: a deliberate field whose telling words fall to one opens
+its contract to anything typed beside it, and measured at `a705977` over this catalogue's six
+publications those fields ran **0, 0, 0, 2, 15, 21** while the twelve requests answered **0, 1, 1, 2,
+6, 12**. `parse json`, `round robin`, `add to cart`, `float left`, `fixed header` — each a thing
+somebody types that this catalogue does not hold. **The rate is not monotone and this file said it
+was**: the negative half had one query answered at one, two, three and four contracts, **none at
+five**, and one again at six, because growth took `string` to three contracts, so it stopped telling
+them apart and `remove accents from string` lost the field it had been naming. **The repair that
+looked obvious is dead on a measurement**: refusing any query carrying a word the catalogue has never
+heard breaks four of the thirty-two corpus queries, since `do`, `i` and `what` are as unheard-of here
+as `yaml` and nothing derived from the catalogue separates a function word from a subject. What it
+costs is stated rather than smoothed — over 198 queries, every alias with one word replaced by one the
+catalogue does not know, **151 were answered before and 125 after with zero wrong answers either
+side**, and the twenty-six lost are the same shape as the twelve closed. **And the reading nearly
+published was the wrong population**: a second sweep of 198 queries with one word *left out* showed no
+change at all, and **nought of them reach the branch the unit changed**. ADR-0154.
+
 **A reader receives the rules and not the argument for them, and the reason to link a stylesheet went
 with the prose.** `style.ts` keeps its reasoning beside the declaration it explains and every word of it
 was being downloaded by every visitor: 75 comments, 25 007 B of a 41 540 B sheet, inlined into fifteen
@@ -799,7 +819,9 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   it a witness that rests on three code points the catalogue happens to spell, and the half of a
   fourth guard that its own name is about;
 - a guard that could not see its own population shrink — ADR-0152, leaving behind it a guard total
-  over populations and never over files, and the reading half of the entry it closed.
+  over populations and never over files, and the reading half of the entry it closed;
+- the allowance written for a word a query omits being spent on a word it adds — ADR-0154, leaving
+  behind it the point at which a second word starts to be evidence.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -925,33 +947,27 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
 **Still open, and what each one now costs.**
 
-- **That the matching rule keeps its precision as the catalogue grows.** It does not, and the sixth
-  contract is the first reading of by how much. `number/round@1` gives the catalogue a third
-  `describe…Failure` export, so `describe` and `failure` go from two contracts to three and cross
-  `TELLS_THE_CONTRACTS_APART`; `number/parse@1`'s exports field drops from three telling words to one,
-  and a field with one telling word is named by a query carrying that word whatever else it carries.
+- **That a second word of a query is one the contract has any business answering.** The entry this
+  replaces was about a word the query *adds* being free, and it is closed: a query that sets a word
+  aside now carries more than one word of the field it names, so a contract cannot be reached through
+  a single word. What is not closed is where that line was drawn. **Two words the reader carried out
+  of one field are two things the contract chose and the query spelled, and no reading here separates
+  a second word that belongs from a second word that does not** — `edit distance zzq` answers
+  `string/levenshtein@1`, deliberately.
 
-  **Both readings, because a trade with one figure is not a trade.** At the ceiling of two this
-  repository keeps, `parse yaml` answers `number/parse@1` at a score of 100 with `yaml` reported in
-  `unknownWords` — *Convert a string to a finite number* — where it answered nothing before. At a
-  ceiling of three, `parse yaml` is silent again and `remove accents from string` answers
-  `number/parse@1` at a score of 80, which is a real request wrongly answered and the one the alias
-  review had already been run to stop. **Both values break exactly one query of the negative corpus,
-  and three breaks the better one**, so the ceiling stays at two and `parse yaml` leaves the corpus
-  with its measurement written beside it.
+  **The population is every query carrying two words of one field and something the catalogue cannot
+  place**, and nothing keeps it. It is not the closed entry read again at a higher number: that one
+  was about an allowance being spent on the wrong thing, and this is about the point at which the
+  catalogue's own evidence starts. **No instance is recorded**, which is the honest state — the twelve
+  requests that motivated ADR-0154 are all one-word, and a two-word one has not been met.
 
-  **The population is every query the catalogue cannot answer**, and what nothing keeps is the rate:
-  one negative query of twenty broke at six contracts, and nothing says what breaks at ten. It does
-  not improve by growing — the whole mechanism is a word ceasing to tell contracts apart, which is
-  monotone in the size of the catalogue — and this repository already carries a neighbouring entry
-  about the index becoming monolithic at scale.
-
-  **What would close it is not a constant.** The allowance exists for a word a query *leaves out* — a
-  preposition it did not spell — and it is being spent on a word the query *adds* that the catalogue
-  has never heard. Separating those two is a change to the matching rule and a unit of its own. What
-  is cheap and is done instead is that both readings are written where the rule is, in
-  `packages/registry/search.test.ts`, so the next reading is taken against them rather than against a
-  memory. ADR-0144.
+  **What would close it is a way to read what a contract is *not* for**, which the catalogue publishes
+  and cannot use: `identity.inputDomain` says in as many words that `number/parse@1` is *not a
+  locale-aware parser*, it is prose, it is inside the frozen half of five published contracts, and
+  ADR-0128 is why it is not restated as a field. So the closure is the same one three entries here
+  already name — something that reads this repository's own strings — and this is the first of them
+  whose subject is a *contract's* prose rather than a source's or a record's. Priced and not taken.
+  ADR-0154.
 
 - **That the repair a record prescribes is one somebody can carry out.** ADR-0035 decides what a
   search may answer, and it names the repair for the case it cannot: *a query only a description could

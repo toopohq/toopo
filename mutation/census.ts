@@ -333,7 +333,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/round-trip.test.ts': 20,
     'packages/registry/served-files.test.ts': 12,
     'packages/registry/shared-surface.test.ts': 4,
-    'packages/registry/search.test.ts': 11,
+    'packages/registry/search.test.ts': 12,
     'packages/registry/signature.test.ts': 15,
     'packages/registry/snapshot.test.ts': 53,
     'packages/registry/frozen-for-life.test.ts': 4,

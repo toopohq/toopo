@@ -1,7 +1,8 @@
 /**
  * From what somebody typed to the contracts that answer it.
  * ADR-0035 is what a search may answer, and the one rule under which it answers nothing; ADR-0136 is
- * the two bounds that replaced its single one, and the cliff those two sides of it were.
+ * the two bounds that replaced its single one, and the cliff those two sides of it were; ADR-0154 is
+ * why a word left out and a word brought in are now charged separately.
  *
  *
  * ---------------------------------------------------------------------------
@@ -30,10 +31,17 @@
  * carry meaning here, they are in fourteen aliases.
  *
  * So: **a word a contract cannot answer is set aside for that contract, and what remains must then
- * name one of its own names, exports or aliases.** Setting a word aside can only widen a query, and
- * this is what the widening is paid for with - the remainder has to name something the contract
- * declares, which `array` alone does not do for `array/group-by@1` and `convert string to number`
- * does do for `number/parse@1`.
+ * name one of its own names, exports or aliases - with more than one word of it.** Setting a word
+ * aside can only widen a query, and this is what the widening is paid for with - the remainder has to
+ * name something the contract declares, which `array` alone does not do for `array/group-by@1` and
+ * `convert string to number` does do for `number/parse@1`.
+ *
+ * **The last clause of that sentence is ADR-0154 and it was missing for two contracts.** Naming a
+ * field was decided by which of its words tell the contracts apart, and that set shrinks as the
+ * catalogue grows - so `describeParseFailure` came down to `parse` alone at the sixth contract, and
+ * `parse yaml` was answered by a function that converts strings to numbers. The allowance being spent
+ * was the one written for a word the query *omits*, and what it was being spent on was a word the
+ * query *adds*. See `namedWellEnoughToSetAWordAside`.
  *
  * A summary cannot be what is named, and that is the same argument again: a summary is prose a
  * contract happens to be described by, so covering it is not a statement about anything.
@@ -313,7 +321,7 @@ const tellsThemApart = (spread: WordSpread, word: string): boolean =>
 const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 3
 
 /**
- * A field the query names: it carries every word of that field which says who is meant.
+ * **Which** of a field's words the query has to carry: the ones that say who is meant.
  *
  * **The direction is the repair, and what it drops is a field's connecting words.** This asked, until
  * it was measured, that the query carry *every* word of a deliberate field - so `string to number`
@@ -322,32 +330,116 @@ const A_FIELD_MAY_KEEP_ONE_BACK_FROM = 3
  * query for free, and it was written on the registry's phrasing: a reader had to have guessed the
  * label, down to its prepositions.
  *
- * So the field's words are read for what they establish. `to` is declared by three of the five
- * contracts and separates none of them; `number` is declared by one and separates it from everything.
+ * So the field's words are read for what they establish. `to` is declared by four of the six
+ * contracts and separates none of them; `number` is declared by two and separates them from the rest.
  * A query that carries `string` and `number` has named `string to number` whether or not it happened
  * to spell the preposition, and a query that carries only `array` has not named `array/group-by` -
  * which is what keeps `sort array` answering nothing.
  *
  * A field with nothing that tells the contracts apart names nobody, which is why the emptiness is
  * refused rather than allowed to pass vacuously.
+ *
+ * **This answers one question and `carriedFrom` answers the other**, which is the shape ADR-0154
+ * separated: what may be missing is decided here, how much has to be there is decided beside it, and
+ * until that record the second question was being answered by this one.
  */
 const namedByWhatTellsThemApart = (
+  field: Field,
+  asked: readonly string[],
+  spread: WordSpread,
+): boolean => {
+  const telling = field.words.filter((word) => tellsThemApart(spread, word))
+  if (telling.length === 0) return false
+
+  const carried = telling.filter((word) => asked.some((one) => answers(one, word)))
+
+  return telling.length >= A_FIELD_MAY_KEEP_ONE_BACK_FROM
+    ? carried.length >= telling.length - 1
+    : carried.length === telling.length
+}
+
+/**
+ * **How much** of a field the query carried: its distinct words, connecting ones and all.
+ *
+ * Every word and not only the telling ones, which is measured rather than tidy. `string` is declared
+ * by three contracts and tells none of them apart, so `string to number` has one telling word left -
+ * and `string into number` carries two of that field's three words, which is somebody naming it.
+ * Counting the telling ones instead refuses that rewording, and refusing it is the defect ADR-0136
+ * was written to remove.
+ *
+ * **Distinct, and nothing in this catalogue distinguishes that from counting the repeats.** Removing
+ * the deduplication leaves all twelve guards of this trial green, so the line is declared rather than
+ * measured: it is reached only by a field that spells its *one* telling word twice - `number to
+ * number` would be one - because any field with two telling words is already named by two distinct
+ * carried words and any field with three is named by at least two. `convert a string to a number`
+ * spells `a` twice and cannot reach it, having `convert` and `number` to be named by.
+ *
+ * It is kept for what that event costs rather than for what it catches now: a field of that shape is
+ * a one-word door, which is the defect ADR-0154 exists to close, and nothing would report it.
+ */
+const carriedFrom = (field: Field, asked: readonly string[]): number =>
+  new Set(field.words.filter((word) => asked.some((one) => answers(one, word)))).size
+
+/**
+ * How many words of the field it names a query has to carry before it may set a word aside.
+ *
+ * **One word is not a name, and that is the whole of it.** It is `sort array` one floor down: `array`
+ * does not name `array/group-by@1` because a word a field *contains* is not a word that names it, and
+ * a query reaching a contract through a single word of a single field is in exactly that position.
+ *
+ * **Both sides are pinned by a trial, and the value is the only one the measurement leaves.** At one
+ * - which is to say with no floor at all, the rule as it stood - twelve requests a person types are
+ * answered by a contract that has nothing to do with them: `parse yaml`, `parse json`, `round robin`,
+ * `add to cart`, `add an event listener`, `float left`, `fixed header`,
+ * `distance between two cities`, `levenshtein automaton`, `number formatting`, `slugify a blog post`,
+ * `slug from an object id`. At three, `how do I round a number` stops resolving and two of the three
+ * rewordings break. At four, three corpus queries and all three rewordings break.
+ *
+ * **It is not a threshold on how much of the query was understood**, and that was measured before
+ * this was written: requiring the contract to have answered more words than it set aside leaves four
+ * of the twelve, because the function words of a longer request pad the count - `add to cart` reaches
+ * a majority on `add` and `to`. What separates the twelve from every query that must answer is not
+ * how much of the *query* was met but how much of the *field* was named.
+ */
+const A_SET_ASIDE_WORD_IS_PAID_FOR_WITH = 2
+
+/**
+ * Whether the query named a contract well enough to be allowed a word that contract cannot answer.
+ *
+ * ---------------------------------------------------------------------------
+ * Two questions, and one of them used to be answered by the other
+ * ---------------------------------------------------------------------------
+ *
+ * A query may **leave a word out** - the preposition of a label nobody memorised - and it may **bring
+ * a word in** that this contract has nothing to say about. Those are different things, and until
+ * ADR-0154 the second was charged to the allowance written for the first: `scoreOf` asked
+ * `namedByWhatTellsThemApart` whenever a word had been set aside, and that function's whole subject
+ * is omission. So an addition cost nothing at all, and what it cost nothing *of* was a budget that
+ * shrinks: a word stops telling the contracts apart as the catalogue grows, so a field's telling
+ * words fall away until one is left and that one word opens the contract to any query carrying it.
+ *
+ * Measured over this catalogue's own six publications, the count of deliberate fields left with a
+ * single telling word runs **0, 0, 0, 2, 15, 21**, and the twelve requests above are answered
+ * **0, 1, 1, 2, 6, 12**. The sixth contract doubled it, and nothing about that was the sixth
+ * contract's doing.
+ *
+ * So the two questions are asked separately here. `namedByWhatTellsThemApart` decides which of the
+ * field's words may be missing; `carriedFrom` decides how many had to be there. The conjunction is
+ * per field rather than over the union of them, and that too was measured: `add to cart` has no field
+ * it names *and* carries two words of, but `add` and `to` do sit together in one alias of
+ * `date/add@1`, so a rule that took the two clauses from different fields admits it.
+ */
+const namedWellEnoughToSetAWordAside = (
   fields: readonly Field[],
   asked: readonly string[],
   spread: WordSpread,
 ): boolean =>
-  fields.some((field) => {
-    if (!DELIBERATE.has(field.kind)) return false
-
-    const telling = field.words.filter((word) => tellsThemApart(spread, word))
-    if (telling.length === 0) return false
-
-    const carried = telling.filter((word) => asked.some((one) => answers(one, word)))
-
-    return telling.length >= A_FIELD_MAY_KEEP_ONE_BACK_FROM
-      ? carried.length >= telling.length - 1
-      : carried.length === telling.length
-  })
+  fields.some(
+    (field) =>
+      DELIBERATE.has(field.kind) &&
+      namedByWhatTellsThemApart(field, asked, spread) &&
+      carriedFrom(field, asked) >= A_SET_ASIDE_WORD_IS_PAID_FOR_WITH,
+  )
 
 /**
  * What a screen shows about one contract: everything except why it was ranked.
@@ -417,9 +509,14 @@ export type Search = {
  * `a-word-carried-by-a-name-outranks-the-same-word-carried-by-an-alias` rather than argued: the
  * candidate that removed them dropped `number/parse@1` from `string`.
  *
- * **The second is `namedByWhatTellsThemApart`, and it is the silence.** Measured over nineteen
+ * **The second is `namedWellEnoughToSetAWordAside`, and it is the silence.** Measured over nineteen
  * ordinary descriptions of what these five functions do, six were answered and thirteen were not,
  * several of them a working query with one word changed. Thirteen are answered now.
+ *
+ * **It was one clause when that was measured and it is two now**, which is ADR-0154 and not a third
+ * bound: the branch is reached because the query brought a word in, and until that record the only
+ * thing asked of it was a test about words left out. What the split costs is nothing on any of the
+ * three trials and what it buys is twelve requests a person types.
  *
  * **Neither bound buys the other's half and together they cost nothing**, which is what says both are
  * load-bearing. On the corpus, on every declared alias, and on the negative half, all four
@@ -435,7 +532,10 @@ const scoreOf = (
   const answered = words.filter((_word, at) => hits[at] !== null)
 
   if (!hits.some((hit) => hit !== null && DELIBERATE.has(hit.field.kind))) return null
-  if (answered.length !== words.length && !namedByWhatTellsThemApart(fields, answered, spread)) {
+  if (
+    answered.length !== words.length &&
+    !namedWellEnoughToSetAWordAside(fields, answered, spread)
+  ) {
     return null
   }
 

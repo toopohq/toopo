@@ -180,33 +180,31 @@ describe('finding a contract from what somebody typed', () => {
    * answer, which is the outcome the whole file is built to prefer, and it is what an alias review is
    * worth when the catalogue holds no accent-stripper.
    *
-   * **`parse yaml` left this list at the sixth contract, and it left because the rule stopped
-   * answering it - not because the expectation was ever wrong.**
+   * **`parse yaml` left this list at the sixth contract and came back at ADR-0154**, which is the
+   * only entry here to have done that, and the reason it left is the reason eleven more are now
+   * beside it.
    *
-   * What it answers now, measured: `number/parse@1`, at a score of 100, with `yaml` reported in
-   * `unknownWords` - *Convert a string to a finite number, or null when the string is not a decimal
-   * number.* That is a wrong answer where there was a silence, and for this product a wrong answer is
-   * worse than a silence: it is the reasoning that took the whole catalogue off `toopo search` when
-   * it listed everything. The expectation is right, and the catalogue still holds nothing for YAML.
+   * It left because the rule stopped answering it: `number/round@1` gave the catalogue a third
+   * `describe…Failure` export, so `describe` and `failure` went from two contracts to three and
+   * crossed `TELLS_THE_CONTRACTS_APART`, `number/parse@1`'s exports field came down to `parse`
+   * alone, and a field with one telling word is named by a query carrying that one word whatever
+   * else the query carries. It came back because the setting-aside rule now costs a second word of
+   * the field, so one word names nobody.
    *
-   * **The cause is arithmetic, and it is the catalogue growing.** `number/round@1` gives the
-   * catalogue a third `describe…Failure` export, so `describe` and `failure` go from two contracts
-   * to three and cross `TELLS_THE_CONTRACTS_APART`. `number/parse@1`'s exports field drops from
-   * three telling words to one, and a field with one telling word is named by a query carrying that
-   * one word, whatever else the query carries.
+   * **The eleven beside it are the same defect and were found by looking for it.** `parse` was one
+   * of eleven words that had become the sole telling word of some field - measured at `a705977`, the
+   * count of such fields ran **0, 0, 0, 2, 15, 21** over this catalogue's six publications - and
+   * every one of them opened its contract to any query carrying it. Each query here is a request a
+   * person types and this catalogue does not hold; none was written to make a measurement pass.
+   * Answered before the repair and silent after: **0, 1, 1, 2, 6, 12** over those same six
+   * publications.
    *
-   * **The one repair the constant admits was measured and refused.** At a ceiling of three,
-   * `parse yaml` answers nothing again and `remove accents from string` answers `number/parse@1` at
-   * a score of 80 - a real request, wrongly answered, where the paragraph above records that
-   * removing its alias was worth doing precisely to stop a wrong answer. Both values break exactly
-   * one query of this list, and three breaks the better one, so the ceiling stays where it is.
-   *
-   * **What it would take is not a constant.** The allowance exists for a word the query *leaves out*
-   * - a preposition it did not spell - and it is being spent on a word the query *adds* that the
-   * catalogue has never heard. Separating those two is a change to the matching rule and a unit of
-   * its own. `CLAUDE.md` carries it as a debt with both readings, because what this measured is not
-   * one line of a corpus: it is the first reading of what the matching rule does as the catalogue
-   * grows.
+   * **The ceiling was measured on both sides and left alone.** At three, `parse yaml` answers
+   * nothing again and `remove accents from string` answers `number/parse@1` at a score of 80 - a
+   * real request, wrongly answered, where the paragraph above records that removing its alias was
+   * worth doing precisely to stop a wrong answer. Both values break exactly one query of this list
+   * and three breaks the better one, so `TELLS_THE_CONTRACTS_APART` is not what this was repaired
+   * with. That reading stands and is what a later one is taken against.
    */
   it('a-query-the-catalogue-cannot-answer-answers-nothing', () => {
     const nothing = [
@@ -230,6 +228,18 @@ describe('finding a contract from what somebody typed', () => {
       'a deep clone of an object',
       'how do I sort an array',
       'is there a debounce',
+      'parse yaml',
+      'parse json',
+      'round robin',
+      'add to cart',
+      'add an event listener',
+      'float left',
+      'fixed header',
+      'distance between two cities',
+      'levenshtein automaton',
+      'number formatting',
+      'slugify a blog post',
+      'slug from an object id',
     ]
 
     expect(
@@ -237,6 +247,60 @@ describe('finding a contract from what somebody typed', () => {
         .map((query) => [query, searching(query).results] as const)
         .filter(([, results]) => results.length > 0)
         .map(([query, results]) => `"${query}" -> ${results.length} results`),
+    ).toEqual([])
+  })
+
+  /**
+   * A word no contract carries, standing for the one a reader brings in from their own problem.
+   *
+   * **It is invented rather than borrowed.** `yaml` would do the job today and would stop doing it
+   * the day this catalogue holds a contract about YAML, at which point the guard below reddens on a
+   * publication instead of on a defect. Nothing rests on the choice: the guard establishes that this
+   * really is unheard of before it sweeps with it.
+   */
+  const A_WORD_THE_CATALOGUE_HAS_NEVER_HEARD = 'zzq'
+
+  /**
+   * No single word of this catalogue answers a query that also asked for something it cannot place.
+   *
+   * **It is the guard above written over a declaration instead of over a list**, and that is the
+   * whole reason it exists beside it: the twelve requests up there are twelve somebody thought of,
+   * and this is every word the catalogue declares - 91 of them at `a705977`. A seventh contract
+   * brings its own words into this population with nobody editing anything, which is what the entry
+   * this closes asked for and could not have: *one negative query of twenty broke at six contracts,
+   * and nothing says what breaks at ten.*
+   *
+   * **It was red on eleven of those 91 before ADR-0154** - `add`, `distance`, `fixed`, `float`,
+   * `int`, `levenshtein`, `number`, `parse`, `round`, `slug`, `slugify` - each of them the last
+   * telling word of some field, each opening its contract to anything typed beside it.
+   *
+   * **What it does not claim is that two words are safe**, and the line is where the catalogue's own
+   * evidence starts rather than where the arithmetic was convenient: two words the reader carried
+   * out of one field are two things the contract chose and the query spelled, and no reading here
+   * separates a second word that belongs from a second word that does not. `edit distance zzq`
+   * answers `string/levenshtein@1`, deliberately.
+   *
+   * **The neighbour is `a-query-the-catalogue-cannot-answer-answers-nothing`, and the two are not one
+   * claim.** That one is about requests, so it can be wrong about English; this one is about the
+   * mechanism, so it can be wrong about nothing but the mechanism, and it says nothing at all about
+   * whether the catalogue holds what a reader wants.
+   */
+  it('a-word-the-catalogue-declares-beside-one-it-has-never-heard-answers-nothing', () => {
+    const declared = [...spreadOverTheCatalogue(theIndex()).keys()]
+    const brought = searching(A_WORD_THE_CATALOGUE_HAS_NEVER_HEARD)
+
+    expect(declared.length).toBeGreaterThan(0)
+    expect(brought.results).toEqual([])
+    expect(brought.unknownWords).toEqual([A_WORD_THE_CATALOGUE_HAS_NEVER_HEARD])
+
+    expect(
+      declared
+        .map(
+          (word) =>
+            [word, searching(`${word} ${A_WORD_THE_CATALOGUE_HAS_NEVER_HEARD}`).results] as const,
+        )
+        .filter(([, results]) => results.length > 0)
+        .map(([word, results]) => `"${word}" -> ${results.length} results`),
     ).toEqual([])
   })
 
@@ -264,6 +328,13 @@ describe('finding a contract from what somebody typed', () => {
    * **What it does not claim is that any rewording is answered.** A word this catalogue declares
    * nowhere - `tolerance`, `spelling`, `maths` - answers nothing and should, and that is a missing
    * alias rather than a missing rule. The second assertion is what keeps this guard about the rule.
+   *
+   * **It gained a second job at ADR-0154 and it is the only guard that can hold it.** All three of
+   * these rewordings leave a word out *and* bring one in, so they are where the two allowances meet -
+   * which is what makes them the ceiling on `A_SET_ASIDE_WORD_IS_PAID_FOR_WITH`. Seen red at three,
+   * on `turn a string into a number` and `string into number`; seen red again when `carriedFrom` was
+   * made to count only the words that tell the contracts apart, which is the same two. The floor
+   * below is held by the guard above; this is what holds it from above.
    */
   it('a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers', () => {
     const rewordings: readonly (readonly [string, string])[] = [
