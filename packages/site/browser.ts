@@ -20,10 +20,22 @@
  *
  * `module.stripTypeScriptTypes` is the mechanism node itself uses to run the `.ts` files of this
  * repository, so the JavaScript a reader's browser executes is produced by the same thing that
- * executes our tests. It is also the only one available: `typescript@7.0.2` ships a native compiler
- * and no JavaScript API - `node_modules/typescript/lib/` holds `tsc.js` and a version string - so a
- * compiler here would mean a subprocess, and a subprocess would put a page's content behind something
- * no guard can reach.
+ * executes our tests. **A compiler here would mean a subprocess, and a subprocess would put a page's
+ * content behind something no guard can reach**, which is why the erasure is node's and not `tsc`'s.
+ *
+ * **That conclusion is true and used to rest on a proof that does not support it.** This paragraph
+ * read *`typescript@7.0.2` ships a native compiler and no JavaScript API*, and offered
+ * `node_modules/typescript/lib/` holding `tsc.js` and a version string as the evidence. The evidence
+ * is true and establishes nothing: the package's API lives under `dist/` and is reached through its
+ * `exports` map, which names eleven entries including `./unstable/ast` and `./unstable/ast/scanner`.
+ * **There is an in-process JavaScript API.** What TypeScript 7 removed is a standalone *parser* - the
+ * only way to a syntax tree is `typescript/unstable/sync`, which loads a project and spawns the
+ * compiler. So the conclusion stands, and it stands on a reason narrower than the one written here:
+ * not *no API*, but *no parser without a process*.
+ *
+ * `packages/validation/typescript-api.ts` has stated the same fact correctly since it was written.
+ * Two files, one fact, one of them wrong - and the wrong one is the file somebody opens to ask
+ * exactly this question.
  *
  * It refuses what it cannot erase rather than guessing: an `enum` or a `namespace` throws instead of
  * being dropped. That is the direction of failure this repository asks for, and it is why nothing
