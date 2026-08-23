@@ -1,6 +1,7 @@
 /**
  * The catalogue's own search, answered in somebody's browser.
- * ADR-0137 is why the site runs the registry's matching rule rather than a second one.
+ * ADR-0137 is why the site runs the registry's matching rule rather than a second one; ADR-0157 is why
+ * the reader is handed in rather than reached for.
  *
  * ---------------------------------------------------------------------------
  * One rule, two surfaces, and no second implementation
@@ -15,6 +16,26 @@
  *
  * So a reader typing on this site and a reader typing into their terminal get the same answer by
  * construction, and the day the rule changes they change together. There is nothing to keep in step.
+ *
+ * ---------------------------------------------------------------------------
+ * The reader is a parameter, and the separation was made for this
+ * ---------------------------------------------------------------------------
+ *
+ * `fetch` was reached for directly until ADR-0157, which made this file exactly as unverifiable as
+ * `start.ts`: four exported names, no test importing it, no mutant able to kill anything in it - and
+ * unlike `start.ts` it was *reachable* the whole time and simply not reached.
+ *
+ * ADR-0137 wrote the condition under which the split from `start.ts` would start to pay: *the two are
+ * one file's worth of separation that only matters once something else runs a query.* **A guard is
+ * that something else.** So the port is the one `packaging/what-npm-holds.ts` already uses - a status
+ * and a body and nothing else, because a port handing back a `Response` lets a caller reach for the
+ * network again.
+ *
+ * `ReadOneAnswer` is that module's `ReadOneAddress` written a second time, and the resemblance is
+ * named rather than shared. Sharing it means a home neither folder owns - `packages/registry/`, which
+ * both already reach - and that is one new module, four files edited in a folder this unit has no
+ * business in, for a type of one line. Priced and not taken; what it would cost to leave is one
+ * declaration, and what it would cost to take is a refactor decided by whoever most wanted a guard.
  *
  * ---------------------------------------------------------------------------
  * Where the two answers live is handed over rather than computed
@@ -38,7 +59,9 @@
  *
  * A fetch that fails is not an empty catalogue. It throws, and the caller renders the failure rather
  * than an answer, because a search that quietly reported *nothing found* when it had asked nobody is
- * the one failure this whole rule is built to avoid.
+ * the one failure this whole rule is built to avoid. The three ways of not knowing are separated for
+ * that reason: nothing answered, the host answered something else, and the host answered with what is
+ * not JSON.
  */
 
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
@@ -69,52 +92,92 @@ export class TheCatalogueCouldNotBeReached extends Error {
   }
 }
 
-const fetched = async <T>(at: string): Promise<T> => {
-  const response = await fetch(at).catch((thrown: unknown) => {
-    throw new TheCatalogueCouldNotBeReached(at, thrown instanceof Error ? thrown.message : 'no answer')
-  })
+/**
+ * One address, read.
+ *
+ * A status and a body and nothing else, for the reason the header gives: everything this module
+ * decides it decides from those two.
+ */
+export type ReadOneAnswer = (at: string) => Promise<{ readonly status: number; readonly body: string }>
 
-  if (!response.ok) throw new TheCatalogueCouldNotBeReached(at, `the host answered ${response.status}`)
+/** `fetch`, reduced to the two things this module reads. */
+export const overHttp: ReadOneAnswer = async (at) => {
+  const answer = await fetch(at)
 
-  return (await response.json()) as T
+  return { status: answer.status, body: await answer.text() }
 }
 
-type TheCatalogue = {
+/** Both answers the search runs against. */
+export type TheCatalogue = {
   readonly index: ServedIndex
   readonly refusals: ServedRefusals
 }
 
+const fetched = async <T>(read: ReadOneAnswer, at: string): Promise<T> => {
+  let answer: { readonly status: number; readonly body: string }
+  try {
+    answer = await read(at)
+  } catch (thrown: unknown) {
+    throw new TheCatalogueCouldNotBeReached(
+      at,
+      thrown instanceof Error ? thrown.message : 'no answer',
+    )
+  }
+
+  if (answer.status !== 200) {
+    throw new TheCatalogueCouldNotBeReached(at, `the host answered ${answer.status}`)
+  }
+
+  try {
+    return JSON.parse(answer.body) as T
+  } catch {
+    throw new TheCatalogueCouldNotBeReached(at, 'the host answered with something that is not JSON')
+  }
+}
+
+/** Both answers, asked for as often as a reader types and fetched at most once. */
+export type TheCatalogueAsItArrives = (where: WhereTheCatalogueIs) => Promise<TheCatalogue>
+
 /**
- * Both answers, fetched once and kept for the life of the page.
+ * Both answers, fetched once and kept for the life of one page.
  *
  * The promise is held rather than the value, so that a reader typing three characters before the
  * first answer arrives makes one request and not three. A rejected promise is *not* kept: the next
  * keystroke asks again, because the failure a reader meets most is a connection that came back.
+ *
+ * **The cache is a closure and not a module-level binding**, which is what makes both of those
+ * sentences checkable. State living in the module is shared by everything that imports it, so a guard
+ * over the second sentence would be reading whatever the guard before it left behind - and the repair
+ * for that is a way to reset the cache, which is a door in the product that exists for the tests. One
+ * page builds one of these; one guard builds one of these.
  */
-let arriving: Promise<TheCatalogue> | null = null
+export const arrivingOnce = (read: ReadOneAnswer): TheCatalogueAsItArrives => {
+  let arriving: Promise<TheCatalogue> | null = null
 
-export const theCatalogue = (where: WhereTheCatalogueIs): Promise<TheCatalogue> => {
-  if (arriving === null) {
-    arriving = Promise.all([
-      fetched<ServedIndex>(where.index),
-      fetched<ServedRefusals>(where.refusals),
-    ])
-      .then(([index, refusals]) => ({ index, refusals }))
-      .catch((thrown: unknown) => {
-        arriving = null
-        throw thrown
-      })
+  return (where) => {
+    if (arriving === null) {
+      arriving = Promise.all([
+        fetched<ServedIndex>(read, where.index),
+        fetched<ServedRefusals>(read, where.refusals),
+      ])
+        .then(([index, refusals]) => ({ index, refusals }))
+        .catch((thrown: unknown) => {
+          arriving = null
+          throw thrown
+        })
+    }
+
+    return arriving
   }
-
-  return arriving
 }
 
 /** What the catalogue answers to what somebody typed. */
 export const answering = async (
+  arriving: TheCatalogueAsItArrives,
   where: WhereTheCatalogueIs,
   query: string,
 ): Promise<Search> => {
-  const { index, refusals } = await theCatalogue(where)
+  const { index, refusals } = await arriving(where)
 
   return search(index, refusals, query)
 }

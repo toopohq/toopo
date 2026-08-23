@@ -93,6 +93,12 @@ const servedHeadersFile = (find: string, replace: string) => ({
   find,
   replace,
 })
+const controlFile = (find: string, replace: string) => ({
+  file: 'what-a-control-says.ts',
+  find,
+  replace,
+})
+const searchingFile = (find: string, replace: string) => ({ file: 'searching.ts', find, replace })
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -148,6 +154,41 @@ const A_COMMENT_THAT_SPANNED_A_LINE_STILL_DOES = `A_LINE_TERMINATOR.test(body)`
 const THE_SHEET_IS_STRIPPED_BEFORE_IT_IS_SERVED = `export const THE_SERVED_STYLESHEET = withoutComments(STYLE)`
 
 const NOTHING_ELSE_IS_TAKEN_OUT_WITH_THEM = `  return kept + css.slice(keptFrom)`
+
+// The controls a visitor touches, whose decisions were unreachable until ADR-0157.
+
+const THE_COPY_LABEL_NAMES_THE_COMMAND = `export const theCopyLabelFor = (command: string): string => \`Copy \${command} to the clipboard\``
+const A_REFUSED_CLIPBOARD_SAYS_SOMETHING_ELSE = `  whenTheClipboardRefuses: 'press ⌘C',`
+const WHAT_FOLLOWS_THE_INVOCATION_IS_DERIVED = `  command.startsWith(THE_INVOCATION) ? command.slice(THE_INVOCATION.length).trim() : null`
+const THE_WAY_ALREADY_CHOSEN_IS_A_SPELLING = `export const theWayAlreadyChosen = (way: AWayToRunIt): boolean => way.spelling === THE_INVOCATION`
+const A_WAY_THAT_RUNS_CARRIES_NO_REFUSAL = `export const theRefusalShownFor = (way: AWayToRunIt): string | null => way.refusedBecause ?? null`
+const A_REFUSED_WAY_SHOWS_WHAT_WORKS = `  theRefusalShownFor(way) === null ? way.spelling : THE_INVOCATION`
+const A_QUERY_NOTHING_ANSWERS_STILL_SAYS_SOMETHING = `    return {
+      kind: 'no-answer',
+      said: [
+        \`Nothing in the catalogue answers "\${found.query}".\`,
+        found.unknownWords.length === 0
+          ? NO_CONTRACT_CARRIES_THEM_ALL
+          : \`No contract mentions: \${found.unknownWords.join(', ')}\`,
+      ],
+    }`
+const A_WORD_LIST_IS_SHOWN_ONLY_WHERE_THERE_IS_ONE = `        found.unknownWords.length === 0
+          ? NO_CONTRACT_CARRIES_THEM_ALL
+          : \`No contract mentions: \${found.unknownWords.join(', ')}\`,`
+const A_RESULT_LINKS_UNDER_THE_ROOT = `    href: \`\${root}\${rendered}/\`,`
+const AN_ANSWER_IS_COMPARED_AGAINST_THE_TRIMMED_FIELD = `export const theAnswerIsStale = (typed: string, asked: string): boolean => typed.trim() !== asked`
+
+const A_FAILED_CATALOGUE_IS_NOT_KEPT = `        .catch((thrown: unknown) => {
+          arriving = null
+          throw thrown
+        })`
+const BOTH_ANSWERS_ARE_KEPT_ONCE_THEY_ARRIVE = `    if (arriving === null) {`
+const A_HOST_THAT_ANSWERED_SOMETHING_ELSE_IS_REFUSED = `  if (answer.status !== 200) {`
+const A_DIAGNOSTIC_IS_CALLED_ONLY_WHERE_THE_ANSWER_IS_NULL = `  const lines = [\`\${callWritten(call.name, spelled)} → \${answerWritten(call.answered)}\`]
+
+  if (call.answered === null && diagnostic !== null) {
+    lines.push(\`\${callWritten(diagnostic.name, spelled)} → \${answerWritten(diagnostic.describes())}\`)
+  }`
 
 const A_STRING_IS_NOT_READ_FOR_COMMENTS = `    if (character === '"' || character === "'") {
       at = pastTheString(css, at)
@@ -2050,6 +2091,272 @@ export const escaped = (character: string): string => {`,
       'language that ends statements at a line',
     [servedModulesFile(A_COMMENT_THAT_SPANNED_A_LINE_STILL_DOES, `false`)],
     survived('unreachable-on-this-catalogue'),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-102 to W-115 - the controls a visitor touches with a mouse
+  // -------------------------------------------------------------------------
+  //
+  // The first cells this battery has ever injected into `start.ts`'s half of the folder, and the
+  // reason there were none is not that anything refused them: nothing did. `contractPath` has been
+  // `packages/site` since the battery was written, so a cell here was always possible - and it would
+  // have been a guaranteed survivor, because `start.ts` exports no name and `searching.ts` was
+  // imported by no test. A mutant with nothing able to kill it is what an absence looks like from the
+  // inside, and it is why the absence was never written down as a decision.
+  //
+  // What separates this section from the rest of the battery is the direction of the failure. A wrong
+  // page publishes a claim a reader can check against the contract; a wrong control publishes nothing
+  // at all - it hands somebody a command that fails, or an empty box, or a label only a screen reader
+  // hears. Every cell below leaves the site looking exactly as it does now.
+
+  /**
+   * **The label a sighted reader never sees.** `textContent` on the install block is the command plus
+   * every control appended to it, so a label built from the button rather than from the command reads
+   * `Copy copy to the clipboard` to a screen reader and is invisible to everybody else - including to
+   * whoever made the edit.
+   */
+  sameOnEveryLens(
+    'W-102',
+    'names the button in the copy control label instead of the command it copies, so the one reader ' +
+      'who depends on that label is told the word on the button - a defect nothing on the rendered ' +
+      'page can show, on the control this site added for the people it is hardest to serve',
+    [
+      controlFile(
+        THE_COPY_LABEL_NAMES_THE_COMMAND,
+        `export const theCopyLabelFor = (): string => \`Copy \${THE_COPY_CONTROL_SAYS.atRest} to the clipboard\``,
+      ),
+    ],
+    killed(['the-copy-control-names-the-command-and-never-itself']),
+  ),
+
+  /**
+   * **A control that answers a refusal by doing nothing.** A clipboard write can be refused - a page
+   * without focus, a permission withheld - and a button that returns to its resting word tells the
+   * reader it worked. It is the exact shape
+   * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` refuses one floor up.
+   */
+  sameOnEveryLens(
+    'W-103',
+    'answers a refused clipboard with the word the button already carried, so a reader whose browser ' +
+      'declined the write is told nothing went wrong and walks away without the command',
+    [controlFile(A_REFUSED_CLIPBOARD_SAYS_SOMETHING_ELSE, `  whenTheClipboardRefuses: 'copy',`)],
+    killed(['every-word-the-copy-control-carries-says-something-the-others-do-not']),
+  ),
+
+  /**
+   * **The spelling this unit removed, put back.** `.split(' ').slice(2)` is right for `npx toopo` and
+   * silently wrong for every other invocation: on `yarn dlx toopo add x` it answers `toopo add x`, so
+   * the arguments a reader is handed carry a package name where a command should be. It is the typed
+   * constant this repository refuses in a stylesheet, arriving in a word count.
+   */
+  sameOnEveryLens(
+    'W-104',
+    'counts the words of the invocation instead of deriving them from it, which is exactly right ' +
+      'today and answers a mangled command the day the invocation gains a word - with nothing on the ' +
+      'page, and no guard anywhere, able to notice the number was ever typed',
+    [
+      controlFile(
+        WHAT_FOLLOWS_THE_INVOCATION_IS_DERIVED,
+        `  command.trim().split(' ').slice(2).join(' ')`,
+      ),
+    ],
+    killed(['a-command-this-control-cannot-take-apart-is-one-it-refuses-to-rewrite']),
+  ),
+
+  /**
+   * **The comparison that marked nothing at all.** Written against the manager rather than against the
+   * spelling, the control opens with no way marked as chosen - and a group of four buttons where none
+   * is pressed reads as a control that has not loaded yet rather than as one that has.
+   */
+  sameOnEveryLens(
+    'W-105',
+    'decides which way is already chosen by the manager rather than by the spelling the page serves, ' +
+      'so the control opens with nothing marked and a reader cannot tell which command they are ' +
+      'already looking at',
+    [
+      controlFile(
+        THE_WAY_ALREADY_CHOSEN_IS_A_SPELLING,
+        `export const theWayAlreadyChosen = (way: AWayToRunIt): boolean => way.manager === THE_INVOCATION`,
+      ),
+    ],
+    killed(['the-way-the-page-serves-is-the-one-the-control-opens-marked']),
+  ),
+
+  /**
+   * **A command measured not to work, handed over on request.** `yarn dlx toopo` is refused on a
+   * reading taken against npm's own registry: Yarn patches `typescript`, the patch does not apply to
+   * TypeScript 7, and the install fails before a file is written. Showing it is the site offering a
+   * reader the one form this catalogue has measured to be broken.
+   */
+  sameOnEveryLens(
+    'W-106',
+    'shows a refused way its own spelling, so a reader who says they use Yarn is handed the command ' +
+      'this catalogue measured failing - beside the paragraph explaining that it fails, which is a ' +
+      'page contradicting itself in two adjacent elements',
+    [controlFile(A_REFUSED_WAY_SHOWS_WHAT_WORKS, `  way.spelling`)],
+    killed(['a-refused-way-shows-the-spelling-that-works']),
+  ),
+
+  /**
+   * **The empty string where a `null` belongs.** The control writes the refusal into a paragraph it
+   * also has to hide, and it decides to hide it by asking whether there is one - so a refusal read as
+   * `''` is a paragraph shown empty rather than a paragraph not shown, on every way that runs.
+   */
+  sameOnEveryLens(
+    'W-107',
+    'answers the empty string where a way carries no refusal, so the paragraph that explains a ' +
+      'refusal is shown blank under every manager that works - a gap in the page whose cause is a ' +
+      'value that reads perfectly well at the call site',
+    [
+      controlFile(
+        A_WAY_THAT_RUNS_CARRIES_NO_REFUSAL,
+        `export const theRefusalShownFor = (way: AWayToRunIt): string => way.refusedBecause ?? ''`,
+      ),
+    ],
+    killed(['a-refused-way-carries-its-measurement-and-a-way-that-runs-carries-nothing']),
+  ),
+
+  /**
+   * **The blank box, which is the failure the whole matching rule exists to avoid.** A search that
+   * answers nothing by showing nothing tells a reader the page is broken rather than that the
+   * catalogue does not hold what they asked for - and the stylesheet already hides an empty panel, so
+   * the edit looks like it is agreeing with the stylesheet.
+   */
+  sameOnEveryLens(
+    'W-108',
+    'closes the panel on a query the catalogue cannot answer, so a reader who described a need reads ' +
+      'a box that vanished rather than which of their words no contract carries - the one failure ' +
+      'ADR-0035 is written to make impossible, arriving in the surface instead of in the rule',
+    [controlFile(A_QUERY_NOTHING_ANSWERS_STILL_SAYS_SOMETHING, `    return THE_PANEL_IS_CLOSED`)],
+    killed(['a-reader-who-is-searching-is-never-shown-nothing']),
+  ),
+
+  /**
+   * **A list rendered where there is nothing to list.** Every word of the query is known and no one
+   * contract carries them all - a real answer about this catalogue - and printing the unknown words
+   * unconditionally answers `No contract mentions: ` with nothing after the colon.
+   */
+  sameOnEveryLens(
+    'W-109',
+    'prints the unknown words of a query whether or not there are any, so a reader whose every word ' +
+      'this catalogue knows is answered with a colon and nothing after it - which reads as a defect ' +
+      'in the page rather than as what it is, an answer about the catalogue',
+    [
+      controlFile(
+        A_WORD_LIST_IS_SHOWN_ONLY_WHERE_THERE_IS_ONE,
+        `        \`No contract mentions: \${found.unknownWords.join(', ')}\`,`,
+      ),
+    ],
+    killed(['a-query-whose-every-word-is-known-is-told-that-and-not-an-empty-list']),
+  ),
+
+  /**
+   * **The link that works on exactly one page.** The root is resolved by the page that hands the
+   * search its addresses, so a link built without it resolves against wherever the reader happens to
+   * be standing: correct on the front page, broken on every domain and contract page - which is
+   * twelve of the thirteen.
+   */
+  sameOnEveryLens(
+    'W-110',
+    'builds a result link without the root the page resolved for itself, so every answer on every ' +
+      'page below the front page points at an address that does not exist - and the front page, ' +
+      'which is where anybody testing the search would try it, keeps working',
+    [controlFile(A_RESULT_LINKS_UNDER_THE_ROOT, `    href: \`\${rendered}/\`,`)],
+    killed(['a-result-links-to-the-contracts-own-address-under-the-root-of-the-site']),
+  ),
+
+  /**
+   * **Every answer dropped from a reader who types a trailing space.** The query is trimmed before it
+   * is asked, so comparing the untrimmed field against it is a comparison that can never hold once a
+   * space is involved - and the panel then stays on whatever it last showed, for ever.
+   */
+  sameOnEveryLens(
+    'W-111',
+    'compares an arriving answer against the untrimmed field, so a reader whose query ends in a ' +
+      'space has every answer discarded as stale and watches a panel that never updates - on a ' +
+      'control whose whole subject is answering while somebody types',
+    [
+      controlFile(
+        AN_ANSWER_IS_COMPARED_AGAINST_THE_TRIMMED_FIELD,
+        `export const theAnswerIsStale = (typed: string, asked: string): boolean => typed !== asked`,
+      ),
+    ],
+    killed(['an-answer-about-a-query-the-reader-has-left-is-not-shown']),
+  ),
+
+  /**
+   * **A page that stays broken after the network came back.** The failure a reader meets most is a
+   * connection that recovered a second later; a rejected promise left in the cache answers *the
+   * catalogue could not be read* for the rest of the session, with a reload as the only repair.
+   */
+  sameOnEveryLens(
+    'W-112',
+    'keeps the rejected promise, so one lost request retires the search for the life of the page - ' +
+      'and it retires it silently, because the panel goes on rendering a failure that was true once ' +
+      'and has not been true since',
+    [
+      searchingFile(
+        A_FAILED_CATALOGUE_IS_NOT_KEPT,
+        `        .catch((thrown: unknown) => {
+          throw thrown
+        })`,
+      ),
+    ],
+    killed(['a-catalogue-that-failed-is-asked-again-on-the-next-keystroke']),
+  ),
+
+  /**
+   * **The whole catalogue, per keystroke.** `null` against `undefined` is the slip that never looks
+   * like one, and the page it produces is indistinguishable from the correct one on any machine near
+   * the origin - the reader who pays is the one on a slow connection typing a long query.
+   */
+  sameOnEveryLens(
+    'W-113',
+    'never finds the answers it already holds, so both documents are fetched again for every ' +
+      'character a reader types - a page that behaves identically on a fast connection and asks a ' +
+      'host for the same two files fifteen times on a slow one',
+    [searchingFile(BOTH_ANSWERS_ARE_KEPT_ONCE_THEY_ARRIVE, `    if (arriving === undefined) {`)],
+    killed(['both-answers-are-fetched-once-however-often-a-reader-types']),
+  ),
+
+  /**
+   * **A status that is not an answer, taken as one.** A host answering 503 with a page of its own, or
+   * a portal answering 200 with a login screen, is not a catalogue - and a search that reported
+   * *nothing found* having read one of those would be the failure ADR-0035 is written against, with
+   * the reader given no way at all to know they had not been asked about.
+   */
+  sameOnEveryLens(
+    'W-114',
+    'stops telling a host that answered something else from a host that answered the catalogue, so ' +
+      'what a reader is shown for a 503 depends on whether that error page happens to parse as JSON - ' +
+      'and the three ways of not knowing collapse into one message that names the wrong cause',
+    [searchingFile(A_HOST_THAT_ANSWERED_SOMETHING_ELSE_IS_REFUSED, `  if (answer.status >= 600) {`)],
+    killed(['nothing-answering-is-told-apart-from-a-host-that-answered-something-else']),
+  ),
+
+  /**
+   * **The cell this section exists for, and the one no reading of the output could catch.** Both lines
+   * are byte for byte what the correct version prints. The only difference is that a contract's
+   * diagnostic now runs on every keystroke of every *successful* call - on a browser, on somebody
+   * else's machine, invisibly. It is what handing a thunk buys, said as a mutant.
+   */
+  sameOnEveryLens(
+    'W-115',
+    'calls the diagnostic before deciding whether to show it, so every contract that publishes one ' +
+      'runs it on every keystroke of every call that succeeded - and prints exactly the same two ' +
+      'lines, so nothing a reader sees and no comparison of the output could ever say so',
+    [
+      playgroundFile(
+        A_DIAGNOSTIC_IS_CALLED_ONLY_WHERE_THE_ANSWER_IS_NULL,
+        `  const described = diagnostic === null ? null : answerWritten(diagnostic.describes())
+  const lines = [\`\${callWritten(call.name, spelled)} → \${answerWritten(call.answered)}\`]
+
+  if (call.answered === null && described !== null && diagnostic !== null) {
+    lines.push(\`\${callWritten(diagnostic.name, spelled)} → \${described}\`)
+  }`,
+      ),
+    ],
+    killed(['a-diagnostic-is-called-where-the-answer-is-null-and-nowhere-else']),
   ),
 ]
 

@@ -1,7 +1,8 @@
 /**
- * The only module of this repository that runs in somebody else's browser.
+ * The only module of this repository that runs in somebody else's browser, and it decides nothing.
  * ADR-0096 is why a field holds text, and why the answer names the call it was made from; ADR-0116 is
- * why the copy control is built here rather than served.
+ * why the copy control is built here rather than served; ADR-0157 is why every word below arrives from
+ * somewhere a guard can reach.
  *
  * ---------------------------------------------------------------------------
  * What it is allowed to be, which is nothing the page depends on
@@ -19,6 +20,23 @@
  * which is complete prose rather than a hole.
  *
  * ---------------------------------------------------------------------------
+ * Delivery and nothing else, because nothing executes this file
+ * ---------------------------------------------------------------------------
+ *
+ * This module exports no name, so nothing can import it and no guard and no mutant will ever reach it.
+ * That was true of two fifths of what it used to hold: measured at `17cc9bf`, 40.2 % of its executable
+ * text was a decision about what a visitor reads, written as an argument to `setAttribute`.
+ *
+ * Every one of those now lives in `what-a-control-says.ts` or, for the deferred half, in
+ * `playground.ts` - both reachable, both guarded, both with mutants that have something to kill. What
+ * is left here is what genuinely needs a document: finding an element, building one, writing a value
+ * into it, and wiring an event.
+ *
+ * **The rule for anybody adding to this file is therefore short.** A line that decides what a reader
+ * is told does not belong here. If it cannot be written without asking one of those two modules for
+ * the answer, the answer is missing from them.
+ *
+ * ---------------------------------------------------------------------------
  * `lib.dom` rather than hand-written declarations
  * ---------------------------------------------------------------------------
  *
@@ -29,11 +47,23 @@
  */
 
 import type { AWayToRunIt } from '../registry/address.js'
-import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { ParameterRecord } from '../registry/contract-record.js'
 import type { PlaygroundField } from './playground.js'
-import type { WhereTheCatalogueIs } from './searching.js'
-import { answering } from './searching.js'
+import type { TheCatalogueAsItArrives, WhereTheCatalogueIs } from './searching.js'
+import { answering, arrivingOnce, overHttp } from './searching.js'
+import type { WhatThePanelShows } from './what-a-control-says.js'
+import {
+  THE_COPY_CONTROL_SAYS,
+  THE_PANEL_IS_CLOSED,
+  theAnswerIsStale,
+  theArgumentsIn,
+  theCommandWrittenFor,
+  theCopyLabelFor,
+  theRefusalShownFor,
+  theSpellingShownFor,
+  theWayAlreadyChosen,
+  whatThePanelShows,
+} from './what-a-control-says.js'
 
 /** What the page hands over in `data-playground`, written by `contract-page.ts`. */
 type ThePlayground = {
@@ -41,29 +71,6 @@ type ThePlayground = {
   readonly describes: string | null
   readonly module: string
   readonly fields: readonly PlaygroundField[]
-}
-
-const labelled = (field: ThePlayground['fields'][number], at: number): HTMLElement => {
-  const row = document.createElement('p')
-  const label = document.createElement('label')
-  const input = document.createElement('input')
-
-  input.id = `playground-argument-${at}`
-  input.value = field.opensOn
-  input.setAttribute('spellcheck', 'false')
-  input.setAttribute('autocapitalize', 'off')
-  label.htmlFor = input.id
-  label.textContent = `${field.name}: ${field.type}`
-
-  row.append(label, input)
-  if (field.constructedBy !== null) {
-    const note = document.createElement('span')
-    note.className = 'why'
-    note.textContent = field.constructedBy
-    row.append(note)
-  }
-
-  return row
 }
 
 /**
@@ -81,6 +88,9 @@ const labelled = (field: ThePlayground['fields'][number], at: number): HTMLEleme
 const theCommandIn = (install: Element): Text | null =>
   [...install.childNodes].find((node): node is Text => node.nodeType === 3) ?? null
 
+/** Whatever that text node spells, trimmed, or nothing where the block holds no text at all. */
+const theCommandSpelled = (install: Element): string => theCommandIn(install)?.nodeValue?.trim() ?? ''
+
 /**
  * The copy control beside the install command, built here for the reason the form below is.
  *
@@ -88,10 +98,6 @@ const theCommandIn = (install: Element): Text | null =>
  * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` is the rule that refuses
  * one. Without JavaScript a reader meets the command as text and selects it, which is what they would
  * have done anyway.
- *
- * What it says after copying is a word and not a colour, which is the rule the stylesheet states for
- * this site's accent and which holds here for a second reason: a reader who cannot tell the two
- * colours apart still reads the word.
  */
 const copyControl = (): void => {
   const install = document.querySelector('pre.install')
@@ -101,16 +107,16 @@ const copyControl = (): void => {
 
   button.type = 'button'
   button.className = 'copy'
-  button.textContent = 'copy'
-  button.setAttribute('aria-label', `Copy ${theCommandIn(install)?.nodeValue?.trim() ?? ''} to the clipboard`)
+  button.textContent = THE_COPY_CONTROL_SAYS.atRest
+  button.setAttribute('aria-label', theCopyLabelFor(theCommandSpelled(install)))
 
   button.addEventListener('click', () => {
-    void navigator.clipboard.writeText(theCommandIn(install)?.nodeValue?.trim() ?? '').then(
+    void navigator.clipboard.writeText(theCommandSpelled(install)).then(
       () => {
-        button.textContent = 'copied'
+        button.textContent = THE_COPY_CONTROL_SAYS.afterCopying
       },
       () => {
-        button.textContent = 'press ⌘C'
+        button.textContent = THE_COPY_CONTROL_SAYS.whenTheClipboardRefuses
       },
     )
   })
@@ -130,11 +136,6 @@ const copyControl = (): void => {
  *
  * **The rule holds.** Without JavaScript the page carries one command, it is the one measured to work
  * whether or not anything is installed, and there is no control that does nothing.
- *
- * A refused way is offered struck through and with its reason, never omitted. A manager quietly
- * missing from a list of four reads as an oversight and sends a reader to try it; this catalogue
- * publishes the contracts it turned down with the measurement behind each refusal, and the same
- * treatment applies when the thing refused is its own.
  */
 const managerControl = (): void => {
   const block = document.querySelector('.get')
@@ -148,8 +149,8 @@ const managerControl = (): void => {
   const command = theCommandIn(install)
   if (command === null) return
 
-  /** What follows the invocation on this page, which is the same for every way of running it. */
-  const arguments_ = (command.nodeValue ?? '').trim().split(' ').slice(2).join(' ')
+  const arguments_ = theArgumentsIn(command.nodeValue?.trim() ?? '')
+  if (arguments_ === null) return
 
   const refusal = document.createElement('p')
   refusal.className = 'refusal'
@@ -163,34 +164,26 @@ const managerControl = (): void => {
   const buttons = ways.map((way) => {
     const item = document.createElement('li')
     const button = document.createElement('button')
+    const refused = theRefusalShownFor(way)
 
     button.type = 'button'
     button.textContent = way.manager
-    /**
-     * The one already chosen is the one the page serves, and `THE_INVOCATION` is that by
-     * declaration - so this compares a spelling against a spelling rather than against the whole
-     * command, which is what it did first and which marked nothing at all.
-     */
-    button.setAttribute('aria-pressed', String(way.spelling === THE_INVOCATION))
-    if (way.refusedBecause !== undefined) button.dataset['refused'] = ''
+    button.setAttribute('aria-pressed', String(theWayAlreadyChosen(way)))
+    if (refused !== null) button.dataset['refused'] = ''
 
     button.addEventListener('click', () => {
       for (const other of buttons) other.setAttribute('aria-pressed', String(other === button))
 
-      /**
-       * A refused way shows the spelling that works rather than the one that does not. The reader
-       * said which manager they use; they did not ask to be handed a command that fails.
-       */
-      const shown = way.refusedBecause === undefined ? way.spelling : THE_INVOCATION
-      command.nodeValue = `${shown} ${arguments_}`
+      const written = theCommandWrittenFor(way, arguments_)
+      command.nodeValue = written
 
-      refusal.textContent = way.refusedBecause ?? ''
-      refusal.hidden = way.refusedBecause === undefined
+      refusal.textContent = refused ?? ''
+      refusal.hidden = refused === null
 
       const copy = install.querySelector('.copy')
       if (copy !== null) {
-        copy.textContent = 'copy'
-        copy.setAttribute('aria-label', `Copy ${command.nodeValue.trim()} to the clipboard`)
+        copy.textContent = THE_COPY_CONTROL_SAYS.atRest
+        copy.setAttribute('aria-label', theCopyLabelFor(written))
       }
     })
 
@@ -215,7 +208,7 @@ const managerControl = (): void => {
  * The results are built from the same `Search` value `toopo search` renders on a terminal, so a page
  * and a terminal disagree about presentation and about nothing else.
  */
-const searchControl = (): void => {
+const searchControl = (arriving: TheCatalogueAsItArrives): void => {
   const slot = document.querySelector('.masthead .search')
   const declared = slot instanceof HTMLElement ? slot.dataset['search'] : undefined
   if (!(slot instanceof HTMLElement) || declared === undefined) return
@@ -238,38 +231,6 @@ const searchControl = (): void => {
   answers.setAttribute('role', 'region')
   answers.setAttribute('aria-live', 'polite')
 
-  /**
-   * What the reader is shown while they are searching, and it is never nothing.
-   *
-   * An empty query offers the examples, a query the catalogue cannot answer says which words no
-   * contract carries, and a query that reaches nobody at all says so - the three shapes
-   * `packages/cli/report.ts` prints on a terminal, rendered for a page. **A box that goes blank when
-   * a search fails is the failure the whole matching rule is built to avoid**, arriving in the
-   * surface instead of in the rule.
-   *
-   * **A reader who is not searching is a different case, and it is `close` below.** This rule is
-   * about a search that answered badly; it was read as being about the panel, and the panel was
-   * therefore never allowed to be empty at all.
-   */
-  const show = (nodes: readonly Node[]): void => {
-    answers.replaceChildren(...nodes)
-  }
-
-  /**
-   * What closes the panel, and it is the state the stylesheet has described since the first day.
-   *
-   * `.answers:empty { display: none }` was written for a panel that fills when somebody asks and
-   * empties when they stop, and **nothing ever emptied it**: the control offered the examples as it
-   * was built, so that rule could not apply on any page of this site. Measured at `fccfcc1`, on the
-   * origin and on a local build: a panel of 268 x 157 stood open at rest over the first block of
-   * **ten of the thirteen addresses served** - the title of the front page, of every domain page and
-   * of every contract page, plus the contract's own address - at 390, 768, 1440 and 1920 alike.
-   *
-   * So the repair is the script agreeing with the stylesheet, rather than a second way to hide a box
-   * written beside a first way that was already correct.
-   */
-  const close = (): void => show([])
-
   const line = (tag: string, className: string, words: string): HTMLElement => {
     const node = document.createElement(tag)
     node.className = className
@@ -278,72 +239,81 @@ const searchControl = (): void => {
     return node
   }
 
-  const offerTheExamples = (): void => {
-    const list = document.createElement('ul')
-    list.className = 'examples'
+  const anExample = (example: string): HTMLElement => {
+    const item = document.createElement('li')
+    const tryIt = document.createElement('button')
 
-    for (const example of where.examples) {
-      const item = document.createElement('li')
-      const tryIt = document.createElement('button')
+    tryIt.type = 'button'
+    tryIt.textContent = example
+    tryIt.addEventListener('click', () => {
+      field.value = example
+      void run()
+    })
+    item.append(tryIt)
 
-      tryIt.type = 'button'
-      tryIt.textContent = example
-      tryIt.addEventListener('click', () => {
-        field.value = example
-        void run()
-      })
-      item.append(tryIt)
-      list.append(item)
+    return item
+  }
+
+  const anAnswer = (answer: {
+    readonly href: string
+    readonly name: string
+    readonly summary: string
+    readonly mark: string | null
+  }): HTMLElement => {
+    const item = document.createElement('a')
+
+    item.className = 'answer'
+    item.href = answer.href
+    item.append(
+      line('span', 'name', answer.name),
+      line('span', 'summary', answer.summary),
+      ...(answer.mark === null ? [] : [line('span', 'mark', answer.mark)]),
+    )
+
+    return item
+  }
+
+  /**
+   * The panel, from what it was decided to show. Total over the union, so a shape added there arrives
+   * here as a type error rather than as a branch nobody wrote.
+   *
+   * `.answers:empty { display: none }` is what closes it, which is the state the stylesheet has
+   * described since the first day and which nothing ever entered until `nothing` became something the
+   * decision could name.
+   */
+  const paint = (shows: WhatThePanelShows): void => {
+    if (shows.kind === 'nothing') return answers.replaceChildren()
+
+    if (shows.kind === 'an-invitation') {
+      const list = document.createElement('ul')
+      list.className = 'examples'
+      list.append(...shows.examples.map(anExample))
+
+      return answers.replaceChildren(line('p', 'why', shows.said), list)
     }
 
-    show([line('p', 'why', 'Describe what you need, in your own words.'), list])
+    if (shows.kind === 'no-answer') {
+      return answers.replaceChildren(...shows.said.map((said) => line('p', 'why', said)))
+    }
+
+    if (shows.kind === 'a-failure') {
+      return answers.replaceChildren(line('p', 'why', shows.said))
+    }
+
+    return answers.replaceChildren(...shows.answers.map(anAnswer))
   }
 
   const run = async (): Promise<void> => {
     const query = field.value.trim()
-    if (query === '') return offerTheExamples()
+    if (query === '') return paint(whatThePanelShows(where, { kind: 'was-not-asked' }))
 
     try {
-      const found = await answering(where, query)
-      if (field.value.trim() !== query) return
+      const found = await answering(arriving, where, query)
+      if (theAnswerIsStale(field.value, query)) return
 
-      if (found.results.length === 0) {
-        return show([
-          line('p', 'why', `Nothing in the catalogue answers "${found.query}".`),
-          line(
-            'p',
-            'why',
-            found.unknownWords.length === 0
-              ? 'Every word is known, and no one contract carries them all.'
-              : `No contract mentions: ${found.unknownWords.join(', ')}`,
-          ),
-        ])
-      }
-
-      show(
-        found.results.map((result) => {
-          const item = document.createElement('a')
-          const rendered = renderContract(result.address)
-
-          item.className = 'answer'
-          item.href = `${where.root}${rendered}/`
-          item.append(
-            line('span', 'name', rendered),
-            line('span', 'summary', result.summary),
-            ...(result.installable ? [] : [line('span', 'mark', 'not installable')]),
-          )
-
-          return item
-        }),
-      )
+      paint(whatThePanelShows(where, { kind: 'answered', found }))
     } catch (thrown) {
-      show([
-        line(
-          'p',
-          'why',
-          thrown instanceof Error ? thrown.message : 'the catalogue could not be read',
-        ),
-      ])
+      paint(whatThePanelShows(where, { kind: 'could-not-be-read', thrown }))
     }
   }
 
@@ -356,14 +326,14 @@ const searchControl = (): void => {
    * is that reaching the field is something the reader does. **A panel answering a question nobody
    * asked, drawn over the name of the page they have just landed on, is not an answer.**
    *
-   * `run` and not `offerTheExamples`, so that a reader who leaves the field and comes back to a query
-   * they had typed finds its results rather than the examples.
+   * `run` and not the invitation directly, so that a reader who leaves the field and comes back to a
+   * query they had typed finds its results rather than the examples.
    */
   field.addEventListener('focus', () => void run())
   slot.addEventListener('focusout', (event) => {
     const moved = event.relatedTarget
 
-    if (!(moved instanceof Node) || !slot.contains(moved)) close()
+    if (!(moved instanceof Node) || !slot.contains(moved)) paint(THE_PANEL_IS_CLOSED)
   })
   /**
    * Escape closes without leaving the field, which is the only dismissal a keyboard has.
@@ -375,7 +345,7 @@ const searchControl = (): void => {
   slot.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return
 
-    close()
+    paint(THE_PANEL_IS_CLOSED)
     field.focus()
   })
 
@@ -385,7 +355,7 @@ const searchControl = (): void => {
 const start = async (): Promise<void> => {
   copyControl()
   managerControl()
-  searchControl()
+  searchControl(arrivingOnce(overHttp))
 
   const container = document.getElementById('playground')
   const declared = container?.dataset['playground']
@@ -399,7 +369,8 @@ const start = async (): Promise<void> => {
    * every one of them, for a section that is not there - the larger half of the graph, fetched by the
    * pages that cannot use it. `browser.ts` declares which half loads before a reader acts.
    */
-  const { answerWritten, argumentsOf, callWritten, declaredBy } = await import('./playground.js')
+  const { theAnswerShown, theFieldLabelFor, theWhatWentWrong, argumentsOf, declaredBy } =
+    await import('./playground.js')
 
   const playground = JSON.parse(declared) as ThePlayground
   const parameters: readonly ParameterRecord[] = playground.fields
@@ -411,17 +382,31 @@ const start = async (): Promise<void> => {
   if (call === undefined || describe === undefined) return
 
   const form = document.createElement('div')
-  const rows = playground.fields.map(labelled)
   const answer = document.createElement('pre')
 
-  /**
-   * Both halves of the surface, and the second only when there is one to show.
-   *
-   * A contract answers `T | null` and publishes its reason beside it, so on a refused input `call`
-   * alone prints `null` and everything that tells one refusal from another is in the other export.
-   * The coupling property is that a call fails exactly when it has a description, which is why the
-   * second line appears exactly when the first is `null` rather than always.
-   */
+  const labelled = (field: PlaygroundField, at: number): HTMLElement => {
+    const row = document.createElement('p')
+    const label = document.createElement('label')
+    const input = document.createElement('input')
+
+    input.id = `playground-argument-${at}`
+    input.value = field.opensOn
+    input.setAttribute('spellcheck', 'false')
+    input.setAttribute('autocapitalize', 'off')
+    label.htmlFor = input.id
+    label.textContent = theFieldLabelFor(field)
+
+    row.append(label, input)
+    if (field.constructedBy !== null) {
+      const note = document.createElement('span')
+      note.className = 'why'
+      note.textContent = field.constructedBy
+      row.append(note)
+    }
+
+    return row
+  }
+
   const run = (): void => {
     try {
       const typed = [...form.querySelectorAll('input')].map((one) => one.value)
@@ -433,22 +418,20 @@ const start = async (): Promise<void> => {
        */
       const spelled = declaredBy(parameters, typed)
       const given = argumentsOf(parameters, typed)
-      const answered = call(...given)
-      const lines = [`${callWritten(playground.calls, spelled)} → ${answerWritten(answered)}`]
 
-      if (answered === null && describe !== null && playground.describes !== null) {
-        lines.push(
-          `${callWritten(playground.describes, spelled)} → ${answerWritten(describe(...given))}`,
-        )
-      }
-
-      answer.textContent = lines.join('\n')
+      answer.textContent = theAnswerShown(
+        spelled,
+        { name: playground.calls, answered: call(...given) },
+        playground.describes === null || describe === null
+          ? null
+          : { name: playground.describes, describes: () => describe(...given) },
+      ).join('\n')
     } catch (thrown) {
-      answer.textContent = thrown instanceof Error ? thrown.message : String(thrown)
+      answer.textContent = theWhatWentWrong(thrown)
     }
   }
 
-  form.append(...rows)
+  form.append(...playground.fields.map(labelled))
   form.addEventListener('input', run)
   container.append(form, answer)
   run()

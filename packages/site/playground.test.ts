@@ -11,7 +11,12 @@ import type {
   WrittenAsACall,
 } from '../registry/contract-record.js'
 import type { FrozenContract } from '../registry/snapshot.js'
-import { THE_BROWSER_GRAPH, asABrowserModule, theReferenceModules } from './browser.js'
+import {
+  LOADED_BEFORE_A_READER_ACTS,
+  THE_BROWSER_GRAPH,
+  asABrowserModule,
+  theReferenceModules,
+} from './browser.js'
 import type { Held } from './catalogue.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { literal } from './literal.js'
@@ -25,8 +30,11 @@ import {
   callWritten,
   declaredBy,
   playgroundOf,
+  theAnswerShown,
   theCallOf,
+  theFieldLabelFor,
   theFieldsFor,
+  theWhatWentWrong,
   whatATextFieldCannotCarry,
 } from './playground.js'
 
@@ -379,6 +387,55 @@ describe('the playground, against the catalogue it opens on', () => {
   })
 
   /**
+   * A module loaded before a reader acts is one the entry point imports outright.
+   *
+   * **The neighbour above is about *what* a browser loads and this one is about *when*.** Every page
+   * runs `start.ts` since the masthead gained a field, and four of the thirteen carry a playground -
+   * so the playground is reached through `await import` and the nine pages with no form fetch none of
+   * it. A static import would put the larger half of the graph on every page, and no page would look
+   * any different.
+   *
+   * The split is read off the specifiers rather than declared twice: what survives stripping written
+   * `from` is a module fetched before anything happens, and what survives written `import(` is one
+   * waited for. `LOADED_BEFORE_A_READER_ACTS` is the claim, and this closes over it from the entry
+   * point outwards.
+   *
+   * **It replaces a name nothing collected.** `browser.ts` cited
+   * `every-page-loads-the-search-and-only-a-contract-page-loads-the-playground` for the whole of that
+   * constant's life; measured at `17cc9bf`, no suite in this repository collected that identifier and
+   * no record cited it, so it was outside `confirmationFaults` and `citationFaults` alike - the class
+   * ADR-0126 opened an entry for, met by adding a row to the list and asking what would check it.
+   */
+  it('a-module-loaded-before-a-reader-acts-is-one-the-entry-point-imports-outright', () => {
+    const ENTRY_POINT = 'packages/site/start.ts'
+
+    const reachedFrom = (relative: string, spelling: RegExp): readonly string[] => {
+      const js = asABrowserModule(readFileSync(join(ROOT, relative), 'utf8'))
+
+      return [...js.matchAll(spelling)].map((found) =>
+        posix.join(posix.dirname(relative.replaceAll('\\', '/')), found[1] as string),
+      )
+    }
+
+    /** Everything the entry point pulls in outright, and everything those pull in outright. */
+    const outright = new Set<string>([ENTRY_POINT])
+    for (const relative of outright) {
+      for (const reached of reachedFrom(relative, /from\s+'([^']+)'/g)) {
+        outright.add(reached.replace(/\.js$/, '.ts'))
+      }
+    }
+
+    const waitedFor = reachedFrom(ENTRY_POINT, /\bimport\(\s*'([^']+)'\s*\)/g).map((reached) =>
+      reached.replace(/\.js$/, '.ts'),
+    )
+
+    expect(waitedFor.length).toBeGreaterThan(0)
+    expect([...outright].sort()).toEqual([...LOADED_BEFORE_A_READER_ACTS].sort())
+    expect(waitedFor.every((module) => !outright.has(module))).toBe(true)
+    expect(THE_BROWSER_GRAPH.filter((module) => !outright.has(module)).length).toBeGreaterThan(0)
+  })
+
+  /**
    * `-0` is why the answer is written through `literal(encode(…))` rather than through `String`.
    * `number/parse@1` settles a case on it, and `String(-0)` is `0`.
    */
@@ -387,6 +444,82 @@ describe('the playground, against the catalogue it opens on', () => {
     expect(answerWritten(null)).toBe('null')
     expect(answerWritten(new Date('2024-02-29T00:00:00.000Z'))).toBe("'2024-02-29T00:00:00.000Z'")
     expect(answerWritten(`1${String.fromCharCode(0x00a0)}000`)).toBe("'1\\u00A0000'")
+  })
+
+  /**
+   * A field is named by what the parameter is called and by what it takes.
+   *
+   * The type is half the label and it is the half a reader needs before typing: the form takes text,
+   * and a box labelled only `input` says nothing about whether `42` means the number or the two
+   * characters. `read-literal.ts` exists because that distinction is the whole point of the field.
+   */
+  it('a-field-is-named-by-what-it-is-called-and-what-it-takes', () => {
+    for (const one of theHeld()) {
+      const playground = playgroundOf(one.contract, renderContract(one.contract.address))
+
+      expect(playground.fields.length).toBeGreaterThan(0)
+      for (const field of playground.fields) {
+        const label = theFieldLabelFor(field)
+
+        expect(label).toContain(field.name)
+        expect(label).toContain(field.type)
+        expect(label.indexOf(field.name)).toBeLessThan(label.lastIndexOf(field.type))
+      }
+    }
+  })
+
+  /**
+   * The diagnostic is called where the answer is `null`, and is not called anywhere else.
+   *
+   * **Both halves, and the second is the one no reading of the output could establish.** A caller
+   * evaluating the diagnostic eagerly prints exactly the same two lines a caller evaluating it lazily
+   * prints - it simply also runs a contract's diagnostic on every keystroke of every successful call,
+   * which the reader never sees. Handed something to call rather than something already called, *not
+   * calling it* becomes an observable, and this is what observes it.
+   */
+  it('a-diagnostic-is-called-where-the-answer-is-null-and-nowhere-else', () => {
+    let called = 0
+    const describes = (): unknown => {
+      called += 1
+
+      return 'why it refused'
+    }
+
+    const answered = theAnswerShown(['x'], { name: 'slugify', answered: 'x' }, { name: 'describeSlugifyFailure', describes })
+
+    expect(answered).toHaveLength(1)
+    expect(called).toBe(0)
+
+    const refused = theAnswerShown(['x'], { name: 'slugify', answered: null }, { name: 'describeSlugifyFailure', describes })
+
+    expect(refused).toHaveLength(2)
+    expect(called).toBe(1)
+    expect(refused[0]).toContain('slugify(')
+    expect(refused[1]).toContain('describeSlugifyFailure(')
+
+    const alone = theAnswerShown(['x'], { name: 'slugify', answered: null }, null)
+
+    expect(alone).toHaveLength(1)
+    expect(called).toBe(1)
+  })
+
+  /**
+   * What the form prints when a call threw is what the call threw, in its own words.
+   *
+   * A playground exists to show what a contract does with what somebody typed, so substituting our
+   * wording for what it threw is the one thing here that would make it lie. It is a different rule
+   * from the search's, one door along, which answers a sentence of ours because a catalogue that
+   * cannot be fetched is a failure of ours.
+   */
+  it('what-the-form-prints-when-a-call-throws-is-what-the-call-threw', () => {
+    expect(theWhatWentWrong(new Error('input.trim is not a function'))).toBe(
+      'input.trim is not a function',
+    )
+    expect(theWhatWentWrong(new UnusableArgument('the first argument', 'string', 'a number', 'it in quotes'))).toContain(
+      'the first argument',
+    )
+    expect(theWhatWentWrong('a string nobody wrapped')).toBe('a string nobody wrapped')
+    expect(theWhatWentWrong(undefined)).toBe('undefined')
   })
 
   /**

@@ -2,6 +2,9 @@
  * What a playground is made of: the call a reader edits, and the two translations around it.
  * ADR-0028 is what a playground demonstrates and what it refuses to show.
  * ADR-0096 is which of the two readings each field gets, and why the answer names its own call.
+ * ADR-0157 is why the form's own decisions are here rather than in `start.ts` or beside the other
+ * controls: nine of the thirteen pages never fetch this module, and a decision about a form belongs
+ * with the form rather than in what every page loads.
  *
  *
  * ---------------------------------------------------------------------------
@@ -544,6 +547,49 @@ export const answerWritten = (answer: unknown): string => asALiteral(answer, 'th
  */
 export const callWritten = (name: string, given: readonly unknown[]): string =>
   `${name}(${given.map((argument, at) => asALiteral(argument, `argument ${at + 1}`)).join(', ')})`
+
+/** How a field is named above the box it is typed into: what the parameter is called, and its type. */
+export const theFieldLabelFor = (field: PlaygroundField): string => `${field.name}: ${field.type}`
+
+/**
+ * Both halves of the surface, and the second only when there is one to show.
+ *
+ * A contract answers `T | null` and publishes its reason beside it, so on a refused input the call
+ * alone prints `null` and everything that tells one refusal from another is in the other export. The
+ * coupling property is that a call fails exactly when it has a description, which is why the second
+ * line appears exactly when the first is `null` rather than always.
+ *
+ * **The diagnostic arrives as something to call rather than as something already called**, and that
+ * is what makes the sentence above checkable rather than asserted. A caller evaluating it eagerly
+ * would run a contract's diagnostic on every keystroke of every successful call - the reader would
+ * never know, both lines would read correctly, and no comparison of the two strings could say so.
+ * Handed a thunk, *not calling it* is an observable.
+ */
+export const theAnswerShown = (
+  spelled: readonly unknown[],
+  call: { readonly name: string; readonly answered: unknown },
+  diagnostic: { readonly name: string; readonly describes: () => unknown } | null,
+): readonly string[] => {
+  const lines = [`${callWritten(call.name, spelled)} → ${answerWritten(call.answered)}`]
+
+  if (call.answered === null && diagnostic !== null) {
+    lines.push(`${callWritten(diagnostic.name, spelled)} → ${answerWritten(diagnostic.describes())}`)
+  }
+
+  return lines
+}
+
+/**
+ * What the form prints when the call threw, which is the thrown value's own words.
+ *
+ * `String(thrown)` for anything that is not an `Error`, rather than a sentence of this site's: a
+ * playground exists to show what a contract does with what somebody typed, and substituting our
+ * wording for what it threw is the one thing that would make it lie. `what-a-control-says.ts` answers
+ * a fixed sentence to the same shape one door along, and the two are not one rule written twice - a
+ * catalogue that cannot be fetched is a failure of ours, and this is the contract speaking.
+ */
+export const theWhatWentWrong = (thrown: unknown): string =>
+  thrown instanceof Error ? thrown.message : String(thrown)
 
 /**
  * What an `<input>` drops, measured rather than read off the specification.

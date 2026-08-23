@@ -57,6 +57,10 @@
  *
  * ADR-0156 is the proof that the first of those two is safe, and why it is a guard here where the same
  * question about the stylesheet could only ever be a reading somebody took once.
+ *
+ * ADR-0157 is why the graph gained a tenth module and what it costs a reader - 1 072 B in brotli on
+ * every page - and it is where the guard under `LOADED_BEFORE_A_READER_ACTS` came from, that constant
+ * having cited one nothing collected for the whole of its life.
  */
 
 import { stripTypeScriptTypes } from 'node:module'
@@ -104,6 +108,7 @@ export const asAContractsReference = (typescript: string): string =>
  */
 export const THE_BROWSER_GRAPH: readonly string[] = [
   'packages/site/start.ts',
+  'packages/site/what-a-control-says.ts',
   'packages/site/searching.ts',
   'packages/registry/search.ts',
   'packages/registry/address.ts',
@@ -123,11 +128,19 @@ export const THE_BROWSER_GRAPH: readonly string[] = [
  * and the playground is the larger half - `build.ts` prints what each module weighs.
  *
  * It is declared rather than derived because it is a claim about *when*, and nothing in a module
- * graph carries that: `every-page-loads-the-search-and-only-a-contract-page-loads-the-playground` is
- * what holds the two together, by reading which specifiers survive stripping in which file.
+ * graph carries that. `a-module-loaded-before-a-reader-acts-is-one-the-entry-point-imports-outright`
+ * is what holds the two together, by separating the specifiers that survive stripping into the ones
+ * written `from` and the ones written `import(`.
+ *
+ * **That sentence named a guard nothing collected for the whole of this constant's life.** It cited
+ * `every-page-loads-the-search-and-only-a-contract-page-loads-the-playground`, measured at `17cc9bf`:
+ * no suite anywhere in this repository collects that identifier, and no record cites it, so it was
+ * outside the reach of `confirmationFaults` and `citationFaults` alike - which is the class ADR-0126
+ * opened an entry for, found here by adding a row to the list and asking what would check it.
  */
 export const LOADED_BEFORE_A_READER_ACTS: readonly string[] = [
   'packages/site/start.ts',
+  'packages/site/what-a-control-says.ts',
   'packages/site/searching.ts',
   'packages/registry/search.ts',
   'packages/registry/address.ts',

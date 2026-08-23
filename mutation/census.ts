@@ -249,6 +249,19 @@
  * already makes**, and that is a thing this file can be asked for cheaply - one number, three
  * measurements. ADR-0141.
  *
+ * A twenty-fifth on what a control says: **two new files under the site's, carrying twenty between
+ * them, and one count moved** - the largest single arrival this table has taken since the fifth. It is
+ * worth a line for what the number *is* rather than for its size. Every one of those twenty is a claim
+ * that had no guard of any kind: they came out of `packages/site/start.ts`, which exports nothing, and
+ * out of `searching.ts`, which exported four names no test imported. So the twenty are not new
+ * coverage of an old subject - they are the first coverage of the only part of this product a visitor
+ * touches with a mouse.
+ *
+ * **The count that did not move is the interesting one.** Nothing in `mutation/site.battery.ts`
+ * injected into either file, and nothing anywhere recorded that as a decision - it was an absence and
+ * never a refusal. A cell there would have been a guaranteed survivor, which is what an empty column
+ * in this table looks like from the inside. ADR-0157.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -382,13 +395,15 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/indexing.test.ts': 11,
     'packages/site/literal.test.ts': 11,
     'packages/site/pages.test.ts': 43,
-    'packages/site/playground.test.ts': 15,
+    'packages/site/playground.test.ts': 19,
     'packages/site/published-tree.test.ts': 9,
     'packages/site/read-literal.test.ts': 10,
+    'packages/site/searching.test.ts': 4,
     'packages/site/served-headers.test.ts': 8,
     'packages/site/served-modules.test.ts': 4,
     'packages/site/served-stylesheet.test.ts': 3,
     'packages/site/source.test.ts': 8,
+    'packages/site/what-a-control-says.test.ts': 16,
   },
 
   'packaging/vitest.config.ts': {
