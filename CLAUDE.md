@@ -208,6 +208,50 @@ which matched `from '...'` and cannot see an `import()`: **an edit that changes 
 expressed can leave a guard's population without touching the guard**, and nothing reports a population
 that has quietly shrunk.
 
+**The only part of this product a visitor touches with a mouse stopped being the only part nothing
+verified.** `start.ts` builds the copy control, the choice of package manager, the search field and the
+playground's form; it exports no name, so nothing could import it and no mutant in it could be killed,
+and `site.battery.ts` had declared `contractPath: 'packages/site'` since it was written without anybody
+ever putting a cell there — an absence and never a refusal. **What was in the way was not the
+document.** Measured at `17cc9bf` over its executable text, by the rule that a line is delivery as soon
+as it names the document, the navigator or something that came from one: **50.8 % delivery, 40.2 %
+decision, 9.0 % brackets** — where the decision half counts the eighteen lines written straight into an
+element, a spelling at a time, as well as those standing free. Two fifths of that file was a claim about
+what a visitor reads, expressed as an argument to `setAttribute`. It is `what-a-control-says.ts` now,
+and the playground's own four claims went to `playground.ts` because nine of thirteen pages never fetch
+that module. **`searching.ts` came with it and was in a worse state in one direction** — four exports,
+no test importing it, reachable the whole time and simply not reached, with *a rejected promise is not
+kept* declared in its own comment and nothing behind it. Twenty-four guards, the site suite 139 → 163,
+the battery 746 → 765. **What a reader pays is stated rather than smoothed**: every page is **1 072 B
+heavier in brotli**, 5.5 % given back of what ADR-0156 removed one unit before, and `start.ts` itself
+*grew* by 286 served bytes. ADR-0157.
+
+**The instrument refused a run in which every declared cell had done what it declared, which is the
+finding of this unit.** Fourteen cells were written for twenty-four new guards on a judgement about
+which defects were plausible; all fourteen killed exactly what they named, and the battery exited 1
+anyway, because **five guards had nothing reddening them at all** and it named them one by one rather
+than printing a total that looked healthy. Nothing beside it could have said so - the guards were
+green, the cells were green, the suite was green, and the count was the count, which is what a guard
+that cannot fail looks like to whoever reads it. One is instructive on its own:
+`what-follows-the-invocation-is-what-the-page-already-asked-for` was believed covered by W-104, and is
+not, because a typed word count and a derived one **agree on every input the function accepts** - so
+that cell reddens the refusal and leaves the ordinary answer untouched. W-116 to W-120 are the five,
+and a judgement about which defects are plausible is a judgement the accounting is what makes
+answerable.
+
+**The cell worth more than the nineteen is the one no reading of the output could have caught.** W-115
+calls a contract's diagnostic before deciding whether to show it: **both printed lines are byte for byte
+what the correct version prints**, and the only difference is that a diagnostic now runs on every
+keystroke of every *successful* call, on somebody else's machine, invisibly. It dies because
+`theAnswerShown` is handed something to call rather than something already called — **not calling it is
+an observable, and calling it early is not**. Three smaller findings are in the record: a typed word
+count that answers `toopo add x` for `yarn dlx toopo add x` and is derived now, with the derivation
+itself published as unobservable; `LOADED_BEFORE_A_READER_ACTS` citing a guard **no suite collected for
+the whole of its life**, which is ADR-0126's class found by adding a row and asking what would check it;
+and ADR-0156's `7 532` and `42 530` reproducing under **none of four readings** of *executable text*
+over files that did not move — both stamped, both left, and what replaces them carries its rule as well
+as its commit. ADR-0157.
+
 **And that freeze now covers what a contract's guards call, which until this unit it did not.** A
 fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard
 left all eight ledger digests identical to the byte while a contract the guard exists to refuse went
@@ -1654,25 +1698,35 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   writing a guard whose event is cheap. What would close it is reading the structure of the expression,
   and that means this file's YAML sweep learning what an operator is, on a repository that has no YAML
   parser and will not gain a dependency to hold one guard. ADR-0111.
-- **That the one module of this repository which runs in a browser does what it says.**
-  `packages/site/start.ts` builds the playground form and, since ADR-0116, the copy control beside the
-  install command. **Nothing executes it.** `playground.test.ts` imports the functions it calls and
-  runs the stripped reference through a `data:` URL, which is the hard half and is measured; what is
-  not is the file that touches a document. `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing`
-  asserts the *absence* of a served control and says nothing about the built one.
+- **That a control a visitor touches is one that was wired to what decides for it.** `start.ts` still
+  exports no name, so nothing can import it and no mutant in it can be killed. What changed is what
+  that costs: every decision the controls make is now in `what-a-control-says.ts` and in
+  `playground.ts`, both reachable, both guarded, both carrying cells. **What is left unkept is the
+  wiring** — appending, event handling, focus, `navigator.clipboard`, reading `dataset` — five
+  behaviours rather than a file.
 
-  **The population is `packages/site/start.ts`, and it is measured now rather than described.** It
-  **exports zero names**, so nothing can import it and nothing can call into it; of the 72 names the
-  nine browser modules export, **51 appear in some test file and its own are none of them**, because it
-  has none. Its **7 532 bytes of executable text are 17.7 %** of the 42 530 the nine modules carry.
-  ADR-0156 measured it while answering a different question and deliberately did not repair it.
+  **The half that is open is the half a split cannot buy, and it is stated rather than covered.** A
+  guard over `theSpellingShownFor` is green on the day `managerControl` stops asking for it. A guard
+  reading `start.ts`'s text for the names it calls was considered and refused: it would prove that an
+  identifier appears in a file, not that a value reaches an element, and a weak guard standing where a
+  real one is missing reads as coverage.
 
-  The event is worth stating because it is not the obvious one: `copyControl` runs first in `start`, so an edit that throws there takes the playground
-  with it — and the section does not look broken, because the prose that stands in for a missing form
-  is exactly what a reader sees when the form was never built. What would close it is a document in
-  the site suite, which means a DOM environment, which means a sixth dev dependency for one file of
-  fifty lines. Priced and not spent; the entry exists so that the next unit adding to that file knows
-  it is writing into the one place here nothing measures.
+  **This entry was false on four counts and none of them made it look old, which is rule 3 of this
+  section arriving on the list itself.** It said `start.ts` *builds the playground form and, since
+  ADR-0116, the copy control* — it builds four things, ADR-0137 and ADR-0138 having added the search
+  field and the choice of package manager without coming back here. It called it *one file of fifty
+  lines*; it was 457, of which 229 executable. It gave the population as `packages/site/start.ts`; it
+  was two files, `searching.ts` being reachable the whole time and reached by nobody. And it concluded
+  that what would close it is *a document in the site suite* — measured at `17cc9bf`, **40.2 % of its
+  executable text was a decision about what a visitor reads, needing no document at all**, and the
+  entry's own subject was the reason. Every clause was written from an assumption about what the file
+  held rather than from a reading of it, and every one was wrong on the day it was published.
+
+  **What would close what remains is a tool that executes a module against a document**, and that is
+  a different tool from the one three entries of this list already price and refuse: those wanted a
+  page laid out and so wanted a rendering engine. It is the owner's decision and not a unit's means,
+  and it is deliberately left open rather than taken inside a unit that would have used it.
+  ADR-0157.
 - **That every surface renders the invocation rather than the bare command name.** This one was met by
   a visitor rather than found by a sweep: the README and the four contract pages published
   `toopo add string/slugify`, which answers `command not found` for anybody who has installed nothing —
