@@ -831,6 +831,21 @@ axioms of a metric — and its table is a third the size of the first's as a res
 first with no oracle of any kind: measured over fifty-seven samples, the four most used slug libraries
 agree on seven, so nothing about its answers is true and every one of them has to be argued for.
 
+**The seventh is decided and not written, and the search that decided it is a record rather than a
+conversation.** It is `object/deep-equal`, and what carried it is that the ecosystem's disagreement is
+a wrong answer rather than a taste: `Object.keys` of a `Set` is `[]`, so an implementation walking own
+properties sees two empty objects, and `fast-deep-equal@3.1.3` and `dequal/lite` both answer `true`
+for `new Set([1])` against `new Set([2])` — while the entry point you are told to use for collections
+answers `false` for a `Set` of objects against its own `structuredClone`. **Ten refused candidates are
+written down with the measurement that refused each**, because the research that chose the sixth cost
+a session and survives nowhere: `string/truncate` is refused not for its four definitions of length —
+a question `string/levenshtein@1` had already settled — but because with code points chosen the whole
+function is `Array.from(text).slice(0, limit).join('')`, one expression over two built-ins.
+**Two things bind the writing unit**: the cycle-detecting walk is written first and is a stopping
+condition, so if it cannot hold `Map`, `Set`, typed arrays, `Error` and `ArrayBuffer` under this
+repository's bars the decision is wrong and the unit says so; and `reference.ts` waits, because the
+licence banner freezes with the contract and the owner is deciding whether it stays. ADR-0158.
+
 **Project name: Toopo.** CLI command `toopo`, lockfile `toopo.lock`.
 
 **What decides the next unit** is the list of what is still open, below, with what each entry costs.
@@ -1767,7 +1782,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **This entry read *present and non-empty* until ADR-0143 went and read the code**, which is rule 3
   of this section on the entry's own text: `declarationFaults` tests `governs` for emptiness and
   `confirmedBy` only for absence, ADR-0001 discusses an empty one as a legitimate state rather than
-  forbidding it, and nineteen records carry `confirmed-by: []`. Nothing about the sentence looked
+  forbidding it, and records carry `confirmed-by: []` legitimately. **The rank that stood here is
+  gone rather than restated**: `nineteen` reproduces under no rule, and ADR-0158 read 21, 22 and 23
+  depending on whether the literal is counted as a declaration in the front matter, as text anywhere
+  in a record, or by occurrence — the loose readings counting ADR-0001, which discusses the empty
+  form because it is the record that defines it. A number that moves whenever a record is added is
+  one this sentence never needed, which is ADR-0018's first rule. Nothing about the sentence looked
   old; it was wrong on the day it was written, in the file whose subject is declarations that hold. `guardsCollectedIn` reads a guard's *written* title, so an `it.each` over the
   catalogue is collected as `…-%s`; `guardAddressFaults` requires a frozen identifier and `%s` is not
   one. **So a decision whose subject is per-contract has no citable guard at all**, and nothing says
