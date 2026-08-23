@@ -243,7 +243,7 @@ is about *what* a browser loads and one about *when*.
 ### Twenty-four guards, and the population asserted before each sweep
 
 The site suite goes from 139 guards over 11 files to **163 over 13**. The battery goes from 746 cells to
-**760**, all fourteen new ones killed.
+**765**, all nineteen new ones killed.
 
 Each sweep asserts that what it sweeps is not empty, because a guard over *every refused way* passes
 comfortably when there are none. One of them met the limit rather than the rule: **no query of this
@@ -251,6 +251,31 @@ catalogue answers with an installable contract and a refused one at once**, meas
 candidates - `array/group-by@1` is the only contract carrying a refusal and nothing reaches it beside
 another. The mixed list is therefore assembled from two real answers rather than met, and no contract is
 invented to make it.
+
+### The battery refused the run and named what no reading of mine had
+
+Fourteen cells were written for the twenty-four guards, on a judgement about which defects were
+plausible. **Every one of the fourteen killed exactly what it declared, and the run still exited 1**:
+five guards had nothing reddening them at all, and the instrument named them one by one rather than
+reporting a total that looked healthy.
+
+    a-module-loaded-before-a-reader-acts-is-one-the-entry-point-imports-outright
+    what-the-form-prints-when-a-call-throws-is-what-the-call-threw
+    what-follows-the-invocation-is-what-the-page-already-asked-for
+    a-reader-who-has-not-typed-meets-the-queries-this-catalogue-answers
+    a-catalogue-that-could-not-be-read-says-so-in-the-failures-own-words
+
+**Nothing beside the battery could have found them.** The guards were green, the cells were green, the
+suite was green, and the count was the count - which is exactly the shape a guard that cannot fail
+presents to anybody reading it. W-116 to W-120 are those five, and one of them is instructive on its
+own: `what-follows-the-invocation-is-what-the-page-already-asked-for` was believed covered by W-104,
+and it is not, because W-104's typed word count and the derived one **agree on every input the function
+accepts** - so the cell reddens the refusal and leaves the ordinary answer untouched. W-118 is the
+other half of the same function.
+
+This is the discipline working on its own author inside one unit, and it is worth more than the
+fourteen: a judgement about which defects are plausible is a judgement, and the accounting is what
+makes it answerable.
 
 ### The cell this section exists for
 

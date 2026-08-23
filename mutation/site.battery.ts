@@ -99,6 +99,7 @@ const controlFile = (find: string, replace: string) => ({
   replace,
 })
 const searchingFile = (find: string, replace: string) => ({ file: 'searching.ts', find, replace })
+const startFile = (find: string, replace: string) => ({ file: 'start.ts', find, replace })
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -189,6 +190,17 @@ const A_DIAGNOSTIC_IS_CALLED_ONLY_WHERE_THE_ANSWER_IS_NULL = `  const lines = [\
   if (call.answered === null && diagnostic !== null) {
     lines.push(\`\${callWritten(diagnostic.name, spelled)} → \${answerWritten(diagnostic.describes())}\`)
   }`
+
+// The five the battery itself asked for: guards no cell reddened, found by its own accounting.
+
+const THE_PLAYGROUND_IS_NOT_IMPORTED_AT_THE_TOP = `import type { PlaygroundField } from './playground.js'`
+const THE_PLAYGROUND_IS_WAITED_FOR = `  const { theAnswerShown, theFieldLabelFor, theWhatWentWrong, argumentsOf, declaredBy } =
+    await import('./playground.js')`
+const WHAT_THE_FORM_PRINTS_IS_WHAT_THE_CALL_THREW = `export const theWhatWentWrong = (thrown: unknown): string =>
+  thrown instanceof Error ? thrown.message : String(thrown)`
+const A_READER_WHO_HAS_NOT_TYPED_MEETS_THE_EXAMPLES = `    return { kind: 'an-invitation', said: THE_INVITATION, examples: where.examples }`
+const A_FAILURE_SPEAKS_IN_ITS_OWN_WORDS = `      said:
+        did.thrown instanceof Error ? did.thrown.message : THE_CATALOGUE_COULD_NOT_BE_READ,`
 
 const A_STRING_IS_NOT_READ_FOR_COMMENTS = `    if (character === '"' || character === "'") {
       at = pastTheString(css, at)
@@ -2357,6 +2369,119 @@ export const escaped = (character: string): string => {`,
       ),
     ],
     killed(['a-diagnostic-is-called-where-the-answer-is-null-and-nowhere-else']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-116 to W-120 - the five the battery asked for and no reading did
+  // -------------------------------------------------------------------------
+  //
+  // Fourteen cells were written for twenty-four new guards, on a judgement about which defects were
+  // plausible. Every one of the fourteen killed what it declared, and the battery refused the run
+  // anyway: five guards had nothing reddening them at all, and it named them rather than reporting a
+  // total that looked healthy. These are those five. **No reading of the battery beside the suite
+  // would have found them** - the guards were green, the cells were green, and the count was the
+  // count. What said so is that this instrument declines to be silent about a guard it never saw red.
+
+  /**
+   * **The playground on nine pages that cannot use it.** `start.ts` waits for that module so the nine
+   * pages with no form fetch none of it - the larger half of the graph. Reaching for it at the top is
+   * the tidying anybody does, it changes nothing a reader sees, and it puts four modules on every page
+   * of this site.
+   */
+  sameOnEveryLens(
+    'W-116',
+    'imports the playground at the top of the entry point instead of waiting for it, so nine of the ' +
+      'thirteen pages fetch four modules for a section that is not on them - a page that renders ' +
+      'identically, loads identically as far as anybody looks, and costs every reader the larger ' +
+      'half of the module graph',
+    [
+      startFile(
+        THE_PLAYGROUND_IS_NOT_IMPORTED_AT_THE_TOP,
+        `import type { PlaygroundField } from './playground.js'
+import {
+  argumentsOf,
+  declaredBy,
+  theAnswerShown,
+  theFieldLabelFor,
+  theWhatWentWrong,
+} from './playground.js'`,
+      ),
+      startFile(THE_PLAYGROUND_IS_WAITED_FOR, `  void 0`),
+    ],
+    killed(['a-module-loaded-before-a-reader-acts-is-one-the-entry-point-imports-outright']),
+  ),
+
+  /**
+   * **Our wording in place of the contract's.** A playground exists to show what a contract does with
+   * what somebody typed; a sentence of ours where its own words belong is the one edit here that makes
+   * the page lie about its subject, and it reads more politely than the truth.
+   */
+  sameOnEveryLens(
+    'W-117',
+    'answers a sentence of this site where the contract threw one of its own, so a reader who typed ' +
+      'something the implementation refused is told nothing about why - on the one part of a contract ' +
+      'page whose whole purpose is that the contract speaks for itself',
+    [
+      playgroundFile(
+        WHAT_THE_FORM_PRINTS_IS_WHAT_THE_CALL_THREW,
+        `export const theWhatWentWrong = (): string => 'that input could not be used'`,
+      ),
+    ],
+    killed(['what-the-form-prints-when-a-call-throws-is-what-the-call-threw']),
+  ),
+
+  /**
+   * **The whole command where its arguments belong.** W-104 is about the invocation being counted
+   * rather than derived, and it leaves the ordinary case right; this leaves the ordinary case wrong,
+   * and it is the other half of the same function - a reader clicking `bun` is handed
+   * `bunx npx toopo add string/slugify`.
+   */
+  sameOnEveryLens(
+    'W-118',
+    'keeps the invocation in what follows it, so choosing any manager writes the new spelling in ' +
+      'front of the old one - a command with two invocations in it, offered on the page whose ' +
+      'subject is the one form measured to work',
+    [
+      controlFile(
+        WHAT_FOLLOWS_THE_INVOCATION_IS_DERIVED,
+        `  command.startsWith(THE_INVOCATION) ? command.trim() : null`,
+      ),
+    ],
+    killed(['what-follows-the-invocation-is-what-the-page-already-asked-for']),
+  ),
+
+  /**
+   * **An invitation with nothing behind it.** ADR-0137 offers three queries before anybody types, each
+   * measured to answer, because the promise this site makes is that describing a need gets you
+   * somewhere. The sentence without them asks a reader to trust that promise on nothing.
+   */
+  sameOnEveryLens(
+    'W-119',
+    'offers the invitation with no examples under it, so a reader meeting the search for the first ' +
+      'time is told to describe what they need and shown nothing that this works - which is the ' +
+      'defect a visitor met on the install command, arriving on the control built to answer it',
+    [
+      controlFile(
+        A_READER_WHO_HAS_NOT_TYPED_MEETS_THE_EXAMPLES,
+        `    return { kind: 'an-invitation', said: THE_INVITATION, examples: [] }`,
+      ),
+    ],
+    killed(['a-reader-who-has-not-typed-meets-the-queries-this-catalogue-answers']),
+  ),
+
+  /**
+   * **The one thing the page knows, dropped.** `TheCatalogueCouldNotBeReached` carries the address and
+   * the reason - a 503, a body that is not JSON, a request nothing answered - and those are what a
+   * reader or whoever they report it to can act on. Replaced by our own sentence, three different
+   * failures become one and none of them is nameable.
+   */
+  sameOnEveryLens(
+    'W-120',
+    'answers a fixed sentence for every way of failing to read the catalogue, so the address and the ' +
+      'status the refusal carried never reach the page - and a host serving a login screen, a host ' +
+      'answering 503 and a request nothing answered are one message a reader cannot tell apart',
+    [controlFile(A_FAILURE_SPEAKS_IN_ITS_OWN_WORDS, `      said: THE_CATALOGUE_COULD_NOT_BE_READ,`)],
+    killed(['a-catalogue-that-could-not-be-read-says-so-in-the-failures-own-words']),
   ),
 ]
 
