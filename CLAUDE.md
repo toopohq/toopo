@@ -844,7 +844,23 @@ function is `Array.from(text).slice(0, limit).join('')`, one expression over two
 **Two things bind the writing unit**: the cycle-detecting walk is written first and is a stopping
 condition, so if it cannot hold `Map`, `Set`, typed arrays, `Error` and `ArrayBuffer` under this
 repository's bars the decision is wrong and the unit says so; and `reference.ts` waits, because the
-licence banner freezes with the contract and the owner is deciding whether it stays. ADR-0158.
+licence banner freezes with the contract, and the copyright is out of it since ADR-0159. ADR-0158.
+
+**The file that lands in somebody else's project no longer says it belongs to somebody else.** The
+front page promises *the source lands in your repository and it is yours* and the second line of the
+file that lands said `Copyright (c) 2026 <the author>`; MIT-0 required nothing of the reader, but
+nobody reads a licence and everybody reads the first two lines of what they have just pasted. The
+five published contracts keep theirs — their `reference.ts` is frozen by a digest other people's
+lockfiles hold — so **two banner forms are permanent**, and the discriminator is a date, which
+nothing in this repository's data derives. It is therefore a required declaration on
+`ContractSource`, so a seventh contract that does not say which form it carries **does not compile**,
+and the argument for setting aside `licence.ts`'s refusal of a hand-written perimeter is written
+beside that refusal rather than only in the record: a wrong list of *paths* mislicenses a file, and a
+wrong banner form cannot, because both forms are MIT-0 and a byte-for-byte guard already reads them.
+**`array/group-by@1` moves to the new form today**, because the ledger binds it nothing — measured,
+the ledger is byte-identical across the change — which is what gives the second branch an instance
+instead of leaving it a branch nothing reaches. What it does not buy is on the list below: `README.md`
+goes on showing a copyright line, correctly, because it demonstrates a published contract. ADR-0159.
 
 **Project name: Toopo.** CLI command `toopo`, lockfile `toopo.lock`.
 
@@ -1093,6 +1109,27 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   outside the frozen folder. ADR-0150.
 
 **Still open, and what each one now costs.**
+
+- **That the banner a reader is shown is the banner a reader would receive.** ADR-0159 made that
+  derived for `LICENSE`: the example must be of `THE_CURRENT_BANNER`, so the day a form is superseded
+  `the-licence-file-shows-the-banner-a-reader-would-receive` reddens by itself. **The same guard
+  cannot be written for `README.md`**, and the reason is not effort: the page demonstrates an
+  *install*, `the-header-the-readme-shows-is-the-one-the-installer-writes` holds it to the real header
+  of the contract it demonstrates, and the only contract carrying the current form is
+  `array/group-by@1`, which is refused and which nobody can install. A front page demonstrating an
+  uninstallable contract would trade one wrong lesson for a worse one.
+
+  **So the surface a stranger reads first goes on showing a copyright line**, correctly, on a file
+  whose header is frozen — and the lesson it teaches about the file a reader is about to receive is
+  the one this repository has just stopped being true. It is not a drift: `string/slugify@1` really
+  carries that header and always will.
+
+  **The population is every surface that shows an example of an installed file**, which is `LICENSE`
+  and `README.md` today, and one of the two is kept. What would close it is the demonstration moving
+  to a contract published after ADR-0159 — which needs a seventh contract to exist and to be
+  demonstrated, and neither is forced by anything. **Where this looked**: `mutation/readme.test.ts`'s
+  own guard, `THE_SUITES[DEMONSTRATED]`, and the banner declarations of all six catalogue entries.
+  ADR-0159.
 
 - **That a second word of a query is one the contract has any business answering.** The entry this
   replaces was about a word the query *adds* being free, and it is closed: a query that sets a word

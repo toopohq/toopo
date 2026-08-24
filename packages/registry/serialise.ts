@@ -45,6 +45,7 @@ import type {
   UseCaseRecord,
 } from './contract-record.js'
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
+import type { Banner } from './licence.js'
 import type { VerificationStratum } from './field-map.js'
 import type { BatteryRecord, CaseProvenance } from './evidence.js'
 import type { HarnessFile, ImplementationRecord } from './implementation-record.js'
@@ -129,6 +130,15 @@ export type UncarriedExport = {
 export type ContractSource = {
   readonly address: ContractAddress
   readonly lifecycle: Lifecycle
+  /**
+   * Which of the two banner forms this contract's copied file carries. ADR-0159.
+   *
+   * Required rather than optional with a default, and that is the whole mechanism: a seventh contract
+   * that does not declare one does not compile, so the declaration cannot be forgotten the way a list
+   * somebody has to remember to extend can. `licence.ts` carries why a per-contract form is a
+   * declaration and not the perimeter that module refuses.
+   */
+  readonly banner: Banner
   /**
    * How the contract is used, declared here and never in `contract.ts`. ADR-0118.
    *

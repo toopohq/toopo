@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest'
 import { trackedFiles } from '../../mutation/paths.js'
 import { THE_ORIGIN, THE_PACKAGE_NAME, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
-import { THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
+import { THE_CURRENT_BANNER, THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
 import {
   THE_AUTHOR_FIELD,
   THE_MINIMUM_RUNTIME,
@@ -49,7 +49,7 @@ const copiedFiles = (): readonly { readonly path: string; readonly header: strin
   theCatalogue.flatMap((source) =>
     referenceImplementationOf(REPOSITORY_ROOT, source).files.map((file) => ({
       path: `${source.folder}/${file.path}`,
-      header: licenceHeaderOf(source.address),
+      header: licenceHeaderOf(source.address, source.banner),
     })),
   )
 
@@ -222,10 +222,57 @@ describe('what this repository publishes about itself', () => {
     const quoted = [...textOf('LICENSE').matchAll(/^\s+(\/\/ .*)$/gm)].map((match) => match[1])
     const real = theCatalogue.map((source) => ({
       address: renderContract(source.address),
-      lines: licenceHeaderOf(source.address).split('\n').filter(Boolean),
+      lines: licenceHeaderOf(source.address, source.banner).split('\n').filter(Boolean),
     }))
 
     expect(quoted.length).toBeGreaterThan(0)
     expect(real.filter((entry) => entry.lines.every((line) => quoted.includes(line)))).toHaveLength(1)
+  })
+
+  /**
+   * And it is an example of the form a reader will actually receive.
+   *
+   * Two banner forms exist and `LICENSE` can show one, so which one is a decision rather than a
+   * detail: the example is what somebody takes for the rule, and a reader who installs a contract
+   * written this year and finds a copyright line in the example has been taught the wrong rule about
+   * the file in front of them.
+   *
+   * **The rule is derived and not a convention.** The example must be of the current banner, and the
+   * current banner is what a contract not yet published carries - so on the day a form is superseded
+   * this reddens by itself rather than waiting for somebody to remember `LICENSE` exists. It is
+   * satisfiable today only because `array/group-by@1` is bound by nothing and could move; had the
+   * catalogue held six published contracts and no refused one, the example would have had to stay on
+   * the old form and this guard could not have been written. ADR-0159.
+   */
+  it('the-licence-file-shows-the-banner-a-reader-would-receive', () => {
+    const quoted = [...textOf('LICENSE').matchAll(/^\s+(\/\/ .*)$/gm)].map((match) => match[1])
+    const shown = theCatalogue.filter((source) =>
+      licenceHeaderOf(source.address, source.banner)
+        .split('\n')
+        .filter(Boolean)
+        .every((line) => quoted.includes(line)),
+    )
+
+    expect(shown.map((source) => source.banner)).toEqual([THE_CURRENT_BANNER])
+  })
+
+  /**
+   * A contract whose bytes are still free carries the banner this repository writes today.
+   *
+   * The condition is about the bytes and not about the calendar. A published contract's
+   * `reference.ts` is frozen by a digest somebody else's lockfile holds, so it keeps whatever header
+   * it was published with and permanent rule 6 is why. A contract that has never been published is
+   * bound by nothing, so it has no reason to carry a superseded header and every reason not to ship
+   * one - which is what makes this a rule rather than an exception written for the one contract that
+   * happens to satisfy it.
+   *
+   * `array/group-by@1` is that contract today, and it is the only instance either branch of
+   * `licenceHeaderOf` has outside the published five.
+   */
+  it('a-contract-not-yet-published-carries-the-current-banner', () => {
+    const free = theCatalogue.filter((source) => source.lifecycle.state === 'never-published')
+
+    expect(free.length).toBeGreaterThan(0)
+    expect(free.filter((source) => source.banner !== THE_CURRENT_BANNER)).toEqual([])
   })
 })

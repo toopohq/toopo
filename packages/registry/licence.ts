@@ -49,6 +49,38 @@
  * repository believes is MIT into somebody else's project under a header saying MIT-0. Getting a
  * licence wrong inside somebody else's repository is more expensive than any defect this project has
  * repaired so far, and it is silent.
+ *
+ * ---------------------------------------------------------------------------
+ * Why `Banner` is a declaration and is not that perimeter
+ * ---------------------------------------------------------------------------
+ *
+ * A contract declares which of two banner forms its copied file carries, and that declaration is
+ * per-contract rather than derived. It is set beside the refusal above rather than filed in a record,
+ * because a module that refuses a list and then holds one owes the distinction where the refusal is
+ * written.
+ *
+ * **The refusal above is a safety property and this declaration cannot violate it.** A wrong entry in
+ * a list of *paths* ships a file under a licence the project did not choose, silently, into somebody
+ * else's repository. A wrong entry here ships an MIT-0 file under the other MIT-0 header: both forms
+ * carry `SPDX-License-Identifier: MIT-0`, both are the same licence, and being wrong mislicences
+ * nothing. What it would do instead is print a copyright line on a file that should not carry one, or
+ * leave one off a file that does - and `every-file-the-installer-copies-is-marked-mit-0` compares
+ * every copied file against this composition byte for byte, so a wrong declaration is red before it is
+ * anything else. **The boundary the refusal protects is enforced by a guard that already exists; the
+ * declaration sits inside it.**
+ *
+ * **Why there is a second form at all.** The front page promises, in as many words, that *the source
+ * lands in your repository and it is yours*, and the second line of the file that lands said
+ * `Copyright (c) 2026 <the author>`. MIT-0 requires no attribution, so there was never anything to
+ * enforce - but nobody reads a licence, and everybody reads the first two lines of the file they have
+ * just pasted. The promise was contradicted by the artefact.
+ *
+ * **And why the old form survives rather than being replaced.** The five published contracts have
+ * their `reference.ts` frozen by a digest a lockfile in somebody else's project already holds, so
+ * their bytes cannot change and permanent rule 6 is why. The discriminator between the two forms is
+ * therefore a date - written before or after the day the copyright came out - and nothing in this
+ * repository's data derives a date in history. That is why it is declared rather than computed, and
+ * it is the whole reason this module carries a declaration at all. ADR-0159.
  */
 
 import type { ContractAddress } from './address.js'
@@ -74,10 +106,36 @@ export const THE_COPIED_LICENCE = 'MIT-0'
  * to correct afterwards, and the second is always the one nobody remembers - which is this repository's
  * oldest failure, met here on a string that is frozen into other people's repositories. The
  * recomposition needs no guard of its own: `every-file-the-installer-copies-is-marked-mit-0` compares
- * the five copied files against `licenceHeaderOf` byte for byte, so a composition off by a character is
+ * every copied file against `licenceHeaderOf` byte for byte, so a composition off by a character is
  * already red.
+ *
+ * **It reaches fewer files than it used to and it is not dead code.** Only the contracts declaring
+ * `a-copyright-beside-the-marking` compose from it now - the published ones, whose bytes are frozen -
+ * and every one of them carries this exact string, so the guard above holds it as tightly as it ever
+ * did. `THE_AUTHOR.name` is unaffected either way: `THE_AUTHOR_FIELD` composes the manifest's author
+ * from it.
  */
 export const THE_COPYRIGHT = `Copyright (c) 2026 ${THE_AUTHOR.name}`
+
+/**
+ * Which of the two second lines a contract's copied file carries.
+ *
+ * The vocabulary names what the line *is* rather than which era it belongs to, because an era is a
+ * fact about this repository's calendar and the line is a fact about the file. A reader meeting
+ * `a-copyright-beside-the-marking` on a contract knows what they will see at the top of the file
+ * without having to know when it was written.
+ */
+export type Banner = 'a-copyright-beside-the-marking' | 'the-marking-alone'
+
+/**
+ * What a contract written from now on carries, and the only value a contract that is not yet
+ * published may declare.
+ *
+ * `a-contract-not-yet-published-carries-the-current-banner` is what holds that, and the condition is
+ * about the bytes rather than about the calendar: an unpublished contract's `reference.ts` is bound by
+ * no digest, so it has no reason to keep a superseded header and every reason not to ship one.
+ */
+export const THE_CURRENT_BANNER: Banner = 'the-marking-alone'
 
 /**
  * The two lines that head every file the installer copies, and the only place they are spelled.
@@ -86,10 +144,16 @@ export const THE_COPYRIGHT = `Copyright (c) 2026 ${THE_AUTHOR.name}`
  * `every-file-the-installer-copies-is-marked-mit-0`. That is the shape `the-catalogue.ts` already has for a
  * transcribed signature: one declaration, N transcriptions, a guard resolving them - rather than a
  * build step, which would put a byte of an installed file behind something no reader can see.
+ *
+ * The banner is a parameter and not a lookup, so this module holds no list and every caller has to
+ * have found out which form it is asking about. `ContractSource.banner` is where the answer is
+ * declared, and it is required, so a contract that does not declare one does not compile.
  */
-export const licenceHeaderOf = (address: ContractAddress): string =>
+export const licenceHeaderOf = (address: ContractAddress, banner: Banner): string =>
   `// ${renderContract(address)} - ${contractUrl(address)}\n` +
-  `// ${THE_COPYRIGHT}. SPDX-License-Identifier: ${THE_COPIED_LICENCE}\n`
+  (banner === 'a-copyright-beside-the-marking'
+    ? `// ${THE_COPYRIGHT}. SPDX-License-Identifier: ${THE_COPIED_LICENCE}\n`
+    : `// SPDX-License-Identifier: ${THE_COPIED_LICENCE}\n`)
 
 /**
  * Whether a file is marked at all, asked of its own first two lines rather than of its whole text.

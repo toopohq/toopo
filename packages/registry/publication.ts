@@ -58,9 +58,14 @@ export const THE_SOURCE_REPOSITORY = 'git+https://github.com/toopohq/toopo.git'
  *
  * The name is declared here and nowhere else: `THE_COPYRIGHT` composes the copyright line from it, so
  * the holder of the licence and the author of the package are one string rather than two that agree
- * today. What keeps that recomposition honest is not a new guard but an old one - the five copied files
- * are compared against `licenceHeaderOf` byte for byte, so a composition that drifts by a character
+ * today. What keeps that recomposition honest is not a new guard but an old one - every copied file is
+ * compared against `licenceHeaderOf` byte for byte, so a composition that drifts by a character
  * reddens the marking guard.
+ *
+ * **The name reaches two things and only one of them is the copyright.** `THE_AUTHOR_FIELD` below
+ * composes the manifest's `author` from it, and that is unconditional; `THE_COPYRIGHT` composes the
+ * second line of the contracts that declare `a-copyright-beside-the-marking`, which is every published
+ * one and no future one. ADR-0159.
  */
 export const THE_AUTHOR = {
   name: 'Mathis Perron',

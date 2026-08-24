@@ -28,6 +28,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 import type { ContractRecord } from '../packages/registry/contract-record.ts'
+import type { ContractSource } from '../packages/registry/serialise.ts'
 import { REPOSITORY_ROOT, serialiseContract } from '../packages/registry/serialise.ts'
 import { theCatalogue } from '../packages/registry/the-catalogue.ts'
 import { THE_REPOSITORY } from './paths.ts'
@@ -57,8 +58,11 @@ export const theCatalogueRecords = (): readonly ContractRecord[] =>
  * of a contract is what the registry would serve of it, and the declaration on disk is one step
  * upstream of that.
  */
+export const theCatalogueSourceIn = (folder: string): ContractSource | undefined =>
+  theCatalogue.find((entry) => entry.folder === folder)
+
 export const theCatalogueRecordIn = (folder: string): ContractRecord | undefined => {
-  const source = theCatalogue.find((entry) => entry.folder === folder)
+  const source = theCatalogueSourceIn(folder)
 
   return source === undefined ? undefined : serialiseContract(REPOSITORY_ROOT, source)
 }

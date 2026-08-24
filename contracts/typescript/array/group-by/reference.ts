@@ -1,5 +1,5 @@
 // typescript/array/group-by@1 - https://toopo.dev/typescript/array/group-by@1/
-// Copyright (c) 2026 Mathis Perron. SPDX-License-Identifier: MIT-0
+// SPDX-License-Identifier: MIT-0
 
 /**
  * `array/group-by@1` - partition an array into groups by a key computed from each element, keeping

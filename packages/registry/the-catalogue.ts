@@ -180,6 +180,7 @@ export const theCatalogue: readonly ContractSource[] = [
   {
     address: NUMBER_PARSE,
     lifecycle: PUBLISHED,
+    banner: 'a-copyright-beside-the-marking',
     /**
      * The first word this registry learned about a contract it may no longer edit. ADR-0155.
      *
@@ -260,6 +261,7 @@ export const theCatalogue: readonly ContractSource[] = [
   {
     address: DATE_ADD,
     lifecycle: PUBLISHED,
+    banner: 'a-copyright-beside-the-marking',
     /**
      * The one contract of the catalogue whose language moved under it after it was frozen. ADR-0150.
      *
@@ -411,6 +413,17 @@ export const theCatalogue: readonly ContractSource[] = [
       measurement: groupBy.catalogueAdmission.measurement,
       keptAs: groupBy.catalogueAdmission.keptAs,
     },
+    /**
+     * The one contract of the catalogue whose copied file carries the current banner, and it can
+     * because it is the one the ledger binds nothing for. ADR-0159.
+     *
+     * It is not a special case made for it: the rule is that a contract not yet published carries
+     * `THE_CURRENT_BANNER`, and this contract has never been published. What it buys is that the
+     * second branch of `licenceHeaderOf` has an instance from the day it exists, so
+     * `every-file-the-installer-copies-is-marked-mit-0` is exercised on both forms rather than on one
+     * and a branch nothing reaches.
+     */
+    banner: 'the-marking-alone',
     folder: 'contracts/typescript/array/group-by',
     // The nine `contractAnatomy` records: the seven, plus the two this contract invented.
     files: [...THE_SEVEN_FILES, 'language.test.ts', 'outcome.ts'],
@@ -515,6 +528,7 @@ export const theCatalogue: readonly ContractSource[] = [
   {
     address: LEVENSHTEIN,
     lifecycle: PUBLISHED,
+    banner: 'a-copyright-beside-the-marking',
     folder: 'contracts/typescript/string/levenshtein',
     files: THE_SEVEN_FILES,
     shared: THE_SHARED_FILES,
@@ -568,6 +582,7 @@ export const theCatalogue: readonly ContractSource[] = [
   {
     address: SLUGIFY,
     lifecycle: PUBLISHED,
+    banner: 'a-copyright-beside-the-marking',
     /**
      * Four jobs, chosen because they carry four different warnings and not because four is a number.
      *
@@ -687,6 +702,7 @@ export const theCatalogue: readonly ContractSource[] = [
   {
     address: ROUND,
     lifecycle: PUBLISHED,
+    banner: 'a-copyright-beside-the-marking',
     folder: 'contracts/typescript/number/round',
     /**
      * The sixth contract, published by ADR-0144.

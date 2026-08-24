@@ -1,12 +1,17 @@
 import { describe, it, expect } from 'vitest'
 
 import { edgeCases } from '../contracts/typescript/string/slugify/edge-cases.ts'
-import type { ContractAddress } from '../packages/registry/address.ts'
 import type { ContractRecord } from '../packages/registry/contract-record.ts'
 import { THE_INVOCATION, renderContract } from '../packages/registry/address.ts'
 import { licenceHeaderOf } from '../packages/registry/licence.ts'
+import type { ContractSource } from '../packages/registry/serialise.ts'
 import { THE_SUITES, guardsCollectedIn } from './decisions.ts'
-import { rootDocument, theCatalogueRecordIn, theCatalogueRecords } from './root-documents.ts'
+import {
+  rootDocument,
+  theCatalogueRecordIn,
+  theCatalogueRecords,
+  theCatalogueSourceIn,
+} from './root-documents.ts'
 import {
   CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS,
   THE_PINS_ARE_AN_ASSERTION,
@@ -350,9 +355,11 @@ describe('what the readme shows of the catalogue', () => {
    * quotation worth anything is that the break between them is where the installer puts it.
    */
   it('the-header-the-readme-shows-is-the-one-the-installer-writes', () => {
-    const address = theContractShown()?.address
+    const shown = theCatalogueSourceIn(THE_SUITES[DEMONSTRATED] as string)
 
-    expect(address).toBeDefined()
-    expect(readmeSource()).toContain(licenceHeaderOf(address as ContractAddress))
+    expect(shown).toBeDefined()
+    expect(readmeSource()).toContain(
+      licenceHeaderOf((shown as ContractSource).address, (shown as ContractSource).banner),
+    )
   })
 })
