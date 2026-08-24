@@ -16,12 +16,12 @@ creates `name@2` beside `name@1`, and `name@1` goes on being served for ever. So
 contract publishes is either something we can put right the day it reads badly, or something we are
 stuck with.
 
-Counted over the six contracts in this repository:
+Counted over the seven contracts in this repository:
 
-**327 frozen.** 218 case identifiers, 55 group identifiers, 32 benchmark profile names,
-12 failure-reason literals, 9 export names and 1 supporting type name.
+**390 frozen.** 267 case identifiers, 64 group identifiers, 36 benchmark profile names,
+12 failure-reason literals, 10 export names and 1 supporting type name.
 
-**96 corrigible.** 72 search aliases, and the 24 reasons a contract gives for whether each universal
+**115 corrigible.** 87 search aliases, and the 28 reasons a contract gives for whether each universal
 property applies to it.
 
 More than three frozen for every one that can be put right.
@@ -40,12 +40,12 @@ evolution creates `name@2`.
 
 Two things are deliberately not in either column.
 
-The **verdict** beside each of those 24 reasons — whether a universal property is applicable — can be
+The **verdict** beside each of those 28 reasons — whether a universal property is applicable — can be
 weakened and not strengthened. Declaring an applicable property inapplicable narrows what the
 contract claims and breaks nobody; the other direction turns a conformant implementation into a
 non-conformant one, which is exactly what permanent rule 6 forbids.
 
-And **22 declarations belong to one contract and to no other** — `metricAxioms`, `theRule`,
+And **25 declarations belong to one contract and to no other** — `metricAxioms`, `theRule`,
 `outputAlphabet`, `keyFunctionRules`, `theTraps` among them. The registry carries them and does not
 interpret them, by construction: a vocabulary that fitted all of them would be a vocabulary invented
 here rather than found in the contracts. Whether one of them is right is a judgement no tool in this

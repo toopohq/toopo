@@ -36,6 +36,7 @@ import {
   theFieldsFor,
   theWhatWentWrong,
   whatATextFieldCannotCarry,
+  whatKeepsACaseFromTheForm,
 } from './playground.js'
 
 /**
@@ -163,7 +164,13 @@ describe('the playground, against the catalogue it opens on', () => {
       const module = await shipped(one)
 
       for (const table of one.contract.caseTables) {
-        for (const entry of table.cases) faults.push(...replayed(one, module, entry, entry.id))
+        // A row the form declines is one no reader can type, so replaying it would measure this
+        // file's own printing rather than the page. Which rows those are is derived from the value's
+        // kinds, never listed - `whatKeepsACaseFromTheForm` carries the argument. ADR-0160.
+        for (const entry of table.cases) {
+          if (whatKeepsACaseFromTheForm(entry, one.contract) !== null) continue
+          faults.push(...replayed(one, module, entry, entry.id))
+        }
       }
     }
 
@@ -600,8 +607,19 @@ describe('the playground, against the catalogue it opens on', () => {
 
     expect(callWritten('parseNumber', ['42'])).toBe("parseNumber('42')")
     expect(callWritten('levenshtein', ['a', 'b'])).toBe("levenshtein('a', 'b')")
-    expect(callWritten('addToDate', [new Date('2024-01-31T00:00:00.000Z'), { months: 1 }])).toBe(
+    // What `callWritten` is given is what the fields *declare*, and `date/add@1`'s date field is read
+    // as text - so its first argument arrives here as the text a reader typed, and prints as one.
+    expect(callWritten('addToDate', ['2024-01-31T00:00:00.000Z', { months: 1 }])).toBe(
       "addToDate('2024-01-31T00:00:00.000Z', { months: 1 })",
+    )
+    // And a contract whose field reads a literal declares a real date, which prints as one. Both
+    // spellings used to come out as text, because the conversion written for the *answer* was applied
+    // here as well. ADR-0160.
+    expect(callWritten('deepEqual', [new Date(0), new Date(0)])).toBe(
+      'deepEqual(new Date(0), new Date(0))',
+    )
+    expect(callWritten('deepEqual', [[, 1], [undefined, 1]])).toBe(
+      'deepEqual([, 1], [undefined, 1])',
     )
   })
 
@@ -624,6 +642,7 @@ describe('the playground, against the catalogue it opens on', () => {
 
       return one.contract.caseTables
         .flatMap((table) => table.cases)
+        .filter((entry) => whatKeepsACaseFromTheForm(entry, one.contract) === null)
         .flatMap((entry) => {
           const { written } = theCallOf(entry, answer)
           const settled = `${answer.name}(${written.join(', ')})`

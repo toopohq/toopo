@@ -57,8 +57,8 @@ import type {
 } from '../registry/contract-record.js'
 import type { EncodedField } from '../registry/value.js'
 import type { FrozenContract } from '../registry/snapshot.js'
-import { decode, encode } from '../registry/value.js'
-import { escaped, literal } from './literal.js'
+import { decode, encode, encodeTogether, labelsIn } from '../registry/value.js'
+import { escaped, hasASpelling, literal } from './literal.js'
 import { read } from './read-literal.js'
 
 export class ThePlaygroundCannotBeBuilt extends Error {
@@ -218,19 +218,34 @@ const AS_AN_ARGUMENT: Readonly<Record<string, Argument>> = {
     build: (value) => value,
     note: 'the text, then Number(…) — so 1.005 is the double a caller who typed it would hold',
   },
+  /**
+   * **The fifth type, and the first that is not a type at all.** `object/deep-equal@1` declares
+   * `(left: unknown, right: unknown)`, because what it compares is any value a program holds - so the
+   * field cannot narrow what it accepts without narrowing the contract.
+   *
+   * It is `a-literal` for the reason `Duration` is: a `Set`, a `Map`, a nested object and a `Date` do
+   * not spell on one line of text, and this contract settles cases on every one of them. The notation
+   * is `packages/site/literal.ts`'s, which is what the case table beside the form already prints, so a
+   * reader edits the call they can see rather than learning a second spelling.
+   *
+   * **`spelledBy` is total and its message is therefore unreachable, which is said here rather than
+   * hidden behind a plausible-looking predicate.** Every value that reads back is a usable argument to
+   * a function taking `unknown`; what a reader can still get wrong is the *notation*, and that is
+   * refused one step earlier by `read` with a message naming the column. `wanted` is carried because
+   * the shape requires it and it is what a reader would be told if this type ever narrowed.
+   */
+  unknown: {
+    readAs: {
+      kind: 'a-literal',
+      spelledBy: () => true,
+      wanted: 'any value — 42, `a`, { a: 1 }, new Set([1]), new Date(0)',
+      because: 'any value at all, which is what this contract compares',
+    },
+    build: (value) => value,
+    note: null,
+  },
 }
 
-/**
- * A live answer, back in the declarative form the registry models.
- *
- * One entry above needs inverting and it is not both of the two that build something: `number`
- * builds a number and answers a number, which `encode` already carries, and `Date` answers a `Date`,
- * which it does not. An *invalid* Date is deliberately left alone rather than given a spelling of its
- * own - it falls through to `encode`, which refuses it by name, which is the refusal that already
- * exists for exactly this.
- */
-const asADeclaredValue = (answer: unknown): unknown =>
-  answer instanceof Date && !Number.isNaN(answer.getTime()) ? answer.toISOString() : answer
 
 /**
  * The fields of a case, parted where the signature stops.
@@ -303,22 +318,54 @@ export type Playground = {
   readonly opensOnCase: string
 }
 
+/** The export a call is made against, which every reading of a case has to start from. */
+const theAnsweringExport = (contract: FrozenContract): ExportRecord | undefined =>
+  contract.surface.exports.find((entry) => entry.role === 'the-answer')
+
+/**
+ * `whatKeepsARowFromTheForm` asked of a case rather than of an encoded row, which is how a guard over
+ * the catalogue asks it: the answering export is what turns one into the other, and it is read here so
+ * that nothing outside this file has to.
+ */
+export const whatKeepsACaseFromTheForm = (
+  entry: WrittenAsACall,
+  contract: FrozenContract,
+): string | null => {
+  const answer = theAnsweringExport(contract)
+
+  return answer === undefined
+    ? 'the contract publishes no export that answers'
+    : whatKeepsARowFromTheForm(theCallOf(entry, answer).given)
+}
+
 /**
  * The playground of a contract, or a refusal naming what stopped it.
  *
- * It opens on the first case of the first table - the one the contract itself puts first - so that a
- * reader arrives on a call that works and edits it rather than facing an empty field.
+ * It opens on the first case a form can hold - which for every contract but the seventh is the first
+ * case there is - so that a reader arrives on a call that works and edits it rather than facing an
+ * empty field.
  */
 export const playgroundOf = (contract: FrozenContract, what: string): Playground => {
-  const answer = contract.surface.exports.find((entry) => entry.role === 'the-answer')
+  const answer = theAnsweringExport(contract)
   if (answer === undefined) {
     throw new ThePlaygroundCannotBeBuilt(what, 'the contract publishes no export that answers')
   }
 
-  const table = contract.caseTables[0]
-  const opening = table?.cases[0]
+  /**
+   * The first case the form can actually hold, which for every contract written before
+   * `object/deep-equal@1` is the first case there is.
+   *
+   * It used to be `caseTables[0].cases[0]` outright. A contract whose opening row holds a function or
+   * a value shared between its arguments would have opened the form on text that means nothing - so
+   * the row is chosen by the same rule that keeps such a row out of the replay, rather than by
+   * position and a hope.
+   */
+  const opening = contract.caseTables
+    .flatMap((table) => table.cases)
+    .find((entry) => whatKeepsARowFromTheForm(theCallOf(entry, answer).given) === null)
+
   if (opening === undefined) {
-    throw new ThePlaygroundCannotBeBuilt(what, 'the contract settles no case to open on')
+    throw new ThePlaygroundCannotBeBuilt(what, 'the contract settles no case a form can hold')
   }
 
   const { written } = theCallOf(opening, answer)
@@ -446,6 +493,43 @@ const theTextFor = (
 }
 
 /**
+ * Why a row cannot be loaded into the form, or `null` when it can.
+ *
+ * **It is derived from what the value is made of, never from a list of cases.** A hand-written
+ * perimeter is the shape this repository has refused twice - once in `packages/registry/licence.ts` and once
+ * here - because it is right on the day it is written and silently wrong afterwards. Both clauses read
+ * the encoded row.
+ *
+ * **A value with no spelling** is one `packages/site/literal.ts` prints a word for: a function, a promise
+ * or a weak collection, an instance of a class. There is no expression that builds the value the
+ * contract settled a case about - a rewritten function is a different function, which is the very
+ * thing `two-functions-are-not-compared` is about - so the form would open on text that means nothing
+ * and the page would teach a notation that does not exist. The case still renders in the table above,
+ * where a word is the honest rendering.
+ *
+ * **A value shared between two arguments** is readable in a row and unreadable in a form. The row is
+ * one value and numbers its labels once, so `deepEqual({ [#1 = Symbol('s')]: 1 }, { [#1]: 2 })` says
+ * one symbol keys both objects; the form is two independent boxes, and `#1` typed into the second
+ * means nothing there. It is a property of the form and not of the notation. ADR-0160.
+ */
+export const whatKeepsARowFromTheForm = (given: readonly EncodedField[]): string | null => {
+  const wordless = given.find((field) => !hasASpelling(field.value))
+  if (wordless !== undefined) {
+    return `its ${wordless.name} argument has no JavaScript spelling`
+  }
+
+  const shared = given.find((field) => {
+    const { defined, referred } = labelsIn(field.value)
+
+    return [...referred].some((label) => !defined.has(label))
+  })
+
+  return shared === undefined
+    ? null
+    : `its ${shared.name} argument shares a value with another argument, which two fields cannot spell`
+}
+
+/**
  * What every field of the form holds for one row, in the signature's order.
  *
  * Written once and reached three times - by the form, which opens on a case, and by the replay, which
@@ -526,10 +610,28 @@ export const argumentsOf = (
  * `literal(encode(…))` rather than `String(…)`, and that is not tidiness: `parseNumber('-0')` answers a
  * negative zero, `String` prints it `0`, and the contract settles a case on the two being different.
  */
-const asALiteral = (value: unknown, path: string): string =>
-  literal(encode(asADeclaredValue(value), path))
+const asALiteral = (value: unknown, path: string): string => literal(encode(value, path))
 
-export const answerWritten = (answer: unknown): string => asALiteral(answer, 'the answer')
+/**
+ * A live answer, back in the declarative form the *row* models - which is not the same thing for every
+ * contract, and that is the whole of it.
+ *
+ * `date/add@1` answers a `Date` and declares its rows as ISO strings, because when it was written
+ * `packages/registry/value.ts` had no instant to encode one as. It has since, so a contract written today
+ * declares a real `Date` and `object/deep-equal@1` does.
+ *
+ * **This used to be applied to the arguments as well, and that was the defect.** An argument arrives
+ * here already in the form its own row declares - `declaredBy` gives `date/add@1` the text of its date
+ * field and `object/deep-equal@1` the value its literal spells - so converting there turned
+ * `deepEqual(new Date(0), …)` into `deepEqual('1970-01-01T00:00:00.000Z', …)`, against a row spelling a
+ * date. An *invalid* Date is deliberately left alone: it falls through to `encode`, which models it.
+ * ADR-0160.
+ */
+const asADeclaredAnswer = (answer: unknown): unknown =>
+  answer instanceof Date && !Number.isNaN(answer.getTime()) ? answer.toISOString() : answer
+
+export const answerWritten = (answer: unknown): string =>
+  asALiteral(asADeclaredAnswer(answer), 'the answer')
 
 /**
  * The call that was just made, named with the arguments it was made with.
@@ -546,7 +648,7 @@ export const answerWritten = (answer: unknown): string => asALiteral(answer, 'th
  * can be wrong about its own question. ADR-0043, ADR-0096.
  */
 export const callWritten = (name: string, given: readonly unknown[]): string =>
-  `${name}(${given.map((argument, at) => asALiteral(argument, `argument ${at + 1}`)).join(', ')})`
+  `${name}(${encodeTogether(given, 'the arguments').map(literal).join(', ')})`
 
 /** How a field is named above the box it is typed into: what the parameter is called, and its type. */
 export const theFieldLabelFor = (field: PlaygroundField): string => `${field.name}: ${field.type}`

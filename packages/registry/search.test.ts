@@ -360,13 +360,46 @@ describe('finding a contract from what somebody typed', () => {
    * ADR-0154 instead, where the reading is that the bound cannot tell them from the eight above and
    * silences both.
    *
-   * **The ceiling was measured on both sides and left alone.** At three, `parse yaml` answers
-   * nothing again and `remove accents from string` answers `number/parse@1` at a score of 80 - a
-   * real request, wrongly answered, where the paragraph above records that removing its alias was
-   * worth doing precisely to stop a wrong answer. Both values break exactly one query of this list
-   * and three breaks the better one, so `TELLS_THE_CONTRACTS_APART` is not what this was repaired
-   * with. That reading stands and is what a later one is taken against.
+   * **The ceiling was measured on both sides and left alone, and one half of that reading is now
+   * withdrawn.** At three, `remove accents from string` answers `number/parse@1` - a real request,
+   * wrongly answered, where the paragraph above records that removing its alias was worth doing
+   * precisely to stop a wrong answer. That half reproduces. *Both values break exactly one query of
+   * this list* does not: measured at `03ac68c`, **at one this list breaks nowhere at all**, over the
+   * catalogue as committed and over the same tree carrying `object/deep-equal@1` alike. What refuses
+   * that value is two rewordings and nothing on this list, and the trial is rebuilt where the
+   * constant is rather than restated here.
    */
+  /**
+   * The entries above that answer, and the word each answer names as one no contract carries.
+   *
+   * **A query that answers still reports what it could not place**, and that is measured rather than
+   * assumed: `string to slug for a blog` answers `string/slugify@1` naming `blog`, `parse a number
+   * safely` answers `number/parse@1` naming `safely`, `turn a title into a url quickly` answers
+   * `string/slugify@1` naming `quickly`. So `a deep clone of an object` answers `object/deep-equal@1`
+   * while saying that `clone` - the word carrying the whole request - is one this catalogue has never
+   * heard. The answer labels itself.
+   *
+   * **The query stays on the list above, and that is what the map is for.** The list says *the
+   * catalogue cannot answer this*, and it still cannot: a deep-equality function is not a clone.
+   * Taking the query off would correct the trial to fit the mechanism, and leaving it there with no
+   * exception would report the answer as a defect it is not.
+   *
+   * **It is not the compromise `parse yaml` was, and the arbitration does not transfer.** There,
+   * silence was withheld from a request this catalogue cannot serve. Buying this one by tightening
+   * `TELLS_THE_CONTRACTS_APART` would silence `turn a string into a number` and `string into number`,
+   * which is the plainest English there is for `number/parse@1` - breaking the product for people it
+   * serves in order to protect people it does not serve either way. **The meaning of silence inverts
+   * with whether the catalogue can answer**, so an arbitration taken on one side of that line says
+   * nothing about the other. ADR-0160.
+   *
+   * **Three directions keep it from growing quietly**: a query above that answers and is not declared
+   * here reddens, a declared query that stops answering reddens as a row nothing needs any more, and a
+   * declared query answering without naming its word reddens because the answer stopped saying so.
+   */
+  const ANSWERED_WHILE_NAMING_WHAT_IT_COULD_NOT_PLACE: Readonly<Record<string, string>> = {
+    'a deep clone of an object': 'clone',
+  }
+
   it('a-query-the-catalogue-cannot-answer-answers-nothing', () => {
     const nothing = [
       'debounce',
@@ -401,9 +434,24 @@ describe('finding a contract from what somebody typed', () => {
 
     expect(
       nothing
+        .filter((query) => !(query in ANSWERED_WHILE_NAMING_WHAT_IT_COULD_NOT_PLACE))
         .map((query) => [query, searching(query).results] as const)
         .filter(([, results]) => results.length > 0)
         .map(([query, results]) => `"${query}" -> ${results.length} results`),
+    ).toEqual([])
+
+    expect(
+      Object.entries(ANSWERED_WHILE_NAMING_WHAT_IT_COULD_NOT_PLACE)
+        .map(([query, word]) => [query, word, searching(query)] as const)
+        .filter(([, word, found]) => found.results.length === 0 || !found.unknownWords.includes(word))
+        .map(([query, word, found]) =>
+          found.results.length === 0
+            ? `"${query}" answers nothing and needs no exception`
+            : `"${query}" answers without naming ${word}`),
+    ).toEqual([])
+
+    expect(
+      Object.keys(ANSWERED_WHILE_NAMING_WHAT_IT_COULD_NOT_PLACE).filter((query) => !nothing.includes(query)),
     ).toEqual([])
   })
 
@@ -566,9 +614,21 @@ describe('finding a contract from what somebody typed', () => {
    *
    * It is what turns a miss into something the reader can act on in one second, and it is the only
    * thing this command says about *why* it found nothing.
+   *
+   * **It reddened on a publication rather than on a defect, which is what the constant above was
+   * invented to avoid.** This asked for `deep clone` to name both its words, and `object/deep-equal@1`
+   * made `deep` a word this catalogue carries - so the seventh contract broke a guard by being
+   * published, in the file that says twenty lines up why borrowing a real word for that role is a
+   * mistake. The repair borrows one anyway, for the half that has to be real: an invented word cannot
+   * show a reader what a miss on their own vocabulary looks like. What it does not borrow is the
+   * claim that every unheard word is named in the query's order, which is now carried by
+   * `A_WORD_THE_CATALOGUE_HAS_NEVER_HEARD` and cannot be retired by a publication. ADR-0160.
    */
   it('a-miss-names-the-words-no-contract-carries', () => {
-    expect(searching('deep clone').unknownWords).toEqual(['deep', 'clone'])
+    expect(searching(`deep clone ${A_WORD_THE_CATALOGUE_HAS_NEVER_HEARD}`).unknownWords).toEqual([
+      'clone',
+      A_WORD_THE_CATALOGUE_HAS_NEVER_HEARD,
+    ])
     expect(searching('memoize the levenshtein').unknownWords).toEqual(['memoize'])
   })
 

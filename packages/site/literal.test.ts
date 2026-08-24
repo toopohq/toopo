@@ -92,14 +92,25 @@ describe('an encoded value, written as the literal a reader recognises', () => {
 
   /**
    * A hole is visited and its element is `undefined`, which is what separates iteration from a
-   * counting loop - `array/group-by@1` settles it as a case. Printed as JavaScript spells it, two
-   * commas in a row, it is a gap nobody sees.
+   * counting loop - `array/group-by@1` settles it as a case, and `object/deep-equal@1` settles two.
+   *
+   * **It was printed `<hole>` until ADR-0160, on the argument that two commas in a row are a gap
+   * nobody sees.** What reversed it is that the argument weighed readability against nothing: there
+   * was no reader then. There is now, and a word cannot be read back where the language's own notation
+   * can - so a hole spells as the language spells it, and what a reader sees is the pair below,
+   * printed side by side in the case table, which is where the difference is meant to be noticed.
+   *
+   * The last three lines are the load-bearing ones: a trailing comma after a value closes a list, and
+   * after a hole it is the hole.
    */
-  it('a-hole-is-named-rather-than-left-as-a-gap', () => {
+  it('a-hole-and-an-undefined-are-two-spellings', () => {
     const sparse = [1, , 3] as unknown[]
 
-    expect(shown(sparse)).toBe('[1, <hole>, 3]')
+    expect(shown(sparse)).toBe('[1, , 3]')
     expect(shown([1, undefined, 3])).toBe('[1, undefined, 3]')
+    expect(shown([, 1])).toBe('[, 1]')
+    expect(shown([1, 2, ,])).toBe('[1, 2, ,]')
+    expect(shown([1, 2])).toBe('[1, 2]')
   })
 
   /**

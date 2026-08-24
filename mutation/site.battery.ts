@@ -224,8 +224,8 @@ const NEGATIVE_ZERO_KEEPS_ITS_SIGN = `  'negative-zero': '-0',`
  * into the switch - because `read-literal.ts` has to refuse exactly these, and what one file prints
  * and the other turns down is one statement. The anchors moved with them; the defects are unchanged.
  */
-const A_HOLE_IS_NAMED = `    case 'hole':
-      return WITHOUT_A_SPELLING.hole`
+const A_HOLE_SPELLS_AS_NOTHING = `    case 'hole':
+      return ''`
 
 const A_FUNCTION_IS_NAMED = `      return WITHOUT_A_SPELLING['not-data']`
 
@@ -234,7 +234,7 @@ const THE_SAME_OBJECT_IS_LABELLED = `const shared = (label: number | undefined, 
 
 const A_KEY_IS_QUOTED_WHEN_IT_MUST_BE = `const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/`
 
-const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `      return value.description === null ? 'Symbol()' : \`Symbol(\${quoted(value.description)})\``
+const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `        value.description === null ? 'Symbol()' : \`Symbol(\${quoted(value.description)})\`,`
 
 const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id, class: 'case' },`
 
@@ -377,8 +377,7 @@ const A_CODE_POINT_ABOVE_THE_PLANE_IS_BRACED = `  return code > 0xffff`
 
 const A_DATE_IS_CONSTRUCTED = `    build: (value) => new Date(value as string),`
 
-const AN_ANSWER_IS_WRITTEN_AS_A_LITERAL = `const asALiteral = (value: unknown, path: string): string =>
-  literal(encode(asADeclaredValue(value), path))`
+const AN_ANSWER_IS_WRITTEN_AS_A_LITERAL = `const asALiteral = (value: unknown, path: string): string => literal(encode(value, path))`
 
 const AN_UNKNOWN_TYPE_STOPS_THE_BUILD = `const theArgumentFor = (parameter: ParameterRecord, what: string): Argument => {
   const known = AS_AN_ARGUMENT[parameter.type]
@@ -387,7 +386,7 @@ const AN_UNKNOWN_TYPE_STOPS_THE_BUILD = `const theArgumentFor = (parameter: Para
 const A_FIELD_SPELLS_ITS_DECLARED_TYPE = `      spelledBy: (declared) => typeof declared === 'object' && declared !== null && !Array.isArray(declared),`
 
 const A_CALL_IS_WRITTEN_AS_A_LITERAL = `export const callWritten = (name: string, given: readonly unknown[]): string =>
-  \`\${name}(\${given.map((argument, at) => asALiteral(argument, \`argument \${at + 1}\`)).join(', ')})\``
+  \`\${name}(\${encodeTogether(given, 'the arguments').map(literal).join(', ')})\``
 
 const A_TEXT_FIELD_LOSES_A_LINE_BREAK = `const STRIPPED_BY_A_TEXT_FIELD = /[\\r\\n]/`
 
@@ -401,7 +400,7 @@ const THE_GRAPH_LISTS_EVERY_MODULE = `  'packages/site/literal.ts',
 const A_CODE_POINT_IS_HEXADECIMAL = `  const code = Number.parseInt(digits, 16)`
 
 const A_FIELD_SET_TO_UNDEFINED_IS_STILL_A_FIELD = `    const value = readValue(scan)
-    Object.defineProperty(record, name, {`
+    Object.defineProperty(record, key, {`
 
 const NOTHING_MAY_FOLLOW_THE_VALUE = `  if (scan.at < text.length) fail(scan, 'there is more text after the value ends')`
 
@@ -578,9 +577,9 @@ const mutants: readonly Mutant[] = [
     'W-09',
     'prints a hole as an undefined element, which is the distinction `array/group-by@1` settles a ' +
       'case on and the difference between iteration and a counting loop',
-    [literalFile(A_HOLE_IS_NAMED, `    case 'hole':
+    [literalFile(A_HOLE_SPELLS_AS_NOTHING, `    case 'hole':
       return 'undefined'`)],
-    killed(['a-hole-is-named-rather-than-left-as-a-gap']),
+    killed(['a-hole-and-an-undefined-are-two-spellings']),
   ),
 
   sameOnEveryLens(
@@ -917,7 +916,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     'W-27',
     'drops a symbol description, so two group keys `array/group-by@1` settles apart are published as ' +
       'the same anonymous symbol',
-    [literalFile(A_SYMBOL_KEEPS_ITS_DESCRIPTION, `      return 'Symbol()'`)],
+    [literalFile(A_SYMBOL_KEEPS_ITS_DESCRIPTION, `        'Symbol()',`)],
     killed(['a-symbol-a-pattern-and-a-set-are-written-as-a-caller-writes-them']),
   ),
 
@@ -1041,7 +1040,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     [
       playgroundFile(
         AN_ANSWER_IS_WRITTEN_AS_A_LITERAL,
-        `const asALiteral = (value: unknown, path: string): string => String(asADeclaredValue(value))`,
+        `const asALiteral = (value: unknown, path: string): string => String(value)`,
       ),
     ],
     killed([
@@ -1159,7 +1158,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
         A_FIELD_SET_TO_UNDEFINED_IS_STILL_A_FIELD,
         `    const value = readValue(scan)
     if (value === undefined) return
-    Object.defineProperty(record, name, {`,
+    Object.defineProperty(record, key, {`,
       ),
     ],
     killed([

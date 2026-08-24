@@ -59,6 +59,8 @@ import { battery as numberParseSpec } from './number-parse-spec.battery.ts'
 import { battery as numberParse } from './number-parse.battery.ts'
 import { battery as numberRoundSpec } from './number-round-spec.battery.ts'
 import { battery as numberRound } from './number-round.battery.ts'
+import { battery as objectDeepEqualSpec } from './object-deep-equal-spec.battery.ts'
+import { battery as objectDeepEqual } from './object-deep-equal.battery.ts'
 import { battery as packaging } from './packaging.battery.ts'
 import { battery as registryStorage } from './registry-storage.battery.ts'
 import { battery as site } from './site.battery.ts'
@@ -91,6 +93,8 @@ export const THE_BATTERIES: readonly Battery[] = [
   numberParse,
   numberRoundSpec,
   numberRound,
+  objectDeepEqualSpec,
+  objectDeepEqual,
   packaging,
   registryStorage,
   site,

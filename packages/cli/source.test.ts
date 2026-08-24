@@ -135,6 +135,10 @@ describe('where an installer gets what it installs', () => {
     const refused = entries.find((entry) => entry.address.name === 'array/group-by')
 
     expect(refused?.installable).toBe(false)
-    expect(entries.filter((entry) => entry.installable)).toHaveLength(5)
+    // Which entry is not installable rather than how many are: the count was a figure a publication
+    // retired, and it read `toHaveLength(5)` through two of them.
+    expect(entries.filter((entry) => !entry.installable).map((entry) => entry.address.name)).toEqual([
+      'array/group-by',
+    ])
   })
 })

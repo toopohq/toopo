@@ -2349,7 +2349,7 @@ export const battery: Battery = {
         // The schema suites still wholly silent. `the files a contract is made of` is deliberately
         // absent: it is a storage suite, every one of its guards is reddened by I-02, and declaring
         // it here is what the instrument refused when the two guards still sat in the file above.
-        // `the implementations under the five contracts` left this list for the same reason, below.
+        // `the implementations under the contracts of the catalogue` left this list for the same reason, below.
         'the registry encoding',
         'the public/private frontier',
         'a sixth contract enters without a migration',
@@ -2364,7 +2364,7 @@ export const battery: Battery = {
        * next run rather than a reader catching it never. Listing the guards costs forty-three lines
        * and buys the opposite behaviour: the next guard added here is *unaccounted for* and says so.
        *
-       * **And it happened a second time, to `the implementations under the five contracts`.** I-26 and
+       * **And it happened a second time, to `the implementations under the contracts of the catalogue`.** I-26 and
        * I-27 move the licence perimeter, which is `referenceImplementationOf` - the very function ten
        * of that suite's eighteen guards call - so ten went red under a declaration saying none of them
        * ever had. The instrument refused on the next run, as before. The eight that stay silent are
@@ -2391,7 +2391,7 @@ export const battery: Battery = {
         ...onEach('every-produced-profile-exists'),
         'a-case-that-is-not-a-call-is-refused',
         ...onEach('every-harness-file-is-hashed'),
-        // `the implementations under the five contracts`, named guard by guard since I-26 and I-27
+        // `the implementations under the contracts of the catalogue`, named guard by guard since I-26 and I-27
         // reached ten of its eighteen. These eight are what is left silent: the perimeter mutants move
         // which files an implementation carries, and none of these reads that.
         ...onEach('the-implementation-belongs-to-its-contract'),

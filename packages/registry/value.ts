@@ -155,7 +155,16 @@ export type EncodedValue =
   /** Carried as digits, because a bigint is exactly the integer JSON cannot hold. */
   | { readonly kind: 'big-integer'; readonly digits: string }
   | { readonly kind: 'undefined' }
-  | { readonly kind: 'symbol'; readonly description: string | null }
+  /**
+   * A symbol. **It carries a label like an object does**, and it is the only primitive that needs one:
+   * two objects keyed by *the same* symbol are a different value from two objects keyed by two
+   * symbols of the same description, and `object/deep-equal@1` settles a case on precisely that.
+   */
+  | {
+      readonly kind: 'symbol'
+      readonly description: string | null
+      readonly shared?: SharedObject
+    }
   | { readonly kind: 'pattern'; readonly source: string; readonly flags: string }
   | {
       readonly kind: 'list'
@@ -165,6 +174,8 @@ export type EncodedValue =
   | {
       readonly kind: 'record'
       readonly fields: readonly EncodedField[]
+      /** Absent rather than empty where there is none, so no record published before it moves. */
+      readonly symbolFields?: readonly EncodedSymbolField[]
       /** Absent on a plain object, which is what keeps every already-published record byte-identical. */
       readonly prototype?: EncodedPrototype
       readonly shared?: SharedObject
@@ -199,6 +210,8 @@ export type EncodedValue =
       readonly message: string
       readonly cause?: EncodedValue
       readonly fields: readonly EncodedField[]
+      /** Absent rather than empty where there is none, so no record published before it moves. */
+      readonly symbolFields?: readonly EncodedSymbolField[]
       readonly shared?: SharedObject
     }
   /**
@@ -210,6 +223,8 @@ export type EncodedValue =
       readonly of: BoxedKind
       readonly value: EncodedValue
       readonly fields: readonly EncodedField[]
+      /** Absent rather than empty where there is none, so no record published before it moves. */
+      readonly symbolFields?: readonly EncodedSymbolField[]
       readonly shared?: SharedObject
     }
   /** A typed array: its kind, because two of different kinds are different values, and its elements. */
@@ -242,6 +257,8 @@ export type EncodedValue =
       readonly kind: 'instance'
       readonly className: string
       readonly fields: readonly EncodedField[]
+      /** Absent rather than empty where there is none, so no record published before it moves. */
+      readonly symbolFields?: readonly EncodedSymbolField[]
       readonly shared?: SharedObject
     }
   /**
@@ -282,6 +299,22 @@ export type EncodedValue =
  */
 export type EncodedField = {
   readonly name: string
+  readonly value: EncodedValue
+}
+
+/**
+ * An own property whose key is a symbol.
+ *
+ * **It is a second list rather than a wider `EncodedField`, and the reason is what reads each.** A
+ * case row's fields are the arguments of a call, named by the signature, and a symbol can never be one
+ * - so widening `EncodedField` would make `packages/site/contract-page.ts` and the playground decide a
+ * case that cannot arise. What can arise is a *value* keyed by a symbol, which is what this is.
+ *
+ * It is absent rather than empty when there is none, which is what keeps every record published before
+ * it byte-identical.
+ */
+export type EncodedSymbolField = {
+  readonly key: EncodedValue
   readonly value: EncodedValue
 }
 
@@ -410,14 +443,44 @@ const classNameOf = (value: object): string | null => {
   return named ?? 'an anonymous class'
 }
 
+/**
+ * What can be shared, which is every object and one primitive.
+ *
+ * A symbol is here because identity is what a symbol *is*: two objects keyed by one symbol and two
+ * objects keyed by two symbols of the same description are different values, and nothing about the
+ * description tells them apart.
+ */
+type Sharable = object | symbol
+
+/**
+ * The own enumerable properties of a value, key and value, whatever the key is made of.
+ *
+ * **It is the only place in this file that asks an object what it carries**, and that is the repair
+ * rather than a tidying. `Object.entries` and `Object.values` report string keys and say nothing about
+ * the rest, so a value keyed by a symbol was encoded as though the key were not there - two objects
+ * whose data differs came back as two empty ones, **and nothing refused**. The criterion that let it
+ * through counted refusals and was called fidelity; encoding without refusing is not encoding
+ * faithfully. ADR-0160.
+ */
+const ownEntries = (subject: object): readonly (readonly [string | symbol, unknown])[] =>
+  Reflect.ownKeys(subject)
+    .filter((key) => Object.getOwnPropertyDescriptor(subject, key)?.enumerable === true)
+    .map((key) => [key, (subject as Record<string | symbol, unknown>)[key]] as const)
+
 type Walk = {
-  /** How many times each object occurs, so that only the shared ones are labelled. */
-  readonly occurrences: Map<object, number>
-  readonly labels: Map<object, SharedObject>
-  readonly emitted: Set<object>
+  /** How many times each sharable value occurs, so that only the shared ones are labelled. */
+  readonly occurrences: Map<Sharable, number>
+  readonly labels: Map<Sharable, SharedObject>
+  readonly emitted: Set<Sharable>
 }
 
-const count = (value: unknown, occurrences: Map<object, number>): void => {
+const count = (value: unknown, occurrences: Map<Sharable, number>): void => {
+  if (typeof value === 'symbol') {
+    occurrences.set(value, (occurrences.get(value) ?? 0) + 1)
+
+    return
+  }
+
   if (typeof value !== 'object' || value === null) return
 
   const seen = occurrences.get(value) ?? 0
@@ -445,17 +508,23 @@ const count = (value: unknown, occurrences: Map<object, number>): void => {
   if (value instanceof Date) return
   if (value instanceof Error) {
     count(value.cause, occurrences)
-    for (const entry of Object.values(value)) count(entry, occurrences)
+    for (const [key, entry] of ownEntries(value)) {
+      count(key, occurrences)
+      count(entry, occurrences)
+    }
     return
   }
   if (unmodelled(value) !== null) return
 
   // A typed array's elements are numbers and a boxed primitive's value is a primitive, so neither can
   // hold an object to share - but both can carry own properties, which can.
-  for (const entry of Object.values(value)) count(entry, occurrences)
+  for (const [key, entry] of ownEntries(value)) {
+    count(key, occurrences)
+    count(entry, occurrences)
+  }
 }
 
-const labelFor = (value: object, walk: Walk): SharedObject | undefined => {
+const labelFor = (value: Sharable, walk: Walk): SharedObject | undefined => {
   if ((walk.occurrences.get(value) ?? 0) < 2) return undefined
 
   const existing = walk.labels.get(value)
@@ -467,10 +536,21 @@ const labelFor = (value: object, walk: Walk): SharedObject | undefined => {
   return next
 }
 
+/** The keys a value carries because of its slot, where there is no slot: none. */
+const NOTHING_OF_ITS_OWN: ReadonlySet<string> = new Set()
+
 const encodeAt = (value: unknown, path: string, walk: Walk): EncodedValue => {
   if (typeof value === 'function') return { kind: 'not-data', nature: 'function' }
   if (typeof value === 'undefined') return { kind: 'undefined' }
-  if (typeof value === 'symbol') return { kind: 'symbol', description: value.description ?? null }
+  if (typeof value === 'symbol') {
+    const label = labelFor(value, walk)
+    if (label !== undefined && walk.emitted.has(value)) return { kind: 'again', shared: label }
+    if (label !== undefined) walk.emitted.add(value)
+
+    const description = value.description ?? null
+
+    return label === undefined ? { kind: 'symbol', description } : { kind: 'symbol', description, shared: label }
+  }
   if (typeof value === 'bigint') return { kind: 'big-integer', digits: value.toString() }
 
   if (typeof value === 'number') {
@@ -510,11 +590,50 @@ const encodeAt = (value: unknown, path: string, walk: Walk): EncodedValue => {
     return shared === undefined ? { kind: 'set', entries } : { kind: 'set', entries, shared }
   }
 
-  const fieldsOf = (subject: object): readonly EncodedField[] =>
-    Object.entries(subject).map(([name, entry]) => ({
-      name,
-      value: encodeAt(entry, `${path}.${name}`, walk),
-    }))
+  /**
+   * The own enumerable properties of a value, beside whatever slot it carries.
+   *
+   * `beside` is what the value carries *because of* its slot rather than in addition to it, which
+   * only a box has and which the boxed branch derives from the primitive itself.
+   */
+  const fieldsOf = (
+    subject: object,
+    beside: ReadonlySet<string> = NOTHING_OF_ITS_OWN,
+  ): readonly EncodedField[] =>
+    ownEntries(subject)
+      .filter(
+        (entry): entry is readonly [string, unknown] =>
+          typeof entry[0] === 'string' && !beside.has(entry[0]),
+      )
+      .map(([name, entry]) => ({
+        name,
+        value: encodeAt(entry, `${path}.${name}`, walk),
+      }))
+
+  /**
+   * The own properties a symbol keys, in the order the object reports them - which is after the named
+   * ones, because that is the order `Reflect.ownKeys` gives and the order a reader sees.
+   */
+  const symbolFieldsOf = (subject: object): readonly EncodedSymbolField[] =>
+    ownEntries(subject)
+      .filter(
+        (entry): entry is readonly [symbol, unknown] => typeof entry[0] === 'symbol',
+      )
+      .map(([key, entry]) => ({
+        key: encodeAt(key, `${path}[${String(key)}]<key>`, walk),
+        value: encodeAt(entry, `${path}[${String(key)}]`, walk),
+      }))
+
+  /** `fields` with `symbolFields` beside it, present only where there is one to carry. */
+  const carrying = (
+    subject: object,
+    beside?: ReadonlySet<string>,
+  ): { readonly fields: readonly EncodedField[]; readonly symbolFields?: readonly EncodedSymbolField[] } => {
+    const fields = fieldsOf(subject, beside)
+    const symbolFields = symbolFieldsOf(subject)
+
+    return symbolFields.length === 0 ? { fields } : { fields, symbolFields }
+  }
 
   if (value instanceof Date) {
     const epoch = encodeAt(value.getTime(), `${path}<epoch>`, walk)
@@ -537,7 +656,7 @@ const encodeAt = (value: unknown, path: string, walk: Walk): EncodedValue => {
       kind: 'error' as const,
       errorKind,
       message: value.message,
-      fields: fieldsOf(value),
+      ...carrying(value),
       ...(value.cause === undefined
         ? {}
         : { cause: encodeAt(value.cause, `${path}<cause>`, walk) }),
@@ -549,12 +668,28 @@ const encodeAt = (value: unknown, path: string, walk: Walk): EncodedValue => {
   const tag = tagOf(value)
   const boxed = BOXED_BY_TAG[tag]
 
+  /**
+   * **A box's own content is not a field beside it, and a literal that says otherwise does not run.**
+   * `new String('a')` carries `0` as an own enumerable property - the character, already in the slot -
+   * so reporting it as a field printed `Object.assign(new String('a'), { '0': 'a' })`, which **throws
+   * `TypeError: Cannot assign to read only property '0'`** when a reader runs it, and which this
+   * catalogue's own reader could not read back either. It was found by the reader and by nothing
+   * looking at this file.
+   *
+   * **What separates the two is the box and never the descriptor**, which was measured: a String's
+   * indices are `writable: false, configurable: false`, and so is any property written with a bare
+   * `Object.defineProperty` - `literal.test.ts` declares its `__proto__` fixture exactly that way, and
+   * a rule reading configurability drops it. So the intrinsic keys are read off `Object(held)`, a
+   * fresh box of the same primitive, which knows what a box of it carries and nothing else.
+   */
   if (boxed !== undefined) {
+    const held = (value as { valueOf(): unknown }).valueOf()
+
     const carried = {
       kind: 'boxed' as const,
       of: boxed,
-      value: encodeAt((value as { valueOf(): unknown }).valueOf(), `${path}<boxed>`, walk),
-      fields: fieldsOf(value),
+      value: encodeAt(held, `${path}<boxed>`, walk),
+      ...carrying(value, new Set(Object.keys(Object(held) as object))),
     }
 
     return shared === undefined ? carried : { ...carried, shared }
@@ -574,26 +709,135 @@ const encodeAt = (value: unknown, path: string, walk: Walk): EncodedValue => {
     return shared === undefined ? carried : { ...carried, shared }
   }
 
-  const fields = fieldsOf(value)
+  const held = carrying(value)
   const className = classNameOf(value)
 
   if (className !== null) {
-    const instance = { kind: 'instance' as const, className, fields }
+    const instance = { kind: 'instance' as const, className, ...held }
 
     return shared === undefined ? instance : { ...instance, shared }
   }
 
   const prototype = prototypeOf(value)
-  const record = { kind: 'record' as const, fields, ...(prototype === undefined ? {} : { prototype }) }
+  const record = { kind: 'record' as const, ...held, ...(prototype === undefined ? {} : { prototype }) }
 
   return shared === undefined ? record : { ...record, shared }
 }
 
-export const encode = (value: unknown, path: string): EncodedValue => {
-  const occurrences = new Map<object, number>()
-  count(value, occurrences)
+/**
+ * Every value inside an encoded one, itself first.
+ *
+ * **One walk, because every reading of an encoded value's shape is the same walk with a different
+ * question**: which kinds are in it, which labels it defines, which it refers to. Two of those were
+ * written separately before this and one of them missed `symbolFields` on the day that field was
+ * added - which is the shape of the defect this whole unit is about, arriving in the check for it.
+ *
+ * The switch has no default and every arm returns, so a kind added to `EncodedValue` does not compile
+ * until it says what it contains.
+ */
+export function* everyValueIn(encoded: EncodedValue): Generator<EncodedValue> {
+  yield encoded
 
-  return encodeAt(value, path, { occurrences, labels: new Map(), emitted: new Set() })
+  switch (encoded.kind) {
+    case 'primitive':
+    case 'number':
+    case 'big-integer':
+    case 'undefined':
+    case 'symbol':
+    case 'pattern':
+    case 'not-data':
+    case 'hole':
+    case 'again':
+    case 'opaque':
+      return
+    case 'list':
+    case 'set':
+      for (const entry of encoded.entries) yield* everyValueIn(entry)
+      return
+    case 'typed-array':
+      for (const entry of encoded.elements) yield* everyValueIn(entry)
+      return
+    case 'instant':
+      yield* everyValueIn(encoded.epoch)
+      return
+    case 'map':
+      for (const entry of encoded.entries) {
+        yield* everyValueIn(entry.key)
+        yield* everyValueIn(entry.value)
+      }
+      return
+    case 'record':
+    case 'instance':
+      yield* everyCarriedValue(encoded)
+      return
+    case 'boxed':
+      yield* everyValueIn(encoded.value)
+      yield* everyCarriedValue(encoded)
+      return
+    case 'error':
+      if (encoded.cause !== undefined) yield* everyValueIn(encoded.cause)
+      yield* everyCarriedValue(encoded)
+      return
+  }
+}
+
+function* everyCarriedValue(carried: {
+  readonly fields: readonly EncodedField[]
+  readonly symbolFields?: readonly EncodedSymbolField[]
+}): Generator<EncodedValue> {
+  for (const field of carried.fields) yield* everyValueIn(field.value)
+  for (const field of carried.symbolFields ?? []) {
+    yield* everyValueIn(field.key)
+    yield* everyValueIn(field.value)
+  }
+}
+
+/** Which kinds an encoded value is made of, itself included. */
+export const kindsIn = (encoded: EncodedValue): ReadonlySet<EncodedValue['kind']> =>
+  new Set([...everyValueIn(encoded)].map((one) => one.kind))
+
+/**
+ * The labels an encoded value defines, and the ones it refers to.
+ *
+ * A value that refers to a label it does not define is one half of something shared with a value
+ * beside it, which is readable in a row and is not readable in a form: the fields of a form are
+ * independent boxes, and `#1` in one of them means nothing in another. ADR-0160.
+ */
+export const labelsIn = (
+  encoded: EncodedValue,
+): { readonly defined: ReadonlySet<SharedObject>; readonly referred: ReadonlySet<SharedObject> } => {
+  const defined = new Set<SharedObject>()
+  const referred = new Set<SharedObject>()
+
+  for (const one of everyValueIn(encoded)) {
+    if (one.kind === 'again') referred.add(one.shared)
+    else if ('shared' in one && one.shared !== undefined) defined.add(one.shared)
+  }
+
+  return { defined, referred }
+}
+
+export const encode = (value: unknown, path: string): EncodedValue =>
+  (encodeTogether([value], path) as readonly [EncodedValue])[0]
+
+/**
+ * Several values in one numbering, which is what a *call* is.
+ *
+ * **Encoded one at a time, each argument starts its labels at `#1`**, so a call whose two arguments
+ * each hold a cycle printed `deepEqual(#1 = { self: #1 }, #1 = { self: #1 })` - the same label for two
+ * different objects, which reads as one object passed twice and is the opposite of what the row says.
+ * A case row is one value and was never wrong; the playground built its call argument by argument and
+ * was. ADR-0160.
+ */
+export const encodeTogether = (values: readonly unknown[], path: string): readonly EncodedValue[] => {
+  const occurrences = new Map<Sharable, number>()
+  for (const value of values) count(value, occurrences)
+
+  const walk: Walk = { occurrences, labels: new Map(), emitted: new Set() }
+
+  return values.map((value, at) =>
+    encodeAt(value, values.length === 1 ? path : `${path}[${at}]`, walk),
+  )
 }
 
 const literals: Readonly<Record<NumberLiteral, number>> = {
@@ -668,6 +912,29 @@ const prototypeFor = (className: string): object => {
  * what makes the round-trip guard a statement about the declarative half only - the half this
  * registry claims to model.
  */
+/**
+ * The symbol-keyed properties of a value, put back on it.
+ *
+ * Defined rather than assigned, for `readRecord`'s reason one level up: a key is written where a
+ * setter could be, and defining is what puts data where data was.
+ */
+const withSymbolFields = <T extends object>(
+  target: T,
+  carried: { readonly symbolFields?: readonly EncodedSymbolField[] },
+  shared: Map<SharedObject, unknown>,
+): T => {
+  for (const field of carried.symbolFields ?? []) {
+    Object.defineProperty(target, decode(field.key, shared) as symbol, {
+      value: decode(field.value, shared),
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    })
+  }
+
+  return target
+}
+
 export const decode = (encoded: EncodedValue, shared: Map<SharedObject, unknown> = new Map()): unknown => {
   switch (encoded.kind) {
     case 'primitive':
@@ -676,8 +943,12 @@ export const decode = (encoded: EncodedValue, shared: Map<SharedObject, unknown>
       return literals[encoded.literal]
     case 'undefined':
       return undefined
-    case 'symbol':
-      return Symbol(encoded.description ?? undefined)
+    case 'symbol': {
+      const held = Symbol(encoded.description ?? undefined)
+      if (encoded.shared !== undefined) shared.set(encoded.shared, held)
+
+      return held
+    }
     case 'pattern':
       return new RegExp(encoded.source, encoded.flags)
     case 'not-data':
@@ -715,14 +986,14 @@ export const decode = (encoded: EncodedValue, shared: Map<SharedObject, unknown>
       if (encoded.shared !== undefined) shared.set(encoded.shared, instance)
       for (const field of encoded.fields) instance[field.name] = decode(field.value, shared)
 
-      return instance
+      return withSymbolFields(instance, encoded, shared)
     }
     case 'record': {
       const record = Object.create(encoded.prototype === 'none' ? null : Object.prototype) as Record<string, unknown>
       if (encoded.shared !== undefined) shared.set(encoded.shared, record)
       for (const field of encoded.fields) record[field.name] = decode(field.value, shared)
 
-      return record
+      return withSymbolFields(record, encoded, shared)
     }
     case 'big-integer':
       return BigInt(encoded.digits)
@@ -751,12 +1022,13 @@ export const decode = (encoded: EncodedValue, shared: Map<SharedObject, unknown>
         ;(failure as unknown as Record<string, unknown>)[field.name] = decode(field.value, shared)
       }
 
-      return failure
+      return withSymbolFields(failure, encoded, shared)
     }
     case 'boxed': {
       const box = Object(decode(encoded.value, shared)) as Record<string, unknown>
       if (encoded.shared !== undefined) shared.set(encoded.shared, box)
       for (const field of encoded.fields) box[field.name] = decode(field.value, shared)
+      withSymbolFields(box, encoded, shared)
 
       return box
     }

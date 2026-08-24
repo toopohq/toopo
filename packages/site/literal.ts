@@ -32,7 +32,13 @@
  * because they are visible and because `string/slugify@1`'s table is *about* them.
  */
 
-import type { EncodedField, EncodedValue, JsonPrimitive } from '../registry/value.js'
+import type {
+  EncodedField,
+  EncodedSymbolField,
+  EncodedValue,
+  JsonPrimitive,
+} from '../registry/value.js'
+import { kindsIn } from '../registry/value.js'
 
 /**
  * A character that carries meaning and shows nothing, or shows on top of its neighbour.
@@ -119,10 +125,28 @@ const BOXES: Readonly<Record<'string' | 'number' | 'boolean', string>> = {
   boolean: 'Boolean',
 }
 
-const record = (fields: readonly EncodedField[]): string =>
-  fields.length === 0
-    ? '{}'
-    : `{ ${fields.map((field) => `${key(field.name)}: ${literal(field.value)}`).join(', ')} }`
+/**
+ * A property whose key is a symbol, in the computed-key notation the language has for it.
+ *
+ * The key is a value like any other, so it carries its own label: `[#1 = Symbol('shared')]` the first
+ * time and `[#1]` after. **That is the whole point of the notation here** - two objects keyed by one
+ * symbol and two objects keyed by two symbols of the same description are a different value, and this
+ * catalogue settles a case on the difference.
+ */
+const symbolField = (field: EncodedSymbolField): string =>
+  `[${literal(field.key)}]: ${literal(field.value)}`
+
+const record = (
+  fields: readonly EncodedField[],
+  symbolFields: readonly EncodedSymbolField[] = [],
+): string => {
+  const written = [
+    ...fields.map((field) => `${key(field.name)}: ${literal(field.value)}`),
+    ...symbolFields.map(symbolField),
+  ]
+
+  return written.length === 0 ? '{}' : `{ ${written.join(', ')} }`
+}
 
 /**
  * The two arms of an encoded value that have no JavaScript spelling, and the words printed instead.
@@ -132,10 +156,7 @@ const record = (fields: readonly EncodedField[]): string =>
  * drift the day one of them is reworded - after which the reader would quietly build a value where the
  * page shows a word, which is the one outcome both sides exist to prevent.
  */
-export const WITHOUT_A_SPELLING: Readonly<
-  Record<'hole' | 'not-data' | 'opaque' | 'instance', string>
-> = {
-  hole: '<hole>',
+export const WITHOUT_A_SPELLING: Readonly<Record<'not-data' | 'opaque' | 'instance', string>> = {
   'not-data': '<a function, served as a file>',
   /**
    * A promise, a WeakMap, a WeakSet or a WeakRef. There is no expression that builds one carrying
@@ -151,9 +172,30 @@ export const WITHOUT_A_SPELLING: Readonly<
   instance: '<an instance of a class>',
 }
 
+/**
+ * The kinds this file prints a word for instead of a spelling, as a set to test a value against.
+ *
+ * **Derived from `WITHOUT_A_SPELLING` and never listed again**, which is the same rule the reader
+ * follows: what has no spelling is a property of the kind, so a case that cannot be opened in the form
+ * is recognised by what it is made of rather than by being named in a list somebody keeps.
+ */
+const WORDS_INSTEAD: ReadonlySet<EncodedValue['kind']> = new Set(
+  Object.keys(WITHOUT_A_SPELLING) as readonly EncodedValue['kind'][],
+)
+
+/** Whether every part of a value can be written as JavaScript a reader can edit and this repo can read. */
+export const hasASpelling = (value: EncodedValue): boolean =>
+  [...kindsIn(value)].every((kind) => !WORDS_INSTEAD.has(kind))
+
 /** `Object.assign(x, { … })`, which is how a value carrying own properties beside a slot is spelled. */
-const withFields = (built: string, fields: readonly EncodedField[]): string =>
-  fields.length === 0 ? built : `Object.assign(${built}, ${record(fields)})`
+const withFields = (
+  built: string,
+  fields: readonly EncodedField[],
+  symbolFields: readonly EncodedSymbolField[] = [],
+): string =>
+  fields.length === 0 && symbolFields.length === 0
+    ? built
+    : `Object.assign(${built}, ${record(fields, symbolFields)})`
 
 export const literal = (value: EncodedValue): string => {
   switch (value.kind) {
@@ -164,13 +206,26 @@ export const literal = (value: EncodedValue): string => {
     case 'undefined':
       return 'undefined'
     case 'symbol':
-      return value.description === null ? 'Symbol()' : `Symbol(${quoted(value.description)})`
+      return shared(
+        value.shared,
+        value.description === null ? 'Symbol()' : `Symbol(${quoted(value.description)})`,
+      )
     case 'pattern':
       return `/${value.source}/${value.flags}`
     case 'not-data':
       return WITHOUT_A_SPELLING['not-data']
+    /**
+     * **A hole spells as nothing at all, which is the language's own notation for it.** `[, 1]` is a
+     * list of two whose first element is absent and `[1, 2, ,]` is a list of three whose last is - so
+     * what carries a hole is the comma beside it, and the comma belongs to the list. The list arm adds
+     * the closing one, because a trailing comma after a value is a separator and after a hole is the
+     * hole itself.
+     *
+     * It used to print `<hole>`, which is why a hole was among the kinds with no spelling. It has one.
+     * ADR-0160.
+     */
     case 'hole':
-      return WITHOUT_A_SPELLING.hole
+      return ''
     case 'again':
       return `#${value.shared}`
     case 'opaque':
@@ -179,8 +234,11 @@ export const literal = (value: EncodedValue): string => {
       return WITHOUT_A_SPELLING.instance
     case 'big-integer':
       return `${value.digits}n`
-    case 'list':
-      return shared(value.shared, `[${value.entries.map(literal).join(', ')}]`)
+    case 'list': {
+      const closing = value.entries[value.entries.length - 1]?.kind === 'hole' ? ',' : ''
+
+      return shared(value.shared, `[${value.entries.map(literal).join(', ')}${closing}]`)
+    }
     case 'set':
       return shared(value.shared, `new Set([${value.entries.map(literal).join(', ')}])`)
     case 'instant':
@@ -202,6 +260,7 @@ export const literal = (value: EncodedValue): string => {
             ? `new ${value.errorKind}(${quoted(value.message)})`
             : `new ${value.errorKind}(${quoted(value.message)}, { cause: ${literal(value.cause)} })`,
           value.fields,
+          value.symbolFields,
         ),
       )
     case 'boxed':
@@ -214,14 +273,15 @@ export const literal = (value: EncodedValue): string => {
             ? `Object(${literal(value.value)})`
             : `new ${BOXES[value.of]}(${literal(value.value)})`,
           value.fields,
+          value.symbolFields,
         ),
       )
     case 'record':
       return shared(
         value.shared,
         value.prototype === 'none'
-          ? `Object.assign(Object.create(null), ${record(value.fields)})`
-          : record(value.fields),
+          ? `Object.assign(Object.create(null), ${record(value.fields, value.symbolFields)})`
+          : record(value.fields, value.symbolFields),
       )
   }
 }

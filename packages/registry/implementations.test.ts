@@ -47,7 +47,7 @@ const lockedFeatureOf = (
   servedFrom: THE_UNPUBLISHED_REVISION,
 })
 
-describe('the implementations under the five contracts', () => {
+describe('the implementations under the contracts of the catalogue', () => {
   it.each(eachContract)(
     'the-reference-files-are-the-declared-ones-and-are-hashed-%s',
     (_name, source) => {
@@ -76,16 +76,21 @@ describe('the implementations under the five contracts', () => {
    * carried its own depth could disagree with its own edges, which is the reason the field was
    * replaced. Here the two cannot disagree, so what the second line adds is that the derivation
    * answers zero on an empty graph rather than throwing on it.
+   *
+   * **Both expectations are shaped by the catalogue rather than written out**, which is a repair
+   * rather than a style: they were six empty arrays and six zeros, transcribed, and the seventh
+   * contract reddened them for existing. What is claimed is still measured - the left of each is what
+   * `referenceImplementationOf` answered - and what is derived is only how many answers there are.
    */
   it('every-reference-has-no-dependencies :: permanent rule 2, as edges and as a number', () => {
     const implementations = theCatalogue.map((source) =>
       referenceImplementationOf(REPOSITORY_ROOT, source),
     )
 
-    expect(implementations.map((entry) => entry.dependsOn)).toEqual([[], [], [], [], [], []])
-    expect(implementations.map((entry) => dependencyDepthOf(entry, implementations))).toEqual([
-      0, 0, 0, 0, 0, 0,
-    ])
+    expect(implementations.map((entry) => entry.dependsOn)).toEqual(theCatalogue.map(() => []))
+    expect(implementations.map((entry) => dependencyDepthOf(entry, implementations))).toEqual(
+      theCatalogue.map(() => 0),
+    )
   })
 
   /**

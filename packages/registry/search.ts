@@ -324,17 +324,41 @@ export const spreadOverTheCatalogue = (entries: readonly ServedIndexEntry[]): Wo
 /**
  * The most contracts a word may be declared by and still say which one is meant.
  *
- * **Both sides of it are pinned by a trial rather than chosen.** At one, `parse yaml` is admitted,
- * which the negative half exists to refuse. At three and above, the silence this constant was
- * introduced to remove comes straight back, 6 of 19 descriptions answered instead of 12. Two is the
- * only value the measurement leaves.
+ * **Both sides are pinned by a trial, and the lower one is re-taken here because the trial that set
+ * it had stopped reproducing.** It read *at one, `parse yaml` is admitted, which the negative half
+ * exists to refuse* - ADR-0136's reading over five contracts, restated by ADR-0144 and by ADR-0154,
+ * which says in as many words that it did not re-open it. Measured at `03ac68c`, over the catalogue
+ * as committed and over the same tree carrying `object/deep-equal@1` alike: at one, `parse yaml`
+ * answers nothing, and so does every other query of that negative half - **zero of twenty-eight, both
+ * populations**. It was re-taken with `A_FIELD_MAY_KEEP_ONE_BACK_FROM` at one as well as at three, so
+ * the floor that arrived after it is not what hides it. Which change retired that pin is not
+ * established here and is not guessed at.
  *
- * **It is not in a gap of the distribution, and saying so would be the easier sentence.** Over the
- * five: 68 words are declared by one contract, three by two - `describe`, `failure`, `safe` - three
- * by three - `from`, `string`, `to` - and two by all five, `1` and `typescript`. The ceiling cuts
- * between two adjacent classes; the one empty class is four, which is nowhere near it. So what
- * justifies the value is the trial on either side of it and not the shape of the counts, and the
- * counts are published here because they are what a later reading is taken against.
+ * **What refuses one is two rewordings, and that is the whole cost.** Over the trial entire - the 40
+ * corpus queries, the 28 of the negative half, 88 aliases and 3 rewordings, **159 items** - a ceiling
+ * of one loses `turn a string into a number` and `string into number`, which answer `number/parse@1`
+ * at two and nothing at one: `string` is declared by three contracts and `number` by two, so at one
+ * neither tells them apart and the request has no telling word left. **Two items of 159, and the same
+ * two of the 144 at six contracts** - the price of tightening did not move when the catalogue grew.
+ *
+ * **What tightening buys did move, and that is the half worth reading.** ADR-0160. At six it bought nothing:
+ * the negative half was already whole at two. At seven it closes `a deep clone of an object`, one of
+ * twenty-eight. So the trade is two requests this catalogue serves against one it does not, and the
+ * answer is accepted instead - `a-query-the-catalogue-cannot-answer-answers-nothing` carries why.
+ *
+ * **The upper side is ADR-0136's and is not re-taken here**: it read 6 of 19 descriptions answered
+ * instead of 12 at three and above. What is measured at `03ac68c` is that three also admits
+ * `remove accents from string`, a real request answered by `number/parse@1`, and that four loses
+ * seven corpus queries and three aliases outright.
+ *
+ * **It is not in a gap of the distribution, and the counts that said so were stale.** Over the five
+ * ADR-0136 read: 68 words declared by one contract, three by two, three by three, two by all five,
+ * with four empty. Measured at `03ac68c` carrying the seventh: **85 by one, 10 by two, 4 by three, 1
+ * by four, 2 by all seven - 102 words**, against 92 over the catalogue as committed. **The class this
+ * ceiling admits went from three words to ten**, so it lets through three times what it did when it
+ * was pinned and nothing said so; and four is no longer the empty class, `to` being there. So what
+ * justifies the value is the trial on either side and never the shape of the counts - which is what
+ * the old reading concluded, and is the half of it that survived.
  */
 const TELLS_THE_CONTRACTS_APART = 2
 

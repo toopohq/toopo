@@ -136,9 +136,11 @@ export type DeferredNeed = {
  * paid rather than repeated: a case whose input is a function cannot be pre-filled, and
  * `array/group-by@1` has thirty of them. **That contract has a page since ADR-0127 and the page carries
  * no playground**, which is a narrower reason and a firmer one: a refused contract has no reference
- * module to strip, so there is nothing for a form to call. `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling`
- * is the guard that turns that from a fact about today into something that reddens the day it stops
- * being true.
+ * module to strip, so there is nothing for a form to call.
+ * `a-case-printed-as-a-word-is-a-case-the-form-declines-to-open` is the guard that turns that from a
+ * fact about today into something that reddens the day it stops being true - it was
+ * `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling` until the seventh contract made
+ * the stronger claim untrue and the agreement between the two halves took its place. ADR-0160.
  *
  * **`search-with-an-alias-thesaurus` left it last, and it is the only one of the three that was lifted
  * rather than paid.** The entry read *until the catalogue stops fitting on one screen*, and that

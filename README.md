@@ -78,7 +78,7 @@ so *is this the code I was given* is a question your own checkout answers with n
 
 ## What is in the catalogue
 
-**6 contracts, 5 of them installable and 1 refused.** The refused one was measured against what the
+**7 contracts, 6 of them installable and 1 refused.** The refused one was measured against what the
 language now does and turned down, and it is published here rather than deleted, because a catalogue
 that only shows what it accepted is a catalogue you cannot check.
 
@@ -89,9 +89,10 @@ that only shows what it accepted is a catalogue you cannot check.
 | `typescript/string/levenshtein@1` | Edit distance, over code points rather than code units |
 | `typescript/string/slugify@1` | Text to a URL-safe identifier, Unicode rather than ASCII |
 | `typescript/number/round@1` | Rounding the decimal a caller wrote, not the double a machine stored |
+| `typescript/object/deep-equal@1` | Comparing two values by the data they carry, where two shipped implementations answer `true` for two different Sets |
 | `typescript/array/group-by@1` | **Refused.** ES2024 shipped `Map.groupBy` and it answers the contract |
 
-Between them the five installable contracts settle **188 named edge cases**, each identifier frozen
+Between them the six installable contracts settle **237 named edge cases**, each identifier frozen
 for the life of the major version.
 
 - [toopo.dev](https://toopo.dev) — the catalogue, one page per contract, with a playground that runs
@@ -101,9 +102,9 @@ for the life of the major version.
 
 ## Why you can believe any of it
 
-21 mutation batteries inject **766 deliberate defects** into this repository — each one a committed
+23 mutation batteries inject **792 deliberate defects** into this repository — each one a committed
 file naming the exact edit it makes and the verdict it must produce — and re-run the whole suite once
-per defect. **726 are caught.**
+per defect. **752 are caught.**
 
 To be exact about what *caught* means: a few of these defects cannot occur on every operating system,
 because what they break is a rule of the filesystem rather than of this code. Each is caught where it
@@ -118,7 +119,7 @@ suite's sight away, and **3 are a limit this repository declares with its price*
 
 ```sh
 pnpm install
-pnpm run mutation    # tens of minutes; replays all 766 cells and prints the total
+pnpm run mutation    # tens of minutes; replays all 792 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 

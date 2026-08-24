@@ -10,7 +10,7 @@ confirmed-by:
   - battery: site
     guard: every-case-the-registry-serves-is-read-back-from-the-literal-its-page-publishes
   - battery: site
-    guard: no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling
+    guard: a-case-printed-as-a-word-is-a-case-the-form-declines-to-open
 ---
 
 # Totality by the compiler beats a pass over the data

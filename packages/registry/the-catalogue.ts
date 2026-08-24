@@ -51,7 +51,9 @@ import * as levenshteinCases from '../../contracts/typescript/string/levenshtein
 import * as slugify from '../../contracts/typescript/string/slugify/contract.js'
 import * as slugifyCases from '../../contracts/typescript/string/slugify/edge-cases.js'
 import * as round from '../../contracts/typescript/number/round/contract.js'
+import * as deepEqual from '../../contracts/typescript/object/deep-equal/contract.js'
 import * as roundCases from '../../contracts/typescript/number/round/edge-cases.js'
+import * as deepEqualCases from '../../contracts/typescript/object/deep-equal/edge-cases.js'
 
 import { battery as numberParseBattery } from '../../mutation/number-parse.battery.js'
 import { battery as numberParseSpec } from '../../mutation/number-parse-spec.battery.js'
@@ -65,6 +67,8 @@ import { battery as slugifyBattery } from '../../mutation/string-slugify.battery
 import { battery as slugifySpec } from '../../mutation/string-slugify-spec.battery.js'
 import { battery as roundBattery } from '../../mutation/number-round.battery.js'
 import { battery as roundSpec } from '../../mutation/number-round-spec.battery.js'
+import { battery as deepEqualBattery } from '../../mutation/object-deep-equal.battery.js'
+import { battery as deepEqualSpec } from '../../mutation/object-deep-equal-spec.battery.js'
 import { battery as validationStageOne } from '../../mutation/validation-stage-1.battery.js'
 
 const addressOf = (name: string): ContractAddress => ({ language: 'typescript', name, major: 1 })
@@ -75,6 +79,7 @@ const GROUP_BY = addressOf('array/group-by')
 const LEVENSHTEIN = addressOf('string/levenshtein')
 const SLUGIFY = addressOf('string/slugify')
 const ROUND = addressOf('number/round')
+const DEEP_EQUAL = addressOf('object/deep-equal')
 
 /**
  * The state the four installable contracts entered on the day this catalogue was published.
@@ -782,6 +787,89 @@ export const theCatalogue: readonly ContractSource[] = [
       },
     ],
     batteries: [batteryRecord(ROUND, roundBattery), batteryRecord(ROUND, roundSpec)],
+  },
+
+  {
+    address: DEEP_EQUAL,
+    lifecycle: PUBLISHED,
+    /**
+     * The first contract written after ADR-0159, and the first whose copied file was never going to
+     * carry a copyright line.
+     */
+    banner: 'the-marking-alone',
+    folder: 'contracts/typescript/object/deep-equal',
+    /** The seven and nothing else: this contract invented no file of its own. */
+    files: THE_SEVEN_FILES,
+    shared: THE_SHARED_FILES,
+    module: deepEqual as unknown as Readonly<Record<string, unknown>>,
+    declares: [deepEqual, deepEqualCases] as unknown as Readonly<Record<string, unknown>>[],
+    notCarried: [{ name: 'outputsAreEqual', reason: SERVED_AS_A_FILE }],
+    exports: [
+      {
+        name: 'deepEqual',
+        typeName: 'DeepEqual',
+        text: '(left: unknown, right: unknown) => boolean',
+        role: 'the-answer',
+      },
+    ],
+    supportingTypes: [],
+    caseTables: [
+      {
+        name: 'edge-cases',
+        purpose:
+          'the pairs this contract settles, each answered by the walk and by the transposition of ' +
+          'itself, because an order-insensitive matching can answer differently by side',
+        groups: deepEqualCases.edgeCaseGroups,
+        cases: deepEqualCases.edgeCases,
+      },
+    ],
+    benchmarks: {
+      classField: 'comparisonClass',
+      vocabulary: [
+        {
+          name: 'stops-early',
+          meaning: 'the pair parts at the first key looked at, which is most of what a caller does',
+        },
+        {
+          name: 'stops-late',
+          meaning: 'the pair parts at the last leaf, so the whole traversal is paid for a false',
+        },
+        {
+          name: 'walks-everything',
+          meaning: 'the pair agrees, so every leaf of both graphs is visited',
+        },
+      ],
+      profiles: deepEqual.benchmarkProfiles,
+      // Every sample is a pair of small values, so the whole of block 4.5 encodes to a document a
+      // reader can open and nothing here points at an expression. The one profile that would have
+      // needed to is gone: `contract.ts` carries the measurement that says the registry could not have
+      // carried its sample at a depth that meant anything.
+    },
+    ownDeclarations: [
+      /**
+       * The two things this contract requires that nothing measured provides, each with its bound in
+       * the same declaration as its claim. It is prose about behaviour rather than a value a run can
+       * contradict; what makes each clause executable is a property and a profile, declared in their
+       * own blocks and reddened there.
+       */
+      { name: 'theClauses', verification: 'documentary' },
+      /**
+       * The depth a comparison reaches, by population, on five shipped implementations and this one.
+       * Every figure is a reading of somebody else's package taken on one machine on one day, so
+       * nothing here can hold it.
+       */
+      { name: 'theDepthReadings', verification: 'documentary' },
+      /**
+       * The three faults this contract's walk was written with. It is the evidence for the speculation
+       * clause and it is history, so no run can contradict it - but the rows the faults produced are in
+       * block 4.4 and are executable there, which is where a reader is sent.
+       */
+      { name: 'theAuthoringFaults', verification: 'documentary' },
+    ],
+    batteries: [
+      batteryRecord(DEEP_EQUAL, deepEqualBattery),
+      batteryRecord(DEEP_EQUAL, deepEqualSpec),
+    ],
   },
 ]
 

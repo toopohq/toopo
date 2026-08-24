@@ -97,8 +97,11 @@ describe('the call a declared signature declares', () => {
   })
 
   /**
-   * The five, read rather than transcribed - and the expectation transcribed rather than read, which
-   * is what makes this a comparison instead of a tautology.
+   * Every contract of the catalogue, read rather than transcribed - and the expectation transcribed
+   * rather than read, which is what makes this a comparison instead of a tautology.
+   *
+   * **A contract with no row here does not pass, it reddens**, `expected[name]` being `undefined`
+   * against a list of parameters, so the transcription cannot be left behind by a publication.
    */
   it.each(eachContract)('the-call-of-%s-is-read-from-its-own-signature', (name, source) => {
     const expected: Readonly<Record<string, readonly ParameterRecord[]>> = {
@@ -111,6 +114,7 @@ describe('the call a declared signature declares', () => {
       'string-levenshtein': [{ name: 'a', type: 'string' }, { name: 'b', type: 'string' }],
       'string-slugify': [{ name: 'text', type: 'string' }],
       'number-round': [{ name: 'value', type: 'number' }, { name: 'places', type: 'number' }],
+      'object-deep-equal': [{ name: 'left', type: 'unknown' }, { name: 'right', type: 'unknown' }],
     }
 
     const record = serialiseContract(REPOSITORY_ROOT, source)

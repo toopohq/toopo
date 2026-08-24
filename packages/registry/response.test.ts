@@ -476,6 +476,10 @@ describe('the index, the refusals, and what update compares', () => {
    * A refused contract is findable and is not installable, and both halves matter. Hiding it would
    * leave somebody searching for `groupBy` told nothing; offering it would offer an installation of
    * something the catalogue's own page says it turned down.
+   *
+   * **It names which entry is not installable rather than counting the ones that are**, which is the
+   * same claim without a figure that a publication retires: it read `toHaveLength(5)` and the sixth
+   * contract left it wrong.
    */
   it('a-refused-contract-is-findable-and-not-installable', () => {
     const index = theServedIndex()
@@ -484,7 +488,9 @@ describe('the index, the refusals, and what update compares', () => {
 
     expect(groupByEntry?.installable).toBe(false)
     expect(groupByEntry?.domain).toBe('array')
-    expect(index.entries.filter((entry) => entry.installable)).toHaveLength(5)
+    expect(
+      index.entries.filter((entry) => !entry.installable).map((entry) => entry.address.name),
+    ).toEqual(['array/group-by'])
     expect(index.entries.every((entry) => entry.searchAliases.length > 0)).toBe(true)
   })
 
@@ -508,6 +514,7 @@ describe('the index, the refusals, and what update compares', () => {
       'string/levenshtein': ['levenshtein'],
       'string/slugify': ['slugify'],
       'number/round': ['round', 'describeRoundFailure'],
+      'object/deep-equal': ['deepEqual'],
     })
     expect(
       index.entries.every((entry) => entry.exports[0]?.role === 'the-answer'),
@@ -525,6 +532,11 @@ describe('the index, the refusals, and what update compares', () => {
    * than of an entry, so it is paid once whatever the catalogue grows to. `added` did not move either
    * time, and that is the number this guard is actually about: what carrying the export names costs is
    * a property of the names and not of how much else the entry happens to hold.
+   *
+   * **It moved for the first time at the seventh contract, by 53, and that confirms the sentence
+   * above rather than refusing it**: `object/deep-equal@1` brought a seventh set of export names, so
+   * `added` grew by what one more name costs. The document went 3 070 to 3 699 and 3 550 to 4 232 -
+   * 629 and 682 - and the 53 between those two is the same 53.
    */
   it('the-index-stays-the-smallest-thing-the-registry-serves', () => {
     const index = theServedIndex()
@@ -537,9 +549,9 @@ describe('the index, the refusals, and what update compares', () => {
     const before = canonical(withoutExports, 'index').length
 
     expect({ before, grown, added: grown - before }).toEqual({
-      before: 3070,
-      grown: 3550,
-      added: 480,
+      before: 3699,
+      grown: 4232,
+      added: 533,
     })
   })
 

@@ -200,16 +200,37 @@ const readSequence = (scan: Cursor, closing: string, entry: () => void): void =>
   }
 }
 
+/**
+ * A list, holes included.
+ *
+ * **It does not go through `readSequence`, and the hole is why.** `[, 1]` is a list of two whose first
+ * element is absent and `[1, 2, ,]` is a list of three whose last is - so an empty position between
+ * two commas is an element here, where everywhere else in this notation it is nothing at all. A
+ * trailing comma after a *value* closes the list without adding one, which is the same comma meaning
+ * two things and the reason the two readers are apart.
+ *
+ * The hole is made by growing `length` and never assigning, so what comes back is a real hole rather
+ * than an `undefined` - which is the pair of cases `object/deep-equal@1` settles. ADR-0160.
+ */
 const readList = (scan: Cursor, label: number | undefined): readonly unknown[] => {
   const entries: unknown[] = []
   if (label !== undefined) scan.shared.set(label, entries)
 
   scan.at += 1
-  readSequence(scan, ']', () => {
-    entries.push(readValue(scan))
-  })
+  for (;;) {
+    skipSpace(scan)
+    if (take(scan, ']')) return entries
+    if (scan.text[scan.at] === ',') {
+      scan.at += 1
+      entries.length += 1
+      continue
+    }
 
-  return entries
+    entries.push(readValue(scan))
+    skipSpace(scan)
+    if (take(scan, ']')) return entries
+    if (!take(scan, ',')) fail(scan, 'a comma or a `]` has to come next')
+  }
 }
 
 const readSet = (scan: Cursor, label: number | undefined): ReadonlySet<unknown> => {
@@ -238,6 +259,27 @@ const readFieldName = (scan: Cursor): string => {
 }
 
 /**
+ * What a field is keyed by: a name, or a value in brackets.
+ *
+ * The bracketed form is the language's computed key, and the only value this notation ever puts in it
+ * is a symbol - so a key that reads back as anything else is refused here rather than becoming a
+ * property named after whatever it stringifies to.
+ */
+const readFieldKey = (scan: Cursor): string | symbol => {
+  skipSpace(scan)
+  if (!take(scan, '[')) return readFieldName(scan)
+
+  const key = readValue(scan)
+  skipSpace(scan)
+  if (!take(scan, ']')) fail(scan, 'a computed key has to be closed by a `]`')
+  if (typeof key !== 'symbol') {
+    fail(scan, 'a computed key is written here only for a symbol')
+  }
+
+  return key as symbol
+}
+
+/**
  * One record. Every field is *defined* rather than assigned, and that is not a precaution about
  * hostile input: `array/group-by@1` settles what happens to a key called `__proto__`, and an
  * assignment there sets the prototype instead of the field - so the one case the catalogue wrote about
@@ -249,12 +291,12 @@ const readRecord = (scan: Cursor, label: number | undefined): Readonly<Record<st
 
   scan.at += 1
   readSequence(scan, '}', () => {
-    const name = readFieldName(scan)
+    const key = readFieldKey(scan)
     skipSpace(scan)
-    if (!take(scan, ':')) fail(scan, `the field \`${name}\` is not followed by a colon`)
+    if (!take(scan, ':')) fail(scan, `the field \`${String(key)}\` is not followed by a colon`)
 
     const value = readValue(scan)
-    Object.defineProperty(record, name, {
+    Object.defineProperty(record, key, {
       value,
       writable: true,
       enumerable: true,
@@ -445,13 +487,18 @@ const readAssign = (scan: Cursor, label: number | undefined): object => {
 }
 
 /** A symbol, whose description is a string or nothing at all. */
-const readSymbol = (scan: Cursor): symbol => {
+const readSymbol = (scan: Cursor, label: number | undefined): symbol => {
   skipSpace(scan)
   const description = scan.text[scan.at] === "'" ? readString(scan) : undefined
   skipSpace(scan)
   if (!take(scan, ')')) fail(scan, 'a `Symbol(` has to be closed by a `)`')
 
-  return Symbol(description)
+  const held = Symbol(description)
+  // A symbol takes a label like an object, and for the same reason: `{ [#1 = Symbol('s')]: 1 }` beside
+  // `{ [#1]: 2 }` is one symbol keying two objects, which is a different value from two symbols.
+  if (label !== undefined) scan.shared.set(label, held)
+
+  return held
 }
 
 const readTerm = (scan: Cursor, label: number | undefined): unknown => {
@@ -491,11 +538,15 @@ const readTerm = (scan: Cursor, label: number | undefined): unknown => {
     return readTypedArray(scan, aTypedArray.replace(/^new\s+|\s*\(\s*\[$/g, ''), label)
   }
 
+  // The one primitive that carries a label, above the refusal because of it: identity is what a symbol
+  // is, so `#1 = Symbol('s')` and `#1` beside it are one symbol and not two of one description.
+  if (takePattern(scan, A_SYMBOL_OPENS) !== null) return readSymbol(scan, label)
+
   if (label !== undefined) {
     return fail(
       scan,
-      'only a list, a set, a record, a map, a date, an error, a boxed primitive or a typed array is ' +
-        'addressed by a `#n =` label',
+      'only a symbol, a list, a set, a record, a map, a date, an error, a boxed primitive or a typed ' +
+        'array is addressed by a `#n =` label',
     )
   }
 
@@ -505,7 +556,6 @@ const readTerm = (scan: Cursor, label: number | undefined): unknown => {
 
   if (character === "'") return readString(scan)
   if (character === '/') return readPattern(scan)
-  if (takePattern(scan, A_SYMBOL_OPENS) !== null) return readSymbol(scan)
   if (takeWord(scan, 'undefined')) return undefined
   if (takeWord(scan, 'null')) return null
   if (takeWord(scan, 'true')) return true

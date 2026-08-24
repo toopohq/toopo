@@ -5,8 +5,9 @@ import type { CaseRecord } from '../registry/contract-record.js'
 import type { EncodedValue } from '../registry/value.js'
 import { decode, encode } from '../registry/value.js'
 import { heldByTheRegistry } from './catalogue.js'
-import { WITHOUT_A_SPELLING, literal } from './literal.js'
+import { WITHOUT_A_SPELLING, hasASpelling, literal } from './literal.js'
 import { localSource } from './local-source.js'
+import { whatKeepsACaseFromTheForm } from './playground.js'
 import { UnreadableLiteral, read } from './read-literal.js'
 
 /**
@@ -35,10 +36,13 @@ import { UnreadableLiteral, read } from './read-literal.js'
  * catalogue refused. Measured over the five: **157 of the 187 cases sit on contracts that have a page,
  * and all 30 that print a word with no spelling sit on `array/group-by@1`, which has none.**
  *
- * That is why `no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling` is written as an
- * assertion rather than as a remark. It is the invariant the playground needs, and it reddens on the
- * day a higher-order contract gains a page - which is exactly the day somebody has to decide what that
- * contract's playground does with a case whose input is a function.
+ * That is why the guard below the catalogue pass is written as an assertion rather than as a remark.
+ * **It said what it would cost to be wrong and it was right about the day**: it reddened when
+ * `object/deep-equal@1` gained a page, on the seven of its forty-nine cases whose values are a
+ * function, a promise, a weak collection or an instance of a class. It is
+ * `a-case-printed-as-a-word-is-a-case-the-form-declines-to-open` now, because the invariant it held is
+ * not available - a rewritten function is a different function - and what replaces it is that the
+ * printer and the form cannot disagree about which rows those are. ADR-0160.
  */
 
 const source = localSource()
@@ -63,8 +67,22 @@ const withoutASpelling = new Set(Object.keys(WITHOUT_A_SPELLING))
 // Comparing what was read with what the registry decodes
 // ---------------------------------------------------------------------------
 
-const show = (value: unknown): string =>
-  Object.is(value, -0) ? '-0' : typeof value === 'string' ? `'${value}'` : String(value)
+/**
+ * A value named in a fault message.
+ *
+ * `String` throws on an object with no prototype - `Cannot convert object to primitive value` - and
+ * `object/deep-equal@1` settles a case on one, so the rendering of a disagreement was able to fail
+ * while describing it. An object is tagged rather than stringified, which is what `String` gave for
+ * every other object anyway.
+ */
+const show = (value: unknown): string => {
+  if (Object.is(value, -0)) return '-0'
+  if (typeof value === 'string') return `'${value}'`
+  if (typeof value === 'symbol') return value.toString()
+  if (typeof value === 'object' && value !== null) return Object.prototype.toString.call(value)
+
+  return String(value)
+}
 
 const at = (path: string): string => (path === '' ? 'the value' : path)
 
@@ -84,22 +102,65 @@ const listFaults = (mine: unknown[], theirs: unknown[], path: string, seen: Map<
 const setFaults = (mine: Set<unknown>, theirs: Set<unknown>, path: string, seen: Map<unknown, unknown>) =>
   listFaults([...mine], [...theirs], `${at(path)} as a set`, seen)
 
+/** The own enumerable keys of a value, of both sorts, in the order the value reports them. */
+const ownKeysOf = (subject: object): readonly (string | symbol)[] =>
+  Reflect.ownKeys(subject).filter(
+    (key) => Object.getOwnPropertyDescriptor(subject, key)?.enumerable === true,
+  )
+
+/**
+ * Two records, named keys and symbol keys alike.
+ *
+ * **`Object.keys` reports neither of the two things this contract is about**, and reading it here
+ * would have been the defect being published compared against itself: a symbol-keyed property is
+ * invisible to it, so `{ [s]: 1 }` and `{ [s]: 2 }` are both `{}` and every reader would pass.
+ *
+ * Named keys are sorted, because a record's own order is not part of what it is - `object/deep-equal@1`
+ * settles that in as many words. Symbol keys are compared in the order they are reported, because there
+ * is no order on symbols to sort by, and each key is put through `disagreement` so that the identity of
+ * one shared symbol is followed rather than its description read.
+ */
 const recordFaults = (
-  mine: Record<string, unknown>,
-  theirs: Record<string, unknown>,
+  mine: Record<string | symbol, unknown>,
+  theirs: Record<string | symbol, unknown>,
   path: string,
   seen: Map<unknown, unknown>,
 ) => {
-  const mineKeys = Object.keys(mine).sort()
-  const theirKeys = Object.keys(theirs).sort()
+  const named = (subject: object): string[] =>
+    ownKeysOf(subject).filter((key): key is string => typeof key === 'string').sort()
+  const keyed = (subject: object): symbol[] =>
+    ownKeysOf(subject).filter((key): key is symbol => typeof key === 'symbol')
+
+  const mineKeys = named(mine)
+  const theirKeys = named(theirs)
 
   if (mineKeys.join() !== theirKeys.join()) {
     return [`${at(path)} holds [${mineKeys}] where the registry decodes [${theirKeys}]`]
   }
 
-  return mineKeys.flatMap((key) =>
-    disagreement(mine[key], theirs[key], `${at(path)}.${key}`, seen),
-  )
+  const mineSymbols = keyed(mine)
+  const theirSymbols = keyed(theirs)
+
+  if (mineSymbols.length !== theirSymbols.length) {
+    return [
+      `${at(path)} holds ${mineSymbols.length} symbol keys where the registry decodes ` +
+        `${theirSymbols.length}`,
+    ]
+  }
+
+  return [
+    ...mineKeys.flatMap((key) =>
+      disagreement(mine[key], theirs[key], `${at(path)}.${key}`, seen),
+    ),
+    ...mineSymbols.flatMap((key, at_) => {
+      const theirKey = theirSymbols[at_] as symbol
+
+      return [
+        ...disagreement(key, theirKey, `${at(path)}[${String(key)}]<key>`, seen),
+        ...disagreement(mine[key], theirs[theirKey], `${at(path)}[${String(key)}]`, seen),
+      ]
+    }),
+  ]
 }
 
 /**
@@ -117,11 +178,22 @@ const disagreement = (
 ): readonly string[] => {
   const differ = [`${at(path)} is ${show(mine)} where the registry decodes ${show(theirs)}`]
 
+  /**
+   * **A symbol is followed like an object, and comparing descriptions alone is the defect this
+   * contract publishes.** `object/deep-equal@1` settles that two objects keyed by *one* symbol differ
+   * from two objects keyed by two symbols of one description - so a comparison that read only the
+   * description would call the reader's answer right whichever of the two it had built.
+   */
   if (typeof mine === 'symbol' || typeof theirs === 'symbol') {
-    const same =
-      typeof mine === 'symbol' && typeof theirs === 'symbol' && mine.description === theirs.description
+    if (typeof mine !== 'symbol' || typeof theirs !== 'symbol') return differ
 
-    return same ? [] : differ
+    const met = seen.get(mine)
+    if (met !== undefined) {
+      return met === theirs ? [] : [`${at(path)} is one symbol where the registry decodes a second`]
+    }
+    seen.set(mine, theirs)
+
+    return mine.description === theirs.description ? [] : differ
   }
 
   if (typeof mine !== 'object' || mine === null || typeof theirs !== 'object' || theirs === null) {
@@ -138,10 +210,8 @@ const disagreement = (
     return String(mine) === String(theirs) ? [] : differ
   }
 
-  // The kinds whose whole value lives where  cannot see it. Without these, this
-  // comparison would commit the defect  exists to publish:  of a
-  // Date, of a Map and of a Set are all the empty array, so every Date would compare equal to every
-  // other and a reader that built the wrong instant would pass. Measured - it did.
+  // Before the general comparison, because what these hold is where the general comparison cannot
+  // look. The argument is on `beyondJson` itself rather than restated here.
   const beyond = beyondJson(mine, theirs, path, seen)
   if (beyond !== null) return beyond
 
@@ -351,29 +421,65 @@ describe('the text somebody typed, as the value it spells', () => {
       held.map((one) => one.contract.caseTables.every((table) => table.cases.length > 0)),
     ).toEqual(held.map(() => true))
 
-    const faults = served.flatMap(({ contract, entry }) =>
-      faultsOf(entry.data).map((fault) => `${contract}#${entry.id}: ${fault}`),
-    )
+    /**
+     * Rows whose value the page prints a word for are out of this population by construction, and the
+     * filter is `hasASpelling` rather than a list: there is no text for a reader to type that builds
+     * *that* function, so there is nothing here to read back. The guard below is what keeps that set
+     * from growing past what the printer really declines. ADR-0160.
+     */
+    const faults = served
+      .filter(({ entry }) => hasASpelling(entry.data))
+      .flatMap(({ contract, entry }) =>
+        faultsOf(entry.data).map((fault) => `${contract}#${entry.id}: ${fault}`),
+      )
 
     expect(faults).toEqual([])
+    expect(served.filter(({ entry }) => hasASpelling(entry.data)).length).toBeGreaterThan(0)
   })
 
   /**
-   * The invariant a playground rests on, asserted rather than remarked.
+   * A case printed as a word is a case the form declines to open, and the two say so of each other.
    *
-   * It is true today because every case printing a word with no spelling belongs to
-   * `array/group-by@1`, which was refused before publication and has no page. It reddens the day a
-   * higher-order contract gains one - which is the day somebody has to decide what that contract's
-   * playground does with a case whose input is a function, rather than the day a reader meets a field
-   * that cannot be filled.
+   * **This guard predicted its own reopening and the question it would ask**, which is worth recording
+   * because an entry of this kind usually closes by surprise. It read: *it is true today because every
+   * case printing a word with no spelling belongs to `array/group-by@1`, which was refused before
+   * publication and has no page. It reddens the day a higher-order contract gains one - which is the
+   * day somebody has to decide what that contract's playground does with a case whose input is a
+   * function.* `object/deep-equal@1` is that contract and this is that day. ADR-0160.
+   *
+   * **What replaces the invariant is the agreement rather than a weaker version of it.** The old claim
+   * cannot be kept - a function has no expression that builds *that* function - and dropping it would
+   * leave a page free to print a word into a field. So the claim is now that the two halves cannot
+   * disagree: what `packages/site/literal.ts` prints a word for is exactly what
+   * `whatKeepsARowFromTheForm` keeps out of the form, read case by case over everything served.
+   *
+   * The word is matched in the printed text rather than derived, deliberately: the *other* side is the
+   * derivation, and a guard whose two sides are one derivation compares nothing.
    */
-  it('no-case-the-registry-serves-is-printed-as-a-word-with-no-spelling', () => {
+  it('a-case-printed-as-a-word-is-a-case-the-form-declines-to-open', () => {
     const words = Object.values(WITHOUT_A_SPELLING)
-    const unreadable = servedCases().filter(({ entry }) =>
-      words.some((word) => literal(entry.data).includes(word)),
+    const held = heldByTheRegistry(source)
+
+    const faults = held.flatMap((one) =>
+      one.contract.caseTables.flatMap((table) =>
+        table.cases.flatMap((entry) => {
+          const printed = words.some((word) => literal(entry.data).includes(word))
+          const declined = whatKeepsACaseFromTheForm(entry, one.contract)
+          const what = `${renderContract(one.contract.address)}#${entry.id}`
+
+          if (printed && declined === null) return [`${what} prints a word and the form takes it`]
+
+          return !printed && declined?.includes('no JavaScript spelling') === true
+            ? [`${what} spells out and the form refuses it for having no spelling`]
+            : []
+        }),
+      ),
     )
 
-    expect(unreadable.map(({ contract, entry }) => `${contract}#${entry.id}`)).toEqual([])
+    expect(faults).toEqual([])
+    // The bound, so a run reaching no case cannot pass on an empty list.
+    expect(held.flatMap((one) => one.contract.caseTables.flatMap((table) => table.cases)).length)
+      .toBeGreaterThan(0)
   })
 
   // -------------------------------------------------------------------------

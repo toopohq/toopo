@@ -141,6 +141,12 @@ type cannot express one. `no-case-the-registry-serves-is-printed-as-a-word-with-
 guard that reddens on that day, which is what makes the event visible rather than something somebody
 has to remember.
 
+**That day came, and the guard is what announced it.** `object/deep-equal@1` settles cases on a
+function, a promise, a weak collection and an instance of a class; the guard reddened on seven of its
+forty-nine. What was decided is that such a row is declined by the form and still rendered in the
+table, and that the two halves answer for each other - the guard is now
+`a-case-printed-as-a-word-is-a-case-the-form-declines-to-open`. ADR-0160.
+
 ## More Information
 
 - [ADR-0011](0011-a-case-of-block-4-4-is-a-call.md) — the parameters this form is built from.
