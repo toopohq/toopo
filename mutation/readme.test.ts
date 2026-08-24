@@ -94,6 +94,10 @@ describe('what the readme publishes about the measurement', () => {
       // term was asserted as the literal `exactly one is a debt` while the eight beside it were read
       // off the instrument. It went from one to three with nothing saying so. ADR-0145.
       `${byKind['a-declared-open-class']} are a limit this repository declares`,
+      // The tenth, and the only one of the split that is a hole and stays one. It carries no line
+      // break, for the reason the ninth stopped carrying one: where a sentence wraps is not a fact
+      // about the measurement. ADR-0161.
+      `${byKind['its-witness-is-frozen-out']} is a real defect whose witness is frozen out`,
     ]
 
     expect(claims.filter((claim) => !text.includes(claim))).toEqual([])

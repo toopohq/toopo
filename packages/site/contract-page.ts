@@ -61,6 +61,7 @@ import type {
   CaseRecord,
   CaseTableRecord,
   ExportRecord,
+  PublishedProseCorrection,
   UseCaseRecord,
 } from '../registry/contract-record.js'
 import type { FrozenContract } from '../registry/snapshot.js'
@@ -171,6 +172,7 @@ const renderedCase = (
   entry: CaseRecord,
   answer: ExportRecord,
   fields: readonly PlaygroundField[],
+  corrections: readonly PublishedProseCorrection[],
 ): Node => {
   const { written: call, answered } = theCallOf(entry, answer)
 
@@ -192,6 +194,24 @@ const renderedCase = (
       'div',
       { class: 'argument' },
       paragraph(entry.rationale),
+      /**
+       * What this catalogue has since measured to be false about the paragraph above it.
+       *
+       * **Here and not in a section of its own**, which is the whole of the decision: a reader who
+       * reads the rationale and meets the correction three screens later has already believed it.
+       * The frozen sentence stays exactly where it is - it is what this catalogue published and an
+       * auditor fetching the snapshot receives it - and the correction stands beside it rather than
+       * over it, so a reader judges the two.
+       *
+       * It is rendered as prose and not as a warning, because a correction to an explanation beside
+       * a correct answer is not a defect anybody is exposed to. ADR-0161.
+       */
+      ...corrections
+        .filter((correction) => correction.about === entry.id)
+        .flatMap((correction) => [
+          paragraph(`Since this was published: ${correction.whatItEstablishes}`, { class: 'why' }),
+          paragraph(correction.measurement, { class: 'meta' }),
+        ]),
       ...whatATextFieldCannotCarry(entry, answer, fields).map((field) =>
         line(
           'p',
@@ -249,6 +269,7 @@ const renderedGroup = (
   table: CaseTableRecord,
   answer: ExportRecord,
   fields: readonly PlaygroundField[],
+  corrections: readonly PublishedProseCorrection[],
   heading: Tag,
 ): readonly Node[] => [
   addressed(heading, group.id, group.title),
@@ -258,7 +279,7 @@ const renderedGroup = (
     { class: 'cases' },
     ...table.cases
       .filter((entry) => entry.group === group.id)
-      .map((entry) => renderedCase(entry, answer, fields)),
+      .map((entry) => renderedCase(entry, answer, fields, corrections)),
   ),
 ]
 
@@ -313,6 +334,7 @@ const renderedTable = (
   table: CaseTableRecord,
   answer: ExportRecord,
   fields: readonly PlaygroundField[],
+  corrections: readonly PublishedProseCorrection[],
   alone: boolean,
 ): readonly Node[] => [
   alone
@@ -320,7 +342,7 @@ const renderedTable = (
     : marked('h3', table.purpose, { class: 'table' }),
   theGroupBar(table),
   ...table.groups.flatMap((group) =>
-    renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
+    renderedGroup(group, table, answer, fields, corrections, alone ? 'h3' : 'h4'),
   ),
 ]
 
@@ -694,7 +716,13 @@ export const contractPage = (
             `contract decides, one input at a time.`,
         ),
         ...contract.caseTables.flatMap((table) =>
-          renderedTable(table, answer, playground.fields, contract.caseTables.length === 1),
+          renderedTable(
+            table,
+            answer,
+            playground.fields,
+            held.binding.correctionsToFrozenProse ?? [],
+            contract.caseTables.length === 1,
+          ),
         ),
       ],
     },

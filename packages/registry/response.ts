@@ -54,6 +54,7 @@ import { DIGEST, canonical, digestOfBytes, servedBytes } from './canonical.js'
 import type {
   ExportRole,
   LanguageReExamination,
+  PublishedProseCorrection,
   LearnedTerm,
   Lifecycle,
   UseCaseRecord,
@@ -277,6 +278,7 @@ export type ServedContractBinding = NamedAnswer & {
    * artefact.
    */
   readonly againstTheLanguage?: readonly LanguageReExamination[]
+  readonly correctionsToFrozenProse?: readonly PublishedProseCorrection[]
   /**
    * Phrases the registry learned people ask this contract by, with the argument for each. ADR-0155.
    *
@@ -341,6 +343,7 @@ export const CONTRACT_BINDING_NATURES: Readonly<Record<keyof ServedContractBindi
   lifecycle: 'revisable',
   useCases: 'revisable',
   againstTheLanguage: 'revisable',
+  correctionsToFrozenProse: 'revisable',
   alsoFoundBy: 'revisable',
 }
 
@@ -380,6 +383,9 @@ export const servedContractBinding = (
   ...(entry.standing.againstTheLanguage === undefined
     ? {}
     : { againstTheLanguage: entry.standing.againstTheLanguage }),
+  ...(entry.standing.correctionsToFrozenProse === undefined
+    ? {}
+    : { correctionsToFrozenProse: entry.standing.correctionsToFrozenProse }),
   ...(entry.standing.alsoFoundBy === undefined
     ? {}
     : { alsoFoundBy: entry.standing.alsoFoundBy }),

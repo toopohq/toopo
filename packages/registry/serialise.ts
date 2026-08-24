@@ -41,6 +41,7 @@ import type {
   SupportingTypeRecord,
   UniversalPropertyRecord,
   LanguageReExamination,
+  PublishedProseCorrection,
   LearnedTerm,
   UseCaseRecord,
 } from './contract-record.js'
@@ -165,6 +166,14 @@ export type ContractSource = {
    * into the digest, so the contract cannot be the thing that says this.
    */
   readonly alsoFoundBy?: readonly LearnedTerm[]
+  /**
+   * Sentences of this contract's own frozen prose that a later measurement found false. ADR-0161.
+   *
+   * Typed directly for the reason its three siblings are, and declared here rather than in the folder
+   * for the reason none of them could be: every file of the folder is hashed into the digest, so the
+   * one thing a published contract cannot do is say that something it published is wrong.
+   */
+  readonly correctionsToFrozenProse?: readonly PublishedProseCorrection[]
   /** The folder, relative to the repository root, as the instrument already addresses one. */
   readonly folder: string
   /**
@@ -827,6 +836,9 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
     ...(source.againstTheLanguage === undefined
       ? {}
       : { againstTheLanguage: source.againstTheLanguage }),
+    ...(source.correctionsToFrozenProse === undefined
+      ? {}
+      : { correctionsToFrozenProse: source.correctionsToFrozenProse }),
     // And once more, on the third field of the standing.
     ...(source.alsoFoundBy === undefined ? {} : { alsoFoundBy: source.alsoFoundBy }),
     identity: identityOf(source.module),

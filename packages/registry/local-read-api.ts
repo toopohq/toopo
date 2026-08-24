@@ -240,6 +240,9 @@ const gather = (): {
             ...(record.againstTheLanguage === undefined
               ? {}
               : { againstTheLanguage: record.againstTheLanguage }),
+            ...(record.correctionsToFrozenProse === undefined
+              ? {}
+              : { correctionsToFrozenProse: record.correctionsToFrozenProse }),
             ...(record.alsoFoundBy === undefined ? {} : { alsoFoundBy: record.alsoFoundBy }),
           },
         }),

@@ -36,12 +36,14 @@
  * Why a survivor carries a nature
  * ---------------------------------------------------------------------------
  *
- * A count of surviving cells published alone is read as a count of holes. Four of the five kinds here
+ * A count of surviving cells published alone is read as a count of holes. Four of the six kinds here
  * are not holes at all - a mutant nothing could catch, a behaviour the contract declines to specify, a
  * rule no input in this catalogue exercises, and a cell that lives only where a lens took the suite's
- * sight away - and only `a-declared-open-class` is a debt. A number more frightening than the truth is
- * as much a misreport as one that flatters, so the aggregate is never available without the split:
- * `theMeasurement` returns the two together and there is no export that gives the total alone.
+ * sight away. `a-declared-open-class` is a debt, and `its-witness-is-frozen-out` is the one kind that
+ * is a hole and stays one: the input that would catch it exists and the contract may no longer carry
+ * it. A number more frightening than the truth is as much a misreport as one that flatters, so the
+ * aggregate is never available without the split: `theMeasurement` returns the two together and there
+ * is no export that gives the total alone.
  */
 
 import type { Battery, Mutant, PlatformFamily, SurvivalNature } from './run.ts'
@@ -134,6 +136,11 @@ export const WHAT_A_SURVIVOR_MEANS_TO_A_READER: Readonly<Record<WhySurviving, st
   'a-declared-open-class':
     'a limit this repository has written down, with its price, in the list of what it declares and ' +
     'nothing keeps. This is the only one of the five that is a debt.',
+  'its-witness-is-frozen-out':
+    'the edit is a real defect and an input tells it from the correct version - measured, not ' +
+    'assumed. The row that would carry that input cannot be added: the contract owning it is ' +
+    'published, and its cases are inside the digest a lockfile holds. It is the one kind here that ' +
+    'nothing closes short of a second major.',
   'only-where-a-lens-blinded-the-suite':
     'the same defect dies on the column that reads the contract as committed, and lives only where a ' +
     'lens took part of the suite\'s sight away. That difference is what the lens exists to measure: ' +

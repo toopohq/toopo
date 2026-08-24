@@ -239,7 +239,7 @@ const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `        value.description === null ? 'Sy
 const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id, class: 'case' },`
 
 const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) =>
-    renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
+    renderedGroup(group, table, answer, fields, corrections, alone ? 'h3' : 'h4'),
   ),`
 
 const A_HEADING_CARRIES_ITS_OWN_ADDRESS = `  addressed(heading, group.id, group.title),`
@@ -937,7 +937,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       contractPageFile(
         THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER,
         `  ...[...table.groups].reverse().flatMap((group) =>
-    renderedGroup(group, table, answer, fields, alone ? 'h3' : 'h4'),
+    renderedGroup(group, table, answer, fields, corrections, alone ? 'h3' : 'h4'),
   ),`,
       ),
     ],

@@ -88,6 +88,7 @@ import type {
   IdentityRecord,
   LanguageReExamination,
   LearnedTerm,
+  PublishedProseCorrection,
   Lifecycle,
   OwnDeclaration,
   PropertiesRecord,
@@ -237,6 +238,18 @@ export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
       'consequence a reader can see. It is the second candidate this comment named on paper.',
   },
   {
+    field: 'correctionsToFrozenProse',
+    reason:
+      'a sentence this catalogue has measured to be false cannot be repaired where it was written - ' +
+      'the seven files are hashed into the digest, so the one thing a published contract cannot do ' +
+      'is say that something it published is wrong. Inside the digest, either the correction moves ' +
+      'the address every lockfile holds or a reader keeps a false explanation for the life of the ' +
+      'major with the catalogue knowing better. It is the fifth, and the first that neither ' +
+      'candidate above named: not a later measurement against somebody else\'s specification - ' +
+      'nothing moved - and not curation, because it is about the artefact and not about how it is ' +
+      'found. ADR-0161.',
+  },
+  {
     field: 'alsoFoundBy',
     reason:
       'how somebody finds a function is not part of what the function is obliged to do, and ' +
@@ -365,6 +378,8 @@ export type ContractStanding = {
   readonly againstTheLanguage?: readonly LanguageReExamination[]
   /** Absent on a contract nobody has had to teach the registry a word for. ADR-0155. */
   readonly alsoFoundBy?: readonly LearnedTerm[]
+  /** Absent on a contract nothing it published has been measured to be wrong about. ADR-0161. */
+  readonly correctionsToFrozenProse?: readonly PublishedProseCorrection[]
 }
 
 export type ImplementationStanding = { readonly status: ImplementationStatus }

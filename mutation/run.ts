@@ -90,6 +90,19 @@ export type SurvivalNature =
   | 'unreachable-on-this-catalogue'
   /** A limit this repository has declared, with its price, in the list of what nothing keeps. */
   | 'a-declared-open-class'
+  /**
+   * A real defect with a real witness, where the file that would have to carry the witness is frozen.
+   *
+   * **It is neither of the two it looks like.** Not `equivalent` - an input tells the two apart, and
+   * that input is measured rather than imagined. Not `unreachable-on-this-catalogue` - a larger
+   * catalogue does not reach it, because what is missing is not a value somebody has yet to publish
+   * but a row inside a contract that may no longer take one.
+   *
+   * **It is the only kind here that cannot be closed.** The other four end when somebody writes a
+   * test, specifies a behaviour, publishes a contract or takes a lens away; this one ends at the next
+   * major of the contract that owns the case, or never. ADR-0161.
+   */
+  | 'its-witness-is-frozen-out'
 
 /**
  * The two families of platform an operating-system defect can belong to, as this instrument splits

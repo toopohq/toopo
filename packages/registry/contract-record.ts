@@ -281,6 +281,62 @@ export type LanguageReExamination = {
   readonly whatItEstablishes: string
 }
 
+/**
+ * A sentence inside a published contract that a later measurement found false. ADR-0161.
+ *
+ * ---------------------------------------------------------------------------
+ * Why it is not `againstTheLanguage`, measured rather than argued from the shape
+ * ---------------------------------------------------------------------------
+ *
+ * The two carry the same three statements and they are about different things. A re-examination is a
+ * reading against **a specification this repository does not own**, and its first field is `whatMoved`
+ * - the language changed under an artefact that could not answer back. Here nothing moved: the prose
+ * was false on the day it was published, and what changed is that somebody measured it. `whatMoved`
+ * would have to be filled with a non-event, which is the shape of a field being borrowed rather than
+ * fitted.
+ *
+ * The test `CONTRACT_STANDING_FIELDS` actually asks is *may the registry change its mind about this
+ * after publication?* - and about a rationale it must, because the alternative is a reader holding a
+ * false explanation for the life of a major with the catalogue knowing better and unable to say so.
+ *
+ * ---------------------------------------------------------------------------
+ * What it does not do, which is the half worth reading
+ * ---------------------------------------------------------------------------
+ *
+ * **It does not correct the frozen half and must not read as though it did.** The sentence stays where
+ * it is, byte for byte, in every published digest and in every snapshot an auditor fetches: it is a
+ * photograph of what this catalogue believed. What this carries is what was measured afterwards, and a
+ * page renders the two together so a reader meets the correction where they meet the claim.
+ *
+ * **It is not for a case whose answer is wrong.** A wrong answer is a defect of the specification and
+ * costs a second major; this is for prose *beside* a correct answer - the explanation, the provenance,
+ * the sentence saying what an implementation would do. `object/deep-equal@1` published a rationale
+ * claiming a memoising implementation answers `true` on a row where it answers `false`, and the row
+ * itself is right.
+ */
+export type PublishedProseCorrection = {
+  /**
+   * What the correction is about, by the address the catalogue already gives it.
+   *
+   * A case identifier here, and the shape allows any address the contract publishes - which is what
+   * keeps this from becoming a field per kind of prose. ADR-0017 is why an address is what a
+   * correction cites rather than a quotation of what it corrects.
+   */
+  readonly about: string
+  /** What the frozen prose says, quoted, so a reader meets both halves at once and judges for themselves. */
+  readonly published: string
+  /**
+   * The reading that refuses it, with the commit it was taken at and what it does not cover.
+   *
+   * The commit goes in the prose in backticks for the reason a re-examination puts it there: that is
+   * the spelling `mutation/history.ts` sweeps, and a stamp in a field nothing resolves stops naming
+   * anything the day the history moves.
+   */
+  readonly measurement: string
+  /** What the reading establishes, which is never the reading itself. ADR-0042. */
+  readonly whatItEstablishes: string
+}
+
 // --- A word the registry learned about a contract it may no longer edit ---
 
 /**
@@ -377,6 +433,13 @@ export type ContractRecord = {
    * empty on a contract nobody has had to teach the registry a word for.
    */
   readonly alsoFoundBy?: readonly LearnedTerm[]
+  /**
+   * Sentences of the frozen half this catalogue has since measured to be false. ADR-0161.
+   *
+   * Beside its three siblings and outside `identity` for the reason they are, and absent rather than
+   * empty on a contract nothing has been found wrong about - which is every contract but one.
+   */
+  readonly correctionsToFrozenProse?: readonly PublishedProseCorrection[]
   readonly identity: IdentityRecord
   readonly surface: SurfaceRecord
   readonly environments: readonly string[]

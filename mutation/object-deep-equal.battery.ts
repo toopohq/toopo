@@ -28,7 +28,7 @@
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
-import { killed, mutantsOn, probe, reference } from './mutants.ts'
+import { killed, mutantsOn, probe, reference, survived } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'E', asCommitted: 'as-committed', blinded: [] }
 
@@ -85,7 +85,6 @@ const REFLEXIVE = 'p3-reflexive'
 const ORDER_IS_NOT_READ = 'p5-order-of-declaration-is-not-read'
 const NOT_ALWAYS_YES = 'p6-a-perturbed-clone-is-not-the-original'
 
-const DETERMINISTIC = 'determinism'
 const NEITHER_ARGUMENT_MOVES = 'never-mutates-its-arguments'
 
 const TYPE_IDENTITY = 'signature-is-the-declared-type'
@@ -98,9 +97,15 @@ const behaviour: readonly Mutant[] = [
     'memoises the pairs it has compared instead of keeping them on a path, so a candidate that ' +
       'failed inside a Set leaves the pair it tried marked as equal. This is the fault this file ' +
       'was written with, and the answer it produces depends on the order the keys of an object were ' +
-      'declared in',
+      'declared in. **The two rows written to witness it do not separate it**, and only the replay ' +
+      'said so: measured over the four forms, `false` against `false` as the witness is published in ' +
+      'either key order, and `false` against `true` only when the keys are transposed *and* the ' +
+      'right-hand `also` holds the very Set member the failed candidate tried. The published witness ' +
+      'holds a fresh object there, and the path is keyed by identity - so nothing is ever found again. ' +
+      'The row that would witness it is a row of `caseTables`, which is inside the digest a lockfile ' +
+      'holds, so it cannot be added',
     [reference(LEAVE_THE_PATH, `const leave = (_underway: Underway, _a: object, _b: object): void => {}`)],
-    killed(['a-failed-candidate-leaves-nothing-behind', 'and-answers-the-same-either-way-round']),
+    survived('its-witness-is-frozen-out'),
   ),
 
   sameOnEveryLens(
@@ -167,7 +172,7 @@ const behaviour: readonly Mutant[] = [
     'compares two instants with `===`, so two invalid dates are not equal to each other - the NaN ' +
       'trap arriving inside a built-in, which three of the five shipped implementations fall into',
     [reference(AN_INSTANT, `  if (a instanceof Date) return a.getTime() === (b as Date).getTime()`)],
-    killed(['an-invalid-date-equals-an-invalid-date', REFLEXIVE_UNDER_A_COPY]),
+    killed(['an-invalid-date-equals-an-invalid-date']),
   ),
 
   sameOnEveryLens(
@@ -201,12 +206,9 @@ const behaviour: readonly Mutant[] = [
       'fields are one value. `inputDomain` says in as many words that a caller who wants them equal ' +
       'wants a different function',
     [reference(THE_PROTOTYPE_IS_PART_OF_THE_VALUE, `  if (false) return false`)],
-    killed([
-      'a-class-instance-is-not-its-fields',
-      'a-null-prototype-object-is-not-a-plain-one',
-      'an-error-kind-is-part-of-it',
-      'a-typed-array-kind-is-part-of-it',
-    ]),
+    // Two of the four rows first pinned here are settled by the slot before the prototype is
+    // reached, so they are green either way and the replay is what said so.
+    killed(['a-class-instance-is-not-its-fields', 'a-null-prototype-object-is-not-a-plain-one']),
   ),
 
   sameOnEveryLens(
@@ -300,7 +302,13 @@ const probes: readonly Mutant[] = [
     'F-15',
     'caches the last pair and its verdict and serves it whenever both arguments match by reference, ' +
       'which answers correctly until one of the two graphs is mutated between calls and then answers ' +
-      'the previous question. It asks whether anything here is a sensor for a stale answer',
+      'the previous question. It asks whether anything here is a sensor for a stale answer, and the ' +
+      'measured answer is no. `no-ambient-input-from-history` was written for this implementation and ' +
+      'the contract names it in the reason for `no ambient input` - it asks the same pair before and ' +
+      'after an arbitrary history, and a history moves the cached references, so the cache misses and ' +
+      'recomputes correctly. What separates them is a call, a mutation of a reachable object, and a ' +
+      'second call through the same references; that probe belongs in `properties.test.ts`, which is ' +
+      'frozen',
     [
       reference(
         THE_ENTRY,
@@ -311,7 +319,7 @@ const probes: readonly Mutant[] = [
           `  return lastVerdict\n}`,
       ),
     ],
-    killed([DETERMINISTIC]),
+    survived('its-witness-is-frozen-out'),
   ),
 ]
 
@@ -344,6 +352,24 @@ export const battery: Battery = {
   unreachableGuards: [
     {
       reason:
+        'the four rows of the speculation clause, declared here rather than as an unprobed region ' +
+        'because a mutant does exist. DE-01 is that mutant and these rows do not separate it: ' +
+        'measured over the four forms of the witness, the memoising walk answers `false` exactly as ' +
+        'the sound one does in either key order, and answers `true` only when the keys are ' +
+        'transposed *and* the right-hand `also` holds the very Set member the failed candidate ' +
+        'tried. The published witness holds a fresh object there, and the path is keyed by identity. ' +
+        'The row that would separate them belongs in `caseTables`, which is inside a published ' +
+        'digest, so no cell of this battery or of any other reaches them for the life of this ' +
+        'major. ADR-0161.',
+      guards: [
+        'a-failed-candidate-leaves-nothing-behind',
+        'a-failed-candidate-leaves-nothing-behind-transposed',
+        'and-answers-the-same-either-way-round',
+        'and-answers-the-same-either-way-round-transposed',
+      ],
+    },
+    {
+      reason:
         'over the contract\'s own declarations rather than over the implementation. This battery ' +
         'injects into `reference.ts`, so nothing it can do reaches a guard that reads the case ' +
         'table, the profile list or the universal-property declarations.',
@@ -362,7 +388,146 @@ export const battery: Battery = {
     },
   ],
 
-  unprobedRegions: [],
+  unprobedRegions: [
+    /**
+     * A branch of the walk this battery does not perturb, one entry per branch.
+     *
+     * They are apart rather than in one list because the reason is what a reader needs: *no cell
+     * reaches the built-ins* would be a sentence about the battery, where *nothing here compares a
+     * bigint by value* names the cell somebody would write next.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the primitive comparison. Every cell here perturbs a walk over objects and nothing edits ' +
+        'the leaf test, so a cell answering `1n == 1` is what would redden these two.',
+      guards: ['a-bigint-is-not-its-number', 'a-bigint-is-not-its-number-transposed'],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the boxed-primitive slot. DE-05 reads a tag rather than a prototype and DE-12 stops ' +
+        'comparing prototypes, and neither makes a box answer as its own primitive: a cell that ' +
+        'unwrapped one before comparing would redden these four.',
+      guards: [
+        'a-boxed-primitive-is-not-its-primitive',
+        'a-boxed-primitive-is-not-its-primitive-transposed',
+        'a-boxed-number-carries-a-number',
+        'a-boxed-number-carries-a-number-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'what a key set is. DE-02 walks `Object.keys` and reaches the symbol rows only; nothing ' +
+        'here drops a key holding `undefined`, reads a key set in declaration order, or reads a ' +
+        'getter twice.',
+      guards: [
+        'a-key-holding-undefined-is-not-a-missing-key',
+        'a-key-holding-undefined-is-not-a-missing-key-transposed',
+        'the-order-keys-were-written-in-is-not-read-transposed',
+        'a-getter-is-read-as-the-value-it-returns-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'a hole in a list. The length test and the key set are two separate lines and no cell edits ' +
+        'either, so nothing here reads `[, 1]` as `[undefined, 1]`.',
+      guards: ['a-hole-is-not-an-undefined', 'a-hole-is-not-an-undefined-transposed'],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the Map slot. DE-04 compares Sets by size alone; the Map arm is beside it and untouched, ' +
+        'so nothing here reads a Map as an empty object or drops the value under a key.',
+      guards: [
+        'a-populated-map-is-not-an-empty-one',
+        'a-populated-map-is-not-an-empty-one-transposed',
+        'a-map-value-is-compared',
+        'a-map-value-is-compared-transposed',
+        'the-order-members-were-added-in-is-not-read-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the instant slot beyond the NaN trap. DE-08 compares two instants with `===` and reddens ' +
+        'the row about two invalid dates; nothing here loses an instant altogether.',
+      guards: [
+        'an-invalid-date-is-not-an-instant',
+        'an-invalid-date-is-not-an-instant-transposed',
+        'two-instants-are-one-date-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the pattern slot. Nothing here compares a `RegExp` by anything but its source and flags, ' +
+        'so the rows saying which parts of one are read are green either way.',
+      guards: [
+        'a-pattern-source-is-part-of-it',
+        'a-pattern-source-is-part-of-it-transposed',
+        'a-pattern-is-its-source-and-its-flags-transposed',
+        'where-a-pattern-stopped-is-not-part-of-it-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the typed-array slot. DE-12 stops comparing prototypes and the kind rows stay green, ' +
+        'because the slot settles two typed arrays of different kinds before a prototype is ' +
+        'reached - measured, and it is why those two left the pin of DE-12.',
+      guards: [
+        'a-typed-array-kind-is-part-of-it',
+        'a-typed-array-kind-is-part-of-it-transposed',
+        'negative-zero-inside-a-float-array-is-not-zero',
+        'negative-zero-inside-a-float-array-is-not-zero-transposed',
+        'two-typed-arrays-of-one-kind-are-their-elements-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the error slot beyond the name. DE-09 reads the name of an error and not its message; ' +
+        'nothing here drops a cause, and the kind row is settled by the slot before a prototype is ' +
+        'read - the same reading that took it out of the pin of DE-12.',
+      guards: [
+        'a-cause-is-part-of-an-error',
+        'a-cause-is-part-of-an-error-transposed',
+        'an-error-kind-is-part-of-it',
+        'an-error-kind-is-part-of-it-transposed',
+        'two-errors-of-one-message-are-one-error-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'a cycle that terminates without assuming too much. The path is entered and left by two ' +
+        'lines and DE-01 edits the second; nothing here stops entering, which is what would make a ' +
+        'cycle read as its own unrolling.',
+      guards: [
+        'a-cycle-is-not-the-same-as-its-unrolling',
+        'a-cycle-is-not-the-same-as-its-unrolling-transposed',
+        'a-cycle-terminates-transposed',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'a function, which this contract compares by reference and by nothing else. Nothing here ' +
+        'walks into one, so the two rows saying it does not are green either way.',
+      guards: ['two-functions-are-not-compared', 'two-functions-are-not-compared-transposed'],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the benchmark profiles and the transitivity property. A profile guard reads what the ' +
+        'contract declares about its samples, and p4 needs three values disagreeing in a particular ' +
+        'way; no cell here produces either.',
+      guards: ['profile-two-renders-of-one-view', 'p4-transitive'],
+    },
+  ],
 
   mutants: [...behaviour, ...signatures, ...probes],
 }

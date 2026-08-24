@@ -797,6 +797,56 @@ export const theCatalogue: readonly ContractSource[] = [
      * carry a copyright line.
      */
     banner: 'the-marking-alone',
+    /**
+     * The first correction this catalogue has ever made to a sentence it froze. ADR-0161.
+     *
+     * **It corrects the explanation and not the answer**, which is what keeps it out of a second
+     * major: `false` is the right answer to both rows, the specification is intact, and nobody
+     * holds code that behaves wrongly. What a reader holds is a false explanation of why the rows
+     * are there.
+     */
+    correctionsToFrozenProse: [
+      {
+        about: 'a-failed-candidate-leaves-nothing-behind',
+        published:
+          'An implementation that memoises the pairs a failed candidate tried answers `true`, ' +
+          'because the failed attempt left `({v:1}, {v:2})` marked as assumed equal.',
+        measurement:
+          'Measured at `3ec621c` by injecting exactly that defect into this contract\'s own ' +
+          'reference - the mutant `object-deep-equal · DE-01`, which replaces the line taking a ' +
+          'pair back off the path with a no-op - and running it against the sound version over the ' +
+          'four forms of the witness. The memoising walk answers `false` on this row and on ' +
+          '`and-answers-the-same-either-way-round`, exactly as the sound one does. It answers ' +
+          '`true` only when the keys are transposed **and** the right-hand `also` holds the very ' +
+          'Set member the failed candidate tried; the witness these rows are built from holds a ' +
+          'fresh object there, and the path is keyed by identity, so the pair the failed candidate ' +
+          'left behind is never asked for again. The reading is of this reference and of no other: ' +
+          'an implementation that memoises differently may well answer `true` here.',
+        whatItEstablishes:
+          'The two rows are correct rows - `false` is the answer, and every shipped implementation ' +
+          'measured gives it - and they do not separate the defect their rationale names. The ' +
+          'clause the contract states about speculation stands; what does not stand is that these ' +
+          'two rows witness it. **Nothing in this repository could have said so**: a rationale is ' +
+          'prose beside a correct answer, and only injecting the defect and watching nothing redden ' +
+          'found it.',
+      },
+      {
+        about: 'and-answers-the-same-either-way-round',
+        published: 'The walk that got the row above wrong answered `false` here',
+        measurement:
+          'The same reading at `3ec621c`, and this row is wrong about its neighbour rather than ' +
+          'about itself: the memoising walk really does answer `false` here, and it also answers ' +
+          '`false` on the row above. Transposing the keys is one of the two things the separating ' +
+          'form needs and this row carries that one; what it does not carry is the right-hand ' +
+          '`also` holding the very Set member the failed candidate tried.',
+        whatItEstablishes:
+          'The sentence is true of this row and false of the pair. `so a table carrying only one ' +
+          'of the two would have been green on half the defect` reads as though the two rows split ' +
+          'the defect between them; measured, both are green on all of it. What the pair still does ' +
+          'is what a transposition is for - it holds the answer steady under a reordering nothing ' +
+          'should read - and that is a smaller claim than the one published.',
+      },
+    ],
     folder: 'contracts/typescript/object/deep-equal',
     /** The seven and nothing else: this contract invented no file of its own. */
     files: THE_SEVEN_FILES,

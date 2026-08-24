@@ -420,6 +420,65 @@ describe('the five, read against their own source', () => {
   })
 
   /**
+   * A correction names something the contract really settles, and quotes what it really says.
+   *
+   * **Both halves are what makes this field `executable` rather than three more sentences.** A
+   * standing field carrying only prose is a field nothing can be wrong about, which is the shape
+   * ADR-0155 already had to answer for on a learned term: two of its three parts are `documentary`
+   * and say so in `field-map.ts`. Here two of the four are not.
+   *
+   * `about` resolves against the contract's own case identifiers, so a correction cannot drift onto
+   * an address that stopped existing. And `published` has to occur in the rationale of that very
+   * case - **which is the half that keeps the correction honest**: a quotation nobody checks is free
+   * to soften, to paraphrase, or to describe a sentence that was never written, and a reader who
+   * meets the two side by side is entitled to believe the left-hand one is what the contract says.
+   *
+   * The quotation is compared with runs of whitespace collapsed, for the reason the discipline
+   * states: the rationale is a wrapped string literal and where it breaks is not a fact about it.
+   */
+  it('a-correction-names-a-case-the-contract-settles-and-quotes-what-it-says', () => {
+    const flat = (text: string): string => text.replace(/\s+/g, ' ').trim()
+
+    const faults = theCatalogue.flatMap((source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const settled = new Map(
+        record.caseTables.flatMap((table) => table.cases.map((entry) => [entry.id, entry.rationale])),
+      )
+
+      return (source.correctionsToFrozenProse ?? []).flatMap((entry) => {
+        const what = `${renderContract(source.address)}#${entry.about}`
+        const rationale = settled.get(entry.about)
+
+        if (rationale === undefined) return [`${what}: no case of this contract carries that address`]
+
+        return flat(rationale).includes(flat(entry.published))
+          ? []
+          : [`${what}: the quoted sentence is not in that case's rationale`]
+      })
+    })
+
+    expect(faults).toEqual([])
+  })
+
+  /**
+   * A correction carries the commit it was taken at, exactly as a re-examination does.
+   *
+   * The neighbour above is about *what* was measured and this is about *when*, and they are apart
+   * because a correction naming the right case and quoting the right sentence with no coordinate is
+   * a reading nobody can retake - which is ADR-0018's rule on the one field of this catalogue whose
+   * whole subject is that a published sentence stopped being believed.
+   */
+  it('a-correction-carries-the-commit-it-was-taken-at', () => {
+    const unstamped = theCatalogue.flatMap((source) =>
+      (source.correctionsToFrozenProse ?? [])
+        .filter((entry) => !/`[0-9a-f]{7}`/.test(entry.measurement))
+        .map((entry) => `${renderContract(source.address)}#${entry.about}`),
+    )
+
+    expect(unstamped).toEqual([])
+  })
+
+  /**
    * A term the registry learned belongs to a contract that can no longer declare an alias itself.
    *
    * **The standing is the door for a contract that is frozen, and it is not a shorter route past the

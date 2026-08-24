@@ -397,6 +397,35 @@ says they are two claims. The compiler holds the other direction - a population 
 declared is `TS2322`. **Its own thinness is published**: it is total over five populations and never
 over files, and the thinnest is `prose` at **three**. ADR-0152.
 
+**The seventh contract is published, and the instrument caught its author and its reviewer in the same
+sentence.** `object/deep-equal@1` publishes two rows as the witness of what a memoising comparison
+does, with a rationale saying such an implementation answers `true` on them. **It answers `false`.**
+Measured at `3ec621c` by injecting exactly that defect into the contract's own reference: over the four
+forms of the witness the memoising walk parts from the sound one **once**, and only where the keys are
+transposed *and* the right-hand `also` holds the very Set member the failed candidate tried - the
+published witness holds a fresh object there, and the path is keyed by identity. The rows are right,
+the specification is intact, nobody holds code that behaves wrongly; what a reader holds is a false
+explanation, in a file inside the digest every lockfile carries.
+
+**What found it was not a review.** That sentence was written by the assistant, read and approved by
+the owner, and published - by two people who both knew the danger, on a row that exists *because* one of
+them had got it wrong an hour earlier. Neither asked whether the witness witnessed. A mutant did, and a
+battery that refuses to call a run healthy when nothing reddens. **That is this project's thesis tested
+on the two people who hold it**, and it is better evidence than any argument either could write in its
+place.
+
+**No second major, and the price is why rather than the sentiment.** A second major costs a duplicate
+the search does not tell apart, the install command on every page of the first ceasing to work, no
+folder to live in, and two majors wanting one installed path. The freeze exists to protect what somebody
+installed. So the frozen half keeps its sentence as a photograph and `correctionsToFrozenProse` - the
+fifth standing field - says what the measurement found, rendered inside the case it corrects because a
+reader who meets a correction three screens later has already believed the rationale. **It is not
+`againstTheLanguage`**: that field's first term is `whatMoved`, and nothing moved. Two of its four
+fields are `executable`, and the guard requiring the quotation to occur in the case's own rationale
+**caught its own author on its first run**. `DE-01` survives under a class that did not exist -
+`its-witness-is-frozen-out`, a real defect whose witness the contract may no longer carry, the one
+survivor kind nothing closes short of a second major. ADR-0160, ADR-0161.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
@@ -1109,6 +1138,36 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   outside the frozen folder. ADR-0150.
 
 **Still open, and what each one now costs.**
+
+- **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
+  reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`
+  published *An implementation that memoises the pairs a failed candidate tried answers `true`* about
+  two rows on which such an implementation answers `false` - measured at `3ec621c` by injecting the
+  defect into the contract's own reference and watching nothing redden.
+
+  **It is not the class of a stale sentence.** It was false on the day it was written, it passed a
+  review by the two people who most knew the danger, and every check this repository holds was green
+  through it: the rows are correct rows, so `every-case-is-justified` sees a rationale, the suite sees
+  the right answers, and the freeze sees a digest that does not move.
+
+  **Where this looked**: `serialise.ts`'s reading of a case, which carries `rationale` as a string and
+  asks nothing of it; `field-map.ts`, where `caseTables[].cases[].rationale` is `documentary` - the
+  schema's own vocabulary saying nothing reads it; and `against-the-catalogue.test.ts`, whose guards
+  over the catalogue's prose are about presence and about stamps.
+
+  **The population is every sentence of prose inside a published contract**, which is every
+  `rationale`, every group note, every `reason` of a universal property and every `purpose` of a
+  table - and the failure is silent by construction, because a rationale explaining a correct answer
+  is green everywhere. **The only path that has ever found one is a replay**, and a replay finds it
+  only where somebody wrote a cell aimed at the very defect the sentence names.
+
+  **What would close it is not a guard over prose** - three entries here already price that and refuse
+  it. What it needs is the discipline the finding produced: a rationale claiming *an implementation
+  that does X answers Y* is a claim a cell can be written for, and the cell belongs in the same unit as
+  the sentence. That is a convention with nothing under it, which is what this list is for. **What is
+  cheap and is done instead** is `correctionsToFrozenProse`, which does not close the entry: it lets
+  the catalogue say a sentence is wrong after the fact, and says nothing about finding the next one.
+  ADR-0161.
 
 - **That a cell's verdict is the verdict of a mutant that ran.** `runSuite` spawns vitest with
   `stdio: 'pipe'` and declares no `maxBuffer`, so node's default of **1 048 576 bytes** applies. A red

@@ -611,6 +611,65 @@ describe('the site', () => {
   })
 
   /**
+   * A correction to a frozen sentence reaches the reader, and reaches them beside that sentence.
+   *
+   * **Two claims and the second is the one worth a guard.** That the correction appears at all is the
+   * shape `a-re-examination-reaches-the-reader` already keeps for its own field. That it appears
+   * *inside the case it corrects* is what this repair is for: a reader who reads a rationale and meets
+   * its correction three screens down has already believed the rationale, and a correction they meet
+   * afterwards repairs nothing.
+   *
+   * The second half is read by cutting the page at the case's own anchor and requiring the correction
+   * to be on the near side of the next one - which is the weakest true statement of *beside*, and the
+   * strongest this file can make without transcribing a layout into an expectation.
+   *
+   * **What it does not check is that the frozen sentence is still there.** It has to be, and nothing
+   * here could remove it: it comes out of the digest. `a-correction-names-a-case-the-contract-settles-and-quotes-what-it-says`
+   * is the neighbour, and it reads the registry where this reads the screen. ADR-0161.
+   */
+  it('a-correction-reaches-the-reader-beside-the-sentence-it-corrects', () => {
+    const faults: string[] = []
+    const declaring = heldByTheRegistry(source).filter(
+      (held) => held.binding.correctionsToFrozenProse !== undefined,
+    )
+
+    for (const held of declaring) {
+      const what = renderContract(held.contract.address)
+      const reading = toText(page(pageOf(held.contract.address)))
+      const cases = held.contract.caseTables.flatMap((table) => table.cases)
+
+      for (const entry of held.binding.correctionsToFrozenProse ?? []) {
+        const at = reading.indexOf(asRead(entry.published))
+        if (at === -1) {
+          faults.push(`${what}: the sentence ${entry.about} corrects does not reach the reader`)
+          continue
+        }
+
+        for (const [field, prose] of Object.entries(entry)) {
+          if (field === 'about') continue
+          if (!reading.includes(asRead(prose))) {
+            faults.push(`${what}: the ${field} of the correction to ${entry.about} does not reach the reader`)
+          }
+        }
+
+        // The next case's rationale, whichever it is, bounds what counts as beside.
+        const after = cases
+          .map((one) => reading.indexOf(asRead(one.rationale)))
+          .filter((where) => where > at)
+        const bound = after.length === 0 ? reading.length : Math.min(...after)
+        const said = reading.indexOf(asRead(entry.whatItEstablishes))
+
+        if (said < at || said > bound) {
+          faults.push(`${what}: the correction to ${entry.about} is not beside the case it corrects`)
+        }
+      }
+    }
+
+    expect(declaring.length).toBeGreaterThan(0)
+    expect(faults).toEqual([])
+  })
+
+  /**
    * What the contract freezes and what the registry may rewrite are never read under one heading.
    *
    * A contract page carries two kinds of prose that look identical on screen. `identity.description`

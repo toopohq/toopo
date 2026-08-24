@@ -145,6 +145,13 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   'againstTheLanguage[].whatMoved': { visibility: 'public', verification: 'documentary' },
   'againstTheLanguage[].measurement': { visibility: 'public', verification: 'documentary' },
   'againstTheLanguage[].whatItEstablishes': { visibility: 'public', verification: 'documentary' },
+  'correctionsToFrozenProse[].about': { visibility: 'public', verification: 'executable' },
+  'correctionsToFrozenProse[].published': { visibility: 'public', verification: 'executable' },
+  'correctionsToFrozenProse[].measurement': { visibility: 'public', verification: 'documentary' },
+  'correctionsToFrozenProse[].whatItEstablishes': {
+    visibility: 'public',
+    verification: 'documentary',
+  },
 
   /**
    * The term is `executable` and the two sentences beside it are not, which is the whole shape of
@@ -370,6 +377,9 @@ export const publicContract = (record: ContractRecord): unknown => ({
   ...(record.againstTheLanguage === undefined
     ? {}
     : { againstTheLanguage: record.againstTheLanguage }),
+  ...(record.correctionsToFrozenProse === undefined
+    ? {}
+    : { correctionsToFrozenProse: record.correctionsToFrozenProse }),
   /** And once more, for the third field of the standing. */
   ...(record.alsoFoundBy === undefined ? {} : { alsoFoundBy: record.alsoFoundBy }),
   identity: record.identity,
