@@ -370,6 +370,8 @@ const WHAT_A_COPY_IS_UNDER = `export const THE_COPIED_LICENCE = 'MIT-0'`
 
 const WHAT_THIS_REPOSITORY_IS_UNDER = `export const THE_REPOSITORY_LICENCE = 'MIT'`
 
+const WHAT_A_NEW_CONTRACT_CARRIES = `export const THE_CURRENT_BANNER: Banner = 'the-marking-alone'`
+
 const NORMALISE_THEN_HASH = `  const recomputed = digestOfBytes(servedBytes(response.bytes))`
 
 const INSTALLABLE_MEANS_PUBLISHED = `      installable: published.has(renderContract(identity.address)),`
@@ -821,10 +823,15 @@ const mutants: readonly Mutant[] = [
    * The copied licence changed in the declaration and not in the files, which is the drift a
    * transcription exists to be caught by.
    *
-   * Both guards it reddens read `licenceHeaderOf`, and they are two claims rather than one: that the
-   * five sources carry the header, and that the example `LICENSE` shows a reader is the header those
-   * sources carry. An example is the part of a licence a reader trusts most and the part nothing else
-   * checks.
+   * All three guards it reddens read `licenceHeaderOf`, and they are three claims rather than one:
+   * that the sources carry the header, that the example `LICENSE` shows a reader is a header those
+   * sources carry, and that the example is of the form a reader would actually receive. An example is
+   * the part of a licence a reader trusts most and the part nothing else checks.
+   *
+   * **It was two until ADR-0159 and the count is not the interesting part.** The third guard exists
+   * because two banner forms do, and this edit reddens it for a reason of its own: with
+   * `THE_COPIED_LICENCE` moved, no contract's composed header matches what `LICENSE` quotes, so the
+   * set of contracts the example shows is empty and there is no form to be current.
    */
   sameOnEveryLens(
     'I-28',
@@ -834,6 +841,7 @@ const mutants: readonly Mutant[] = [
     killed([
       'every-file-the-installer-copies-is-marked-mit-0',
       'the-licence-file-quotes-a-header-a-contract-really-carries',
+      'the-licence-file-shows-the-banner-a-reader-would-receive',
     ]),
   ),
 
@@ -853,6 +861,40 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
+   * The banner a new contract takes goes back to the one with a copyright on it, which is ADR-0159
+   * quietly undone.
+   *
+   * The edit is one word and it is the plausible one: somebody restoring what they take for the
+   * catalogue's convention, on a constant whose two values are both spelled in the same union three
+   * lines above it. What it costs is the whole of that decision - the next contract published would
+   * freeze a copyright line into every repository that installs it, for the life of its major.
+   *
+   * **It cannot redden `a-contract-not-yet-published-carries-the-current-banner` alone, and the reason
+   * is a property of today's catalogue rather than of this cell.** That guard's population is the
+   * contracts the ledger binds nothing for, which is `array/group-by@1` and only that - and
+   * `array/group-by@1` is also the contract `LICENSE` shows, because it is the only one carrying the
+   * current form. So every state that makes the first guard red makes the second red too, and no edit
+   * available today separates them. The two are genuinely different claims - measured, pointing
+   * `LICENSE` at a real header of the superseded form reddens the example guard alone while this one
+   * stays green - and the independence runs one way until a second unpublished contract exists.
+   */
+  sameOnEveryLens(
+    'I-69',
+    'restores the copyright to the banner a new contract takes, so the next contract published freezes ' +
+      'an attribution line into every repository that installs it',
+    [
+      licenceFile(
+        WHAT_A_NEW_CONTRACT_CARRIES,
+        `export const THE_CURRENT_BANNER: Banner = 'a-copyright-beside-the-marking'`,
+      ),
+    ],
+    killed([
+      'a-contract-not-yet-published-carries-the-current-banner',
+      'the-licence-file-shows-the-banner-a-reader-would-receive',
+    ]),
+  ),
+
+  /**
    * The address stops rendering its language, which is the state this repository shipped in until the
    * rendering was repaired - so this cell is the defect put back rather than one invented for it.
    *
@@ -861,10 +903,16 @@ const mutants: readonly Mutant[] = [
    * changed was the strings a reader, a crawler and a foreign repository see. Nothing was in a position
    * to notice, because each consumer sees one rendering and the claim is about all of them.
    *
-   * **Five guards and all five are named**, under the rule that a red set of five or fewer is named in
-   * full. They are three different claims and that is the useful part: the two address guards say the
-   * rendering lost a coordinate, the two licence guards say five files in somebody else's repository
-   * now carry a header that is not the one this code writes, and `a-shared-dependency-is-resolved-once`
+   * **Six guards and all six are named.** ADR-0076 requires a set of five or fewer to be named in
+   * full and lets a wider one name only what the mutant was written to exercise; this one crossed to
+   * six when ADR-0159 added a third licence guard, and it is named in full anyway because every one of
+   * the six is a consequence a reader would want to see. **The sentence here said *five* and was false
+   * for exactly as long as it took the battery to be replayed**, which is the drift a pin exists to
+   * report and a comment does not.
+   *
+   * They are three different claims and that is the useful part: the two address guards say the
+   * rendering lost a coordinate, the three licence guards say files in somebody else's repository now
+   * carry a header that is not the one this code writes, and `a-shared-dependency-is-resolved-once`
    * says the resolution's own answer moved. A defect in an address is not local to the address.
    *
    * **The abbreviation was measured and is not a second cell.** Rendering `ts/` instead of the
@@ -882,6 +930,7 @@ const mutants: readonly Mutant[] = [
       'a-rendered-address-is-the-spelling-frozen-with-the-major',
       'every-file-the-installer-copies-is-marked-mit-0',
       'the-licence-file-quotes-a-header-a-contract-really-carries',
+      'the-licence-file-shows-the-banner-a-reader-would-receive',
       'a-shared-dependency-is-resolved-once',
     ]),
   ),
