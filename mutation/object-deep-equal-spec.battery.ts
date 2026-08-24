@@ -213,17 +213,20 @@ export const battery: Battery = {
       reason:
         'over the implementation rather than over the specification. This battery injects into ' +
         '`contract.ts` and `edge-cases.ts`, so a property that draws its own values and compares the ' +
-        'walk against the platform reaches nothing this battery can edit.',
+        'walk against the platform reaches nothing this battery can edit.' +
+        ' **Four properties left this list on the replay and the instrument is what removed them**: ' +
+        '`p2-symmetric`, `p5-order-of-declaration-is-not-read`, `determinism` and ' +
+        '`no-ambient-input-from-history` are reddened by cells here, because a property draws its ' +
+        'values from an alphabet the *contract* declares - so editing the specification does reach ' +
+        'them, and the sentence above was true of the file this battery edits and false of what those ' +
+        'four read. A declaration a mutant contradicts is refused as loudly as a silence, which is ' +
+        'the half of the accounting that caught this. ADR-0161.',
       guards: [
         'p1-reflexive-under-a-copy',
-        'p2-symmetric',
         'p3-reflexive',
         'p4-transitive',
-        'p5-order-of-declaration-is-not-read',
         'p6-a-perturbed-clone-is-not-the-original',
         'never-mutates-its-arguments',
-        'determinism',
-        'no-ambient-input-from-history',
         'the-alphabet-reaches-what-the-contract-is-about',
       ],
     },
