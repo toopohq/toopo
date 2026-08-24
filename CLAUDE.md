@@ -1110,6 +1110,36 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
 **Still open, and what each one now costs.**
 
+- **That a cell's verdict is the verdict of a mutant that ran.** `runSuite` spawns vitest with
+  `stdio: 'pipe'` and declares no `maxBuffer`, so node's default of **1 048 576 bytes** applies. A red
+  run that prints more than that kills the child before vitest writes its JSON report;
+  `reportedFiles()` returns `null`, `failedGuards` is empty, and `verdictOf` answers
+  **`killed-by-typecheck`** — a mutant that ran and was caught, reported as one that did not compile.
+  **`assertWholeSuiteRan` cannot see it**, because it returns early on `testsSeen === null`, which is
+  exactly the value that path produces.
+
+  **It is measured and not hypothetical.** `a-contract-not-yet-published-carries-the-current-banner`
+  held `ContractSource` values in its expectation and a `ContractSource` carries `module` — the
+  contract's whole namespace — so its red run printed **1 177 066 bytes**, 12% over the buffer. `I-69`
+  read `killed-by-typecheck` on two consecutive replays. Reporting addresses instead took the same red
+  run to **7 649 bytes**, a factor of 154, and the cell reads `killed`. The guard is repaired; the path
+  that mis-verdicted it is not.
+
+  **The population is every guard whose failure diff can cross that buffer**, which is every guard
+  holding a rich value in an expectation rather than a rendering of one — and nothing bounds it,
+  because the size is a property of the data a guard happens to hold. The failure is silent by
+  construction: the cell disagrees, the battery names it, and what it names is the wrong cause.
+
+  **Where this looked**: `runSuite` and `verdictOf` in `mutation/run.ts`, `assertWholeSuiteRan` beside
+  them, and `reportedFiles()`'s `catch` returning `null` for a report that was never written as well as
+  for one that cannot be parsed.
+
+  What would close it is one line — `maxBuffer` raised to what `determinism.test.ts` already uses,
+  `1 << 28` — and the price is that **it changes what every battery measures**: any cell currently
+  reading `killed-by-typecheck` through this path would start reading its true verdict, so it wants a
+  full `npm run mutation` to say what moves rather than a line slipped into a unit about a licence
+  header. Priced as its own unit and not taken. ADR-0159.
+
 - **That the banner a reader is shown is the banner a reader would receive.** ADR-0159 made that
   derived for `LICENSE`: the example must be of `THE_CURRENT_BANNER`, so the day a form is superseded
   `the-licence-file-shows-the-banner-a-reader-would-receive` reddens by itself. **The same guard
