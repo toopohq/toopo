@@ -268,11 +268,22 @@ describe('what this repository publishes about itself', () => {
    *
    * `array/group-by@1` is that contract today, and it is the only instance either branch of
    * `licenceHeaderOf` has outside the published five.
+   *
+   * **It reports addresses and never the sources themselves, and that is not a nicety.** A
+   * `ContractSource` carries `module` - the contract's whole namespace - so an expectation holding one
+   * renders the entire contract when it fails. Measured: the first version of this guard printed
+   * 1 177 066 bytes on a red run, against the 1 048 576 that `execFileSync` buffers by default, so the
+   * mutation instrument's child was killed before vitest wrote its report and the cell that reddens
+   * this guard was measured `killed-by-typecheck` - a mutant that ran and was caught, reported as one
+   * that did not compile. ADR-0159 carries the instrument's half of that.
    */
   it('a-contract-not-yet-published-carries-the-current-banner', () => {
     const free = theCatalogue.filter((source) => source.lifecycle.state === 'never-published')
+    const wrong = free
+      .filter((source) => source.banner !== THE_CURRENT_BANNER)
+      .map((source) => `${renderContract(source.address)}: ${source.banner}`)
 
     expect(free.length).toBeGreaterThan(0)
-    expect(free.filter((source) => source.banner !== THE_CURRENT_BANNER)).toEqual([])
+    expect(wrong).toEqual([])
   })
 })
