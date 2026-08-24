@@ -137,6 +137,14 @@ const disagreement = (
   if (mine instanceof RegExp || theirs instanceof RegExp) {
     return String(mine) === String(theirs) ? [] : differ
   }
+
+  // The kinds whose whole value lives where  cannot see it. Without these, this
+  // comparison would commit the defect  exists to publish:  of a
+  // Date, of a Map and of a Set are all the empty array, so every Date would compare equal to every
+  // other and a reader that built the wrong instant would pass. Measured - it did.
+  const beyond = beyondJson(mine, theirs, path, seen)
+  if (beyond !== null) return beyond
+
   if (Array.isArray(mine) && Array.isArray(theirs)) return listFaults(mine, theirs, path, seen)
   if (mine instanceof Set && theirs instanceof Set) return setFaults(mine, theirs, path, seen)
   if (Array.isArray(mine) !== Array.isArray(theirs) || mine instanceof Set !== (theirs instanceof Set)) {
@@ -144,6 +152,77 @@ const disagreement = (
   }
 
   return recordFaults(mine as Record<string, unknown>, theirs as Record<string, unknown>, path, seen)
+}
+
+const tagOf = (value: object): string => Object.prototype.toString.call(value).slice(8, -1)
+
+/**
+ * The kinds whose whole value lives where `Object.keys` cannot see it, and `null` where the general
+ * comparison is what applies.
+ *
+ * **Without these this comparison would commit the defect `object/deep-equal@1` exists to publish.**
+ * `Object.keys` of a Date, of a Map and of a Set are all the empty array - the one line of the
+ * language that makes `fast-deep-equal` answer `true` for two different Sets. Measured on this very
+ * file: breaking the decoder so that every instant came back as the epoch left this guard green.
+ */
+const beyondJson = (
+  mine: object,
+  theirs: object,
+  path: string,
+  seen: Map<unknown, unknown>,
+): readonly string[] | null => {
+  const differ = [`${at(path)} is ${show(mine)} where the registry decodes ${show(theirs)}`]
+
+  if (mine instanceof Date || theirs instanceof Date) {
+    const same =
+      mine instanceof Date && theirs instanceof Date && Object.is(mine.getTime(), theirs.getTime())
+
+    return same ? [] : differ
+  }
+
+  if (mine instanceof Map || theirs instanceof Map) {
+    if (!(mine instanceof Map) || !(theirs instanceof Map) || mine.size !== theirs.size) return differ
+
+    const held = [...theirs]
+
+    return [...mine].flatMap(([key, value], index) => [
+      ...disagreement(key, held[index]?.[0], `${at(path)}<key ${index}>`, seen),
+      ...disagreement(value, held[index]?.[1], `${at(path)}<value ${index}>`, seen),
+    ])
+  }
+
+  if (mine instanceof Error || theirs instanceof Error) {
+    if (!(mine instanceof Error) || !(theirs instanceof Error)) return differ
+    if (mine.name !== theirs.name || mine.message !== theirs.message) return differ
+
+    return disagreement(mine.cause, theirs.cause, `${at(path)}<cause>`, seen)
+  }
+
+  const tag = tagOf(mine)
+  if (tag !== tagOf(theirs)) return differ
+
+  if (['String', 'Number', 'Boolean', 'BigInt', 'Symbol'].includes(tag)) {
+    const held = (mine as { valueOf(): unknown }).valueOf()
+    const other = (theirs as { valueOf(): unknown }).valueOf()
+
+    return Object.is(held, other) ? null : differ
+  }
+
+  if (ArrayBuffer.isView(mine)) {
+    const held = [...(mine as unknown as Iterable<unknown>)]
+    const other = [...(theirs as unknown as Iterable<unknown>)]
+
+    return held.length === other.length && held.every((entry, index) => Object.is(entry, other[index]))
+      ? []
+      : differ
+  }
+
+  // A record with no prototype is not a plain one, and this is the only thing that says so: their
+  // fields are identical and `Object.keys` reads them alike.
+  const bare = Object.getPrototypeOf(mine) === null
+  if (bare !== (Object.getPrototypeOf(theirs) === null)) return differ
+
+  return null
 }
 
 const faultsOf = (encoded: EncodedValue): readonly string[] =>
@@ -174,6 +253,24 @@ const EVERY_ARM: Readonly<Record<EncodedValue['kind'], unknown>> = {
   again: { items: [theSameObject, theSameObject] },
   hole: [1, , 3],
   'not-data': [1, (x: number) => x],
+  'big-integer': 123n,
+  instant: new Date(1234),
+  map: new Map<unknown, unknown>([['a', 1]]),
+  // With a cause, because a cause is the half an error's spelling would be easiest to leave out.
+  error: new TypeError('boom', { cause: 1 }),
+  // Boxed and carrying an own property, so that the `Object.assign(…)` form is exercised here rather
+  // than only where a contract happens to declare one.
+  boxed: Object.assign(new Number(7), { tag: 1 }),
+  'typed-array': new Uint8Array([1, 2]),
+  /**
+   * Refused rather than read back, and the word is the point: nothing about a promise's contents is
+   * readable, so no expression builds the one a contract settled a case about.
+   */
+  opaque: Promise.resolve(1),
+  /** Refused for the neighbouring reason - the class is not in the record and cannot be. */
+  instance: new (class Sample {
+    readonly x = 1
+  })(),
 }
 
 const kindsIn = (encoded: EncodedValue, into: Set<string> = new Set()): ReadonlySet<string> => {
@@ -181,7 +278,22 @@ const kindsIn = (encoded: EncodedValue, into: Set<string> = new Set()): Readonly
   if (encoded.kind === 'list' || encoded.kind === 'set') {
     for (const entry of encoded.entries) kindsIn(entry, into)
   }
-  if (encoded.kind === 'record') for (const field of encoded.fields) kindsIn(field.value, into)
+  if (encoded.kind === 'record' || encoded.kind === 'instance' || encoded.kind === 'boxed') {
+    for (const field of encoded.fields) kindsIn(field.value, into)
+  }
+  if (encoded.kind === 'error') {
+    for (const field of encoded.fields) kindsIn(field.value, into)
+    if (encoded.cause !== undefined) kindsIn(encoded.cause, into)
+  }
+  if (encoded.kind === 'boxed') kindsIn(encoded.value, into)
+  if (encoded.kind === 'instant') kindsIn(encoded.epoch, into)
+  if (encoded.kind === 'typed-array') for (const entry of encoded.elements) kindsIn(entry, into)
+  if (encoded.kind === 'map') {
+    for (const entry of encoded.entries) {
+      kindsIn(entry.key, into)
+      kindsIn(entry.value, into)
+    }
+  }
 
   return into
 }
@@ -200,7 +312,9 @@ describe('the text somebody typed, as the value it spells', () => {
       if (!withoutASpelling.has(kind)) return [kind, faultsOf(encoded)] as const
 
       expect(() => read(text), `${kind} is read where it must be refused`).toThrow(UnreadableLiteral)
-      expect(() => read(text)).toThrow(WITHOUT_A_SPELLING[kind as 'hole' | 'not-data'])
+      expect(() => read(text)).toThrow(
+        WITHOUT_A_SPELLING[kind as keyof typeof WITHOUT_A_SPELLING],
+      )
 
       return [kind, []] as const
     })

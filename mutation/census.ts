@@ -343,7 +343,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/implementations.test.ts': 21,
     'packages/registry/response.test.ts': 60,
     'packages/registry/revision.test.ts': 4,
-    'packages/registry/round-trip.test.ts': 20,
+    'packages/registry/round-trip.test.ts': 33,
     'packages/registry/served-files.test.ts': 12,
     'packages/registry/shared-surface.test.ts': 4,
     'packages/registry/search.test.ts': 14,

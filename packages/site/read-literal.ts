@@ -273,6 +273,177 @@ const A_NUMBER = /^-?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?/
 const A_SET_OPENS = /^new\s+Set\s*\(\s*\[/
 const A_SYMBOL_OPENS = /^Symbol\s*\(/
 
+// The forms `literal.ts` prints for the kinds a contract of this catalogue produces beyond JSON. Each
+// one is a spelling somebody can paste into a console and get the value back, which is the whole test
+// of whether it belonged on a page at all.
+const A_BIG_INTEGER = /^-?\d+n/
+const A_DATE_OPENS = /^new\s+Date\s*\(/
+const A_MAP_OPENS = /^new\s+Map\s*\(\s*\[/
+const AN_ERROR_OPENS =
+  /^new\s+(Error|TypeError|RangeError|SyntaxError|ReferenceError|EvalError|URIError)\s*\(/
+const A_BOX_OPENS = /^new\s+(String|Number|Boolean)\s*\(/
+const AN_OBJECT_CALL_OPENS = /^Object\s*\(/
+const A_TYPED_ARRAY_OPENS =
+  /^new\s+(Int8Array|Uint8ClampedArray|Uint8Array|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array)\s*\(\s*\[/
+const AN_ASSIGN_OPENS = /^Object\s*\.\s*assign\s*\(/
+const A_BARE_OBJECT = /^Object\s*\.\s*create\s*\(\s*null\s*\)/
+
+const ERROR_CONSTRUCTORS: Readonly<Record<string, ErrorConstructor | undefined>> = {
+  Error,
+  TypeError,
+  RangeError,
+  SyntaxError,
+  ReferenceError,
+  EvalError,
+  URIError,
+}
+
+const BOXES: Readonly<Record<string, ((value: never) => object) | undefined>> = {
+  String: (value: string) => new String(value),
+  Number: (value: number) => new Number(value),
+  Boolean: (value: boolean) => new Boolean(value),
+}
+
+const TYPED_ARRAYS = {
+  Int8Array,
+  Uint8Array,
+  Uint8ClampedArray,
+  Int16Array,
+  Uint16Array,
+  Int32Array,
+  Uint32Array,
+  Float32Array,
+  Float64Array,
+  BigInt64Array,
+  BigUint64Array,
+} as const
+
+/** One argument, then the `)` that closes the call it opened. */
+const readOneArgument = (scan: Cursor, what: string): unknown => {
+  const value = readValue(scan)
+  skipSpace(scan)
+  if (!take(scan, ')')) fail(scan, `a \`${what}\` has to be closed by a \`)\``)
+
+  return value
+}
+
+const readDate = (scan: Cursor, label: number | undefined): Date => {
+  const epoch = readOneArgument(scan, 'new Date(')
+  const instant = new Date(epoch as number)
+  if (label !== undefined) scan.shared.set(label, instant)
+
+  return instant
+}
+
+const readMap = (scan: Cursor, label: number | undefined): ReadonlyMap<unknown, unknown> => {
+  const entries = new Map<unknown, unknown>()
+  if (label !== undefined) scan.shared.set(label, entries)
+
+  readSequence(scan, ']', () => {
+    skipSpace(scan)
+    if (!take(scan, '[')) fail(scan, 'an entry of a `new Map([` is a `[key, value]` pair')
+    const key = readValue(scan)
+    skipSpace(scan)
+    if (!take(scan, ',')) fail(scan, 'a map entry needs a comma between its key and its value')
+    const value = readValue(scan)
+    skipSpace(scan)
+    if (!take(scan, ']')) fail(scan, 'a map entry has to be closed by a `]`')
+    entries.set(key, value)
+  })
+  skipSpace(scan)
+  if (!take(scan, ')')) fail(scan, 'a `new Map([` has to be closed by a `)`')
+
+  return entries
+}
+
+const readError = (scan: Cursor, kind: string, label: number | undefined): Error => {
+  skipSpace(scan)
+  const message = readString(scan)
+  skipSpace(scan)
+
+  const cause = take(scan, ',') ? (readValue(scan) as { readonly cause?: unknown }) : undefined
+  skipSpace(scan)
+  if (!take(scan, ')')) fail(scan, `a \`new ${kind}(\` has to be closed by a \`)\``)
+
+  const make = ERROR_CONSTRUCTORS[kind] as ErrorConstructor
+  const failure =
+    cause === undefined ? new make(message) : new make(message, { cause: cause.cause })
+
+  if (label !== undefined) scan.shared.set(label, failure)
+
+  return failure
+}
+
+const readBox = (scan: Cursor, kind: string, label: number | undefined): object => {
+  const value = readOneArgument(scan, `new ${kind}(`)
+  const box = (BOXES[kind] as (held: unknown) => object)(value)
+  if (label !== undefined) scan.shared.set(label, box)
+
+  return box
+}
+
+/** `Object(x)`, which is how a boxed bigint or symbol is written - neither has a `new` form. */
+const readObjectCall = (scan: Cursor, label: number | undefined): object => {
+  const value = readOneArgument(scan, 'Object(')
+  if (typeof value !== 'bigint' && typeof value !== 'symbol') {
+    return fail(scan, '`Object(` is how a boxed bigint or symbol is written, and holds one of those')
+  }
+
+  const box = Object(value) as object
+  if (label !== undefined) scan.shared.set(label, box)
+
+  return box
+}
+
+const readTypedArray = (scan: Cursor, kind: string, label: number | undefined): ArrayBufferView => {
+  const elements: unknown[] = []
+  readSequence(scan, ']', () => {
+    elements.push(readValue(scan))
+  })
+  skipSpace(scan)
+  if (!take(scan, ')')) fail(scan, `a \`new ${kind}([\` has to be closed by a \`)\``)
+
+  const make = TYPED_ARRAYS[kind as keyof typeof TYPED_ARRAYS] as {
+    from(source: readonly unknown[]): ArrayBufferView
+  }
+  const built = make.from(elements)
+  if (label !== undefined) scan.shared.set(label, built)
+
+  return built
+}
+
+/**
+ * `Object.assign(x, { … })`, which is how a value carrying own properties beside a slot is written.
+ *
+ * The fields are *defined* rather than assigned, for the reason `readRecord` defines its own: a field
+ * called `__proto__` is a field on one side of that difference and a prototype on the other, and
+ * `array/group-by@1` settles a case on exactly that name.
+ */
+const readAssign = (scan: Cursor, label: number | undefined): object => {
+  const target = readValue(scan) as Record<string, unknown>
+  if (label !== undefined) scan.shared.set(label, target)
+
+  skipSpace(scan)
+  if (!take(scan, ',')) fail(scan, 'an `Object.assign(` needs a comma between its two arguments')
+  skipSpace(scan)
+  if (scan.text[scan.at] !== '{') fail(scan, 'the second argument of `Object.assign(` is a record')
+
+  const fields = readRecord(scan, undefined)
+  skipSpace(scan)
+  if (!take(scan, ')')) fail(scan, 'an `Object.assign(` has to be closed by a `)`')
+
+  for (const [name, value] of Object.entries(fields)) {
+    Object.defineProperty(target, name, {
+      value,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    })
+  }
+
+  return target
+}
+
 /** A symbol, whose description is a string or nothing at all. */
 const readSymbol = (scan: Cursor): symbol => {
   skipSpace(scan)
@@ -301,10 +472,36 @@ const readTerm = (scan: Cursor, label: number | undefined): unknown => {
   if (character === '[') return readList(scan, label)
   if (character === '{') return readRecord(scan, label)
   if (takePattern(scan, A_SET_OPENS) !== null) return readSet(scan, label)
+  if (takePattern(scan, A_MAP_OPENS) !== null) return readMap(scan, label)
+  if (takePattern(scan, A_DATE_OPENS) !== null) return readDate(scan, label)
+
+  // Before `Object(`, which its first six characters would otherwise match.
+  if (takePattern(scan, A_BARE_OBJECT) !== null) return Object.create(null) as object
+  if (takePattern(scan, AN_ASSIGN_OPENS) !== null) return readAssign(scan, label)
+  if (takePattern(scan, AN_OBJECT_CALL_OPENS) !== null) return readObjectCall(scan, label)
+
+  const anError = takePattern(scan, AN_ERROR_OPENS)
+  if (anError !== null) return readError(scan, anError.replace(/^new\s+|\s*\($/g, ''), label)
+
+  const aBox = takePattern(scan, A_BOX_OPENS)
+  if (aBox !== null) return readBox(scan, aBox.replace(/^new\s+|\s*\($/g, ''), label)
+
+  const aTypedArray = takePattern(scan, A_TYPED_ARRAY_OPENS)
+  if (aTypedArray !== null) {
+    return readTypedArray(scan, aTypedArray.replace(/^new\s+|\s*\(\s*\[$/g, ''), label)
+  }
 
   if (label !== undefined) {
-    return fail(scan, 'only a list, a set or a record is addressed by a `#n =` label')
+    return fail(
+      scan,
+      'only a list, a set, a record, a map, a date, an error, a boxed primitive or a typed array is ' +
+        'addressed by a `#n =` label',
+    )
   }
+
+  // Before the number, whose pattern would otherwise take the digits and leave the `n` behind.
+  const big = takePattern(scan, A_BIG_INTEGER)
+  if (big !== null) return BigInt(big.slice(0, -1))
 
   if (character === "'") return readString(scan)
   if (character === '/') return readPattern(scan)

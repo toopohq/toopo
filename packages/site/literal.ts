@@ -32,7 +32,7 @@
  * because they are visible and because `string/slugify@1`'s table is *about* them.
  */
 
-import type { EncodedValue, JsonPrimitive } from '../registry/value.js'
+import type { EncodedField, EncodedValue, JsonPrimitive } from '../registry/value.js'
 
 /**
  * A character that carries meaning and shows nothing, or shows on top of its neighbour.
@@ -112,6 +112,18 @@ const LITERALS: Readonly<Record<string, string>> = {
 const shared = (label: number | undefined, rendered: string): string =>
   label === undefined ? rendered : `#${label} = ${rendered}`
 
+/** The constructor a boxed primitive is written with, for the three that have one. */
+const BOXES: Readonly<Record<'string' | 'number' | 'boolean', string>> = {
+  string: 'String',
+  number: 'Number',
+  boolean: 'Boolean',
+}
+
+const record = (fields: readonly EncodedField[]): string =>
+  fields.length === 0
+    ? '{}'
+    : `{ ${fields.map((field) => `${key(field.name)}: ${literal(field.value)}`).join(', ')} }`
+
 /**
  * The two arms of an encoded value that have no JavaScript spelling, and the words printed instead.
  *
@@ -120,10 +132,28 @@ const shared = (label: number | undefined, rendered: string): string =>
  * drift the day one of them is reworded - after which the reader would quietly build a value where the
  * page shows a word, which is the one outcome both sides exist to prevent.
  */
-export const WITHOUT_A_SPELLING: Readonly<Record<'hole' | 'not-data', string>> = {
+export const WITHOUT_A_SPELLING: Readonly<
+  Record<'hole' | 'not-data' | 'opaque' | 'instance', string>
+> = {
   hole: '<hole>',
   'not-data': '<a function, served as a file>',
+  /**
+   * A promise, a WeakMap, a WeakSet or a WeakRef. There is no expression that builds one carrying
+   * particular contents, because nothing about their contents is readable in the first place - which
+   * is the reason `object/deep-equal@1` answers `false` for two of them rather than comparing.
+   */
+  opaque: '<a value whose contents cannot be read>',
+  /**
+   * An instance of a class. The class is not in the record and cannot be, so no expression here would
+   * build the value a contract settled a case about - and a spelling that looked like one would be a
+   * lie a reader could paste.
+   */
+  instance: '<an instance of a class>',
 }
+
+/** `Object.assign(x, { … })`, which is how a value carrying own properties beside a slot is spelled. */
+const withFields = (built: string, fields: readonly EncodedField[]): string =>
+  fields.length === 0 ? built : `Object.assign(${built}, ${record(fields)})`
 
 export const literal = (value: EncodedValue): string => {
   switch (value.kind) {
@@ -143,16 +173,55 @@ export const literal = (value: EncodedValue): string => {
       return WITHOUT_A_SPELLING.hole
     case 'again':
       return `#${value.shared}`
+    case 'opaque':
+      return WITHOUT_A_SPELLING.opaque
+    case 'instance':
+      return WITHOUT_A_SPELLING.instance
+    case 'big-integer':
+      return `${value.digits}n`
     case 'list':
       return shared(value.shared, `[${value.entries.map(literal).join(', ')}]`)
     case 'set':
       return shared(value.shared, `new Set([${value.entries.map(literal).join(', ')}])`)
+    case 'instant':
+      return shared(value.shared, `new Date(${literal(value.epoch)})`)
+    case 'map':
+      return shared(
+        value.shared,
+        `new Map([${value.entries
+          .map((entry) => `[${literal(entry.key)}, ${literal(entry.value)}]`)
+          .join(', ')}])`,
+      )
+    case 'typed-array':
+      return shared(value.shared, `new ${value.of}([${value.elements.map(literal).join(', ')}])`)
+    case 'error':
+      return shared(
+        value.shared,
+        withFields(
+          value.cause === undefined
+            ? `new ${value.errorKind}(${quoted(value.message)})`
+            : `new ${value.errorKind}(${quoted(value.message)}, { cause: ${literal(value.cause)} })`,
+          value.fields,
+        ),
+      )
+    case 'boxed':
+      // `new BigInt(…)` and `new Symbol(…)` are not expressions the language has, so those two are
+      // spelled the way a caller really writes them.
+      return shared(
+        value.shared,
+        withFields(
+          value.of === 'bigint' || value.of === 'symbol'
+            ? `Object(${literal(value.value)})`
+            : `new ${BOXES[value.of]}(${literal(value.value)})`,
+          value.fields,
+        ),
+      )
     case 'record':
       return shared(
         value.shared,
-        value.fields.length === 0
-          ? '{}'
-          : `{ ${value.fields.map((field) => `${key(field.name)}: ${literal(field.value)}`).join(', ')} }`,
+        value.prototype === 'none'
+          ? `Object.assign(Object.create(null), ${record(value.fields)})`
+          : record(value.fields),
       )
   }
 }
