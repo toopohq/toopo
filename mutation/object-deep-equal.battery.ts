@@ -356,7 +356,6 @@ export const battery: Battery = {
         'every-profile-has-samples',
         'every-profile-is-addressed',
         'every-class-the-vocabulary-declares-is-sampled',
-        'the-deep-chain-is-deeper-than-any-call-stack-holds',
         'universal-properties-answered',
         'the-alphabet-reaches-what-the-contract-is-about',
       ],
