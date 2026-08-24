@@ -1155,11 +1155,25 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   schema's own vocabulary saying nothing reads it; and `against-the-catalogue.test.ts`, whose guards
   over the catalogue's prose are about presence and about stamps.
 
+  **A second instance came out of the same replay, and it is a comment on a guard rather than on a
+  case.** `every-class-the-vocabulary-declares-is-sampled` re-declares the profile vocabulary by hand -
+  three strings in an array beside the union - and its comment says *both directions*: a profile
+  declaring a class outside the union does not compile, and a class inside it that no profile carries
+  reddens here. **The second direction is dead.** `DS-05` adds a fourth member to the union and the
+  guard's list stays at three, so it passes; measured on the same run. Totality would need the union
+  derived from a runtime list rather than transcribed from the type, and `profiles.test.ts` is one of
+  the seven frozen files. The correction cannot be declared either, because
+  `correctionsToFrozenProse` resolves its address against case identifiers and this address is a
+  guard - which is the field's first known limit and is written here rather than in it.
+
   **The population is every sentence of prose inside a published contract**, which is every
-  `rationale`, every group note, every `reason` of a universal property and every `purpose` of a
-  table - and the failure is silent by construction, because a rationale explaining a correct answer
-  is green everywhere. **The only path that has ever found one is a replay**, and a replay finds it
-  only where somebody wrote a cell aimed at the very defect the sentence names.
+  `rationale`, every group note, every `reason` of a universal property, every `purpose` of a table
+  and every comment inside the seven files - and the failure is silent by construction, because a
+  sentence explaining a correct answer is green everywhere. **The only path that has ever found one is
+  a replay**, and a replay finds it only where somebody wrote a cell aimed at the very defect the
+  sentence names. Two of the three found this week were found that way; the third was found by the
+  instrument refusing a *declaration a mutant contradicted*, which is the same accounting read the
+  other way round.
 
   **What would close it is not a guard over prose** - three entries here already price that and refuse
   it. What it needs is the discipline the finding produced: a rationale claiming *an implementation
