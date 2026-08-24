@@ -16,7 +16,7 @@
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
-import { contract, edgeCases, killed, mutantsOn } from './mutants.ts'
+import { contract, edgeCases, killed, mutantsOn, survived } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'S', asCommitted: 'as-committed', blinded: [] }
 
@@ -60,7 +60,6 @@ const HOW_ANSWERS_ARE_COMPARED = `export const outputsAreEqual = (a: boolean, b:
 const CASES_ARE_ADDRESSED = 'every-case-is-addressed'
 const CASES_ARE_GROUPED = 'every-case-is-grouped'
 const CASES_ARE_JUSTIFIED = 'every-case-is-justified'
-const A_CLASS_IS_SAMPLED = 'every-class-the-vocabulary-declares-is-sampled'
 const UNIVERSAL_PROPERTIES = 'universal-properties-answered'
 const TYPE_IDENTITY = 'signature-is-the-declared-type'
 
@@ -109,14 +108,21 @@ const specification: readonly Mutant[] = [
   sameOnEveryLens(
     'DS-05',
     'adds a fourth class to the profile vocabulary that no profile carries, so the registry serves a ' +
-      'word a reader is handed and nothing measures',
+      'word a reader is handed and nothing measures. **It survives, and the guard written for it is ' +
+      'why**: `every-class-the-vocabulary-declares-is-sampled` re-declares the union by hand - three ' +
+      'strings in an array beside the type - so a fourth member of the type leaves its list at three ' +
+      'and it passes. Its own comment claims *both directions*, and the second one is dead: a profile ' +
+      'declaring a class outside the union does not compile, and a class inside it that no profile ' +
+      'carries reddens nothing. Totality would need the union derived from a runtime list rather than ' +
+      'transcribed from the type, and `profiles.test.ts` is one of the seven files inside this ' +
+      'contract digest. ADR-0161',
     [
       contract(
         THE_PROFILE_VOCABULARY,
         `  readonly comparisonClass: 'stops-early' | 'stops-late' | 'walks-everything' | 'stops-nowhere'`,
       ),
     ],
-    killed([A_CLASS_IS_SAMPLED]),
+    survived('its-witness-is-frozen-out'),
   ),
 
   sameOnEveryLens(
@@ -223,7 +229,63 @@ export const battery: Battery = {
     },
   ],
 
-  unprobedRegions: [],
+  unprobedRegions: [
+    /**
+     * Regions of the specification this battery could edit and does not, one entry per region.
+     *
+     * They are apart from the list above because that one is about what this battery *cannot* reach -
+     * a property that draws its own values - and these are cells nobody has written yet.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the case table read as a table rather than as rows. DS-02 to DS-04 break a case one field ' +
+        'at a time; nothing here writes the same pair twice or leaves a row out of the transposed ' +
+        'table, which is what these two are about.',
+      guards: ['settles-each-pair-once', 'answers-both-ways'],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the shape of a benchmark profile. DS-05 edits the vocabulary and DS-06 the samples; nothing ' +
+        'here empties a profile of its samples or malforms a profile name.',
+      guards: ['every-profile-has-samples', 'every-profile-is-addressed'],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'what three particular profiles hold, which is a claim about samples rather than about the ' +
+        'shape of one. A cell would have to replace the samples of a named profile with values that ' +
+        'no longer answer its own description.',
+      guards: [
+        'profile-a-row-that-changed-at-the-end',
+        'profile-members-without-an-order',
+        'profile-two-copies-of-one-tree',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the declared signature read as a type. DS-10 breaks the type identity outright; the four ' +
+        'below are the finer claims about it - that it takes two unknowns, returns a boolean, and ' +
+        'accepts values whose types are unrelated or unknown to the caller - and a cell narrowing ' +
+        'one parameter rather than replacing the whole signature is what would part them.',
+      guards: [
+        'signature-takes-two-unknowns',
+        'signature-returns-a-boolean',
+        'signature-accepts-a-value-whose-type-the-caller-does-not-know',
+        'signature-accepts-two-values-of-unrelated-types',
+      ],
+    },
+    {
+      nature: 'claims detection',
+      reason:
+        'the bound on ordinary depth, which is measured against the runtime and not against the ' +
+        'specification. p7 builds a chain deeper than any call stack holds and requires the walk to ' +
+        'finish; nothing this battery edits changes how deep the walk goes.',
+      guards: ['p7-ordinary-depth-costs-no-call-frames'],
+    },
+  ],
 
   mutants: [...specification],
 }
