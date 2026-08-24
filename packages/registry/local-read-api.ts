@@ -150,12 +150,28 @@ const THE_FIRST_PUBLICATION = 'd3a5166347cf334ee699097673ada179e8f06b60'
  */
 const THE_SIXTH_CONTRACT = '50ff9906be9a00e033cb41b5443a3b5a08e96e8f'
 
+/**
+ * The commit that published `object/deep-equal@1`, and the third publication of this catalogue.
+ *
+ * The same shape a third time, and the map is what the comment above said would happen: a coordinate
+ * per publication, because a commit that mints an address cannot name itself. What it publishes is
+ * unlike the two before it - it is the first contract whose cases hold values the registry had no
+ * model for, so the commit it names moves `packages/registry/value.ts` as well as the catalogue.
+ *
+ * **`symbolFields` is absent where there is none, and that is what keeps this coordinate honest for
+ * the five bindings above it**: every record published before this one is byte-identical across the
+ * change, so rebuilding at their commits still produces what this tree produces. Measured -
+ * `every-published-binding-still-hashes-to-what-it-was-published-as` is green either side. ADR-0160.
+ */
+const THE_SEVENTH_CONTRACT = '3ec621cc6f8f3af1cfcb4116831f4e68cd7de4ce'
+
 const PUBLISHED_FROM: Readonly<Record<string, string | undefined>> = {
   'typescript/number/parse@1': THE_FIRST_PUBLICATION,
   'typescript/date/add@1': THE_FIRST_PUBLICATION,
   'typescript/string/levenshtein@1': THE_FIRST_PUBLICATION,
   'typescript/string/slugify@1': THE_FIRST_PUBLICATION,
   'typescript/number/round@1': THE_SIXTH_CONTRACT,
+  'typescript/object/deep-equal@1': THE_SEVENTH_CONTRACT,
 }
 
 type Holding = {
