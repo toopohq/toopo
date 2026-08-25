@@ -301,6 +301,21 @@ export const THE_CONTRACTS_SUITE = 'the contracts'
 /** Guards per test file, relative to the repository root. */
 export type SuiteCensus = Readonly<Record<string, number>>
 
+/**
+ * **A shortfall is only visible from the battery that reads that folder**, which is why correcting
+ * one battery's rows says nothing about the others.
+ *
+ * `assertTheCensusHolds` runs at a battery's calibration and reports the files *that battery*
+ * collected. So the nine rows of `packages/registry/` that the seventh contract moved were reported
+ * by `registry-storage` and by nothing else, and the tenth - `packages/validation/the-catalogue.test.ts`
+ * - stayed wrong until `validation-stage-1` ran, four commits later, inside a full replay. Nine
+ * corrected rows read exactly like a corrected census.
+ *
+ * The cause recurs rather than being an accident of this publication: a guard written with
+ * `it.each` over the catalogue changes count when a contract is published, in files nobody edited.
+ * The list of what nothing keeps carries it under the entry about a parameterised guard having no
+ * citable address. ADR-0162.
+ */
 export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   [THE_CONTRACTS_SUITE]: {
     'contracts/typescript/array/group-by/edge-cases.test.ts': 33,

@@ -560,6 +560,18 @@ jobs:
   #
   # The matrix is `everything` from the job above rather than a second reading of `THE_BATTERIES`, for
   # the reason that job's own comment gives.
+  #
+  # **What a publication waits for is the slowest single battery, not the sum of them**, and the
+  # distinction is worth writing down because the sum is the number a local replay prints. Measured at
+  # `cedf777` on one machine, twenty-three batteries sequentially: 54 min 27 s in total, of which
+  # `registry-storage` is 905.9 s, `cli-install` 592.9 s and `site` 555.6 s. The forty minutes below
+  # are per job and this is one job per battery, so the figure to hold them against is **15 min 6 s**
+  # and the total is a reading about a different population.
+  #
+  # What is not measured here is how many of these jobs a runner will start at once, so the wait is the
+  # slowest battery plus whatever queuing that imposes. That is waiting rather than failing, and it is
+  # the thing to re-read the day a battery approaches the bound rather than the day the total does.
+  # ADR-0162.
   every-battery:
     needs: [suites, version, which-batteries]
 

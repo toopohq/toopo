@@ -1012,8 +1012,14 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
 - **a verdict the instrument did not measure, both halves of it, at one `execFileSync`** — ADR-0162.
   The buffer that killed a red run before vitest could report and the bound that was never there are
   one fault: `catch {}` threw the error away, so a run cut short and a run that reddened were one
-  fact. What it leaves behind is a number — 600 seconds, chosen against seven readings taken on one
-  machine, and a runner slow enough to cross it turns a real reading into `not-measured`.
+  fact. **The entry priced a full replay and predicted verdicts would move; measured, none did** -
+  zero cells disagreed across the twenty-two batteries that ran, and `I-69`, the only one it named,
+  reads `killed` exactly as pinned. It was wrong for a reason worth keeping: **the guard that
+  overflowed had already been repaired when the entry was written**, so what was left was the path
+  and never a cell on it. An entry can describe a real path and be wrong about what travels it, which
+  is a nuance of *false without being stale* this list had not carried. What it leaves behind is a
+  number — 600 seconds, chosen against seven readings taken on one machine, and a runner slow enough
+  to cross it turns a real reading into `not-measured`.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
