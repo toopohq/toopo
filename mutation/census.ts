@@ -367,7 +367,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/validation/source.test.ts': 3,
     'packages/validation/states-its-own-signature.test.ts': 3,
     'packages/validation/the-boundary.test.ts': 3,
-    'packages/validation/the-catalogue.test.ts': 8,
+    'packages/validation/the-catalogue.test.ts': 9,
     'packages/validation/typescript-api.test.ts': 2,
   },
 
