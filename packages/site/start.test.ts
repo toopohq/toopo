@@ -50,11 +50,13 @@ import { THE_COPY_CONTROL_SAYS } from './what-a-control-says.js'
  * a defect that makes `theSite` throw would otherwise stop this file from collecting, and the
  * instrument reads a file that collected nothing as a run that measured part of the suite.
  *
- * **The source is read once and the site is built thirteen times**, which is the same split that file
- * makes and it is a measurement rather than a copy of its shape: at `2ae8b50` `localSource()` costs
- * 268 ms against `theSite`'s 9 ms, so reading the catalogue inside each guard put 7 s on a suite that
- * runs once per injected defect. What the argument above protects is the call that can throw on a
- * defect of this folder, and reading thirty-seven files off disk is not it.
+ * **The source is read once and the site is built twelve times**, which is the same split that file
+ * makes and it is a measurement rather than a copy of its shape: at `d0c8fe6` `localSource()` costs
+ * 268 ms against `theSite`'s 9 ms. Reading the catalogue inside each guard instead put 3.3 s on a
+ * suite that runs once per injected defect - a reading taken on a draft of this file that no commit
+ * holds, and ADR-0165 is where it is written down with what it was. What the argument above protects
+ * is the call that can throw on a defect of this folder, and reading thirty-seven files off disk is
+ * not it.
  */
 
 const source = localSource()
@@ -207,9 +209,9 @@ describe('the controls a visitor touches, run against a document', () => {
 
   /**
    * **A slot that declares nothing is a different page from a page with no slot**, and a guard that only
-   * ever meets the second cannot see the first. Measured at `2ae8b50`: dropping the check on
-   * `data-search` altogether left the guard above green, because the page it builds carries no masthead
-   * for the check to have mattered on.
+   * ever meets the second cannot see the first. Dropping the check on `data-search` altogether left the
+   * guard above green, because the page it builds carries no masthead for the check to have mattered
+   * on - a reading of that guard as first drafted, which no commit holds and which ADR-0165 records.
    *
    * The declaration is what a builder reads, so a page serving the slot and declaring nothing is the
    * state where a builder either asks the page or invents an answer of its own.
@@ -239,7 +241,7 @@ describe('the controls a visitor touches, run against a document', () => {
    *
    * `playgroundControl` opens `if (container === null || declared === undefined)`. The first clause
    * carries no behaviour of its own: `declared` is read through `container?.dataset`, so a null
-   * container already makes it `undefined` - measured at `2ae8b50`, dropping that clause changes no
+   * container already makes it `undefined` - measured at `d0c8fe6`, dropping that clause changes no
    * answer and every guard here stays green. What it does is narrow the type for `container.append`
    * further down, and dropping it is `TS18047: 'container' is possibly 'null'`, so the compiler holds
    * it and the run never sees it.
@@ -335,9 +337,10 @@ describe('the controls a visitor touches, run against a document', () => {
     /**
      * Read as well as written, and that is the half a guard forgets.
      *
-     * Measured at `2ae8b50`: a control that sets the words and never reveals the paragraph left this
-     * guard green, because it was reading `textContent` on an element the reader cannot see. A refusal
-     * nobody is shown is the defect, not a refusal nobody composed.
+     * A control that sets the words and never reveals the paragraph left this guard green, because it
+     * was reading `textContent` on an element the reader cannot see. A refusal nobody is shown is the
+     * defect, not a refusal nobody composed. That reading is of this guard as first drafted, which no
+     * commit holds; ADR-0165 records it.
      */
     const shown = refusal instanceof HTMLElement && !refusal.hidden
 

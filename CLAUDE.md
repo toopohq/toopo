@@ -266,9 +266,14 @@ beside it already makes. **Four perturbations came back green and three were hol
 slot that declares nothing is a different page from a page with no slot, a refusal read by `textContent`
 is one nobody is shown, and Escape on a panel of answers is a different claim from Escape on an
 invitation — the fourth being a clause `TS18047` holds. **A thirteenth guard was written, passed, and
-was struck out**, its subject enforced by the type system. What a reader pays is **28 B in brotli on
-every page**; what the suite pays is **0.16 s**, after a first version cost 3.3 s because
-`localSource()` is 268 ms against `theSite`'s 9 and was being called twice per guard. ADR-0165.
+was struck out**, its subject enforced by the type system. What a reader pays is **43 B in brotli on
+every page**, `start.js` going 9 842 to 10 074 served bytes and 2 276 to 2 319 compressed; what the
+suite pays is **0.16 s**, after a first version cost 3.3 s because `localSource()` is 268 ms against
+`theSite`'s 9 and was being called twice per guard; what the instrument pays is read off the two runs
+themselves, `batteries (site)` going **19 min 07 s at `1a1b0f8` to 22 min 07 s at `d0c8fe6`** — 47.8 %
+of its bound to 55.3 %, with 46 s of the three minutes unaccounted for. **The commit carries 28 B and it was measured
+before the Escape repair was written** - the method was sound and the moment was not, which is
+ADR-0141's lesson arriving on a second unit. ADR-0165.
 
 **And that freeze now covers what a contract's guards call, which until this unit it did not.** A
 fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard
@@ -1949,7 +1954,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   **The entry it replaces was false on four counts and its figures are corrected rather than carried
   forward.** It called the file *457 lines, of which 229 executable*, stamped at `17cc9bf`. Measured at
-  `2ae8b50` by a rule written down beside the answer — a line counts when, with block comments removed,
+  `d0c8fe6` by a rule written down beside the answer — a line counts when, with block comments removed,
   what is left is neither empty nor a `//` comment — `start.ts` is **480 lines, 254 of them
   executable**, and `start.test.ts` is 478 and 249. The rule is stated because ADR-0157 published four
   readings of *executable text* over files that had not moved and none of them rebuilt the figure it

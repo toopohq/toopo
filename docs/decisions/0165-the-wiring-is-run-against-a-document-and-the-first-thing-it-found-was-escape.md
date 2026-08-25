@@ -170,15 +170,39 @@ that cannot fail, and it is recorded in `start.test.ts` where somebody would oth
 `mutation/site.battery.ts` gains W-122 to W-133 — the first cells to inject into `start.ts`. Each was
 applied to the working tree and run before it was written down.
 
+Replayed at `d0c8fe6`, all twelve are **killed as expected**, the battery exits 0, and it says *every
+guard of this contract is either witnessed or accounted for* with **nothing unaccounted for**.
+
+**Seven of the twelve guards have a cell that reddens them alone** — W-122, W-124, W-125, W-126,
+W-127, W-129 and W-130. The other five are only ever reddened alongside a neighbour, which is the
+ordinary state of this battery rather than a finding: the block written one unit earlier reports the
+same for its own guards, because a cell aimed at one claim usually trips a second. What the instrument
+refuses is a guard nothing reddens at all, and there is none.
+
+**The reason so many of them redden together is worth naming.** These guards build a real page, so
+W-02, W-19 and W-20 — cells that break page building outright — trip most of them. That is a coupling
+the fixture buys: a guard reading the emitted page is a guard the emission can break. It is the price
+of not writing a hand-written fixture, and it is paid rather than hidden.
+
 ## Consequences
 
 ### What a reader pays, stated rather than smoothed
 
-`start.js` goes from **9 842 to 9 960 served bytes and from 2 276 to 2 304 in brotli**, so every page of
-this site is **28 B heavier**. The five other always-loaded modules are unmoved to the byte, which is
-what makes the two readings comparable: they were taken by two different methods — `build.ts`'s own
-output before, and `asABrowserModule` called directly after, because the build refuses to stamp a tree
-that disagrees with its commit.
+`start.js` goes from **9 842 to 10 074 served bytes and from 2 276 to 2 319 in brotli**, so every page
+of this site is **43 B heavier**. Both readings are `build.ts`'s own output, at `2ae8b50` and at
+`d0c8fe6`, and the five other always-loaded modules are unmoved to the byte.
+
+**The commit message of `d0c8fe6` publishes 9 960 and 28 B, and it is wrong.** That reading was taken
+with `asABrowserModule` called directly, because the build refuses to stamp a tree that disagrees with
+its commit — and it was taken *before the Escape repair was written*. The two-method comparison it
+rested on was sound and is still: the five unchanged modules matched to the byte either way, which is
+what says the method agreed. **What it could not say is that the file had stopped moving.** A
+comparable method does not make a reading current, and the coordinate a figure carries has to name the
+tree it was taken from rather than the commit the unit ended up at.
+
+It is corrected here rather than restated, on ADR-0018's own rule, and the commit is left as it stands
+because a commit message cannot be corrected — the same shape ADR-0156 recorded when its commit carried
+the simulated figures and its record carried the shipped ones.
 
 ### What the suite pays, and the mistake that nearly went in
 
@@ -195,9 +219,21 @@ is not it.
 ### The bound, and a figure this repository was carrying from the wrong population
 
 `CLAUDE.md` says the slowest battery job sits at **68 %** of its 40-minute bound. That is
-`registry-storage` and it is not this battery: measured on the run that closed the unit before this one,
-`batteries (site)` takes **19 min 07 s of 40, which is 47.8 %**. The margin here was twice what the
-number in front of it suggested.
+`registry-storage` and it is not this battery. Read off the two runs themselves, same job, same
+workflow, same class of runner:
+
+| commit | cells | `batteries (site)` | of the 40-minute bound |
+| --- | --- | --- | --- |
+| `1a1b0f8` | 122 | 19 min 07 s | 47.8 % |
+| `d0c8fe6` | 134 | **22 min 07 s** | **55.3 %** |
+
+So twelve cells cost **three minutes**, and the margin is still eighteen.
+
+**The arithmetic does not close and that is stated rather than smoothed.** Twelve cells at the earlier
+run's 9.40 s each predicts 1 min 53 s, and the suite being 0.16 s slower on every one of the 134
+predicts 21 s more — 2 min 14 s against 3 min 00 s observed. The remaining **46 s is unaccounted for**.
+A shared runner varies, and that is a candidate rather than a measurement: nothing here read it, so
+nothing here names it as the cause.
 
 ### What none of this proves, written down rather than softened
 
