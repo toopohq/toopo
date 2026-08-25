@@ -2564,12 +2564,24 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
    what it says belongs to the registry rather than to any one feature". Resemblance is not
    duplication: three functions that answer the same question about different data stay apart.
 3. **A dev dependency is admitted when it cannot reach the product, and when the mechanism that stops
-   it is executable.** Five today — `typescript`, `vitest`, `fast-check`, `@types/node`, `wrangler` —
-   and it is the criterion that decides the sixth, not the list: a rule written as four names plus an
-   exception grows an exception per tool, where a rule that states its test survives its first case.
+   it is executable.** Six today, and **the field each is declared in is what decides what the
+   criterion asks of it** — a list that does not say so reads as six tools held to one test, and one of
+   them is not. `typescript` is a `dependency` and it **does** reach the product: measured at
+   `1a1b0f8`, the archive's own specifiers run
+   `published.js → command.js → install.js → rewrite.js → forbidden-constructs.js → typescript-api.js`,
+   so every install downloads a compiler, and what it buys is the client reading what it is about to
+   write into somebody's project. The other five are `devDependencies` — `vitest`, `fast-check`,
+   `@types/node`, `wrangler`, `happy-dom` — and it is the criterion that decides the seventh, not the
+   list: a rule written as names plus an exception grows an exception per tool, where a rule that
+   states its test survives its first case.
    Two mechanisms answer it and both are measured: `files: ["dist"]` decides what `npm pack` ships,
    and `packaging/reachable.ts` prunes `dist` to what the published entry point can reach — so a tool
    no published module imports is absent from the archive twice over, by a declaration and by a walk.
+   `happy-dom` executes a module against a document, which is what nothing here could do and what no
+   earlier refusal had priced: ADR-0157 refused a headless browser for the fourth time and wrote that
+   *this wants a module executed against a document, which is a different tool at a different price*.
+   Measured across the commit that added it: the archive is **35 modules and 466 308 bytes either
+   side**, and `grep -rl happy-dom dist/` answers nothing.
    `@types/node` is types-only and has no runtime footprint at all; without it the mutation instrument
    would either sit outside the typechecker or be written in plain JavaScript, and an unchecked `.ts`
    file would claim a guarantee the repository does not give it. `wrangler` deploys and is imported by
