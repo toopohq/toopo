@@ -194,6 +194,33 @@ is unanimous, across `v2Point0`, `utf8Decoder`, `parseInt32`, `html5Parser`, `ba
 That is `string/truncate`'s refusal arriving on a different candidate: a contract freezing one of them
 for the life of a major is freezing a preference.
 
+#### Two refusals, and the second survives the first
+
+**This record first wrote that a rule for families of one algorithm was the highest-value opening the
+search had found, and quoted 442.55 M weekly against it. That framing was wrong and the owner refused
+it on the record's own leg C**, hours after it was published: leg C refuses `string/camel-case`
+*independently of the format*, so a format change cannot be what stands between this catalogue and
+that demand.
+
+**Measured rather than conceded, because the question it turns on is where the fork lives.** If the
+digit fork were a rendering decision, each member of the family would meet it separately and a member
+might escape. It is not. Over the five evenly split inputs, **the shared word split is itself disputed
+5 of 5** — `lodash` reads `foo2bar` as `['foo', '2', 'bar']`, `sha256sum` as `['sha', '256', 'sum']`
+and `point3d` as `['point', '3', 'd']`, where `change-case` and `scule` read each as one word.
+
+**And no rendering escapes it: camelCase, kebab-case, snake_case and PascalCase are each disputed 5 of
+5.** The shape differs and the difference is the population rather than the fork — camelCase and
+PascalCase split evenly because four implementations answer them, kebab-case and snake_case run two
+against one because `camelcase` exposes no kebab renderer. It is one fork, in one place, and that place
+is the algorithm every member shares.
+
+**So the two refusals are independent and the second is the load-bearing one.** A families rule would
+relocate the fork from four contracts to one; it would not dissolve it, because whatever is published —
+`string/split-words@1` or `string/camel-case@1` — has to answer whether `foo2bar` is one word or three,
+and nothing in the use of either constrains that answer. **The 442.55 M is what the catalogue is giving
+up, and it is not what a format change would buy back.** It is written this way so the ninth search does
+not read a format decision as a door to this demand.
+
 **The obvious counter was tested and it is why this leg is decisive rather than merely true.**
 `string/slugify@1` was published with *worse* agreement than this — four libraries agreeing on seven
 of fifty-seven samples — so ecosystem disagreement alone cannot refuse a contract, and a record
@@ -309,11 +336,12 @@ not have to derive it again.
 
 ## What would reopen this
 
-* **A rule for families of one algorithm**, which ADR-0158 named and which this record has now
-  measured the price of. The case family is 442.55 M weekly, its algorithm is one function carrying
-  17 of the 20 disputed rows, and the only thing between it and the catalogue is that a splitter
-  cannot declare a phrase anybody types. That is the highest-value opening this search found, and it
-  is a decision about the format rather than about a candidate.
+* **A rule for families of one algorithm**, which ADR-0158 named and which this record first framed
+  wrongly. **It opens the category and it does not open the demand**, and the correction is in
+  *Two refusals, and the second survives the first* above. It is a real question about the format and
+  it is not the door to 442.55 M weekly installs; the next search should reach for it because four
+  contracts publishing one algorithm is a format defect, never because opening it would make the case
+  family admissible.
 * **A mechanism that lets a case table carry a function readably**, which would reopen
   `array/binary-search` and every higher-order candidate at once, and which the measurement above
   prices: today such a contract publishes thirty calls a reader cannot check.

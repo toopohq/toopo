@@ -904,8 +904,11 @@ digit-bearing inputs, **7 are disputed and 5 split exactly two against two** —
 `foo2Bar`, `sha256sum` against `sha256Sum` — where neither answer is wrong and the use, unlike
 `string/slugify@1`'s URL, constrains nothing. **It is the most expensive refusal this catalogue has
 taken**: read on 2026-08-25, the case family is **442.55 M weekly installs**, 1.5 times the family
-behind the contract published two days before it. What would open it is a rule for families of one
-algorithm, priced there and not taken.
+behind the contract published two days before it. **And a rule for families of one algorithm is not
+what would open it**, which that record first said and then measured: the fork is in the *shared word
+split*, disputed **5 of 5**, and no rendering escapes it — so a families rule moves the fork from four
+contracts to one rather than dissolving it. The format refusal and the candidate's refusal are two
+refusals, and the second survives the first.
 
 **One measurement of that search is about this repository rather than about a candidate, and nothing
 else would have found it.** A higher-order contract publishes a case table nobody can read: measured at
@@ -2164,6 +2167,34 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   keeps is that the next one written will reach for a number again, and the executable form is the
   validation stage reading this repository's own strings — already on this list, already priced,
   already refused as a lint over prose.
+
+- **That the catalogue this file names is the catalogue the registry holds.** `theCatalogue` knows how
+  many contracts there are; the sentence above naming them is prose, and nothing compares the two.
+  Measured: this file read **The catalogue is six contracts** for the two days between
+  `object/deep-equal@1`'s publication and `474d453`, four hundred lines below a sentence of its own
+  saying the seventh was published, with every suite, the typecheck and the whole meta suite green
+  throughout.
+
+  **It is the neighbouring entry's class over a different population and it does not close where that
+  one closes.** A page count can be written out of existence — *a sentence that can be true without
+  counting does not count* — and a roster cannot: naming the contracts is the paragraph's job, and
+  the count is the part of it a reader believes.
+
+  **The obvious guard is dead and that was measured rather than assumed.** *Every contract of the
+  catalogue is named in `CLAUDE.md`* is total over the catalogue, which is the direction this
+  repository prefers, and at `3daae2f` all seven were named — `object/deep-equal@1` twice — so it
+  would have been **green on the day the roster said six**. What it would take is a guard that finds
+  the roster *sentence*, which couples a check to where a paragraph sits, and this file has refused
+  that coupling every time it has been priced.
+
+  **Where this looked**: `theCatalogue` and `eachContract` in `packages/registry/the-catalogue.ts`;
+  the nine guards of `mutation/decisions.ts`, which resolve what a record names in both directions and
+  read no prose of this file; and `mutation/history.ts`, whose sweep over this file is for commit
+  identifiers and refused addresses.
+
+  **The population is every statement in this repository of how many contracts exist**, and what would
+  close it is the same thing four entries here already name, price and refuse: a validation stage
+  reading this repository's own strings. ADR-0163.
 
 - **That a set of examples is not narrower than what the contract it illustrates settles.** ADR-0120
   states the rule and refuses the guard in the same breath, and the refusal is the part worth
