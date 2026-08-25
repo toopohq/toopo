@@ -2020,7 +2020,16 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'first substitution in a module and reads the code that follows as prose - leaving comments ' +
       'in what is served while reporting that it removed them all',
     [servedModulesFile(THE_TEMPLATE_IS_RESUMED, `        braces -= 1`)],
-    killed(['every-module-a-reader-runs-carries-no-comment']),
+    // Three rather than one since ADR-0162, and the reason is that this mutant stopped answering
+    // wrongly and started not answering: the reader lost its place and spun, so the guard written for
+    // it hung with it and the cell measured nothing at all. `theCommentRangesIn` refuses to spin now -
+    // a correct reading of n characters takes at most n + 1 steps - and every guard that reads a
+    // served module reddens on the refusal. Measured: 2.1 s where it used to run for ever.
+    killed([
+      'every-module-a-reader-runs-carries-no-comment',
+      'a-module-a-reader-runs-is-the-program-its-source-declares',
+      'no-module-a-reader-runs-carries-a-comment-a-tool-reads',
+    ]),
   ),
 
   /**

@@ -107,6 +107,31 @@ const NOT_A_TOKEN: ReadonlySet<number> = new Set<number>([
   SyntaxKind.ConflictMarkerTrivia,
 ])
 
+/**
+ * A reader that lost its place, refused rather than left to spin.
+ *
+ * **The bound is the input's own length and is therefore sound rather than generous.** Every
+ * iteration below calls `scan()` exactly once, and a scanner that has not reached the end consumes at
+ * least one character per call - the two rescans re-read a token already begun and happen at most
+ * once each per iteration. So a correct reading of *n* characters takes at most *n* + 1 iterations,
+ * and one that takes more has stopped advancing.
+ *
+ * It is born green and the event it is for is measured: `site · W-97` takes the template-token rescan
+ * out of the loop, and the reader then never leaves the first substitution it meets - measured at
+ * `505fddb` over the ten modules a browser fetches, it does not finish on `playground.ts`,
+ * `literal.ts` or `value.ts`. Without this the build hangs rather than failing, and the guard written
+ * to catch that mutant hangs with it. ADR-0162.
+ */
+export class TheReaderLostItsPlace extends Error {
+  constructor(characters: number) {
+    super(
+      `reading the comments of a module of ${characters} characters took more steps than it has ` +
+        `characters, so the reader is no longer advancing through it`,
+    )
+    this.name = 'TheReaderLostItsPlace'
+  }
+}
+
 /** Every comment in one module of JavaScript, in the order it is written. */
 export const theCommentRangesIn = (javascript: string): readonly CommentRange[] => {
   const scanner = createScanner(false, undefined, javascript)
@@ -116,8 +141,12 @@ export const theCommentRangesIn = (javascript: string): readonly CommentRange[] 
   const substitutions: number[] = []
   let braces = 0
   let previous: number | undefined = undefined
+  let steps = 0
 
   for (;;) {
+    steps += 1
+    if (steps > javascript.length + 1) throw new TheReaderLostItsPlace(javascript.length)
+
     let token: number = scanner.scan()
     if (token === SyntaxKind.EndOfFile) break
 
