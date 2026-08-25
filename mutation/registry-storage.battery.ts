@@ -136,6 +136,10 @@ const emitFile = (find: string, replace: string) => ({ file: 'emit.ts', find, re
  * it is inside this battery's reach - the unreachable-guard entry about a contract's address already
  * says so.
  */
+const A_CORRECTION_QUOTES_WHAT_IS_FROZEN = `          'An implementation that memoises the pairs a failed candidate tried answers \`true\`, ' +`
+
+const A_CORRECTION_IS_STAMPED = `          'Measured at \`3ec621c\` by injecting exactly that defect into this contract\\'s own ' +`
+
 const catalogueFile = (find: string, replace: string) => ({
   file: 'the-catalogue.ts',
   find,
@@ -2095,6 +2099,50 @@ const mutants: readonly Mutant[] = [
     ],
     killed(['a-word-only-a-summary-carries-answers-nothing-on-its-own']),
   ),
+  /**
+   * **The correction that softens what it quotes**, which is the defect this guard caught on its own
+   * author the first time it ran: the second correction of `object/deep-equal@1` was declared with a
+   * paraphrase of the frozen sentence rather than the sentence.
+   *
+   * A quotation nobody checks is free to soften, to shorten, or to describe a sentence that was never
+   * written - and a reader meeting the frozen half and the correction side by side is entitled to
+   * believe the left-hand one is what the contract says. The comparison collapses runs of whitespace,
+   * so this cell changes a word rather than a line break.
+   */
+  sameOnEveryLens(
+    'I-70',
+    'softens the sentence a correction quotes, so the page shows a frozen half the contract does not ' +
+      'carry beside a correction of it - the one half of this field a reader has no way to check',
+    [
+      catalogueFile(
+        A_CORRECTION_QUOTES_WHAT_IS_FROZEN,
+        `          'An implementation that memoises the pairs a failed candidate tried may answer \`true\`, ' +`,
+      ),
+    ],
+    killed(['a-correction-names-a-case-the-contract-settles-and-quotes-what-it-says']),
+  ),
+
+  /**
+   * **A correction with no coordinate**, which is ADR-0018's rule arriving on the one field of this
+   * catalogue whose whole subject is that a published sentence stopped being believed.
+   *
+   * The neighbour above is about *what* was measured and this is about *when*: a correction naming the
+   * right case and quoting the right sentence with no commit beside it is a reading nobody can retake,
+   * and it is true on the morning it is written and unfalsifiable afterwards.
+   */
+  sameOnEveryLens(
+    'I-71',
+    'takes the commit out of what a correction measured, so the catalogue publishes a reading of its ' +
+      'own frozen prose that nobody can take again',
+    [
+      catalogueFile(
+        A_CORRECTION_IS_STAMPED,
+        `          'Measured by injecting exactly that defect into this contract\\'s own ' +`,
+      ),
+    ],
+    killed(['a-correction-carries-the-commit-it-was-taken-at']),
+  ),
+
 ]
 
 export const battery: Battery = {
