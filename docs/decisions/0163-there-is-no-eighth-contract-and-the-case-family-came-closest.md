@@ -53,8 +53,14 @@ already established. The case family is refused a third time, and for the first 
 was measured rather than regretted.
 
 **The catalogue is not closed and nothing here says it should be.** What is settled is that the
-eighth is not among the candidates this repository has now looked at twice, and that the next
-search's cheapest move is a decision about families rather than another sweep of the ecosystem.
+eighth is not among the candidates this repository has now looked at twice.
+
+**This paragraph named the next move and named the wrong one**, which is worth leaving visible rather
+than quietly rewriting: it read *the next search's cheapest move is a decision about families*, and
+*Two refusals, and the second survives the first* below is why that is not what it buys. A families
+rule is a real question about the format and it opens the category rather than the demand. **What this
+search does not settle is where the eighth comes from**, and saying so is more honest than pointing at
+the nearest open door.
 
 ### The prediction this search wrote down before it measured anything
 
