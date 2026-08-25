@@ -754,9 +754,14 @@ export const theFilesToCollect = (battery: Battery): readonly string[] =>
  * **The value is chosen against the slowest legitimate run rather than picked.** Measured at
  * `505fddb`, one run of each configuration this instrument spawns: contracts 1.4 s, validation 2.5 s,
  * site 5.4 s, cli 10.8 s, registry 14.9 s, packaging 14.9 s, meta 39.4 s. Ten minutes is fifteen times
- * the slowest of those, which leaves room for a runner slower than this machine, and it sits well
- * under the forty minutes `suites.yml` allows a job - so a bounded cell reports rather than being cut
- * off with everything else.
+ * the slowest of those, and it sits under the forty minutes `suites.yml` allows a job - so a bounded
+ * cell reports rather than being cut off with everything else.
+ *
+ * **The margin over a runner is smaller than that fifteen and is now measured rather than waved at.**
+ * Run 32842887678 took 1.8 to 2.6 times as long as this machine on the three heaviest batteries, so
+ * the slowest legitimate *run* there is nearer 100 s than 40 - which leaves about six times rather
+ * than fifteen. Still a bound a correct run does not approach, and the reading to retake if one ever
+ * reports `not-measured` without a defect to explain it.
  */
 const THE_LONGEST_A_RUN_MAY_TAKE = 600_000
 
