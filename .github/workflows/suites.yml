@@ -499,7 +499,10 @@ jobs:
     runs-on: ubuntu-latest
 
     # A hung cell must not hold a runner for six hours. The longest battery on `ubuntu-latest` is
-    # `cli-install` at 1 497 s, and this allows rather more than that before it is called a hang.
+    # `registry-storage` at 1 649 s, measured at `1008c96`, and this allows rather more than that
+    # before it is called a hang. The line this replaces named `cli-install` at 1 497 s; that battery
+    # is not the longest and 1 497 reproduces on no run read here. What a contract adds to the longest
+    # one is the second gate's comment below.
     timeout-minutes: 40
 
     strategy:
@@ -573,11 +576,61 @@ jobs:
   # population.
   #
   # **The slowest job therefore consumes 68 % of its bound**, not the 38 % a local reading suggests.
-  # That is the number to re-read when a battery grows, and it is close enough that the next contract
-  # is worth watching: `registry-storage` and `cli-install` are the two that carry the catalogue's
-  # size. What is still not measured is how many of these jobs a runner starts at once, so a
-  # publication waits for the slowest plus whatever queuing that imposes - waiting rather than
-  # failing. ADR-0162.
+  # That is run 32842887678's reading. What used to follow it guessed at what would move it - which of
+  # the batteries carry the catalogue, and what a queue costs - and both guesses were wrong. What
+  # replaces them is measured. ADR-0162.
+  #
+  # ---------------------------------------------------------------------------
+  # What a contract costs, and what actually spends the bound
+  # ---------------------------------------------------------------------------
+  #
+  # **A contract adds 36 guards to the registry suite and nothing else to either long battery.**
+  # Derived file by file from `mutation/census.ts` at five, six and seven contracts, with no residue
+  # over eight files: `against-the-catalogue` 11n - 4, `coverage` 4n, `implementations` 3n + 3,
+  # `response` 7n + 18, `snapshot` 7n + 11, `served-files` 2n, `signature` n + 9, `visibility` n + 5.
+  # The reconstruction is not trusted on its own: it reproduces to the unit the nine control counts the
+  # battery logs print on the runner, from `c58c8cd` to `5559932`.
+  #
+  # **A publication commit adds no cell at all.** Neither `b03915c` nor `3ec621c` touches a battery
+  # file, and the twelve cells `registry-storage` gained between `7c9906c` and `1008c96` came from six
+  # ordinary units. So the catalogue moves the guards and the units move the cells - and it is the
+  # cells that are worth watching, which is the opposite of what this comment used to say.
+  #
+  # **A cell costs 17 s and a contract costs 56 s, so one contract is worth 3.3 cells.** Twelve cells
+  # over 78 commits is four contracts of budget, spent with nothing saying so. At today's 94 cells the
+  # bound is reached at the twenty-first contract, between the nineteenth and the twenty-fifth at one
+  # standard error; at seven contracts it is reached at 138 cells. The joint line is 133 cells at eight
+  # contracts, 125 at ten, 108 at fifteen - and at twenty contracts today's 94 is already the ceiling.
+  #
+  # **The method is half the finding, because the raw duration says nothing.** Two runs of identical
+  # work - 88 cells over 409 guards, at `f761de0` and `643bf7e` - measured 1 017 s and 1 464 s, and
+  # regressing the registry suite's own step on the census count over 59 runs gives 0.0078 s per guard
+  # against a standard error of 0.0098, at an r-squared of 0.011. What separates the signal is a
+  # denominator: every run carries the registry suite and the cli suite **on one machine**, and the cli
+  # census did not move across the window, so their ratio is independent of the machine. It reads
+  # 0.7998 over 34 runs at five contracts and 0.8318 over 24 at six, each against a standard error of
+  # 0.0065 - 4.2 % per contract, that step at three and a half of them - and 0.8682 at seven, which is
+  # one run and carries no error of its own. What the extrapolation rests on is the slope over all 59:
+  # 0.000832 per guard against 0.000177, which is 0.0162 s. Anybody who replays the raw regression will
+  # conclude there is no effect at all.
+  #
+  # **`cli-install` does not carry the catalogue's size, and the sentence that said it did was this
+  # comment's own, one unit old.** It holds 72 cells and 178 guards at five, six and seven contracts,
+  # and four readings of that identical work measured 1 392, 1 477, 1 549 and 1 417 s - so the 3.4 %
+  # between the six-contract mean and the seven-contract one sits inside an 11 % spread. Its suite step
+  # says the same: 19.60 s, 19.20 s, 20.01 s across the three.
+  #
+  # **A runner starts 20 of these jobs at once**, which this comment used to declare unmeasured. On run
+  # 32842887678, 19 battery jobs start within 2 s of the first and the last four at +28, +31, +33 and
+  # +33 s, as the short ones finish. The matrix is 9 + 2n jobs - 23 at seven contracts - and it
+  # consumes 6 852 runner seconds against the 32 780 slot-seconds those 20 places offer over the
+  # slowest job, so the queue drains in 33 s and concurrency does not bind before the per-job bound
+  # does. It closes by measurement rather than by estimate, which is why it is stated here and not on
+  # the list of what nothing keeps.
+  #
+  # **What is on that list is the bound itself.** The 68 % above was computed by hand, in a file that
+  # exists to keep other declarations, and nothing compares 40 minutes to what the slowest battery
+  # really costs.
   every-battery:
     needs: [suites, version, which-batteries]
 

@@ -2022,6 +2022,37 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   waits. ADR-0146 carries the criterion that classifies one. **It is now two pushes in forty-three that
   pay a full replay rather than none**, which is where that cost first arrives in fact.
 
+- **That the bound a battery runs under is one anybody compared with what a battery costs.** Both gates
+  declare `timeout-minutes: 40`, and the share the slowest job consumes is written beside them by hand:
+  1 649 s against 2 400 is 68 %, computed by a reader and by nothing else. It is a dated number in a
+  present-tense sentence, which is the class the section above this list refuses in as many words - and
+  this instance is inside `.github/workflows/suites.yml`, which is the file a suite exists to keep.
+
+  **The failure is loud and uninformative rather than quiet, and that is what makes it an entry rather
+  than a note.** A battery that grows past the bound is not wrong, it is killed: the job reports a
+  timeout, every cell it had measured is thrown away with the process, and on the second gate that is a
+  publication that stops with no verdict at all. Nothing before that moment says the margin was
+  thinning.
+
+  **Where this looked**: `mutation/workflows.test.ts`, whose nine guards read what that file may *hold*
+  - a pinned digest, the publishing gate, the identity token - and not one of which reads a duration;
+  `THE_LONGEST_A_RUN_MAY_TAKE` in `mutation/run.ts`, which bounds one cell at 600 s and is related to
+  the job's forty minutes by nothing; and `mutation/selection.ts`, which decides which batteries a push
+  answers for and never how long they may take.
+
+  **The population is the two `timeout-minutes` declarations and the cell bound beside them**, and it
+  grows by one with each gate. What would close it is a job that reads the battery matrix's own
+  durations through the Actions API and refuses a share of the bound. **Its price is three things and
+  the third is the one worth reading twice**: the workflow's token would gain `actions: read`, against a
+  file whose whole argument is that permission is `contents: read` with exactly one job widening it; a
+  job cannot read its own duration, so it is one more job after every matrix; and it needs a share to
+  refuse at, which is a hand-written number - this entry, one floor down. Priced and not taken.
+
+  **What is cheap and is done instead is that the arithmetic now sits beside the number.** The second
+  gate's comment carries what a contract adds - 36 guards to the registry suite, 56 s, 3.3 cells - and
+  what actually spends the bound, which is cells and not contracts. A reader who re-reads the 68 % has
+  the law rather than a memory. It still does not compute it. ADR-0162.
+
 - **That the reading of who has read this repository's prose is one anything executes.** `npm run
   hands` is in no workflow, and this is the half of the entry ADR-0152 did not close. It is not the
   guard's half: `hands.test.ts` is collected by `mutation/vitest.config.ts` and `npm run meta` is a
@@ -2666,6 +2697,12 @@ the record beside it.
 - A dated number followed by a present-tense claim about the same quantity publishes a truth and a lie
   in one sentence, and it is the lie the reader believes. The clause carries the stamp, or it is
   stated at the commit, or it is not written. ADR-0018.
+- **Two figures taken at two commits are not one state.** Each can carry its own coordinate and be
+  true of it, and the sentence that puts them side by side describes a repository that never existed —
+  *61 mutants against 427 guards*, where 61 is `7c9906c` and 427 is `03ac68c` and the pair holds at
+  neither. It is the rule above applied between two figures rather than between a figure and the clause
+  beside it, so the same remedy answers it: the pair is rebuilt at one commit, never checked half by
+  half, because each half passes. ADR-0018.
 - A property settles exactly the decisions its alphabet represents, and no others. A named case is not
   bookkeeping beside it, and a battery mutant is what says which of the two settles a decision.
   ADR-0021.
