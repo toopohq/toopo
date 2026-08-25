@@ -231,9 +231,18 @@ So twelve cells cost **three minutes**, and the margin is still eighteen.
 
 **The arithmetic does not close and that is stated rather than smoothed.** Twelve cells at the earlier
 run's 9.40 s each predicts 1 min 53 s, and the suite being 0.16 s slower on every one of the 134
-predicts 21 s more — 2 min 14 s against 3 min 00 s observed. The remaining **46 s is unaccounted for**.
-A shared runner varies, and that is a candidate rather than a measurement: nothing here read it, so
-nothing here names it as the cause.
+predicts 21 s more — 2 min 14 s against 3 min 00 s observed, leaving **46 s** over.
+
+**The next run measured what that 46 s was a candidate for.** `0dea050` changes prose and nothing
+else — the same 134 cells, the same suite — and the same job took **23 min 35 s**, which is **88 s
+more than the run before it for no work added at all**. So the spread between two runs of identical
+work is nearly twice the residue the arithmetic could not place, and the residue needs no cause of its
+own.
+
+**Two readings are a spread and not a variance**, and this record claims only the spread: 22 min 07 s
+and 23 min 35 s over 134 cells, at 55.3 % and 59.0 % of the bound. What it is enough for is the
+decision it bears on — whether twelve cells moved this job materially closer to forty minutes — and the
+answer is that the run-to-run spread is the larger term.
 
 ### What none of this proves, written down rather than softened
 

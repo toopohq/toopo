@@ -271,7 +271,9 @@ every page**, `start.js` going 9 842 to 10 074 served bytes and 2 276 to 2 319 c
 suite pays is **0.16 s**, after a first version cost 3.3 s because `localSource()` is 268 ms against
 `theSite`'s 9 and was being called twice per guard; what the instrument pays is read off the two runs
 themselves, `batteries (site)` going **19 min 07 s at `1a1b0f8` to 22 min 07 s at `d0c8fe6`** — 47.8 %
-of its bound to 55.3 %, with 46 s of the three minutes unaccounted for. **The commit carries 28 B and it was measured
+of its bound to 55.3 %, with 46 s of the three minutes unaccounted for — and the run after it, which
+changed prose and nothing else, took **23 min 35 s on the same 134 cells**, so the spread between two
+runs of identical work is nearly twice that residue. **The commit carries 28 B and it was measured
 before the Escape repair was written** - the method was sound and the moment was not, which is
 ADR-0141's lesson arriving on a second unit. ADR-0165.
 
