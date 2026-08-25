@@ -252,6 +252,24 @@ and ADR-0156's `7 532` and `42 530` reproducing under **none of four readings** 
 over files that did not move — both stamped, both left, and what replaces them carries its rule as well
 as its commit. ADR-0157.
 
+**The wiring runs against a document now, and the first thing it found is that Escape closed nothing.**
+`start.ts` exports four builders, `start.test.ts` runs each against a page `theSite` really renders, and
+W-122 to W-133 inject into a file no cell had ever reached. The panel's dismissal read
+`paint(THE_PANEL_IS_CLOSED)` then `field.focus()`, and closing first **detaches the example that holds
+the focus** — so the focus event that follows arrives from a node no longer in the slot, reads as a
+reader arriving, and runs the query again. Measured at `2ae8b50` on a contract page: with the field
+empty the invitation came back within the tick, with a query typed the panel emptied and **repopulated
+once the answer settled**, and it closed only when the field already had the focus, which is the one
+case the refocus was not written for. The repair is two lines and adds no state — move the focus first,
+and treat a focus arriving from inside the slot as what it is, which is the distinction the `focusout`
+beside it already makes. **Four perturbations came back green and three were holes in the guards**: a
+slot that declares nothing is a different page from a page with no slot, a refusal read by `textContent`
+is one nobody is shown, and Escape on a panel of answers is a different claim from Escape on an
+invitation — the fourth being a clause `TS18047` holds. **A thirteenth guard was written, passed, and
+was struck out**, its subject enforced by the type system. What a reader pays is **28 B in brotli on
+every page**; what the suite pays is **0.16 s**, after a first version cost 3.3 s because
+`localSource()` is 268 ms against `theSite`'s 9 and was being called twice per guard. ADR-0165.
+
 **And that freeze now covers what a contract's guards call, which until this unit it did not.** A
 fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard
 left all eight ledger digests identical to the byte while a contract the guard exists to refuse went
@@ -1901,35 +1919,41 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   writing a guard whose event is cheap. What would close it is reading the structure of the expression,
   and that means this file's YAML sweep learning what an operator is, on a repository that has no YAML
   parser and will not gain a dependency to hold one guard. ADR-0111.
-- **That a control a visitor touches is one that was wired to what decides for it.** `start.ts` still
-  exports no name, so nothing can import it and no mutant in it can be killed. What changed is what
-  that costs: every decision the controls make is now in `what-a-control-says.ts` and in
-  `playground.ts`, both reachable, both guarded, both carrying cells. **What is left unkept is the
-  wiring** — appending, event handling, focus, `navigator.clipboard`, reading `dataset` — five
-  behaviours rather than a file.
+- **That a browser does what a document says it does.** The entry this replaces was about the wiring
+  and it is closed: `start.ts` exports four builders, `start.test.ts` runs each of them against a
+  document, and W-122 to W-133 inject into a file that had never carried a cell. **What replaces it is
+  narrower and cannot be closed by the same move**: the document is happy-dom's, and a second statement
+  about the browser is what `start.ts`'s own header refuses for type declarations.
 
-  **The half that is open is the half a split cannot buy, and it is stated rather than covered.** A
-  guard over `theSpellingShownFor` is green on the day `managerControl` stops asking for it. A guard
-  reading `start.ts`'s text for the names it calls was considered and refused: it would prove that an
-  identifier appears in a file, not that a value reaches an element, and a weak guard standing where a
-  real one is missing reads as coverage.
+  **The population is six claims, each named rather than summarised.** That a real browser exposes
+  `navigator.clipboard` at all — it wants a secure context and, in some browsers, a user gesture, where
+  happy-dom's is unconditional. That anything reaches the operating system's clipboard. That a control
+  is visible, laid out, or can be hit. That a browser fetches and executes this module at all. That the
+  focus order a reader tabs through is this one — `focus()` succeeds here on an element a browser
+  refuses. And that happy-dom agrees with a browser about any of the rest.
 
-  **This entry was false on four counts and none of them made it look old, which is rule 3 of this
-  section arriving on the list itself.** It said `start.ts` *builds the playground form and, since
-  ADR-0116, the copy control* — it builds four things, ADR-0137 and ADR-0138 having added the search
-  field and the choice of package manager without coming back here. It called it *one file of fifty
-  lines*; it was 457, of which 229 executable. It gave the population as `packages/site/start.ts`; it
-  was two files, `searching.ts` being reachable the whole time and reached by nobody. And it concluded
-  that what would close it is *a document in the site suite* — measured at `17cc9bf`, **40.2 % of its
-  executable text was a decision about what a visitor reads, needing no document at all**, and the
-  entry's own subject was the reason. Every clause was written from an assumption about what the file
-  held rather than from a reading of it, and every one was wrong on the day it was published.
+  **It is not the entry it replaces read again at a lower level.** That one said *nothing executes this
+  file*; this one says *something executes it, and the something is not a browser*. The failure is quiet
+  in a new way: a guard here is green because an emulator agreed with itself, and the only thing that
+  would disagree is the engine nobody runs.
 
-  **What would close what remains is a tool that executes a module against a document**, and that is
-  a different tool from the one three entries of this list already price and refuse: those wanted a
-  page laid out and so wanted a rendering engine. It is the owner's decision and not a unit's means,
-  and it is deliberately left open rather than taken inside a unit that would have used it.
-  ADR-0157.
+  **Where this looked**: `packages/site/start.test.ts`, whose header carries the same six; the
+  `environmentOptions` of `packages/site/vitest.config.ts`, which is the whole of what this repository
+  says to that emulator; and `THE_BROWSER_GRAPH` in `packages/site/browser.ts`, which declares what a
+  page loads and has no opinion about what runs it.
+
+  **What would close it is the headless browser three entries of this list already price and refuse**,
+  and this is the first of them whose subject is behaviour rather than layout — so the day one arrives
+  for a layout, it closes this too, and the trade should be taken knowing that. Priced there and not
+  taken here.
+
+  **The entry it replaces was false on four counts and its figures are corrected rather than carried
+  forward.** It called the file *457 lines, of which 229 executable*, stamped at `17cc9bf`. Measured at
+  `2ae8b50` by a rule written down beside the answer — a line counts when, with block comments removed,
+  what is left is neither empty nor a `//` comment — `start.ts` is **480 lines, 254 of them
+  executable**, and `start.test.ts` is 478 and 249. The rule is stated because ADR-0157 published four
+  readings of *executable text* over files that had not moved and none of them rebuilt the figure it
+  was correcting. ADR-0157, ADR-0165.
 - **That every surface renders the invocation rather than the bare command name.** This one was met by
   a visitor rather than found by a sweep: the README and the four contract pages published
   `toopo add string/slugify`, which answers `command not found` for anybody who has installed nothing —

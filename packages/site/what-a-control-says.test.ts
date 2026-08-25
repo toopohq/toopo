@@ -37,9 +37,12 @@ import {
  *
  * **They do not keep `start.ts` calling any of it.** A guard over `theSpellingShownFor` is green on
  * the day the control stops asking for it, which is the class this repository has five recorded
- * instances of. Executing the control against a document is what would close that, and ADR-0157
- * refuses to reach for the tool inside a unit that wants it - what is bought here is that the
- * decisions are checkable at all, and the residue is named rather than covered.
+ * instances of. What is bought here is that the decisions are checkable at all.
+ *
+ * **That residue is `start.test.ts`'s now**, which runs each builder against a document and asks what
+ * reached an element - so a control that stops asking, asks the wrong thing, or asks at the wrong
+ * moment reddens there. The two files are one claim each: a decision is checked here, and that the
+ * decision arrives is checked there. ADR-0165.
  *
  * ---------------------------------------------------------------------------
  * The catalogue is this working tree's, and the populations are asserted before they are swept

@@ -102,9 +102,9 @@ for the life of the major version.
 
 ## Why you can believe any of it
 
-23 mutation batteries inject **795 deliberate defects** into this repository — each one a committed
+23 mutation batteries inject **807 deliberate defects** into this repository — each one a committed
 file naming the exact edit it makes and the verdict it must produce — and re-run the whole suite once
-per defect. **753 are caught.**
+per defect. **765 are caught.**
 
 To be exact about what *caught* means: a few of these defects cannot occur on every operating system,
 because what they break is a rule of the filesystem rather than of this code. Each is caught where it
@@ -121,7 +121,7 @@ would have to carry it is published.
 
 ```sh
 pnpm install
-pnpm run mutation    # tens of minutes; replays all 795 cells and prints the total
+pnpm run mutation    # tens of minutes; replays all 807 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 

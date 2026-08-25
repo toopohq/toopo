@@ -262,6 +262,17 @@
  * never a refusal. A cell there would have been a guaranteed survivor, which is what an empty column
  * in this table looks like from the inside. ADR-0157.
  *
+ * A twenty-sixth on the wiring those decisions travel: **one new file under the site's, carrying
+ * twelve, and no count moved**. It is the other half of the twenty-fifth and it is worth a line for
+ * what closes rather than for the number: `start.ts` exports four names now, so the empty column that
+ * entry described is a column a cell can be written into. Every one of the twelve runs a builder
+ * against a document happy-dom parses from a page `theSite` really renders.
+ *
+ * **Thirteen were written and one was struck out before it was ever counted.** A guard that a page
+ * with no playground container is left alone passed, and nothing could make it fail: the clause it is
+ * about narrows a type, and removing it is `TS18047` rather than a defect a run can see. It is
+ * recorded in the file where somebody would otherwise write it again. ADR-0165.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -422,6 +433,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/served-modules.test.ts': 4,
     'packages/site/served-stylesheet.test.ts': 3,
     'packages/site/source.test.ts': 8,
+    'packages/site/start.test.ts': 12,
     'packages/site/what-a-control-says.test.ts': 16,
   },
 

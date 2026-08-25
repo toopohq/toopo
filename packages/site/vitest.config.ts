@@ -22,5 +22,20 @@ export default defineConfig({
   root: import.meta.dirname,
   test: {
     include: ['*.test.ts'],
+    /**
+     * One file of this suite runs against a document, and it says so itself.
+     *
+     * `start.test.ts` opens with `@vitest-environment happy-dom`; every other file here is node, which
+     * is what keeps the cost to the one guard that needs it. What cannot be declared in that file is
+     * the setting below - measured at `2ae8b50`, an `@vitest-environment-options` comment is not read
+     * by vitest 4.1.10 and the option never reaches the window.
+     *
+     * A served contract page carries `<script type="module" src="…/start.js">`, which is how a browser
+     * runs the very module the guards drive themselves. happy-dom will not fetch it, correctly, and
+     * announces that as an error on every page it parses. Treating the refusal as a load makes it
+     * silent - and silence is what a suite the instrument reads has to have, because a line of noise
+     * per guard is indistinguishable from a line of noise that means something. ADR-0165.
+     */
+    environmentOptions: { happyDOM: { settings: { handleDisabledFileLoadingAsSuccess: true } } },
   },
 })

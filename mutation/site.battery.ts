@@ -196,6 +196,24 @@ const A_DIAGNOSTIC_IS_CALLED_ONLY_WHERE_THE_ANSWER_IS_NULL = `  const lines = [\
 const THE_PLAYGROUND_IS_NOT_IMPORTED_AT_THE_TOP = `import type { PlaygroundField } from './playground.js'`
 const THE_PLAYGROUND_IS_WAITED_FOR = `  const { theAnswerShown, theFieldLabelFor, theWhatWentWrong, argumentsOf, declaredBy } =
     await import('./playground.js')`
+
+// The wiring itself, reachable since ADR-0165 exported the four builders. Every one of these was seen
+// to redden a named guard before it was written down here.
+const THE_REFUSAL_SITS_BESIDE_THE_COMMAND = `  install.after(refusal)`
+const EVERY_WAY_THE_PAGE_DECLARED_IS_OFFERED = `  const buttons = ways.map((way) => {`
+const THE_SEARCH_NEEDS_A_SLOT_THAT_DECLARED_ONE = `  if (!(slot instanceof HTMLElement) || declared === undefined) return`
+const THE_COPY_CONTROL_NEEDS_A_BLOCK_AND_A_CLIPBOARD = `  if (install === null || !navigator.clipboard) return`
+const THE_COMMAND_IS_READ_WHEN_THE_BUTTON_IS_PRESSED = `  button.addEventListener('click', () => {
+    void navigator.clipboard.writeText(theCommandSpelled(install)).then(`
+const THE_COPY_CONTROL_IS_RELABELLED = `      const copy = install.querySelector('.copy')
+      if (copy !== null) {`
+const A_REFUSAL_IS_SHOWN_WHEN_THERE_IS_ONE = `      refusal.hidden = refused === null`
+const A_CLIPBOARD_THAT_REFUSES_IS_SAID_SO = `        button.textContent = THE_COPY_CONTROL_SAYS.whenTheClipboardRefuses`
+const TYPING_ASKS_THE_CATALOGUE = `  field.addEventListener('input', () => void run())`
+const A_FOCUS_FROM_INSIDE_THE_SLOT_IS_NOT_A_READER_ARRIVING = `    if (from instanceof Node && slot.contains(from)) return`
+const LEAVING_THE_SLOT_CLOSES_THE_PANEL = `    if (!(moved instanceof Node) || !slot.contains(moved)) paint(THE_PANEL_IS_CLOSED)`
+const ESCAPE_MOVES_THE_FOCUS_BEFORE_IT_CLOSES = `    field.focus()
+    paint(THE_PANEL_IS_CLOSED)`
 const WHAT_THE_FORM_PRINTS_IS_WHAT_THE_CALL_THREW = `export const theWhatWentWrong = (thrown: unknown): string =>
   thrown instanceof Error ? thrown.message : String(thrown)`
 const A_READER_WHO_HAS_NOT_TYPED_MEETS_THE_EXAMPLES = `    return { kind: 'an-invitation', said: THE_INVITATION, examples: where.examples }`
@@ -918,6 +936,217 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'fields the rows turn on',
     [literalFile(AN_INSTANCE_SHOWS_WHAT_IT_HOLDS, `          : ''`)],
     killed(['an-instance-shows-the-class-it-is-of-and-what-it-holds']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-122 to W-133 - the wiring, which nothing could reach until ADR-0165
+  // -------------------------------------------------------------------------
+  //
+  // The twenty-fifth arrival at `mutation/census.ts` recorded that no cell here injected into
+  // `start.ts` and that nothing had refused one: the file exported no name, so a mutant in it had
+  // nothing able to kill it. These are the cells that column was empty of.
+  //
+  // Every one of the twelve was applied to the working tree and run before it was written down, and
+  // every one named a guard. **Four were applied and left the suite green, which is the half worth
+  // recording**: three were holes in the guards and were repaired - a slot that declares nothing is a
+  // different page from a page with no slot, a refusal read by `textContent` is one nobody is shown,
+  // and Escape on a panel of answers reopens where Escape on an invitation does not - and the fourth
+  // is a clause the compiler holds rather than a defect a run can see. ADR-0165 carries all four.
+  //
+  // What separates these from W-102 to W-121 is what a defect reaches. Those are decisions: a wrong
+  // word, a wrong label, a wrong spelling. These are delivery: the right word, arriving at the wrong
+  // element, at the wrong moment, or not at all.
+
+  /**
+   * **The defect the copy control's own header was written against.** `textContent` on the install
+   * block is the command plus every control appended to it, so the command is read from its text node
+   * instead - and reading it *once*, when the button is built, stopped being safe the day the command
+   * became something a reader can change. A reader who chooses Bun and then copies is handed `npx`,
+   * and every word on the page is the word they asked for.
+   */
+  sameOnEveryLens(
+    'W-122',
+    'reads the command when the copy control is built rather than when it is pressed, so a reader ' +
+      'who chooses another package manager and then copies is handed the spelling they moved away ' +
+      'from - on a page showing them the one they chose',
+    [
+      startFile(
+        THE_COMMAND_IS_READ_WHEN_THE_BUTTON_IS_PRESSED,
+        `  const captured = theCommandSpelled(install)
+  button.addEventListener('click', () => {
+    void navigator.clipboard.writeText(captured).then(`,
+      ),
+    ],
+    killed(['the-command-copied-is-the-one-the-block-spells-at-the-moment-it-is-pressed']),
+  ),
+
+  /**
+   * **The order this unit repaired, put back.** Closing before moving the focus detaches the example
+   * that holds it, so the focus event that follows arrives from a node no longer in the slot, reads as
+   * a reader engaging the field, and paints the panel straight back.
+   */
+  sameOnEveryLens(
+    'W-123',
+    'closes the search panel before it moves the focus, so Escape pressed on an example paints the ' +
+      'panel straight back - the dismissal a keyboard has, doing nothing, on a page where every ' +
+      'other way out still works',
+    [
+      startFile(
+        ESCAPE_MOVES_THE_FOCUS_BEFORE_IT_CLOSES,
+        `    paint(THE_PANEL_IS_CLOSED)
+    field.focus()`,
+      ),
+    ],
+    killed([
+      'escape-closes-the-panel-and-brings-the-reader-back-to-the-field',
+      'escape-closes-a-panel-of-answers-and-it-stays-closed',
+    ]),
+  ),
+
+  /**
+   * The same defect one floor down, and it is the cell that makes the focus condition load-bearing:
+   * with the ordering kept and this inverted, a panel of *answers* reopens after the close because the
+   * re-run is awaited, while the invitation is repainted synchronously and the close still wins.
+   */
+  sameOnEveryLens(
+    'W-124',
+    'treats a focus arriving from inside the search panel as a reader engaging the field, so ' +
+      'dismissing a panel of answers runs the query again and puts them back a tick later',
+    [
+      startFile(
+        A_FOCUS_FROM_INSIDE_THE_SLOT_IS_NOT_A_READER_ARRIVING,
+        `    if (from instanceof Node && !slot.contains(from)) return`,
+      ),
+    ],
+    killed(['escape-closes-a-panel-of-answers-and-it-stays-closed']),
+  ),
+
+  /**
+   * **A refusal composed and never revealed.** `yarn dlx toopo` does not run - measured against npm's
+   * own artefact - and the paragraph saying so is built, filled and left hidden. The reader chooses
+   * Yarn, is shown a command, and finds out from Yarn.
+   */
+  sameOnEveryLens(
+    'W-125',
+    'keeps the refusal hidden whichever way is chosen, so the one package manager measured not to ' +
+      'work offers its command with nothing beside it',
+    [startFile(A_REFUSAL_IS_SHOWN_WHEN_THERE_IS_ONE, `      refusal.hidden = true`)],
+    killed(['a-way-that-was-measured-to-fail-says-so-and-one-that-runs-says-nothing']),
+  ),
+
+  sameOnEveryLens(
+    'W-126',
+    'builds the search on a slot that declared no catalogue, so a page serving the masthead and ' +
+      'nothing else gets a field that throws on the first keystroke',
+    [
+      startFile(
+        THE_SEARCH_NEEDS_A_SLOT_THAT_DECLARED_ONE,
+        `  if (!(slot instanceof HTMLElement)) return`,
+      ),
+    ],
+    killed(['a-slot-that-declares-nothing-is-left-alone']),
+  ),
+
+  sameOnEveryLens(
+    'W-127',
+    'builds a copy control on a page carrying no install block, so the nine pages of this site that ' +
+      'name no contract fail on load',
+    [startFile(THE_COPY_CONTROL_NEEDS_A_BLOCK_AND_A_CLIPBOARD, `  if (!navigator.clipboard) return`)],
+    killed(['a-page-with-no-slots-on-it-has-nothing-built-into-it']),
+  ),
+
+  /**
+   * The page declares which ways there are; a control that decides for itself is a control that goes
+   * on offering four after the catalogue has been changed to serve three, and every rendering of it
+   * looks correct.
+   */
+  sameOnEveryLens(
+    'W-128',
+    'offers the first way the page declared and drops the rest, so a reader with Bun or pnpm is left ' +
+      'with the one spelling that needs Node',
+    [
+      startFile(
+        EVERY_WAY_THE_PAGE_DECLARED_IS_OFFERED,
+        `  const buttons = ways.slice(0, 1).map((way) => {`,
+      ),
+    ],
+    killed([
+      'the-ways-a-control-offers-are-the-ways-the-page-declared',
+      'the-command-copied-is-the-one-the-block-spells-at-the-moment-it-is-pressed',
+      'choosing-a-way-rewrites-the-command-marks-it-and-relabels-the-copy-control',
+      'a-way-that-was-measured-to-fail-says-so-and-one-that-runs-says-nothing',
+    ]),
+  ),
+
+  /**
+   * **The label a sighted reader never sees, one unit on.** W-102 builds it from the wrong string;
+   * this one stops rebuilding it when the command changes, so a screen reader is offered the spelling
+   * the reader moved away from while the page shows the one they chose.
+   */
+  sameOnEveryLens(
+    'W-129',
+    'leaves the copy control labelled for the way chosen before it, so the one reader who depends on ' +
+      'that label is told a command the page no longer carries',
+    [
+      startFile(
+        THE_COPY_CONTROL_IS_RELABELLED,
+        `      const copy = null
+      if (copy !== null) {`,
+      ),
+    ],
+    killed(['choosing-a-way-rewrites-the-command-marks-it-and-relabels-the-copy-control']),
+  ),
+
+  sameOnEveryLens(
+    'W-130',
+    'reports a clipboard that refused as a copy that happened, so a reader who denied the permission ' +
+      'walks away with an empty clipboard and a control saying otherwise',
+    [
+      startFile(
+        A_CLIPBOARD_THAT_REFUSES_IS_SAID_SO,
+        `        button.textContent = THE_COPY_CONTROL_SAYS.afterCopying`,
+      ),
+    ],
+    killed(['a-clipboard-that-refuses-is-said-so-and-one-that-is-not-there-builds-no-control']),
+  ),
+
+  sameOnEveryLens(
+    'W-131',
+    'wires typing to nothing, so the search field a reader types into answers only when it is ' +
+      'focused - a control that works the first time and never again',
+    [startFile(TYPING_ASKS_THE_CATALOGUE, `  field.addEventListener('input', () => void 0)`)],
+    killed([
+      'typing-answers-from-the-catalogue-the-masthead-declared',
+      'escape-closes-a-panel-of-answers-and-it-stays-closed',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'W-132',
+    'closes the panel when the focus moves inside it and keeps it when the focus leaves, so reaching ' +
+      'for an example with the keyboard dismisses the thing being reached for',
+    [
+      startFile(
+        LEAVING_THE_SLOT_CLOSES_THE_PANEL,
+        `    if (!(moved instanceof Node) || slot.contains(moved)) paint(THE_PANEL_IS_CLOSED)`,
+      ),
+    ],
+    killed([
+      'leaving-the-slot-closes-the-panel-and-moving-inside-it-does-not',
+      'escape-closes-the-panel-and-brings-the-reader-back-to-the-field',
+      'escape-closes-a-panel-of-answers-and-it-stays-closed',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'W-133',
+    'builds the refusal and never puts it on the page, so the paragraph that would tell a reader ' +
+      'their package manager is broken exists in memory and nowhere else',
+    [startFile(THE_REFUSAL_SITS_BESIDE_THE_COMMAND, `  void refusal`)],
+    killed([
+      'every-control-lands-in-the-slot-the-page-serves-for-it',
+      'a-way-that-was-measured-to-fail-says-so-and-one-that-runs-says-nothing',
+    ]),
   ),
 
   sameOnEveryLens(

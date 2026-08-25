@@ -20,17 +20,20 @@
  * which is complete prose rather than a hole.
  *
  * ---------------------------------------------------------------------------
- * Delivery and nothing else, because nothing executes this file
+ * Delivery and nothing else, and four names a guard can reach
  * ---------------------------------------------------------------------------
  *
- * This module exports no name, so nothing can import it and no guard and no mutant will ever reach it.
- * That was true of two fifths of what it used to hold: measured at `17cc9bf`, 40.2 % of its executable
- * text was a decision about what a visitor reads, written as an argument to `setAttribute`.
+ * This module used to export no name, so nothing could import it and a mutant injected here had
+ * nothing able to kill it. That was true of two fifths of what it used to hold: measured at
+ * `17cc9bf`, 40.2 % of its executable text was a decision about what a visitor reads, written as an
+ * argument to `setAttribute`.
  *
  * Every one of those now lives in `what-a-control-says.ts` or, for the deferred half, in
  * `playground.ts` - both reachable, both guarded, both with mutants that have something to kill. What
  * is left here is what genuinely needs a document: finding an element, building one, writing a value
- * into it, and wiring an event.
+ * into it, and wiring an event. **That half is exported now**, one builder per control, so the wiring
+ * is reached by a guard rather than only by a reader: `start.test.ts` runs each of them against a
+ * document happy-dom builds, and `start()` stays the composition it always was. ADR-0165.
  *
  * **The rule for anybody adding to this file is therefore short.** A line that decides what a reader
  * is told does not belong here. If it cannot be written without asking one of those two modules for
@@ -99,7 +102,7 @@ const theCommandSpelled = (install: Element): string => theCommandIn(install)?.n
  * one. Without JavaScript a reader meets the command as text and selects it, which is what they would
  * have done anyway.
  */
-const copyControl = (): void => {
+export const copyControl = (): void => {
   const install = document.querySelector('pre.install')
   if (install === null || !navigator.clipboard) return
 
@@ -137,7 +140,7 @@ const copyControl = (): void => {
  * **The rule holds.** Without JavaScript the page carries one command, it is the one measured to work
  * whether or not anything is installed, and there is no control that does nothing.
  */
-const managerControl = (): void => {
+export const managerControl = (): void => {
   const block = document.querySelector('.get')
   const head = block?.querySelector('.get-head')
   const install = block?.querySelector('pre.install')
@@ -208,7 +211,7 @@ const managerControl = (): void => {
  * The results are built from the same `Search` value `toopo search` renders on a terminal, so a page
  * and a terminal disagree about presentation and about nothing else.
  */
-const searchControl = (arriving: TheCatalogueAsItArrives): void => {
+export const searchControl = (arriving: TheCatalogueAsItArrives): void => {
   const slot = document.querySelector('.masthead .search')
   const declared = slot instanceof HTMLElement ? slot.dataset['search'] : undefined
   if (!(slot instanceof HTMLElement) || declared === undefined) return
@@ -328,8 +331,19 @@ const searchControl = (arriving: TheCatalogueAsItArrives): void => {
    *
    * `run` and not the invitation directly, so that a reader who leaves the field and comes back to a
    * query they had typed finds its results rather than the examples.
+   *
+   * **Coming back is a focus arriving from outside this slot**, which is the same distinction the
+   * `focusout` below already makes and the reason it is made here rather than left implicit. Focus
+   * moving *within* the slot - from an example back to the field - is not a reader engaging the field,
+   * and treating it as one is what made Escape unable to close anything. ADR-0165.
    */
-  field.addEventListener('focus', () => void run())
+  field.addEventListener('focus', (event) => {
+    const from = event.relatedTarget
+
+    if (from instanceof Node && slot.contains(from)) return
+
+    void run()
+  })
   slot.addEventListener('focusout', (event) => {
     const moved = event.relatedTarget
 
@@ -341,22 +355,33 @@ const searchControl = (arriving: TheCatalogueAsItArrives): void => {
    * The focus is put back deliberately: an example is a button inside the panel, so closing while one
    * of them is focused would drop the reader on the document body, a page away from what they were
    * doing.
+   *
+   * **The order is load-bearing and was measured rather than reasoned about.** Closing first detaches
+   * the example that holds the focus, so the focus event that follows arrives from a node no longer in
+   * the slot, reads as a reader engaging the field, and paints the panel straight back. Measured at
+   * `2ae8b50`: with an empty field the invitation reappeared within the same tick, and with a query
+   * typed the panel emptied and then repopulated once the answer settled. Moving the focus first
+   * leaves the example attached at the moment the event is read, so the focus is recognised as
+   * internal, no query is run, and the close is the last thing to happen. ADR-0165.
    */
   slot.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return
 
-    paint(THE_PANEL_IS_CLOSED)
     field.focus()
+    paint(THE_PANEL_IS_CLOSED)
   })
 
   slot.append(label, field, answers)
 }
 
-const start = async (): Promise<void> => {
-  copyControl()
-  managerControl()
-  searchControl(arrivingOnce(overHttp))
-
+/**
+ * The playground, on the four pages of thirteen that serve a container for one.
+ *
+ * It answers nothing on the other nine, and that is the whole of its guard: the container is the
+ * page's declaration that this contract has a form, so a page without one is left alone rather than
+ * asked about.
+ */
+export const playgroundControl = async (): Promise<void> => {
   const container = document.getElementById('playground')
   const declared = container?.dataset['playground']
   if (container === null || declared === undefined) return
@@ -435,6 +460,20 @@ const start = async (): Promise<void> => {
   form.addEventListener('input', run)
   container.append(form, answer)
   run()
+}
+
+/**
+ * Every control this page carries, in the order a reader meets them.
+ *
+ * It is the one name here a guard does not import: what it composes is four builders each reached on
+ * its own, and a guard over the composition would be a guard over four calls in a row.
+ */
+const start = async (): Promise<void> => {
+  copyControl()
+  managerControl()
+  searchControl(arrivingOnce(overHttp))
+
+  await playgroundControl()
 }
 
 void start()
