@@ -919,6 +919,29 @@ others**. Nobody had seen it, because a turned-down contract's page renders no c
 refuses `array/binary-search` and `function/debounce` a second time, on the catalogue rather than on
 themselves. ADR-0163.
 
+**That 5 of 49 counted rows and this sentence read it as functions.** ADR-0163's table is headed *with
+an argument that has no spelling* and is correct; the clause above puts the figure straight after the
+key function, where a reader takes the five to be five of them. Decomposed at `045709b`, they are **1
+function, 2 values whose contents cannot be read, and 2 instances of a class** — a figure true of its
+own population, read into a sentence about another, which is the class this file traces arriving on
+this file. ADR-0164.
+
+**And the instance half was a defect a reader met, on a published contract, with no digest in the way.**
+`literal.ts` printed `<an instance of a class>` and dropped the `className` and the fields the record
+holds, so `a-class-instance-is-not-its-fields` published `{ left: <an instance of a class>, right:
+{ x: 1 }, expected: false }` — *two different things are different*, which is not the claim — and its
+neighbour, whose instance holds `x: 2`, was printed in the same words on the left. It now reads
+`<an instance of ASmallClass, holding { x: 1 }>`, so each row shows the same field on both sides and
+the answer still `false`. **0 of 7 digests moved and `npm run freeze` is green**, because a rendering
+is in no digest. The brackets stay: `ASmallClass { x: 1 }` is what a reader would paste and the class
+is not in the record. `WITHOUT_A_SPELLING` holds what a phrase *opens with* now, so `read-literal.ts`
+refuses it by `startsWith` with nothing about the refusal changed. **The arm had no guard in
+`literal.test.ts` at all**, which is how it survived being written; what found it was a probe printing
+the record beside the rendering for another question entirely. **Three headers said *two* and each was
+made false by a unit that did not come back** — `read-literal.ts` claiming `literal` prints `<hole>`,
+which has had a spelling since ADR-0160, `literal.ts` over a record of three, and `site.battery.ts`
+calling a hole a word with no spelling. ADR-0164.
+
 **The file that lands in somebody else's project no longer says it belongs to somebody else.** The
 front page promises *the source lands in your repository and it is yours* and the second line of the
 file that lands said `Copyright (c) 2026 <the author>`; MIT-0 required nothing of the reader, but

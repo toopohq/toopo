@@ -123,6 +123,46 @@ describe('an encoded value, written as the literal a reader recognises', () => {
   })
 
   /**
+   * `object/deep-equal@1` settles in two rows that an instance carrying `{ x: 1 }` is not the plain
+   * object `{ x: 1 }`, and what the instance holds is what those rows turn on. Printing the class
+   * alone rendered both as `<an instance of a class>` beside the plain object, so the page said *two
+   * different things are different* - which is not the claim and is not interesting - and printed the
+   * neighbouring row, whose instance holds `x: 2`, in the very same words. The record had the fields
+   * the whole time.
+   *
+   * **The brackets are asserted rather than assumed.** `Sample { x: 1 }` is the form a reader knows
+   * from a console and would paste, and it does not run; the brackets are what say this is a phrase
+   * and not a spelling, which is what lets the phrase carry the content at all.
+   *
+   * It is not `the-same-object-is-shown-as-the-same-object` in another arm. That one is about two
+   * occurrences of one value; this is about one occurrence of a value the page was abbreviating. The
+   * last line is where they meet, and it is here because the label was the half this arm dropped.
+   */
+  it('an-instance-shows-the-class-it-is-of-and-what-it-holds', () => {
+    class Sample {
+      x: number
+
+      constructor(x: number) {
+        this.x = x
+      }
+    }
+    class Empty {}
+
+    const one = new Sample(1)
+
+    expect(shown(one)).toBe('<an instance of Sample, holding { x: 1 }>')
+    expect(shown(one)).not.toBe(shown(new Sample(2)))
+    expect(shown(new Empty())).toBe('<an instance of Empty>')
+    expect(shown(new Empty())).not.toBe(shown(one))
+    expect(shown(Object.assign(new Sample(1), { [Symbol('tag')]: 2 }))).toBe(
+      "<an instance of Sample, holding { x: 1, [Symbol('tag')]: 2 }>",
+    )
+    expect(shown({ items: [one, one] })).toBe(
+      '{ items: [#1 = <an instance of Sample, holding { x: 1 }>, #1] }',
+    )
+  })
+
+  /**
    * `array/group-by@1` pins that the element in a group is the *same object* as the element in the
    * input, and nine of its cases say so. Printing the object twice would publish a claim about
    * equality where the contract makes one about identity.

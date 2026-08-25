@@ -149,12 +149,20 @@ const record = (
 }
 
 /**
- * The two arms of an encoded value that have no JavaScript spelling, and the words printed instead.
+ * The three arms of an encoded value that have no JavaScript spelling, and what a page prints where
+ * one stands - each entry being what that phrase **opens with**.
  *
  * **One statement rather than two, because `read-literal.ts` has to refuse exactly these.** What this
  * file prints and what the reader turns down are the same fact, and a second copy of either word would
  * drift the day one of them is reworded - after which the reader would quietly build a value where the
  * page shows a word, which is the one outcome both sides exist to prevent.
+ *
+ * **An opening rather than the whole phrase, because one of the three goes on to say something.** The
+ * reader matches what a phrase begins with, so an arm that carries content a reader needs - which
+ * `instance` does, the record holding a class name and the fields under it - is printed and refused by
+ * the same declaration as the two that have nothing further to add. This entry read
+ * `<an instance of a class>` and threw that content away; ADR-0164 is why it no longer does, and the
+ * sentence above it said *two* arms while this record held three.
  */
 export const WITHOUT_A_SPELLING: Readonly<Record<'not-data' | 'opaque' | 'instance', string>> = {
   'not-data': '<a function, served as a file>',
@@ -165,11 +173,12 @@ export const WITHOUT_A_SPELLING: Readonly<Record<'not-data' | 'opaque' | 'instan
    */
   opaque: '<a value whose contents cannot be read>',
   /**
-   * An instance of a class. The class is not in the record and cannot be, so no expression here would
-   * build the value a contract settled a case about - and a spelling that looked like one would be a
-   * lie a reader could paste.
+   * An instance of a class, whose name and fields follow. The class is not in the record and cannot
+   * be, so no expression here would build the value a contract settled a case about - and a spelling
+   * that looked like one would be a lie a reader could paste. The brackets are what say so, which is
+   * what lets the phrase carry the content without becoming a spelling.
    */
-  instance: '<an instance of a class>',
+  instance: '<an instance of ',
 }
 
 /**
@@ -230,8 +239,27 @@ export const literal = (value: EncodedValue): string => {
       return `#${value.shared}`
     case 'opaque':
       return WITHOUT_A_SPELLING.opaque
-    case 'instance':
-      return WITHOUT_A_SPELLING.instance
+    /**
+     * **The record holds the class and the fields under it, and this used to print neither.** What
+     * `object/deep-equal@1` settles in two rows is that an instance carrying `{ x: 1 }` is not the
+     * plain object `{ x: 1 }` - so a page that dropped the fields rendered the case as
+     * `<an instance of a class>` beside `{ x: 1 }`, which is two different things being different and
+     * is not the claim. Its neighbour, whose instance holds `x: 2`, was printed in the very same
+     * words. The loss was the page's alone: no digest moved to repair it. ADR-0164.
+     *
+     * The label is carried for the reason every other arm carries one. An instance in two places is
+     * one object, `encode` labels it, and the second occurrence renders `#1` - which pointed at
+     * nothing while this arm dropped the label. No case does that today; a contract settling identity
+     * on an instance is what would, and this catalogue has one that settles identity.
+     */
+    case 'instance': {
+      const holding =
+        value.fields.length === 0 && (value.symbolFields ?? []).length === 0
+          ? ''
+          : `, holding ${record(value.fields, value.symbolFields)}`
+
+      return shared(value.shared, `${WITHOUT_A_SPELLING.instance}${value.className}${holding}>`)
+    }
     case 'big-integer':
       return `${value.digits}n`
     case 'list': {

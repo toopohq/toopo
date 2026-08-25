@@ -17,15 +17,24 @@
  * that argument arriving from the other direction.
  *
  * ---------------------------------------------------------------------------
- * The two arms it refuses, and why refusing is the whole point
+ * The three arms it refuses, and why refusing is the whole point
  * ---------------------------------------------------------------------------
  *
- * `literal` prints `<hole>` and `<a function, served as a file>` in words, deliberately, because
- * neither arm has a JavaScript spelling. Whoever meets those words gets a refusal that names them,
- * never a value: a reader answering `undefined` for a hole would build the value `array/group-by@1`
- * settles a case on *not* being, and a reader answering anything at all for a function would put a
- * value where the registry deliberately serves a file. The words are imported from `literal.ts` rather
- * than written again, so the printing and the refusal cannot come apart.
+ * `literal` prints a bracketed phrase for a function, for a value whose contents cannot be read and
+ * for an instance of a class, deliberately, because none of the three has a JavaScript spelling.
+ * Whoever meets one gets a refusal that names it, never a value: a reader answering anything at all
+ * for a function would put a value where the registry deliberately serves a file, and one answering a
+ * plain object for an instance would build the very thing `object/deep-equal@1` settles it is not. The
+ * phrases are imported from `literal.ts` rather than written again, so the printing and the refusal
+ * cannot come apart - and what is imported is what each phrase *opens with*, because an instance goes
+ * on to name its class and the fields under it.
+ *
+ * **This paragraph read `<hole>` and `<a function, served as a file>`, and counted them as two.** Both
+ * halves were false. A hole has had a spelling since ADR-0160 - it prints as nothing at all, which is
+ * the language's own notation, and `readList` below builds a real one rather than refusing it - and
+ * the two arms that arrived with `object/deep-equal@1` were never added here. The sentence went on
+ * describing a reader that had stopped existing, in the file whose subject is these exact words.
+ * ADR-0164.
  *
  * ---------------------------------------------------------------------------
  * Strict on the notation, forgiving on the spacing

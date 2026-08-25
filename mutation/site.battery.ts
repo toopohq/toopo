@@ -220,14 +220,21 @@ const THE_ORDINARY_SPACE_IS_KEPT = `const INVISIBLE = /[\\p{Cc}\\p{Cf}\\p{Cs}\\p
 const NEGATIVE_ZERO_KEEPS_ITS_SIGN = `  'negative-zero': '-0',`
 
 /**
- * The two words with no JavaScript spelling, now read from `WITHOUT_A_SPELLING` rather than written
- * into the switch - because `read-literal.ts` has to refuse exactly these, and what one file prints
- * and the other turns down is one statement. The anchors moved with them; the defects are unchanged.
+ * What a page prints where the switch cannot write a spelling.
+ *
+ * The second and third are read from `WITHOUT_A_SPELLING` rather than written into the switch,
+ * because `read-literal.ts` has to refuse exactly those and what one file prints and the other turns
+ * down is one statement. **A hole is not one of them and has not been since ADR-0160** - it spells as
+ * nothing at all, which is the language's own notation, and the reader builds a real one. This comment
+ * called the pair below *the two words with no JavaScript spelling* while one of the two had a
+ * spelling and the arms that did not had grown to three. ADR-0164.
  */
 const A_HOLE_SPELLS_AS_NOTHING = `    case 'hole':
       return ''`
 
 const A_FUNCTION_IS_NAMED = `      return WITHOUT_A_SPELLING['not-data']`
+
+const AN_INSTANCE_SHOWS_WHAT_IT_HOLDS = `          : \`, holding \${record(value.fields, value.symbolFields)}\``
 
 const THE_SAME_OBJECT_IS_LABELLED = `const shared = (label: number | undefined, rendered: string): string =>
   label === undefined ? rendered : \`#\${label} = \${rendered}\``
@@ -902,6 +909,15 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'argument missing rather than one the registry serves as a file',
     [literalFile(A_FUNCTION_IS_NAMED, `      return ''`)],
     killed(['a-function-is-named-as-what-the-registry-does-with-it']),
+  ),
+
+  sameOnEveryLens(
+    'W-121',
+    'prints an instance as its class alone, so the two rows where `object/deep-equal@1` settles that ' +
+      'an instance is not a plain object carrying the same fields publish the class and hide the ' +
+      'fields the rows turn on',
+    [literalFile(AN_INSTANCE_SHOWS_WHAT_IT_HOLDS, `          : ''`)],
+    killed(['an-instance-shows-the-class-it-is-of-and-what-it-holds']),
   ),
 
   sameOnEveryLens(

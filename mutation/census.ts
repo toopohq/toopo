@@ -412,7 +412,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'packages/site/vitest.config.ts': {
     'packages/site/document.test.ts': 17,
     'packages/site/indexing.test.ts': 11,
-    'packages/site/literal.test.ts': 11,
+    'packages/site/literal.test.ts': 12,
     'packages/site/pages.test.ts': 44,
     'packages/site/playground.test.ts': 19,
     'packages/site/published-tree.test.ts': 9,
