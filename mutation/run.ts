@@ -72,7 +72,29 @@ export type Edit = {
   readonly replace: string
 }
 
-export type Verdict = 'killed' | 'killed-by-typecheck' | 'survived' | 'not-applicable'
+/**
+ * What a cell produced, as this instrument is able to say it.
+ *
+ * **`not-measured` is the one that is not about the mutant**, and it is here because the alternative
+ * was reporting a verdict nobody measured. A run that does not finish, one killed for printing past
+ * the buffer, and one that writes no report are three ways of learning nothing, and all three used to
+ * arrive as `killed-by-typecheck` - which is derived from an *absence*, red with no guard named. A
+ * report that was never written looks exactly like a red run with nothing to attribute it to.
+ *
+ * It cannot be pinned: `Expectation` takes `PinnableVerdict`, so no battery may declare a cell
+ * unmeasurable, and a cell that measures this therefore disagrees with whatever it was pinned at and
+ * fails the run. That is the whole of how it is enforced - no second term in the exit code, because a
+ * disagreement already is one. ADR-0162.
+ */
+export type Verdict =
+  | 'killed'
+  | 'killed-by-typecheck'
+  | 'survived'
+  | 'not-applicable'
+  | 'not-measured'
+
+/** What a battery may pin, which is every verdict but the one that says the instrument learned nothing. */
+export type PinnableVerdict = Exclude<Verdict, 'not-measured'>
 
 /**
  * Why a cell is expected to survive. `mutants.ts` owns the vocabulary and ADR-0078 the argument for
@@ -152,7 +174,7 @@ export type OnlyOnePlatform = {
  * argument nobody can see in the answer.
  */
 export type Expectation = {
-  readonly verdict: Verdict
+  readonly verdict: PinnableVerdict
   readonly by?: readonly string[]
   readonly nature?: SurvivalNature
   readonly onlyOn?: OnlyOnePlatform
@@ -587,14 +609,27 @@ type ReportedFile = {
 
 type VitestReport = { readonly testResults?: readonly ReportedFile[] }
 
-type SuiteRun = {
+export type SuiteRun = {
   readonly green: boolean
   readonly failedGuards: readonly string[]
   /**
-   * Tests the run reported, or `null` when it died before writing a report at all - a type error or
-   * an import failure. That is still a kill; it simply has no per-test detail to attribute it to.
+   * Tests the run reported, or `null` when there is no report to read.
+   *
+   * **This used to say that a run with no report is still a kill, and it is not.** Measured at
+   * `505fddb`: a mutant that fails to compile reddens *with* a report - the syntax error probe
+   * reported 17 assertions of the 29 the census declares and none failed - where a run stopped by its
+   * bound writes nothing at all. A null here now means the instrument learned nothing, and
+   * `notMeasured` says why. ADR-0162.
    */
   readonly testsSeen: number | null
+  /**
+   * Why this run measured nothing about the mutant, or `null` where it measured something.
+   *
+   * A sentence rather than a code, because the only thing anybody does with it is read it: it reaches
+   * a person through the cell's verdict and through the calibration's refusal, and both are places
+   * where the next question is *what happened*.
+   */
+  readonly notMeasured: string | null
   readonly guards: readonly GuardIdentity[]
   /**
    * Every file the run reported on, against what it said about it - empty where it said nothing.
@@ -706,8 +741,79 @@ const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
 export const theFilesToCollect = (battery: Battery): readonly string[] =>
   battery.vitestConfig === undefined ? [`${battery.contractPath}/`] : []
 
+/**
+ * The longest one run of the suite may take before the instrument stops waiting for it.
+ *
+ * **A mutant whose defect is non-termination is a real defect and the instrument could not report
+ * one.** `site · W-97` takes the template-token rescan out of the comment reader, and measured at
+ * `505fddb` over the ten modules a browser fetches, the reader then never finishes on three of them -
+ * `playground.ts`, `literal.ts` and `value.ts`. With no bound the battery waits for ever: the owner
+ * watched sixty-five minutes of it, and `measure.ts` sat at zero seconds of processor time while its
+ * child spun.
+ *
+ * **The value is chosen against the slowest legitimate run rather than picked.** Measured at
+ * `505fddb`, one run of each configuration this instrument spawns: contracts 1.4 s, validation 2.5 s,
+ * site 5.4 s, cli 10.8 s, registry 14.9 s, packaging 14.9 s, meta 39.4 s. Ten minutes is fifteen times
+ * the slowest of those, which leaves room for a runner slower than this machine, and it sits well
+ * under the forty minutes `suites.yml` allows a job - so a bounded cell reports rather than being cut
+ * off with everything else.
+ */
+const THE_LONGEST_A_RUN_MAY_TAKE = 600_000
+
+/**
+ * The most one run may print before node kills it.
+ *
+ * Node's default is 1 048 576 bytes, and a red run that prints past it is killed before vitest writes
+ * its report - so the cell read `killed-by-typecheck`, a mutant that ran and was caught reported as
+ * one that did not compile. It was measured rather than imagined:
+ * `a-contract-not-yet-published-carries-the-current-banner` held whole `ContractSource` values in an
+ * expectation, and its red run printed **1 177 066 bytes**, 12 % over.
+ *
+ * `1 << 28` is `packages/registry/determinism.test.ts`'s value, reached for rather than invented. It
+ * does not make an overflow impossible, which is why one is still reported by name below.
+ */
+const THE_MOST_A_RUN_MAY_PRINT = 1 << 28
+
+/**
+ * Why a spawn that threw measured nothing, or `null` where what it threw was a red run.
+ *
+ * **Read off `code` and off nothing else**, measured at `505fddb` on this platform: an ordinary
+ * non-zero exit carries `status: 1` and no `code`; a run past its bound carries `ETIMEDOUT`; one past
+ * its buffer carries `ENOBUFS`; both of those also carry `signal: 'SIGTERM'`, which is why the signal
+ * separates neither from the other. `killed` is `undefined` in every case here and is not the
+ * discriminator it looks like. A run both over its buffer and hanging reports `ENOBUFS` - the buffer
+ * fires first.
+ *
+ * Exported so the meta suite can put all three past it without spawning anything. ADR-0162.
+ */
+export const whyARunMeasuredNothing = (code: string | undefined): string | null => {
+  if (code === 'ETIMEDOUT') {
+    return (
+      `the run did not finish within ${THE_LONGEST_A_RUN_MAY_TAKE / 1000} seconds, so nothing ` +
+      `about this mutant was measured`
+    )
+  }
+  if (code === 'ENOBUFS') {
+    return (
+      `the run printed more than ${THE_MOST_A_RUN_MAY_PRINT} bytes and was killed before it could ` +
+      `report, so nothing about this mutant was measured`
+    )
+  }
+
+  return null
+}
+
 const runSuite = (battery: Battery): SuiteRun => {
   rmSync(REPORT, { force: true })
+
+  const nothingMeasured = (because: string): SuiteRun => ({
+    green: false,
+    failedGuards: [],
+    testsSeen: null,
+    guards: [],
+    reportedFiles: {},
+    notMeasured: because,
+  })
 
   let green: boolean
   try {
@@ -737,16 +843,36 @@ const runSuite = (battery: Battery): SuiteRun => {
         encoding: 'utf8',
         stdio: 'pipe',
         env: { ...process.env, TZ: battery.timeZone },
+        timeout: THE_LONGEST_A_RUN_MAY_TAKE,
+        maxBuffer: THE_MOST_A_RUN_MAY_PRINT,
       },
     )
     green = true
-  } catch {
+  } catch (thrown) {
+    /**
+     * **The error is read rather than discarded, and that is the whole repair.** This was `catch {}`,
+     * so a run cut short and a run that reddened were one fact - and the second is a verdict where the
+     * first is the absence of one.
+     *
+     * Node separates them on `code` and on nothing else, measured at `505fddb` on this platform: an
+     * ordinary non-zero exit carries `status: 1` and no `code`; a run past its bound carries
+     * `code: 'ETIMEDOUT'`; one past its buffer carries `code: 'ENOBUFS'`; and both carry
+     * `signal: 'SIGTERM'`, which is why the signal cannot tell them apart. **`killed` is `undefined`
+     * in all six cases here**, so it is not the discriminator either. A run that is both over its
+     * buffer and hanging reports `ENOBUFS` - the buffer fires first.
+     */
+    const because = whyARunMeasuredNothing((thrown as { readonly code?: string }).code)
+    if (because !== null) return nothingMeasured(because)
+
     green = false
   }
 
   const files = reportedFiles()
   if (files === null) {
-    return { green, failedGuards: [], testsSeen: null, guards: [], reportedFiles: {} }
+    // Measured at `505fddb`: a run stopped by its bound writes no report at all, so this is reached
+    // by anything that ends the child before vitest can write - not by a mutant that fails to compile,
+    // which reddens *with* a report and with fewer assertions in it.
+    return nothingMeasured('the run wrote no report this instrument could read')
   }
 
   const assertions = files.flatMap((file) => file.assertionResults ?? [])
@@ -756,16 +882,27 @@ const runSuite = (battery: Battery): SuiteRun => {
     failedGuards: assertions.filter((t) => t.status === 'failed').map((t) => guardIdOf(t.title)),
     testsSeen: assertions.length,
     guards: guardsIn(files),
+    notMeasured: null,
     reportedFiles: Object.fromEntries(
       files.map((file) => [relative(file.name ?? ''), file.message ?? '']),
     ),
   }
 }
 
-const verdictOf = (green: boolean, failedGuards: readonly string[]): Verdict => {
-  if (green) return 'survived'
+/**
+ * What a run says about the mutant that was in the tree while it ran.
+ *
+ * The order is the argument: **a run that measured nothing is asked about first**, because every term
+ * below it reads an absence as evidence. `killed-by-typecheck` is *red with no guard named*, which is
+ * indistinguishable from *red because the report was never written* - so until the unmeasured cases
+ * are taken out of it, that verdict is an absence wearing a name. With them out, it is a positive
+ * reading: the child exited non-zero, a report exists, and nothing in it failed. ADR-0162.
+ */
+export const verdictOf = (run: SuiteRun): Verdict => {
+  if (run.notMeasured !== null) return 'not-measured'
+  if (run.green) return 'survived'
 
-  return failedGuards.length === 0 ? 'killed-by-typecheck' : 'killed'
+  return run.failedGuards.length === 0 ? 'killed-by-typecheck' : 'killed'
 }
 
 const agreesWith = (
@@ -847,7 +984,7 @@ const measureCell = (
   const run = runSuite(battery)
   assertWholeSuiteRan(`${mutant.id} on ${cellKey(arm, lens)}`, run, expectedTests)
 
-  return { verdict: verdictOf(run.green, run.failedGuards), failedGuards: run.failedGuards }
+  return { verdict: verdictOf(run), failedGuards: run.failedGuards }
 }
 
 /**
@@ -1052,6 +1189,12 @@ export const calibrate = (battery: Battery): Calibration => {
         `calibration ${cellKey(arm, lens).padEnd(20)} control ${control.green ? 'green' : 'RED'} ` +
           `(${control.testsSeen ?? 'no'} tests)\n`,
       )
+      if (control.notMeasured !== null) {
+        throw new Error(
+          `the unmutated ${cellKey(arm, lens)} could not be measured: ${control.notMeasured}. ` +
+            `Nothing this battery reported below it would be a reading.`,
+        )
+      }
       assertTheCensusHolds(cellKey(arm, lens), control, census)
       if (!control.green) {
         throw new Error(

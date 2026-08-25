@@ -50,6 +50,9 @@ const matrix = (results: readonly RunResult[]): string => {
     'killed-by-typecheck': 'killed (typecheck)',
     survived: 'SURVIVED',
     'not-applicable': 'n/a',
+    // Shouted like a survivor, because it is the worse of the two: a survivor is a hole this
+    // repository knows the shape of, and this is a cell nobody measured at all. ADR-0162.
+    'not-measured': 'NOT MEASURED',
   } as const
 
   const header = ['mutant'.padEnd(6), ...columns.map((c) => c.padEnd(20))].join('  ')
