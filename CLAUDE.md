@@ -865,30 +865,56 @@ contract pages, 110 of them on `string/slugify@1` beside 51 `code` elements prod
 same page. What settled the register ADR-0026 said nothing mechanical could settle is that **every one
 of the 220 is paired**, so there is nothing to guess at. ADR-0117.
 
-**The catalogue is six contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
-`string/levenshtein@1`, `string/slugify@1`, `number/round@1`. The sixth is the first published after
+**The catalogue is seven contracts** — `number/parse@1`, `date/add@1`, `array/group-by@1`,
+`string/levenshtein@1`, `string/slugify@1`, `number/round@1`, `object/deep-equal@1`. **This line read
+*six* for two days after the seventh was published**, four hundred lines below a sentence of this file
+saying it had been, which is the class this file keeps finding: a present-tense claim that expired with
+nothing noticing. The sixth is the first published after
 the founding four, the first whose call takes a number, and the first whose reference was caught
 annotating itself with the contract's own types. The third is a format prototype that will not be published,
 because ES2024 shipped `Map.groupBy` and it answers what the contract specifies; the refusal and the
 rule it establishes are recorded. The fourth is the first whose properties are strong by nature — the
 axioms of a metric — and its table is a third the size of the first's as a result. The fifth is the
 first with no oracle of any kind: measured over fifty-seven samples, the four most used slug libraries
-agree on seven, so nothing about its answers is true and every one of them has to be argued for.
+agree on seven, so nothing about its answers is true and every one of them has to be argued for. The
+seventh is the first whose case table the registry had to be widened to carry, and the first to publish
+a witness its own rationale described wrongly.
 
-**The seventh is decided and not written, and the search that decided it is a record rather than a
-conversation.** It is `object/deep-equal`, and what carried it is that the ecosystem's disagreement is
-a wrong answer rather than a taste: `Object.keys` of a `Set` is `[]`, so an implementation walking own
-properties sees two empty objects, and `fast-deep-equal@3.1.3` and `dequal/lite` both answer `true`
+**The seventh was chosen by a record rather than by a conversation, and that record is what made the
+eighth search cheap.** `object/deep-equal@1` was carried by a disagreement that is a wrong answer rather
+than a taste: `Object.keys` of a `Set` is `[]`, so an implementation walking own properties sees two
+empty objects, and `fast-deep-equal@3.1.3` and `dequal/lite` both answer `true`
 for `new Set([1])` against `new Set([2])` — while the entry point you are told to use for collections
-answers `false` for a `Set` of objects against its own `structuredClone`. **Ten refused candidates are
+answers `false` for a `Set` of objects against its own `structuredClone`. **Ten refused candidates were
 written down with the measurement that refused each**, because the research that chose the sixth cost
 a session and survives nowhere: `string/truncate` is refused not for its four definitions of length —
 a question `string/levenshtein@1` had already settled — but because with code points chosen the whole
-function is `Array.from(text).slice(0, limit).join('')`, one expression over two built-ins.
-**Two things bind the writing unit**: the cycle-detecting walk is written first and is a stopping
-condition, so if it cannot hold `Map`, `Set`, typed arrays, `Error` and `ArrayBuffer` under this
-repository's bars the decision is wrong and the unit says so; and `reference.ts` waits, because the
-licence banner freezes with the contract, and the copyright is out of it since ADR-0159. ADR-0158.
+function is `Array.from(text).slice(0, limit).join('')`, one expression over two built-ins. ADR-0158.
+
+**And the eighth search returned nothing, which is a result rather than a gap.** The ten hold, not one
+proposal load-bearing on a refusal has moved — Composites, Array Equality and Comparisons carry the
+same last pushes two days on — and the registry's widening reopens none of them, because not one was
+refused on what its cases contain. **`string/camel-case` is refused a third time and for the first
+time on a leg that was measured rather than regretted.** Its decomposition is real: over twenty-nine
+inputs the disagreement is **17 in the word split against 3 in the rendering**, so `string/split-words`
+would be one function — and ADR-0023 forbids it every phrase anybody would type to reach it, because
+`camel case` promises a string and a splitter answers an array, which is the criterion that killed
+`string similarity`. What refuses the caser itself is the digit fork: measured at `3daae2f` over twenty
+digit-bearing inputs, **7 are disputed and 5 split exactly two against two** — `foo2bar` against
+`foo2Bar`, `sha256sum` against `sha256Sum` — where neither answer is wrong and the use, unlike
+`string/slugify@1`'s URL, constrains nothing. **It is the most expensive refusal this catalogue has
+taken**: read on 2026-08-25, the case family is **442.55 M weekly installs**, 1.5 times the family
+behind the contract published two days before it. What would open it is a rule for families of one
+algorithm, priced there and not taken.
+
+**One measurement of that search is about this repository rather than about a candidate, and nothing
+else would have found it.** A higher-order contract publishes a case table nobody can read: measured at
+`3daae2f`, **all 30 of `array/group-by@1`'s cases** render as
+`groupBy([1, 2, 3, 4, 5], <a function, served as a file>)`, the key function being half of what the case
+settles and absent from the record — against 5 of 49 on `object/deep-equal@1` and **0 on the five
+others**. Nobody had seen it, because a turned-down contract's page renders no case table at all. It
+refuses `array/binary-search` and `function/debounce` a second time, on the catalogue rather than on
+themselves. ADR-0163.
 
 **The file that lands in somebody else's project no longer says it belongs to somebody else.** The
 front page promises *the source lands in your repository and it is yours* and the second line of the
