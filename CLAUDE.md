@@ -426,6 +426,21 @@ fields are `executable`, and the guard requiring the quotation to occur in the c
 `its-witness-is-frozen-out`, a real defect whose witness the contract may no longer carry, the one
 survivor kind nothing closes short of a second major. ADR-0160, ADR-0161.
 
+**The gate on the instrument's own reading closed, and it was the trap rather than the bound that
+mattered.** `site · W-97` stopped being a wrong answer and became non-termination - measured at
+`505fddb`, the mutated comment reader never finishes on `playground.ts`, `literal.ts` and `value.ts`,
+the three modules the seventh contract grew - and `runSuite` declared neither a `timeout` nor a
+`maxBuffer` and threw its error away with `catch {}`. **A bound alone would have bought nothing**:
+`killed-by-typecheck` is derived from an absence, red with no guard named, which is exactly the shape
+of a report that was never written, so every hanging cell would have become one more of those and the
+repair would have measured nothing while looking finished. Node separates them on `code` and on
+nothing else - `ETIMEDOUT`, `ENOBUFS`, and no code at all for an ordinary red; `signal` is `SIGTERM`
+for both bounded cases and **`killed` is `undefined` in all six**, so the field that looks like the
+answer is not one. `not-measured` cannot be pinned, so a cell that measures it fails the run by
+construction. **One addition sufficed and that is measured**: with the unmeasured cases out of it,
+`killed-by-typecheck` is a positive reading - a mutant the compiler refuses reddens *with* a report
+and with fewer assertions in it. ADR-0162.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
@@ -993,7 +1008,12 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
 - a guard that could not see its own population shrink — ADR-0152, leaving behind it a guard total
   over populations and never over files, and the reading half of the entry it closed;
 - the allowance written for a word a query omits being spent on a word it adds — ADR-0154, leaving
-  behind it the point at which a second word starts to be evidence.
+  behind it the point at which a second word starts to be evidence;
+- **a verdict the instrument did not measure, both halves of it, at one `execFileSync`** — ADR-0162.
+  The buffer that killed a red run before vitest could report and the bound that was never there are
+  one fault: `catch {}` threw the error away, so a run cut short and a run that reddened were one
+  fact. What it leaves behind is a number — 600 seconds, chosen against seven readings taken on one
+  machine, and a runner slow enough to cross it turns a real reading into `not-measured`.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1182,36 +1202,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   cheap and is done instead** is `correctionsToFrozenProse`, which does not close the entry: it lets
   the catalogue say a sentence is wrong after the fact, and says nothing about finding the next one.
   ADR-0161.
-
-- **That a cell's verdict is the verdict of a mutant that ran.** `runSuite` spawns vitest with
-  `stdio: 'pipe'` and declares no `maxBuffer`, so node's default of **1 048 576 bytes** applies. A red
-  run that prints more than that kills the child before vitest writes its JSON report;
-  `reportedFiles()` returns `null`, `failedGuards` is empty, and `verdictOf` answers
-  **`killed-by-typecheck`** — a mutant that ran and was caught, reported as one that did not compile.
-  **`assertWholeSuiteRan` cannot see it**, because it returns early on `testsSeen === null`, which is
-  exactly the value that path produces.
-
-  **It is measured and not hypothetical.** `a-contract-not-yet-published-carries-the-current-banner`
-  held `ContractSource` values in its expectation and a `ContractSource` carries `module` — the
-  contract's whole namespace — so its red run printed **1 177 066 bytes**, 12% over the buffer. `I-69`
-  read `killed-by-typecheck` on two consecutive replays. Reporting addresses instead took the same red
-  run to **7 649 bytes**, a factor of 154, and the cell reads `killed`. The guard is repaired; the path
-  that mis-verdicted it is not.
-
-  **The population is every guard whose failure diff can cross that buffer**, which is every guard
-  holding a rich value in an expectation rather than a rendering of one — and nothing bounds it,
-  because the size is a property of the data a guard happens to hold. The failure is silent by
-  construction: the cell disagrees, the battery names it, and what it names is the wrong cause.
-
-  **Where this looked**: `runSuite` and `verdictOf` in `mutation/run.ts`, `assertWholeSuiteRan` beside
-  them, and `reportedFiles()`'s `catch` returning `null` for a report that was never written as well as
-  for one that cannot be parsed.
-
-  What would close it is one line — `maxBuffer` raised to what `determinism.test.ts` already uses,
-  `1 << 28` — and the price is that **it changes what every battery measures**: any cell currently
-  reading `killed-by-typecheck` through this path would start reading its true verdict, so it wants a
-  full `npm run mutation` to say what moves rather than a line slipped into a unit about a licence
-  header. Priced as its own unit and not taken. ADR-0159.
 
 - **That the banner a reader is shown is the banner a reader would receive.** ADR-0159 made that
   derived for `LICENSE`: the example must be of `THE_CURRENT_BANNER`, so the day a form is superseded

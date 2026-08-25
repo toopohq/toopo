@@ -97,7 +97,7 @@ describe('what the readme publishes about the measurement', () => {
       // The tenth, and the only one of the split that is a hole and stays one. It carries no line
       // break, for the reason the ninth stopped carrying one: where a sentence wraps is not a fact
       // about the measurement. ADR-0161.
-      `${byKind['its-witness-is-frozen-out']} is a real defect whose witness is frozen out`,
+      `${byKind['its-witness-is-frozen-out']} are a real defect whose witness is frozen out`,
     ]
 
     expect(claims.filter((claim) => !text.includes(claim))).toEqual([])

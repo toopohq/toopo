@@ -104,7 +104,7 @@ for the life of the major version.
 
 23 mutation batteries inject **792 deliberate defects** into this repository — each one a committed
 file naming the exact edit it makes and the verdict it must produce — and re-run the whole suite once
-per defect. **751 are caught.**
+per defect. **750 are caught.**
 
 To be exact about what *caught* means: a few of these defects cannot occur on every operating system,
 because what they break is a rule of the filesystem rather than of this code. Each is caught where it
@@ -112,10 +112,10 @@ exists and is not measured where it cannot occur, so the count is the same where
 replay elsewhere reports those cells as not applicable rather than as missed. Today that is
 `cli-install · C-64`, whose defect only Windows can have.
 
-The 41 that survive are each classified, because a survivor count
+The 42 that survive are each classified, because a survivor count
 alone reads as a count of holes: 15 are equivalent mutants, 6 are behaviour the contract declines to
 specify, 4 are unreachable on this catalogue, 12 exist only where a lens deliberately took the
-suite's sight away, **3 are a limit this repository declares with its price**, and **1 is a real
+suite's sight away, **3 are a limit this repository declares with its price**, and **2 are a real
 defect whose witness is frozen out** — the input that would catch it exists, and the contract that
 would have to carry it is published.
 
