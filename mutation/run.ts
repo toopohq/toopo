@@ -604,10 +604,49 @@ type ReportedFile = {
   readonly name?: string
   /** `file.result.errors[0].message`, and `''` when the file had no error of its own. */
   readonly message?: string
+  /** Vitest's own verdict on the file, which is not the disjunction of its guards'. See `ReportedFileState`. */
+  readonly status?: string
   readonly assertionResults?: readonly Assertion[]
 }
 
 type VitestReport = { readonly testResults?: readonly ReportedFile[] }
+
+/**
+ * The two answers a guard can give. Everything else a runner reports is a guard that did not answer.
+ *
+ * **Written as the answers rather than as vitest's own six-member union, and that is what makes the
+ * claim above it total.** `JsonAssertionResult['status']` is `passed | failed | skipped | pending |
+ * todo | disabled`; restating those six here would be a declaration that goes stale in silence,
+ * because the report is parsed out of JSON and a seventh state added by a runner upgrade would arrive
+ * as a string nothing here has heard of and be read as healthy. Naming the two that mean *this guard
+ * spoke* refuses the seventh by construction, and a runner that renames `passed` reddens every cell at
+ * once rather than none.
+ *
+ * **The set of legitimate exemptions is empty, and it is written empty rather than left unsaid.**
+ * Measured at `3eeaaae` over every `*.test.ts` and `*.test-d.ts` of this repository: zero occurrences
+ * of `skip`, `skipIf`, `runIf`, `todo`, `fails` or `concurrent` on `it`, `test` or `describe`. A
+ * platform family is decided one floor up, by `expectedHere`, and never by asking vitest to stand a
+ * guard down - so nothing in this tree may legitimately report a guard that did not answer. That is a
+ * condition which expires with nobody noticing, which is why it carries its coordinate: the day
+ * somebody writes a conditional test, this refusal reddens and the exemption becomes a decision
+ * instead of an omission.
+ */
+const AN_ANSWER: ReadonlySet<string> = new Set(['passed', 'failed'])
+
+/**
+ * What the run said about one file it reported on.
+ *
+ * `red` is vitest's verdict on the *file*, and it is not the disjunction of its guards'. Measured on
+ * the fixture at `3eeaaae`, over the same two test files and the same three guards: a `beforeAll` that
+ * throws leaves the file red with its one guard reported `skipped`, and an `afterAll` that throws
+ * leaves it red with its one guard `passed`. In both readings the run reports three assertions, which
+ * is what the control reports - so neither is visible to anything that counts.
+ */
+export type ReportedFileState = {
+  readonly red: boolean
+  /** The first line of the first error the run reported for it, or `null` where it said nothing. */
+  readonly said: string | null
+}
 
 export type SuiteRun = {
   readonly green: boolean
@@ -632,13 +671,26 @@ export type SuiteRun = {
   readonly notMeasured: string | null
   readonly guards: readonly GuardIdentity[]
   /**
-   * Every file the run reported on, against what it said about it - empty where it said nothing.
+   * Every guard the run collected that gave neither answer - reported skipped, pending, todo, or
+   * whatever else a runner calls a test it did not run.
+   *
+   * **It is the sibling of `failedGuards` and it is not a judgement.** Both are the report projected
+   * onto what a guard said; what is done about either is decided one screen down. The projection is
+   * here because the report is read here, and reading it twice is how two readers come to disagree.
+   *
+   * It carries whole identities rather than identifiers because the fault has to name a file. A guard
+   * stops answering when something above it in its own file gave way, and the file is what a reader
+   * opens.
+   */
+  readonly unansweredGuards: readonly GuardIdentity[]
+  /**
+   * Every file the run reported on, against what it said about it.
    *
    * `guards` cannot answer for a file that collected nothing, because a file with no assertion
    * contributes no guard and so disappears from it. This is the list the census needs: a file that
    * is silent is exactly the one worth asking about.
    */
-  readonly reportedFiles: Readonly<Record<string, string>>
+  readonly reportedFiles: Readonly<Record<string, ReportedFileState>>
 }
 
 const reportedFiles = (): readonly ReportedFile[] | null => {
@@ -653,6 +705,27 @@ const reportedFiles = (): readonly ReportedFile[] | null => {
 const REPO_PREFIX = `${THE_REPOSITORY.replaceAll('\\', '/')}/`
 
 const relative = (name: string): string => name.replaceAll('\\', '/').replace(REPO_PREFIX, '')
+
+/**
+ * The same file with every guard that answered taken out of it, so that `guardsIn` produces the
+ * identities of the ones that did not.
+ *
+ * A narrowing of the report rather than a second walk over it: one mapping from an assertion to an
+ * identity, reached twice. Two walks would be free to disagree about what a guard's file is, on the
+ * day one of them was corrected.
+ */
+const withoutTheGuardsThatAnswered = (file: ReportedFile): ReportedFile => ({
+  ...file,
+  assertionResults: (file.assertionResults ?? []).filter(
+    (assertion) => !AN_ANSWER.has(assertion.status),
+  ),
+})
+
+/** What the run said about a file, read where the report is read rather than at each reader. */
+const stateOf = (file: ReportedFile): ReportedFileState => ({
+  red: file.status === 'failed',
+  said: file.message === undefined || file.message === '' ? null : (file.message.split('\n')[0] ?? null),
+})
 
 const guardsIn = (files: readonly ReportedFile[]): readonly GuardIdentity[] =>
   files.flatMap((file) =>
@@ -816,6 +889,7 @@ const runSuite = (battery: Battery): SuiteRun => {
     failedGuards: [],
     testsSeen: null,
     guards: [],
+    unansweredGuards: [],
     reportedFiles: {},
     notMeasured: because,
   })
@@ -887,10 +961,9 @@ const runSuite = (battery: Battery): SuiteRun => {
     failedGuards: assertions.filter((t) => t.status === 'failed').map((t) => guardIdOf(t.title)),
     testsSeen: assertions.length,
     guards: guardsIn(files),
+    unansweredGuards: guardsIn(files.map(withoutTheGuardsThatAnswered)),
     notMeasured: null,
-    reportedFiles: Object.fromEntries(
-      files.map((file) => [relative(file.name ?? ''), file.message ?? '']),
-    ),
+    reportedFiles: Object.fromEntries(files.map((file) => [relative(file.name ?? ''), stateOf(file)])),
   }
 }
 
@@ -958,6 +1031,112 @@ const assertWholeSuiteRan = (label: string, run: SuiteRun, expectedTests: number
   )
 }
 
+/**
+ * A guard the run collected and never ran.
+ *
+ * **This is the entry `CLAUDE.md` records against `assertWholeSuiteRan`, and it is not what that
+ * entry proposed to close it with.** The entry's own figures settle it: with a checkout left
+ * registered, `packages/registry/frozen-for-life.test.ts` cannot start and the report reads *351
+ * assertions, 347 passed, 4 skipped, 0 failed* against a control of 351. The four guards that left are
+ * **counted**. So the total is silent, and so is any comparison of counts - which is what the census
+ * is. The entry says so itself one sentence earlier, without noticing: *ignored is not failed, and the
+ * two are indistinguishable to anything that counts*.
+ *
+ * **It perturbs the claim and never an object derived from it**, which is what `assertWholeSuiteRan`
+ * cannot say of itself. There is no expectation here to be wrong about: the claim is that a guard
+ * which was collected answered, and its other half is `AN_ANSWER` above, which is two strings. A door
+ * open for the control as well as for the mutant leaves this refusal exactly where it was.
+ *
+ * The shape that makes it worth more than its neighbour is the one that stays **green**. Measured on
+ * the fixture at `3eeaaae`: a guard set aside with `it.skip` leaves the run green, the count at three,
+ * every file passed - and the cell reports `survived, as expected`. A guard had left the suite and the
+ * instrument agreed with its own pin.
+ */
+const assertEveryGuardAnswered = (label: string, run: SuiteRun): void => {
+  if (run.unansweredGuards.length === 0) return
+
+  throw new Error(
+    `${label}: ${run.unansweredGuards.length} guard(s) were collected and never ran, so this cell ` +
+      `was measured by a suite smaller than the one it reports:\n` +
+      run.unansweredGuards.map((guard) => `  ${guard.file}: ${guard.title}`).join('\n') +
+      `\n  A guard that does not answer is counted exactly like one that passed. If a test was ` +
+      `deliberately stood down, nothing in this repository may do that: see AN_ANSWER in this file.`,
+  )
+}
+
+/**
+ * A file the run reddened, with no guard of it saying why.
+ *
+ * **The absence this one refuses is an absence of attribution, and unrefused it acquires a name.** A
+ * red run naming no failed guard is `killed-by-typecheck`, a verdict this instrument counts apart and
+ * publishes - so a file that reddened because its teardown threw arrives as *the compiler refused this
+ * mutant*, with a column and a figure on a page. Measured on the fixture at `3eeaaae`: an `afterAll`
+ * that throws leaves every guard `passed`, three assertions against the control's three, and the cell
+ * reports `killed-by-typecheck`. That shape is this refusal's alone - every guard answered, so its
+ * neighbour above is silent and right to be.
+ *
+ * The one legitimate shape it has to leave alone is the verdict it is named after, and that was
+ * measured rather than reasoned about. `NP-5` of `number-parse-spec` puts a provenance outside the
+ * declared vocabulary, which is the catalogue's own example of a defect only the compiler holds: read
+ * at `3eeaaae`, the run reddens and writes a report **identical in composition to the control** - four
+ * files, 122 assertions, every one `passed`, not one file marked failed. A source error is not a test
+ * file, so it enters neither this reading nor the census.
+ */
+const assertEveryRedFileNamesItsGuard = (label: string, run: SuiteRun): void => {
+  const owned = new Set(
+    run.guards.filter((guard) => run.failedGuards.includes(guard.id)).map((guard) => guard.file),
+  )
+  const unowned = Object.entries(run.reportedFiles).filter(
+    ([file, state]) => state.red && !owned.has(file),
+  )
+  if (unowned.length === 0) return
+
+  throw new Error(
+    `${label}: the run reddened ${unowned.length} file(s) and no guard of them failed, so whatever ` +
+      `went wrong is a verdict nobody can attribute:\n` +
+      unowned
+        .map(
+          ([file, state]) =>
+            `  ${file}: ${run.guards.filter((guard) => guard.file === file).length} guard(s) ` +
+            `collected, none of them failed` +
+            (state.said === null ? ' and the run said nothing about it' : `\n    the run said: ${state.said}`),
+        )
+        .join('\n') +
+      `\n  A file that reddens without one of its guards saying so is a teardown, a fixture or a ` +
+      `collection that gave way, and this cell would otherwise be counted as killed by the compiler.`,
+  )
+}
+
+/**
+ * That the suite answered, asked of a control and of every mutant cell in one order.
+ *
+ * **The order is the argument, and it is `verdictOf`'s own read one floor up.** That function asks
+ * whether a run measured anything before it asks anything else, *because every term below it reads an
+ * absence as evidence*. The same holds of the controls over a run, and they are four rather than two:
+ *
+ *   1. nothing measured at all - `notMeasured`, refused by the caller before this is reached;
+ *   2. nothing collected - `assertTheCensusHolds`, which is anchored outside the run and therefore
+ *      runs at calibration, where the expectation it is compared against is not the run's own;
+ *   3. collected and never answered - `assertEveryGuardAnswered`;
+ *   4. answered, but the run reddened and no guard owns it - `assertEveryRedFileNamesItsGuard`;
+ *   5. answered, and by fewer guards than this arm's control had - `assertWholeSuiteRan`.
+ *
+ * Each term reads an absence the one before it would have named. **3 before 4 is the cause before the
+ * symptom**, and it decides which sentence a reader meets on the one shape both see: a `beforeAll`
+ * that throws leaves guards unrun *and* a file red, and the guards are why. Where only the file is
+ * red - a teardown that throws - 3 is silent and correct, because every guard did answer.
+ *
+ * **They are not two controls competing for one question**, which is how `CLAUDE.md` framed it while
+ * the third and fourth were missing. Measured at `3eeaaae` on the fixture, each has a condition it is
+ * the only one red on: a door open for the control as well as for the mutant reaches 2 alone, a guard
+ * set aside with `it.skip` reaches 3 alone and leaves the run *green*, a teardown that throws reaches
+ * 4 alone, and a guard deleted outright from a green file reaches 5 alone.
+ */
+const assertTheRunAnswered = (label: string, run: SuiteRun): void => {
+  assertEveryGuardAnswered(label, run)
+  assertEveryRedFileNamesItsGuard(label, run)
+}
+
 /** Materialise one cell - arm, lens, mutant - and read the suite's verdict on it. */
 const measureCell = (
   battery: Battery,
@@ -987,6 +1166,7 @@ const measureCell = (
   applyEdits(battery.contractPath, edits, `mutant ${mutant.id} on arm ${arm.id}`)
 
   const run = runSuite(battery)
+  assertTheRunAnswered(`${mutant.id} on ${cellKey(arm, lens)}`, run)
   assertWholeSuiteRan(`${mutant.id} on ${cellKey(arm, lens)}`, run, expectedTests)
 
   return { verdict: verdictOf(run), failedGuards: run.failedGuards }
@@ -1138,12 +1318,9 @@ const assertEveryAddressResolves = (
  */
 const assertTheCensusHolds = (label: string, run: SuiteRun, census: SuiteCensus): void => {
   const collected: Record<string, CollectedFile> = Object.fromEntries(
-    Object.entries(run.reportedFiles).map(([file, said]) => [
+    Object.entries(run.reportedFiles).map(([file, state]) => [
       file,
-      {
-        guards: run.guards.filter((guard) => guard.file === file).length,
-        reported: said === '' ? null : (said.split('\n')[0] ?? null),
-      },
+      { guards: run.guards.filter((guard) => guard.file === file).length, reported: state.said },
     ]),
   )
 
@@ -1201,6 +1378,7 @@ export const calibrate = (battery: Battery): Calibration => {
         )
       }
       assertTheCensusHolds(cellKey(arm, lens), control, census)
+      assertTheRunAnswered(cellKey(arm, lens), control)
       if (!control.green) {
         throw new Error(
           `the unmutated ${cellKey(arm, lens)} is red, so every verdict from this battery would be ` +

@@ -55,6 +55,7 @@ describe('a verdict this instrument did not measure', () => {
       failedGuards: [],
       testsSeen: null,
       guards: [],
+      unansweredGuards: [],
       reportedFiles: {},
       notMeasured: 'the run did not finish',
     }

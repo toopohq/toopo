@@ -18,7 +18,13 @@ import { attributionOf, disagreementsIn } from './attribution.ts'
 import type { MeasuredBattery } from './score.ts'
 import { renderScore, scoreFaults, theScore } from './score.ts'
 import { killed, mutantsOn, onlyOn, reference, survived, survivesOnlyBlinded } from './mutants.ts'
-import { battery, DOUBLED, DOUBLES_A_POSITIVE, DOUBLES_ZERO } from './fixture.battery.ts'
+import {
+  battery,
+  DOUBLED,
+  DOUBLES_A_NEGATIVE,
+  DOUBLES_A_POSITIVE,
+  DOUBLES_ZERO,
+} from './fixture.battery.ts'
 import { THE_BATTERIES, survivorFaults, theMeasurement } from './published.ts'
 
 /**
@@ -118,6 +124,13 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
       // contract catching something. Measured for real on vitest 4.1.10, where naming the json
       // reporter alone under `--typecheck` collected 9 tests instead of 215 and every cell of every
       // battery read as a kill.
+      //
+      // **The sentence it is refused by moved, and the guard it witnesses moved with it.** This used
+      // to expect `reported 2 tests where the unmutated arm reported 3`, which is
+      // `assertWholeSuiteRan`. A file that throws while being collected is now reached first by
+      // `assertEveryRedFileNamesItsGuard`, which names the file and quotes the run - the census's own
+      // lesson arriving where the census does not run. So this cell stopped being that guard's
+      // witness, and the one below it is the replacement rather than an addition.
       const breaksOneFileAtImport = sameOnEveryLens(
         'FX-M2',
         'makes the second test file throw while it is being collected',
@@ -132,7 +145,162 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
       )
 
       expect(() => runOne(breaksOneFileAtImport)).toThrow(
+        /second-file\.test\.ts: 0 guard\(s\) collected, none of them failed\n {4}the run said: collection failed/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a cell whose suite lost a guard outright, which is the total on its own',
+    () => {
+      /**
+       * `assertWholeSuiteRan`'s own condition, separated from the three that used to share it.
+       *
+       * A guard deleted from a file that stays green is the one shape that reaches the total and
+       * nothing else: measured at `3eeaaae` on the fixture, the run is **green with 2 assertions**,
+       * no file is marked failed and no guard is left unanswered - so both refusals beside it are
+       * silent and right to be, and only the comparison against this arm's control speaks.
+       *
+       * It matters that the run stays green. A cell here is pinned `survived`, so without the total
+       * this is a contract reported as failing to catch a defect while a third of its suite is not
+       * in the room.
+       */
+      const deletesAGuardOutright = sameOnEveryLens(
+        'FX-M10',
+        'deletes one of the two guards of the first test file, leaving the file green',
+        [
+          {
+            file: 'guards.test.ts',
+            find: `\n  it('${DOUBLES_ZERO} :: zero doubles to zero', () => {\n    expect(doubled(0)).toBe(0)\n  })\n`,
+            replace: '\n',
+          },
+        ],
+        survived('equivalent'),
+      )
+
+      expect(() => runOne(deletesAGuardOutright)).toThrow(
         /reported 2 tests where the unmutated arm reported 3/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a cell whose guards were collected and never ran, which no count can see',
+    () => {
+      /**
+       * The defect `CLAUDE.md` records against `assertWholeSuiteRan`, reproduced in the apparatus
+       * that reads it.
+       *
+       * The entry's own figures are the argument and no measurement here is needed to make it: with a
+       * checkout left registered, `packages/registry/frozen-for-life.test.ts` cannot start and the
+       * report reads *351 assertions, 347 passed, 4 skipped, 0 failed* against a control of 351. The
+       * four guards that left the suite are **counted**, so the total is silent - and so is every
+       * comparison of counts, which is what the census is.
+       *
+       * Reproduced here on the same shape: `frozen-for-life.test.ts` fails inside a `beforeAll`, and
+       * so does this. Measured at `3eeaaae` before the refusal existed, this cell reported
+       * `killed-by-typecheck` with no guard named - a verdict this instrument counts apart and
+       * publishes on a page.
+       */
+      const aFixtureThatCannotBeBuilt = sameOnEveryLens(
+        'FX-M11',
+        'throws in a beforeAll, so the second file collects its guard and never runs it',
+        [
+          {
+            file: 'second-file.test.ts',
+            find: `import { describe, it, expect } from 'vitest'`,
+            replace: `import { describe, it, expect, beforeAll } from 'vitest'`,
+          },
+          {
+            file: 'second-file.test.ts',
+            find: `describe('fixture, in a second file', () => {`,
+            replace:
+              `describe('fixture, in a second file', () => {\n` +
+              `  beforeAll(() => {\n    throw new Error('cannot build the fixture')\n  })`,
+          },
+        ],
+        killed(),
+      )
+
+      expect(() => runOne(aFixtureThatCannotBeBuilt)).toThrow(
+        new RegExp(`1 guard\\(s\\) were collected and never ran[\\s\\S]*${DOUBLES_A_NEGATIVE}`),
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a cell whose guards all answered while the run reddened anyway',
+    () => {
+      /**
+       * The neighbour of the refusal above, and the condition that makes them two rather than one.
+       *
+       * A teardown that throws leaves every guard `passed` - measured at `3eeaaae` on the fixture,
+       * three assertions, none unanswered - so `assertEveryGuardAnswered` is silent and correct. What
+       * is wrong is that the run reddened and no guard says why, which is exactly the absence
+       * `killed-by-typecheck` is derived from. Before the refusal existed this cell reported that
+       * verdict, with `failedGuards` empty.
+       */
+      const aTeardownThatThrows = sameOnEveryLens(
+        'FX-M12',
+        'throws in an afterAll, so the file reddens with every guard of it passing',
+        [
+          {
+            file: 'second-file.test.ts',
+            find: `import { describe, it, expect } from 'vitest'`,
+            replace: `import { describe, it, expect, afterAll } from 'vitest'`,
+          },
+          {
+            file: 'second-file.test.ts',
+            find: `describe('fixture, in a second file', () => {`,
+            replace:
+              `describe('fixture, in a second file', () => {\n` +
+              `  afterAll(() => {\n    throw new Error('cannot tear the fixture down')\n  })`,
+          },
+        ],
+        killed(),
+      )
+
+      expect(() => runOne(aTeardownThatThrows)).toThrow(
+        /second-file\.test\.ts: 1 guard\(s\) collected, none of them failed/,
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
+    'refuses a guard stood down, which leaves the run green and the count whole',
+    () => {
+      /**
+       * The other direction of the pair, and the worst reading of the three.
+       *
+       * A guard set aside is reported `skipped` and counted like one that passed, and nothing
+       * reddens: measured at `3eeaaae` before the refusal existed, this cell reported **`survived`,
+       * as expected** - the pin agreed, the battery went on, and a guard had left the suite. Its
+       * neighbour is silent here because no file is red, so this is the condition
+       * `assertEveryGuardAnswered` is the only one of the three refusals to see.
+       *
+       * It is also where the emptiness of `AN_ANSWER`'s exemption list is checked against a real
+       * runner rather than asserted: if vitest ever reported a stood-down test as an answer, this
+       * cell would stop reddening.
+       */
+      const aGuardStoodDown = sameOnEveryLens(
+        'FX-M13',
+        'sets the third guard aside with it.skip, so the suite is green with one guard fewer',
+        [
+          {
+            file: 'second-file.test.ts',
+            find: `  it('${DOUBLES_A_NEGATIVE}`,
+            replace: `  it.skip('${DOUBLES_A_NEGATIVE}`,
+          },
+        ],
+        survived('equivalent'),
+      )
+
+      expect(() => runOne(aGuardStoodDown)).toThrow(
+        new RegExp(`1 guard\\(s\\) were collected and never ran[\\s\\S]*${DOUBLES_A_NEGATIVE}`),
       )
     },
     META_TIMEOUT_MS,
