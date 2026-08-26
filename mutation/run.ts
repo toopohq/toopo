@@ -1131,6 +1131,9 @@ const assertEveryRedFileNamesItsGuard = (label: string, run: SuiteRun): void => 
  * the only one red on: a door open for the control as well as for the mutant reaches 2 alone, a guard
  * set aside with `it.skip` reaches 3 alone and leaves the run *green*, a teardown that throws reaches
  * 4 alone, and a guard deleted outright from a green file reaches 5 alone.
+ *
+ * ADR-0166 carries the arbitration, the price of the closure it refused, and why the census stays at
+ * calibration.
  */
 const assertTheRunAnswered = (label: string, run: SuiteRun): void => {
   assertEveryGuardAnswered(label, run)

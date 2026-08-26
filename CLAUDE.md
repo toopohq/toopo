@@ -1086,6 +1086,13 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   over populations and never over files, and the reading half of the entry it closed;
 - the allowance written for a word a query omits being spent on a word it adds — ADR-0154, leaving
   behind it the point at which a second word starts to be evidence;
+- **a control that counted a suite without seeing the suite it counted** — ADR-0166, and the entry it
+  closed is the second one this list has recorded where **the closure was the false half**: what it
+  named — the census, read on every mutant cell — is a comparison of counts, and its own published
+  figures are four guards leaving a suite with the count unmoved. What closed it is two readings of
+  the report's statuses, each seen red on a condition the other is green on. It leaves behind the
+  refusal of the per-cell census, which is an entry below rather than a line here, because a reader
+  arriving at *ignored is not failed* has to meet the argument and not the verdict;
 - **a verdict the instrument did not measure, both halves of it, at one `execFileSync`** — ADR-0162.
   The buffer that killed a red run before vitest could report and the bound that was never there are
   one fault: `catch {}` threw the error away, so a run cut short and a run that reddened were one
@@ -2422,20 +2429,41 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   a declared absence carries the commit at which it was true, exactly as a count does. The executable
   form is the validation stage reading this repository's own strings, which is already on this list,
   already priced, and already refused as a lint over prose.
-- **That a control which counts a suite has seen the suite it counted.** `assertWholeSuiteRan` compares
-  a total against a total and never looks at the composition, so a guard that stops answering is
-  invisible to it as long as something else answers in its place. Measured at `c21865e`, on the state
-  ADR-0102 was closing: with a checkout left registered, `packages/registry/frozen-for-life.test.ts`
-  cannot start, and the report reads **351 assertions, 347 passed, 4 skipped, 0 failed** — 351 against
-  the control's 351, so the check is silent while four guards of the contract under measurement have
-  quietly left the suite. **What makes it possible is that ignored is not failed**, and the two are
-  indistinguishable to anything that counts. The class is not that cell and not that mutant: it is
-  anything that makes a test file unstartable — a `beforeAll` that throws, an import that dies, a
-  fixture that cannot be built — and every one of them leaves a cell that reads exactly like a result.
-  **The population is the files one cell's run reports**, and what would close it is the comparison
-  `assertTheCensusHolds` already makes, read where `assertWholeSuiteRan` runs instead of only during
-  calibration. It is not built with ADR-0102 because two controls over one reading have nothing to say
-  on the day they disagree, and which of them owns the question is undecided.
+- **That the composition of a mutant cell's run is compared against what the repository declares.** It
+  is not, deliberately, and this entry is the refused half of the one that used to stand here. It is
+  written at length rather than as a line because **the fact worth keeping is the one a rature would
+  lose**: the repair named here for three years was green on the very instance that motivated it, and
+  the next session to read *ignored is not failed* will propose it again unless something says so.
+
+  **What the entry used to say, which was true and is closed.** `assertWholeSuiteRan` compares a total
+  against a total, so a guard that stops answering is invisible to it as long as something else answers
+  in its place. Measured at `c21865e`: with a checkout left registered,
+  `packages/registry/frozen-for-life.test.ts` cannot start and the report reads **351 assertions, 347
+  passed, 4 skipped, 0 failed** — 351 against the control's 351. Every word of that holds. ADR-0166
+  closed it, and not with what this entry asked for.
+
+  **What it asked for, and why that was false on the day it was written.** It named the comparison
+  `assertTheCensusHolds` already makes, read where `assertWholeSuiteRan` runs. `censusFaults` filters on
+  `(collected[file]?.guards ?? 0) !== guards`, where `guards` is a `number` — the census is a
+  comparison of counts, and **the four guards that left the suite are counted**. The entry's own figures
+  refute it with nobody re-running anything, and its own sentence one clause earlier says why: *ignored
+  is not failed, and the two are indistinguishable to anything that counts.* Nothing about it ever
+  looked old. That is rule 3 of this section arriving on the entry naming the largest blind spot in the
+  instrument, and it is the second time this list has had to record that a *closure* was what failed.
+
+  **Why the census still does not move**, which is what is now standing here. `run.ts` already states
+  the rule for this shape: *two mechanisms over one fault have nothing to say on the day they
+  disagree*. On a mutant cell the census's only catch that `assertWholeSuiteRan` has not got is a guard
+  moving between files at constant total, and that has **zero reachable instances** — swept at
+  `3eeaaae`, 685 mutant-arm pairs, **two** editing more than one file, and neither of those two files
+  is a test file. **The price is published so nobody re-refuses it on that ground**: over the largest
+  real report here, 54–102 µs per cell against the status reading's 4.4 µs, which over the 837 cells
+  the instrument declares is 45–85 ms against a replay of some forty minutes. It is refused on the
+  argument, and the price is there so the argument is the thing anybody has to answer.
+
+  **The population is every mutant cell**, and what would reopen it is a mutant that edits two test
+  files — which would give the per-cell census the reachable instance it has not got. Priced and
+  refused. ADR-0166.
 - **That the manifest declares no dependency the product could reach**, which stage rule 3 now states
   as a criterion and nothing reads. The two mechanisms that rule names are real and are about *files*:
   `no-part-of-the-instrument-or-of-the-suite-is-in-the-archive` and

@@ -152,7 +152,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   it(
-    'refuses a cell whose suite lost a guard outright, which is the total on its own',
+    'a-suite-that-lost-a-guard-outright-is-refused-by-the-total :: and by neither of its two neighbours, because the file it left stays green',
     () => {
       /**
        * `assertWholeSuiteRan`'s own condition, separated from the three that used to share it.
@@ -187,7 +187,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   it(
-    'refuses a cell whose guards were collected and never ran, which no count can see',
+    'a-fixture-that-cannot-be-built-names-the-guards-it-took-with-it :: which is the shape CLAUDE.md measured, and no count sees it',
     () => {
       /**
        * The defect `CLAUDE.md` records against `assertWholeSuiteRan`, reproduced in the apparatus
@@ -232,7 +232,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   it(
-    'refuses a cell whose guards all answered while the run reddened anyway',
+    'a-file-that-reddens-names-the-guard-that-reddened-it :: or the run is red for a reason nobody can attribute',
     () => {
       /**
        * The neighbour of the refusal above, and the condition that makes them two rather than one.
@@ -271,7 +271,7 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   it(
-    'refuses a guard stood down, which leaves the run green and the count whole',
+    'a-guard-collected-and-never-run-is-not-a-guard-that-passed :: and the run that carries one is green',
     () => {
       /**
        * The other direction of the pair, and the worst reading of the three.
