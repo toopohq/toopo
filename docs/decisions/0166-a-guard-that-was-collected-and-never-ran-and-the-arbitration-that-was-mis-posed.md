@@ -196,8 +196,20 @@ throws inside `beforeAll`, and four guards are reported `skipped`. The assertion
 
 It is the file and the four addresses `CLAUDE.md` named at `c21865e`, found live on a pinned cell.
 
-**The population is one.** Measured at `3eeaaae`, cell by cell: 93 of `registry-storage`, 19 of
-`packaging`, 3 of `cli-search`, 21 of `cli-remove` — one refusal, and no verdict moved anywhere else.
+**The population is one.** Replayed whole at `b0748d6`, over every battery whose folder holds a test
+file that builds something in a setup or tears something down:
+
+```
+registry-storage   R/as-committed   89/94   surviving I-01, I-08, S-11, S-12, S-14
+packaging          A/as-committed   18/19   surviving A-13
+cli-install        C/as-committed   72/72   -
+cli-update         U/as-committed   35/35   -
+```
+
+Four times *every cell agrees with the verdict this battery pins for it*, and `I-30` goes on reddening
+`every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract` — so the declaration
+silenced the four it names and nothing else. The figures are the batteries' own rather than a probe's,
+because `npm run battery <name>` reproduces them and a probe written for one afternoon does not.
 
 `packaging` returned zero **for a reason and not by luck**, which is worth as much as the one: its
 `beforeAll` builds the archive through `npm pack`, which fails loudly, so the file loses its assertions
@@ -229,8 +241,15 @@ version*.
 
 `Mutant.leavesUnanswered` is the third kind of declared silence here and the only one that is per
 mutant: `unreachableGuards` says no mutant of a battery reddens a guard, `unprobedRegions` says none
-does yet, and this says one mutant stops a guard from speaking at all — which is neither, because the
-guard is not silent, it is absent.
+does yet, and this says one mutant stops a guard from speaking at all — which is neither, because
+**the guard is not silent, it is absent, and nothing in this instrument could tell those two apart.**
+
+**That is this record's own subject arriving one floor up, inside the repair written for it.** What
+closed above is that a guard which stopped answering was counted exactly like one that passed. The
+vocabulary for *declaring* a silence carried the same hole one level of abstraction higher: a battery
+could say *nothing reddens this guard*, and had no way at all to say *this cell never asked it*. The
+field is the small half. The finding is that the distinction did not exist, in the folder whose whole
+subject is telling absences apart.
 
 `assertNoDeclaredGuardAnswered` is what keeps that from being a licence to hide, and it is
 `attribution.ts`'s shape one floor over: that file refuses a silence nobody accounts for **and** a
