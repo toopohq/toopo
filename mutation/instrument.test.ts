@@ -307,6 +307,48 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
   )
 
   it(
+    'a-declaration-that-outlives-its-mutant-is-refused :: or it hides the next guard to go quiet',
+    () => {
+      /**
+       * The direction that keeps `leavesUnanswered` from being a licence to hide.
+       *
+       * A mutant may declare the guards it stops from answering, and `I-30` of `registry-storage` is
+       * the one cell of this repository that needs to. Without this refusal the declaration would be
+       * a list nothing reads back: a guard renamed out from under it, or a mutant that stops stopping
+       * one, would leave the name standing and the next guard to go quiet accounted for by it.
+       *
+       * The cell below stands one guard down and declares two. The one it really silences is
+       * declared, so the first refusal is silent; no file reddens, so the second is; and the third
+       * names the guard that answered. That is this refusal seen red on a condition neither of its
+       * neighbours sees at all.
+       */
+      const declaresMoreThanItSilences = {
+        ...sameOnEveryLens(
+          'FX-M14',
+          'stands one guard down and declares that it stops two',
+          [
+            {
+              file: 'second-file.test.ts',
+              find: `  it('${DOUBLES_A_NEGATIVE}`,
+              replace: `  it.skip('${DOUBLES_A_NEGATIVE}`,
+            },
+          ],
+          survived('equivalent'),
+        ),
+        leavesUnanswered: {
+          guards: [DOUBLES_A_NEGATIVE, DOUBLES_ZERO],
+          reason: 'the second name is the stale half this guard exists to refuse',
+        },
+      }
+
+      expect(() => runOne(declaresMoreThanItSilences)).toThrow(
+        new RegExp(`declares that it stops 1 guard\\(s\\)[\\s\\S]*${DOUBLES_ZERO}`),
+      )
+    },
+    META_TIMEOUT_MS,
+  )
+
+  it(
     'refuses a suite that shrank, which nothing else in this apparatus can see',
     () => {
       /**

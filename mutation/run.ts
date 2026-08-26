@@ -206,6 +206,29 @@ export const expectedHere = (
  */
 export type MutantKind = 'defect' | 'probe'
 
+/**
+ * Guards this mutant stops from answering at all, named and explained.
+ *
+ * **Addresses and never a file, and that distinction is the whole of what the refusals below are
+ * about.** A declaration naming `frozen-for-life.test.ts` would take a fifth guard added to that file
+ * into the silence with nobody deciding - which is a total absorbing what it lost, rebuilt one floor
+ * down inside the repair written to remove it. Named guards leave a fifth one undeclared, and
+ * `assertEveryGuardAnswered` sees it. A guard is an address here, frozen with its contract's major,
+ * and this is the granularity the census already works at.
+ *
+ * It is the third kind of declared silence in this instrument and the only one that is *per mutant*.
+ * `unreachableGuards` says no mutant of this battery reddens a guard; `unprobedRegions` says none does
+ * yet. This says one mutant prevents a guard from speaking at all, which is neither - the guard is not
+ * silent, it is absent, and until ADR-0166 nothing could tell those apart either.
+ *
+ * **A declaration that outlives its mutant is refused**, the way `attribution.ts` refuses one a mutant
+ * contradicts: every identifier here must really go unanswered on the cell, or the list is stale.
+ */
+export type GuardsLeftUnanswered = {
+  readonly guards: readonly string[]
+  readonly reason: string
+}
+
 export type Mutant = {
   readonly id: string
   readonly kind: MutantKind
@@ -214,6 +237,8 @@ export type Mutant = {
   readonly arms: Readonly<Record<string, readonly Edit[]>>
   /** Expected verdict per `arm/lens`. Every cell the battery runs must be pinned here. */
   readonly expected: Readonly<Record<string, Expectation>>
+  /** Guards this mutant stops from answering, where that is a fact about the defect and not a fault. */
+  readonly leavesUnanswered?: GuardsLeftUnanswered
 }
 
 export type Arm = {
@@ -1052,15 +1077,21 @@ const assertWholeSuiteRan = (label: string, run: SuiteRun, expectedTests: number
  * every file passed - and the cell reports `survived, as expected`. A guard had left the suite and the
  * instrument agreed with its own pin.
  */
-const assertEveryGuardAnswered = (label: string, run: SuiteRun): void => {
-  if (run.unansweredGuards.length === 0) return
+const assertEveryGuardAnswered = (
+  label: string,
+  run: SuiteRun,
+  declared: readonly string[],
+): void => {
+  const undeclared = run.unansweredGuards.filter((guard) => !declared.includes(guard.id))
+  if (undeclared.length === 0) return
 
   throw new Error(
-    `${label}: ${run.unansweredGuards.length} guard(s) were collected and never ran, so this cell ` +
+    `${label}: ${undeclared.length} guard(s) were collected and never ran, so this cell ` +
       `was measured by a suite smaller than the one it reports:\n` +
-      run.unansweredGuards.map((guard) => `  ${guard.file}: ${guard.title}`).join('\n') +
+      undeclared.map((guard) => `  ${guard.file}: ${guard.title}`).join('\n') +
       `\n  A guard that does not answer is counted exactly like one that passed. If a test was ` +
-      `deliberately stood down, nothing in this repository may do that: see AN_ANSWER in this file.`,
+      `deliberately stood down, nothing in this repository may do that: see AN_ANSWER in this file. ` +
+      `If this mutant is what stops them, name them in its \`leavesUnanswered\` with the reason.`,
   )
 }
 
@@ -1082,12 +1113,22 @@ const assertEveryGuardAnswered = (label: string, run: SuiteRun): void => {
  * files, 122 assertions, every one `passed`, not one file marked failed. A source error is not a test
  * file, so it enters neither this reading nor the census.
  */
-const assertEveryRedFileNamesItsGuard = (label: string, run: SuiteRun): void => {
+const assertEveryRedFileNamesItsGuard = (
+  label: string,
+  run: SuiteRun,
+  declared: readonly string[],
+): void => {
   const owned = new Set(
     run.guards.filter((guard) => run.failedGuards.includes(guard.id)).map((guard) => guard.file),
   )
+  // A declared guard that did not answer is why its file reddened, so the file is accounted for. A
+  // file red with every guard of it passing - a teardown that throws - is explained by nothing here
+  // and still speaks.
+  const explained = new Set(
+    run.unansweredGuards.filter((guard) => declared.includes(guard.id)).map((guard) => guard.file),
+  )
   const unowned = Object.entries(run.reportedFiles).filter(
-    ([file, state]) => state.red && !owned.has(file),
+    ([file, state]) => state.red && !owned.has(file) && !explained.has(file),
   )
   if (unowned.length === 0) return
 
@@ -1104,6 +1145,35 @@ const assertEveryRedFileNamesItsGuard = (label: string, run: SuiteRun): void => 
         .join('\n') +
       `\n  A file that reddens without one of its guards saying so is a teardown, a fixture or a ` +
       `collection that gave way, and this cell would otherwise be counted as killed by the compiler.`,
+  )
+}
+
+/**
+ * A guard a mutant declares it silences, that answered anyway.
+ *
+ * **Without this the declaration is a licence to hide**, and the shape is `attribution.ts`'s own one
+ * floor over: it refuses a silence nobody accounts for *and* a declaration a mutant contradicts,
+ * because a stale declaration has to be as loud as anything else this instrument pins. Here the
+ * contradiction runs the other way - the guard spoke - and it is the same fault.
+ *
+ * It is total over the declaration rather than over the run: an identifier no run collects fails it
+ * too, so a guard renamed out from under a declaration is a red rather than a line nobody reads.
+ */
+const assertNoDeclaredGuardAnswered = (
+  label: string,
+  run: SuiteRun,
+  declared: readonly string[],
+): void => {
+  const silenced = new Set(run.unansweredGuards.map((guard) => guard.id))
+  const spoke = declared.filter((id) => !silenced.has(id))
+  if (spoke.length === 0) return
+
+  throw new Error(
+    `${label}: this mutant declares that it stops ${spoke.length} guard(s) from answering, and ` +
+      `they answered:\n` +
+      spoke.map((id) => `  ${id}`).join('\n') +
+      `\n  A declaration that outlives what it describes hides the next guard to go quiet, which is ` +
+      `what the declaration exists to prevent. Drop the name, or say what really stops it.`,
   )
 }
 
@@ -1135,9 +1205,14 @@ const assertEveryRedFileNamesItsGuard = (label: string, run: SuiteRun): void => 
  * ADR-0166 carries the arbitration, the price of the closure it refused, and why the census stays at
  * calibration.
  */
-const assertTheRunAnswered = (label: string, run: SuiteRun): void => {
-  assertEveryGuardAnswered(label, run)
-  assertEveryRedFileNamesItsGuard(label, run)
+const assertTheRunAnswered = (
+  label: string,
+  run: SuiteRun,
+  declared: readonly string[],
+): void => {
+  assertEveryGuardAnswered(label, run, declared)
+  assertEveryRedFileNamesItsGuard(label, run, declared)
+  assertNoDeclaredGuardAnswered(label, run, declared)
 }
 
 /** Materialise one cell - arm, lens, mutant - and read the suite's verdict on it. */
@@ -1169,7 +1244,11 @@ const measureCell = (
   applyEdits(battery.contractPath, edits, `mutant ${mutant.id} on arm ${arm.id}`)
 
   const run = runSuite(battery)
-  assertTheRunAnswered(`${mutant.id} on ${cellKey(arm, lens)}`, run)
+  assertTheRunAnswered(
+    `${mutant.id} on ${cellKey(arm, lens)}`,
+    run,
+    mutant.leavesUnanswered?.guards ?? [],
+  )
   assertWholeSuiteRan(`${mutant.id} on ${cellKey(arm, lens)}`, run, expectedTests)
 
   return { verdict: verdictOf(run), failedGuards: run.failedGuards }
@@ -1381,7 +1460,8 @@ export const calibrate = (battery: Battery): Calibration => {
         )
       }
       assertTheCensusHolds(cellKey(arm, lens), control, census)
-      assertTheRunAnswered(cellKey(arm, lens), control)
+      // The control carries no mutant, so nothing may declare a guard silent on it.
+      assertTheRunAnswered(cellKey(arm, lens), control, [])
       if (!control.green) {
         throw new Error(
           `the unmutated ${cellKey(arm, lens)} is red, so every verdict from this battery would be ` +

@@ -924,20 +924,55 @@ const mutants: readonly Mutant[] = [
    * would be a cell whose only content is a second spelling of one edit. The refusal is recorded here
    * rather than left for somebody to propose again.
    */
-  sameOnEveryLens(
-    'I-30',
-    'renders an address without its language, so every URL, page path, case anchor and installed ' +
-      'licence header goes back to a spelling a second language could never be added to',
-    [addressFile(AN_ADDRESS_RENDERS_ITS_LANGUAGE, '  `${address.name}@${address.major}`')],
-    killed([
-      'every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract',
-      'a-rendered-address-is-the-spelling-frozen-with-the-major',
-      'every-file-the-installer-copies-is-marked-mit-0',
-      'the-licence-file-quotes-a-header-a-contract-really-carries',
-      'the-licence-file-shows-the-banner-a-reader-would-receive',
-      'a-shared-dependency-is-resolved-once',
-    ]),
-  ),
+  {
+    ...sameOnEveryLens(
+      'I-30',
+      'renders an address without its language, so every URL, page path, case anchor and installed ' +
+        'licence header goes back to a spelling a second language could never be added to',
+      [addressFile(AN_ADDRESS_RENDERS_ITS_LANGUAGE, '  `${address.name}@${address.major}`')],
+      killed([
+        'every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract',
+        'a-rendered-address-is-the-spelling-frozen-with-the-major',
+        'every-file-the-installer-copies-is-marked-mit-0',
+        'the-licence-file-quotes-a-header-a-contract-really-carries',
+        'the-licence-file-shows-the-banner-a-reader-would-receive',
+        'a-shared-dependency-is-resolved-once',
+      ]),
+    ),
+    /**
+     * **This is the only cell of this repository that produces the defect ADR-0166 was written for**,
+     * and it produced it silently for as long as it has existed. Measured at `3eeaaae` over the 93
+     * cells of this battery and the 19 of `packaging`: one.
+     *
+     * `frozen-for-life.test.ts` builds its subject by cloning this repository at committed `HEAD` and
+     * looking the published binding up under `WHAT = renderContract(SLUGIFY.address)`. The clone holds
+     * the unmutated spelling and the process holds the mutated one, so the key misses, `rebuild()`
+     * throws inside `beforeAll`, and the four guards below are reported `skipped` rather than run. The
+     * assertion count does not move, so nothing before ADR-0166 could see it.
+     *
+     * **The defect is detected and it is detected by a throw rather than by a guard.** That is why the
+     * silence is declared instead of repaired: making the `beforeAll` fail into its guards would have
+     * them claim to have caught a defect in address rendering, when their subject is the freeze -
+     * which is the misattribution this file already records against `array/group-by@1`'s
+     * `language.test.ts`. Redesigning that fixture is an entry of `CLAUDE.md`'s open list, not a
+     * change to make from here.
+     *
+     * The verdict is unaffected and that was measured rather than assumed: the six guards this cell
+     * pins are in other files and all six really fail, so `killed` was never wrong. Only its silence
+     * was.
+     */
+    leavesUnanswered: {
+      guards: [
+        'a-comment-reworded-in-a-published-contract-is-refused',
+        'a-published-contract-nothing-touched-is-accepted',
+        'a-standing-change-and-prose-outside-the-harness-are-accepted',
+        'the-decision-to-publish-moves-no-digest',
+      ],
+      reason:
+        'this mutant changes the address this process renders and not the address the clone at ' +
+        'committed HEAD binds, so the subject of that file cannot be built and its `beforeAll` throws',
+    },
+  },
 
   /**
    * One rendering builds the address by hand instead of calling `renderContract`, and every other
