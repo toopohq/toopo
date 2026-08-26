@@ -196,20 +196,29 @@ throws inside `beforeAll`, and four guards are reported `skipped`. The assertion
 
 It is the file and the four addresses `CLAUDE.md` named at `c21865e`, found live on a pinned cell.
 
-**The population is one.** Replayed whole at `b0748d6`, over every battery whose folder holds a test
-file that builds something in a setup or tears something down:
+**The population is one, out of 224.** Replayed whole over every battery whose folder holds a test file
+that builds something in a setup or tears something down — which is six and not four, because
+`packages/cli/ignored.test.ts` puts all four `cli-*` batteries in that population and only
+`cli-install` reaches `remove-directory.ts` from it:
 
 ```
-registry-storage   R/as-committed   89/94   surviving I-01, I-08, S-11, S-12, S-14
-packaging          A/as-committed   18/19   surviving A-13
-cli-install        C/as-committed   72/72   -
-cli-update         U/as-committed   35/35   -
+registry-storage   R/as-committed   89/94   surviving I-01, I-08, S-11, S-12, S-14   b0748d6
+packaging          A/as-committed   18/19   surviving A-13                           b0748d6
+cli-install        C/as-committed   72/72   -                                        b0748d6
+cli-update         U/as-committed   35/35   -                                        b0748d6
+cli-search         S/as-committed    3/3    -                                        ffd7682
+cli-remove         R/as-committed   21/21   -                                        ffd7682
 ```
 
-Four times *every cell agrees with the verdict this battery pins for it*, and `I-30` goes on reddening
-`every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract` — so the declaration
-silenced the four it names and nothing else. The figures are the batteries' own rather than a probe's,
-because `npm run battery <name>` reproduces them and a probe written for one afternoon does not.
+Six times *every cell agrees with the verdict this battery pins for it*, and `I-30` goes on reddening
+`every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract`, alone on `I-31` — so the
+declaration silenced the four addresses it names and nothing else.
+
+**Two coordinates and one state, shown rather than asserted**: `git diff b0748d6..ffd7682 --
+mutation/run.ts mutation/instrument.test.ts` is empty, so the instrument that took the last two
+readings is the instrument that took the first four. The figures are the batteries' own rather than a
+probe's, because `npm run battery <name>` reproduces them and a probe written for one afternoon does
+not.
 
 `packaging` returned zero **for a reason and not by luck**, which is worth as much as the one: its
 `beforeAll` builds the archive through `npm pack`, which fails loudly, so the file loses its assertions

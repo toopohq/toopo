@@ -941,9 +941,10 @@ const mutants: readonly Mutant[] = [
     ),
     /**
      * **This is the only cell of this repository that produces the defect ADR-0166 was written for**,
-     * and it produced it silently for as long as it has existed. Replayed at `b0748d6` over the four
-     * batteries whose folder holds a test file that builds something in a setup - this one at 89/94,
-     * `packaging` at 18/19, `cli-install` at 72/72, `cli-update` at 35/35: one.
+     * and it produced it silently for as long as it has existed. Replayed over the six batteries whose
+     * folder holds a test file that builds something in a setup or tears something down - this one at
+     * 89/94, `packaging` at 18/19, `cli-install` at 72/72, `cli-update` at 35/35, `cli-search` at 3/3
+     * and `cli-remove` at 21/21: **one cell of 224**. ADR-0166 carries the coordinates.
      *
      * `frozen-for-life.test.ts` builds its subject by cloning this repository at committed `HEAD` and
      * looking the published binding up under `WHAT = renderContract(SLUGIFY.address)`. The clone holds
