@@ -4,7 +4,7 @@ date: 2026-08-26
 decision-makers: Mathis Perron
 governs:
   - mutation/run.ts
-  - mutation/instrument.test.ts
+  - mutation/registry-storage.battery.ts
 confirmed-by:
   - battery: meta
     guard: a-guard-collected-and-never-run-is-not-a-guard-that-passed
@@ -14,6 +14,8 @@ confirmed-by:
     guard: a-suite-that-lost-a-guard-outright-is-refused-by-the-total
   - battery: meta
     guard: a-fixture-that-cannot-be-built-names-the-guards-it-took-with-it
+  - battery: meta
+    guard: a-declaration-that-outlives-its-mutant-is-refused
 ---
 
 # A guard that was collected and never ran, and the arbitration that was mis-posed
@@ -183,6 +185,60 @@ repository produces — `packages/registry/`, 24 files, 464 assertions — the c
 declares is 45–85 ms and 3.8 ms, against a replay of some forty minutes. A battery's wall clock cannot
 resolve either: two runs of identical work on `site` differ by three minutes.
 
+### The one live instance, and why its silence is declared
+
+Replaying with the refusals in place found the defect in the catalogue rather than in the fixture.
+**`registry-storage · I-30`** renders an address without its language;
+`packages/registry/frozen-for-life.test.ts` builds its subject by cloning this repository at committed
+`HEAD` and looking the published binding up under `WHAT = renderContract(SLUGIFY.address)`. The clone
+holds the unmutated spelling and the process holds the mutated one, so the key misses, `rebuild()`
+throws inside `beforeAll`, and four guards are reported `skipped`. The assertion count does not move.
+
+It is the file and the four addresses `CLAUDE.md` named at `c21865e`, found live on a pinned cell.
+
+**The population is one.** Measured at `3eeaaae`, cell by cell: 93 of `registry-storage`, 19 of
+`packaging`, 3 of `cli-search`, 21 of `cli-remove` — one refusal, and no verdict moved anywhere else.
+
+`packaging` returned zero **for a reason and not by luck**, which is worth as much as the one: its
+`beforeAll` builds the archive through `npm pack`, which fails loudly, so the file loses its assertions
+and the total moves — the shape that was already refused before this record.
+
+For the batteries not swept cell by cell the shape is unreachable by construction, and that is measured
+rather than assumed. A guard that does not answer needs a `skip`, `skipIf`, `runIf`, `todo`, `fails` or
+`concurrent` — **zero occurrences at `3eeaaae` across every `*.test.ts` and `*.test-d.ts`** — or a
+`beforeAll` that throws, and only seven test files of this repository declare a setup or a teardown at
+all. A red file owning no failed guard needs a teardown that throws, a throw at module scope or a dead
+import; the last two move the total, so no pinned cell could have been in that state without its
+battery already being red. **That argument expires the day somebody writes a `skipIf`**, which is why
+it carries a coordinate rather than a claim about today.
+
+**Three options, and the two that were refused.** Refusing `I-30` outright throws a correct measurement
+away to punish an unrelated silence, and no rewrite avoids the desynchronisation — the desynchronisation
+*is* the defect. Repairing the fixture so its `beforeAll` cannot throw makes those four guards redden
+for a defect in address rendering when their subject is the freeze, which is the misattribution `run.ts`
+already records against `array/group-by@1`'s `language.test.ts`; it is also a decision about the design
+of a registry fixture taken inside a unit whose subject is the instrument, so it is written as an entry
+of the open list instead of made here.
+
+**So the silence is declared, and the declaration names guards and never a file.** A declaration naming
+`frozen-for-life.test.ts` would take a fifth guard added to that file into the silence with nobody
+deciding — a total absorbing what it lost, rebuilt one floor down inside the repair written to remove
+it. Named addresses leave a fifth one undeclared, and `assertEveryGuardAnswered` sees it. It is the
+granularity `census.ts` already works at: *a guard identifier is frozen with its contract's major
+version*.
+
+`Mutant.leavesUnanswered` is the third kind of declared silence here and the only one that is per
+mutant: `unreachableGuards` says no mutant of a battery reddens a guard, `unprobedRegions` says none
+does yet, and this says one mutant stops a guard from speaking at all — which is neither, because the
+guard is not silent, it is absent.
+
+`assertNoDeclaredGuardAnswered` is what keeps that from being a licence to hide, and it is
+`attribution.ts`'s shape one floor over: that file refuses a silence nobody accounts for **and** a
+declaration a mutant contradicts. It is total over the declaration rather than over the run, so a guard
+renamed out from under a name is a red rather than a line nobody reads. `FX-M14` is it seen red alone —
+a cell standing one guard down and declaring two, where the first refusal is silent because the real
+one is declared, the second because no file reddens, and the third names the guard that answered.
+
 ### One witness moved rather than being added to
 
 `FX-M2` — a file that throws while being collected — used to be `assertWholeSuiteRan`'s only witness in
@@ -201,8 +257,13 @@ none unanswered, so the total is the only one of the three that speaks.
   lesson arriving where the census does not run.
 * Good: `runSuite` reads a file's verdict and the first line of its error once, where the report is
   read, instead of `assertTheCensusHolds` re-deriving the second at its own end.
-* Bad: the meta suite gains four guards and about eight seconds, and the instrument gains two refusals
+* Good: the defect was found in the catalogue and not only in the fixture — `I-30` had been reporting
+  a correct verdict over four guards that had left the suite, for as long as it has existed.
+* Bad: the meta suite gains five guards and about ten seconds, and the instrument gains three refusals
   a reader of `measureCell` has to hold in their head.
+* Bad: a battery may now declare a guard silent on a cell, which is a door that did not exist. It is
+  narrowed by being per mutant, by naming addresses rather than files, and by a refusal on the other
+  direction — but it is a door, and the population it is open for is one cell today.
 * Bad: a battery that legitimately wanted a guard stood down now cannot have one. Nothing wants that
   today — the exemption set is measured empty — and the day something does, this refusal is where the
   decision gets taken rather than where it gets skipped.
@@ -218,3 +279,6 @@ none unanswered, so the total is the only one of the three that speaks.
   exemption set stops being empty and has to be declared rather than assumed.
 * A mutant that edits two test files, which would give the per-cell census the reachable instance it
   does not have today and reopen the refusal above on its own terms.
+* A second `leavesUnanswered`. One declaration is a fact about one mutant; a handful would be a
+  pattern, and the question would stop being *may this cell declare it* and become *why do fixtures of
+  this repository stop answering when the code under them is wrong*.

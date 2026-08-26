@@ -2429,6 +2429,33 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   a declared absence carries the commit at which it was true, exactly as a count does. The executable
   form is the validation stage reading this repository's own strings, which is already on this list,
   already priced, and already refused as a lint over prose.
+- **That a test file of this repository goes on answering when the code under it is wrong.** One does
+  not, and it was found by a mutant rather than by reading.
+  `packages/registry/frozen-for-life.test.ts` builds its subject inside a `beforeAll` — a clone of this
+  repository at committed `HEAD`, and a lookup of the published binding under the address *this
+  process* renders. `registry-storage · I-30` renders an address without its language, so the clone
+  holds one spelling and the process holds another, the lookup misses, and the `beforeAll` throws.
+  **Its four guards are then reported `skipped` rather than run**, and the defect that was detected is
+  detected by a throw instead of by a guard.
+
+  **The silence is declared rather than repaired, deliberately.** `I-30`'s `leavesUnanswered` names the
+  four addresses, ADR-0166 carries why, and the reason it is not repaired here is that making the
+  `beforeAll` fail into its guards would have them claim to have caught a defect in *address
+  rendering* when their subject is the freeze — the misattribution `run.ts` already records against
+  `array/group-by@1`'s `language.test.ts`. Redesigning a registry fixture inside a unit whose subject
+  is the instrument is the move this list exists to refuse, so it is named here and not made.
+
+  **Where this looked**: the seven test files of this repository that declare a setup or a teardown,
+  swept at `3eeaaae` — `frozen-for-life.test.ts`, `rebuild.test.ts` and `revision.test.ts` under
+  `packages/registry/`, `archive.test.ts` and `against-the-origin/the-whole-chain.test.ts` under
+  `packaging/`, `packages/cli/ignored.test.ts`, and `mutation/instrument.test.ts`. **The population is
+  those seven**, and it grows with every fixture built outside a guard.
+
+  **What would close it is a rule rather than a repair**: that a test file does only work in its setup
+  which cannot fail on a defect in the code under test, everything fallible being a guard. That is a
+  constraint on seven files and it needs something to keep it, and nothing here reads a `beforeAll` for
+  what it can throw on. Priced as its own unit and not taken. ADR-0166.
+
 - **That the composition of a mutant cell's run is compared against what the repository declares.** It
   is not, deliberately, and this entry is the refused half of the one that used to stand here. It is
   written at length rather than as a line because **the fact worth keeping is the one a rature would
