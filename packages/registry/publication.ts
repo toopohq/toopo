@@ -153,7 +153,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * act. `1.0.3` was the last release argued for in a commit message and dispatched from a menu
  * afterwards.
  */
-export const THE_PACKAGE_VERSION = '1.0.4'
+export const THE_PACKAGE_VERSION = '1.1.0'
 
 /**
  * The version every reference implementation of this catalogue is published at, and frozen at.
