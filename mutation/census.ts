@@ -281,7 +281,16 @@
  * suite runs `run` in the test's own process, where the exit code has to be a stand-in and an ending
  * cannot be watched at all. The fourth guard is one folder over and reads the tarball, because the
  * cause is text that ships and the symptom is a race that does not reproduce on every platform.
- * ADR-0168.
+ *
+ * **And it is the row that made the price of a guard worth writing down, which no row before it did.**
+ * A guard file enters the accounting of every battery that *collects its suite*, not of the battery
+ * whose folder it describes - so adding one costs **a battery file per battery over that folder, plus
+ * a row here**. Measured over `THE_BATTERIES`: `packages/cli` is four, each of the seven contracts is
+ * two, and `packaging`, `packages/registry`, `packages/site`, `packages/validation` and
+ * `mutation/fixture` are one. One of them has to witness the guard and the rest have to declare that
+ * they do not, because the instrument refuses silence in both directions. **Three guards under
+ * `packages/cli/` therefore cost five files**, and the run that taught it named every battery and
+ * every guard. ADR-0168.
  *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is

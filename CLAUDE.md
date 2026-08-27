@@ -48,15 +48,18 @@ modules; the first is red only where the race is lost, and **no leg of `suites.y
 which is why the `beforeExit` one exists. **CI answered the reading this record was written owing**:
 on ubuntu the restored defect reddens the `beforeExit` guard *alone*, and on win32 it reddens both — so
 `process.exit` after a fetch leaves the code at 1 and stderr empty on Linux, and had this unit shipped
-only the guard that reads the exit code, **every gate would have been green on the defect**. **And the
-accounting is per suite rather than per folder**: four batteries collect `packages/cli`, one had the
-cells, and the push failed naming 3, 2 and 2 unaccounted guards. **Declaring that 3, 2, 2 was the
-obvious repair and it was wrong** — the asymmetry was the control running `add`, which every defect of
-the plan, the rewrite, the lockfile, the configuration and the git question reaches, and one of the
-cells reddening it, `cli-remove`'s R-20, **edits a module an install cannot reach at all**. A guard
-reddening on a mutant with no causal path to it is invisible to a green suite; what made it visible was
-a battery having no business witnessing it. The control asks for a search now, and C-75 gives it the
-witness the install was supplying by accident. ADR-0168.
+only the guard that reads the exit code, **every gate would have been green on the defect**. Measured:
+**seven `runs-on:` in `suites.yml` and every one `ubuntu-latest`**, no Windows runner anywhere in
+`.github/` — so **this CI could not have caught the defect it just repaired**, and the guard reading
+the exit code is green on every runner this project owns while the defect is live. **And the
+accounting is per suite rather than per folder**, which has a price worth knowing before writing a
+guard: **one battery file per battery that collects the folder, plus the census** — `packages/cli` is
+four, each contract is two, everything else is one, so three guards there cost five files. The push
+failed naming 3, 2 and 2 unaccounted guards; **the 3 is that price and the 2s were a defect**, the
+control having run `add`, which every defect of the plan, the rewrite, the lockfile, the configuration
+and the git question reaches — and one cell reddening it, `cli-remove`'s R-20, **edits a module an
+install cannot reach at all**. A guard reddening on a mutant with no causal path to it is invisible to
+a green suite; what made it visible was a battery having no business witnessing it. ADR-0168.
 
 **The gate now answers for the instrument as well as for what the instrument measures, and the exit
 code it reads has a failing direction that is exercised.** A battery *measures* a folder and is *built

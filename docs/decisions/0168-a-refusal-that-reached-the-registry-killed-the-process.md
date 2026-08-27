@@ -255,6 +255,24 @@ therefore arrived in four accountings at once, and only one of them had cells fo
 made the other three look answered. They were not: the run at `aefd323` failed with `cli-search`
 naming three unaccounted guards and `cli-remove` and `cli-update` naming two each.
 
+**That is two findings and not one, and the first is the ordinary price.** `cli-search` is the clean
+instance: nothing there reddens any of the three, nothing declares them, and the battery refuses — no
+defect of any kind, just a guard that arrived in an accounting nobody told. The second finding is why
+the other two said *two* rather than *three*, and it is a defect in a guard; it is below.
+
+**So the price of a guard is one line and it is worth stating as one**: adding a guard to a folder
+costs **one battery file per battery that collects that folder, plus the census**. Measured over
+`THE_BATTERIES`, that is `packages/cli` at four, each of the seven contracts at two, and
+`packaging`, `packages/registry`, `packages/site`, `packages/validation` and `mutation/fixture` at
+one. `packages/cli/` is the most expensive folder in this repository to add a guard to, and this unit
+paid it: **five files for three guards** — cells in `cli-install`, a declaration in each of
+`cli-remove`, `cli-search` and `cli-update`, and a count in `mutation/census.ts`.
+
+One battery must *witness* it and the rest must *declare* that they do not, because the instrument
+refuses silence in both directions: an unwitnessed guard nothing accounts for is `unaccountedFor`, and
+a guard declared silent that some mutant reddens is `wronglyDeclaredSilent`. Neither is a defect —
+both are the price, and nobody will know it next time if it is not written down.
+
 **The obvious repair was to declare the `3, 2, 2` as measured, and it was wrong.** The asymmetry was
 `a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way`, which ran `add` — so it reached
 the plan, the rewrite, the lockfile, the configuration and the git question, and any mutant of any of
@@ -300,11 +318,19 @@ fires on a push of `main` declaring a version npm does not hold — ADR-0111 —
 the release. Whether this goes out is the owner's decision and it is not taken here. Until it does,
 `npx toopo@1.0.4 add <a name that does not exist>` goes on aborting on Windows.
 
-**The behavioural guards' red is not portable, and this is where that is written down rather than
-discovered.** The abort belongs to libuv's Windows implementation — the assertion names `src/win/async.c`
-— and every job of `suites.yml` is `ubuntu-latest`. So on the runners that gate every push,
-`a-refusal-that-reached-the-registry-exits-one-…` is expected to be green either side of this change.
-What answers there is the `beforeExit` guard and the archive guard, and that is why both exist.
+**This CI could not have caught the defect it has just repaired, and that is measured rather than
+inferred.** `suites.yml` carries **seven `runs-on:` and every one of them is `ubuntu-latest`**; there
+is no Windows or macOS runner anywhere in `.github/`, and the only occurrence of `windows-latest` in
+the whole directory is a comment at line 98 describing a measurement taken elsewhere. The abort
+belongs to libuv's Windows implementation — the assertion names `src/win/async.c` — so no gate this
+project owns could ever have gone red on it.
+
+**The sharper form of that is the one this repository refuses everywhere else.**
+`a-refusal-that-reached-the-registry-exits-one-…` is green on every runner of this project *while the
+defect is live*. It is not decorative — it is red where the defect exists, and this machine is where
+that was seen — but on the machines that decide whether a push is good, it is a guard that cannot
+fail. What answers there is `a-refusal-lets-the-process-end-…`, and CI has now demonstrated it:
+`alone on C-73` on ubuntu, merely `red on C-73` here.
 
 **Linux was unreadable from the machine this was measured on, and CI answered it on the first run.**
 No Linux was reachable here — the docker daemon was not running, and the only WSL distribution
@@ -340,6 +366,14 @@ run, so a bug inside a command cannot pass through the suite quietly.
 ## What would reopen this
 
 A Windows leg in `suites.yml`. Two of the four guards would then be red in CI on the real condition
-rather than on a text, and the reading this record leaves open — whether Linux aborts too — would be
-taken by the machine instead of by hand. It is not decided here: it changes what every push and every
-publication costs, and the battery matrix with it.
+rather than on a text, and the readings this record had to take by hand would be taken by the machine.
+
+**The argument for it is this unit and it is measured, not felt**: seven jobs, seven `ubuntu-latest`,
+no Windows runner anywhere in `.github/` — so the gate that decides every push could not have gone red
+on a defect that was live in the published package, on the most likely mistake a stranger makes. What
+stood between that and a silent gate was one guard written on purpose because CI has no Windows leg.
+That is a thin margin, and it was a judgement rather than a mechanism.
+
+It is not decided here. It changes what every push and every publication costs, and the battery matrix
+with it — `packages/cli` alone is four batteries, and the second gate replays all of them before
+anything reaches npm.
