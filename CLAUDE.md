@@ -523,18 +523,21 @@ so it is written where a session reads first rather than filed as a declaration 
 would close it is a decision about that runtime dependency, which is a unit of its own and touches
 the archive rather than the site.
 
-**The second is repaired in this tree and still live on npm: `npx toopo@1.0.4 add <a name that does
-not exist>` aborts on Windows.** ADR-0168 is the defect, the cause and the guards, and the paragraph
-above carries what it found. What keeps it open is not the repair, which is written and measured in
-both directions — it is that a publication is a push of `main` declaring a version npm does not hold,
-so the number *is* the release and moving it is the owner's decision rather than a step of the unit
-that fixed the code. **`THE_PACKAGE_VERSION` and `package.json` are therefore still `1.0.4`**, and
-every reader on Windows meets the abort until that decision is taken.
+**The second is repaired, its decision has been taken, and what is left of it is a run: `npx
+toopo@1.0.4 add <a name that does not exist>` aborts on Windows.** ADR-0168 is the defect, the cause
+and the guards, and the paragraph above carries what it found. What kept it open was never the repair,
+which is written and measured in both directions — it is that a publication is a push of `main`
+declaring a version npm does not hold, so the number *is* the release and moving it is the owner's
+decision rather than a step of the unit that fixed the code. **That decision is `1.1.0`**, which the
+manifest declares and npm does not hold. **Until that push has run green npm goes on serving `1.0.4`**
+and every reader on Windows meets the abort; what closes this entry is the number appearing in npm's
+own listing, which `print-whether-to-publish.ts` reads on every push and prints either way.
 
 **The two are not the same shape and the difference decides who can close them.** The first is
-unrepaired anywhere and needs a decision about a runtime dependency. The second is repaired
-everywhere this repository controls and needs only a version. It is written here rather than on the
-open list for the reason the first is: nothing is unkept, something is broken.
+unrepaired anywhere and needs a decision about a runtime dependency. The second is repaired everywhere
+this repository controls and its version is declared, so what remains of it is a run rather than a
+decision. It is written here rather than on the open list for the reason the first is: nothing is
+unkept, something is broken.
 
 **`toopo@1.0.0` is on npm, and the way it got there is what the unit before this one replaced.** It was
 published from a keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal
@@ -546,12 +549,13 @@ writes the attestation itself, so **nothing here stores a credential** and there
 to renew. ADR-0109. What that job used to wait for was a dispatch carrying a typed word, and ADR-0111 —
 below, under its own heading — is why it no longer does.
 
-**The manifest reads `1.0.4`, and it is the first release that corrects neither the program nor the
-artefact.** `1.0.0` was published from a keyboard with no attestation and a personal address frozen into
+**The manifest reads `1.1.0`, and it is the first release that is not a correction.** `1.0.0` was
+published from a keyboard with no attestation and a personal address frozen into
 it; `1.0.1` corrected that artefact and nothing else, its `dist/` byte for byte `1.0.0`'s; `1.0.2`
 carried out a defect in the program and was the first whose compiled content differed; `1.0.3` carries
 ADR-0110, a feature landing at `lib/toopo/string/slugify.ts` rather than at `…/slugify/slugify.ts`, and
-was the first whose change a user meets on their own disk. **`1.0.4` repairs a chain of provenance this
+was the first whose change a user meets on their own disk; `1.0.4` corrected neither the program nor
+the artefact and **repairs a chain of provenance this
 repository broke itself**: ADR-0124 reissued all 506 commits of this graph, and an attestation is
 addressing like everything else, so the four npm holds name commits of a history that no longer exists.
 `npm view toopo@1.0.3 gitHead` prints one and nothing here resolves it. **The four are named by that
@@ -578,6 +582,52 @@ the others**: the manifest declares a `bin` and no `exports`, so nothing here is
 whole public surface is the grammar of the six commands, which has not moved.
 `THE_PUBLISHED_IMPLEMENTATION_VERSION` stays at `1.0.0`: a version is half of an implementation's
 address, nothing it addresses moved, and the publication is the event ADR-0106 cut that tie for.
+
+**`1.1.0` is the first MINOR, and what decided it is the half of `1.0.4`'s own rule that nobody had
+read.** That rule is *founded on one fact and confirmed by two*, and the fact is intact: measured at
+`0fd53e1`, the rendered usage is **547 bytes either side and identical**, and the `Command` union,
+everything from `ParsedArguments` to the end of `arguments.ts`, and `THE_WRITE_DISCIPLINE` are byte for
+byte what they were at `f95c4fa` — with the one reader of `argv` the archive holds, `command.ts`'s call
+to `parseArguments`, untouched across 175 commits. No flag moved and no command was added. **What is
+false here is the confirmation**, which is the clause that was doing the work: *the two modules carrying
+code carry functions no command reaches*. `toopo search` reaches what moved.
+
+**Measured against the two clients rather than against the diff.** `toopo@1.0.4` as npm serves it and
+the archive this tree builds, both asked of the live origin in the same minute, over 25 queries taken
+from the records that name them: **17 unchanged, 6 gained an answer, 2 lost one, 0 answered a different
+contract first.** `string to integer` is the shape of the six — silent at `1.0.4`, `number/parse@1` at
+the candidate — and the mechanism is `alsoFoundBy`, whose own comment in `response.ts` says why the gain
+can never reach the older client: *a field added is ignored by a client that has never heard of it*. A
+capability the new archive has and the old one cannot acquire by waiting is MINOR by definition, and
+PATCH would promise a reader nothing to learn where there are six things.
+
+**Two answers are lost and one of them was right, which is written beside the balance rather than
+inside it.** `round robin` answered `number/round@1` at `1.0.4` and the candidate is silent, which is
+ADR-0154's floor removing a wrong answer. **`slugify a blog post` answered `string/slugify@1` and the
+candidate is silent**, which is a right answer withdrawn — ADR-0154 assumed that cost and this release
+is what carries it to a reader. It is not MAJOR, because nothing this catalogue publishes promises that
+a given query answers a given contract, and the grammar is what a reader is entitled to. It is an entry
+of the open list below.
+
+**The method is `1.0.2`'s, and the two figures it produces disagree, which is what it exists to show.**
+`npm pack toopo@1.0.4` unpacked and compared with what this tree builds, at `0fd53e1`: **35 modules
+either side, 434 709 bytes against 469 558, and 15 of 36 addresses differing** — 13 whose content moved,
+plus `packages/cli/search.js` gone and `packages/registry/search.js` arrived, which is one module that
+changed folder. **Git says 16 sources moved and the archive says 13**, and the two that separate them
+are `install.ts` and `report.ts`: both moved only inside text the compiler erases — a comment within
+`export type Installation`, and an `import type` specifier — so their JavaScript is identical to the
+byte, `13 123` against `13 123`. **It is not that comments are stripped**: they reach the archive, and
+these two happened to sit inside an erased type alias and an erased import. A reading of the diff counts
+them; only the artefact says they ship nothing.
+
+**No anchoring commit follows, and that is ADR-0106 read rather than assumed.** It asks for one because
+`implementationSnapshot` carries `version`, so the commit minting `reference@1.0.0` creates four
+addresses no earlier commit binds and cannot name itself as where they were minted. This release mints
+nothing: no contract is published and `THE_PUBLISHED_IMPLEMENTATION_VERSION` does not move.
+`THE_PACKAGE_VERSION` is imported by no module of the product — `publication.test.ts` and
+`packaging/archive.test.ts` are its only readers and both equate it with the manifest — so it enters no
+snapshot by construction rather than by luck, and the ledger's twelve bindings are identical to the byte
+across this release.
 
 **And the dispatch is gone: the number asks for the publication.** It was two gestures for one decision —
 a version decided in a commit, a run asked for from a menu afterwards — and between them the tree was
@@ -1415,6 +1465,33 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   already name — something that reads this repository's own strings — and this is the first of them
   whose subject is a *contract's* prose rather than a source's or a record's. Priced and not taken.
   ADR-0154.
+
+- **That a query this catalogue can answer is one it does answer.** ADR-0154 raised the floor a query
+  must clear and published what that cost: over 198 queries, each an alias with one word replaced by one
+  the catalogue does not know, **151 were answered before and 125 after**, so twenty-six that had an
+  answer have none. That record calls them *the same shape as the twelve closed* and does not say which
+  of the twenty-six the catalogue could have answered, so the count is a loss and never a defect count.
+
+  **One instance is measured rather than left inside that arithmetic, and it is the first a reader
+  meets.** At `0fd53e1`, against the live origin: `toopo@1.0.4` answers `string/slugify@1` to `slugify
+  a blog post` and the archive this tree builds is silent. It is a right answer withdrawn — ADR-0154's
+  own sweep puts that query among the four requests this catalogue *could* have answered — and it is a
+  different event from `round robin` losing `number/round@1` in the same corpus, which was a wrong
+  answer the floor was correct to take. **Nothing here tells the two apart**, and that is the entry: the
+  floor is a rule about how many words a query carries, and the distinction is about whether the
+  catalogue holds the thing asked for.
+
+  **Where this looked**: the floor itself in `packages/registry/search.ts`; `packages/registry/search.test.ts`,
+  whose corpus is queries somebody chose and which therefore cannot report a query nobody thought of;
+  and ADR-0154's own sweep, which counts the loss and names none of it.
+
+  **The population is every query the catalogue could answer and does not**, and it is unbounded the way
+  the alias population one entry up is unbounded. **Closing one instance is reachable and is not taken
+  here**: `alsoFoundBy` is standing since ADR-0155, so a phrase can be declared on a published contract
+  with no digest moving — but declaring one is an alias review under ADR-0023, and making that judgement
+  inside a unit whose subject is a release is the move this list exists to refuse. What would close the
+  *class* is the thing four entries here already name, price and refuse: something that reads a
+  contract's own prose against a query. ADR-0154, ADR-0155.
 
 - **That a module a browser loads is one this repository's guards can see.** ADR-0156 takes the
   argument out of every module of `THE_BROWSER_GRAPH` and keeps the removal with four guards whose

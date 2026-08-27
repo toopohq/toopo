@@ -83,7 +83,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * already holds its contracts to, and the youth of the catalogue is a sentence the README owes a
  * reader rather than a digit nobody can read. ADR-0048 records the order a publication takes.
  *
- * **It is 1.0.4 because the tie between an archive and a commit was broken here, by this repository.**
+ * **It reached 1.0.4 because the tie between an archive and a commit was broken here, by this repository.**
  * ADR-0124 reissued all 506 commits of this graph to take the assistant's co-signature out of them, and
  * an attestation is addressing like everything else: the four npm holds name commits of a history that
  * no longer exists. `npm view toopo@1.0.3 gitHead` prints one and nothing here resolves it. **The four
@@ -91,38 +91,62 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * paragraph explaining why they are dead is the defect that paragraph describes - the rule that
  * withdrew `1.0.1`'s tree digest, applied to an address rather than to a figure. They cannot be
  * repaired either: npm does not republish a version, so the chain is reattached forwards and never
- * backwards, and this is the first of the four releases that corrects neither the program nor the
+ * backwards, and it was the first of the four releases that corrected neither the program nor the
  * artefact.
+ *
+ * **It is 1.1.0 because a reader on Windows meets an abort, and because the client learned to read a
+ * field the catalogue had already begun serving.** ADR-0168 is the abort - `process.exit` after a fetch
+ * kills node on a libuv assertion on win32, over a refusal that was correct - and it is the reason the
+ * release exists. It is not the reason for the rank: what moves the rank is `alsoFoundBy`, a field
+ * `1.0.4` ignores for ever and this archive reads.
  *
  * **What decides a rank is what a command reaches, and this repository computes that rather than
  * judging it.** `reachable.ts` prunes `dist/` to what the published entry point can reach, and the same
  * walk answers the version question one floor up: a module the archive carries and no command calls is
  * compiled bytes that moved and behaviour that did not. **It is the method and not a finding** - the
  * walk was here long before anybody read it this way - and it is stated because the rank of the next
- * release turns on it exactly as this one does. Read here: ADR-0118 gave `servedContractBinding` a
- * `useCases` field, its only callers are `local-read-api.ts` and `packages/site/local-source.ts`, and
- * the walk keeps neither.
+ * release turns on it exactly as this one does. Read at `1.0.4`: ADR-0118 gave `servedContractBinding`
+ * a `useCases` field, its only callers are `local-read-api.ts` and `packages/site/local-source.ts`, and
+ * the walk keeps neither. **Read here, the walk answers the other way**, which is the instructive case
+ * and the one this rank turned on: `packages/registry/search.js` is in what the walk keeps, and
+ * `command.js` calls it on every `toopo search`.
  *
- * **PATCH, founded on one fact and confirmed by two.** The manifest declares a `bin` and no `exports`,
- * so nothing in this package is importable and the whole public surface is the grammar of the six
- * commands - which has not moved. Beside that: the two modules carrying code carry functions no command
- * reaches, and the six others that differ moved only inside documentation comments. MINOR would promise
- * a reader something to learn where there is nothing.
+ * **MINOR, and the rank turned on the confirmation rather than on the fact.** `1.0.4` argued *PATCH,
+ * founded on one fact and confirmed by two*, and the fact still holds: the manifest declares a `bin`
+ * and no `exports`, so nothing in this package is importable and the whole public surface is the
+ * grammar of the six commands - which has not moved, measured at `0fd53e1` as 547 bytes of rendered
+ * usage identical either side and three regions of `arguments.ts` byte for byte what they were at
+ * `f95c4fa`. **An unmoved grammar refuses MAJOR; it does not establish PATCH.** What established PATCH
+ * last time was the second clause - *the two modules carrying code carry functions no command reaches* -
+ * and that clause is false here, because `toopo search` reaches what moved. Measured with the two
+ * clients against the live origin, over 25 queries: 17 unchanged, **6 gained an answer**, 2 lost one.
+ * `1.0.4` cannot acquire those six by waiting, because `alsoFoundBy` is a field it has never heard of.
+ * **A reader who upgrades has something to learn, which is the whole of what MINOR promises.**
+ *
+ * **Two answers go the other way and the balance is not what decides**: `round robin` loses a wrong
+ * answer, which ADR-0154's floor is right to take, and `slugify a blog post` loses a right one, which
+ * it assumed. Neither is MAJOR - nothing here promises that a given query answers a given contract -
+ * and the loss is an entry of the open list rather than a line in this argument.
  *
  * **Measured against what npm is serving rather than against a rebuild of it**, which is the method
- * `1.0.2` established: `npm pack toopo@1.0.3` unpacked and its `dist/` compared against the one this
- * tree builds, by count, total and per-file digest. **No tree digest is published**, for the reason
- * `1.0.2` withdrew `1.0.1`'s: nothing here computes one, so no reader could rebuild it. The table is in
- * this release's commit message, which is where this repository keeps a measurement at length.
+ * `1.0.2` established: `npm pack toopo@1.0.4` unpacked and its `dist/` compared against the one this
+ * tree builds, by count, total and per-file digest. **The source and the artefact disagree here and
+ * the disagreement is the point** - git counts 16 shipped sources moved and the archive counts 13,
+ * because `install.ts` and `report.ts` moved only inside text the compiler erases. **No tree digest
+ * is published**, for the reason `1.0.2` withdrew `1.0.1`'s: nothing here computes one, so no reader
+ * could rebuild it. The table is in the commit that argues the release, which is the one before the
+ * commit that moves this line - a measurement is kept where it can still be corrected, and a commit
+ * message cannot be.
  *
  * **It is not the version an implementation is bound at, and the separation is what makes that
  * readable.** The two were one string, tied by `the-archive-is-visibly-unpublished`, and the tie was
  * right for exactly as long as both were stand-ins saying *nothing here was published*; ADR-0106 cut
- * it at the publication, when they stopped answering the same question. This one moves on a patch of
- * the client. `THE_PUBLISHED_IMPLEMENTATION_VERSION` may never move at all, because a version is half
- * of an implementation's address and rebinding one is what permanent rule 6 refuses - so **a tie kept
- * across the publication would have rebound four addresses here**, on a release that moves no
- * implementation's bytes, and the freeze check is what would report it if somebody tied them again.
+ * it at the publication, when they stopped answering the same question. This one moves on any release
+ * of the client, patch or minor. `THE_PUBLISHED_IMPLEMENTATION_VERSION` may never move at all,
+ * because a version is half of an implementation's address and rebinding one is what permanent rule 6
+ * refuses - so **a tie kept across the publication would have rebound four addresses here**, on a
+ * release that moves no implementation's bytes, and the freeze check is what would report it if
+ * somebody tied them again.
  *
  * **This line is what asks for a publication, and nothing else does.** ADR-0111: a push of `main`
  * declaring a version npm does not hold is what publishes, so editing this string is the deliberate
