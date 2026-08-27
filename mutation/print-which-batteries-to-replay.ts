@@ -34,8 +34,8 @@
 import { appendFileSync } from 'node:fs'
 
 import { answered, git } from './paths.ts'
-import { THE_BATTERIES } from './published.ts'
-import { selectionFor } from './selection.ts'
+import { THE_BATTERIES, theMeasurement } from './published.ts'
+import { batteriesWhereThePlatformDecides, selectionFor } from './selection.ts'
 
 /** What GitHub hands as the commit before the first push of a branch. */
 const NO_COMMIT_BEFORE = '0'.repeat(40)
@@ -60,6 +60,20 @@ const changed = unreadable === null ? changedBetween(base as string, head) : nul
 
 const everything = THE_BATTERIES.map((battery) => battery.name)
 
+/**
+ * The batteries a Windows leg has to run, which is a fact about the pins rather than about this push.
+ *
+ * **The family is spelled and the reason is that there are two.** The gates run on `ubuntu-latest`,
+ * which `thePlatformFamily` calls `posix`, so the family they cannot measure is the other one and
+ * `PlatformFamily` has exactly two members. ADR-0147 already says a third would be a decision rather
+ * than a widening, and this is one more place that decision would have to be taken.
+ *
+ * It is not filtered by what the push changed. A cell no runner exercises is unmeasured at every
+ * commit, not at the ones that touch it, so the leg this feeds is the publication's and its population
+ * is the declaration's. ADR-0169.
+ */
+const windows = batteriesWhereThePlatformDecides('windows', theMeasurement())
+
 const selection =
   changed === null
     ? { batteries: everything, unaccounted: [] as readonly string[] }
@@ -81,6 +95,15 @@ process.stdout.write(
       everything.map((name) => `    ${name}\n`).join(''),
 )
 
+// Printed for the reason the two readings above are: this log is the only place a reader can
+// afterwards see why a leg ran or did not, and a leg whose population appears nowhere is one nobody
+// can check. It is printed even when empty, because empty is the state that would otherwise look
+// exactly like the job having been removed.
+process.stdout.write(
+  `\n${windows.length} battery(ies) hold a cell only a Windows runner can measure\n` +
+    windows.map((name) => `    ${name}\n`).join(''),
+)
+
 /**
  * Absent when this is run by a person, which is the case the job output is meaningless in. A file that
  * is not there is not a failure here: the reading above is the whole of what somebody at a keyboard
@@ -95,6 +118,12 @@ if (output !== undefined && output !== '') {
       // The second gate replays everything, and it takes that list from here rather than from a
       // second reading of `THE_BATTERIES`. One job answers *which batteries*, in both senses, so the
       // two matrices cannot come to disagree about what the instrument holds.
-      `everything=${JSON.stringify(everything)}\n`,
+      `everything=${JSON.stringify(everything)}\n` +
+      // The Windows leg of the second gate, and the boolean beside it for the reason `any` above has
+      // one: GitHub fails a job whose matrix is an empty list rather than skipping it, and this list
+      // is empty the day the last platform-decided cell stops being one. That day is a green
+      // publication under the old shape and a red one under a matrix read without its boolean.
+      `windows=${JSON.stringify(windows)}\n` +
+      `anyWindows=${windows.length > 0}\n`,
   )
 }

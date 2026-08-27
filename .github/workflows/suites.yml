@@ -243,6 +243,100 @@ jobs:
         run: npm run freeze
 
   # ---------------------------------------------------------------------------
+  # The same eight suites on Windows, because one of them is green there and
+  # nowhere else
+  # ---------------------------------------------------------------------------
+  #
+  # ADR-0169 is the decision and the readings. ADR-0168 is the defect that asked for it: a refusal that
+  # had reached the registry called `process.exit` after a `fetch`, libuv aborted on an assertion in
+  # `src/win/async.c`, and git-bash reported the exit code as `127` - *command not found*, on the most
+  # likely mistake a stranger makes. It shipped.
+  #
+  # **`a-refusal-that-reached-the-registry-exits-one-and-says-nothing-on-the-error-stream` is an
+  # ordinary guard of `packages/cli/`, so the `cli` step above is what runs it, and it was green on
+  # every runner this repository owned while that defect was live.** Measured at `36e4bbb`, one run,
+  # both platforms, node v24.19.0, with the defect put back in the one line it lived on:
+  #
+  #     ubuntu-latest    reddened 2 of 3, that guard green
+  #     windows-latest   reddened 3 of 3, that guard red
+  #
+  # So this leg is not a second opinion about the suites; it is the only machine on which one of their
+  # guards can answer at all.
+  #
+  # **It is a job and not a leg of the matrix above, and the difference is measured.** `site` and
+  # `batteries` both wait for `suites`, and `needs` waits for every leg of a matrix - so putting this in
+  # there would add its whole duration to the critical path of every push. Measured at `36e4bbb`: 257 s
+  # here against 125 s for the same eight steps on `ubuntu-latest`, which is 132 s that every push would
+  # pay before a battery could start.
+  #
+  # **What waits for it is `site`, and `publish` reaches it through that.** The batteries deliberately do
+  # not: a battery calibrates against its own suite's control on its own platform, which is the reason
+  # `batteries` waits for `suites` at all, and this leg says nothing about that. So the run grows only
+  # where nothing else is longer - 20 of the 75 pushes read at `88bfb54` select no battery.
+  #
+  # **One runtime and not two.** The matrix above answers *which runtimes pass* and carries the
+  # contributor floor for that; this answers *which platform passes*, and a second runtime here would be
+  # measuring the first question again on a machine that costs twice as much to ask it on.
+  #
+  # `meta` and `freeze` had never run on `windows-latest` before this leg existed - a battery runs its
+  # own folder's configuration, and neither of those two is replayed by any battery. Both are green:
+  # 56 s and 7 s, against 32 s and 5 s on `ubuntu-latest`.
+  suites-on-windows:
+    runs-on: windows-latest
+
+    # 257 s measured at `36e4bbb`. This is a hang detector and not a budget, and the derivation of the
+    # one on the Windows battery below is the argument for both.
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The coordinates a reading taken on this leg needs, and that the matrix above does not print
+      # because there is only ever one answer there. Which Windows image ran this is the first thing
+      # anybody reading a disagreement here will want.
+      - name: what this reading was taken on
+        shell: bash
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      - name: contracts
+        run: npm run test
+
+      - name: meta
+        run: npm run meta
+
+      - name: registry
+        run: npm run registry
+
+      - name: validation
+        run: npm run validation
+
+      - name: cli
+        run: npm run cli
+
+      - name: site
+        run: npm run site
+
+      - name: packaging
+        run: npm run packaging
+
+      - name: the freeze
+        run: npm run freeze
+
+  # ---------------------------------------------------------------------------
   # The site, built where the environment is declared
   # ---------------------------------------------------------------------------
   #
@@ -265,8 +359,13 @@ jobs:
   # A second job rather than an eighth step, because it must not run when a suite is red - `needs`
   # is what says so - and because it needs one runtime rather than the matrix's two. The build is not a
   # test of the runtime floor; it is what the deployment will run, and the deployment runs one.
+  # **Both platforms, and the second name is what puts the Windows leg in front of the irreversible
+  # act.** `publish` waits for `site`, so `publish -> site -> suites-on-windows` is the path by which a
+  # red Windows suite skips a publication - a skipped dependency skips its dependent, twice over. It is
+  # named here rather than in `publish`'s own `needs` because the claim is wider than publishing:
+  # nothing is *deployed* from a tree whose Windows suites are red either, and this job is what deploys.
   site:
-    needs: suites
+    needs: [suites, suites-on-windows]
     runs-on: ubuntu-latest
 
     steps:
@@ -465,6 +564,12 @@ jobs:
       batteries: ${{ steps.selection.outputs.batteries }}
       any: ${{ steps.selection.outputs.any }}
       everything: ${{ steps.selection.outputs.everything }}
+      # The Windows leg's population and the boolean that keeps an empty one from failing the job it
+      # feeds. Both come from the same step as the three above, for that step's own reason: one job
+      # answers *which batteries* in every sense the file asks it, so two readings cannot disagree
+      # about what the instrument holds.
+      windows: ${{ steps.selection.outputs.windows }}
+      anyWindows: ${{ steps.selection.outputs.anyWindows }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -676,6 +781,122 @@ jobs:
         run: npm run battery ${{ matrix.battery }}
 
   # ---------------------------------------------------------------------------
+  # The batteries holding a cell no runner above can measure
+  # ---------------------------------------------------------------------------
+  #
+  # ADR-0169 is the decision, ADR-0147 is what this closes. `C-64` of `cli-install` removes the retry
+  # from `removeDirectory`, and POSIX unlinks a directory another process is standing in - so off
+  # Windows the cell is not injected at all and answers `not-applicable`, correctly. The `killed` half
+  # of its pin was therefore exercised by no runner this repository owned, and the guard it names,
+  # `a-project-is-removed-while-another-process-still-holds-it`, is named by no other cell at all.
+  #
+  # Measured at `36e4bbb`, the same battery on the two platforms:
+  #
+  #     ubuntu-latest    C-64 not-applicable as expected
+  #                      never red, not measured on this platform ... (1)
+  #     windows-latest   C-64 killed as expected
+  #                      a-project-is-removed-... red on C-64, alone on C-64
+  #                      never red, not measured on this platform ... (0)
+  #
+  # **The matrix is derived and never a name typed here.** `batteriesWhereThePlatformDecides` projects
+  # the field the instrument already publishes, so a second such cell in another battery adds that
+  # battery to this leg with nobody editing this file, and the day the last one stops being decided by
+  # the platform this list is empty. `anyWindows` is why that day is a skipped job rather than a red
+  # one: GitHub fails a job whose matrix is an empty list.
+  #
+  # It is not gated on what the push changed. A cell no runner exercises is unmeasured at every commit,
+  # so this belongs to the publication rather than to the first gate - which is also the cheaper answer,
+  # 13 of the 75 pushes read at `88bfb54` selecting `cli-install`.
+  #
+  # ---------------------------------------------------------------------------
+  # The bound, derived from the spread rather than chosen
+  # ---------------------------------------------------------------------------
+  #
+  # **A bound is not a guard.** Crossing it detects nothing: the job is killed, every cell it had
+  # measured is thrown away with the process, and on this gate that is a publication that stops with no
+  # verdict at all. The two errors are not symmetric - too low kills a publication at the one moment
+  # that does not replay, too high lets a runaway job burn minutes somebody can see - so it is placed
+  # above the worst plausible run and not near the median.
+  #
+  #     the job, measured at `36e4bbb`                                        2 122 s
+  #     x the spread of this battery's own identical work, six readings
+  #       on ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 541, 1 549 s,
+  #       of which two are this reading's and four are the ones quoted
+  #       further up this file: 1 549 / 1 319                                x 1.1744
+  #     = the worst plausible run                                            2 492 s  41.5 min
+  #     x what the 40 minutes above already allows the longest job it
+  #       was written against: 2 400 / 1 649                                 x 1.4554
+  #     =                                                                    3 627 s  60.5 min
+  #
+  # rounded up to the whole minute the field takes, which is the only rounding here.
+  #
+  # **What it assumes, said rather than buried.** That the Windows job's relative spread is the ubuntu
+  # one for this battery - there is a single Windows reading and n = 1 measures no spread at all. And
+  # that the reading taken was the *fastest* plausible draw, which is the conservative direction: if it
+  # was a slow one the bound is generous by however much.
+  #
+  # **What it does not claim.** It does not bound a hang, which is unbounded by definition. It does not
+  # claim 61 is optimal. And it does not claim the spread is stationary - it is six readings of one
+  # battery on one platform, and the day a seventh falls outside them this arithmetic is what somebody
+  # re-runs.
+  #
+  # **What it lands on is the check rather than the argument**: 3 660 s over the worst plausible 2 492
+  # leaves 1 168 s, which at 27.1 s a cell here is 43 cells - against the 42 the 40 minutes above leave
+  # the ubuntu leg over its own worst plausible 1 549. The two legs get the same margin, which is not
+  # what the derivation was aimed at and is what says it landed somewhere.
+  #
+  # **A second Windows reading was priced and refused.** It costs 2 122 s of runner and takes n from 1
+  # to 2, which bounds a tail no better than 1 does; the six ubuntu readings already give the spread for
+  # this class of job. Thirty-five minutes of runner to move from one point to two changes no decision
+  # here.
+  every-battery-on-windows:
+    needs: [suites, version, which-batteries]
+
+    if: >-
+      github.ref == 'refs/heads/main'
+      && needs.version.outputs.unpublished == 'true'
+      && needs.which-batteries.outputs.anyWindows == 'true'
+
+    runs-on: windows-latest
+
+    timeout-minutes: 61
+
+    strategy:
+      fail-fast: false
+      matrix:
+        battery: ${{ fromJSON(needs.which-batteries.outputs.windows) }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: what this reading was taken on
+        shell: bash
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      - name: the tree the instrument requires
+        shell: bash
+        run: |
+          git status --porcelain
+          git worktree list
+
+      - name: ${{ matrix.battery }}
+        run: npm run battery ${{ matrix.battery }}
+
+  # ---------------------------------------------------------------------------
   # The publication, and the only thing this repository does that cannot be
   # undone
   # ---------------------------------------------------------------------------
@@ -711,7 +932,13 @@ jobs:
     # `every-battery` carries this job's own condition, so a publication that this gate would not fire
     # for cannot happen: a skipped dependency skips its dependent, and the two are skipped together.
     # ADR-0146.
-    needs: [site, version, every-battery]
+    #
+    # **`every-battery-on-windows` is named here for the same reason and not for a different one.** It
+    # carries this job's condition too, so a publication this gate would not fire for cannot happen; and
+    # a replay that runs somewhere no other job can measure is exactly the replay a publication must not
+    # go without. `every-job-that-replays-a-battery-is-one-the-publication-waits-for` is what keeps a
+    # third from being added and left out of this list. ADR-0169.
+    needs: [site, version, every-battery, every-battery-on-windows]
     if: >-
       github.ref == 'refs/heads/main'
       && needs.version.outputs.unpublished == 'true'

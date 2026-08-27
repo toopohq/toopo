@@ -42,6 +42,34 @@
  * between two of them. It is the same window `breakage.ts` declares as breaking badly, and the repair
  * is the same one - write through a temporary file and rename - so the mutant is not written until
  * there is something for it to redden.
+ *
+ * ---------------------------------------------------------------------------
+ * What a cell here costs, which is not what a cell anywhere else costs
+ * ---------------------------------------------------------------------------
+ *
+ * **This is the only battery of the instrument that runs on two runners, and a cell added here is paid
+ * twice.** `C-64` below removes a retry whose defect POSIX does not have, so off Windows it is not
+ * injected and answers `not-applicable`; ADR-0169 gives the second gate a Windows leg whose population
+ * is derived from exactly that, and today that population is this folder alone.
+ *
+ * Measured at `36e4bbb`, the same 75 cells on the two platforms:
+ *
+ *     ubuntu-latest    job 1 541 s    a cell 20.3 s    bound 40 min
+ *     windows-latest   job 2 122 s    a cell 27.1 s    bound 61 min
+ *
+ * **A cell is 1.33 times dearer on the Windows leg, so the two legs spend their margins at different
+ * rates.** The bounds were derived so that today they run out together - 42 cells of headroom on
+ * `ubuntu-latest` over its worst plausible run, 43 on `windows-latest` over its own - and that equality
+ * is arithmetic somebody performed, not a property that maintains itself. `suites.yml` carries the
+ * derivation and its assumptions; the number to re-run it with is the job duration off the next
+ * publication.
+ *
+ * **What nothing keeps is that anybody looks.** A cell added here reddens no bound and thins two, and
+ * a battery that grows past one is killed rather than reported - every cell it had measured thrown
+ * away with the process, on the gate that stands in front of a publication. `CLAUDE.md` carries that
+ * as an entry, with what a mechanism for it would cost and why it is refused. This paragraph is the
+ * cheap half of it: the reader who would set the entry off is the one adding a cell, and this is where
+ * they are.
  */
 
 import type { Battery, Mutant } from './run.ts'

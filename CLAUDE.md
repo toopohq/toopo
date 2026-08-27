@@ -44,14 +44,14 @@ over — it is a race, and *one fetch then 10 ms* aborts three times in five, wh
 fetch aborts identically, and `command.ts` deliberately let unexpected errors out as a crash. So `run`
 answers `HowItEnded`, nothing under it ends the process, and the two entry points assign the code.
 Three guards watch a real process through a socket and a fourth is total over the tarball's own
-modules; the first is red only where the race is lost, and **no leg of `suites.yml` runs on Windows**,
-which is why the `beforeExit` one exists. **CI answered the reading this record was written owing**:
+modules; the first is red only where the race is lost, and **no leg of `suites.yml` ran on Windows**,
+which is why the `beforeExit` one exists — the paragraph below is that half closing. **CI answered the reading this record was written owing**:
 on ubuntu the restored defect reddens the `beforeExit` guard *alone*, and on win32 it reddens both — so
 `process.exit` after a fetch leaves the code at 1 and stderr empty on Linux, and had this unit shipped
 only the guard that reads the exit code, **every gate would have been green on the defect**. Measured:
-**seven `runs-on:` in `suites.yml` and every one `ubuntu-latest`**, no Windows runner anywhere in
-`.github/` — so **this CI could not have caught the defect it just repaired**, and the guard reading
-the exit code is green on every runner this project owns while the defect is live. **And the
+at `88bfb54`, **seven `runs-on:` in `suites.yml` and every one `ubuntu-latest`**, no Windows runner
+anywhere in `.github/` — so **this CI could not have caught the defect it just repaired**, and the
+guard reading the exit code was green on every runner this project owned while the defect was live. **And the
 accounting is per suite rather than per folder**, which has a price worth knowing before writing a
 guard: **one battery file per battery that collects the folder, plus the census** — `packages/cli` is
 four, each contract is two, everything else is one, so three guards there cost five files. The push
@@ -60,6 +60,33 @@ control having run `add`, which every defect of the plan, the rewrite, the lockf
 and the git question reaches — and one cell reddening it, `cli-remove`'s R-20, **edits a module an
 install cannot reach at all**. A guard reddening on a mutant with no causal path to it is invisible to
 a green suite; what made it visible was a battery having no business witnessing it. ADR-0168.
+
+**The gate can now redden on a defect only Windows has, and what it cost was read rather than
+argued.** Two legs, two prices, and neither buys the other — which is the finding, because the brief
+this unit started from treated them as one. **The three guards of ADR-0168 are ordinary guards of
+`packages/cli/`**, so the `cli` step runs them and no mutant is needed: with the defect put back in the
+one line it lived on, measured at `36e4bbb` in one run on node v24.19.0 both sides, `ubuntu-latest`
+reddens **2 of 3 with the exit-code guard green** and `windows-latest` reddens **3 of 3**. So the
+first leg is the eight suites on Windows, 257 s against 125 s, and it is a *sibling job* rather than a
+leg of the matrix: `site` and `batteries` both wait for `suites`, and `needs` waits for every leg, so
+the matrix would have put 132 s on the critical path of every push. `publish → site →
+suites-on-windows` is the path that keeps the irreversible act behind it. **`meta` and `freeze` had
+never run on `windows-latest` in their lives** — no battery replays either — and both are green, 56 s
+and 7 s. **The second leg is `C-64`'s**, whose `killed` half was exercised by nothing: the battery on
+Windows prints `killed as expected`, `a-project-is-removed-…` goes `red on C-64, alone on C-64`, and
+the *not measured on this platform* bucket goes **1 → 0**. Its matrix is derived from
+`whereThePlatformDecides` rather than naming a folder, so a second such cell brings its battery with
+it and the last one leaving empties the leg. **The bound is where the method earned its keep**: the
+extrapolation published before the run said 2 029 s and the job measured **2 122 s, 4.4 % low** — and
+the same run refuted the premise that one reading characterises a job at all, two readings of
+identical work at one commit coming back **1 541 s and 1 319 s**. So 61 minutes is arithmetic over six
+readings and the two assumptions it needs, not a number chosen: it leaves the Windows leg 43 cells of
+margin against the ubuntu leg's 42, which is not what it was aimed at. **A second Windows tirage was
+priced at 2 122 s and refused** — n = 2 bounds a tail no better than n = 1. What the reading cost is
+stated rather than smoothed: **10 819 runner-seconds, of which 6 690 was a full replay of all 23
+batteries nobody wanted**, because the first push of a branch hands `0000…0000` as the commit before
+it and the selection answers *every battery* rather than *none* — written in the module whose comment
+says so. ADR-0169.
 
 **The gate now answers for the instrument as well as for what the instrument measures, and the exit
 code it reads has a failing direction that is exercised.** A battery *measures* a folder and is *built
@@ -2323,17 +2350,26 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   waits. ADR-0146 carries the criterion that classifies one. **It is now two pushes in forty-three that
   pay a full replay rather than none**, which is where that cost first arrives in fact.
 
-- **That the bound a battery runs under is one anybody compared with what a battery costs.** Both gates
-  declare `timeout-minutes: 40`, and the share the slowest job consumes is written beside them by hand:
-  1 649 s against 2 400 is 68 %, computed by a reader and by nothing else. It is a dated number in a
-  present-tense sentence, which is the class the section above this list refuses in as many words - and
-  this instance is inside `.github/workflows/suites.yml`, which is the file a suite exists to keep.
+- **That the bound a battery runs under is one anybody compared with what a battery costs.** The two
+  ubuntu gates declare `timeout-minutes: 40`, and the share the slowest job consumes is written beside
+  them by hand: 1 649 s against 2 400 is 68 %, computed by a reader and by nothing else. It is a dated
+  number in a present-tense sentence, which is the class the section above this list refuses in as many
+  words - and this instance is inside `.github/workflows/suites.yml`, which is the file a suite exists
+  to keep.
 
   **The failure is loud and uninformative rather than quiet, and that is what makes it an entry rather
   than a note.** A battery that grows past the bound is not wrong, it is killed: the job reports a
   timeout, every cell it had measured is thrown away with the process, and on the second gate that is a
-  publication that stops with no verdict at all. Nothing before that moment says the margin was
-  thinning.
+  publication that stops with no verdict at all.
+
+  **This entry read *nothing before that moment says the margin was thinning*, and ADR-0169 says it -
+  for one battery, in prose, kept by nothing.** `mutation/cli-install.battery.ts` now carries what a
+  cell there costs on each of the two runners it is measured on, 20.3 s and 27.1 s, with the margin in
+  cells beside it; and the Windows bound is derived in `suites.yml` from six readings rather than
+  chosen. So the clause is corrected rather than struck: what is said is said in the one place a reader
+  adding a cell to *that* battery arrives at, and the twenty-two other batteries are exactly where they
+  were. **The asymmetry it exposed is the thing to carry**: a cell is 1.33 times dearer on the Windows
+  leg, so two bounds that run out together today do not stay level, and nothing recomputes either.
 
   **Where this looked**: `mutation/workflows.test.ts`, whose nine guards read what that file may *hold*
   - a pinned digest, the publishing gate, the identity token - and not one of which reads a duration;
@@ -2341,8 +2377,11 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   the job's forty minutes by nothing; and `mutation/selection.ts`, which decides which batteries a push
   answers for and never how long they may take.
 
-  **The population is the two `timeout-minutes` declarations and the cell bound beside them**, and it
-  grows by one with each gate. What would close it is a job that reads the battery matrix's own
+  **The population is the four `timeout-minutes` declarations and the cell bound beside them** - two
+  ubuntu gates at 40, the Windows suites leg at 20, the Windows battery leg at 61 - and it grows by one
+  with each gate. **One of the four is derived and three are typed**, which is a narrowing rather than a
+  closure: ADR-0169's arithmetic was performed once, by a person, and re-running it is as unkept as
+  reading the other three. What would close it is a job that reads the battery matrix's own
   durations through the Actions API and refuses a share of the bound. **Its price is three things and
   the third is the one worth reading twice**: the workflow's token would gain `actions: read`, against a
   file whose whole argument is that permission is `contents: read` with exactly one job widening it; a
@@ -2352,7 +2391,9 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **What is cheap and is done instead is that the arithmetic now sits beside the number.** The second
   gate's comment carries what a contract adds - 36 guards to the registry suite, 56 s, 3.3 cells - and
   what actually spends the bound, which is cells and not contracts. A reader who re-reads the 68 % has
-  the law rather than a memory. It still does not compute it. ADR-0162.
+  the law rather than a memory. It still does not compute it. **And a second cheap half arrived with
+  the Windows legs**: one bound now shows its own derivation, and the battery it bounds says what a
+  cell costs where somebody adding one reads it. Neither is computed either. ADR-0162, ADR-0169.
 
 - **That the reading of who has read this repository's prose is one anything executes.** `npm run
   hands` is in no workflow, and this is the half of the entry ADR-0152 did not close. It is not the

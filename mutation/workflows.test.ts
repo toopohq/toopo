@@ -354,6 +354,75 @@ describe('what the continuous integration is allowed to run', () => {
   })
 
   /**
+   * Every job that fires exactly when a publication fires is one the publication waits for.
+   *
+   * Its neighbour above asks whether a publication waits for *a* replay, and the fault it catches is a
+   * publication that waits for none. This catches a gate added beside the existing one and left out of
+   * that list - at which point the neighbour is still green and still true to its own name, and the new
+   * gate runs *alongside* the publication instead of in front of it, which is a job that gates nothing
+   * while looking exactly like one that does.
+   *
+   * **It is not a hypothetical.** `every-battery-on-windows` is the second such job, and it exists
+   * because one cell of `cli-install` is exercised on no other runner: off Windows `C-64` is not
+   * injected at all. A publication that ran beside it would go out without the only replay that can
+   * answer for that pin. ADR-0169.
+   *
+   * **The population is *the publication's own condition* and not *runs a battery*, and that is a
+   * repair rather than a choice.** Written over the jobs that replay, it reported
+   * `publish publishes without waiting for batteries` - correctly, and about a job that must not be
+   * waited for: the first gate is skipped when a push selects nothing, and a skipped dependency skips
+   * its dependent, so `needs` on it would skip a publication whenever the push before it was quiet.
+   * What separates the two is not the command they run but the reading they fire on.
+   *
+   * The condition is found rather than spelled: the publishing job's `if` names the job whose answer it
+   * reads, and any job in the same file reading that same answer is one that fires with it. The
+   * comparison is within a file because `needs` is.
+   */
+  it('every-job-gated-on-the-version-is-one-the-publication-waits-for', () => {
+    const found = jobsThatPublish().flatMap((job) => {
+      const consulted = [
+        ...new Set(
+          [
+            ...declarationOf(job).matchAll(/\bneeds\.([A-Za-z0-9_-]+)\.outputs\.[A-Za-z0-9_-]+/g),
+          ].map((match) => match[1] as string),
+        ),
+      ]
+
+      const waitedFor = new Set(jobsWaitedForBy(job))
+
+      const alongside = jobs()
+        .filter((other) => other.file === job.file && other.name !== job.name)
+        .filter((other) =>
+          consulted.some((name) =>
+            new RegExp(`\\bneeds\\.${name}\\.outputs\\.`).test(declarationOf(other)),
+          ),
+        )
+
+      return {
+        job,
+        alongside,
+        faults: alongside
+          .filter((other) => !waitedFor.has(other.name))
+          .map(
+            (other) =>
+              `${job.file}:${job.name} fires on the same reading as ${other.name} and does not ` +
+              `wait for it`,
+          ),
+      }
+    })
+
+    // A publication sharing its condition with nothing is the state this is written against, so an
+    // empty population is a fault of its own rather than a silent pass. It is a floor and never a
+    // count: pinning how many gates there are would be a number somebody has to edit to add one.
+    expect(
+      found
+        .filter(({ alongside }) => alongside.length === 0)
+        .map(({ job }) => `${job.file}:${job.name} shares its condition with no gate at all`),
+    ).toEqual([])
+    expect(found.flatMap(({ faults }) => faults)).toEqual([])
+  })
+
+  /**
    * npm accepts this token as the package's publisher, so where it can be minted is where the package can
    * be published from. Granted at the top of a workflow it reaches every job of every pull request, and
    * the sweep is therefore over whole files rather than over jobs: the line that would do the damage is

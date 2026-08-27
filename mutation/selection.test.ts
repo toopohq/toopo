@@ -8,8 +8,9 @@ import { describe, expect, it } from 'vitest'
 import { closureFrom, sourceNamedBy } from '../packaging/reachable.ts'
 
 import { THE_REPOSITORY } from './paths.ts'
-import { THE_BATTERIES } from './published.ts'
+import { THE_BATTERIES, theMeasurement } from './published.ts'
 import {
+  batteriesWhereThePlatformDecides,
   selectionFor,
   theFileOf,
   THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS,
@@ -309,5 +310,80 @@ describe('the entry point the continuous integration runs', () => {
 
     expect(JSON.parse(outputs['everything'] as string)).toEqual(everyBattery)
     expect(outputs['batteries']).toBe('[]')
+  })
+})
+
+/**
+ * Which batteries a *platform* has to answer for, which is not a question about a push.
+ *
+ * A pin may say its defect exists on one family of platforms and not the other - `C-64` of
+ * `cli-install` is the one instance, and ADR-0147 is why that is an applicability rather than a
+ * survival. Off that family the cell is not injected and answers `not-applicable`, so its `killed`
+ * half is exercised by the runners of that family and by nothing else. Every gate of `suites.yml` runs
+ * on `ubuntu-latest`, so until ADR-0169 that half was exercised nowhere at all.
+ *
+ * **The two guards below are the two halves of one path and neither implies the other.** The first is
+ * about the derivation: a battery holding such a cell must be in the list. The second is about the
+ * *delivery*: that list has to reach `GITHUB_OUTPUT`, because a job whose matrix expression resolves
+ * to nothing is a leg that silently runs no battery at all.
+ *
+ * **What is deliberately not asserted is that the list is non-empty.** Its population is the
+ * platform-decided cells, and the day the last of those stops being one there is nothing for a Windows
+ * leg to measure - which is a correct state and not a regression. The transition is covered by the
+ * second guard rather than by a floor here: `anyWindows` is what turns an empty list into a skipped
+ * job instead of a failed one.
+ *
+ * **One direction is unreachable and is written down rather than asserted.** A name in the list that
+ * no cell justifies cannot be produced while every platform-decided cell names the same family: with
+ * one family present, a derivation that dropped the family filter altogether answers the same list. It
+ * becomes reachable the day a cell is decided by `posix`, and that is the day this describe gains its
+ * second direction.
+ */
+describe('which batteries a platform has to answer for', () => {
+  /**
+   * Total over the cells rather than over the batteries, so the fault names the pin that is about to
+   * go unmeasured rather than the folder it lives in.
+   *
+   * Seen red by filtering `batteriesWhereThePlatformDecides` on the family it was *not* given, which
+   * is the plausible slip and which empties the list on this catalogue.
+   */
+  it('every-battery-holding-a-cell-one-platform-alone-measures-is-named-to-the-gate', () => {
+    const named = new Set(batteriesWhereThePlatformDecides('windows', theMeasurement()))
+
+    const missed = THE_BATTERIES.filter((battery) => !named.has(battery.name)).flatMap((battery) =>
+      battery.mutants.flatMap((mutant) =>
+        Object.entries(mutant.expected)
+          .filter(([, pinned]) => pinned.onlyOn?.family === 'windows')
+          .map(
+            ([cell]) =>
+              `${battery.name}: ${mutant.id} on ${cell} is decided by windows, and no Windows leg ` +
+              `is told to run ${battery.name}`,
+          ),
+      ),
+    )
+
+    expect(missed).toEqual([])
+  })
+
+  /**
+   * The list the workflow really receives, asked of the entry point rather than of the function.
+   *
+   * **`HEAD..HEAD` is the whole of the claim and not a convenience.** It is the range in which nothing
+   * changed, so `batteries` is empty there - and this list must not be. A cell no runner exercises is
+   * unmeasured at every commit and not at the ones that happen to touch it, so a Windows leg filtered
+   * by the push would be a leg that answers for the pin only when somebody was already editing it.
+   */
+  it('the-entry-point-answers-for-the-platform-no-gate-of-this-file-can-measure', () => {
+    const { outputs, printed } = runTheEntryPoint('HEAD', 'HEAD')
+    const derived = batteriesWhereThePlatformDecides('windows', theMeasurement())
+
+    expect(outputs['batteries']).toBe('[]')
+
+    // Compared as the written string rather than parsed, because that string is what `fromJSON`
+    // receives and because a missing output has to redden as a missing output: parsing it first
+    // reports `"undefined" is not valid JSON`, which names neither the guard's subject nor the fault.
+    expect(outputs['windows']).toBe(JSON.stringify(derived))
+    expect(outputs['anyWindows']).toBe(String(derived.length > 0))
+    expect(printed).toContain('only a Windows runner can measure')
   })
 })

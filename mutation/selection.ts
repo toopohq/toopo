@@ -56,7 +56,8 @@
  * touches it, so a reader of the log sees the gap instead of reading it in a paragraph somewhere else.
  */
 
-import type { Battery } from './run.ts'
+import type { Battery, PlatformFamily } from './run.ts'
+import type { TheMeasurement } from './published.ts'
 
 /**
  * Where a battery's own declaration lives.
@@ -165,3 +166,33 @@ export const selectionFor = (
     ),
   }
 }
+
+/**
+ * The batteries holding a cell whose defect exists on one family of platforms and not the other.
+ *
+ * **It is a projection of what the instrument already publishes and never a second walk.**
+ * `whereThePlatformDecides` is built once, in `published.ts`, out of every `onlyOn` a pin carries;
+ * this filters it by family and keeps the battery names. A rule here that re-read `mutant.expected`
+ * would be free to disagree with the count that reader publishes, and the disagreement would be a leg
+ * of continuous integration silently running the wrong batteries.
+ *
+ * **The order is `THE_BATTERIES`', for the reason `selectionFor` gives about its own**: the field is
+ * built by walking the batteries in order, so first insertion into the set is that order, and a matrix
+ * built from this is stable across runs.
+ *
+ * **What makes it worth deriving rather than naming `cli-install` in a workflow** is that both
+ * directions move on their own. A second such cell arriving in another battery adds that battery to a
+ * leg with nobody editing `.github/`; and the day the last one stops being decided by the platform,
+ * this answers nothing and the leg has nothing to run - which is the state the caller has to handle
+ * rather than discover, exactly as `any` exists beside `batteries` above. ADR-0169.
+ */
+export const batteriesWhereThePlatformDecides = (
+  family: PlatformFamily,
+  measured: TheMeasurement,
+): readonly string[] => [
+  ...new Set(
+    measured.whereThePlatformDecides
+      .filter((cell) => cell.family === family)
+      .map((cell) => cell.battery),
+  ),
+]
