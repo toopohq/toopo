@@ -164,13 +164,27 @@ describe('how a command ends', () => {
   /**
    * The control, and it is what the two above are not about.
    *
-   * They are both about a command that refuses. A client that never got as far as doing anything would
-   * satisfy both of them, and this is the guard that says the same process, against the same registry,
-   * still installs a feature and ends at `0`.
+   * They are both about a command that refuses. A repair that ended every process the same way by
+   * never letting one succeed would satisfy both, and this is what says a command that reached the
+   * registry and did what was asked ends at `0` and ends the same way.
+   *
+   * **It asks for a search rather than an install, and that is a repair rather than a preference.** It
+   * ran `add` first, which reaches the plan, the rewrite, the lockfile, the configuration and the git
+   * question - so any mutant of any of those reddens it, in a set that differs by platform: measured at
+   * `aefd323`, on ubuntu it was red on six cells of `cli-install` where win32 gave four, and on one
+   * cell each of `cli-remove` and `cli-update` that win32 does not reach. **One of those had no causal
+   * path to it at all** - `cli-remove`'s R-20 edits `list.ts`, whose only runtime export is reached by
+   * the `list` branch of `command.ts` and by nothing else, so a red there was this guard failing for a
+   * reason that is not its subject.
+   *
+   * A search reaches the registry, exits `0`, and touches no project, no configuration, no lockfile and
+   * no subprocess. It is the smallest command that has both properties this guard needs - **it fetched,
+   * and it succeeded** - which is the whole of what the ending is being read for.
    */
   it('a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way', async () => {
-    const ended = await ending('add', ROUND.name)
+    const ended = await ending('search', 'round', 'a', 'number')
 
+    expect(ended.stdout).toContain(ROUND.name)
     expect(ended.stderr).toBe('')
     expect(ended.signal).toBe(null)
     expect(ended.status).toBe(0)

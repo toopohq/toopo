@@ -216,7 +216,10 @@ killed can have set the right code on its way, which is what a repair writing `p
 
 **`a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way`** is the control. The two above
 are both about a command that refuses, and a repair that ended every process identically by never
-letting one succeed would satisfy both.
+letting one succeed would satisfy both. It asks for a `search` rather than an install, for the reason
+the section below gives at length: a control that installs is a control that any defect in the plan,
+the rewrite, the lockfile, the configuration or the git question reddens, and that is a different
+subject.
 
 **`no-module-the-archive-carries-ends-the-process-itself`** is total over what ships: the population is
 the tarball's own `.js`, so a module added to the archive joins it with nobody editing the guard. It
@@ -236,9 +239,59 @@ taking its origin from the environment. It is the client's side of the seam `ser
 compiles the closure of `published.ts` and nothing else. The origin arrives in the environment rather
 than in the arguments so that the grammar under measurement is the product's own, word for word.
 
-**C-73 and C-74 of `cli-install` are what redden the first two on every run.** C-73 is this record's
+**C-73, C-74 and C-75 of `cli-install` are what redden the three on every run.** C-73 is this record's
 own defect restored; C-74 refuses with an ordinary error, so the frame reads a decision as a bug and
-prints a stack where a sentence belonged. They are two doors and not one defect twice.
+prints a stack where a sentence belonged; C-75 stops the process on the way out of a command that
+succeeded, which is the one path the other two do not travel. Three doors, not one defect three times.
+
+## The accounting is per suite, and the red run it cost found a defect in a guard
+
+A guard file lands in the accounting of **every battery that collects its suite**, not of the battery
+whose folder it describes. `packages/cli/` is measured by four — `cli-install`, `cli-remove`,
+`cli-search`, `cli-update` — and all four collect `packages/cli/vitest.config.ts`. Three new guards
+therefore arrived in four accountings at once, and only one of them had cells for them.
+
+`cli-install` was run locally and was 74/74 with nothing unaccounted, which is exactly the reading that
+made the other three look answered. They were not: the run at `aefd323` failed with `cli-search`
+naming three unaccounted guards and `cli-remove` and `cli-update` naming two each.
+
+**The obvious repair was to declare the `3, 2, 2` as measured, and it was wrong.** The asymmetry was
+`a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way`, which ran `add` — so it reached
+the plan, the rewrite, the lockfile, the configuration and the git question, and any mutant of any of
+those reddened it. The sets it was red on:
+
+| | reddened the control |
+| --- | --- |
+| `cli-install`, win32 | C-08, C-22, C-42, C-69 |
+| `cli-install`, ubuntu | C-08, C-22, C-42, **C-49, C-50**, C-69 |
+| `cli-remove`, ubuntu | **R-20** |
+| `cli-update`, ubuntu | **U-15** |
+| `cli-remove` / `cli-update`, win32 | nothing |
+
+Three of the five additions have a causal path — C-49 edits `configuration.ts`, C-50 edits `ignored.ts`
+and U-15 edits `write.ts`, all of which an install reaches. **R-20 has none.** It edits `list.ts`,
+whose only runtime export is `listProject`, reached by the `list` branch of `command.ts` and by nothing
+else; `report.ts` imports a *type* from it and no value. So that red was the guard failing for a reason
+that is not its subject — and a guard that does that makes every verdict naming it worth nothing. It
+did not reproduce here: the file was run 30 times over and was green 30 times.
+
+**So the repair is the guard and not the declaration.** The control asks for a `search` now — a command
+that fetches, succeeds, and touches no project, no configuration, no lockfile and no subprocess. It is
+the smallest command with the two properties the guard needs, *it fetched* and *it succeeded*, and
+everything that made it broad is gone with the install. All three guards are now unprobed in all three
+neighbouring batteries, in one sentence rather than three.
+
+**And the control needed a witness of its own, which the install had been supplying by accident.**
+C-75 ends the process on the way out of a command that did what was asked. C-73 and C-74 both leave
+through the frame's `catch`, so neither touches that path. It reddens the control on win32 by aborting
+and on every platform by skipping `beforeExit` — seen red here with the libuv assertion as its failure
+message, both neighbours staying green.
+
+No mechanism is proposed for the per-suite accounting itself. The instrument caught it on the first
+push, named every guard and every battery, and the cost was one red run — which is the argument this
+repository already states for not writing a guard whose event is cheap. **What the run bought was
+larger than what it cost**: a guard reddening on a mutant that cannot reach it is invisible to a green
+suite, and only the accounting of a battery that had no business witnessing it made it visible.
 
 ## Consequences
 
@@ -253,13 +306,27 @@ discovered.** The abort belongs to libuv's Windows implementation — the assert
 `a-refusal-that-reached-the-registry-exits-one-…` is expected to be green either side of this change.
 What answers there is the `beforeExit` guard and the archive guard, and that is why both exist.
 
-**Whether this defect exists at all on Linux is unmeasured, and is not claimed either way.** No Linux
-was reachable from the machine this was measured on: the docker daemon was not running, and the only
-WSL distribution registered is Docker Desktop's own utility image. The structural half of the argument
-— that the assertion names a Windows-only source file, so *this* abort cannot fire there — is an
-argument and not a reading. The first CI run after this change is the reading, and it is worth taking:
-if `a-refusal-that-reached-the-registry-exits-one-…` is red on ubuntu, the class is wider than this
-record says.
+**Linux was unreadable from the machine this was measured on, and CI answered it on the first run.**
+No Linux was reachable here — the docker daemon was not running, and the only WSL distribution
+registered is Docker Desktop's own utility image — so this section was written owing a reading. The
+run at `aefd323` took it, and the answer is in one line of the `cli-install` attribution:
+
+| C-73, the defect restored | reddens |
+| --- | --- |
+| win32, this machine | `a-refusal-that-reached-the-registry-exits-one-…` **and** `a-refusal-lets-the-process-end-…` |
+| ubuntu-latest, CI | `a-refusal-lets-the-process-end-…` **alone** |
+
+So on Linux, `process.exit` after a `fetch` leaves the exit code at `1` and the error stream empty:
+the abort does not happen there, and the structural argument — that the assertion names a Windows-only
+source file — is now a reading as well. **The class is not wider than this record says.**
+
+**It is also the demonstration that the portable guard was worth writing.** On the runners that gate
+every push, C-73 is caught by `a-refusal-lets-the-process-end-…` and by nothing else — the cell is
+`alone on C-73` there and merely `red on C-73` here. Had this unit shipped only the guard that reads
+the exit code, CI would have been green on the defect this record is about.
+
+**What it does not establish**: that no arrangement on Linux aborts. What was measured is this cell,
+on this runner, at this commit.
 
 **Node v24.15.0 is the only runtime read.** The matrix is `['22.18.0', '24']`; 22 was not measured
 here.

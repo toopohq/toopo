@@ -1381,6 +1381,27 @@ import type {
     ],
     killed(['a-refusal-that-reached-the-registry-exits-one-and-says-nothing-on-the-error-stream']),
   ),
+
+  /**
+   * The success half of ADR-0168, which C-73 and C-74 do not reach.
+   *
+   * Both of those go through the frame's `catch`, so neither says anything about the path a command
+   * takes when it did what was asked. This edits that path and nothing else: the code is right, the
+   * output is right, and the process is stopped rather than allowed to finish.
+   *
+   * **It is what the control guard is for, and it reddens on every platform** - on win32 by aborting
+   * after the walk's eleven requests, and everywhere by skipping `beforeExit`. That second half is why
+   * the control reads whether the process was allowed to end rather than only reading the code: a
+   * command killed with the right code in its hand looks perfect from outside.
+   */
+  sameOnEveryLens(
+    'C-75',
+    'ends the process on the way out of a command that did what was asked, so a successful install ' +
+      'is stopped rather than allowed to finish - with the right code, the right output, and the ' +
+      'same race under it that a refusal used to lose',
+    [commandFile(`    return await theCommand(theRegistry)`, `    process.exit(await theCommand(theRegistry))`)],
+    killed(['a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way']),
+  ),
 ]
 
 export const battery: Battery = {

@@ -138,6 +138,31 @@ export const battery: Battery = {
    * splitting a region across batteries is how two batteries come to disagree about who probes what.
    */
   unprobedRegions: [
+    /**
+     * How a command ends, which `command.ts` decides and this battery injects nowhere near.
+     *
+     * All three, in the same words as `cli-remove` and `cli-update` - and the uniformity is bought
+     * rather than assumed. The control ran `add` first, which reaches the plan, the rewrite, the
+     * lockfile, the configuration and the git question, so it reddened on a set of cells that differed
+     * by platform and once on a cell with no causal path to it at all. It asks for a search now, which
+     * fetches, succeeds, and touches nothing else - so no mutant of this folder's other three batteries
+     * reaches any of the three, and the declaration is one sentence everywhere instead of three.
+     *
+     * ADR-0168 is the defect they exist for; `cli-install` carries it with C-73, C-74 and C-75.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'how a command ends, which `command.ts` decides and this battery injects nowhere near - it ' +
+        'edits `report.ts` alone. `cli-install` carries all three defects over that frame: C-73 and ' +
+        'C-74 on a refusal that had reached the registry, and C-75 on a command that did what was ' +
+        'asked. ADR-0168',
+      guards: [
+        'a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way',
+        'a-refusal-lets-the-process-end-rather-than-stopping-it',
+        'a-refusal-that-reached-the-registry-exits-one-and-says-nothing-on-the-error-stream',
+      ],
+    },
     {
       nature: 'claims detection',
       reason:

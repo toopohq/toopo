@@ -587,6 +587,28 @@ export const battery: Battery = {
    * them silent, each named a defect that could be written, and U-32 to U-34 write it.
    */
   unprobedRegions: [
+    /**
+     * How a command ends, which `command.ts` decides and this battery injects nowhere near.
+     *
+     * All three, and the control is here for the same reason its two neighbours are: it asks for a
+     * search, which fetches and succeeds and touches no lockfile, no diff and no staged write. It ran
+     * `add` for one commit, which reaches `write.ts` - measured at `aefd323` it was red on U-15, the
+     * cell about staging the lockfile, which is a defect in an install and not in an ending.
+     *
+     * ADR-0168 is the defect they exist for; `cli-install` carries it with C-73, C-74 and C-75.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'how a command ends, which `command.ts` decides and this battery injects nowhere near. ' +
+        '`cli-install` carries all three defects over that frame: C-73 and C-74 on a refusal that had ' +
+        'reached the registry, and C-75 on a command that did what was asked. ADR-0168',
+      guards: [
+        'a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way',
+        'a-refusal-lets-the-process-end-rather-than-stopping-it',
+        'a-refusal-that-reached-the-registry-exits-one-and-says-nothing-on-the-error-stream',
+      ],
+    },
     {
       nature: 'claims detection',
       reason:

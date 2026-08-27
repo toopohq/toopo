@@ -438,6 +438,29 @@ export const battery: Battery = {
    * asked.
    */
   unprobedRegions: [
+    /**
+     * How a command ends, which `command.ts` decides and this battery injects nowhere near.
+     *
+     * **This entry read two rather than three for one commit, and the third was witnessed here by
+     * accident.** The control ran `add`, which a removal's defects reach; measured at `aefd323` it was
+     * red on R-20 - a mutant of `list.ts`, whose only runtime export is reached by the `list` branch of
+     * `command.ts` and by nothing else, so it has no causal path to an install at all. It asks for a
+     * search now, which fetches, succeeds and touches nothing this battery edits.
+     *
+     * ADR-0168 is the defect they exist for; `cli-install` carries it with C-73, C-74 and C-75.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'how a command ends, which `command.ts` decides and this battery injects nowhere near. ' +
+        '`cli-install` carries all three defects over that frame: C-73 and C-74 on a refusal that had ' +
+        'reached the registry, and C-75 on a command that did what was asked. ADR-0168',
+      guards: [
+        'a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way',
+        'a-refusal-lets-the-process-end-rather-than-stopping-it',
+        'a-refusal-that-reached-the-registry-exits-one-and-says-nothing-on-the-error-stream',
+      ],
+    },
     {
       nature: 'claims detection',
       reason:
