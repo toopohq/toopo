@@ -98,13 +98,17 @@ The eight suites go from 106 s to 167 s, which is 1.58; the tooling goes from 14
 which half it is in.
 
 **That 257 s was published as though a job had a duration, in the record that derives a bound from the
-fact that one does not.** The second reading, at `c44a76d` in the wired shape, is **325 s** — 26 %
-above. The lesson was applied to the bound and not to the figure beside it, and the correction is worth
-more than the number: **all of the spread is the tooling.** Checkout, `pnpm/action-setup`, `setup-node`
-and the install went **83 s to 152 s** between the two readings; the eight suites went **167 s to
-164 s**. So what a Windows leg costs is a runner setting itself up, and the work on top of it is the
-stable part — which is also why the same job's per-step table above is worth reading and its total is
-not.
+fact that one does not.** Two more readings in the wired shape, at `c44a76d` and `df91920`, are
+**325 s** and **211 s**. The lesson was applied to the bound and not to the figure beside it, and the
+correction is worth more than the number: **all of the spread is the tooling and none of it is the
+work.**
+
+    checkout, pnpm/action-setup, setup-node, install     83 s   152 s    47 s    x3.2
+    the eight suites                                    167 s   164 s   158 s    x1.06
+    the job                                             257 s   325 s   211 s    x1.5
+
+So what a Windows leg costs is a runner setting itself up, and the work on top of it is the stable part
+— which is why the per-step table above is worth reading and its total is not.
 
 **`meta` and `freeze` had never run on `windows-latest`.** A battery runs its own folder's
 configuration, so six configurations had; neither of those two is replayed by any battery — ADR-0107 is
@@ -170,9 +174,9 @@ launched in the same minute, came back **1 541 s and 1 319 s**. One reading does
 job.
 
     the job, measured at `36e4bbb`                                        2 122 s
-    x the spread of this battery's own identical work, seven readings on
-      ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 541, 1 549, 1 566 s:
-      1 566 / 1 319                                                      x 1.1873
+    x the spread of this battery's own identical work, eight readings on
+      ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 515, 1 541, 1 549,
+      1 566 s: 1 566 / 1 319                                             x 1.1873
     = the worst plausible run                                            2 519 s  42.0 min
     x what the 40 minutes already allows the longest job it was
       written against: 2 400 / 1 649                                     x 1.4554
@@ -186,10 +190,35 @@ two legs, and `batteries (cli-install)` on it is that seventh. The arithmetic wa
 clause left to be somebody else's problem, which is the whole of what a reopening condition is for.
 
 **What that says about the form is worth more than the minute.** The input moved 1.1 % and the answer
-moved one minute, so the derivation is insensitive to the reading that broke its own population. What it
-also says, and this is the half to carry: **six readings did not bound the spread, and seven may not
-either.** The assumption below — that this spread characterises the class — is weaker than six readings
-made it look.
+moved one minute, so the derivation is insensitive to the reading that broke its own population.
+
+### The clause that fired was the wrong clause, and that is this record's own defect
+
+**It was keyed to the observed range, which grows with the sample by construction.** For exchangeable
+readings the chance that the next is a new extreme is `2 / (n + 1)` — 25 % at seven, 22 % at eight — so
+*outside 1 319–1 549 s* was a condition that fires about one time in four **for a reason that says
+nothing about whether the number is wrong**. It is a treadmill: re-derive, widen the range, wait to
+re-derive again.
+
+**The eighth reading is the illustration and it arrived before this could be written.** `df91920`
+measured **1 515 s** — a value this population had never held, inside the range, so the clause was
+silent. It was silent by where the reading fell and not by anything it established.
+
+**So the condition is keyed to the answer instead**, which is computable because the arithmetic rounds
+to whole minutes. The bound moves when `2 122 × (max / min) × 1.4554` crosses one:
+
+    a reading above 1 589 s, or below 1 300 s    →  63 minutes, and the arithmetic is re-run
+    anything between                             →  62 minutes, and there is nothing to do
+
+**It is a ratchet, and that is named rather than repaired.** `max / min` only grows, so this bound only
+rises and never tightens. What makes it acceptable is what it is: a sample's range underestimates its
+population's, so the ratchet is an estimator converging rather than a number drifting — and it errs in
+the cheap direction, a runaway job burning minutes somebody sees rather than a publication stopped with
+no verdict.
+
+**The half to carry is still that six readings did not bound the spread and eight may not either.** The
+assumption below — that this spread characterises the class — is weaker than any of these samples made
+it look.
 
 **What it assumes.** That the Windows job's relative spread is the ubuntu one for this battery — there
 is one Windows reading and n = 1 measures no spread at all. And that the reading taken was the fastest
@@ -280,11 +309,12 @@ not an exception.
   instance — a name in the list that no cell of that family justifies is unreachable while every
   platform-decided cell names one family, and `mutation/selection.test.ts` says so rather than
   asserting it.
-- **An eighth reading of `cli-install` on `ubuntu-latest` falling outside 1 319–1 566 s**, at which
-  point the spread the bound rests on is not the spread and the arithmetic above is re-run. This clause
-  read *a seventh outside 1 319–1 549* and fired on the next run, which is the entry that has closed
-  and reopened fastest in this repository; it is restated at the widened range rather than struck,
-  because what it is about has not changed.
+- **A reading of `cli-install` on `ubuntu-latest` above 1 589 s or below 1 300 s**, which is where the
+  arithmetic above crosses a whole minute. This clause read *a seventh outside 1 319–1 549 s*, fired on
+  the very next run, and was then found to be the wrong shape rather than merely tripped: a range grows
+  with its sample, so it was a condition firing one time in four on an event that establishes nothing.
+  What replaces it is keyed to the answer, so it is silent exactly when there is nothing to do — the
+  eighth reading, 1 515 s, being the first thing it correctly says nothing about.
 - `every-battery-on-windows` starting for the first time, which will be a publication and which is the
   one thing here nothing could exercise in advance.
 - The `packaging` step of leg (a) losing its network, which is what makes an unreachable npm a red run

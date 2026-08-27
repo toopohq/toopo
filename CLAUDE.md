@@ -79,15 +79,20 @@ the *not measured on this platform* bucket goes **1 → 0**. Its matrix is deriv
 it and the last one leaving empties the leg. **The bound is where the method earned its keep**: the
 extrapolation published before the run said 2 029 s and the job measured **2 122 s, 4.4 % low** — and
 the same run refuted the premise that one reading characterises a job at all, two readings of
-identical work at one commit coming back **1 541 s and 1 319 s**. So 62 minutes is arithmetic over seven
+identical work at one commit coming back **1 541 s and 1 319 s**. So 62 minutes is arithmetic over eight
 readings and the two assumptions it needs, not a number chosen: it leaves the Windows leg 44 cells of
 margin against the ubuntu leg's 41, which is not what it was aimed at. **It shipped at 61 on six
 readings, named *a seventh outside 1 319–1 549 s* as its reopening condition, and the next run measured
-1 566** — so the arithmetic was re-run one run after it was written, and what that says is that the form
-is insensitive where its population is not: the input moved 1.1 % and the answer moved a minute.
-**The same lesson was owed to the figure beside it and not paid**: leg (a) was published at 257 s and
-the second reading is **325 s**, where the eight suites went 167 → 164 s and the tooling went 83 → 152,
-so the whole spread of a Windows leg is a runner setting itself up. **A second Windows tirage was
+1 566** — so the arithmetic was re-run one run after it was written, and the form turned out to be
+insensitive where its population is not: the input moved 1.1 % and the answer moved a minute. **Then
+the clause itself turned out to be the wrong shape**, which is the finding rather than the minute: a
+sample's range grows with the sample, so *outside the observed range* fires `2/(n+1)` of the time — 22 %
+at eight — on an event that establishes nothing. It is keyed to the answer now, **above 1 589 s or below
+1 300 s**, and the eighth reading of 1 515 s is the first thing it correctly says nothing about. **The
+same lesson was owed to the figure beside it and not paid**: leg (a) was published at 257 s and the two
+readings since are **325 s and 211 s**, where the eight suites went 167 → 164 → 158 and the tooling went
+83 → 152 → 47, so the whole spread of a Windows leg is a runner setting itself up and none of it is the
+work. **A second Windows tirage was
 priced at 2 122 s and refused** — n = 2 bounds a tail no better than n = 1. What the reading cost is
 stated rather than smoothed: **10 819 runner-seconds, of which 6 690 was a full replay of all 23
 batteries nobody wanted**, because the first push of a branch hands `0000…0000` as the commit before

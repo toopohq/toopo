@@ -267,12 +267,17 @@ jobs:
   # `batteries` both wait for `suites`, and `needs` waits for every leg of a matrix - so putting this in
   # there would add its whole duration to the critical path of every push.
   #
-  # **Two readings and not one, because the first was published as though a job had a duration.** 257 s
-  # at `36e4bbb` in the workflow the reading was taken with, 325 s at `c44a76d` in this shape, against
-  # 125 s for the same eight steps on `ubuntu-latest`. The spread is 26 % and **all of it is the
-  # tooling**: checkout, `pnpm/action-setup`, `setup-node` and the install went 83 s to 152 s between
-  # the two, and the eight suites went 167 s to 164 s. So what a Windows leg costs is a runner setting
-  # itself up, and the work on top of it is the stable part.
+  # **Three readings and not one, because the first was published as though a job had a duration.**
+  # 257 s at `36e4bbb` in the workflow the reading was taken with, then 325 s and 211 s in this shape,
+  # against 125 s for the same eight steps on `ubuntu-latest`. **All of the spread is the tooling and
+  # none of it is the work**:
+  #
+  #     checkout, pnpm/action-setup, setup-node, install    83 s   152 s    47 s   x3.2
+  #     the eight suites                                   167 s   164 s   158 s   x1.06
+  #     the job                                            257 s   325 s   211 s   x1.5
+  #
+  # So what a Windows leg costs is a runner setting itself up, and the work on top of it is the stable
+  # part. Anybody reading a total here is reading the runner's mood.
   #
   # `site` waited for it and the clock says so rather than the graph: at `c44a76d` the ubuntu matrix
   # finished at 16:21:34, this at 16:24:59, and `site` started at 16:25:01.
@@ -292,10 +297,12 @@ jobs:
   suites-on-windows:
     runs-on: windows-latest
 
-    # 257 s and 325 s over the two readings above. This is a hang detector and not a budget, and the
-    # derivation of the one on the Windows battery below is the argument for both - applied here it
-    # gives about ten minutes, and this is left at twice that because the cost of being generous is a
-    # red push somebody sees rather than a publication that stops with no verdict.
+    # 211 s to 325 s over the three readings above. This is a hang detector and not a budget, and the
+    # derivation of the one on the Windows battery below is the argument for both - applied here,
+    # 325 x (325 / 211) x 1.4554 is 729 s, or 12.2 minutes. It is left at twenty rather than tightened
+    # to thirteen because the cost of being generous is a red push somebody sees, where the cost of
+    # being tight on that other job is a publication stopped with no verdict. The two bounds are not
+    # held to the same margin because they do not fail into the same thing.
     timeout-minutes: 20
 
     steps:
@@ -841,9 +848,9 @@ jobs:
   # above the worst plausible run and not near the median.
   #
   #     the job, measured at `36e4bbb`                                        2 122 s
-  #     x the spread of this battery's own identical work, seven readings
-  #       on ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 541, 1 549,
-  #       1 566 s: 1 566 / 1 319                                             x 1.1873
+  #     x the spread of this battery's own identical work, eight readings
+  #       on ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 515, 1 541,
+  #       1 549, 1 566 s: 1 566 / 1 319                                      x 1.1873
   #     = the worst plausible run                                            2 519 s  42.0 min
   #     x what the 40 minutes above already allows the longest job it
   #       was written against: 2 400 / 1 649                                 x 1.4554
@@ -856,8 +863,30 @@ jobs:
   # condition - *a seventh falling outside them* - and `c44a76d`, the push that wired this job, measured
   # 1 566 s. The arithmetic was re-run rather than the clause shrugged at. **What that says about the
   # form is worth more than the minute**: the input moved 1.1 % and the answer moved one minute, so the
-  # derivation is not sensitive to the reading that broke its own population. What it also says is that
-  # six readings did not bound the spread and seven may not either.
+  # derivation is not sensitive to the reading that broke its own population.
+  #
+  # ---------------------------------------------------------------------------
+  # What re-reads this, and why it is not the range
+  # ---------------------------------------------------------------------------
+  #
+  # **The clause that fired was keyed to the observed range, and that is a treadmill rather than a
+  # signal.** The range of a sample grows with the sample: for exchangeable readings the chance that
+  # the next one is a new extreme is 2/(n+1), which is 22 % at eight - so *outside 1 319-1 566 s* fires
+  # about one time in five for a reason that says nothing about whether this number is wrong. The
+  # eighth reading, 1 515 s at `df91920`, is the illustration: a value this population had never seen,
+  # silent because of where it happened to fall.
+  #
+  # **So the condition is keyed to the answer instead.** The bound moves when
+  # `2 122 x (max / min) x 1.4554` crosses a whole minute, which at today's population is:
+  #
+  #     a reading above 1 589 s, or below 1 300 s   ->  63 minutes, and this is re-derived
+  #     anything between                            ->  62 minutes, and there is nothing to do
+  #
+  # **It is a ratchet and that is named rather than repaired.** `max / min` only grows, so this bound
+  # only rises. What makes that acceptable is what it is: a sample's range underestimates its
+  # population's, so the ratchet is an estimator converging rather than a number drifting - and the
+  # direction it errs in is the cheap one, a runaway job burning minutes somebody sees instead of a
+  # publication stopped with no verdict.
   #
   # **What it assumes, said rather than buried.** That the Windows job's relative spread is the ubuntu
   # one for this battery - there is a single Windows reading and n = 1 measures no spread at all. And
