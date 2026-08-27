@@ -499,45 +499,65 @@ and with fewer assertions in it. ADR-0162.
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
-**What is broken is two things, both in the published package and neither on the site. The first is
-that `yarn dlx toopo` does not run.** Measured on 2026-08-19 against `toopo@1.0.4` as npm serves it, in an empty project
-with a `packageManager` of `yarn@4.6.0` obtained through corepack: `yarn dlx toopo add
-string/slugify` exits 1 with nothing written, and Yarn names its own cause — it applies its builtin
-compatibility patch to `typescript`, `typescript@patch:…#optional!builtin<compat/typescript>`, and
-the patch fails with `ENOENT … lstat '/node_modules/typescript/lib/_tsc.js'` because TypeScript 7
-does not hold that file. **`typescript@7.0.2` is this package's one runtime dependency**, which is
-what puts it in the way.
+**What is broken is one thing, in the published package and not on the site: `yarn dlx toopo` does
+not run.** Re-measured on 2026-08-27 against `toopo@1.1.0` as npm serves it, in an empty project with
+a `packageManager` of `yarn@4.6.0` obtained through corepack: `yarn dlx toopo@1.1.0 add
+string/slugify` exits 1 with nothing written but its own `package.json`, and Yarn names its own cause
+— it applies its builtin compatibility patch to `typescript`,
+`typescript@patch:…#optional!builtin<compat/typescript>`, and the patch fails with `ENOENT … lstat
+'/node_modules/typescript/lib/_tsc.js'` because TypeScript 7 does not hold that file.
+**`typescript@7.0.2` is this package's one runtime dependency**, which is what puts it in the way.
+The reading it replaces was taken on 2026-08-19 against `1.0.4`, and it is retaken rather than
+carried because a release is exactly the event that would have made it false.
 
 **The control is what makes the cause believable rather than plausible.** `yarn dlx cowsay` in the
 same shell, the same minute, exits 0 and prints its cow — so Yarn works on this machine and fails on
 this package. Without that reading the failure could have been Yarn's, and a cause named without it
 would be the thing ADR-0042 refuses.
 
-**The three that were measured all work and land the same byte.** `npx`, `pnpm dlx` and `bunx`
-each exit 0 and write `lib/toopo/string/slugify.ts` hashing to `1a8ae9d1…`, which is the blob the
-catalogue announces. `deno` was not measured, because it is not on this machine, and so it is not
-published anywhere either. **The population of forms is four and one of them is red.**
+**Re-reading the population found a fifth form nobody had separated from a fourth, and it is red.**
+`npx`, `pnpm dlx` and `bunx` each exit 0 against `1.1.0` and write `lib/toopo/string/slugify.ts`
+hashing to `1a8ae9d1…`, which is the blob the catalogue announces. **`bunx --bun` does not**: it exits
+1 on `SyntaxError: Export named 'diff' not found in module 'node:util'`, because that flag runs the
+client under Bun's runtime instead of node, and Bun's `node:util` has no `diff`. **It is not a defect
+of this package and it is worth writing down anyway.** `packages/cli/diff.ts` imports `diff` from
+`node:util`, which arrived in Node 22.15, and the manifest declares `"node": "^22.15.0 || >=24.0.0"` —
+so the package says which runtime it needs and Bun's is not it. What a reader meets is a raw
+`SyntaxError` where every other refusal here is a sentence. **The population of forms is five and two
+of them are red**, and the fourth was only ever measured in one of its two spellings. `deno` is still
+not measured, because it is not on this machine, and so it is not published anywhere either.
 
 It is not repaired here and it is not this list's class - nothing is unkept, something is broken -
 so it is written where a session reads first rather than filed as a declaration nobody keeps. What
-would close it is a decision about that runtime dependency, which is a unit of its own and touches
-the archive rather than the site.
+would close the first is a decision about that runtime dependency, which is a unit of its own and
+touches the archive rather than the site; what would close the second is not this repository's to
+take, and what it could do instead is refuse a runtime the manifest does not declare with a sentence
+rather than a stack.
 
-**The second is repaired, its decision has been taken, and what is left of it is a run: `npx
-toopo@1.0.4 add <a name that does not exist>` aborts on Windows.** ADR-0168 is the defect, the cause
-and the guards, and the paragraph above carries what it found. What kept it open was never the repair,
-which is written and measured in both directions — it is that a publication is a push of `main`
-declaring a version npm does not hold, so the number *is* the release and moving it is the owner's
-decision rather than a step of the unit that fixed the code. **That decision is `1.1.0`**, which the
-manifest declares and npm does not hold. **Until that push has run green npm goes on serving `1.0.4`**
-and every reader on Windows meets the abort; what closes this entry is the number appearing in npm's
-own listing, which `print-whether-to-publish.ts` reads on every push and prints either way.
+**What used to stand second here closed on 2026-08-27, and it is written up rather than struck out
+because the entry had named its own closing condition and that is the rare half of this file.** `npx
+toopo add <a name that does not exist>` aborted on Windows with `0xC0000409`, which git-bash reports
+as `127` — the code a POSIX shell keeps for *command not found*. ADR-0168 is the defect, the cause and
+the guards; the entry said what would close it, *the number appearing in npm's own listing*, and
+`1.1.0` is that number.
 
-**The two are not the same shape and the difference decides who can close them.** The first is
-unrepaired anywhere and needs a decision about a runtime dependency. The second is repaired everywhere
-this repository controls and its version is declared, so what remains of it is a run rather than a
-decision. It is written here rather than on the open list for the reason the first is: nothing is
-unkept, something is broken.
+**What closed it is the reader and not the release.** Measured on `MINGW64_NT-10.0-22631`, from npm,
+both versions in the same shell in the same minute:
+
+| | run 1 | run 2 | run 3 |
+| --- | --- | --- | --- |
+| `npx toopo@1.0.4 add string/does-not-exist` | 127 | 127 | 127 |
+| `npx toopo@1.1.0 add string/does-not-exist` | 1 | 1 | 1 |
+
+The refusal prints and nothing is written — after six refusals the project held `.` and `..` and
+nothing else. **The control is what makes that a repair rather than a coincidence**: the two rows are
+one command against two archives, and the only thing that differs between them is the change ADR-0168
+made.
+
+**The two were never the same shape, and the closure is what proved it rather than the argument
+that said so.** The one that closed was repaired everywhere this repository controls and wanted only
+a number; the one that remains is unrepaired anywhere and wants a decision about a runtime
+dependency, which no release reaches.
 
 **`toopo@1.0.0` is on npm, and the way it got there is what the unit before this one replaced.** It was
 published from a keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal
@@ -557,7 +577,8 @@ ADR-0110, a feature landing at `lib/toopo/string/slugify.ts` rather than at `…
 was the first whose change a user meets on their own disk; `1.0.4` corrected neither the program nor
 the artefact and **repairs a chain of provenance this
 repository broke itself**: ADR-0124 reissued all 506 commits of this graph, and an attestation is
-addressing like everything else, so the four npm holds name commits of a history that no longer exists.
+addressing like everything else, so the four published before it name commits of a history that no
+longer exists.
 `npm view toopo@1.0.3 gitHead` prints one and nothing here resolves it. **The four are named by that
 command and never written down**, because a citation of a dead commit inside the paragraph explaining
 why they are dead is the defect that paragraph describes — the rule that withdrew `1.0.1`'s tree digest,
@@ -628,6 +649,21 @@ nothing: no contract is published and `THE_PUBLISHED_IMPLEMENTATION_VERSION` doe
 `packaging/archive.test.ts` are its only readers and both equate it with the manifest — so it enters no
 snapshot by construction rather than by luck, and the ledger's twelve bindings are identical to the byte
 across this release.
+
+**It landed, and the reading is npm's rather than this repository's.** Run `33078125142` on `1cf8ecd`,
+**30 jobs and 30 green** — the 23 batteries of `every-battery`, both matrix legs of `suites`, `site`,
+`version` and `publish` — in 28 min 40. npm holds six versions and `latest` answers `1.1.0`. The
+attestation's `gitHead` is `1cf8ecd`, **the commit that moves the version and not the one that argues
+it**, which is what the two-commit order was chosen for; its provenance names `.github/workflows/suites.yml`,
+`refs/heads/main`, event `push`, and the two numeric identifiers a rename does not move, `1319617655`
+and `280416883`. `_npmUser` is `GitHub Actions`, so no keyboard touched it.
+
+**And a listing read 52 seconds after the publishing job printed `+ toopo@1.1.0` did not hold it**, with
+`dist-tags.latest` still answering `1.0.4` and the version itself answering 404 — a green job beside a
+registry saying the thing does not exist, which is the shape in which a cause gets invented. npm's own
+publishing output says it is processing. The lesson is in `packaging/what-npm-holds.ts` beside the one
+about a request and a listing, because that is the module whose whole subject is asking npm what it
+has.
 
 **And the dispatch is gone: the number asks for the publication.** It was two gestures for one decision —
 a version decided in a commit, a run asked for from a menu afterwards — and between them the tree was
@@ -1472,12 +1508,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   answer have none. That record calls them *the same shape as the twelve closed* and does not say which
   of the twenty-six the catalogue could have answered, so the count is a loss and never a defect count.
 
-  **One instance is measured rather than left inside that arithmetic, and it is the first a reader
-  meets.** At `0fd53e1`, against the live origin: `toopo@1.0.4` answers `string/slugify@1` to `slugify
-  a blog post` and the archive this tree builds is silent. It is a right answer withdrawn — ADR-0154's
-  own sweep puts that query among the four requests this catalogue *could* have answered — and it is a
-  different event from `round robin` losing `number/round@1` in the same corpus, which was a wrong
-  answer the floor was correct to take. **Nothing here tells the two apart**, and that is the entry: the
+  **One instance is measured rather than left inside that arithmetic, and a reader meets it now rather
+  than one day.** Against the live origin, both clients from npm: `toopo@1.0.4` answers
+  `string/slugify@1` to `slugify a blog post` and **`toopo@1.1.0` answers `Nothing in the catalogue
+  answers "slugify a blog post"`** — measured on 2026-08-27, after the release that carried it out of
+  this tree. It is a right answer withdrawn — ADR-0154's own sweep puts that query among the four
+  requests this catalogue *could* have answered — and it is a different event from `round robin` losing
+  `number/round@1` in the same corpus, which was a wrong answer the floor was correct to take. **The two
+  refusals are indistinguishable to a reader**, and that is what the entry is about rather than a
+  figure: `1.1.0` answers both with the same sentence, naming `blog, post` in one and `robin` in the
+  other. **Nothing here tells the two apart**, and that is the entry: the
   floor is a rule about how many words a query carries, and the distinction is about whether the
   catalogue holds the thing asked for.
 
@@ -2073,6 +2113,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   trusted publisher is keyed on the four strings, three of which this repository can still rename on its
   own, and a rename would stop the *next* publication with every guard here green. Both halves are written
   because the entry read blacker than it is with only the first.
+
+  **A third reading was taken at `1cf8ecd` for `1.1.0` and it is recorded in one sentence on purpose:
+  the four strings and the policy held again, and that closes nothing.** This entry's own argument is
+  that a successful exchange is evidence about a day and never a mechanism, so a fourth reading written
+  out at length would be this file accumulating identical paragraphs against its own rule. **The one
+  thing worth carrying forward is the instruction not to add a fourth**: what would change this entry is
+  a way to read npm's side, not one more day on which npm's side was right.
 
   **Both sides were configured on 2026-08-17, and this paragraph is the entire record of it.** The
   trusted publisher on npmjs.com names `toopohq`, `toopo`, `suites.yml` and the `npm` environment, with

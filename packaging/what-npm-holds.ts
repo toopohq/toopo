@@ -15,6 +15,26 @@
  * channel exists.
  *
  * ---------------------------------------------------------------------------
+ * A listing taken too early is not a listing
+ * ---------------------------------------------------------------------------
+ *
+ * **npm answers about a version it has already accepted before it serves it, and the gap reads exactly
+ * like a failed publication.** Measured across the release of `1.1.0`: the publishing job printed
+ * `+ toopo@1.1.0` at `14:09:49Z` with the provenance signed and logged, and a listing taken **52
+ * seconds later** held five versions and not the sixth, with `dist-tags.latest` still answering
+ * `1.0.4`. A request for the version itself answered `404 No match found`. The next reading held it;
+ * how long it really took was not measured, so what is published here is the lower bound and not a
+ * duration. npm says so itself in the publishing output - *your package is being processed and may
+ * take a few minutes to become available* - which is the sentence that turns this from an anomaly into
+ * a documented wait.
+ *
+ * **The mechanism is not exposed to it and a person is.** This module is read by a push, which happens
+ * at a moment nobody is publishing, so the gate has no such case. What that gap costs is a reader: a
+ * green publishing job beside a registry answering 404 is the shape in which a cause gets invented, and
+ * the only thing that separates *not yet* from *not at all* is the job's own output. So the reading to
+ * take first is the log, and never a second listing.
+ *
+ * ---------------------------------------------------------------------------
  * What is asked for, and what it costs
  * ---------------------------------------------------------------------------
  *
