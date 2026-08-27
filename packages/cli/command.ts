@@ -112,25 +112,55 @@ const out = (text: string): void => {
 
 const EMPTY: Lockfile = { version: LOCKFILE_VERSION, features: [] }
 
-export const run = async (theRegistry: () => RegistrySource): Promise<void> => {
+/**
+ * What the process should end with: `0` where the command did what was asked, `1` where it did not.
+ *
+ * A value the caller is handed rather than something written into `process` from in here, and the
+ * reason is not tidiness. **A command that ends the process cannot be run twice**, which is what the
+ * guards over this file were paying for before ADR-0168: `command.test.ts` replaced `process.exit`
+ * with a throw for the length of each run, so what the suite measured was a stand-in and the exit code
+ * itself was reachable from nothing. Answering it makes it the ordinary subject of a guard.
+ */
+export type HowItEnded = 0 | 1
+
+/**
+ * A command that will not do what it was asked, on its way out of `theCommand`.
+ *
+ * **A refusal is thrown rather than printed where it is decided, because the alternative is ending the
+ * process from the middle of one** - and ADR-0168 is the day this repository learned what that costs on
+ * somebody else's machine. `refuse` is called from four helpers nested inside the dispatch, and the only
+ * two ways out of those are a throw and a `process.exit`. The second is what crashed.
+ *
+ * It carries the usage as a flag rather than as a second class, because the two refusals differ by what
+ * follows the sentence and by nothing else: a fault in the grammar is the one case where a reader is
+ * better off seeing every command than the one they mistyped.
+ */
+class TheCommandRefused extends Error {
+  readonly faults: readonly string[]
+  readonly alsoShowUsage: boolean
+
+  constructor(faults: readonly string[], alsoShowUsage: boolean) {
+    super(faults.join('\n'))
+    this.name = 'TheCommandRefused'
+    this.faults = faults
+    this.alsoShowUsage = alsoShowUsage
+  }
+}
+
+const theCommand = async (theRegistry: () => RegistrySource): Promise<HowItEnded> => {
   /**
    * Annotated on the constant rather than on the arrow, which is not a style choice: TypeScript only
    * treats a call as never-returning - and therefore only narrows what follows it - when the callee is
    * an identifier declared with an explicit type.
    */
   const refuse: (faults: readonly string[]) => never = (faults) => {
-    process.stdout.write(renderRefusal(faults))
-    process.exit(1)
+    throw new TheCommandRefused(faults, false)
   }
 
   const root = process.cwd()
   const parsed = parseArguments(process.argv.slice(2))
 
-  if ('faults' in parsed) {
-    process.stdout.write(renderRefusal(parsed.faults))
-    out(USAGE)
-    process.exit(1)
-  }
+  if ('faults' in parsed) throw new TheCommandRefused(parsed.faults, true)
 
   /** The configuration, or the refusal that names the one command which writes it. */
   const theConfiguration = (): Configuration => {
@@ -400,5 +430,44 @@ export const run = async (theRegistry: () => RegistrySource): Promise<void> => {
     }
 
     throw error
+  }
+
+  return 0
+}
+
+/**
+ * Run a command, and answer what the process should end with.
+ *
+ * **This frame exists because nothing above it may end the process abruptly, and that is a measurement
+ * rather than a preference.** `process.exit` and an uncaught throw both tear libuv down where it stands;
+ * on win32, after a `fetch`, either one races the teardown of the handles that connection left behind
+ * and node aborts on an assertion in `src/win/async.c` - printing a line no reader of this tool can act
+ * on, over the refusal it had just correctly given. Measured at `d962426` on Node v24.15.0: three runs
+ * of three of `toopo add nonsense/nothing`, and the same abort from a bare `throw` after one `fetch`.
+ * ADR-0168 carries the readings, including the two arrangements that do *not* abort and why counting
+ * them was the wrong reading.
+ *
+ * So the whole of what this file promises about endings is here: a refusal is reported and answered
+ * `1`, a bug is reported and answered `1`, and the process ends by having nothing left to do. **A bug
+ * is still loud** - the stack goes to the error stream exactly as node would have printed it - and what
+ * it no longer does is take the ending with it.
+ *
+ * The code is answered rather than written into `process`, so that a guard can read it. `HowItEnded`
+ * carries why that is the difference between a guard and a stand-in for one.
+ */
+export const run = async (theRegistry: () => RegistrySource): Promise<HowItEnded> => {
+  try {
+    return await theCommand(theRegistry)
+  } catch (error) {
+    if (error instanceof TheCommandRefused) {
+      process.stdout.write(renderRefusal(error.faults))
+      if (error.alsoShowUsage) out(USAGE)
+
+      return 1
+    }
+
+    process.stderr.write(`${error instanceof Error ? (error.stack ?? error.message) : String(error)}\n`)
+
+    return 1
   }
 }

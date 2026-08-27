@@ -495,6 +495,14 @@ export const battery: Battery = {
         'installed package, and `THE_PACKAGE_VERSION` in `packages/registry/publication.ts` - and a ' +
         'battery may edit only the folder under measurement',
     },
+    {
+      guards: ['no-module-the-archive-carries-ends-the-process-itself'],
+      reason:
+        'what it reads is the text of the modules the tarball carries, and `tsconfig.dist.json` ' +
+        'compiles the closure of `packages/cli/published.ts` and nothing else - so no file this ' +
+        'battery may edit is ever one of them, and the defect it exists for lives one folder away. ' +
+        'ADR-0168 is that defect; it was seen red there by hand, naming `dist/packages/cli/command.js`',
+    },
   ],
 
   /**

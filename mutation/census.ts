@@ -273,6 +273,16 @@
  * about narrows a type, and removing it is `TS18047` rather than a defect a run can see. It is
  * recorded in the file where somebody would otherwise write it again. ADR-0165.
  *
+ * A twenty-seventh on how a command ends, and it is the first row here whose subject is a *process*.
+ * **Three new guards under the client's and one more under the packaging's**, for a defect every guard
+ * this repository held was green through: a refusal that had reached the registry printed the right
+ * sentence and then aborted, because `process.exit` after a `fetch` races libuv's teardown on win32.
+ * What is worth a line is why it took a file of its own rather than joining `command.test.ts`: that
+ * suite runs `run` in the test's own process, where the exit code has to be a stand-in and an ending
+ * cannot be watched at all. The fourth guard is one folder over and reads the tarball, because the
+ * cause is text that ships and the symptom is a race that does not reproduce on every platform.
+ * ADR-0168.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -404,6 +414,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/cli/configuration.test.ts': 9,
     'packages/cli/diff.test.ts': 10,
     'packages/cli/emitted-registry.test.ts': 6,
+    'packages/cli/how-a-command-ends.test.ts': 3,
     'packages/cli/http-source.test.ts': 6,
     'packages/cli/ignored.test.ts': 3,
     'packages/cli/install.test.ts': 22,
@@ -438,7 +449,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'packaging/vitest.config.ts': {
-    'packaging/archive.test.ts': 8,
+    'packaging/archive.test.ts': 9,
     'packaging/what-npm-holds.test.ts': 6,
     'packaging/what-the-origin-lists.test.ts': 8,
   },

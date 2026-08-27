@@ -83,6 +83,15 @@ const resolveFile = (find: string, replace: string) => ({ file: 'resolve.ts', fi
  */
 const httpSourceFile = (find: string, replace: string) => ({ file: 'http-source.ts', find, replace })
 
+/**
+ * The dispatch, and the frame that decides how a command ends.
+ *
+ * It is measured from this battery for the reason `http-source.ts` is: what its defects break is an
+ * *install*. ADR-0168's was reached by `toopo add` of a name the registry does not hold - a refusal
+ * that had already crossed the wire, which is this battery's own subject and no other's.
+ */
+const commandFile = (find: string, replace: string) => ({ file: 'command.ts', find, replace })
+
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
 // ---------------------------------------------------------------------------
@@ -1312,6 +1321,65 @@ import type {
       ),
     ],
     killed(['a-registry-that-does-not-answer-is-a-sentence-a-person-can-read']),
+  ),
+
+  /**
+   * ADR-0168's own defect, restored: a refusal ends the process from the middle of a command.
+   *
+   * **What it breaks is not the refusal.** The sentence is right, nothing is written, and every guard
+   * this repository had over that screen stayed green for the whole life of the defect. What
+   * `process.exit` does is stop node where it stands, and after a `fetch` that races the teardown of
+   * what the connection left behind: on win32 libuv aborts on an assertion in `src/win/async.c`, and
+   * the exit code becomes `0xC0000409` - which git-bash reports as `127`, the code a POSIX shell keeps
+   * for *command not found*. A mistyped contract name told a CI script that `toopo` was not installed.
+   *
+   * **The guard it is pinned by is the portable half and that is deliberate.** The abort belongs to
+   * libuv's Windows implementation, so `a-refusal-that-reached-the-registry-exits-one-…` reddens here
+   * only on that family - measured, five runs of five. `beforeExit` is skipped by `process.exit`
+   * wherever it runs, so the guard named below is the one that answers on both, and no leg of this
+   * repository's CI is on Windows.
+   */
+  sameOnEveryLens(
+    'C-73',
+    'ends the process from inside a refusal, so a command that had already reached the registry ' +
+      'stops node where it stands instead of letting it finish - and on Windows dies on a libuv ' +
+      'assertion with an exit code a shell reads as `command not found`',
+    [
+      commandFile(
+        `  const refuse: (faults: readonly string[]) => never = (faults) => {
+    throw new TheCommandRefused(faults, false)
+  }`,
+        `  const refuse: (faults: readonly string[]) => never = (faults) => {
+    process.stdout.write(renderRefusal(faults))
+    process.exit(1)
+  }`,
+      ),
+    ],
+    killed(['a-refusal-lets-the-process-end-rather-than-stopping-it']),
+  ),
+
+  /**
+   * A refusal leaves as something the frame above it does not recognise, so it is reported as a bug.
+   *
+   * The neighbour of C-73 and not a second reading of it. That one is about a command *stopping* the
+   * process; this one lets the process end exactly as it should and breaks what the person is handed -
+   * a stack on the error stream where a sentence belonged, and no refusal on the output at all.
+   *
+   * It is what the repair could plausibly lose: `TheCommandRefused` is the whole of what tells a
+   * decision that will not be taken from a defect, and a refusal thrown as an ordinary error is the
+   * shape of somebody reaching for the nearest exception class.
+   */
+  sameOnEveryLens(
+    'C-74',
+    'refuses with an ordinary error, so the frame that ends a command reads a decision as a bug and ' +
+      'prints a stack trace where the reader should have met a sentence',
+    [
+      commandFile(
+        `    throw new TheCommandRefused(faults, false)`,
+        `    throw new Error(faults.join('\\n'))`,
+      ),
+    ],
+    killed(['a-refusal-that-reached-the-registry-exits-one-and-says-nothing-on-the-error-stream']),
   ),
 ]
 

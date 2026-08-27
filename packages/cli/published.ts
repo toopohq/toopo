@@ -18,10 +18,15 @@
  *
  * The thunk is not called until a command needs a registry, so `toopo` with no arguments prints its
  * usage without opening a socket.
+ *
+ * **The code is assigned rather than exited on, and ADR-0168 is why.** `run` answers what this process
+ * should end with; nothing under it stops node, because a command that had reached the registry and
+ * then called `process.exit` aborted on a libuv assertion on win32 - printing a line no reader can act
+ * on over a refusal that was correct, and ending with a code git-bash reads as *command not found*.
  */
 
 import { THE_ORIGIN } from '../registry/address.js'
 import { run } from './command.js'
 import { httpSource } from './http-source.js'
 
-await run(() => httpSource(THE_ORIGIN))
+process.exitCode = await run(() => httpSource(THE_ORIGIN))

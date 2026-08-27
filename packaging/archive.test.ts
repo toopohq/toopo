@@ -192,6 +192,33 @@ describe('the archive somebody installs', () => {
   })
 
   /**
+   * Nothing the archive carries ends the process itself.
+   *
+   * **This is ADR-0168's cause rather than its symptom, and it is the half that reddens everywhere.**
+   * `process.exit` and `process.abort` stop node where it stands; after a `fetch` that races the
+   * teardown of what the connection left behind, and on win32 libuv aborts on an assertion in
+   * `src/win/async.c` - so `toopo add` of a name the registry does not hold printed a correct refusal
+   * and then died with an exit code git-bash reads as *command not found*. `how-a-command-ends.test.ts`
+   * is what watches the ending happen; **that suite can only be red where the race is lost**, and no
+   * leg of this repository's CI runs on Windows. This one is red on the text wherever it runs.
+   *
+   * It is total over what ships rather than over a list somebody keeps: the population is the tarball's
+   * own `.js`, so a module added to the archive joins it with nobody editing this guard. What it reads
+   * is text, and it says so - `command.ts` answering a code rather than writing one is what makes the
+   * behaviour reachable from a guard at all, and this is the claim that no second way back in appears.
+   *
+   * Seen red at `d962426` by putting `process.exit(1)` back in `refuse`, which named
+   * `dist/packages/cli/command.js`.
+   */
+  it('no-module-the-archive-carries-ends-the-process-itself', () => {
+    const endingItWhereItStands = archive.carries
+      .filter((path) => path.endsWith('.js'))
+      .filter((path) => /process\.(?:exit|abort)\s*\(/.test(carried(path)))
+
+    expect(endingItWhereItStands).toEqual([])
+  })
+
+  /**
    * **The claim this unit is about: nothing the archive carries is produced by the catalogue.**
    *
    * The archive used to hold `registry.json`, every contract the registry serves with its files base64

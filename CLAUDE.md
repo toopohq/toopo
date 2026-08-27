@@ -31,6 +31,23 @@ holds rather than against what somebody checked: a commit identifier in the pros
 this graph, no object of it carries an address the project refuses to publish, and the only checkout
 registered here is its root.
 
+**The client stopped killing the process it was refusing in, and the ending was a half nothing here
+watched.** `toopo add` of a name the registry does not hold refused correctly, printed the right
+sentence, wrote nothing — and then aborted: `process.exit` after a `fetch` races libuv's teardown, and
+on win32 node dies on an assertion in `src/win/async.c`. **The exit code became `0xC0000409`, which
+git-bash reports as `127`** — the code a POSIX shell keeps for *command not found*, so a mistyped
+contract name told a CI script that `toopo` was not installed. Every guard over that refusal was green
+through all of it, because every one stopped at the sentence. **The count was the wrong reading and the
+product refuted it**: one fetch aborts and two do not against `toopo.dev`, and on loopback the two swap
+over — it is a race, and *one fetch then 10 ms* aborts three times in five, which is what says so.
+**The class is wider than `process.exit` and that is what widened the repair**: a bare `throw` after a
+fetch aborts identically, and `command.ts` deliberately let unexpected errors out as a crash. So `run`
+answers `HowItEnded`, nothing under it ends the process, and the two entry points assign the code.
+Three guards watch a real process through a socket and a fourth is total over the tarball's own
+modules; the first is red only where the race is lost, and **no leg of `suites.yml` runs on Windows**,
+which is why the `beforeExit` one exists. **Whether Linux aborts at all is unmeasured and not claimed**
+— no Linux was reachable from the machine that measured this. ADR-0168.
+
 **The gate now answers for the instrument as well as for what the instrument measures, and the exit
 code it reads has a failing direction that is exercised.** A battery *measures* a folder and is *built
 out of* the runner; the second half selected nothing, and ADR-0146 refused it on the price of a walk it
@@ -469,8 +486,8 @@ and with fewer assertions in it. ADR-0162.
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
-**What is broken, and it is the published package rather than anything in this tree: `yarn dlx toopo`
-does not run.** Measured on 2026-08-19 against `toopo@1.0.4` as npm serves it, in an empty project
+**What is broken is two things, both in the published package and neither on the site. The first is
+that `yarn dlx toopo` does not run.** Measured on 2026-08-19 against `toopo@1.0.4` as npm serves it, in an empty project
 with a `packageManager` of `yarn@4.6.0` obtained through corepack: `yarn dlx toopo add
 string/slugify` exits 1 with nothing written, and Yarn names its own cause — it applies its builtin
 compatibility patch to `typescript`, `typescript@patch:…#optional!builtin<compat/typescript>`, and
@@ -492,6 +509,19 @@ It is not repaired here and it is not this list's class - nothing is unkept, som
 so it is written where a session reads first rather than filed as a declaration nobody keeps. What
 would close it is a decision about that runtime dependency, which is a unit of its own and touches
 the archive rather than the site.
+
+**The second is repaired in this tree and still live on npm: `npx toopo@1.0.4 add <a name that does
+not exist>` aborts on Windows.** ADR-0168 is the defect, the cause and the guards, and the paragraph
+above carries what it found. What keeps it open is not the repair, which is written and measured in
+both directions — it is that a publication is a push of `main` declaring a version npm does not hold,
+so the number *is* the release and moving it is the owner's decision rather than a step of the unit
+that fixed the code. **`THE_PACKAGE_VERSION` and `package.json` are therefore still `1.0.4`**, and
+every reader on Windows meets the abort until that decision is taken.
+
+**The two are not the same shape and the difference decides who can close them.** The first is
+unrepaired anywhere and needs a decision about a runtime dependency. The second is repaired
+everywhere this repository controls and needs only a version. It is written here rather than on the
+open list for the reason the first is: nothing is unkept, something is broken.
 
 **`toopo@1.0.0` is on npm, and the way it got there is what the unit before this one replaced.** It was
 published from a keyboard, and the registry's record says so: `maintainers` and `_npmUser` name a personal

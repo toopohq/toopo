@@ -17,6 +17,11 @@
  * that file recorded as a debt is closed by the archive being built rather than stripped.
  *
  * The imports are `.ts` and dynamic on purpose: the translation cannot be used before it is registered.
+ *
+ * The code `run` answers is assigned rather than exited on, for the reason `published.ts` gives at
+ * length: ADR-0168, where a command that ended the process from the middle of a refusal aborted after
+ * a `fetch`. This entry point talks to a registry that opens no socket, so it never met that defect -
+ * and it carries the same line because which registry was named is the only thing separating the two.
  */
 
 import '../../typescript-imports.ts'
@@ -24,4 +29,4 @@ import '../../typescript-imports.ts'
 const { run } = await import('./command.ts')
 const { localSource } = await import('./local-source.ts')
 
-await run(localSource)
+process.exitCode = await run(localSource)

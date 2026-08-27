@@ -55,32 +55,38 @@ const aProjectHoldingSomething = async (): Promise<TemporaryProject> => {
   return project
 }
 
-/** What `process.exit` becomes for the length of one command, so a refusal ends it rather than the run. */
-class Exited extends Error {}
-
 /**
  * Whether one command reaches for the registry, observed through the seam `run` already takes it by.
  *
  * Everything the command would print is swallowed and everything it would change is under a temporary
  * project, so the only thing this reads out of the run is whether the thunk was called.
+ *
+ * **The error stream is collected rather than swallowed, and that is what keeps this honest across
+ * ADR-0168.** `run` answers a code now instead of ending the process, so a bug inside a command comes
+ * back as a printed stack and a `1` where it used to come back as a throw - which this guard would
+ * pass straight through, reading the thunk and nothing else. Anything on that stream is therefore
+ * raised here: it is the one thing a run of a command may not do quietly.
  */
 const reachesTheRegistry = async (
   project: TemporaryProject,
   words: readonly string[],
 ): Promise<boolean> => {
   let reached = false
+  let complained = ''
 
   const argv = process.argv
   const cwd = process.cwd()
-  const exit = process.exit
   const write = process.stdout.write
+  const complain = process.stderr.write
 
   process.argv = ['node', 'toopo', ...words]
   process.chdir(project.root)
-  process.exit = (() => {
-    throw new Exited()
-  }) as typeof process.exit
   process.stdout.write = (() => true) as typeof process.stdout.write
+  process.stderr.write = ((text: string) => {
+    complained += text
+
+    return true
+  }) as typeof process.stderr.write
 
   try {
     // Awaited, and that is what keeps the observation honest: `run` is asynchronous now, so without it
@@ -91,14 +97,14 @@ const reachesTheRegistry = async (
 
       return imaginedSource()
     })
-  } catch (error) {
-    if (!(error instanceof Exited)) throw error
   } finally {
     process.argv = argv
     process.chdir(cwd)
-    process.exit = exit
     process.stdout.write = write
+    process.stderr.write = complain
   }
+
+  if (complained !== '') throw new Error(`\`toopo ${words.join(' ')}\` reported: ${complained}`)
 
   return reached
 }
