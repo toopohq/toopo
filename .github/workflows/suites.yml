@@ -267,17 +267,20 @@ jobs:
   # `batteries` both wait for `suites`, and `needs` waits for every leg of a matrix - so putting this in
   # there would add its whole duration to the critical path of every push.
   #
-  # **Three readings and not one, because the first was published as though a job had a duration.**
-  # 257 s at `36e4bbb` in the workflow the reading was taken with, then 325 s and 211 s in this shape,
-  # against 125 s for the same eight steps on `ubuntu-latest`. **All of the spread is the tooling and
-  # none of it is the work**:
+  # **Four readings and not one, because the first was published as though a job had a duration.**
+  # 257 s at `36e4bbb` in the workflow the reading was taken with, then three in this shape, against
+  # 125 s for the same eight steps on `ubuntu-latest`:
   #
-  #     checkout, pnpm/action-setup, setup-node, install    83 s   152 s    47 s   x3.2
-  #     the eight suites                                   167 s   164 s   158 s   x1.06
-  #     the job                                            257 s   325 s   211 s   x1.5
+  #     checkout, pnpm/action-setup, setup-node, install    83 s   152 s    47 s   100 s   x3.2
+  #     the eight suites                                   167 s   164 s   158 s   139 s   x1.20
+  #     the job                                            257 s   325 s   211 s   244 s   x1.54
   #
-  # So what a Windows leg costs is a runner setting itself up, and the work on top of it is the stable
-  # part. Anybody reading a total here is reading the runner's mood.
+  # **This read *all of the spread is the tooling and none of it is the work*, and the fourth reading
+  # made that false.** The suites had gone 167, 164, 158 - six per cent - and then 139. What survives is
+  # the comparison rather than the absolute: the tooling spreads 105 s where the suites spread 28, so it
+  # dominates without being alone, and `meta` alone moves 41 to 56 s across the four.
+  #
+  # So a total here is the runner's mood and the per-step table is the reading.
   #
   # `site` waited for it and the clock says so rather than the graph: at `c44a76d` the ubuntu matrix
   # finished at 16:21:34, this at 16:24:59, and `site` started at 16:25:01.
@@ -297,7 +300,7 @@ jobs:
   suites-on-windows:
     runs-on: windows-latest
 
-    # 211 s to 325 s over the three readings above. This is a hang detector and not a budget, and the
+    # 211 s to 325 s over the four readings above. This is a hang detector and not a budget, and the
     # derivation of the one on the Windows battery below is the argument for both - applied here,
     # 325 x (325 / 211) x 1.4554 is 729 s, or 12.2 minutes. It is left at twenty rather than tightened
     # to thirteen because the cost of being generous is a red push somebody sees, where the cost of
@@ -848,13 +851,13 @@ jobs:
   # above the worst plausible run and not near the median.
   #
   #     the job, measured at `36e4bbb`                                        2 122 s
-  #     x the spread of this battery's own identical work, eight readings
+  #     x the spread of this battery's own identical work, nine readings
   #       on ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 515, 1 541,
-  #       1 549, 1 566 s: 1 566 / 1 319                                      x 1.1873
-  #     = the worst plausible run                                            2 519 s  42.0 min
+  #       1 549, 1 566, 1 632 s: 1 632 / 1 319                               x 1.2373
+  #     = the worst plausible run                                            2 626 s  43.8 min
   #     x what the 40 minutes above already allows the longest job it
   #       was written against: 2 400 / 1 649                                 x 1.4554
-  #     =                                                                    3 667 s  61.1 min
+  #     =                                                                    3 821 s  63.7 min
   #
   # rounded up to the whole minute the field takes, which is the only rounding here.
   #
@@ -879,14 +882,24 @@ jobs:
   # **So the condition is keyed to the answer instead.** The bound moves when
   # `2 122 x (max / min) x 1.4554` crosses a whole minute, which at today's population is:
   #
-  #     a reading above 1 589 s, or below 1 300 s   ->  63 minutes, and this is re-derived
-  #     anything between                            ->  62 minutes, and there is nothing to do
+  #     a reading above 1 640 s, or below 1 312 s   ->  65 minutes, and this is re-derived
+  #     anything between                            ->  64 minutes, and there is nothing to do
+  #
+  # **The repaired clause fired on the first reading it ever judged, and that is what says it is the
+  # right shape.** The push that wrote it, `7d979c4`, measured 1 632 s - above the 1 589 s the previous
+  # threshold named - and the answer really moved, 62 to 64. The clause it replaced would also have
+  # fired, on 1 515 s and on 1 632 s alike; this one was silent on the first and is not on the second.
   #
   # **It is a ratchet and that is named rather than repaired.** `max / min` only grows, so this bound
   # only rises. What makes that acceptable is what it is: a sample's range underestimates its
   # population's, so the ratchet is an estimator converging rather than a number drifting - and the
   # direction it errs in is the cheap one, a runaway job burning minutes somebody sees instead of a
   # publication stopped with no verdict.
+  #
+  # **What the ratchet exposes is the bound beside it, which has none.** The two ubuntu gates are typed
+  # at 40 minutes, so as this battery's slowest reading grows their margin shrinks with nobody deciding
+  # anything: over the nine readings above it went 42 cells, then 41, then 38. This one self-corrected
+  # across the same window and that one did not. `CLAUDE.md` carries it as an entry; the rate is here.
   #
   # **What it assumes, said rather than buried.** That the Windows job's relative spread is the ubuntu
   # one for this battery - there is a single Windows reading and n = 1 measures no spread at all. And
@@ -898,10 +911,10 @@ jobs:
   # battery on one platform, and the day a seventh falls outside them this arithmetic is what somebody
   # re-runs.
   #
-  # **What it lands on is the check rather than the argument**: 3 720 s over the worst plausible 2 519
-  # leaves 1 201 s, which at 27.1 s a cell here is 44 cells - against the 41 the 40 minutes above leave
-  # the ubuntu leg over its own worst plausible 1 566. The two legs get about the same margin, which is
-  # not what the derivation was aimed at and is what says it landed somewhere.
+  # **What it lands on is the check rather than the argument**: 3 840 s over the worst plausible 2 626
+  # leaves 1 214 s, which at 27.1 s a cell here is 45 cells - against the 38 the 40 minutes above leave
+  # the ubuntu leg over its own worst plausible 1 632. They started level at 43 and 42; the gap between
+  # them is the ratchet doing its work on one and not on the other.
   #
   # **A second Windows reading was priced and refused.** It costs 2 122 s of runner and takes n from 1
   # to 2, which bounds a tail no better than 1 does; the six ubuntu readings already give the spread for
@@ -917,7 +930,7 @@ jobs:
 
     runs-on: windows-latest
 
-    timeout-minutes: 62
+    timeout-minutes: 64
 
     strategy:
       fail-fast: false

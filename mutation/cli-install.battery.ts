@@ -54,15 +54,15 @@
  *
  * Measured at `36e4bbb`, the same 75 cells on the two platforms:
  *
- *     ubuntu-latest    job 1 319-1 566 s over eight readings    a cell 20.3 s    bound 40 min
- *     windows-latest   job 2 122 s over one                     a cell 27.1 s    bound 62 min
+ *     ubuntu-latest    job 1 319-1 632 s over nine readings    a cell 20.3 s    bound 40 min
+ *     windows-latest   job 2 122 s over one                    a cell 27.1 s    bound 64 min
  *
  * **A cell is 1.33 times dearer on the Windows leg, so the two legs spend their margins at different
- * rates.** The bounds were derived so that today they run out at about the same point - 41 cells of
- * headroom on `ubuntu-latest` over its worst plausible run, 44 on `windows-latest` over its own - and
- * that is arithmetic somebody performed, not a property that maintains itself. `suites.yml` carries the
- * derivation and its assumptions; the number to re-run it with is the job duration off the next
- * publication.
+ * rates.** They were derived level - 43 cells of headroom on `ubuntu-latest` over its worst plausible
+ * run against 42 on `windows-latest` - and they are **38 and 45** now, nine readings later, with nobody
+ * having decided anything. The Windows bound is computed from the readings and re-derives itself; the
+ * ubuntu one is typed at 40 and simply loses margin as the slowest reading grows. `suites.yml` carries
+ * the derivation and its assumptions.
  *
  * **The range on the ubuntu row is not decoration.** The Windows bound rests on the spread of this
  * battery's own identical work, and ADR-0169 shipped with six readings and named a seventh outside them
@@ -71,9 +71,14 @@
  *
  * **What re-reads it is not the range, and a cell added here is what will move the readings.** A
  * sample's range grows with the sample, so *outside what has been seen* is a condition that fires on
- * its own arithmetic; the bound is re-derived when a reading of this job comes back **above 1 589 s or
- * below 1 300 s**, which is where `suites.yml`'s arithmetic crosses a whole minute. Adding cells here
+ * its own arithmetic; the bound is re-derived when a reading of this job comes back **above 1 640 s or
+ * below 1 312 s**, which is where `suites.yml`'s arithmetic crosses a whole minute. Adding cells here
  * moves both ends of that, and nothing recomputes it.
+ *
+ * **The ubuntu row is the one to watch and it is the one nothing watches.** Its bound does not move
+ * when its readings do, so every slow run there is margin spent silently - and a cell added to this
+ * file spends 20.3 s of it at once. The reading that would say so is this job's duration off the next
+ * publication.
  *
  * **What nothing keeps is that anybody looks.** A cell added here reddens no bound and thins two, and
  * a battery that grows past one is killed rather than reported - every cell it had measured thrown

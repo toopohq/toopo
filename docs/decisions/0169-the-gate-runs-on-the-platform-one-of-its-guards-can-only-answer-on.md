@@ -98,17 +98,21 @@ The eight suites go from 106 s to 167 s, which is 1.58; the tooling goes from 14
 which half it is in.
 
 **That 257 s was published as though a job had a duration, in the record that derives a bound from the
-fact that one does not.** Two more readings in the wired shape, at `c44a76d` and `df91920`, are
-**325 s** and **211 s**. The lesson was applied to the bound and not to the figure beside it, and the
-correction is worth more than the number: **all of the spread is the tooling and none of it is the
-work.**
+fact that one does not.** Three more readings in the wired shape, at `c44a76d`, `df91920` and
+`7d979c4`:
 
-    checkout, pnpm/action-setup, setup-node, install     83 s   152 s    47 s    x3.2
-    the eight suites                                    167 s   164 s   158 s    x1.06
-    the job                                             257 s   325 s   211 s    x1.5
+    checkout, pnpm/action-setup, setup-node, install     83 s   152 s    47 s   100 s    x3.2
+    the eight suites                                    167 s   164 s   158 s   139 s    x1.20
+    the job                                             257 s   325 s   211 s   244 s    x1.54
 
-So what a Windows leg costs is a runner setting itself up, and the work on top of it is the stable part
-— which is why the per-step table above is worth reading and its total is not.
+**This record then said *all of the spread is the tooling and none of it is the work*, and the fourth
+reading made that false.** The suites had gone 167, 164, 158 — six per cent, on three readings — and
+then 139. It was a claim about a total that three draws happened to land close on, which is the same
+mistake as the 257 one level up, made while correcting it.
+
+What survives is the comparison and not the absolute: **the tooling spreads 105 s where the suites
+spread 28**, so it dominates without being alone, and `meta` by itself moves 41 to 56 s across the
+four. A total here is the runner's mood; the per-step table is the reading.
 
 **`meta` and `freeze` had never run on `windows-latest`.** A battery runs its own folder's
 configuration, so six configurations had; neither of those two is replayed by any battery — ADR-0107 is
@@ -174,15 +178,15 @@ launched in the same minute, came back **1 541 s and 1 319 s**. One reading does
 job.
 
     the job, measured at `36e4bbb`                                        2 122 s
-    x the spread of this battery's own identical work, eight readings on
+    x the spread of this battery's own identical work, nine readings on
       ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 515, 1 541, 1 549,
-      1 566 s: 1 566 / 1 319                                             x 1.1873
-    = the worst plausible run                                            2 519 s  42.0 min
+      1 566, 1 632 s: 1 632 / 1 319                                      x 1.2373
+    = the worst plausible run                                            2 626 s  43.8 min
     x what the 40 minutes already allows the longest job it was
       written against: 2 400 / 1 649                                     x 1.4554
-    =                                                                    3 667 s  61.1 min
+    =                                                                    3 821 s  63.7 min
 
-rounded up to the whole minute the field takes, which is the only rounding: **62**.
+rounded up to the whole minute the field takes, which is the only rounding: **64**.
 
 **This record shipped saying 61, on six readings, and named its own reopening condition — *a seventh
 falling outside 1 319–1 549 s*. The next run measured 1 566 s.** `c44a76d` is the push that wired these
@@ -207,8 +211,14 @@ silent. It was silent by where the reading fell and not by anything it establish
 **So the condition is keyed to the answer instead**, which is computable because the arithmetic rounds
 to whole minutes. The bound moves when `2 122 × (max / min) × 1.4554` crosses one:
 
-    a reading above 1 589 s, or below 1 300 s    →  63 minutes, and the arithmetic is re-run
-    anything between                             →  62 minutes, and there is nothing to do
+    a reading above 1 640 s, or below 1 312 s    →  65 minutes, and the arithmetic is re-run
+    anything between                             →  64 minutes, and there is nothing to do
+
+**The repaired clause fired on the first reading it ever judged, and the answer really moved.**
+`7d979c4` — the push that carried the repair — measured **1 632 s**, above the 1 589 s the threshold
+then named, and the bound went 62 to 64. The clause it replaced would have fired on 1 515 s *and* on
+1 632 s; this one was silent on the first and is not on the second, which is the whole of the
+difference between a condition and a treadmill.
 
 **It is a ratchet, and that is named rather than repaired.** `max / min` only grows, so this bound only
 rises and never tightens. What makes it acceptable is what it is: a sample's range underestimates its
@@ -216,9 +226,16 @@ population's, so the ratchet is an estimator converging rather than a number dri
 the cheap direction, a runaway job burning minutes somebody sees rather than a publication stopped with
 no verdict.
 
-**The half to carry is still that six readings did not bound the spread and eight may not either.** The
+**What the ratchet exposes is the bound beside it, and that is the finding rather than the two
+minutes.** The ubuntu gates are typed at 40, so as this battery's slowest reading grows their margin
+shrinks with nobody deciding anything: over the nine readings it went **42 cells, then 41, then 38**.
+The derived bound self-corrected across exactly the same window and the typed one did not. That is
+`CLAUDE.md`'s entry about a bound nobody compares with what a battery costs, no longer a class but a
+rate.
+
+**The half to carry is still that six readings did not bound the spread and nine may not either.** The
 assumption below — that this spread characterises the class — is weaker than any of these samples made
-it look.
+it look, and each new extreme has moved it.
 
 **What it assumes.** That the Windows job's relative spread is the ubuntu one for this battery — there
 is one Windows reading and n = 1 measures no spread at all. And that the reading taken was the fastest
@@ -228,10 +245,10 @@ plausible draw, which is the conservative direction.
 claim 61 is optimal. It does not claim the spread is stationary — six readings of one battery on one
 platform, and the day a seventh falls outside them this arithmetic is what somebody re-runs.
 
-**What says it landed somewhere is the check and not the argument.** 3 720 s over the worst plausible
-2 519 leaves 1 201 s, which at 27.1 s a cell is **44 cells** — against the **41** the 40 minutes leave
-the ubuntu leg over its own worst plausible 1 566. The two legs get about the same margin, which the
-derivation was not aimed at.
+**What says it landed somewhere is the check and not the argument.** 3 840 s over the worst plausible
+2 626 leaves 1 214 s, which at 27.1 s a cell is **45 cells** — against the **38** the 40 minutes leave
+the ubuntu leg over its own worst plausible 1 632. They started level, at 43 and 42; the gap between
+them now is the ratchet working on one bound and not on the other.
 
 **A second Windows reading was priced and refused.** It costs 2 122 s of runner and takes n from 1 to
 2, which bounds a tail no better than 1 does; the six ubuntu readings already give the spread for this
@@ -309,12 +326,16 @@ not an exception.
   instance — a name in the list that no cell of that family justifies is unreachable while every
   platform-decided cell names one family, and `mutation/selection.test.ts` says so rather than
   asserting it.
-- **A reading of `cli-install` on `ubuntu-latest` above 1 589 s or below 1 300 s**, which is where the
+- **A reading of `cli-install` on `ubuntu-latest` above 1 640 s or below 1 312 s**, which is where the
   arithmetic above crosses a whole minute. This clause read *a seventh outside 1 319–1 549 s*, fired on
   the very next run, and was then found to be the wrong shape rather than merely tripped: a range grows
   with its sample, so it was a condition firing one time in four on an event that establishes nothing.
-  What replaces it is keyed to the answer, so it is silent exactly when there is nothing to do — the
-  eighth reading, 1 515 s, being the first thing it correctly says nothing about.
+  What replaces it is keyed to the answer — silent on the eighth reading of 1 515 s, fired on the ninth
+  of 1 632 s, and the bound really moved on the second and not the first.
+- **The ubuntu gates' own margin reaching a point somebody is willing to name.** It is 38 cells and
+  falling, against 42 nine readings ago, and nothing recomputes it because 40 minutes is typed. This
+  record does not propose a number for it: raising a bound this unit did not measure, inside a unit
+  about a different one, is the move `CLAUDE.md`'s list exists to refuse.
 - `every-battery-on-windows` starting for the first time, which will be a publication and which is the
   one thing here nothing could exercise in advance.
 - The `packaging` step of leg (a) losing its network, which is what makes an unreachable npm a red run
