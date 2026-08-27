@@ -1,0 +1,265 @@
+# A throwaway workflow, on a throwaway branch, carrying one reading and nothing else.
+#
+# It never runs on `main` - `branches` below names this branch alone - and it edits no file the gates
+# in `suites.yml` read. ADR-0145 took its own reading exactly this way, and the reason is the same: a
+# branch runs its own copy of every workflow, so measuring inside `suites.yml` would mean editing the
+# gate that keeps a branch from deploying and from publishing.
+#
+# ---------------------------------------------------------------------------
+# What is being measured, and why an extrapolation would not do
+# ---------------------------------------------------------------------------
+#
+# Two Windows legs are proposed for `suites.yml`:
+#
+#   (a) the eight suites on `windows-latest`, on every push. It is ADR-0168's reopening clause: the
+#       three guards of `packages/cli/how-a-command-ends.test.ts` are ordinary suite guards, and the
+#       one that reads a real process's exit code is green on every runner this project owns while
+#       the defect is live.
+#
+#   (b) the `cli-install` battery on `windows-latest`, before a publication. It is the only thing
+#       that measures `C-64`, whose `killed` half is exercised by no runner this project owns.
+#       `expectedHere` answers `not-applicable` off the family and `measureCell` returns before
+#       injecting, so on POSIX the cell is honoured and never exercised.
+#
+# **(b) lands on `every-battery`, which gates publications, and its bound is 40 minutes.** A first
+# reading taken there would be taken during a release - the one moment at which nobody wants to
+# discover a number. So it is taken here instead.
+#
+# The figure this replaces is an extrapolation and is written down so that it can be refuted: ADR-0145
+# read `cli-install` at 1 497 s on Linux and 1 970 s on Windows, a ratio of 1.316; run 33078125142
+# read it at 1 542 s on `ubuntu-latest` at `1cf8ecd`; 1 542 x 1.316 is 2 029 s, which is 84.5 % of the
+# bound. Nothing is decided on that number. Both legs of the battery run here so that the ratio is
+# this commit's rather than six days old.
+#
+# ---------------------------------------------------------------------------
+# The criterion, written before any run of this file has finished
+# ---------------------------------------------------------------------------
+#
+# On the bound, read off `the-battery` below:
+#
+#   1. under 40 minutes on `windows-latest` - (b) is wired at the bound the file already declares and
+#      there is nothing to decide;
+#   2. over it - the bound becomes a decision with a measurement behind it, and it is the owner's.
+#
+# The margin is published either way, as a share of the bound and as cells, re-derived from the two
+# legs of this run rather than from the 17 s per cell `suites.yml` derives across batteries.
+#
+# On `C-64`, read off the same job's log:
+#
+#   `C-64` must print `killed as expected`. `not-applicable` there would mean the leg runs, is green,
+#   and measures exactly what `ubuntu-latest` already measures - which is the trap this unit exists to
+#   avoid rather than to add one floor up.
+#
+# On whether (a) can redden, read off `the-defect-restored` below:
+#
+#   With `process.exit` back in the client the guards spawn, the *set of reddened guards must differ
+#   between the two platforms*. It is a per-guard reading and never a per-job one: both jobs are
+#   expected red, because `a-refusal-lets-the-process-end-…` is portable by construction. What the
+#   Windows leg buys is `a-refusal-that-reached-the-registry-exits-one-…`, which ADR-0168 measured by
+#   hand at `aefd323` and which nothing has ever run.
+#
+# On `meta` and `freeze`:
+#
+#   Reported as a reading and nothing more. A battery runs its own folder's configuration, so six
+#   configurations have run on `windows-latest`; `mutation/vitest.config.ts` and
+#   `packages/registry/against-what-was-published/vitest.config.ts` are replayed by no battery and
+#   have never run there. This machine is Windows, which de-risks and does not prove.
+
+name: the windows reading
+
+on:
+  push:
+    branches: ['the-windows-reading']
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Leg (a), on both platforms, so the cost is a comparison rather than a number
+  # ---------------------------------------------------------------------------
+  #
+  # The steps are `suites.yml`'s eight, in its order, so what is read here is what that job would cost
+  # and not what a shorter version of it would. `ubuntu-latest` is the control: `suites.yml` runs the
+  # same eight on this push already, but in a job this file does not define, and a comparison across
+  # two definitions is one nobody can check.
+  the-suites:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 40
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: what this reading was taken on
+        shell: bash
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      - name: the tree the instrument requires
+        shell: bash
+        run: |
+          git status --porcelain
+          git worktree list
+
+      - name: contracts
+        run: npm run test
+
+      # Replayed by no battery, so it has never run on `windows-latest`.
+      - name: meta
+        run: npm run meta
+
+      - name: registry
+        run: npm run registry
+
+      - name: validation
+        run: npm run validation
+
+      - name: cli
+        run: npm run cli
+
+      - name: site
+        run: npm run site
+
+      - name: packaging
+        run: npm run packaging
+
+      # Replayed by no battery either - ADR-0107 is why - so this is the second of the two.
+      - name: the freeze
+        run: npm run freeze
+
+  # ---------------------------------------------------------------------------
+  # Leg (b), on both platforms, at one commit
+  # ---------------------------------------------------------------------------
+  #
+  # **`timeout-minutes` is 90 and that is deliberate.** The bound under measurement is 40, and a job
+  # killed at the number it is measuring reports that number rather than the one it was going to
+  # reach. A reading cut off at its own hypothesis is not a reading.
+  the-battery:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: what this reading was taken on
+        shell: bash
+        run: |
+          node --version
+          git --version
+          echo "$ImageOS $ImageVersion"
+
+      - name: the tree the instrument requires
+        shell: bash
+        run: |
+          git status --porcelain
+          git worktree list
+
+      # `npm run` and not `node mutation/measure.ts`: `packaging/the-archive.ts` finds npm through
+      # `npm_execpath`, and starting it any other way measures the launcher. `suites.yml` carries the
+      # argument; this is the same command both gates issue.
+      - name: cli-install
+        run: npm run battery cli-install
+
+  # ---------------------------------------------------------------------------
+  # Whether leg (a) can redden at all, which is the half that decides this unit
+  # ---------------------------------------------------------------------------
+  #
+  # ADR-0168's defect, restored in the one line it lives on: the client the three guards spawn ends
+  # with `process.exit` after a `fetch` instead of assigning `process.exitCode`.
+  #
+  # **The substitution refuses to fail quietly.** A step that replaced nothing and then ran a green
+  # suite would be the decorative guard this repository refuses, arriving inside the demonstration
+  # that a guard is not decorative.
+  #
+  # The suite is expected red on both platforms and the job is therefore not gated on its exit code -
+  # what is being read is *which guards* reddened, which the json report carries and a conclusion does
+  # not.
+  the-defect-restored:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: what this reading was taken on
+        shell: bash
+        run: |
+          node --version
+          echo "$ImageOS $ImageVersion"
+
+      - name: restore the defect
+        shell: bash
+        run: node .github/restore-the-defect.mjs
+
+      - name: what the restoration changed
+        shell: bash
+        run: git --no-pager diff --stat
+
+      - name: the guards that read how a command ends
+        id: the-suite
+        continue-on-error: true
+        shell: bash
+        run: |
+          node run-vitest.ts run \
+            --config packages/cli/vitest.config.ts \
+            --reporter=default \
+            --reporter=json \
+            --outputFile.json=the-ending.json \
+            packages/cli/how-a-command-ends.test.ts
+
+      - name: which guards reddened
+        shell: bash
+        run: node .github/which-guards-reddened.mjs packages/cli/the-ending.json
