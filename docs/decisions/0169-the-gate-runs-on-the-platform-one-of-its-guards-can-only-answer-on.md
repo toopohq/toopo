@@ -247,3 +247,22 @@ not an exception.
   the spread the bound rests on is not the spread and the arithmetic above is re-run.
 - The `packaging` step of leg (a) losing its network, which is what makes an unreachable npm a red run
   already — the same conditional the `version` job's own comment states, arriving on a second job.
+
+## More Information
+
+**Ten citations of `36e4bbb` are live only while the branch is.** Measured after this unit was
+written: five in `.github/workflows/suites.yml`, three here, one in `CLAUDE.md` and one in
+`mutation/cli-install.battery.ts`. That commit is reachable from `refs/heads/the-windows-reading` and
+from nothing else — `git rev-list --all` covers `refs/remotes/` too, and `actions/checkout` with
+`fetch-depth: 0` creates `refs/remotes/origin/the-windows-reading`, which is why they resolve on a
+runner.
+
+**So deleting that branch turns ten citations dead at once**, and this paragraph exists so that whoever
+meets that red knows what caused it rather than hunting for a rewrite. It is *kept* rather than merely
+declared: `deadCitationFaults` sweeps the tracked tree against `--all` and the meta suite runs on every
+push, so the deletion is a loud failure and not a silent one.
+
+**ADR-0145 solved the same problem with an annotated tag** — `evidence/the-batteries-on-two-runners` —
+and that route was not taken here because no tag was to be created in this unit. A branch and a tag
+keep a commit reachable equally well; what a tag adds is that nobody deletes one by tidying up. That
+difference is the whole of the risk, and it is written down rather than mitigated.
