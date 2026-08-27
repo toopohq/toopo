@@ -54,15 +54,20 @@
  *
  * Measured at `36e4bbb`, the same 75 cells on the two platforms:
  *
- *     ubuntu-latest    job 1 541 s    a cell 20.3 s    bound 40 min
- *     windows-latest   job 2 122 s    a cell 27.1 s    bound 61 min
+ *     ubuntu-latest    job 1 319-1 566 s over seven readings    a cell 20.3 s    bound 40 min
+ *     windows-latest   job 2 122 s over one                     a cell 27.1 s    bound 62 min
  *
  * **A cell is 1.33 times dearer on the Windows leg, so the two legs spend their margins at different
- * rates.** The bounds were derived so that today they run out together - 42 cells of headroom on
- * `ubuntu-latest` over its worst plausible run, 43 on `windows-latest` over its own - and that equality
- * is arithmetic somebody performed, not a property that maintains itself. `suites.yml` carries the
+ * rates.** The bounds were derived so that today they run out at about the same point - 41 cells of
+ * headroom on `ubuntu-latest` over its worst plausible run, 44 on `windows-latest` over its own - and
+ * that is arithmetic somebody performed, not a property that maintains itself. `suites.yml` carries the
  * derivation and its assumptions; the number to re-run it with is the job duration off the next
  * publication.
+ *
+ * **The range on the ubuntu row is not decoration.** The Windows bound rests on the spread of this
+ * battery's own identical work, and ADR-0169 shipped with six readings and named a seventh outside them
+ * as its reopening condition. The next push measured 1 566 s. So the arithmetic has already been re-run
+ * once, one run after it was written, and the population it rests on is not closed.
  *
  * **What nothing keeps is that anybody looks.** A cell added here reddens no bound and thins two, and
  * a battery that grows past one is killed rather than reported - every cell it had measured thrown

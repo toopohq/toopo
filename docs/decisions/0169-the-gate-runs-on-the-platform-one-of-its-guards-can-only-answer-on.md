@@ -97,6 +97,15 @@ The eight suites go from 106 s to 167 s, which is 1.58; the tooling goes from 14
 5.9, and **72 of the 132 seconds of difference are two actions**. Anybody optimising this should know
 which half it is in.
 
+**That 257 s was published as though a job had a duration, in the record that derives a bound from the
+fact that one does not.** The second reading, at `c44a76d` in the wired shape, is **325 s** — 26 %
+above. The lesson was applied to the bound and not to the figure beside it, and the correction is worth
+more than the number: **all of the spread is the tooling.** Checkout, `pnpm/action-setup`, `setup-node`
+and the install went **83 s to 152 s** between the two readings; the eight suites went **167 s to
+164 s**. So what a Windows leg costs is a runner setting itself up, and the work on top of it is the
+stable part — which is also why the same job's per-step table above is worth reading and its total is
+not.
+
 **`meta` and `freeze` had never run on `windows-latest`.** A battery runs its own folder's
 configuration, so six configurations had; neither of those two is replayed by any battery — ADR-0107 is
 why the freeze is not. Both are green. That was the named risk of leg (a) and it is answered by a
@@ -161,16 +170,26 @@ launched in the same minute, came back **1 541 s and 1 319 s**. One reading does
 job.
 
     the job, measured at `36e4bbb`                                        2 122 s
-    x the spread of this battery's own identical work, six readings on
-      ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 541, 1 549 s, of
-      which two are this reading's and four are quoted in `suites.yml`
-      already: 1 549 / 1 319                                             x 1.1744
-    = the worst plausible run                                            2 492 s  41.5 min
+    x the spread of this battery's own identical work, seven readings on
+      ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 541, 1 549, 1 566 s:
+      1 566 / 1 319                                                      x 1.1873
+    = the worst plausible run                                            2 519 s  42.0 min
     x what the 40 minutes already allows the longest job it was
       written against: 2 400 / 1 649                                     x 1.4554
-    =                                                                    3 627 s  60.5 min
+    =                                                                    3 667 s  61.1 min
 
-rounded up to the whole minute the field takes, which is the only rounding: **61**.
+rounded up to the whole minute the field takes, which is the only rounding: **62**.
+
+**This record shipped saying 61, on six readings, and named its own reopening condition — *a seventh
+falling outside 1 319–1 549 s*. The next run measured 1 566 s.** `c44a76d` is the push that wired these
+two legs, and `batteries (cli-install)` on it is that seventh. The arithmetic was re-run rather than the
+clause left to be somebody else's problem, which is the whole of what a reopening condition is for.
+
+**What that says about the form is worth more than the minute.** The input moved 1.1 % and the answer
+moved one minute, so the derivation is insensitive to the reading that broke its own population. What it
+also says, and this is the half to carry: **six readings did not bound the spread, and seven may not
+either.** The assumption below — that this spread characterises the class — is weaker than six readings
+made it look.
 
 **What it assumes.** That the Windows job's relative spread is the ubuntu one for this battery — there
 is one Windows reading and n = 1 measures no spread at all. And that the reading taken was the fastest
@@ -180,9 +199,9 @@ plausible draw, which is the conservative direction.
 claim 61 is optimal. It does not claim the spread is stationary — six readings of one battery on one
 platform, and the day a seventh falls outside them this arithmetic is what somebody re-runs.
 
-**What says it landed somewhere is the check and not the argument.** 3 660 s over the worst plausible
-2 492 leaves 1 168 s, which at 27.1 s a cell is **43 cells** — against the **42** the 40 minutes leave
-the ubuntu leg over its own worst plausible 1 549. The two legs get the same margin, which the
+**What says it landed somewhere is the check and not the argument.** 3 720 s over the worst plausible
+2 519 leaves 1 201 s, which at 27.1 s a cell is **44 cells** — against the **41** the 40 minutes leave
+the ubuntu leg over its own worst plausible 1 566. The two legs get about the same margin, which the
 derivation was not aimed at.
 
 **A second Windows reading was priced and refused.** It costs 2 122 s of runner and takes n from 1 to
@@ -217,8 +236,26 @@ second is 1.33 times the first. The two bounds run out together today by arithme
 not by a property that maintains itself. `mutation/cli-install.battery.ts` carries that where a reader
 adding a cell arrives; nothing recomputes it.
 
-**Bad.** Every push now costs one more job. Leg (a) is 257 s of runner, and on the 20 pushes in 75 where
-no battery is selected it is also the run's wall clock, which goes from about 163 s to about 295 s.
+**Bad.** Every push now costs one more job, of 257 s and 325 s over the two readings, and on the 20
+pushes in 75 where no battery is selected it is also the run's wall clock. The wiring is demonstrated
+by the clock rather than by the graph: at `c44a76d` the ubuntu matrix finished at 16:21:34,
+`suites-on-windows` at 16:24:59, and `site` started at 16:25:01 — so a deployment now waits 207 s
+longer than it did.
+
+**Bad, and it is the one thing here that could not be measured before it matters.** A skipped job does
+not evaluate its `strategy`, so `every-battery-on-windows` was reported `skipped` at `c44a76d` without
+GitHub ever resolving `fromJSON(needs.which-batteries.outputs.windows)`. **The first time that job
+starts will be a publication.** What is established is narrower and is written down rather than
+rounded up to *it works*: the condition evaluates and skips rather than failing; `which-batteries`
+printed `1 battery(ies) hold a cell only a Windows runner can measure - cli-install` on that run; and
+the matrix expression is the same construction as `every-battery`'s, which has resolved on every
+publication so far. What is not established is this job starting.
+
+It is the shape this record refused for the bound — *the first reading must not happen in a
+publication* — arriving on the wiring, where it cannot be refused: the condition that makes the job run
+is the condition that publishes, and nothing here can make one happen without the other. What could be
+bought is a branch run with the condition relaxed, at the price of the job, and it is named here rather
+than taken.
 
 **What the reading cost, which is not what the legs cost.** 10 819 runner-seconds — 4 129 for the run
 above, and **6 690 for a full replay of all 23 batteries that nobody wanted**. The first push of a
@@ -243,8 +280,13 @@ not an exception.
   instance — a name in the list that no cell of that family justifies is unreachable while every
   platform-decided cell names one family, and `mutation/selection.test.ts` says so rather than
   asserting it.
-- A seventh reading of `cli-install` on `ubuntu-latest` falling outside 1 319–1 549 s, at which point
-  the spread the bound rests on is not the spread and the arithmetic above is re-run.
+- **An eighth reading of `cli-install` on `ubuntu-latest` falling outside 1 319–1 566 s**, at which
+  point the spread the bound rests on is not the spread and the arithmetic above is re-run. This clause
+  read *a seventh outside 1 319–1 549* and fired on the next run, which is the entry that has closed
+  and reopened fastest in this repository; it is restated at the widened range rather than struck,
+  because what it is about has not changed.
+- `every-battery-on-windows` starting for the first time, which will be a publication and which is the
+  one thing here nothing could exercise in advance.
 - The `packaging` step of leg (a) losing its network, which is what makes an unreachable npm a red run
   already — the same conditional the `version` job's own comment states, arriving on a second job.
 

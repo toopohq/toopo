@@ -265,9 +265,17 @@ jobs:
   #
   # **It is a job and not a leg of the matrix above, and the difference is measured.** `site` and
   # `batteries` both wait for `suites`, and `needs` waits for every leg of a matrix - so putting this in
-  # there would add its whole duration to the critical path of every push. Measured at `36e4bbb`: 257 s
-  # here against 125 s for the same eight steps on `ubuntu-latest`, which is 132 s that every push would
-  # pay before a battery could start.
+  # there would add its whole duration to the critical path of every push.
+  #
+  # **Two readings and not one, because the first was published as though a job had a duration.** 257 s
+  # at `36e4bbb` in the workflow the reading was taken with, 325 s at `c44a76d` in this shape, against
+  # 125 s for the same eight steps on `ubuntu-latest`. The spread is 26 % and **all of it is the
+  # tooling**: checkout, `pnpm/action-setup`, `setup-node` and the install went 83 s to 152 s between
+  # the two, and the eight suites went 167 s to 164 s. So what a Windows leg costs is a runner setting
+  # itself up, and the work on top of it is the stable part.
+  #
+  # `site` waited for it and the clock says so rather than the graph: at `c44a76d` the ubuntu matrix
+  # finished at 16:21:34, this at 16:24:59, and `site` started at 16:25:01.
   #
   # **What waits for it is `site`, and `publish` reaches it through that.** The batteries deliberately do
   # not: a battery calibrates against its own suite's control on its own platform, which is the reason
@@ -284,8 +292,10 @@ jobs:
   suites-on-windows:
     runs-on: windows-latest
 
-    # 257 s measured at `36e4bbb`. This is a hang detector and not a budget, and the derivation of the
-    # one on the Windows battery below is the argument for both.
+    # 257 s and 325 s over the two readings above. This is a hang detector and not a budget, and the
+    # derivation of the one on the Windows battery below is the argument for both - applied here it
+    # gives about ten minutes, and this is left at twice that because the cost of being generous is a
+    # red push somebody sees rather than a publication that stops with no verdict.
     timeout-minutes: 20
 
     steps:
@@ -808,6 +818,18 @@ jobs:
   # so this belongs to the publication rather than to the first gate - which is also the cheaper answer,
   # 13 of the 75 pushes read at `88bfb54` selecting `cli-install`.
   #
+  # **What no run has exercised is this job's own matrix, and that is stated rather than left to be
+  # found.** A skipped job does not evaluate its `strategy`, so at `c44a76d` - where the condition below
+  # was false because npm already held the version - GitHub reported `skipped` without ever resolving
+  # `fromJSON`. What *is* established: the condition evaluates and skips rather than failing; the output
+  # it reads was printed by `which-batteries` on that run as `1 battery(ies) hold a cell only a Windows
+  # runner can measure - cli-install`; and the expression is the same construction as `every-battery`'s,
+  # which has resolved on every publication. What is not is this job starting.
+  #
+  # So the first time it runs will be a publication, which is the shape ADR-0169 refused for the bound
+  # one paragraph down and could not refuse for itself: the condition that makes it run is the condition
+  # that publishes, and nothing this repository can do makes one happen without the other.
+  #
   # ---------------------------------------------------------------------------
   # The bound, derived from the spread rather than chosen
   # ---------------------------------------------------------------------------
@@ -819,16 +841,23 @@ jobs:
   # above the worst plausible run and not near the median.
   #
   #     the job, measured at `36e4bbb`                                        2 122 s
-  #     x the spread of this battery's own identical work, six readings
-  #       on ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 541, 1 549 s,
-  #       of which two are this reading's and four are the ones quoted
-  #       further up this file: 1 549 / 1 319                                x 1.1744
-  #     = the worst plausible run                                            2 492 s  41.5 min
+  #     x the spread of this battery's own identical work, seven readings
+  #       on ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 541, 1 549,
+  #       1 566 s: 1 566 / 1 319                                             x 1.1873
+  #     = the worst plausible run                                            2 519 s  42.0 min
   #     x what the 40 minutes above already allows the longest job it
   #       was written against: 2 400 / 1 649                                 x 1.4554
-  #     =                                                                    3 627 s  60.5 min
+  #     =                                                                    3 667 s  61.1 min
   #
   # rounded up to the whole minute the field takes, which is the only rounding here.
+  #
+  # **The seventh reading arrived one run after this was written, and it is why the figure is 62 and
+  # not 61.** ADR-0169 shipped with six readings spanning 1 319-1 549 s and named its own reopening
+  # condition - *a seventh falling outside them* - and `c44a76d`, the push that wired this job, measured
+  # 1 566 s. The arithmetic was re-run rather than the clause shrugged at. **What that says about the
+  # form is worth more than the minute**: the input moved 1.1 % and the answer moved one minute, so the
+  # derivation is not sensitive to the reading that broke its own population. What it also says is that
+  # six readings did not bound the spread and seven may not either.
   #
   # **What it assumes, said rather than buried.** That the Windows job's relative spread is the ubuntu
   # one for this battery - there is a single Windows reading and n = 1 measures no spread at all. And
@@ -840,10 +869,10 @@ jobs:
   # battery on one platform, and the day a seventh falls outside them this arithmetic is what somebody
   # re-runs.
   #
-  # **What it lands on is the check rather than the argument**: 3 660 s over the worst plausible 2 492
-  # leaves 1 168 s, which at 27.1 s a cell here is 43 cells - against the 42 the 40 minutes above leave
-  # the ubuntu leg over its own worst plausible 1 549. The two legs get the same margin, which is not
-  # what the derivation was aimed at and is what says it landed somewhere.
+  # **What it lands on is the check rather than the argument**: 3 720 s over the worst plausible 2 519
+  # leaves 1 201 s, which at 27.1 s a cell here is 44 cells - against the 41 the 40 minutes above leave
+  # the ubuntu leg over its own worst plausible 1 566. The two legs get about the same margin, which is
+  # not what the derivation was aimed at and is what says it landed somewhere.
   #
   # **A second Windows reading was priced and refused.** It costs 2 122 s of runner and takes n from 1
   # to 2, which bounds a tail no better than 1 does; the six ubuntu readings already give the spread for
@@ -859,7 +888,7 @@ jobs:
 
     runs-on: windows-latest
 
-    timeout-minutes: 61
+    timeout-minutes: 62
 
     strategy:
       fail-fast: false
