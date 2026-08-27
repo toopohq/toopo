@@ -1030,6 +1030,27 @@ over the tracked tree: **nineteen citations of this list, in thirteen records an
 every one of them names what the list is; not one names when it closes.** The half that was doing
 the work was never the conditional half. ADR-0153.
 
+**And *an order that says nothing about which one is taken next* was read once, at `0986b70`, by
+asking of each entry whether a reader meets it.** A reader is somebody who visits `toopo.dev`, runs
+`npx toopo`, installs the archive npm serves or fetches an answer from the declared origin — never
+somebody who reads this repository — and an entry was counted as met when the artefact whose
+declaration is unkept is itself something a reader receives or acts on, the artefact and never the
+consequence. **The population was 56 and the marker count said 50**, four entries opening with a
+backticked identifier and two standing above the *Still open* subheading. That reading answered **27
+met and 29 not, and of the 27, five realised** — a reader receives something wrong today — **and 22
+latent**. The five: three citations that resolve nowhere inside the shared harness every snapshot
+serves; a README whose banner example disagrees with what installing `object/deep-equal@1` lands; a
+frozen benchmark-profile name rendered on a page and answerable by no query; two cache policies of
+which one is written in no file here; and two levels of verifiability across the published contracts,
+six serving seven harness files and one serving eight. Each carries its command in the record.
+
+**It is a reading and not a rule, which is the whole of what could be decided.** An entry has no
+address, ADR-0118 refuses one on rewritable prose, and a guard keyed to an entry's text would redden
+when somebody rewrites an entry — ADR-0112's refusal exactly. So nothing holds this reading to the
+list: entries will be rewritten, closed and opened, and no mechanism will notice that it has stopped
+describing them. It says what was true at one commit by a rule written down before it was applied,
+and nothing about tomorrow. ADR-0167.
+
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
 file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
@@ -1223,15 +1244,23 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **And the sentence describing the debt is frozen with the contracts it describes.**
   `every-contract.ts` is one of `THE_SHARED_FILES`, so a byte in it moves every contract digest at
   once — measured, all six. What saves it from being false is that it is stamped, at
-  `THE_ANATOMY_WAS_MEASURED_AT`; what nothing can do is correct it. Today's reading of the field is
-  **four of six** where the frozen sentence says three of five, and the set of contracts still owing
-  it has not moved.
+  `THE_ANATOMY_WAS_MEASURED_AT`; what nothing can do is correct it. **This entry read *four of six*
+  and it is five of seven** — measured at `0986b70`, `relationToTheLanguage` is declared by
+  `array/group-by`, `number/round`, `object/deep-equal`, `string/levenshtein` and `string/slugify`
+  and missing from `date/add` and `number/parse`, where the frozen sentence says three of five. The
+  set of contracts still owing it has not moved. ADR-0167.
 
-  **The population is the four founding contracts, and it will not grow.** `number/round@1` carries
-  its `language.test.ts` because it declared it *before* it was published, and every contract
-  published after it can do the same — so the window shut once, on the day of the first publication,
-  rather than closing a little further with each contract. That is what makes this an entry to read
-  and not one to act on.
+  **This entry read *the population is the four founding contracts, and it will not grow*, and the
+  seventh contract refutes both halves.** `number/round@1` carries its `language.test.ts` because it
+  declared it *before* it was published, and every contract published after it *can* do the same —
+  which is the part that holds. What does not is that any of them did: measured at `0986b70` by
+  fetching each installable contract's binding and then its snapshot, **six serve seven harness files
+  with no `language.test.ts` and `number/round@1` serves eight with one**, and `object/deep-equal@1`
+  was published after `number/round@1` and is frozen without one. So the population is **five
+  published contracts that can never carry a replay**, not four, and it grows by one with every
+  contract published without one — the window does not shut, it is re-opened and re-shut at each
+  publication. That is what makes this an entry to read and not one to act on, and what makes the
+  reading worth taking again. ADR-0167.
 
   **What it costs is stated rather than smoothed: two published contracts, two levels of
   verifiability, for a reason of calendar.** An auditor fetching the snapshot of `number/round@1`
@@ -1298,9 +1327,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `the-licence-file-shows-the-banner-a-reader-would-receive` reddens by itself. **The same guard
   cannot be written for `README.md`**, and the reason is not effort: the page demonstrates an
   *install*, `the-header-the-readme-shows-is-the-one-the-installer-writes` holds it to the real header
-  of the contract it demonstrates, and the only contract carrying the current form is
-  `array/group-by@1`, which is refused and which nobody can install. A front page demonstrating an
-  uninstallable contract would trade one wrong lesson for a worse one.
+  of the contract it demonstrates. **This entry read *the only contract carrying the current form is
+  `array/group-by@1`, which is refused and which nobody can install*, and the seventh contract made
+  both halves false.** Measured at `0986b70`: `object/deep-equal@1` declares `the-marking-alone` too,
+  the origin's own index marks it `installable: true`, and installing it lands
+  `// typescript/object/deep-equal@1 - …` and `// SPDX-License-Identifier: MIT-0` with **no copyright
+  line at all**. So the argument that stood here — a front page demonstrating an uninstallable
+  contract would trade one wrong lesson for a worse one — is about a state this repository left when
+  it published its seventh contract. ADR-0167.
 
   **So the surface a stranger reads first goes on showing a copyright line**, correctly, on a file
   whose header is frozen — and the lesson it teaches about the file a reader is about to receive is
@@ -1308,11 +1342,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   carries that header and always will.
 
   **The population is every surface that shows an example of an installed file**, which is `LICENSE`
-  and `README.md` today, and one of the two is kept. What would close it is the demonstration moving
-  to a contract published after ADR-0159 — which needs a seventh contract to exist and to be
-  demonstrated, and neither is forced by anything. **Where this looked**: `mutation/readme.test.ts`'s
-  own guard, `THE_SUITES[DEMONSTRATED]`, and the banner declarations of all six catalogue entries.
-  ADR-0159.
+  and `README.md` today, and one of the two is kept. **What would close it is reachable now and not
+  taken**, which is a different state from the one this entry described for two days: the closure was
+  *the demonstration moving to a contract published after ADR-0159*, that contract exists, it is
+  installable, and moving the README onto it is a judgement about which contract a stranger should
+  meet first rather than about licensing — so it is named here rather than made inside a unit whose
+  subject was the reading. **Where this looked**: `mutation/readme.test.ts`'s own guard,
+  `THE_SUITES[DEMONSTRATED]`, and the banner declarations of all seven catalogue entries. ADR-0159,
+  ADR-0167.
 
 - **That a second word of a query is one the contract has any business answering.** The entry this
   replaces was about a word the query *adds* being free, and it is closed: a query that sets a word
@@ -1579,8 +1616,11 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   guard whose subject is exactly that defect could not see it, and the instrument is what said so.
 
   **The population is every place this site writes text beside a phrasing element**, which today is
-  one: the mark after a turned-down contract's name on the front page, one contract of five. That is
-  what makes the price wrong rather than the defect small.
+  one: the mark after a turned-down contract's name, one contract of seven. **This entry said *on the
+  front page* and ADR-0140 moved it** — measured at `0986b70`, `/catalogue/` renders
+  `<li><a …>group-by</a> — turned down</li>` and the front page carries no such mark, the door having
+  taken the catalogue's thirteen links with it. That is what makes the price wrong rather than the
+  defect small. ADR-0167.
 
   **What would close it is one of two things and both cost more than they buy.** Widening the guard
   to element-against-text changes its population across every page of the tree, and a guard whose
@@ -1768,10 +1808,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   which is what nineteen destinations of two contract pages did at every width a phone has until
   ADR-0135. The repair ties the clearance to the bar by sharing its terms: the padding the masthead
   declares, and its content at the tallest that content gets. **One term of that arithmetic is data
-  and not a length.** `--the-menu-at-its-tallest: 3` is the most rows the menu wraps to between 280
-  and 479, measured, and the menu's entry count lives in `theMenu` of `packages/site/chrome.ts` where
-  nothing resolves it against the stylesheet. **A fourth destination in the masthead makes the
-  clearance too short and no check says so**, and the failure is quiet by construction: the page is
+  and not a length.** `--the-menu-at-its-tallest` is the most rows the menu wraps to between 280 and
+  479, measured, and the menu's entry count lives in `theMenu` of `packages/site/chrome.ts` where
+  nothing resolves it against the stylesheet. **This entry read *3* and *a fourth destination*, and
+  both moved with ADR-0140** — measured at `0986b70`, the declaration is `1` and `theMenu` returns one
+  entry, `How we verify`, the door having taken the catalogue out of the masthead. So the two agree
+  today and **a second destination in the masthead makes the clearance too short with no check saying
+  so**, which is a cheaper event than the one this entry was written against. The failure is quiet by
+  construction: the page is
   not broken, it is one row of navigation taller than the offset that was written for it, and only
   somebody following a link at a phone width would find out.
 
