@@ -226,6 +226,15 @@ population's, so the ratchet is an estimator converging rather than a number dri
 the cheap direction, a runaway job burning minutes somebody sees rather than a publication stopped with
 no verdict.
 
+**And the clause is a reason to look, never an obligation to edit — which this unit nearly failed to
+notice about itself.** Each commit touching `mutation/cli-install.battery.ts` produces another reading,
+which may move the number again, which would want another commit: a repaired clause can build the
+treadmill the broken one built, one level up. What stops it is that **a bound one minute under its own
+derivation costs nothing** — it is generous in the safe direction and no run is near it. So the
+arithmetic is re-run when somebody is already here, and the event that would make it urgent is a *run*
+approaching the bound, which is not the same event and is the one the whole derivation exists for. This
+unit stops re-deriving here, at nine readings, deliberately.
+
 **What the ratchet exposes is the bound beside it, and that is the finding rather than the two
 minutes.** The ubuntu gates are typed at 40, so as this battery's slowest reading grows their margin
 shrinks with nobody deciding anything: over the nine readings it went **42 cells, then 41, then 38**.

@@ -896,6 +896,14 @@ jobs:
   # direction it errs in is the cheap one, a runaway job burning minutes somebody sees instead of a
   # publication stopped with no verdict.
   #
+  # **The clause is a reason to look and never an obligation to edit**, and that half is written here
+  # because the unit that wrote it nearly missed it: every commit touching the battery below produces
+  # another reading, which may move this number again, which would want another commit. A bound one
+  # minute under its own derivation costs nothing - it is generous in the safe direction and a real run
+  # is nowhere near it - so re-deriving is worth doing when somebody is here anyway and is not worth a
+  # commit of its own. What would make it urgent is a *run* approaching the bound, which is a different
+  # event and the one this whole comment exists for.
+  #
   # **What the ratchet exposes is the bound beside it, which has none.** The two ubuntu gates are typed
   # at 40 minutes, so as this battery's slowest reading grows their margin shrinks with nobody deciding
   # anything: over the nine readings above it went 42 cells, then 41, then 38. This one self-corrected
