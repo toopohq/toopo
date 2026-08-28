@@ -5,12 +5,6 @@ contract.** Not a dependency: the source lands in your repository and it is your
 registry rather than a collection is the contract — the specification that judges the code, owned
 here, frozen for life, and yours to read before you install anything.
 
-```sh
-npx toopo add string/slugify
-```
-
-`npx` needs nothing installed; `npm install -g toopo` makes the prefix optional.
-
 ## What a contract is
 
 A folder of seven files. **One is the implementation. The other six are what judges it**, and all
@@ -55,7 +49,39 @@ The properties beside that table hold for *every* input rather than for a named 
 `p2-idempotence`, that slugging a slug changes nothing; `p8-one-separator-per-gap`, that a separator
 appears exactly between two runs.
 
+## What is in the catalogue
+
+**7 contracts, 6 of them installable and 1 refused.** The refused one was measured against what the
+language now does and turned down, and it is published here rather than deleted, because a catalogue
+that only shows what it accepted is a catalogue you cannot check.
+
+| Contract | What it settles |
+| --- | --- |
+| `typescript/number/parse@1` | Turning text into a number without `Number`'s traps |
+| `typescript/date/add@1` | Calendar arithmetic, including what a fractional month means |
+| `typescript/string/levenshtein@1` | Edit distance, over code points rather than code units |
+| `typescript/string/slugify@1` | Text to a URL-safe identifier, Unicode rather than ASCII |
+| `typescript/number/round@1` | Rounding the decimal a caller wrote, not the double a machine stored |
+| `typescript/object/deep-equal@1` | Comparing two values by the data they carry, where two shipped implementations answer `true` for two different Sets |
+| `typescript/array/group-by@1` | **Refused.** ES2024 shipped `Map.groupBy` and it answers the contract |
+
+Between them the six installable contracts settle **237 named edge cases**, each identifier frozen
+for the life of the major version.
+
+- [toopo.dev](https://toopo.dev) — the catalogue, one page per contract, with a playground that runs
+  the implementation on what you type
+- [toopo.dev/method/](https://toopo.dev/method/) — how the verification is measured, and what it
+  does not establish
+
 ## What lands in your project
+
+Any row of that table installs the same way, and this one takes `string/slugify@1`:
+
+```sh
+npx toopo add string/slugify
+```
+
+`npx` needs nothing installed; `npm install -g toopo` makes the prefix optional.
 
 One file, at `lib/toopo/string/slugify.ts`, its digest recorded in `toopo.lock` — `toopo add` writes
 under `src/lib/toopo/` instead when your project has a `src` folder, and prints the path it chose. It
@@ -80,30 +106,6 @@ offers. `toopo add` prints the line for wherever it wrote.
 
 `toopo.lock` records, for every file it wrote, what the registry served and what landed on your disk,
 so *is this the code I was given* is a question your own checkout answers with nothing from us.
-
-## What is in the catalogue
-
-**7 contracts, 6 of them installable and 1 refused.** The refused one was measured against what the
-language now does and turned down, and it is published here rather than deleted, because a catalogue
-that only shows what it accepted is a catalogue you cannot check.
-
-| Contract | What it settles |
-| --- | --- |
-| `typescript/number/parse@1` | Turning text into a number without `Number`'s traps |
-| `typescript/date/add@1` | Calendar arithmetic, including what a fractional month means |
-| `typescript/string/levenshtein@1` | Edit distance, over code points rather than code units |
-| `typescript/string/slugify@1` | Text to a URL-safe identifier, Unicode rather than ASCII |
-| `typescript/number/round@1` | Rounding the decimal a caller wrote, not the double a machine stored |
-| `typescript/object/deep-equal@1` | Comparing two values by the data they carry, where two shipped implementations answer `true` for two different Sets |
-| `typescript/array/group-by@1` | **Refused.** ES2024 shipped `Map.groupBy` and it answers the contract |
-
-Between them the six installable contracts settle **237 named edge cases**, each identifier frozen
-for the life of the major version.
-
-- [toopo.dev](https://toopo.dev) — the catalogue, one page per contract, with a playground that runs
-  the implementation on what you type
-- [toopo.dev/method/](https://toopo.dev/method/) — how the verification is measured, and what it
-  does not establish
 
 ## Why you can believe any of it
 

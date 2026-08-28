@@ -58,6 +58,14 @@ export const rootDocument = (name: RootDocument): string =>
  * It answers `''` for a heading that is not there, and a caller refuses that rather than sweeping it -
  * a population built from a heading somebody retitled is empty, and an empty population is the one
  * shape that passes while establishing nothing. ADR-0172.
+ *
+ * **Addressing a section by its heading rather than by its position is what let two of them change
+ * places with nothing here needing an edit.** ADR-0173 raised the catalogue above the section about
+ * one install and lowered the opening command into it, and not one guard's text moved, because none
+ * of them knows where anything sits. **What that buys is stated with what it does not**: no guard
+ * over these documents reads an order, so a page whose sections are in the wrong sequence is a page
+ * every one of them passes - which is the defect ADR-0173 repaired and the reason nothing had
+ * reported it. ADR-0173.
  */
 export const theSectionOn = (name: RootDocument, heading: string): string => {
   const document = rootDocument(name)
