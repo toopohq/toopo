@@ -58,6 +58,22 @@
  *
  * So attestations are held by digest, in an index of their own: not in the snapshot, whose identity
  * they would change, and not in the ledger, whose entry is the frozen binding of a name to a digest.
+ *
+ * ---------------------------------------------------------------------------
+ * Half of this file is read by nothing, and that is declared one file away
+ * ---------------------------------------------------------------------------
+ *
+ * `AttestationIndex`, `EMPTY_ATTESTATIONS`, `attestationsFor` and `VerificationPolicy` are reached by
+ * no module and by no guard, and they are not leftovers. `read-api.ts` carries the deferral in as many
+ * words - `attestations` is the one endpoint no method of the read API answers, because the only
+ * honest answers are *an empty set at every digest*, which claims a completeness `endpoints.ts` says
+ * cannot be claimed, or nothing at all. It is nothing at all, with the trigger that would change it.
+ *
+ * **The sentence is written there and the unread code is here**, so nothing led from one to the other:
+ * anybody reading this file, or any tool listing what nothing imports, met four names with no reason
+ * beside them. ADR-0174 is why the reason is now beside them, and the class it belongs to is the third
+ * verdict of that record - *declared silent*, which is only worth anything when the declaration is
+ * reachable from the thing it excuses.
  */
 
 import { DIGEST } from './canonical.js'

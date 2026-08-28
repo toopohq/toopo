@@ -27,6 +27,20 @@
  * no command loads. Neither can hide behind the other.
  *
  * ---------------------------------------------------------------------------
+ * What this walk cannot see, and why that is worth saying here
+ * ---------------------------------------------------------------------------
+ *
+ * This is the only mechanism in the repository that answers *what reaches what*, so it is where
+ * somebody asking *what here is dead* arrives - and the answer it gives is one third of the question.
+ * ADR-0174 measured the other two thirds: of the nine tracked modules this walk does not reach from
+ * any entry point, **nine are alive**. Three are `node <path>` steps of `suites.yml`, one is spawned
+ * as a child process by a guard, and five are handed to the analyser as paths rather than imported.
+ *
+ * A file is reached here by an `import`, elsewhere by a path, and elsewhere again by a name in prose
+ * that a guard resolves. Only the first is walkable, and a reading of this module's output as a list
+ * of dead files is wrong by construction rather than by accident.
+ *
+ * ---------------------------------------------------------------------------
  * Why a second folder reads this one, and why it is not moved
  * ---------------------------------------------------------------------------
  *

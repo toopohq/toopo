@@ -538,6 +538,28 @@ construction. **One addition sufficed and that is measured**: with the unmeasure
 `killed-by-typecheck` is a positive reading - a mutant the compiler refuses reddens *with* a report
 and with fewer assertions in it. ADR-0162.
 
+**This repository has no dead-code mechanism, and what the unit that went looking produced is a
+criterion rather than a purge.** No `knip`, no `ts-prune`, no `depcheck`, and `strict: true` without
+`noUnusedLocals` or `noUnusedParameters`; the only pruning that existed is `packaging/reachable.ts`,
+which decides what leaves in the archive and not what lives in the tree. **The trap is that
+*reachable only from a test* is the normal state of almost everything here** - the manifest declares
+a `bin` and no `exports` - so a tool run without a criterion returns a list that is enormous and
+almost entirely wrong. What is written down is that **a disappearance nothing noticed is a question
+and not a verdict**, with three answers of which one is *delete*: dead, unwatched, or declared
+silent. **Zero files are dead out of 302**: the walk does not reach nine and all nine are alive, by
+`node <path>` in `suites.yml`, by a child process a guard spawns, or by a path handed to the
+analyser - which is where *reached has three spellings and one is walkable* came from. **The rule
+proposed for unused exports was refused on its own measurement**: over the 109 non-frozen names their
+own file uses, it spares 86 and reaches 23, and the 86 are **every type but one** while the 23 are 22
+values - so it separates nothing that *is this a type?* does not, which is a justification wearing
+the shape of a rule. **Two defects came out of the reading and neither is tidying**: a fixtures
+`tsconfig.json` whose `extends` resolved to a file that does not exist, so the analyser read
+submissions under a compiler configured by nobody for the whole life of the file; and one of two
+sibling link builders on the domain page typing `../../` where the other composed `rootFrom(own)` -
+identical to the character today, so every rendering was right and every guard was green, and they
+part the day a domain page changes depth. **The unused parameter is what said so**, which is the
+whole argument for the flags. ADR-0174.
+
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
@@ -1545,6 +1567,74 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
 **Still open, and what each one now costs.**
 
+- **That an `extends` a configuration declares is one that resolves.**
+  `packages/validation/fixtures/tsconfig.json` declared `"extends": "../../tsconfig.json"`, which from
+  that folder is `packages/tsconfig.json` and does not exist. `tsc` answered TS5083 and fell back to
+  its own defaults, so the analyser read those submissions under options nobody chose - **for the whole
+  life of the file, with nothing red anywhere.** No npm script typechecks that project; the file exists,
+  so `readSources` gets a program; stage 1's rules are syntactic, so a wrong `target` and a missing
+  `strict` cost no finding.
+
+  **Where this looked**: `mutation/workflows.test.ts`, which is the one suite that reads a repository
+  configuration file and reads `suites.yml`; the nine fault functions of `mutation/decisions.ts`, which
+  resolve what a *record* names; and `packaging/`, whose readers are the manifest and the archive and
+  never a compiler configuration.
+
+  **The population is the eight tracked `tsconfig` files**, and it grows with each project. The instance
+  is repaired. **What would close the class is one of the cheapest guards this repository could hold** -
+  resolve each `extends` and refuse one that names no file - and the price is where it would live: the
+  subject is every configuration and so is nobody's folder, and the natural home is the meta suite,
+  which **no battery injects into**, so the guard would be born unwitnessed. That is the trade this
+  repository refuses without an argument, and taking it inside a unit about dead code would be deciding
+  what the meta suite is worth as a side effect. Priced and not taken. ADR-0174.
+
+- **That an exported name is one something outside its file could want.** Measured at `b1fcff6` over
+  the 1 065 names this repository exports: **135 are mentioned by no other tracked file**, of which 14
+  are frozen and 13 occur once in their own file - the declaration and nothing else. The remaining
+  **109 are used at home and exported for nobody**, and the `export` keyword on each is a declaration
+  with nothing behind it.
+
+  **The rule that looked like the closure is refused, and the refusal is the entry's most useful half.**
+  *A name mentioned by the signature of an exported declaration stays exported* is derivable, so a guard
+  could hold it - and measured, it spares **86 of the 109 and reaches 23**, where the 86 are every type
+  but one and the 23 are twenty-two values and one type. It separates nothing that *is this a type?*
+  does not already separate. A rule that exempts four fifths of its population on a distinction it did
+  not invent is a justification, and adopting it would buy a guard that cannot redden.
+
+  **Where this looked**: `packaging/reachable.ts`, which walks files and has no opinion about a name;
+  `packages/validation/typescript-api.ts`, which is the one door onto a parser and is what any such
+  guard would be built on; and `tsconfig.json`, whose `noUnusedLocals` reaches a local and never an
+  export.
+
+  **What is available and not taken is the other issue**: removing all 109 `export` keywords, which
+  makes the claim total and guardable - *no exported name is unused outside its file*. Nothing outside
+  can import them anyway, the manifest declaring a `bin` and no `exports`, so the affordance being
+  given up is a name a reader of *this* repository might want to write. It is 109 edits across six
+  packages moving no behaviour, and landing it beside twelve deletions would make every change in the
+  diff unrecoverable. Priced as its own unit. ADR-0174.
+
+- **That a guard address a battery names is one a cell reddens.** Five constants of three batteries
+  are guard identifiers, and one is a mutant's find text, that no cell uses: `DETERMINISTIC` and
+  `CALL_HISTORY` in `number-round.battery.ts`, `SYMMETRIC` and `ORDER_IS_NOT_READ` in
+  `object-deep-equal.battery.ts`, `THE_ORIGIN_IS_WRITTEN_ONCE` in `site.battery.ts`.
+
+  **They are not leftovers, and that was read rather than assumed.** `npm run tally` refuses all 22
+  artefacts under `mutation/results/` as measured before the commit they would describe, so the
+  attribution cannot be asked without a replay. Git answers instead: each occurs **once** in its file
+  at the commit that introduced it and **once today**, where used siblings occur 2, 3 and 6 times and
+  have never moved either. **They were never used, ever** - guard addresses written beside their
+  siblings and never given a cell.
+
+  **What makes this an entry rather than a deletion is `attribution.ts`'s own header**, which says what
+  an unaccounted guard is worth: *reading it produces mutants instead of deletions* - and which names
+  `determinism` and freedom from ambient input as the two real gaps that motivated extracting
+  attribution by hand at all. Deleting the five would remove the only trace in the tree that those
+  guards have no cell.
+
+  **The population is every guard identifier a battery declares**, and what would close it is a reading
+  no cheap thing can take: the attribution of three batteries at this commit, which is a replay. Priced
+  at a replay and not bought on intuition. ADR-0174.
+
 - **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
   reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`
   published *An implementation that memoises the pairs a failed candidate tried answers `true`* about
@@ -1869,6 +1959,15 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   lint over prose; what is cheap and is done instead is that both never-held addresses are now taken
   from the declaration rather than typed, so writing a bare one is a deviation rather than the path of
   least resistance. ADR-0142.
+
+  **It now has a measured instance, and it was found by looking for dead code rather than for
+  addresses.** `packages/cli/imagined-source.ts` exports `THE_IMAGINED_ROOT`, whose own comment says it
+  exists *so that a caller does not transcribe the name* - and measured at `b1fcff6`, **no caller reads
+  it and eleven sites transcribe exactly what it holds**, `'typescript/imagined-number/round@1'`,
+  across `install.test.ts`, `remove.test.ts`, `update.test.ts`, `emit.test.ts` and `list.test.ts`. So
+  the declaration exists, the path of least resistance goes around it, and the thing that noticed was
+  an export nothing imports. **It is the entry's own class arriving on the entry's own remedy**: what
+  was *done instead* is a declaration, and nothing keeps a declaration being used. ADR-0174.
 
 - **That the text of a guard is the text somebody wrote.** A `\b` edited into a source through a shell
   heredoc lands in the file as a literal backspace, `0x08`. Nothing here reads a source for a control
