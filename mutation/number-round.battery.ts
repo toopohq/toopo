@@ -81,9 +81,6 @@ const ORDER_PRESERVING = 'p5-order-preserving'
 const SIGN_SYMMETRIC = 'p6-sign-symmetric'
 const FAILURE_COUPLING = 'p7-failure-coupling'
 
-const DETERMINISTIC = 'determinism'
-const CALL_HISTORY = 'no-ambient-input-from-history'
-
 const TYPE_IDENTITY = 'signature-is-the-declared-type'
 const TAKES_TWO_NUMBERS = 'signature-takes-two-numbers'
 const RETURNS_NUMBER_OR_NULL = 'signature-returns-a-number-or-null'

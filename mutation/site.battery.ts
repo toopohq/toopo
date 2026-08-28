@@ -380,8 +380,6 @@ const A_LINK_IS_THE_FOLDER_AND_NOT_THE_FILE = `export const linkTo = (page: stri
 
 const A_URL_LINE_CARRIES_NO_DATE = `    ...pages.map((page) => \`  <url><loc>\${escaped(urlOf(page))}</loc></url>\`),`
 
-const THE_ORIGIN_IS_WRITTEN_ONCE = `export const THE_ORIGIN = 'https://toopo.dev'`
-
 const XML_IS_ESCAPED = `    .replaceAll('&', '&amp;')`
 
 const THE_SITEMAP_IS_WHERE_A_CRAWLER_LOOKS = `export const SITEMAP = 'sitemap.xml'`

@@ -558,7 +558,14 @@ submissions under a compiler configured by nobody for the whole life of the file
 sibling link builders on the domain page typing `../../` where the other composed `rootFrom(own)` -
 identical to the character today, so every rendering was right and every guard was green, and they
 part the day a domain page changes depth. **The unused parameter is what said so**, which is the
-whole argument for the flags. ADR-0174.
+whole argument for the flags. **Both flags are on now**, in the root configuration all six projects
+extend, seen biting on a planted local before they were believed; **eighteen names are gone over two
+commits**, and the second six exist because turning the flags on refuted the argument for keeping
+five of them. Those five were guard addresses no cell pins, read as *unwatched* on a git measurement
+and corrected by an argument from the gate: an undeclared never-red guard fails a run, every battery
+was green before `1.1.0` reached npm, so those guards are red and merely unpinned. **What the
+constants never recorded is the gap that is real** - two of those guards have never been seen red
+alone - and that is an entry now rather than five inert names. ADR-0174.
 
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
@@ -1613,27 +1620,35 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   packages moving no behaviour, and landing it beside twelve deletions would make every change in the
   diff unrecoverable. Priced as its own unit. ADR-0174.
 
-- **That a guard address a battery names is one a cell reddens.** Five constants of three batteries
-  are guard identifiers, and one is a mutant's find text, that no cell uses: `DETERMINISTIC` and
-  `CALL_HISTORY` in `number-round.battery.ts`, `SYMMETRIC` and `ORDER_IS_NOT_READ` in
-  `object-deep-equal.battery.ts`, `THE_ORIGIN_IS_WRITTEN_ONCE` in `site.battery.ts`.
+- **That a guard declared applicable has been seen red on its own failure condition, alone.** The
+  verification discipline above asks for *at least one plausible mutant*, and `mutation/attribution.ts`
+  records what that leaves open: **`determinism` and `no-ambient-input-from-history` on
+  `number/round@1` are red only on mutants that also redden everything else**, so neither has ever
+  carried a defect by itself. A guard that never reddens alone is not decorative - it would catch its
+  defect if its neighbour went away - and nothing here shows that it would.
 
-  **They are not leftovers, and that was read rather than assumed.** `npm run tally` refuses all 22
-  artefacts under `mutation/results/` as measured before the commit they would describe, so the
-  attribution cannot be asked without a replay. Git answers instead: each occurs **once** in its file
-  at the commit that introduced it and **once today**, where used siblings occur 2, 3 and 6 times and
-  have never moved either. **They were never used, ever** - guard addresses written beside their
-  siblings and never given a cell.
+  **It was found by looking for dead code, which is the only reason it is written down.** Five
+  constants of three batteries held four such guard addresses and one mutant find text and were used
+  by nothing. The reading that settled them cost no replay - git says each occurs once at the commit
+  that introduced it and once today, where used siblings occur 2, 3 and 6 - and it said they were
+  never used, from which *unwatched* was the wrong verdict to draw. **What corrects it is an argument
+  from the gate.** Every battery ran green before `toopo@1.1.0` reached npm; an undeclared never-red
+  guard fails a run as *unaccounted for*; and neither guard is declared under `unreachableGuards` or
+  `unprobedRegions`, `number-round`'s being empty. So they are red and merely unpinned, the constants
+  were names prepared for pins the five-or-fewer convention made unnecessary, and they are gone.
+  **What the constants never recorded is the gap itself**, which is this entry.
 
-  **What makes this an entry rather than a deletion is `attribution.ts`'s own header**, which says what
-  an unaccounted guard is worth: *reading it produces mutants instead of deletions* - and which names
-  `determinism` and freedom from ambient input as the two real gaps that motivated extracting
-  attribution by hand at all. Deleting the five would remove the only trace in the tree that those
-  guards have no cell.
+  **Where this looked**: `mutation/attribution.ts`, whose three buckets are *load-bearing*, *never
+  alone* and *never red*, and whose header names these two guards; `mutation/number-round.battery.ts`,
+  whose `unprobedRegions` is empty and whose `unreachableGuards` name neither; and `mutation/run.ts`,
+  where a pin declares what a cell must produce and never what a guard has been alone on.
 
-  **The population is every guard identifier a battery declares**, and what would close it is a reading
-  no cheap thing can take: the attribution of three batteries at this commit, which is a replay. Priced
-  at a replay and not bought on intuition. ADR-0174.
+  **The population is every guard the batteries leave in the *never alone* bucket**, and no reading
+  here has taken it - the artefacts under `mutation/results/` are refused by `npm run tally` as
+  measured before the commit they would describe. What would close it is a cell per guard, aimed at
+  that guard's own failure condition and at nothing else, which is what `attribution.ts` asks for in as
+  many words: *reading it produces mutants instead of deletions*. Priced at a replay to find the
+  population and a cell apiece to close it. ADR-0174.
 
 - **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
   reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`

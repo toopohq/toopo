@@ -1119,8 +1119,6 @@ describe('the site', () => {
   it('a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing', () => {
     for (const held of heldByTheRegistry(source)) {
       const rendered = html(pageOf(held.contract.address))
-      const reading = toText(page(pageOf(held.contract.address)))
-
       expect(rendered).not.toContain('<input')
       expect(rendered).not.toContain('<form')
       expect(rendered).toMatch(/<div id="playground" data-playground="[^"]+"><\/div>/)

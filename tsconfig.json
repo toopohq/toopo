@@ -1,6 +1,20 @@
 {
   "compilerOptions": {
     "strict": true,
+
+    // ADR-0174. The two flags below are the only mechanism this repository has against dead code, and
+    // they are here rather than in six places because every project configuration extends this file -
+    // so one line reaches all 302 tracked sources and a seventh project inherits it by existing.
+    //
+    // What they cost was measured before they were turned on: 18 distinct errors, of which twelve were
+    // names nothing read and six were leftovers of refactors that had moved on. What they buy is the
+    // only verdict of ADR-0174's criterion a compiler can reach - an *unused local*, which is the one
+    // shape of deadness that needs no judgement about who reaches a file and how.
+    //
+    // They reach a local and never an export. A name exported and read by nobody is invisible to them,
+    // that population is 109, and the entry in CLAUDE.md carries what closing it would cost.
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "ESNext",

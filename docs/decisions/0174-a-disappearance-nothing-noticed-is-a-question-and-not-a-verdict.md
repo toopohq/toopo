@@ -145,9 +145,18 @@ open list with this measurement beside it.
 
 ## Consequences
 
-**Twelve deletions**, each with its reason in the commit that makes it. Nine residual imports, two
-test constants, and `isAFile` — a one-line alias of `isSourceFile` that nothing reads, in a file where
-both its neighbours carry a comment and it carries none.
+**Eighteen deletions over two commits**, each with its reason in the commit that makes it, and the
+eighteen are exactly the eighteen the flags name. Twelve first: nine residual imports, two test
+constants, and `isAFile` — a one-line alias of `isSourceFile` that nothing reads, in a file where both
+its neighbours carry a comment and it carries none. Six after, once turning the flags on had refuted
+the argument for keeping five of them: the five battery constants below, and one leftover `reading` in
+`pages.test.ts` whose guard had moved its check to `underEachHeading` three lines further down.
+
+**The two flags are on.** `noUnusedLocals` and `noUnusedParameters` in the root configuration, which
+all six projects extend, so one line reaches every tracked source and a seventh project inherits it by
+existing. Seen biting before it was believed: a planted unused local reddens `tsc -p tsconfig.json`,
+and every suite is green with the flags live — registry 459, validation 29, cli 181, site 180,
+packaging 23, root 718.
 
 **Two defects repaired**, and neither is tidying.
 
@@ -174,16 +183,35 @@ code and are not: the fixtures, the `print-*.ts` scripts, `a-client-over-http.ts
 of `attestation.ts` — whose justification lives in `read-api.ts`, one file away, so that the module
 itself said nothing about why half of it is unread. That link is repaired.
 
-**Five battery constants are kept, and the reading that settles them cost no replay.** `DETERMINISTIC`
-and `CALL_HISTORY` in `number-round.battery.ts`, `SYMMETRIC` and `ORDER_IS_NOT_READ` in
-`object-deep-equal.battery.ts`, and `THE_ORIGIN_IS_WRITTEN_ONCE` in `site.battery.ts` are guard
-addresses and a mutant's find text that no cell names. The artefacts under `mutation/results/` cannot
-answer — `npm run tally` refuses all 22 as measured before the commit they would describe — so git was
-asked instead. Each occurs **once** in its file at the commit that introduced it and once today, where
-used siblings occur 2, 3 and 6 times and have never moved either. **They were never used, ever**: not
-remnants of removed cells, but guard addresses written beside their siblings and never given one. That
-is what `attribution.ts` says to do with them in its own header — *reading it produces mutants instead
-of deletions* — and two of the five are the very gaps that record says motivated its existence.
+**Five battery constants were going to be kept, and turning the flags on is what refuted that.** This
+paragraph is the reversal rather than a tidied version of it, because the reasoning that was wrong is
+the part worth reading.
+
+`DETERMINISTIC` and `CALL_HISTORY` in `number-round.battery.ts`, `SYMMETRIC` and `ORDER_IS_NOT_READ`
+in `object-deep-equal.battery.ts`, and `THE_ORIGIN_IS_WRITTEN_ONCE` in `site.battery.ts` are four
+guard addresses and one mutant's find text that no cell names. Git settles what the artefacts cannot —
+`npm run tally` refuses all 22 as measured before the commit they would describe — and each occurs
+**once** in its file at the commit that introduced it and once today, where used siblings occur 2, 3
+and 6 times and have never moved. **They were never used, ever.**
+
+From that the verdict *unwatched* was drawn, on `attribution.ts`'s own instruction that reading an
+unaccounted guard *produces mutants instead of deletions*. **It was the wrong verdict, and what shows
+it is an argument from the gate rather than a new measurement.** The four strings are real guard
+identifiers — `properties.test.ts` declares `determinism` and `no-ambient-input-from-history` for
+`number/round@1`, and `p2-symmetric` and `p5-order-of-declaration-is-not-read` for
+`object/deep-equal@1`. A never-red guard that no battery declares under `unreachableGuards` or
+`unprobedRegions` lands in the *unaccounted for* bucket and fails the run; `number-round`'s
+`unprobedRegions` is empty and its `unreachableGuards` name neither. Every battery ran green before
+`toopo@1.1.0` reached npm. **So those guards are red — they are simply never pinned**, which the
+five-or-fewer convention makes ordinary, and which `attribution.ts` states about these two by name:
+*red only on mutants that also redden everything else*.
+
+They are therefore not addresses awaiting a cell. They are names prepared for pins that a convention
+made unnecessary, which is the *dead* verdict, and they are removed with the other twelve.
+
+**What survives the reversal is the finding underneath it**, and it is `attribution.ts`'s and not this
+record's: two of those guards have never been seen red on their own failure condition. That is a real
+gap, it is recorded where it was found, and a dangling constant was never what recorded it.
 
 ## Confirmation
 

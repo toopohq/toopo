@@ -80,9 +80,7 @@ const THE_PAIR_IS_ENTERED_MARKS = `  enter(underway, a, b)`
 // ---------------------------------------------------------------------------
 
 const REFLEXIVE_UNDER_A_COPY = 'p1-reflexive-under-a-copy'
-const SYMMETRIC = 'p2-symmetric'
 const REFLEXIVE = 'p3-reflexive'
-const ORDER_IS_NOT_READ = 'p5-order-of-declaration-is-not-read'
 const NOT_ALWAYS_YES = 'p6-a-perturbed-clone-is-not-the-original'
 
 const NEITHER_ARGUMENT_MOVES = 'never-mutates-its-arguments'
