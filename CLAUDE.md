@@ -1296,6 +1296,16 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   is a nuance of *false without being stale* this list had not carried. What it leaves behind is a
   number — 600 seconds, chosen against seven readings taken on one machine, and a runner slow enough
   to cross it turns a real reading into `not-measured`.
+- **the cache policy every address the tree serves carries** — ADR-0170, and it is the third time this
+  list records that what failed was an entry's own half rather than the code. The entry's heading asked
+  that *every* address carry a chosen policy and its prescription named the browser modules and three
+  convention constants: re-measured at `7e3f64a` the tree writes **128** addresses of which **55**
+  carried no rule, and the prescription reaches **17** of them, leaving thirty-four pages and Markdown
+  twins on a host default. **The heading was right against the prescription**, which is ADR-0128's rule
+  3 arriving on the half of an entry nobody re-reads — a repair written from an assumption about what
+  the code holds, wrong on the day it was written and looking no older for it. What it leaves behind is
+  the four hours, which is an entry of the open list rather than a line here, because they are decided
+  on the far side of a gap `wrangler.jsonc` records and no push reaches them.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -2618,44 +2628,46 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   still among them — and what is **not** closed is the general case: nothing in this repository requires
   a deletion to be proved by a listing, and the next one written will be as free to ask a question that
   cannot answer.
-- **That every address this tree serves carries a cache policy this repository chose.** Measured at
-  `27d1dbb` over the 76 addresses: **ten of them do not.** The nine modules and `robots.txt` answer
-  `public, max-age=14400, must-revalidate`, a policy written in no file here. `theHeaderRules` derives
-  one rule per endpoint from `ENDPOINTS`, and a module is not an endpoint, so those ten match nothing
-  and fall through to whatever the host does that morning.
+- **That the four hours a returning reader holds a module for are decided by anything in this
+  repository.** The entry this replaces had two halves and only one of them was ever this repository's
+  to close. The declaration half is closed and is recorded below with ADR-0170; **this is the half
+  that is not**, and it is the reason the entry was taken up at all.
 
-  **What the ten do not share is the whole of what makes this an entry rather than a curiosity.** Not an
-  extension — nine are `.js` and one is `.txt`. Not a content type, not a depth, not a folder. And
-  `llms.txt`, a root-level `text/plain` file beside `robots.txt`, answers `max-age=0`: two files of the
-  same format, in the same place, with different answers. **No cause is named, because none was
-  measured** — three passes say only that it is stable, and a plausible explanation written here would
-  be worth less than the gap it filled.
+  **Measured on 2026-08-28 at `7e3f64a`, by `curl` on both host shapes**: sixteen browser modules and
+  `robots.txt` answer `public, max-age=14400, must-revalidate` at `toopo.dev`, and the *same tree at
+  the same deployment* answers `public, max-age=0, must-revalidate` at `toopo.pages.dev`.
+  `cf-cache-status: REVALIDATED` is on those seventeen and on nothing else of the thirty-five
+  addresses read. So **Pages already sends the policy this repository declares, and something between
+  Pages and a reader replaces the age.**
 
-  **It closes by declaration and not by explanation**, which is why the missing cause does not block it:
-  a second family of rules in `packages/site/served-headers.ts`, covering the addresses the emission
-  writes that no endpoint names, derived the way the first family is — from `browser.ts`'s module map
-  and the three convention constants in `paths.ts`, never from a list somebody types. The one thing that
-  repair has to answer is ordering: `_headers` is itself written into the tree it describes, so a
-  derivation reading the finished tree is circular and the rules have to come from the same declarations
-  the emission does. **Declaring it does not explain the split and does not need to** — it makes the
-  split stop deciding anything. Today those ten land on a default; the day the default moves, nothing
-  here says so, and that is the failure, not the four hours. ADR-0103.
+  **What it costs a reader**: returning inside four hours they are served the repaired HTML and the
+  old script, and `must-revalidate` does not save them - it forces revalidation once the freshness
+  lifetime has run out, never during it. The mixture was met rather than predicted, a browser holding
+  the module from an earlier session going on running it while `curl` showed the origin serving the
+  new one. **And it costs more than a visitor**: this site is judged by looking at it just after a
+  deployment, which is exactly the window in which its two halves disagree, so a reviewer can see a
+  mixture of two commits with neither the page nor the module saying which. A defect read there is
+  attributed to the change that was just made, and a defect repaired there can go on being visible.
 
-  **The four hours were dismissed in the line above, and a reading has since cost them.** Measured at
-  `755322f`, over five addresses of the origin: the pages and `contract-index` answer `max-age=0,
-  must-revalidate`, and `start.js` and `search.js` answer `max-age=14400`. So **a reader returning
-  inside four hours is served the repaired HTML and the broken script.** `must-revalidate` does not
-  save them - it forces revalidation once the freshness lifetime has run out, never during it - and the
-  mixture was met rather than predicted: a browser holding the module from earlier in the session went
-  on running it while `curl` showed the origin serving the new one, which read for several minutes as a
-  deployment that had not happened.
+  **No cause is named for the split, and one is now excluded.** `robots.txt` is in that layer and
+  `llms.txt` is not - both `text/plain`, both at the root - and nothing measured says why. What is
+  excluded is that it is anything the emission does: the two host shapes serve one tree.
 
-  **What it costs is not only a visitor, and that is the half worth carrying.** This site is judged by
-  looking at it just after a deployment, which is precisely the window in which its two halves disagree
-  - so what a reviewer sees can be a mixture of two commits, with neither the page nor the module
-  saying which. A defect read there is attributed to the change that was just made, and a defect
-  repaired there can go on being visible. The entry above is about a default that could move one day;
-  this is the same declaration costing something on the day it was written.
+  **Where this looked**: `theHeaderRules` in `packages/site/served-headers.ts`, which now declares the
+  named policy for all seventeen; `cachePolicyFor` in `packages/registry/response.ts`, which is the
+  only place a duration is decided here; and `wrangler.jsonc`, which is where a deployment decision
+  would live and which says in its own words that this one does not - *it is attached in the
+  dashboard, not here... That is a gap in this file's own claim to hold every decision.*
+
+  **The population is every address the zone edge-caches**, which is seventeen today and which nothing
+  here bounds: a module added to the browser graph joins it, and no guard can see that happen.
+
+  **Two things would close it and neither is a guard.** The zone's own setting, which is on the far
+  side of the gap `wrangler.jsonc` records and is the owner's act rather than this repository's. Or
+  **modules addressed by their content** - `start.<digest>.js` - which would make a year correct and
+  staleness impossible, and which is a unit of its own: it moves an address a reader may have linked,
+  a price `paths.ts` already states for `THE_ENTRY_POINT`, and it needs every page's `script` and
+  every kept import rewritten to carry the digest. Priced and not taken. ADR-0103, ADR-0170.
 - **That an address the emitted tree serves and no listing names goes on being written.** The pages are
   kept, by a mechanism and at a price the closed entry never considered: it costed a rebuild of the tree
   at every commit an address was first served from, and what does the work is one fetch of the origin's

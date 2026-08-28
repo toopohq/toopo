@@ -14,7 +14,7 @@ confirmed-by:
   - battery: registry-storage
     guard: every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not
   - battery: site
-    guard: every-endpoint-carries-a-cache-rule-at-an-address-that-names-it
+    guard: every-endpoint-carries-a-rule-at-an-address-that-names-it
   - battery: site
     guard: only-the-two-content-addressed-endpoints-are-cached-for-a-year
   - battery: site
@@ -32,6 +32,16 @@ confirmed-by:
 ---
 
 # The deployment is configured in this repository, and the declared cache policy is what is served
+
+**Three things below stopped being true and [ADR-0170](0170-every-address-this-tree-serves-carries-a-policy-this-repository-chose.md) is
+where they are corrected.** The rule set is no longer one family: how long an answer may be held is
+decided by the space it is in and not by the endpoint that names it, so
+`every-endpoint-carries-a-rule-at-an-address-that-names-it` is that guard's name now and the table
+below carries it - the guard, its claim and its mutant are otherwise the ones it has always had.
+Whether Cloudflare's splat spans a slash is measured rather than out of reach. And
+`every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint` states the matching rather than a
+necessary condition of it, which that measurement is what bought. **The reading in *What the sweep
+found* holds as taken**, and the entry it left open is what ADR-0170 closes.
 
 ## Context and Problem Statement
 
@@ -184,7 +194,7 @@ Read off `npm run battery`, at `5547bcb`:
 | `a-content-addressed-answer-is-public-for-a-year-and-immutable` | I-58 |
 | `a-named-answer-is-public-and-revalidated-before-every-use` | I-59, I-60 |
 | `every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not` | I-58, I-59, I-60 |
-| `every-endpoint-carries-a-cache-rule-at-an-address-that-names-it` | W-78 |
+| `every-endpoint-carries-a-rule-at-an-address-that-names-it` | W-78 |
 | `only-the-two-content-addressed-endpoints-are-cached-for-a-year` | W-78, W-79 |
 | `every-other-answer-is-revalidated-before-it-is-used` | W-79 |
 | `the-deployment-is-closed-to-robots-and-the-declared-origin-is-not` | W-80 |

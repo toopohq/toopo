@@ -226,6 +226,53 @@ export const THE_HEADERS_FILE = '_headers'
 export const THE_NOT_FOUND_FILE = '404.html'
 
 /**
+ * The five above as one set, for anything that has to classify an address rather than write one.
+ *
+ * Three are fetched by a crawler, one is read by the host and served to nobody, and one is served to a
+ * reader who arrived by being wrong. They are one set anyway: what they share is that no link points
+ * at them and their names are somebody else's convention, which is exactly what a classification needs
+ * to know about a file.
+ *
+ * **It is here rather than beside either of its readers, because there are two.** `build.ts` counts
+ * them to say what it wrote and `served-headers.ts` gives each one a cache rule, and a set written out
+ * in both would be one arrival away from disagreeing - which has happened twice already, `_headers`
+ * being the fourth arrival and `404.html` the fifth. ADR-0170.
+ */
+export const THE_FILES_FOUND_BY_CONVENTION: readonly string[] = [
+  SITEMAP,
+  ROBOTS,
+  LLMS_TXT,
+  THE_HEADERS_FILE,
+  THE_NOT_FOUND_FILE,
+]
+
+/**
+ * The pages this site has of its own, as against the ones an address produces.
+ *
+ * A domain page and a contract page are `pageOf` and `domainPageOf` of something the registry holds;
+ * these five exist because the site has them. It is the same distinction `theSite` already makes by
+ * listing them apart from the two it walks the catalogue for, and it is declared here because a
+ * second reader appeared - the cache rules have to know which spaces the tree writes.
+ *
+ * **`REFUSALS_PAGE` is among them and is written only when something has been refused**, which is
+ * deliberate rather than an oversight: a rule covering an address nothing is served at costs a reader
+ * nothing, and a rule missing on the day the catalogue refuses something would cost one. It is the
+ * argument `served-headers.ts` already makes for `attestations`.
+ *
+ * Nothing holds this list to `theSite`'s, and nothing needs to: the two are statements about
+ * different things - which pages exist, and how each is built - and
+ * `every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose` reddens the day they
+ * disagree.
+ */
+export const THE_PAGES_THE_SITE_HAS_OF_ITS_OWN: readonly string[] = [
+  FRONT_PAGE,
+  CATALOGUE_PAGE,
+  METHOD_PAGE,
+  REFUSALS_PAGE,
+  WHAT_A_CONTRACT_IS_PAGE,
+]
+
+/**
  * The folder the build writes the tree into, beside this one.
  *
  * It is the one name here that is not an address a reader is served: everything above says where a

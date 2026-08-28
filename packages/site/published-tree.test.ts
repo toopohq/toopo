@@ -4,8 +4,9 @@ import { askedAt } from '../registry/endpoints.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { THE_BROWSER_GRAPH } from './browser.js'
 import { notFoundPage } from './not-found-page.js'
-import { THE_HEADERS_FILE, THE_NOT_FOUND_FILE, markdownOf } from './paths.js'
-import { theHeaderRules } from './served-headers.js'
+import { THE_HEADERS_FILE, THE_NOT_FOUND_FILE, linkTo, markdownOf } from './paths.js'
+import type { HeaderRule } from './served-headers.js'
+import { covers, isAboutAPath, theHeaderRules } from './served-headers.js'
 import { thePublication } from './site.js'
 
 /**
@@ -38,6 +39,19 @@ const theTree = (): ReadonlyMap<string, string | Buffer> =>
   ))
 
 const paths = (): readonly string[] => (published ??= [...theTree().keys()])
+
+/**
+ * The rules about a path that carry one header, which is how the two families are told apart.
+ *
+ * By what a rule *says* rather than by which function produced it: `theHeaderRules` merges the two
+ * families into one block per pattern, so an endpoint's own space carries both headers in one rule,
+ * and asking which family a rule came from would need the merge undone to answer a question the
+ * merged file already answers.
+ */
+const rulesCarrying = (header: string): readonly HeaderRule[] =>
+  theHeaderRules()
+    .filter(isAboutAPath)
+    .filter((rule) => rule.headers.some(([name]) => name === header))
 
 /**
  * A relative address as a browser resolves it: against the folder of the document that carries it.
@@ -207,18 +221,20 @@ describe('what a host is given', () => {
   /**
    * Every emitted answer falls under the rule for the endpoint it answers.
    *
-   * The check is a necessary condition of Cloudflare's matching and not a re-implementation of it: a
-   * splat matches greedily, so a path a rule covers must carry the text on either side of the splat at
-   * the ends the rule puts them. **If this is red the host certainly does not match; that it is green
-   * is not proof the host does**, and what settles that is a request against the real deployment.
-   * `endpoints.test.ts` holds `askedAt` to being `pathTo`'s inverse, which is what lets a rule and a
-   * file be resolved to the same endpoint without either being rebuilt from the other.
+   * **The check re-implements Cloudflare's matching where it used to state a necessary condition of
+   * it**, and what makes that trade acceptable is that both halves of the semantics have since been
+   * measured against the real deployment rather than read off a page: a splat spans a slash, and a
+   * splat takes an empty remainder. `served-headers.ts` carries both readings and `covers` is their
+   * one spelling. `endpoints.test.ts` holds `askedAt` to being `pathTo`'s inverse, which is what lets
+   * a rule and a file be resolved to the same endpoint without either being rebuilt from the other.
+   *
+   * It asks only about the family that says what an answer *is*, which is the one an endpoint owns.
+   * How long an answer may be held is a fact about the space it is in, and the two guards below are
+   * what keep that.
    */
   it('every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint', () => {
     const ruleFor = new Map(
-      theHeaderRules()
-        .filter((rule) => !rule.url.includes('://'))
-        .map((rule) => [askedAt(rule.url)?.endpoint.id, rule.url]),
+      rulesCarrying('Content-Type').map((rule) => [askedAt(rule.url)?.endpoint.id, rule.url]),
     )
     const answers = paths()
       .map((path) => ({ path, asked: askedAt(`/${path}`) }))
@@ -226,18 +242,72 @@ describe('what a host is given', () => {
 
     expect(answers.length).toBeGreaterThan(0)
     expect(
-      answers.filter(({ path, asked }) => {
-        const url = ruleFor.get(asked?.endpoint.id)
-        if (url === undefined) return true
-        const [before, after] = url.split('*')
+      answers
+        .filter(({ path, asked }) => {
+          const url = ruleFor.get(asked?.endpoint.id)
 
-        return !(
-          `/${path}`.startsWith(before) &&
-          `/${path}`.endsWith(after ?? '') &&
-          path.length + 1 >= before.length + (after ?? '').length
-        )
-      }),
+          return url === undefined || !covers(url, `/${path}`)
+        })
+        .map(({ path }) => path),
     ).toEqual([])
+  })
+
+  /**
+   * The entry this closes, as a guard: **every address the tree writes is told how long it may be
+   * held, by this repository rather than by whatever the host does that morning.**
+   *
+   * Measured at `7e3f64a`, before the second family existed: the tree wrote 128 addresses and the
+   * rules covered 73, so 55 - every page, every Markdown twin, all sixteen modules and all five files
+   * found by convention - fell through to a platform default. Seventeen of them answered
+   * `max-age=14400` at the declared origin, which is written in no file of this repository.
+   *
+   * **It can fail, and that is the whole reason the rules are read off declarations rather than off
+   * this tree.** A derivation that walked the emission would agree with the emission by construction
+   * and this guard would be the derivation compared with itself - green on every defect it exists to
+   * catch, which is ADR-0087's rule arriving on a file rather than on an object. What it compares are
+   * two independent statements: the spaces `served-headers.ts` declares, and the addresses `site.ts`
+   * writes.
+   *
+   * A page is asked for at `linkTo`'s spelling and not at its file's, because that is the address a
+   * reader's browser sends and therefore the one the host matches: the front page is written
+   * `index.html` and requested at `/`.
+   */
+  it('every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose', () => {
+    const told = rulesCarrying('Cache-Control')
+
+    expect(paths().length).toBeGreaterThan(0)
+    expect(
+      paths().filter((path) => !told.some((rule) => covers(rule.url, `/${linkTo(path)}`))),
+    ).toEqual([])
+  })
+
+  /**
+   * And no address is told either thing twice, which is a fact about the host and not about taste.
+   *
+   * Cloudflare's documentation for this file says that a request matching several rules *"will
+   * inherit all rules' headers"* and that a header applied twice has *"the values joined with a comma
+   * separator"*. **So two rules are not a precedence question, they are an addition**: two matching
+   * `Cache-Control` rules that agree perfectly would send `max-age` twice in one header, and no order
+   * within the file is specified that would let anybody reason about which won.
+   *
+   * That is why the two families carry different header names and why the space family is keyed on a
+   * first segment - a total function of a path, so two of its rules cannot reach one address. This
+   * guard is what says the construction held, over what the tree really writes rather than over the
+   * shape somebody intended.
+   */
+  it('every-address-is-told-each-thing-once', () => {
+    const twice = paths()
+      .map((path) => ({
+        path,
+        headers: theHeaderRules()
+          .filter(isAboutAPath)
+          .filter((rule) => covers(rule.url, `/${linkTo(path)}`))
+          .flatMap((rule) => rule.headers.map(([name]) => name)),
+      }))
+      .filter(({ headers }) => new Set(headers).size !== headers.length)
+
+    expect(paths().length).toBeGreaterThan(0)
+    expect(twice.map(({ path, headers }) => `${path} is told ${headers.join(', ')}`)).toEqual([])
   })
 
   /**

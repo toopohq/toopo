@@ -3,17 +3,25 @@ import { describe, it, expect } from 'vitest'
 import { ENDPOINTS, askedAt, pathTo } from '../registry/endpoints.js'
 import { THE_ORIGIN } from './paths.js'
 import type { HeaderRule } from './served-headers.js'
-import { renderHeaders, theHeaderRules } from './served-headers.js'
+import { isAboutAPath, renderHeaders, theHeaderRules } from './served-headers.js'
 
 /** The rules that are about a host rather than about a path, which is how the file spells the two. */
-const aboutAHost = (): readonly HeaderRule[] =>
-  theHeaderRules().filter((rule) => rule.url.includes('://'))
+const aboutAHost = (): readonly HeaderRule[] => theHeaderRules().filter((rule) => !isAboutAPath(rule))
 
-const aboutAPath = (): readonly HeaderRule[] =>
-  theHeaderRules().filter((rule) => !rule.url.includes('://'))
+const aboutAPath = (): readonly HeaderRule[] => theHeaderRules().filter(isAboutAPath)
 
 const valueOf = (rule: HeaderRule, name: string): string | null =>
   rule.headers.find(([carried]) => carried === name)?.[1] ?? null
+
+/**
+ * The rules that say what an answer is, which is the family an endpoint owns.
+ *
+ * Told apart by what a rule carries rather than by which function wrote it, for the reason
+ * `published-tree.test.ts` gives beside its own copy of this question: the file is merged into one
+ * block per pattern before anybody reads it.
+ */
+const whatAnAnswerIs = (): readonly HeaderRule[] =>
+  aboutAPath().filter((rule) => valueOf(rule, 'Content-Type') !== null)
 
 /**
  * The host a pattern is about, taken apart by hand because `new URL` refuses one.
@@ -27,17 +35,23 @@ const hostOf = (url: string): string => (url.split('://')[1] ?? '').split('/')[0
 describe('the host is told how to serve every answer', () => {
   /**
    * Total over the endpoints, which is the whole mechanism: a rule list assembled by hand would be
-   * right about the eight that exist and silent about the ninth, and a named answer served without
-   * `must-revalidate` is a CDN free to hand out a binding that has moved.
+   * right about the eight that exist and silent about the ninth, and an answer served with no type
+   * declared is a document a host has no opinion about.
    *
    * **Which endpoint a rule names is asked of `askedAt`, and that is the load-bearing half.** It is
    * `pathTo`'s own inverse, held to that in `endpoints.test.ts`, so a pattern this file gets wrong -
    * `/blobs/*` for `/blob/*`, a segment too many, an identifier that is no endpoint - resolves to
    * nothing and reddens here. A comparison against patterns rebuilt from `pathTo` would agree with
    * itself whatever either of them said.
+   *
+   * **It used to be named for the cache rule and is not any more**, because the two headers stopped
+   * being one family: how long an answer may be held is decided by the space it is in and not by the
+   * endpoint that names it, so what an endpoint now carries at its own address is what its answers
+   * *are*. The claim, the population and the mechanism are otherwise the ones this guard has always
+   * had.
    */
-  it('every-endpoint-carries-a-cache-rule-at-an-address-that-names-it', () => {
-    const covered = new Set(aboutAPath().map((rule) => askedAt(rule.url)?.endpoint.id))
+  it('every-endpoint-carries-a-rule-at-an-address-that-names-it', () => {
+    const covered = new Set(whatAnAnswerIs().map((rule) => askedAt(rule.url)?.endpoint.id))
 
     expect(covered.has(undefined)).toBe(false)
     expect(ENDPOINTS.filter((endpoint) => !covered.has(endpoint.id)).map((one) => one.id)).toEqual([])
@@ -62,15 +76,24 @@ describe('the host is told how to serve every answer', () => {
    * Every other rule revalidates, asked as a partition rather than as a second list.
    *
    * The two guards together say *these two and no others*, which is the sentence a deployment needs:
-   * an endpoint that quietly became immutable would pass the one above by leaving those two intact.
+   * a space that quietly became immutable would pass the one above by leaving those two intact.
+   *
+   * **The whole file carries exactly two policies and the guard says so as two spellings**, which is
+   * the form that survived the second family arriving. Counting the rules against `ENDPOINTS` was the
+   * old shape and it stopped being a claim the day a rule stopped being an endpoint's: what is claimed
+   * now is that more spaces are covered than there are endpoints - the reason this family exists - and
+   * that no third policy has appeared anywhere in the file.
    */
   it('every-other-answer-is-revalidated-before-it-is-used', () => {
-    const stale = aboutAPath()
-      .filter((rule) => valueOf(rule, 'Cache-Control')?.includes('immutable') !== true)
+    const policies = aboutAPath()
       .map((rule) => valueOf(rule, 'Cache-Control'))
+      .filter((value): value is string => value !== null)
 
-    expect(stale.length).toBe(ENDPOINTS.length - 2)
-    expect([...new Set(stale)]).toEqual(['public, max-age=0, must-revalidate'])
+    expect(policies.length).toBeGreaterThan(ENDPOINTS.length)
+    expect([...new Set(policies)].sort()).toEqual([
+      'public, max-age=0, must-revalidate',
+      'public, max-age=31536000, immutable',
+    ])
   })
 
   /**
@@ -90,7 +113,7 @@ describe('the host is told how to serve every answer', () => {
    * independently of the function that reads it.
    */
   it('every-endpoint-tells-the-host-what-its-answers-are', () => {
-    const rules = aboutAPath()
+    const rules = whatAnAnswerIs()
 
     expect(rules.length).toBe(ENDPOINTS.length)
     expect(rules.filter((rule) => valueOf(rule, 'Content-Type') === null).map((rule) => rule.url)).toEqual([])

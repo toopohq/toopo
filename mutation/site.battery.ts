@@ -1977,8 +1977,8 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       ),
     ],
     killed([
-      'every-endpoint-carries-a-cache-rule-at-an-address-that-names-it',
-      'only-the-two-content-addressed-endpoints-are-cached-for-a-year',
+      'every-endpoint-carries-a-rule-at-an-address-that-names-it',
+      'every-endpoint-tells-the-host-what-its-answers-are',
       'every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint',
     ]),
   ),
@@ -1996,7 +1996,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'to go stale',
     [
       servedHeadersFile(
-        'cacheControlOf(cachePolicyFor(endpoint.addressing))',
+        'cacheControlOf(cachePolicyFor(addressing))',
         "cacheControlOf(cachePolicyFor('content-addressed'))",
       ),
     ],
@@ -2025,6 +2025,52 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       ),
     ],
     killed(['the-deployment-is-closed-to-robots-and-the-declared-origin-is-not']),
+  ),
+
+  /**
+   * A space dropped from the derivation, which is the defect the open entry recorded for months.
+   *
+   * Until ADR-0170 the rules were derived from `ENDPOINTS` alone, so every page, every Markdown twin,
+   * every browser module and every file found by convention fell through to whatever the host does
+   * that morning - 55 of the 128 addresses the tree writes, of which seventeen answered a four-hour
+   * policy written in no file here. This is that state restored for one family, and it is the shape
+   * the next one will have: a kind of address arrives, nobody declares its space, and nothing about
+   * the file looks wrong.
+   */
+  sameOnEveryLens(
+    'W-134',
+    'stops declaring the space the browser modules live in, so every module a page loads is served ' +
+      'under whatever policy the host reaches for',
+    [servedHeadersFile('    ...THE_BROWSER_GRAPH.map(named),\n', '')],
+    killed(['every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose']),
+  ),
+
+  /**
+   * The cache rule given back to the endpoints, which is this file as it stood one commit ago.
+   *
+   * **It is the most plausible defect in the whole area and it reads as a correction.** Every endpoint
+   * rule carrying both headers is symmetrical, agrees with the space rule on every value, and would be
+   * approved by anybody reading the file - and Cloudflare joins two matching rules' headers with a
+   * comma rather than choosing between them, so a contract's binding would be served a `Cache-Control`
+   * carrying `max-age` twice.
+   *
+   * Nothing that reads the *rules* can see it: the values agree, so the two guards about which policy
+   * goes where stay green. What sees it is the guard that asks what an *address* is told.
+   */
+  sameOnEveryLens(
+    'W-135',
+    'gives every endpoint its cache rule back beside its type, so an address matched by both families ' +
+      'is served one header twice and no guard over the rules disagrees',
+    [
+      servedHeadersFile(
+        "    headers: [['Content-Type', contentTypeOf(endpoint)]] as const,",
+        '    headers: [\n' +
+          "      ['Content-Type', contentTypeOf(endpoint)],\n" +
+          "      ['Cache-Control', cacheControlOf(cachePolicyFor(endpoint.addressing))],\n" +
+          '    ] as const,',
+      ),
+    ],
+    killed(['every-address-is-told-each-thing-once']),
   ),
 
   /**

@@ -35,30 +35,21 @@ const { dirname, join } = await import('node:path')
 
 const { theRevision } = await import('../registry/revision.ts')
 const { THE_BROWSER_GRAPH, asABrowserModule } = await import('./browser.ts')
-const { LLMS_TXT, ROBOTS, SITEMAP, THE_BUILT_TREE, THE_HEADERS_FILE, THE_NOT_FOUND_FILE } =
-  await import('./paths.ts')
+const { THE_BUILT_TREE, THE_FILES_FOUND_BY_CONVENTION } = await import('./paths.ts')
 const { thePublication } = await import('./site.ts')
 
 /**
- * The files a machine looks for at addresses no link points at, named from where they are declared.
+ * The files a machine looks for at addresses no link points at, taken from where they are declared.
  *
  * The breakdown below is read off the tree and the classification is not, so a file that joined this
  * set and not this line would be counted as an answer - which is how a summary starts describing a
  * tree it no longer matches. It happened once, to the line under it, and the sentence has since been
  * worth its keep twice: `_headers` was the fourth arrival and `404.html` the fifth.
  *
- * Three are fetched by a crawler, one is read by the host and served to nobody, and one is served to a
- * reader who arrived by being wrong. They are one set anyway: what they share is that no link points at
- * them and their names are somebody else's convention, which is exactly what the breakdown needs to
- * know about a file.
+ * **The set itself moved to `paths.ts` when the cache rules became its second reader**, which is what
+ * makes a sixth arrival one edit rather than two that can disagree.
  */
-const FOUND_BY_CONVENTION = new Set<string>([
-  SITEMAP,
-  ROBOTS,
-  LLMS_TXT,
-  THE_HEADERS_FILE,
-  THE_NOT_FOUND_FILE,
-])
+const FOUND_BY_CONVENTION = new Set<string>(THE_FILES_FOUND_BY_CONVENTION)
 
 const OUT = join(import.meta.dirname, THE_BUILT_TREE)
 const ROOT = join(import.meta.dirname, '..', '..')
