@@ -14,7 +14,7 @@ confirmed-by:
 ## The criterion, written before it was applied
 
 This section is first because it is the only part of this unit that will still be doing work in two
-years. The twelve deletions below are its application; what a session needs when it next asks *what
+years. The eighteen deletions below are its application; what a session needs when it next asks *what
 here is dead* is the rule, not the list.
 
 > **A thing is dead when nothing in this repository would notice its removal.**
@@ -140,7 +140,7 @@ the next session that reaches for it meets the measurement rather than the elega
 
 What replaces it is not the other two options either. Removing all 109 `export` keywords is available
 and is a unit of its own: it is 109 edits across six packages, it moves no behaviour, and landing it
-beside twelve deletions would make every change in the diff unrecoverable. It is written into the
+beside eighteen deletions would make every change in the diff unrecoverable. It is written into the
 open list with this measurement beside it.
 
 ## Consequences

@@ -1617,7 +1617,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   makes the claim total and guardable - *no exported name is unused outside its file*. Nothing outside
   can import them anyway, the manifest declaring a `bin` and no `exports`, so the affordance being
   given up is a name a reader of *this* repository might want to write. It is 109 edits across six
-  packages moving no behaviour, and landing it beside twelve deletions would make every change in the
+  packages moving no behaviour, and landing it beside eighteen deletions would make every change in the
   diff unrecoverable. Priced as its own unit. ADR-0174.
 
 - **That a guard declared applicable has been seen red on its own failure condition, alone.** The
