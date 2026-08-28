@@ -210,6 +210,22 @@ expected to take away, and the only thing that can refute it is a reader.
 - Everything ADR-0113 lists that has not happened: a sixth contract, per-version READMEs on npm, a
   second language in the catalogue.
 
+**The third condition fired on 2026-08-28, and
+[ADR-0173](0173-a-decision-named-the-only-condition-nothing-could-raise-and-a-reader-raised-it.md) is
+what it opened.** The owner read this page as a stranger and said it makes the project look as though
+it were one function. **The count this record repaired was still right** — measured at `1e85f9e`, six
+occurrences of `slugify` and none of them a call — and what a count cannot see is an order: the install
+naming one contract stood at 3.8 % of the page's words and the word `catalogue` first occurred at
+39.3 %, so the page asserted the plural in its opening sentence and proved the singular for the next
+two fifths. **The gap is in the test above rather than in its application**: *no competitor could print
+this block* grades a block on what it shows and never on where it stands, and a page can pass it block
+by block while spending its opening proving the wrong cardinality.
+
+Nothing else here moved. The order of the first two blocks, the refusal of a page carrying no code, the
+thirty-second criterion itself and the floor reading are all kept, and ADR-0173 contradicts no sentence
+of this record — it was written against them, and two of its own refusals rest on the sentence about
+nothing structural standing in front of the answer.
+
 ## More Information
 
 - [ADR-0113](0113-one-readme-that-shows-a-function-before-it-explains-one.md) — the thirteen readings,

@@ -36,6 +36,18 @@ privileged on the page that stands for all of them. The constraint is right and 
 template, which is a thing a reader sees. The resolution is that a command belongs to a *contract*, so
 it belongs on every contract's page and on none of the pages that are about the catalogue.
 
+**That sentence settles the README too, and nothing swept it there for a year.**
+[ADR-0114](0114-a-front-page-that-shows-the-registry-and-not-a-function.md), written the day before
+this record, exempts the install command on that page — *it is a coordinate and not a claim, and every
+README on earth has one* — which is the clause this one refuses.
+[ADR-0173](0173-a-decision-named-the-only-condition-nothing-could-raise-and-a-reader-raised-it.md)
+records the divergence and is where that command finally leaves the top of the page. **It does not go
+to zero there, and the difference is measured rather than argued**: this door has the catalogue one
+click away, a README is the only page an npm reader receives, and
+`every-command-the-readme-tells-a-reader-to-type-carries-the-invocation` requires one fenced line
+opening with the invocation. So *no command at all* is refused on that surface by a guard, and the
+guard is right against this precedent.
+
 ## Considered Options
 
 ### Refused: a page that opens on a search field

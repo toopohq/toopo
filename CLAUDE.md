@@ -1177,6 +1177,39 @@ had never shown. The exhibit is unchanged and frozen; what moved is that the pag
 says the form it does not show is the one written today, and names the contract a reader can check
 that on. ADR-0172.
 
+**And the page stopped proving the opposite of what it says.** ADR-0114 closed by naming four things
+that would reopen it, one of which nothing here could raise — *a real reader failing the thirty-second
+criterion* — and the owner raised it, reading his own README as a stranger and saying it makes the
+project look like one function. **It is the record's own trigger firing, and
+`every-decision-says-what-would-reopen-it` is what forced it to carry one**: a record with no trigger
+is *a decision frozen by accident rather than on purpose*, and this is the first time one of those
+triggers has been pulled by the only thing that could pull it. **The count could not have seen it.**
+ADR-0114 took `slugify` from 11 mentions to 6 and recorded that none of the six is a call; measured at
+`1e85f9e` every word of that still held. What a count cannot see is an order — measured in words rather
+than in lines, which is ADR-0114's own refusal of a line reading, the install naming one contract stood
+at **3.8 %** of the page and the word `catalogue` first occurred at **39.3 %**. **The page asserted the
+plural at 0 % and proved the singular for 39 %**, its opening sentence being *Utility functions … each
+one verified against a public, executable contract* and everything concrete after it being one
+contract's install, files, row, header and import; a reader believes the evidence. The catalogue now
+opens at **22.5 %** and `slugify` at 28.4 %, so the plural precedes the singular by 6.1 points where it
+trailed by 35.5 the wrong way. The reordering is a **pure permutation** — proved rather than asserted,
+the multiset of whitespace-separated tokens being identical across it — and the fourteen words added
+are the one sentence that makes the command read as a row of the table above. **What it cost is stated
+rather than smoothed**: an npm reader's install line moves from 3.8 % to 35.7 %. ADR-0173.
+
+**A wordless `npx toopo search` at the top was the strongest refused candidate, and what refused it was
+a measurement.** Against the live origin it answers **45 lines and 230 words** where the whole catalogue
+section is 214; it names all seven addresses, which is the compact-roster refusal at eight times the
+size; its line 43 is the `npx toopo add <domain>/<name>` template ADR-0140 records being rejected by
+name, returning through a command's output where nobody would look; and it carries `The catalogue holds
+7 contracts.` where **both guards that resolve that count seek the bolded literal**, so a `7` inside a
+fence escapes them — worse than ADR-0130's shape, where a duplicate at least *satisfies* the guard, and
+an eighth contract would have left the page carrying a stale `7` with all fifteen green. Without its
+output it is refused on ADR-0114's exemption read closely, *every README on earth has one* being a
+toleration rather than a claim to the opening position — **and because it repairs the half that was not
+broken**: the plural is already asserted at 0 %, what was missing at 4 % was plural *evidence*, and a
+command is a third assertion. ADR-0173.
+
 **Project name: Toopo.** CLI command `toopo`, lockfile `toopo.lock`.
 
 **What decides the next unit** is the list of what is still open, below, with what each entry costs.
@@ -1681,6 +1714,40 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   by several entries of this list already, already priced and already refused as a lint over prose —
   and this is the first of them whose subject is a *record* rather than a source, which is a widening
   of that stage rather than one more customer for it. ADR-0136.
+
+- **That a decision's answer reaches every surface the decision settles.** ADR-0140 settled *a command
+  belongs to a contract, so it belongs on every contract's page and on none of the pages that are about
+  the catalogue*, and took every command off the site's door. **The README is the other door and kept
+  the answer ADR-0140 had just replaced.** Measured: ADR-0114 is dated 2026-08-18 and ADR-0140
+  2026-08-19, and the exemption ADR-0114 wrote — *an install command is exempt … it is a coordinate and
+  not a claim, and every README on earth has one* — is the clause ADR-0140 refuses in as many words. It
+  stood for a year, and what ended it was a reader's complaint rather than any sweep.
+
+  **It is not the class of a stale entry and nothing drifted.** Both records are true of the surface
+  each was written about, both are still cited, both resolve, and no guard was wrong at any point. What
+  is missing is that **a decision answering a question does not sweep the other surfaces holding the
+  answer it replaced**. This is rule 2 of this section — *the change that builds such a mechanism sweeps
+  this list for every entry naming it* — arriving on a **decision** rather than on an entry, where the
+  rule does not reach: it is written about entries of this list, and a record is not one.
+
+  **Where this looked**: the eight fault functions of `mutation/decisions.ts` — `declarationFaults`,
+  `guardFileFaults`, `pathFaults`, `backCitationFaults`, `confirmationFaults`, `citationFaults`,
+  `linkFaults` and `reopeningFaults`. Every one resolves what a record **names** — a path, a guard, a
+  record, a link's target, the presence of a section — and **not one reads what a record says**.
+  `reopeningFaults` comes closest and asks only that a trigger section exist, never that anything
+  answer it.
+
+  **The population is every clause of a record that decides something true of more than one surface**,
+  and no sweep here can bound it: telling such a clause from an ordinary sentence is the judgement this
+  list refuses to hand to a shape, which is why three entries above already refuse a lint over prose.
+  **One instance is recorded and no rank is published** — a count over this population would be a count
+  of somebody's readings, which is ADR-0018's first rule.
+
+  What would close it is the thing five entries here already name, price and refuse: a validation stage
+  reading this repository's own strings, and this is the **second** of them whose subject is a *record*
+  rather than a source. **What is cheap and is done instead** is that both records now carry a note
+  where the divergence is, so a reader arriving at either meets the other rather than the half that was
+  replaced. ADR-0173.
 
 - **That every phrase a contract is found by has been read against what the contract does.** ADR-0023's
   alias review happens at publication: somebody reads each phrase against the contract's own
