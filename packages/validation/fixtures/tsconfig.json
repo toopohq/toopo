@@ -1,4 +1,8 @@
 {
-  "extends": "../../tsconfig.json",
+  // Three folders up and not two. `../../tsconfig.json` from here is `packages/tsconfig.json`, which
+  // does not exist, so `tsc` answered TS5083 and fell back to its own defaults - and the analyser went
+  // on reading these submissions under a compiler configured by nobody. Nothing was red: the rules are
+  // syntactic, so a wrong `target` and a missing `strict` cost no finding and left no trace.
+  "extends": "../../../tsconfig.json",
   "include": ["."]
 }
