@@ -253,6 +253,32 @@ pattern took its cache rule with it; the cache rule is a space's now, so `/blob/
 **Neither of the two new guards moves on W-78 or W-79**, which is what says they are about something
 the four older ones were not.
 
+## What the deployment answered, which is the prediction above tested
+
+Read with `curl` on both host shapes at `ec3dda9`, the origin's own `contract-index` confirming it
+serves that revision, over the same thirty-five addresses as before.
+
+**The prediction held and is therefore worth as little as predictions are: the seventeen did not
+move.** Sixteen modules and `robots.txt` answer `public, max-age=14400, must-revalidate` with
+`cf-cache-status: REVALIDATED` at `toopo.dev` and `public, max-age=0, must-revalidate` at
+`toopo.pages.dev` - the value this repository now declares, arriving intact at one host and replaced at
+the other. What that adds to the reading taken before the change is only that declaring the policy did
+not disturb it, which is the half a reader would otherwise have to take on trust.
+
+**One address moved and nothing here predicted it.** `/404.html` answered `308` with **no
+`Cache-Control` at all** before this change and answers `308` with `public, max-age=0, must-revalidate`
+after it, on **both** hosts. So a rule reaches a redirect, which is this file's own note about the `@`
+trap read in the one direction it had never been read - the rule applies to the redirect rather than to
+its destination, and here that is what was wanted. **It is the only one of the fifty-five where the
+declaration changed what a reader receives**, and it was found by taking the reading rather than by
+reasoning about it.
+
+The rest of the fifty-five were already being answered the declared value by a host default: the
+thirty-four pages and Markdown twins, `sitemap.xml` and `llms.txt`. `_headers` and an address nothing
+is served at answer `no-store` whatever is declared, as the measurement before the change said they
+would. **What changed for them is not the header but who decides it**, which is the whole entry: today
+they land on a default that agrees, and the day it stops agreeing something here says so.
+
 ## What would reopen this
 
 - **A reading of the origin in which the seventeen stop answering four hours**, which would mean the

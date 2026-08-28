@@ -2640,6 +2640,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   addresses read. So **Pages already sends the policy this repository declares, and something between
   Pages and a reader replaces the age.**
 
+  **ADR-0170 declared that policy for all seventeen and the reading after the deployment is
+  unchanged**, at `ec3dda9`, the origin's own `contract-index` confirming the revision: the same
+  seventeen, the same four hours, the same `REVALIDATED`. The prediction was published before the
+  deployment that tested it, which is the only thing that makes this reading worth more than the one
+  above it.
+
   **What it costs a reader**: returning inside four hours they are served the repaired HTML and the
   old script, and `must-revalidate` does not save them - it forces revalidation once the freshness
   lifetime has run out, never during it. The mixture was met rather than predicted, a browser holding
