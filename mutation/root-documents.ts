@@ -27,7 +27,9 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
+import { renderContract } from '../packages/registry/address.ts'
 import type { ContractRecord } from '../packages/registry/contract-record.ts'
+import { localReadApi } from '../packages/registry/local-read-api.ts'
 import type { ContractSource } from '../packages/registry/serialise.ts'
 import { REPOSITORY_ROOT, serialiseContract } from '../packages/registry/serialise.ts'
 import { theCatalogue } from '../packages/registry/the-catalogue.ts'
@@ -38,6 +40,58 @@ export type RootDocument = 'README.md' | 'CONTRIBUTING.md'
 
 export const rootDocument = (name: RootDocument): string =>
   readFileSync(join(THE_REPOSITORY, name), 'utf8')
+
+/**
+ * One section of a root document, collapsed, from its heading to the next heading of the same level.
+ *
+ * **A guard about a paragraph needs an address for it, and a heading is the only one a hand-written
+ * page has.** Asking whether a claim is *somewhere* in a document is answered by any copy of it, and
+ * these documents repeat themselves by design: `README.md` names every contract of the catalogue in
+ * one table and one contract in its demonstration, so a guard reading the whole page cannot tell the
+ * demonstration from the table. That is the shape ADR-0130 records, met here on prose rather than on
+ * a rendered page.
+ *
+ * Collapsed, on the discipline the two guard files already follow: where a paragraph wraps is not a
+ * fact about anything asserted in it, and an expectation carrying a column width is one that reddens
+ * on a re-flow.
+ *
+ * It answers `''` for a heading that is not there, and a caller refuses that rather than sweeping it -
+ * a population built from a heading somebody retitled is empty, and an empty population is the one
+ * shape that passes while establishing nothing. ADR-0172.
+ */
+export const theSectionOn = (name: RootDocument, heading: string): string => {
+  const document = rootDocument(name)
+  const opens = document.indexOf(`## ${heading}\n`)
+  if (opens === -1) return ''
+
+  const body = document.slice(opens + heading.length + 4)
+  const closes = body.indexOf('\n## ')
+
+  return (closes === -1 ? body : body.slice(0, closes)).replace(/\s+/g, ' ')
+}
+
+/**
+ * The contracts a reader can install, each with the banner its copied file carries.
+ *
+ * **What a document may claim about an installed file is bounded by what a reader can install**, so
+ * the population is the served index's own `installable` rather than the catalogue: `array/group-by@1`
+ * is refused, nobody receives its header, and counting it would let a form nobody meets answer for a
+ * form somebody does.
+ *
+ * It is here rather than in the guard that wants it for this module's own reason: `theCatalogue` is
+ * read here and nowhere else under `mutation/`, and a second import of it is how two answers to one
+ * question about the catalogue come to disagree. ADR-0114, ADR-0172.
+ */
+export const installableContracts = (): readonly ContractSource[] => {
+  const served = new Set(
+    localReadApi()
+      .contractIndex()
+      .entries.filter((entry) => entry.installable)
+      .map((entry) => renderContract(entry.address)),
+  )
+
+  return theCatalogue.filter((source) => served.has(renderContract(source.address)))
+}
 
 /**
  * Every contract of the catalogue, serialised, which is the form both documents count over.

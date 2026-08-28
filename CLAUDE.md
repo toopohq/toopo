@@ -541,6 +541,19 @@ and with fewer assertions in it. ADR-0162.
 **What does not exist.** The publishing tool. Stages 2 to 7 of the validation pipeline. A second
 language.
 
+**Four of those words are an ordinal ADR-0171 measured to name nothing, and they are left standing on
+purpose.** Nothing anywhere says what stage 2, 3, 4, 5, 6 or 7 would be, so *stages 2 to 7* lends the
+pipeline a shape it does not have — six identifiable stages that happen to be unbuilt — and so does
+`README.md`'s *the validation pipeline that judges a third-party implementation exists at its first
+stage only*. Those two are the whole population, swept at `5e1e2a9`. **Neither is an entry of the open
+list and neither names a closing mechanism**, so rule 1 does not bite on either, which is what
+separates them from the `contractAnatomy` entry that was corrected. **What stops them being repaired
+is that a true replacement has to say what the pipeline will become**, and that is the question
+ADR-0171 opened and deliberately did not close; writing one now would be the guess this whole
+discipline refuses. They are recorded rather than corrected because two mentions somebody knows about
+are worth more than two somebody rediscovers — and because a reader meeting ADR-0171 would otherwise
+find them false by omission. ADR-0171.
+
 **What is broken is one thing, in the published package and not on the site: `yarn dlx toopo` does
 not run.** Re-measured on 2026-08-27 against `toopo@1.1.0` as npm serves it, in an empty project with
 a `packageManager` of `yarn@4.6.0` obtained through corepack: `yarn dlx toopo@1.1.0 add
@@ -1151,8 +1164,18 @@ beside that refusal rather than only in the record: a wrong list of *paths* misl
 wrong banner form cannot, because both forms are MIT-0 and a byte-for-byte guard already reads them.
 **`array/group-by@1` moves to the new form today**, because the ledger binds it nothing — measured,
 the ledger is byte-identical across the change — which is what gives the second branch an instance
-instead of leaving it a branch nothing reaches. What it does not buy is on the list below: `README.md`
-goes on showing a copyright line, correctly, because it demonstrates a published contract. ADR-0159.
+instead of leaving it a branch nothing reaches. ADR-0159.
+
+**`README.md` still shows a copyright line and no longer teaches it as the rule, which is a different
+state from the one that clause described.** It read *what it does not buy is on the list below:
+`README.md` goes on showing a copyright line, correctly, because it demonstrates a published
+contract* — true of the exhibit and false of the page, because the two lines stood under *all it asks
+of you*, which is read as the deal and not as a fact about `string/slugify@1`. Measured from npm
+against the live origin: `toopo add object/deep-equal` lands `// SPDX-License-Identifier: MIT-0` with
+no copyright line, so a reader installing the seventh contract received a second line the front page
+had never shown. The exhibit is unchanged and frozen; what moved is that the page now attributes it,
+says the form it does not show is the one written today, and names the contract a reader can check
+that on. ADR-0172.
 
 **Project name: Toopo.** CLI command `toopo`, lockfile `toopo.lock`.
 
@@ -1319,6 +1342,23 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   not get: `serialiseContract` has dozens of callers and one of them is the client, so a parser there
   would put a 138 ms compiler spawn inside `npx toopo add`. The field is a declaration still, and it
   is `structural` rather than derived.
+- **the banner a reader is shown against the banner a reader would receive** — ADR-0172, and it is the
+  fifth time this list records that an entry's own half was what failed. **The closure it named would
+  have inverted the defect rather than repaired it**: *the demonstration moving to a contract published
+  after ADR-0159* puts on the page the form **1 of 6** installable contracts carries in place of the
+  form **5 of 6** carry, and the defect was never which particular was shown — it was showing one under
+  a sentence that reads as the deal. The comparison with `LICENSE` is what misled it: that file claims
+  *each one says so in its own first two lines*, a claim about the marking, which both forms satisfy, so
+  one example is adequate to it; the README claimed *all it asks of you*, which is a claim about the
+  whole header. **Two surfaces, two claims, and the entry treated them as one problem with one
+  closure.** What closed it is that the page now attributes its exhibit, names the form it does not
+  show, and names an installable contract a reader can refute it on. **The paragraph held a second
+  particular nobody had separated from the first** — the install root, which is `src/lib/toopo` only
+  where the project has a `src` folder — and it was caught in the repair's own draft rather than by the
+  reading that opened the entry. What the closure leaves behind is that **no guard here installs
+  anything**: the three that now keep the page read the catalogue and the page against each other, and
+  both defects were found by `npx toopo@1.1.0` against the live origin in two project shapes, which is a
+  measurement somebody took and not a mechanism.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1515,35 +1555,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   cheap and is done instead** is `correctionsToFrozenProse`, which does not close the entry: it lets
   the catalogue say a sentence is wrong after the fact, and says nothing about finding the next one.
   ADR-0161.
-
-- **That the banner a reader is shown is the banner a reader would receive.** ADR-0159 made that
-  derived for `LICENSE`: the example must be of `THE_CURRENT_BANNER`, so the day a form is superseded
-  `the-licence-file-shows-the-banner-a-reader-would-receive` reddens by itself. **The same guard
-  cannot be written for `README.md`**, and the reason is not effort: the page demonstrates an
-  *install*, `the-header-the-readme-shows-is-the-one-the-installer-writes` holds it to the real header
-  of the contract it demonstrates. **This entry read *the only contract carrying the current form is
-  `array/group-by@1`, which is refused and which nobody can install*, and the seventh contract made
-  both halves false.** Measured at `0986b70`: `object/deep-equal@1` declares `the-marking-alone` too,
-  the origin's own index marks it `installable: true`, and installing it lands
-  `// typescript/object/deep-equal@1 - …` and `// SPDX-License-Identifier: MIT-0` with **no copyright
-  line at all**. So the argument that stood here — a front page demonstrating an uninstallable
-  contract would trade one wrong lesson for a worse one — is about a state this repository left when
-  it published its seventh contract. ADR-0167.
-
-  **So the surface a stranger reads first goes on showing a copyright line**, correctly, on a file
-  whose header is frozen — and the lesson it teaches about the file a reader is about to receive is
-  the one this repository has just stopped being true. It is not a drift: `string/slugify@1` really
-  carries that header and always will.
-
-  **The population is every surface that shows an example of an installed file**, which is `LICENSE`
-  and `README.md` today, and one of the two is kept. **What would close it is reachable now and not
-  taken**, which is a different state from the one this entry described for two days: the closure was
-  *the demonstration moving to a contract published after ADR-0159*, that contract exists, it is
-  installable, and moving the README onto it is a judgement about which contract a stranger should
-  meet first rather than about licensing — so it is named here rather than made inside a unit whose
-  subject was the reading. **Where this looked**: `mutation/readme.test.ts`'s own guard,
-  `THE_SUITES[DEMONSTRATED]`, and the banner declarations of all seven catalogue entries. ADR-0159,
-  ADR-0167.
 
 - **That a second word of a query is one the contract has any business answering.** The entry this
   replaces was about a word the query *adds* being free, and it is closed: a query that sets a word
@@ -1880,8 +1891,21 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   edit, and says so rather than claiming a sweep one part of which is out of reach. **What nothing
   keeps is that the next frozen file carries a fourth.** What would close it is a validation stage
   refusing a commit identifier in a file a submission freezes — which is the same stage three entries
-  below already name, priced there and refused there as a lint over prose. Written into that stage's
-  requirements rather than built. ADR-0124.
+  below already name, priced there and refused there as a lint over prose.
+
+  **This entry closed on *written into that stage's requirements rather than built*, and there are no
+  such requirements.** Swept at `5e1e2a9`: `stage's requirements` occurs nowhere in the tree, ADR-0124
+  does not carry the word `requirements` once, and the only `requirementsOf` this repository holds
+  reads what a *contract's* own module publishes — which is stage 1's subject and not a future stage's
+  filing cabinet. The clause named an act that was never performed and a place that does not hold it.
+
+  **It is worth separating from the ordinal ADR-0171 refuted, because the two look alike and only one
+  is a defect.** Naming a mechanism by what it does — *a validation stage reading this repository's own
+  strings* — satisfies rule 1: the day somebody writes that lint, every entry naming it is
+  recognisable. Naming one by its number does not, which is why the `contractAnatomy` entry was
+  corrected and this one is not. What was wrong here was smaller and in a different place: a filing
+  claim beside a sound description, invisible to any sweep for an ordinal. What is written down is this
+  entry. ADR-0124, ADR-0171.
 
 - **That an identifier this repository writes bare is one somebody can follow.** `A_CITATION` matches
   seven hexadecimal digits closed by a backtick, and that form was measured rather than chosen — it

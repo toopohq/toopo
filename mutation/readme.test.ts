@@ -1,16 +1,23 @@
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 import { describe, it, expect } from 'vitest'
 
 import { edgeCases } from '../contracts/typescript/string/slugify/edge-cases.ts'
+import { proposeDirectory } from '../packages/cli/configuration.ts'
 import type { ContractRecord } from '../packages/registry/contract-record.ts'
 import { THE_INVOCATION, renderContract } from '../packages/registry/address.ts'
-import { licenceHeaderOf } from '../packages/registry/licence.ts'
+import { THE_CURRENT_BANNER, licenceHeaderOf } from '../packages/registry/licence.ts'
 import type { ContractSource } from '../packages/registry/serialise.ts'
 import { THE_SUITES, guardsCollectedIn } from './decisions.ts'
 import {
+  installableContracts,
   rootDocument,
   theCatalogueRecordIn,
   theCatalogueRecords,
   theCatalogueSourceIn,
+  theSectionOn,
 } from './root-documents.ts'
 import {
   CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS,
@@ -67,6 +74,17 @@ const everyFencedLine = (): readonly string[] =>
   [...readmeSource().matchAll(/```[a-z]*\n([\s\S]*?)```/g)].flatMap((block) =>
     (block[1] as string).split('\n'),
   )
+
+/**
+ * The section describing an install, named once so a retitling moves one line.
+ *
+ * The three guards keyed to it refuse an empty section, so retitling the heading reddens them rather
+ * than quietly emptying their subject.
+ */
+const WHAT_LANDS = 'What lands in your project'
+
+/** That section of this page, which is the paragraph those three read. */
+const whatLands = (): string => theSectionOn('README.md', WHAT_LANDS)
 
 describe('what the readme publishes about the measurement', () => {
   /**
@@ -201,6 +219,7 @@ describe('what the readme publishes about the measurement', () => {
  * different one this is the single line that moves.
  */
 const DEMONSTRATED = 'string-slugify'
+
 
 /**
  * A file of a contract's folder, as the page lists one: a bare name at the head of a line.
@@ -365,5 +384,105 @@ describe('what the readme shows of the catalogue', () => {
     expect(readmeSource()).toContain(
       licenceHeaderOf((shown as ContractSource).address, (shown as ContractSource).banner),
     )
+  })
+
+  /**
+   * And the page says that the header it shows is one of two forms, on a contract a reader can check.
+   *
+   * **The guard above is satisfied by a true quotation of a particular, and that is what went wrong.**
+   * The page showed `string/slugify@1`'s two lines under *all it asks of you* - true of that file,
+   * and read as the deal on offer. Measured from npm against the live origin: `toopo add
+   * object/deep-equal` writes `// SPDX-License-Identifier: MIT-0` with no copyright line at all, so a
+   * reader installing the seventh contract received a second line the front page had never shown.
+   *
+   * **What is asked here is not that the page shows both forms.** It is that the page says a second
+   * form exists, that the form it does not show is the one written today, and that it names a contract
+   * carrying that form which a reader can actually install - so the claim is one they can refute in a
+   * terminal rather than one they take from us. The count of forms is asked too, because the sentence
+   * says *the older of two* and a third would leave it describing a catalogue this repository no
+   * longer has.
+   *
+   * Scoped to the section: the catalogue table names every contract of the catalogue, so a guard
+   * asking whether the page names one carrying the other form is answered by that table with this
+   * sentence deleted - the shape ADR-0130 records. ADR-0159, ADR-0167, ADR-0172.
+   */
+  it('the-readme-names-the-banner-form-it-does-not-show-and-a-contract-that-carries-it', () => {
+    const shown = theCatalogueSourceIn(THE_SUITES[DEMONSTRATED] as string) as ContractSource
+    const section = whatLands()
+    const installable = installableContracts()
+    const carryingTheOther = installable.filter(
+      (source) => source.banner === THE_CURRENT_BANNER && source.banner !== shown.banner,
+    )
+
+    expect(section).not.toBe('')
+    // Total over what a reader can receive rather than a count of two: the page shows one form and
+    // names one, so a third on any installable contract is a header nothing on the page accounts for.
+    expect(
+      [...new Set(installable.map((source) => source.banner))].filter(
+        (banner) => banner !== shown.banner && banner !== THE_CURRENT_BANNER,
+      ),
+    ).toEqual([])
+    expect(carryingTheOther.map((source) => source.address.name)).not.toEqual([])
+    expect(
+      carryingTheOther.filter((source) => section.includes(`\`${source.address.name}\``)),
+    ).not.toEqual([])
+  })
+
+  /**
+   * Every folder an install can write to is one the page names.
+   *
+   * `proposeDirectory` answers `src/lib/toopo` where the project has a `src` folder and `lib/toopo`
+   * where it has not, and the page had named only the first - so a reader whose project has no `src`
+   * was told their file is somewhere it is not. Measured from npm against the live origin, the same
+   * `toopo add string/slugify` in two projects differing only by that folder.
+   *
+   * **One directory read twice rather than two directories**, so that what separates the two answers
+   * is the thing the function tests and nothing else about either path. The temporary folder is
+   * removed here rather than in a teardown: this repository has been bitten by a removal that throws
+   * outside a guard, and a removal inside one fails the guard that made the folder.
+   *
+   * **The backtick is load-bearing.** `src/lib/toopo` contains `lib/toopo`, so a guard asking for both
+   * by containment is answered by a page naming only the first - which is why each root is sought as
+   * the page opens a code span with it.
+   *
+   * What it does not reach is a third project shape: `proposeDirectory` is a ternary, so two readings
+   * are total over it today, and a chain would answer a shape neither of these two dirs has.
+   */
+  it('the-readme-names-every-root-an-install-can-write-to', () => {
+    const project = mkdtempSync(join(tmpdir(), 'toopo-readme-'))
+    const section = whatLands()
+
+    const bare = proposeDirectory(project)
+    mkdirSync(join(project, 'src'))
+    const held = proposeDirectory(project)
+    rmSync(project, { recursive: true })
+
+    expect(section).not.toBe('')
+    expect(new Set([bare, held]).size).toBe(2)
+    expect([bare, held].filter((root) => !section.includes(`\`${root}/`))).toEqual([])
+  })
+
+  /**
+   * And the line the page tells a reader to write imports the file the page has just shown them.
+   *
+   * The two are one paragraph apart and they moved independently once: the section named the file
+   * under one root and the import under the other would be a page telling a reader to import
+   * something it has just told them is elsewhere. **It is the shape a half-done repair of this very
+   * paragraph produces** - the landed path corrected, the import line left - which is the event this
+   * guard is written for rather than anything it finds today.
+   *
+   * It asks agreement within the section and never that either is what the installer writes, which is
+   * `renderImportLine`'s own guard one folder over. `install.ts` says why: the path is read off the
+   * plan rather than rebuilt from the naming rule, because applying that rule twice is how two answers
+   * to one question come to disagree - and a second rebuild here would be a third.
+   */
+  it('the-import-line-the-readme-shows-is-the-file-it-just-showed', () => {
+    const section = whatLands()
+    const landed = [...section.matchAll(/`([^`]+)\.ts`/g)].map((match) => match[1] as string)
+    const imported = [...section.matchAll(/`\.\/([^`]+)\.js`/g)].map((match) => match[1] as string)
+
+    expect(section).not.toBe('')
+    expect(imported).not.toEqual([])
+    expect(imported.filter((path) => !landed.includes(path))).toEqual([])
   })
 })

@@ -57,9 +57,10 @@ appears exactly between two runs.
 
 ## What lands in your project
 
-One file, at `src/lib/toopo/string/slugify.ts`, its digest recorded in `toopo.lock`. It imports
-nothing, and after the install nothing of ours runs in your program: no runtime, no wrapper, no
-resolution step. Its first two lines are all it asks of you:
+One file, at `lib/toopo/string/slugify.ts`, its digest recorded in `toopo.lock` — `toopo add` writes
+under `src/lib/toopo/` instead when your project has a `src` folder, and prints the path it chose. It
+imports nothing, and after the install nothing of ours runs in your program: no runtime, no wrapper,
+no resolution step. Its first two lines are all it asks of you, and `string/slugify@1`'s read:
 
 ```ts
 // typescript/string/slugify@1 - https://toopo.dev/typescript/string/slugify@1/
@@ -67,11 +68,15 @@ resolution step. Its first two lines are all it asks of you:
 ```
 
 An address, so whoever finds the file in six months can look up what it is meant to do and read the
-six files that decide it; and a licence that asks nothing back. Both are provenance rather than a
+six files that decide it; and a licence that asks nothing back. **The copyright line is the older of
+two forms and not the one written today** — install `object/deep-equal` and the second line is the
+marking alone. It stays on the contracts published before it came out because their bytes are frozen,
+which is the promise the rest of this page is about. Both lines are provenance rather than a
 condition, and you may delete them.
 
-Import it from your project root as `./src/lib/toopo/string/slugify.js` — `.js` although the file is
-`.ts`, the one spelling TypeScript resolves under every module resolution it offers.
+Import it from your project root as `./lib/toopo/string/slugify.js` — the file above, with `.js`
+although it is `.ts`, which is the one spelling TypeScript resolves under every module resolution it
+offers. `toopo add` prints the line for wherever it wrote.
 
 `toopo.lock` records, for every file it wrote, what the registry served and what landed on your disk,
 so *is this the code I was given* is a question your own checkout answers with nothing from us.
