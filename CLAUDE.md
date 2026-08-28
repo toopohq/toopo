@@ -79,17 +79,21 @@ the *not measured on this platform* bucket goes **1 → 0**. Its matrix is deriv
 it and the last one leaving empties the leg. **The bound is where the method earned its keep**: the
 extrapolation published before the run said 2 029 s and the job measured **2 122 s, 4.4 % low** — and
 the same run refuted the premise that one reading characterises a job at all, two readings of
-identical work at one commit coming back **1 541 s and 1 319 s**. So 64 minutes is arithmetic over nine
-readings and the two assumptions it needs, not a number chosen. **What the unit is actually about is the
-clause beside it, which was wrong twice.** It shipped at 61 saying *a seventh reading outside
-1 319–1 549 s reopens this*, fired on the next run, and was re-derived to 62 — and then the clause
-itself turned out to be the wrong shape: **a sample's range grows with the sample**, so *outside what
-has been seen* fires `2/(n+1)` of the time, 22 % at eight, on an event that establishes nothing. It is
-keyed to the answer now — the bound moves at a reading **above 1 640 s or below 1 312 s** — and the pair
-that proves the shape is that it was **silent on 1 515 s and fired on 1 632 s**, the second of which
-really moved the number, to 64. **What the ratchet then exposed is the bound beside it**: `max/min` only
-grows so the derived bound self-corrects, while the two ubuntu gates are typed at 40 and their margin
-fell **42 → 41 → 38 cells** across the same nine readings with nobody deciding anything. **And the
+identical work at one commit coming back **1 541 s and 1 319 s**. **What the unit turned out to be about
+is the derivation beside it, which was wrong twice, and the property that would have caught both.** The
+clause shipped as *a reading outside what has been seen reopens this*, fired on the next run, and is the
+wrong shape: **a sample's range grows with the sample**, so it fires `2/(n+1)` of the time — 22 % at
+eight — on an event that establishes nothing. Keyed to the answer instead, it was **silent on 1 515 s
+and fired on 1 632 s**, which is the difference between a condition and a treadmill. **Then the form
+itself failed**: the tenth reading, 1 233 s, was the *fastest* ever recorded, the maximum did not move,
+and `max/min` would have taken the bound **64 → 69** — a timeout loosening five minutes because a job
+ran faster, at 1.95 times the only Windows reading there is. **The finding is the property and not the
+formula: a derivation that moves in response to a faster run is broken.** `max/median` asks what a
+timeout is about — how far the slow tail runs above the typical — and passes by construction: append a
+1 100 s reading and it answers **57** where `max/min` answers 77. So the bound is **57 minutes**, 1.61×
+the measured job, 41 cells of margin, and it can tighten as well as loosen where the old form could only
+rise. **What that exposed is the bound beside it**: the two ubuntu gates are typed at 40 and their
+margin fell **42 → 41 → 38 cells** across the same ten readings with nobody deciding anything. **And the
 figure for leg (a) was published the same wrong way twice**: 257 s alone, then *all of the spread is the
 tooling and none of it is the work* on three readings — 167, 164, 158 — which a fourth at 139 refuted.
 What survives is the comparison and not the total: the tooling spreads 105 s where the suites spread 28. **A second Windows tirage was
@@ -2389,16 +2393,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   answers for and never how long they may take.
 
   **The population is the four `timeout-minutes` declarations and the cell bound beside them** - two
-  ubuntu gates at 40, the Windows suites leg at 20, the Windows battery leg at 64 - and it grows by one
+  ubuntu gates at 40, the Windows suites leg at 20, the Windows battery leg at 57 - and it grows by one
   with each gate. **One of the four is derived and three are typed**, which is a narrowing rather than a
-  closure: ADR-0169's arithmetic was performed twice, by a person, and re-running it is as unkept as
+  closure: ADR-0169's arithmetic was performed by a person each time, and re-running it is as unkept as
   reading the other three.
 
   **The derived one now measures the cost of the typed ones, which is the sharpest form this entry has
-  ever had.** Over nine readings of `cli-install` the Windows bound re-derived itself twice - 61, 62,
-  64 - and held about 45 cells of margin throughout, while the ubuntu gates stayed at 40 and their
-  margin fell **42 to 41 to 38 cells**. Nobody decided that. It is the same battery, the same window,
-  and the only difference is that one number is computed from a reading and three are typed. What would close it is a job that reads the battery matrix's own
+  ever had.** Over ten readings of `cli-install` the Windows bound re-derived itself three times and had
+  its *form* replaced once, holding about 41 cells of margin, while the ubuntu gates stayed at 40 and
+  their margin fell **42 to 41 to 38 cells**. Nobody decided that. It is the same battery, the same
+  window, and the only difference is that one number is computed from a reading and three are typed. What would close it is a job that reads the battery matrix's own
   durations through the Actions API and refuses a share of the bound. **Its price is three things and
   the third is the one worth reading twice**: the workflow's token would gain `actions: read`, against a
   file whose whole argument is that permission is `contents: read` with exactly one job widening it; a

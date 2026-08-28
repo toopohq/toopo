@@ -851,13 +851,14 @@ jobs:
   # above the worst plausible run and not near the median.
   #
   #     the job, measured at `36e4bbb`                                        2 122 s
-  #     x the spread of this battery's own identical work, nine readings
-  #       on ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 515, 1 541,
-  #       1 549, 1 566, 1 632 s: 1 632 / 1 319                               x 1.2373
-  #     = the worst plausible run                                            2 626 s  43.8 min
+  #     x how far the slow tail of this battery's own identical work runs
+  #       above its typical, ten readings on ubuntu-latest - 1 233, 1 319,
+  #       1 392, 1 417, 1 477, 1 515, 1 541, 1 549, 1 566, 1 632 s, median
+  #       1 496: 1 632 / 1 496                                               x 1.0909
+  #     = the worst plausible run                                            2 315 s  38.6 min
   #     x what the 40 minutes above already allows the longest job it
   #       was written against: 2 400 / 1 649                                 x 1.4554
-  #     =                                                                    3 821 s  63.7 min
+  #     =                                                                    3 369 s  56.2 min
   #
   # rounded up to the whole minute the field takes, which is the only rounding here.
   #
@@ -880,34 +881,61 @@ jobs:
   # silent because of where it happened to fall.
   #
   # **So the condition is keyed to the answer instead.** The bound moves when
-  # `2 122 x (max / min) x 1.4554` crosses a whole minute, which at today's population is:
+  # `2 122 x (max / median) x 1.4554` crosses a whole minute, which at today's population is:
   #
-  #     a reading above 1 640 s, or below 1 312 s   ->  65 minutes, and this is re-derived
-  #     anything between                            ->  64 minutes, and there is nothing to do
+  #     max / median leaving 1.0879 - 1.1074   ->  re-derive; today that is a reading above 1 657 s,
+  #                                                or one that pulls the median below 1 473 s
+  #     anything else                          ->  57 minutes, and there is nothing to do
   #
-  # **The repaired clause fired on the first reading it ever judged, and that is what says it is the
-  # right shape.** The push that wrote it, `7d979c4`, measured 1 632 s - above the 1 589 s the previous
-  # threshold named - and the answer really moved, 62 to 64. The clause it replaced would also have
-  # fired, on 1 515 s and on 1 632 s alike; this one was silent on the first and is not on the second.
+  # ---------------------------------------------------------------------------
+  # The property any form here has to hold, which outlives this one
+  # ---------------------------------------------------------------------------
   #
-  # **It is a ratchet and that is named rather than repaired.** `max / min` only grows, so this bound
-  # only rises. What makes that acceptable is what it is: a sample's range underestimates its
-  # population's, so the ratchet is an estimator converging rather than a number drifting - and the
-  # direction it errs in is the cheap one, a runaway job burning minutes somebody sees instead of a
-  # publication stopped with no verdict.
+  # **A derivation that moves in response to a faster run is broken.** Not imprecise - broken. A bound
+  # exists to survive the slow tail, so it may only move on evidence about how slow this job can get;
+  # a number that loosens because a machine was quick has answered a different question from the one
+  # it is asked.
+  #
+  # **This form was `max / min` and it failed exactly that test.** The tenth reading, 1 233 s at
+  # `2903980`, was the *fastest* ever recorded here. The maximum did not move. `max / min` went 1.2373
+  # to 1.3236 and the bound would have gone 64 to 69 - a timeout loosening by five minutes because a
+  # job ran faster, which is incoherent however carefully the arithmetic is checked.
+  #
+  # `max / median` asks the question a timeout is about - how far the slow tail runs above the typical -
+  # and passes the test by construction. Measured rather than asserted: append a reading of 1 100 s to
+  # the ten above and `max / median` answers 57 where `max / min` answers 77.
+  #
+  # **Test any replacement against that before its arithmetic.** The formula is a detail and has been
+  # wrong once; the property is what would have caught it.
+  #
+  # **A second consequence, and it is why this is better than a ratchet.** `max` only grows but a median
+  # moves either way, so this bound can tighten as well as loosen. `max / min` could only ever rise -
+  # which reads as conservatism and is really a number with no way back.
+  #
+  # ---------------------------------------------------------------------------
+  # What a later reading is worth, decided here so nobody re-decides it
+  # ---------------------------------------------------------------------------
   #
   # **The clause is a reason to look and never an obligation to edit**, and that half is written here
   # because the unit that wrote it nearly missed it: every commit touching the battery below produces
-  # another reading, which may move this number again, which would want another commit. A bound one
-  # minute under its own derivation costs nothing - it is generous in the safe direction and a real run
-  # is nowhere near it - so re-deriving is worth doing when somebody is here anyway and is not worth a
-  # commit of its own. What would make it urgent is a *run* approaching the bound, which is a different
-  # event and the one this whole comment exists for.
+  # another reading, which may move this number again, which would want another commit. So the
+  # conclusion is written in advance rather than re-derived by whoever arrives next. **Look, and unless
+  # a run is approaching the bound, stop there.** Today the worst plausible run is 38.6 minutes against
+  # a bound of 57, so nothing is approaching and nothing is owed.
   #
-  # **What the ratchet exposes is the bound beside it, which has none.** The two ubuntu gates are typed
-  # at 40 minutes, so as this battery's slowest reading grows their margin shrinks with nobody deciding
-  # anything: over the nine readings above it went 42 cells, then 41, then 38. This one self-corrected
-  # across the same window and that one did not. `CLAUDE.md` carries it as an entry; the rate is here.
+  # **The one error left in this number is declared with its price rather than bought.** There is a
+  # single Windows reading and it is treated as *typical*, which is the honest reading of one draw - a
+  # draw lands in the middle more often than at an edge - but it could have been a fast one, in which
+  # case this is short by however much. What would settle it is a second Windows reading, and its price
+  # is 2 122 s of runner. It is **not** bought now: it would buy precision on a number nothing is near.
+  # Buy it on the day a run approaches the bound, which is the same trigger as above and turns a
+  # speculative expense into a triggered one.
+  #
+  # **What this exposes is the bound beside it, which is derived from nothing.** The two ubuntu gates
+  # are typed at 40 minutes, so as this battery's slowest reading grows their margin shrinks with nobody
+  # deciding anything: across these ten readings it went 42 cells, then 41, then 38. This number
+  # re-derived itself three times over the same window and that one did not move at all. `CLAUDE.md`
+  # carries it as an entry; the rate is here.
   #
   # **What it assumes, said rather than buried.** That the Windows job's relative spread is the ubuntu
   # one for this battery - there is a single Windows reading and n = 1 measures no spread at all. And
@@ -919,10 +947,11 @@ jobs:
   # battery on one platform, and the day a seventh falls outside them this arithmetic is what somebody
   # re-runs.
   #
-  # **What it lands on is the check rather than the argument**: 3 840 s over the worst plausible 2 626
-  # leaves 1 214 s, which at 27.1 s a cell here is 45 cells - against the 38 the 40 minutes above leave
-  # the ubuntu leg over its own worst plausible 1 632. They started level at 43 and 42; the gap between
-  # them is the ratchet doing its work on one and not on the other.
+  # **What it lands on is the check rather than the argument**: 3 420 s over the worst plausible 2 315
+  # leaves 1 105 s, which at 27.1 s a cell here is 41 cells - against the 38 the 40 minutes above leave
+  # the ubuntu leg over its own worst plausible 1 632. And it is 1.61 times the job that was measured,
+  # where the form this replaces had reached 1.95 - a bound approaching twice its subject has stopped
+  # being a hang detector.
   #
   # **A second Windows reading was priced and refused.** It costs 2 122 s of runner and takes n from 1
   # to 2, which bounds a tail no better than 1 does; the six ubuntu readings already give the spread for
@@ -938,7 +967,7 @@ jobs:
 
     runs-on: windows-latest
 
-    timeout-minutes: 64
+    timeout-minutes: 57
 
     strategy:
       fail-fast: false

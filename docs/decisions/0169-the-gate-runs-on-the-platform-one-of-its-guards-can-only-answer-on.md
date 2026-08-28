@@ -178,15 +178,16 @@ launched in the same minute, came back **1 541 s and 1 319 s**. One reading does
 job.
 
     the job, measured at `36e4bbb`                                        2 122 s
-    x the spread of this battery's own identical work, nine readings on
-      ubuntu-latest - 1 319, 1 392, 1 417, 1 477, 1 515, 1 541, 1 549,
-      1 566, 1 632 s: 1 632 / 1 319                                      x 1.2373
-    = the worst plausible run                                            2 626 s  43.8 min
+    x how far the slow tail of this battery's own identical work runs
+      above its typical, ten readings on ubuntu-latest - 1 233, 1 319,
+      1 392, 1 417, 1 477, 1 515, 1 541, 1 549, 1 566, 1 632 s, median
+      1 496: 1 632 / 1 496                                               x 1.0909
+    = the worst plausible run                                            2 315 s  38.6 min
     x what the 40 minutes already allows the longest job it was
       written against: 2 400 / 1 649                                     x 1.4554
-    =                                                                    3 821 s  63.7 min
+    =                                                                    3 369 s  56.2 min
 
-rounded up to the whole minute the field takes, which is the only rounding: **64**.
+rounded up to the whole minute the field takes, which is the only rounding: **57**.
 
 **This record shipped saying 61, on six readings, and named its own reopening condition — *a seventh
 falling outside 1 319–1 549 s*. The next run measured 1 566 s.** `c44a76d` is the push that wired these
@@ -209,42 +210,59 @@ measured **1 515 s** — a value this population had never held, inside the rang
 silent. It was silent by where the reading fell and not by anything it established.
 
 **So the condition is keyed to the answer instead**, which is computable because the arithmetic rounds
-to whole minutes. The bound moves when `2 122 × (max / min) × 1.4554` crosses one:
+to whole minutes. It fired on the first reading it ever judged — `7d979c4` measured **1 632 s**, and the
+bound went 62 to 64 — where the clause it replaced would have fired on 1 515 s as well. That is the
+difference between a condition and a treadmill, and it was not the end of it.
 
-    a reading above 1 640 s, or below 1 312 s    →  65 minutes, and the arithmetic is re-run
-    anything between                             →  64 minutes, and there is nothing to do
+### The property that outlives the formula, and it is this record's finding
 
-**The repaired clause fired on the first reading it ever judged, and the answer really moved.**
-`7d979c4` — the push that carried the repair — measured **1 632 s**, above the 1 589 s the threshold
-then named, and the bound went 62 to 64. The clause it replaced would have fired on 1 515 s *and* on
-1 632 s; this one was silent on the first and is not on the second, which is the whole of the
-difference between a condition and a treadmill.
+**A derivation that moves in response to a faster run is broken.** Not imprecise — broken. A bound
+exists to survive the slow tail, so it may only move on evidence about how slow the job can get; a
+number that loosens because a machine was quick has answered a different question from the one it was
+asked.
 
-**It is a ratchet, and that is named rather than repaired.** `max / min` only grows, so this bound only
-rises and never tightens. What makes it acceptable is what it is: a sample's range underestimates its
-population's, so the ratchet is an estimator converging rather than a number drifting — and it errs in
-the cheap direction, a runaway job burning minutes somebody sees rather than a publication stopped with
-no verdict.
+**The form was `max / min` and it failed exactly that test, one reading after being defended here.**
+`2903980` measured **1 233 s**, the fastest ever recorded for this job. The maximum did not move.
+`max / min` went 1.2373 to 1.3236 and the bound would have gone **64 to 69** — a timeout loosening by
+five minutes because a job ran faster, at which point it is 1.95 times the only Windows reading there
+is and has stopped being a hang detector.
 
-**And the clause is a reason to look, never an obligation to edit — which this unit nearly failed to
-notice about itself.** Each commit touching `mutation/cli-install.battery.ts` produces another reading,
-which may move the number again, which would want another commit: a repaired clause can build the
-treadmill the broken one built, one level up. What stops it is that **a bound one minute under its own
-derivation costs nothing** — it is generous in the safe direction and no run is near it. So the
-arithmetic is re-run when somebody is already here, and the event that would make it urgent is a *run*
-approaching the bound, which is not the same event and is the one the whole derivation exists for. This
-unit stops re-deriving here, at nine readings, deliberately.
+**`max / median` is what replaces it**, because it asks the question a timeout is about: how far the
+slow tail runs above the typical. And the single Windows reading is treated as *typical* rather than as
+*fastest*, which is the honest reading of one draw — a draw lands in the middle more often than at an
+edge. Measured rather than asserted: append a reading of 1 100 s to the ten above and `max / median`
+answers **57** where `max / min` answers **77**.
 
-**What the ratchet exposes is the bound beside it, and that is the finding rather than the two
-minutes.** The ubuntu gates are typed at 40, so as this battery's slowest reading grows their margin
-shrinks with nobody deciding anything: over the nine readings it went **42 cells, then 41, then 38**.
-The derived bound self-corrected across exactly the same window and the typed one did not. That is
-`CLAUDE.md`'s entry about a bound nobody compares with what a battery costs, no longer a class but a
-rate.
+**Test any replacement against that property before checking its arithmetic.** The formula is a detail,
+it has now been wrong once, and the property is what would have caught it before a reading did.
 
-**The half to carry is still that six readings did not bound the spread and nine may not either.** The
-assumption below — that this spread characterises the class — is weaker than any of these samples made
-it look, and each new extreme has moved it.
+**A second consequence, and it is why this is better than the ratchet it replaces.** `max` only grows
+but a median moves either way, so this bound can tighten as well as loosen. `max / min` could only ever
+rise, which reads as conservatism and is really a number with no way back.
+
+### What a later reading is worth, decided here so that nobody re-decides it
+
+**The clause is a reason to look and never an obligation to edit**, and this unit nearly failed to
+notice that about itself: each commit touching `mutation/cli-install.battery.ts` produces another
+reading, which may move the number, which would want another commit — a repaired clause building the
+treadmill the broken one built, one level up. So the conclusion is written in advance rather than
+re-derived by whoever arrives next. **Look; and unless a run is approaching the bound, stop there.**
+The worst plausible run is 38.6 minutes against a bound of 57, so nothing is approaching and nothing is
+owed.
+
+**The one error left in the number is declared with its price rather than bought.** There is a single
+Windows reading and it could have been a fast draw, in which case this is short by however much. A
+second reading would settle it, at **2 122 s of runner** — and it is not bought, because it buys
+precision on a number nothing is near. The earlier refusal was that *n = 2 bounds a tail no better than
+n = 1*, which remains true and is no longer the argument: what a second reading now buys is **locating
+the anchor**, which is a different purchase at the same price. It is bought on the day a run approaches
+the bound, which is the same trigger as above and makes a speculative expense a triggered one.
+
+**What all of this exposes is the bound beside it, which is derived from nothing.** The ubuntu gates are
+typed at 40, so as this battery's slowest reading grows their margin shrinks with nobody deciding
+anything: across these ten readings it went **42 cells, then 41, then 38**. This number re-derived
+itself three times over exactly that window and the typed one did not move at all. That is `CLAUDE.md`'s
+entry about a bound nobody compares with what a battery costs, no longer a class but a rate.
 
 **What it assumes.** That the Windows job's relative spread is the ubuntu one for this battery — there
 is one Windows reading and n = 1 measures no spread at all. And that the reading taken was the fastest
@@ -254,10 +272,11 @@ plausible draw, which is the conservative direction.
 claim 61 is optimal. It does not claim the spread is stationary — six readings of one battery on one
 platform, and the day a seventh falls outside them this arithmetic is what somebody re-runs.
 
-**What says it landed somewhere is the check and not the argument.** 3 840 s over the worst plausible
-2 626 leaves 1 214 s, which at 27.1 s a cell is **45 cells** — against the **38** the 40 minutes leave
-the ubuntu leg over its own worst plausible 1 632. They started level, at 43 and 42; the gap between
-them now is the ratchet working on one bound and not on the other.
+**What says it landed somewhere is the check and not the argument.** 3 420 s over the worst plausible
+2 315 leaves 1 105 s, which at 27.1 s a cell is **41 cells** — against the **38** the 40 minutes leave
+the ubuntu leg over its own worst plausible 1 632. And it is **1.61 times the job that was measured**,
+where the form it replaces had reached 1.95: a bound approaching twice its subject is no longer
+detecting a hang.
 
 **A second Windows reading was priced and refused.** It costs 2 122 s of runner and takes n from 1 to
 2, which bounds a tail no better than 1 does; the six ubuntu readings already give the spread for this
@@ -335,14 +354,17 @@ not an exception.
   instance — a name in the list that no cell of that family justifies is unreachable while every
   platform-decided cell names one family, and `mutation/selection.test.ts` says so rather than
   asserting it.
-- **A reading of `cli-install` on `ubuntu-latest` above 1 640 s or below 1 312 s**, which is where the
-  arithmetic above crosses a whole minute. This clause read *a seventh outside 1 319–1 549 s*, fired on
-  the very next run, and was then found to be the wrong shape rather than merely tripped: a range grows
-  with its sample, so it was a condition firing one time in four on an event that establishes nothing.
-  What replaces it is keyed to the answer — silent on the eighth reading of 1 515 s, fired on the ninth
-  of 1 632 s, and the bound really moved on the second and not the first.
+- **`max / median` for this battery leaving 1.0879–1.1074**, which is where the arithmetic above
+  crosses a whole minute — today a reading above 1 657 s, or one that pulls the median below 1 473 s.
+  **And the answer to it is written above rather than left open**: look, and unless a run is
+  approaching the bound, stop there. Two clauses have already been replaced here — one keyed to a
+  range, which fires on its own arithmetic, and one built on `max / min`, which moved when a job ran
+  faster — so what reopens this is the *property*, not the next reading.
+- **A run approaching the bound**, which is the one event that changes what anything here is worth: it
+  is what makes the second Windows reading worth its 2 122 s, and what would make the ubuntu gates'
+  own 40 minutes worth re-deciding.
 - **The ubuntu gates' own margin reaching a point somebody is willing to name.** It is 38 cells and
-  falling, against 42 nine readings ago, and nothing recomputes it because 40 minutes is typed. This
+  falling, against 42 ten readings ago, and nothing recomputes it because 40 minutes is typed. This
   record does not propose a number for it: raising a bound this unit did not measure, inside a unit
   about a different one, is the move `CLAUDE.md`'s list exists to refuse.
 - `every-battery-on-windows` starting for the first time, which will be a publication and which is the
