@@ -174,8 +174,9 @@ whose whole subject is mutating that serialiser.
 ## What it costs
 
 A compiler. `readSources` spawns one, so the contracts that point are read in a single call rather
-than one apiece, and the guard declares its own timeout under the catalogue's clock rule — measured,
-the registry suite goes to 459 guards in 10.43 s.
+than one apiece, and the guard declares its own timeout under the catalogue's clock rule. The seven
+`it.each` guards become one and one guard is added, so the registry suite goes **464 to 459** and the
+census row for `against-the-catalogue.test.ts` goes **73 to 68**; measured, the suite runs in 10.43 s.
 
 **Deriving `producedBy` at serialisation was measured and refused.** `serialiseContract` has dozens of
 callers, several of them parameterised over seven contracts, and one of them is

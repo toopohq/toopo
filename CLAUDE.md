@@ -2826,6 +2826,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   controller is not "`contractAnatomy` made executable"; it is three entries, and a fourth stage that
   evaluates a vetted module takes four more. The triage is data on each entry and one guard keeps the
   half that can be kept — a new entry with no verdict is refused.
+
+  **The four entries this defers close on an ordinal, and ADR-0171 measured that the ordinal names
+  nothing.** Swept over the tree, no file says what stage 2, 3, 4, 5, 6 or 7 would be, so *a fourth
+  stage* is a mechanism named by its number — which is rule 1 of this section unmet, on an entry that
+  looks as though it meets it. What the four actually need is not in doubt and is written in the
+  triage itself: the *value* of a declaration, which stage 1 already reads for the contract it checks
+  against. So the deferral is real and its address is not. ADR-0171.
 - `CLOCK_DEPENDENCE_RULE` — declared, cited in prose, imported by nothing executable. It is one of the
   four a reader keeps: which guards *can* depend on elapsed time is a judgement about what a defect
   could do to a guard.
