@@ -43,6 +43,13 @@ Whether Cloudflare's splat spans a slash is measured rather than out of reach. A
 necessary condition of it, which that measurement is what bought. **The reading in *What the sweep
 found* holds as taken**, and the entry it left open is what ADR-0170 closes.
 
+**One row of the table below has since been re-measured and moved**, which is a reading changing rather
+than a name: W-78 misspells an endpoint's pattern, and while that pattern carried the cache rule it
+took the year policy with it. The policy is a space's now, so `/blob/*` keeps its year and only the
+type goes missing - W-78 reddens `every-endpoint-tells-the-host-what-its-answers-are` where it used to
+redden `only-the-two-content-addressed-endpoints-are-cached-for-a-year`. The table is left as it was
+read at `5547bcb`; ADR-0170 carries the reading at `6a73bc4` and the battery carries the pins.
+
 ## Context and Problem Statement
 
 A Cloudflare project was connected to this repository and its first build failed. The diagnosis is

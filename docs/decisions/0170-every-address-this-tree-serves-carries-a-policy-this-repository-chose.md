@@ -233,6 +233,26 @@ defect was the guard that asks what an *address* is told. That is the shape W-13
 rules given their cache header back, which is this file as it stood one commit before this record and
 would be approved by anybody reading it.
 
+Read off `npm run battery -- site --only=W-78,W-79,W-134,W-135` at `6a73bc4`, four cells and four
+`killed as expected`; the complete red set of each was then read off the suite by hand, because a
+filtered run computes no attribution and `agreesWith` checks only that every pinned guard is among the
+failed ones:
+
+| mutant | red on, and on nothing else |
+| --- | --- |
+| W-78 | `every-endpoint-carries-a-rule-at-an-address-that-names-it`, `every-endpoint-tells-the-host-what-its-answers-are`, `every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint` |
+| W-79 | `only-the-two-content-addressed-endpoints-are-cached-for-a-year`, `every-other-answer-is-revalidated-before-it-is-used` |
+| W-134 | `every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose` |
+| W-135 | `every-address-is-told-each-thing-once` |
+
+**W-78 lost a guard and gained one, and both halves are the shape of this change.** It used to redden
+`only-the-two-content-addressed-endpoints-are-cached-for-a-year`, because misspelling an endpoint's
+pattern took its cache rule with it; the cache rule is a space's now, so `/blob/*` keeps its year while
+`/blobs/*` carries the type. What it reddens instead is
+`every-endpoint-tells-the-host-what-its-answers-are`, which had never been pinned to it at all.
+**Neither of the two new guards moves on W-78 or W-79**, which is what says they are about something
+the four older ones were not.
+
 ## What would reopen this
 
 - **A reading of the origin in which the seventeen stop answering four hours**, which would mean the
