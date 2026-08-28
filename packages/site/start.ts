@@ -63,7 +63,6 @@ import {
   theCommandWrittenFor,
   theCopyLabelFor,
   theRefusalShownFor,
-  theSpellingShownFor,
   theWayAlreadyChosen,
   whatThePanelShows,
 } from './what-a-control-says.js'

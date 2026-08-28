@@ -46,8 +46,6 @@ import { el, text } from './document.js'
 import {
   FRONT_PAGE,
   METHOD_PAGE,
-  REFUSALS_PAGE,
-  WHAT_A_CONTRACT_IS_PAGE,
   domainPageOf,
   linkTo,
   pageOf,

@@ -38,7 +38,7 @@
 import { API, TYPESCRIPT_SURFACE, missingFromTheChecker } from './typescript-api.js'
 import type { Checker, Node, Program, SourceFile } from './typescript-api.js'
 
-const { isShorthandPropertyAssignment, isSourceFile } = TYPESCRIPT_SURFACE
+const { isShorthandPropertyAssignment } = TYPESCRIPT_SURFACE
 
 /**
  * Where the name an identifier reads is bound.
@@ -224,5 +224,3 @@ export const positionOf = (node: Node, source: ParsedSource): string => {
 
   return `${source.path}:${line + 1}`
 }
-
-export const isAFile = (node: Node): boolean => isSourceFile(node)

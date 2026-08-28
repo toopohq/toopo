@@ -35,7 +35,7 @@
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
-import { killed, mutantsOn, survived } from './mutants.ts'
+import { killed, mutantsOn } from './mutants.ts'
 
 const UNDER: ArmUnderTest = { arm: 'S', asCommitted: 'as-committed', blinded: [] }
 

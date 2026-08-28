@@ -3,7 +3,6 @@ import { join } from 'node:path'
 
 import { describe, it, expect } from 'vitest'
 
-import { readConfiguration } from './configuration.js'
 import { LOCKFILE, readLockfile } from './lockfile.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { EMPTY_LOCKFILE, aProject } from './temporary-project.js'

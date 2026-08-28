@@ -39,7 +39,6 @@ const ADDRESS = { language: 'typescript' as const, name: 'number/parse', major: 
 const OTHER = { ...ADDRESS, name: 'date/add' }
 
 const A_COMMIT = 'a'.repeat(40)
-const ANOTHER_COMMIT = 'b'.repeat(40)
 
 const AS_PUBLISHED = 'c'.repeat(64)
 const AS_IT_STANDS = 'd'.repeat(64)

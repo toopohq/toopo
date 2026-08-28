@@ -40,7 +40,6 @@
 import type { ContractAddress } from '../registry/address.js'
 import { THE_INVOCATION, renderContract, sameContract } from '../registry/address.js'
 import type { Lockfile } from '../registry/implementation-record.js'
-import type { ServedIndexEntry, ServedRefusals } from '../registry/response.js'
 import type { Configuration } from './configuration.js'
 import { CONFIGURATION_FILE } from './configuration.js'
 import type { CommitStanding } from './ignored.js'

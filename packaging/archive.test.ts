@@ -79,8 +79,6 @@ import type { InstalledArchive } from './the-archive.js'
  * caught here rather than confirmed.
  */
 
-const REPOSITORY = join(import.meta.dirname, '..')
-
 let archive: InstalledArchive
 
 beforeAll(() => {

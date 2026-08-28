@@ -56,7 +56,6 @@
 import type {
   PublishedPopulation,
   PublishedSilence,
-  PublishedSurvivor,
   TheMeasurement,
   WhySurviving,
 } from '../../mutation/published.js'

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 
 import { ENDPOINTS, askedAt, contentTypeOf, endpointOf, pathTo, portFaults } from './endpoints.js'
-import { THE_QUESTIONS_THAT_NEED_NOTHING, emitted, theFileAt, urlAsked } from './emit.js'
+import { THE_QUESTIONS_THAT_NEED_NOTHING, emitted, theFileAt } from './emit.js'
 import { CLAMP, ROUND } from './imagined-addresses.js'
 import { HOLDINGS, IMAGINED_BLOBS, IMAGINED_VERSION } from './imagined-graph.js'
 import { localReadApi } from './local-read-api.js'

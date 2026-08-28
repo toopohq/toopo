@@ -21,7 +21,7 @@
 
 import type { TheMeasurement } from '../../mutation/published.js'
 import { THE_COMMANDS } from '../cli/arguments.js'
-import { THE_INVOCATION, renderContract } from '../registry/address.js'
+import { THE_INVOCATION } from '../registry/address.js'
 import type { ServedIndex, ServedRefusals } from '../registry/response.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
