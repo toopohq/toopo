@@ -38,6 +38,14 @@ own limit: `ProfileSamples.producedBy` is guarded the same way and is recorded a
 `field-map.ts`, because a text can survive the guard for a reason that has nothing to do with the
 samples it claims to produce. That is [ADR-0013](0013-samples-are-carried-or-pointed-at.md).
 
+**That second instance left the rule at
+[ADR-0171](0171-a-profile-name-is-frozen-with-a-claim-nothing-reads-and-only-the-next-contract-can-still-be-held-to-it.md),
+and the limit named above is exactly why.** `producedBy` is now resolved against the profile that
+writes it rather than against the file that contains it, so the text cannot survive for another
+profile's reason, and the field is `structural`. The paragraph below still holds for the signature and
+is the argument for why that one did not have to move: a contract publishes one export under one name,
+so there is no twin to answer for it.
+
 What the occurrence check does not establish is that the transcription is the *right* declaration —
 only that it is *a* declaration the file holds. On a signature that is enough, because a contract
 publishes one export under one name.

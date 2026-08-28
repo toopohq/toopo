@@ -2180,6 +2180,50 @@ const mutants: readonly Mutant[] = [
     killed(['a-correction-carries-the-commit-it-was-taken-at']),
   ),
 
+  /**
+   * The hole `the-catalogue.ts` published, injected.
+   *
+   * `few-large-groups` is given the text its two siblings genuinely share, so the transcription names
+   * an expression that occurs in `contract.ts` - twice - and is not the one this profile writes. The
+   * guard that searched the file for the text was green on exactly this; the guard that asks the
+   * profile is red. It is the mutant that makes the difference between the two shapes a measurement
+   * rather than an argument. ADR-0171.
+   */
+  sameOnEveryLens(
+    'I-72',
+    'points a profile at a sibling\'s producing expression, which the old occurrence guard could not ' +
+      'see because the sibling keeps that text alive in the contract',
+    [
+      catalogueFile(
+        `        'few-large-groups': '[range(1_000), range(50_000)]',`,
+        `        'few-large-groups': '[range(10), range(1_000), range(50_000)]',`,
+      ),
+    ],
+    killed(['every-produced-expression-is-the-one-its-own-profile-declares']),
+  ),
+
+  /**
+   * What a profile declares beyond the fields the schema names, emptied.
+   *
+   * `array/group-by@1` separates its two `few-large-groups` profiles by `keyFunction`, and
+   * `keyFunction` reaches the record through `data`. Emptying it makes the pair indistinguishable to
+   * everything downstream, which is the state `PROFILE_SEPARATION_RULE` exists to keep an unpublished
+   * contract out of. ADR-0171.
+   */
+  sameOnEveryLens(
+    'I-73',
+    'drops what a profile declares beside the fields the schema names, so two profiles a contract ' +
+      'separated by its own field arrive at the record as one thing',
+    [
+      serialiseFile(
+        `  const data = Object.fromEntries(Object.entries(entry).filter(([field]) => !named.includes(field)))`,
+        `  void named
+  const data = {}`,
+      ),
+    ],
+    killed(['no-two-profiles-of-an-unpublished-contract-are-indistinguishable']),
+  ),
+
 ]
 
 export const battery: Battery = {
@@ -2472,7 +2516,9 @@ export const battery: Battery = {
         ...onEach('every-case-is-addressable-across-the-whole-contract'),
         ...onEach('the-address-is-well-formed'),
         'no-two-contracts-share-an-address',
-        ...onEach('every-produced-expression-occurs-in-the-contract'),
+        // `every-produced-expression-is-the-one-its-own-profile-declares` left this list when it
+        // replaced the seven occurrence guards: I-72 reddens it, and a guard a mutant reaches is not
+        // an unprobed region. Its neighbour below is still silent and stays named. ADR-0171.
         ...onEach('every-produced-profile-exists'),
         'a-case-that-is-not-a-call-is-refused',
         ...onEach('every-harness-file-is-hashed'),

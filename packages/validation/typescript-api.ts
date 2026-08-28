@@ -53,10 +53,11 @@
  * it *is* the surface. Everything anything here uses is read off this object, so a name the package
  * stopped exporting arrives here as `undefined`, and `missingFromTheSurface` names it.
  *
- * **It has two readers now and the wider word is the point.** Stage 1 reads the tree and the checker;
- * `packages/site/served-modules.ts` reads the scanner. A second import of `typescript/unstable/*`
- * would have been the cheaper thing to write and would have cost the sentence at the top of this
- * file - one module, one door, one place a moved path is discovered.
+ * **It has three readers now and the wider word is the point.** Stage 1 reads the tree and the
+ * checker; `packages/site/served-modules.ts` reads the scanner; `packages/registry/` reads the two
+ * literal predicates, to ask a benchmark profile what its own `samples` initialiser says. A second
+ * import of `typescript/unstable/*` would have been the cheaper thing to write and would have cost
+ * the sentence at the top of this file - one module, one door, one place a moved path is discovered.
  *
  * **The converse has to be kept by hand, and it is what makes the trick worth anything.** An entry
  * nothing reads is a dependency the analyser does not have, guarded as though it did - the shape this
@@ -107,6 +108,18 @@ export const TYPESCRIPT_SURFACE = {
   isElementAccessExpression: ast.isElementAccessExpression,
   isShorthandPropertyAssignment: ast.isShorthandPropertyAssignment,
   isBinaryExpression: ast.isBinaryExpression,
+
+  /**
+   * The two the registry reads, and the third door onto this object.
+   *
+   * `every-produced-expression-is-the-one-its-own-profile-declares` reads a benchmark profile's
+   * `samples` initialiser out of the contract that wrote it, which means asking a property assignment
+   * for its own name and its own value rather than searching the file for a string. A search answers
+   * from anywhere; a property answers for the profile it belongs to, and that difference is the whole
+   * of what the guard buys.
+   */
+  isObjectLiteralExpression: ast.isObjectLiteralExpression,
+  isPropertyAssignment: ast.isPropertyAssignment,
 
   /**
    * Whether a node is part of a type rather than of the code that runs.

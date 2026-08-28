@@ -9,6 +9,13 @@ confirmed-by: []
 
 # A profile's samples are carried, or pointed at
 
+**The gap this record declared is closed, and its *What would reopen this* was wrong about why.** That
+section named the validation pipeline, quoting the sentence written for *a declared name* — and a
+producing expression is not a name. What was unread here was arithmetic, not prose, and
+[ADR-0171](0171-a-profile-name-is-frozen-with-a-claim-nothing-reads-and-only-the-next-contract-can-still-be-held-to-it.md)
+closes it with a guard that asks the profile for its own `samples` initialiser instead of searching the
+file for the text. The field is `structural` now. The paragraph below is left as it was taken.
+
 ## Context and Problem Statement
 
 The samples of one profile, carried or pointed at.

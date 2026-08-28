@@ -490,12 +490,14 @@ export const theCatalogue: readonly ContractSource[] = [
        * 1.73 MB each, one to 100.9 kB and one to 14.1 kB, against 0.4 kB for `empty`, which is
        * carried. Its record was 5.22 MB and 99.2 per cent block 4.5 before this map existed.
        *
-       * **Two entries hold the same text, and that is the residual gap the transcription guard
-       * cannot see.** `one-group-per-element` and `single-group` genuinely draw the same three
-       * ranges and differ only in the key function, so if one of them became literal tomorrow the
-       * other would keep the text alive in `contract.ts` and the guard would stay green. It is the
-       * only instance in the catalogue, it is named here rather than left for a reader to find, and
-       * it is why `benchmarks.profiles[].samples.producedBy` is classified `one-directional`.
+       * **Two entries hold the same text, and that gap is closed rather than declared now.**
+       * `one-group-per-element` and `single-group` genuinely draw the same three ranges and differ
+       * only in the key function, so under the guard that searched `contract.ts` for the text either
+       * could have become literal while the other kept it alive. `every-produced-expression-is-the-
+       * one-its-own-profile-declares` asks the profile instead of the file, so the twin cannot answer
+       * for it - measured at `286ca34` on exactly that perturbation, red, with the twin still holding
+       * the text once. The pair is left named here because it is what made the old guard's shape
+       * visible, and it is still the only instance in the catalogue. ADR-0171.
        */
       producedBy: {
         'one-group-per-element': '[range(10), range(1_000), range(50_000)]',

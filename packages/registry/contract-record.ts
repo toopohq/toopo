@@ -172,6 +172,36 @@ export type ProfileRecord = {
   readonly data: EncodedValue
 }
 
+/**
+ * What a contract has to settle about its benchmark profiles before it is published.
+ *
+ * **A profile's name is a claim about its own samples, and nothing reads a name.** Measured at
+ * `286ca34` over the catalogue's thirty-six profiles: nineteen share their class with a sibling of
+ * the same contract, and seventeen are indistinguishable from a sibling in *everything* a guard
+ * reads - same class, same declared fields, and only the name and the samples differ. For those
+ * seventeen the name is the only thing that tells two profiles apart and it is checked by nothing:
+ * `number/parse@1` was measured with `small-integers` naming `['1e308', '0.000000000000015',
+ * '-1e-300']` and the whole of `contracts/` stayed green.
+ *
+ * **The repair belongs to `contract.ts` and is therefore only available before publication.** A
+ * profile's class is decided by running the contract's own reference, so a class fine enough to
+ * separate two profiles is a claim a guard settles; a name is prose and no stage of anything will
+ * read one. `array/group-by@1` is the worked example and it is the only contract here that passes:
+ * `few-large-groups` and `string-keys` share a shape and are separated by `keyFunction`, which
+ * `profiles.test.ts` *executes* through `profileKeyFunctions`. Its own comment names the defect
+ * better than the schema did - *without it, a profile called `many-small-groups` could quietly be
+ * measuring sixteen groups over fifty thousand elements*.
+ *
+ * **The six published contracts can never satisfy it**, because satisfying it means editing
+ * `contract.ts` and every byte of that file is inside a digest other people's lockfiles hold. That
+ * is permanent rule 6 working, not failing, and this constant exists so the next contract does not
+ * buy the same debt. ADR-0171.
+ */
+export const PROFILE_SEPARATION_RULE =
+  'no two benchmark profiles of one contract are indistinguishable to the guards that read them: ' +
+  'where two profiles share a class, some further declared field separates them and the ' +
+  "contract's own `profiles.test.ts` executes it"
+
 /** A vocabulary and its profiles, and no list of timings: a figure needs a machine. ADR-0014. */
 export type BenchmarksRecord = {
   readonly vocabulary: readonly ProfileClassRecord[]

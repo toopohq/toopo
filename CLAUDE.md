@@ -1306,6 +1306,19 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   the code holds, wrong on the day it was written and looking no older for it. What it leaves behind is
   the four hours, which is an entry of the open list rather than a line here, because they are decided
   on the far side of a gap `wrangler.jsonc` records and no push reaches them.
+- **the producing expression a profile's record transcribes** — ADR-0171, and it is the fourth time
+  this list records that what failed was an entry's own half. The entry swept `producedBy` in with
+  `benchmarks.profiles[].name` *for the reason the entry above closes there*, and ADR-0013 reached for
+  the same sentence — *the only thing that will ever read a **declared name** against what it
+  describes*. **`producedBy` is not a name**: it is a transcribed expression, what was unread about it
+  was arithmetic rather than prose, and it closed with a guard rather than with a pipeline. What
+  closed it is that the text is asked of the profile instead of searched for in the file, so the twin
+  that kept it alive cannot answer for it — seen red at `286ca34` with `one-group-per-element`'s
+  samples made literal, and the control is that the old guard was **green** on the same perturbation,
+  the twin still holding the text once. It leaves behind the derivation this entry asked for and did
+  not get: `serialiseContract` has dozens of callers and one of them is the client, so a parser there
+  would put a 138 ms compiler spawn inside `npx toopo add`. The field is a declaration still, and it
+  is `structural` rather than derived.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1720,6 +1733,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   one document every query fetches on the strength of a field nothing verifies. What it would cost is
   measurable and is not measured: `contract-index` is 3 586 canonical bytes today, and the population
   above is larger than everything now in it. Priced as its own unit and not taken. ADR-0155.
+
+  **The deferral was waiting on something that is now known not to be coming, and it holds anyway.**
+  It reads as *not yet*, on the strength of the entry above closing one day at the validation pipeline.
+  ADR-0171 measured that it closes nowhere: seventeen of thirty-six profile names are frozen inside
+  digests six contracts are bound by, so the field this deferral is conditioned on stays unverified for
+  the life of those majors. The arithmetic is unchanged and the tense is: it is not *held back until*,
+  it is **held back**, and what would lift it is a decision to serve 348 addresses knowing what backs
+  them rather than a mechanism to make them verifiable. ADR-0171.
 
 - **That a comment naming a guard is naming one that exists.** A record may not: `confirmationFaults`
   resolves every pair a `confirmed-by` declares against the guards its suite collects, and
@@ -2808,18 +2829,60 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 - `CLOCK_DEPENDENCE_RULE` — declared, cited in prose, imported by nothing executable. It is one of the
   four a reader keeps: which guards *can* depend on elapsed time is a judgement about what a defect
   could do to a guard.
-- `benchmarks.profiles[].name`, **the content half of it and no longer the address half.** The
-  address is closed and is recorded below with the mechanism that closed it. What stays open is that a
-  profile's name makes a claim about its own samples that no guard reads: measured by leaving
-  `small-integers` named `small-integers` and classed `accepted` while its samples became
-  `['1e308', '0.000000000000001', '-1e-300']`, not one of them a small integer — 472 of 472 green in
-  `contracts/`, and the one red in `registry/` was `the-served-bytes-are-the-committed-bytes` noticing
-  that bytes had moved at all. It is GS-11's shape on a second field, so it closes where the two below
-  close: the validation pipeline, the only thing that will ever read a declared name against what it
-  describes.
-- `outputAlphabet` of `string/slugify@1` and `benchmarks.profiles[].samples.producedBy`, the two
-  `one-directional` fields the schema already carried, with GS-11 as the measurement. Closed by the
-  validation pipeline, for the reason the entry above closes there.
+- **That a profile's name is true of its own samples — which nothing will ever establish for six of
+  the seven contracts, and this entry is that fact rather than a debt anybody can pay.** Re-measured
+  at `286ca34` by leaving `small-integers` named and classed `accepted` while its samples became
+  `['1e308', '0.000000000000001', '-1e-300']`: **718 of 718 green** in `contracts/`, and the only red
+  was `npm run freeze`, on a digest — `d5071a58…` becoming `4992b93f…`.
+
+  **The three entries this replaces all closed on the validation pipeline and none of them closed
+  there.** The pipeline is not a mechanism: `analyseImplementation` has no caller outside its own
+  folder's tests, and **`stages 2 to 7` is a rank with no list** — swept over the tree, nothing
+  anywhere says what stage 2, 3, 4, 5, 6 or 7 would be, and ADR-0082's *fourth stage* has nothing
+  behind it either. That is this file's own rule about a rank arriving on the list that wrote it.
+  **And evaluation was never the obstacle**, which is what inverts the reasoning: stage 1 never
+  imports what it *analyses* and already imports what it *checks against* — `requirementsOf`
+  receives the evaluated contract module — so a profile's samples are within its reach today. What
+  is missing is not a stage but a machine-readable statement of what the name claims, and neither
+  reading source nor evaluating a module produces one.
+
+  **Where this looked**: `analyse.ts`, whose own paragraph distinguishes reading a declaration from
+  reading an implementation; `packages/validation/source.ts`, which states the constraint the triage
+  is built on; and ADR-0058, which decides that a contribution is *never a contract*.
+
+  **The population is measured and it is the price of the freeze rather than a defect.** Over the
+  catalogue's thirty-six profiles: **nineteen share their class with a sibling of the same contract,
+  and seventeen are indistinguishable from a sibling in everything a guard reads.** The two differ by
+  `array/group-by@1`, which separates its two `few-large-groups` profiles by `keyFunction` and
+  *executes* it — the only contract here where no two profiles are one thing, 0 of 6, and the only
+  one that has never been published. The repair is a field of `contract.ts`, every byte of that file
+  is inside a digest six contracts are bound by, so **the seventeen cannot be repaired by anybody,
+  ever, for the life of those majors.**
+
+  **What is done instead is that the debt stops growing.** `PROFILE_SEPARATION_RULE` is declared in
+  `contract-record.ts` beside `ProfileRecord`, and
+  `no-two-profiles-of-an-unpublished-contract-are-indistinguishable` holds every contract whose frozen
+  half is still open — a population *derived from the lifecycle*, so the exemption is granted only
+  by publishing, which is the moment the rule has already been met. Nobody can add a name to it.
+  ADR-0171.
+- **That the alphabet a contract declares is no wider than what it emits.** GS-11 widens
+  `string/slugify@1`'s `outputAlphabet` by an underscore and both guards that read it go on passing:
+  every property asks whether an answer falls *outside* the declared alphabet and nothing asks whether
+  the alphabet is wider than the answers need, so a contract can promise a larger surface than it
+  keeps and a caller escaping on that promise escapes more than they have to.
+
+  **It was swept in with the entry above and it is not that shape.** A name is prose; this is an
+  anchored `RegExp`, and the missing direction is arithmetic over code points rather than a judgement
+  about words. So it does not close where that one fails to, and it is not refused for that one's
+  reason.
+
+  **What would close it is a witness requirement** — a declared character class with no witness among
+  the outputs the properties already generate is a promise nothing backs, which is vocabulary this
+  repository already has. **It is not bought here because the trigger has not been measured**: whether
+  `\p{M}` has a real witness in `string/slugify@1`'s generated outputs. If it has none, the guard would
+  be red on a legitimate declaration, which is worse than no guard at all — and the alphabet is inside
+  a published digest, so the only available repair would be forbidden. **That one measurement decides
+  it**, and it is the whole of what this entry is waiting for. ADR-0171.
 - **The rule that an alias must not name what its contract refuses to be**, argued in ADR-0023, which
   also carries the criterion. The eight liars are gone and nothing keeps it.
 
@@ -3076,6 +3139,15 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
   they do not show it in the same language. The test that decides the next one: could this example make
   its point in another language? If it could, and something else in the set is already in this one, it
   changes. ADR-0120.
+- **No two benchmark profiles of one contract are indistinguishable to the guards that read them.**
+  Where two share a class, some further declared field separates them and the contract's own
+  `profiles.test.ts` executes it. A profile's *name* is prose and is read by nothing, so a distinction
+  that lives only in the name is one the catalogue cannot make — and the field that would carry it is
+  inside `contract.ts`, which is inside the digest, so **this is settled before publication or never**.
+  Measured over the seven: seventeen of thirty-six profiles fail it and only `array/group-by@1` passes,
+  0 of 6, because it is the only one that was never published.
+  `no-two-profiles-of-an-unpublished-contract-are-indistinguishable` holds every contract that can
+  still act on it. ADR-0171.
 
 ## Verification discipline
 

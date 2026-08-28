@@ -4,8 +4,9 @@ import { describe, it, expect } from 'vitest'
 
 import * as catalogue from '../catalogue/every-contract.js'
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
+import { canonical } from './canonical.js'
 import type { Lifecycle } from './contract-record.js'
-import { isASentence, stringsIn } from './contract-record.js'
+import { PROFILE_SEPARATION_RULE, isASentence, stringsIn } from './contract-record.js'
 import type { CaseTableSource, ContractSource } from './serialise.js'
 import {
   CaseIsNotACall,
@@ -15,6 +16,9 @@ import {
   serialiseContract,
 } from './serialise.js'
 import { eachContract, theCatalogue } from './the-catalogue.js'
+import { everyNode, readSources } from '../validation/source.js'
+import type { Node, SourceFile } from '../validation/typescript-api.js'
+import { TYPESCRIPT_SURFACE } from '../validation/typescript-api.js'
 import { THE_BATTERIES, theFolderOf } from '../../mutation/published.js'
 
 /**
@@ -36,13 +40,57 @@ const sourceOf = (folder: string, file: string): string =>
 
 const flattened = (text: string): string => text.replace(/\s+/g, ' ').trim()
 
+const { isObjectLiteralExpression, isPropertyAssignment, isStringLiteral } = TYPESCRIPT_SURFACE
+
+/** The compiler is a process, and a process is slower than everything else in this suite. */
+const READ_TIMEOUT_MS = 30_000
+
 /**
- * Whether a contract in this state can still put a phrase in `identity.searchAliases`.
+ * What each benchmark profile of one contract writes after `samples:`, keyed by the profile's own
+ * name, read from the source rather than searched for in it.
  *
- * `contractSnapshot` freezes `identity` whole, so the answer is whether the contract has a
- * binding: a published one - and one the language has since absorbed, which is a state entered
- * *after* publication - is frozen for life by permanent rule 6. The other two have no digest to
- * break.
+ * A profile is recognised as an object literal carrying both a `name` whose value is a string and a
+ * `samples` property. That is the shape and not a position, so a contract may declare its profiles
+ * in any order and inside any wrapper; what it may not do is give two profiles one name, which
+ * `every-case-is-addressable-across-the-whole-contract` already refuses one block up for cases and
+ * which the collision below would otherwise hide.
+ */
+const samplesWrittenIn = (source: {
+  readonly file: SourceFile
+}): ReadonlyMap<string, string> => {
+  const written = new Map<string, string>()
+
+  for (const node of everyNode(source.file)) {
+    if (!isObjectLiteralExpression(node)) continue
+
+    const properties = new Map<string, Node>()
+    node.forEachChild((child) => {
+      if (isPropertyAssignment(child)) properties.set(child.name.getText(source.file), child.initializer)
+    })
+
+    const name = properties.get('name')
+    const samples = properties.get('samples')
+    if (name === undefined || samples === undefined || !isStringLiteral(name)) continue
+
+    written.set(name.text, samples.getText(source.file))
+  }
+
+  return written
+}
+
+/**
+ * Whether a contract in this state can still edit the half a snapshot freezes.
+ *
+ * The answer is whether the contract has a binding: a published one - and one the language has since
+ * absorbed, which is a state entered *after* publication - is frozen for life by permanent rule 6.
+ * The other two have no digest to break.
+ *
+ * **It has two readers, and they ask it of two different fields for one reason.** One asks whether a
+ * phrase can still enter `identity.searchAliases`, which `contractSnapshot` freezes whole. The other
+ * asks whether `PROFILE_SEPARATION_RULE` can still be satisfied, which needs a field in
+ * `contract.ts`, whose every byte is inside the same digest. The map is the population both rules
+ * are total over, and it is derived from the lifecycle rather than declared as a list of exceptions:
+ * an exemption granted by publishing is one that can only be granted after the rule is met.
  */
 const THE_FROZEN_HALF_IS_STILL_OPEN: Readonly<Record<Lifecycle['state'], boolean>> = {
   'not-yet-published': true,
@@ -224,28 +272,68 @@ describe('the five, read against their own source', () => {
   })
 
   /**
-   * The one transcribed thing in the pointing arm of `ProfileSamples`.
+   * The one transcribed thing in the pointing arm of `ProfileSamples`, resolved against the profile
+   * that wrote it rather than against the file that contains it.
    *
-   * Same discipline as a declared type, for the same reason and with the same normalisation: a
-   * contract that stopped producing its samples would take the expression out of `contract.ts` and
-   * redden this. What it cannot see is a text that survives for another reason, which is why the
-   * field is `one-directional` and why `the-catalogue.ts` names the one instance in the five.
+   * **The guard this replaces asked whether the expression occurred in `contract.ts` anywhere**, and
+   * `the-catalogue.ts` published the hole that leaves in as many words: `one-group-per-element` and
+   * `single-group` transcribe the same three ranges, so either could become literal while the other
+   * kept the text alive and the search went on finding it. That is the class `CLAUDE.md` records one
+   * entry along - *a value a guard looks for appears once on the surface it looks at* - and a
+   * duplicate is what answers it.
+   *
+   * Reading the profile's own `samples` initialiser closes it by construction: the twin cannot answer
+   * for a profile that no longer says what it is transcribed as saying. What it costs is a compiler,
+   * so the seven contracts are read in one call rather than one apiece, and the guard declares its
+   * own timeout under the catalogue's clock rule.
+   *
+   * **Byte equality and not the flattened comparison the transcriptions above use.** A declared type
+   * is written over several lines in its contract and on one line by a page, so normalising is what
+   * makes that claim true of both; here the two sides are one string with one provenance, and
+   * measured at `286ca34` the six transcriptions are identical to the byte to what their profiles
+   * write. Normalising would buy nothing and would admit a transcription that had lost a space.
    */
-  it.each(eachContract)(
-    'every-produced-expression-occurs-in-the-contract-%s',
-    (_name, source) => {
-      const contract = flattened(sourceOf(source.folder, 'contract.ts'))
-      const missing = Object.entries(source.benchmarks.producedBy ?? {})
-        .filter(([, expression]) => !contract.includes(flattened(expression)))
-        .map(([profile]) => profile)
+  it(
+    'every-produced-expression-is-the-one-its-own-profile-declares :: asked of the profile, not of the file',
+    () => {
+      const pointing = theCatalogue.filter(
+        (source) => Object.keys(source.benchmarks.producedBy ?? {}).length > 0,
+      )
 
-      expect(missing).toEqual([])
+      const faults = readSources(
+        {
+          project: join(REPOSITORY_ROOT, 'tsconfig.json'),
+          files: pointing.map((source) => join(REPOSITORY_ROOT, source.folder, 'contract.ts')),
+        },
+        (sources) =>
+          pointing.flatMap((source, at) => {
+            const written = samplesWrittenIn(sources[at]!)
+
+            return Object.entries(source.benchmarks.producedBy ?? {})
+              .filter(([profile, expression]) => written.get(profile) !== expression)
+              .map(
+                ([profile]) =>
+                  `${renderContract(source.address)} ${profile}: the record transcribes ` +
+                  `${JSON.stringify(source.benchmarks.producedBy?.[profile])} and the profile ` +
+                  `writes ${JSON.stringify(written.get(profile) ?? null)}`,
+              )
+          }),
+      )
+
+      expect(faults).toEqual([])
     },
+    READ_TIMEOUT_MS,
   )
 
   /**
    * A profile the source names and the contract does not have would be a pointing arm attached to
    * nothing, and the record would silently keep carrying the samples it was meant to omit.
+   *
+   * **It survives the guard above, and writing the two side by side is what says why.** That one
+   * reads `contract.ts` and this one reads the *record* `serialiseContract` built, so a serialiser
+   * that dropped a profile reddens here and is invisible there. `registry-storage` is the battery
+   * whose whole subject is mutating that serialiser, which is what makes the difference a real one
+   * rather than a distinction on paper.
    */
   it.each(eachContract)(
     'every-produced-profile-exists-%s',
@@ -257,6 +345,47 @@ describe('the five, read against their own source', () => {
       expect(named.filter((name) => !known.has(name))).toEqual([])
     },
   )
+
+  /**
+   * `PROFILE_SEPARATION_RULE`, over the contracts that can still satisfy it.
+   *
+   * **The population is derived and it is what makes this a rule rather than a list of exceptions.**
+   * A contract is held to it while its frozen half is still open, and it leaves the population by
+   * being published - which is exactly the moment the rule has already been met. So the exemption
+   * cannot grow by anybody's choice: nobody can add a name to it, and the six contracts already
+   * outside it are outside because a digest other people hold says so.
+   *
+   * **It is not born on an empty population.** `array/group-by@1` is in it today and passes, 0 of 6:
+   * its two `few-large-groups` profiles are separated by `keyFunction`, which its `profiles.test.ts`
+   * executes. The six that are exempt would fail, 17 of 30, and that figure is the price of the
+   * freeze rather than a defect anybody can repair. ADR-0171.
+   *
+   * Comparison is over the class and the `data` the schema does not name, which is where a contract's
+   * own separating field lands - `keyFunction` for `array/group-by@1`. `canonical` is what compares
+   * them, so key order is not part of the answer.
+   */
+  it('no-two-profiles-of-an-unpublished-contract-are-indistinguishable :: while it can still be fixed', () => {
+    const open = theCatalogue.filter(
+      (source) => THE_FROZEN_HALF_IS_STILL_OPEN[source.lifecycle.state],
+    )
+
+    const faults = open.flatMap((source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const read = record.benchmarks.profiles.map((profile) =>
+        canonical({ class: profile.class, data: profile.data }, `profile ${profile.name}`),
+      )
+
+      return record.benchmarks.profiles
+        .filter((_profile, at) => read.filter((entry) => entry === read[at]).length > 1)
+        .map(
+          (profile) =>
+            `${renderContract(source.address)} ${profile.name}: nothing a guard reads tells it ` +
+            `from a sibling. ${PROFILE_SEPARATION_RULE}`,
+        )
+    })
+
+    expect(faults).toEqual([])
+  })
 
   /**
    * The other half of the parameter reading, and the reason the reading needs no second transcription

@@ -238,9 +238,10 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   'benchmarks.vocabulary[].name': { visibility: 'public', verification: 'executable' },
   'benchmarks.vocabulary[].meaning': { visibility: 'public', verification: 'documentary' },
   /**
-   * The fourth `one-directional` field, and it arrived from the guard-identifier sweep rather than
-   * from a mutant. A profile's name is frozen with the major - the registry cites it in a benchmark
-   * figure, the site anchors on it, a validation report names the profile a submission failed - and
+   * It arrived from the guard-identifier sweep rather than from a mutant, and it used to open by
+   * calling itself the fourth `one-directional` field - a rank in prose, which went wrong the moment
+   * `producedBy` stopped being one. A profile's name is frozen with the major - the registry cites it
+   * in a benchmark figure, the site anchors on it, a validation report names the profile it failed - and
    * it was already an address in fact, since the five specification batteries pin `profile-<name>`
    * identifiers.
    *
@@ -254,17 +255,37 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
    * disagree.
    *
    * **What keeps the classification is the other half, and it is GS-11's shape on a second field: a
-   * name makes a claim about its own samples that no guard reads.** Measured by leaving
-   * `small-integers` named and classed `accepted` while its samples became `['1e308',
-   * '0.000000000000001', '-1e-300']`, not one of them a small integer - 472 of 472 green in
-   * `contracts/`, and the one red in this folder was `the-served-bytes-are-the-committed-bytes`
-   * noticing that bytes had moved at all. The declared value may disagree with what the guards keep,
-   * and nothing sees it. It closes with the validation pipeline or not at all.
+   * name makes a claim about its own samples that no guard reads.** Re-measured at `286ca34` by
+   * leaving `small-integers` named and classed `accepted` while its samples became `['1e308',
+   * '0.000000000000001', '-1e-300']`, not one of them a small integer - **718 of 718 green** in
+   * `contracts/`, and the one red was the freeze, on a digest.
+   *
+   * **This comment used to end *it closes with the validation pipeline or not at all*, and the
+   * second half was the true one.** Stage 1 reads a submission and a submission is never a contract;
+   * it already evaluates the contract module, so evaluation was never the obstacle; and `stages 2 to
+   * 7` is a rank nothing in this repository turns into a list. What is missing is not a stage but a
+   * machine-readable statement of what the name claims, and neither reading source nor evaluating a
+   * module produces one.
+   *
+   * **Why it cannot be repaired.** The statement would be a field of `contract.ts`, and every byte of
+   * that file is inside the digest six published contracts are bound by. Measured at `286ca34` over
+   * the thirty-six profiles: **nineteen share their class with a sibling and seventeen are
+   * indistinguishable from a sibling in everything a guard reads.** `PROFILE_SEPARATION_RULE` is what
+   * holds the *next* contract to it, `array/group-by@1` is the worked example, and the seventeen are
+   * the freeze keeping its promise rather than a defect anybody left behind. ADR-0171.
    */
   'benchmarks.profiles[].name': { visibility: 'public', verification: 'one-directional' },
   'benchmarks.profiles[].description': { visibility: 'public', verification: 'documentary' },
-  // `profiles.test.ts` runs the reference over every sample and refuses a profile whose name is not
-  // true of them, which is the guard `number/parse@1` shipped without and paid for.
+  /**
+   * `profiles.test.ts` runs the reference over every sample and refuses a profile whose **class** is
+   * not true of them, which is the guard `number/parse@1` shipped without and paid for.
+   *
+   * **This comment read *whose name is not true of them* and that was true of one contract of
+   * seven.** `array/group-by@1` names five of its six profiles with a term of its own vocabulary, so
+   * there the class check is a name check; everywhere else the two are different claims and only the
+   * class is read. The sentence was written in the file whose whole job is to classify what is
+   * verified, which is what makes it worth correcting rather than deleting. ADR-0171.
+   */
   'benchmarks.profiles[].class': { visibility: 'public', verification: 'executable' },
   'benchmarks.profiles[].data': { visibility: 'public', verification: 'executable' },
 
@@ -274,15 +295,23 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   // The samples themselves, which is where `profiles.test.ts` actually bites.
   'benchmarks.profiles[].samples.values[]': { visibility: 'public', verification: 'executable' },
   /**
-   * The third `one-directional` field in the catalogue, and the same shape as GS-11 and as
-   * `staticAnalysisRequirements`. The guard requires this text to occur in the contract's own
-   * `contract.ts`; nothing establishes that it is the expression that produced *these* samples. The
-   * concrete gap is named in `the-catalogue.ts`: `one-group-per-element` and `single-group` transcribe the
-   * same three ranges, so either could become literal while the other kept the text alive.
+   * **It was the third `one-directional` field and it is not one any more**, and the reason is worth
+   * more than the reclassification: it was never GS-11's shape at all. GS-11 and
+   * `benchmarks.profiles[].name` are about *names*, which are prose; this is a transcribed
+   * expression, and what was unread about it was arithmetic.
+   *
+   * The old guard asked whether the text occurred in `contract.ts` anywhere, and `the-catalogue.ts`
+   * published the hole: `one-group-per-element` and `single-group` transcribe the same three ranges,
+   * so either could become literal while the other kept the text alive. Measured at `286ca34` on
+   * exactly that perturbation - the twin holds the text once, so the old guard was green and
+   * `every-produced-expression-is-the-one-its-own-profile-declares` is red.
+   *
+   * `structural` and not `executable`: a catalogue guard refuses a wrong value by reading the
+   * contract's own source, and no implementation is involved. ADR-0171.
    */
   'benchmarks.profiles[].samples.producedBy': {
     visibility: 'public',
-    verification: 'one-directional',
+    verification: 'structural',
   },
   // Read off the values rather than declared, so there is one statement and nothing to make disagree.
   // What can still be wrong is the serialiser, and `registry-storage` is the battery that shows it.

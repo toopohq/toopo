@@ -177,7 +177,10 @@ describe('the methodology answer', () => {
 
     expect(Object.keys(methodology.fields).sort()).toEqual(Object.keys(FIELD_MAP).sort())
     expect(methodology.fields['caseTables[].cases[].data']).toBe('executable')
-    expect(methodology.fields['benchmarks.profiles[].samples.producedBy']).toBe('one-directional')
+    // Two fields at two strata, so the answer is carrying the classification rather than one word.
+    // It named `producedBy` until that field stopped being `one-directional`; the field it names now
+    // is the one this repository has measured it cannot repair. ADR-0171.
+    expect(methodology.fields['benchmarks.profiles[].name']).toBe('one-directional')
   })
 
   it('the-methodology-answer-carries-both-columns-and-the-seeding-policy', () => {
