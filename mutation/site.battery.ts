@@ -2074,6 +2074,34 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   ),
 
   /**
+   * The root typed back into the contract list of a domain page, which is this file as it stood
+   * before the unit that purged the tree.
+   *
+   * **It is the rarest shape this battery carries: a defect that changes no byte of the emitted
+   * site.** `rootFrom` counts the segments of the page it is handed, a domain page has three, and
+   * `'../'.repeat(2)` is the string this replaces it with - so every page renders identically, the
+   * walk over the page graph resolves every link, and the fourteen files of HTML are the same to the
+   * byte. Nothing that reads a rendering can disagree with it, because there is nothing to disagree
+   * with until a domain page changes depth.
+   *
+   * Its sister four declarations below composes its root and always did. What made the difference
+   * visible was neither a reading nor a rendering but an unused parameter: `entry` took `own` and
+   * never read it, and `noUnusedParameters` is what asked why.
+   */
+  sameOnEveryLens(
+    'W-136',
+    'types the root of a domain page back into its contract list, so one of two sibling link builders ' +
+      'stops following the page it is rendered onto and every rendered byte stays identical',
+    [
+      domainPageFile(
+        '{ href: `${rootFrom(own)}${linkTo(pageOf(held.contract.address))}` },',
+        '{ href: `../../${linkTo(pageOf(held.contract.address))}` },',
+      ),
+    ],
+    killed(['every-address-a-page-links-to-is-composed-and-never-typed']),
+  ),
+
+  /**
    * The preview shape dropped, which is the half of a host rule nobody would notice missing.
    *
    * A production deployment is one label in front of the vendor's domain and a preview is two, and a

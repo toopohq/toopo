@@ -158,7 +158,7 @@ const entry = (held: Held, own: string): Node => {
       { class: 'call' },
       el(
         'a',
-        { href: `../../${linkTo(pageOf(held.contract.address))}` },
+        { href: `${rootFrom(own)}${linkTo(pageOf(held.contract.address))}` },
         text(shortNameOf(held.contract.address.name)),
       ),
     ),
