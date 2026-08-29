@@ -709,12 +709,25 @@ jobs:
   # What a contract costs, and what actually spends the bound
   # ---------------------------------------------------------------------------
   #
-  # **A contract adds 36 guards to the registry suite and nothing else to either long battery.**
-  # Derived file by file from `mutation/census.ts` at five, six and seven contracts, with no residue
-  # over eight files: `against-the-catalogue` 11n - 4, `coverage` 4n, `implementations` 3n + 3,
-  # `response` 7n + 18, `snapshot` 7n + 11, `served-files` 2n, `signature` n + 9, `visibility` n + 5.
-  # The reconstruction is not trusted on its own: it reproduces to the unit the nine control counts the
+  # **A contract adds 33 guards to the registry suite and nothing else to either long battery.**
+  # Derived file by file from `mutation/census.ts`, with no residue over eight files:
+  # `against-the-catalogue` 8n + 12, `coverage` 4n, `implementations` 3n + 3, `response` 7n + 18,
+  # `snapshot` 7n + 11, `served-files` 2n, `signature` n + 9, `visibility` n + 5. It is not trusted on
+  # its own: at five, six and seven contracts it reproduced to the unit the nine control counts the
   # battery logs print on the runner, from `c58c8cd` to `5559932`.
+  #
+  # **It read 36, with `against-the-catalogue` at 11n - 4, and it had been stale for one commit.**
+  # `483d197` replaced seven `it.each(eachContract)` guards with one and added one, taking that file's
+  # census row from 73 to 68 - and the derivation standing beside it was not swept. That is the rule
+  # about a decision reaching every surface it settles, arriving on a derived figure rather than on an
+  # entry of a list. Re-derived at `210bc7c` from the sources instead of from a fit, because a fit is
+  # what went stale: a file collects `(it.each(eachContract)) * n + (plain it)`, and the eight rebuild
+  # to the census exactly, 289 against 289.
+  #
+  # **What is not re-derived is everything standing on the old count.** The 56 s a contract costs, the
+  # 3.3 cells and the joint line below were computed at 36 guards, so each overstates by 9 % - in the
+  # direction that makes this bound more generous than it reads, never tighter. Recomputing them needs
+  # the fifty-nine runs the regression was taken over, which is a reading and not an edit.
   #
   # **A publication commit adds no cell at all.** Neither `b03915c` nor `3ec621c` touches a battery
   # file, and the twelve cells `registry-storage` gained between `7c9906c` and `1008c96` came from six
