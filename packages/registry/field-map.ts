@@ -215,8 +215,17 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
   // unique against every other group *and case* of the contract - the two share one `#id` space.
   'caseTables[].groups[].id': { visibility: 'public', verification: 'structural' },
   'caseTables[].groups[].title': { visibility: 'public', verification: 'documentary' },
-  // Prose, and required so that having nothing to add is written rather than omitted. Not frozen:
-  // `id` is the address, a title and a note are corrected the day they read badly.
+  /**
+   * Prose, and required so that having nothing to add is written rather than omitted.
+   *
+   * **This read *not frozen: a title and a note are corrected the day they read badly*, and it was
+   * false.** `contractSnapshot` carries `caseTables` whole, so a title and a note are inside the
+   * digest exactly as the `id` beside them is, and permanent rule 6 forbids correcting either. What
+   * separates them from the address is what a wrong one costs - a stale `id` breaks a link somebody
+   * saved, where a title that reads badly reads badly for ever - and not whether they can be
+   * repaired. Neither can. Measured at `210bc7c` by walking the snapshot with `pathsIn`: 58 paths
+   * inside the digest, and both of these are among them.
+   */
   'caseTables[].groups[].note': { visibility: 'public', verification: 'documentary' },
   // The partition, refused in both directions: an undeclared group, and a group no case sits in.
   'caseTables[].cases[].group': { visibility: 'public', verification: 'structural' },
