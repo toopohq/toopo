@@ -65,7 +65,7 @@ that only shows what it accepted is a catalogue you cannot check.
 | `typescript/object/deep-equal@1` | Comparing two values by the data they carry, where two shipped implementations answer `true` for two different Sets |
 | `typescript/array/group-by@1` | **Refused.** ES2024 shipped `Map.groupBy` and it answers the contract |
 
-Between them the six installable contracts settle **237 named edge cases**, each identifier frozen
+Between them the 6 installable contracts settle **237 named edge cases**, each identifier frozen
 for the life of the major version.
 
 - [toopo.dev](https://toopo.dev) — the catalogue, one page per contract, with a playground that runs

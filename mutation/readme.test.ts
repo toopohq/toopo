@@ -277,7 +277,17 @@ describe('what the readme shows of the catalogue', () => {
 
     const claims = [
       `**${held.length} contracts, ${installable.length} of them installable and ${refused.length} refused.**`,
-      `settle **${cases} named edge cases**`,
+      /**
+       * The count and the total in one claim, because they were two statements and only one of them
+       * was derived.
+       *
+       * The page read *the **six** installable contracts settle **237 named edge cases***: a word
+       * beside a figure, the figure guarded here and the word typed. A publication makes the word
+       * false and leaves every guard green, which is the half-false sentence this file exists to
+       * refuse. It is a digit now, for the reason `countOf` renders one - this repository has no
+       * spelling of a number anywhere, and adding one would be a second statement free to drift.
+       */
+      `the ${installable.length} installable contracts settle **${cases} named edge cases**`,
     ]
 
     expect(claims.filter((claim) => !text.includes(claim))).toEqual([])

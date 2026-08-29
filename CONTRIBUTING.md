@@ -16,7 +16,7 @@ creates `name@2` beside `name@1`, and `name@1` goes on being served for ever. So
 contract publishes is either something we can put right the day it reads badly, or something we are
 stuck with.
 
-Counted over the seven contracts in this repository:
+Counted over the 7 contracts in this repository:
 
 **390 frozen.** 267 case identifiers, 64 group identifiers, 36 benchmark profile names,
 12 failure-reason literals, 10 export names and 1 supporting type name.

@@ -89,6 +89,15 @@ describe('what the contributing guide publishes about the catalogue', () => {
     const text = CONTRIBUTING()
 
     const claims = [
+      /**
+       * The population the eleven figures below are counted over, which was the one thing on the page
+       * that was not derived.
+       *
+       * It read *counted over the **seven** contracts*: a typed word introducing eleven guarded
+       * figures, so a publication made the sentence half false with this guard green. Sweeping for it
+       * is what found it, and the repair is the same one the readme took - a digit, derived here.
+       */
+      `Counted over the ${held.length} contracts in this repository`,
       `**${totalOf(held, FROZEN)} frozen.**`,
       `${over(held, FROZEN['caseTables[].cases[].id']!)} case identifiers`,
       `${over(held, FROZEN['caseTables[].groups[].id']!)} group identifiers`,
