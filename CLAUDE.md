@@ -1421,6 +1421,18 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   anything**: the three that now keep the page read the catalogue and the page against each other, and
   both defects were found by `npx toopo@1.1.0` against the live origin in two project shapes, which is a
   measurement somebody took and not a mechanism.
+- **the alphabet a contract declares against the answers that witness it** — ADR-0175, and it is the
+  first entry this list has closed by *taking the measurement the entry named*. It read *that one
+  measurement decides it, and it is the whole of what this entry is waiting for* — whether `\p{M}` had
+  a real witness among `string/slugify@1`'s answers — and it had been priced and refused on that
+  unmeasured trigger for three units. Measured at `df5b367` over the forty-one settled cases: `\p{L}`
+  is witnessed by `日本語テキスト`, `\p{M}` by **three** answers — `हिन्दी`, `eَ` and `x́` — and
+  `\p{Nd}` by `٤٢`. **The route that looked obvious was refused on its own arithmetic**: deriving the
+  population from `THE_FROZEN_HALF_IS_STILL_OPEN`, as ADR-0171's profile guard does, scopes the guard
+  to unpublished contracts, and `string/slugify@1` is the only contract declaring a pattern at all —
+  so that guard would have been born on an empty population and could not have failed. It leaves
+  behind the reading's published limit, which is that a character outside a bracket expression is not
+  read, and `outputAlphabet`'s own frozen stratum, which is an entry below.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1574,6 +1586,79 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
 **Still open, and what each one now costs.**
 
+- **That a field the digest freezes is one something reads.** Measured at `df5b367` by walking
+  `contractSnapshot`'s own output with `pathsIn` and classing each path by `FIELD_MAP`: **58 paths
+  are inside the digest, and 17 of them are read by nothing** — 16 `documentary`, plus
+  `benchmarks.profiles[].name`, whose stratum says a guard refuses one direction and not the other.
+  Every one is frozen for the life of the major the day its contract is published.
+
+  **The population is derivable and that is the whole reason this is an entry of its own rather than
+  a clause of the one about a contract's prose.** That entry names five kinds of sentence — a
+  `rationale`, a group note, a `reason`, a `purpose`, a comment in the seven files — and a named list
+  shrinks in silence. This one is *the paths of the frozen half that `FIELD_MAP` gives no reader*,
+  which is a set anybody can recompute and which grows the day a field is added to the digest unread.
+  The two overlap and neither contains the other: `rationale` and `properties.universal[].reason` are
+  `structural`, so they are that entry's and not this one's.
+
+  **Ten of the seventeen are named by no entry of this list**, and one of them is the sharpest:
+  `benchmarks.profiles[].description` is the exact twin of the `name` beside it that ADR-0171 measured,
+  argued and wrote `PROFILE_SEPARATION_RULE` for, and it has never been mentioned anywhere. The others
+  are `identity.summary`, `identity.description`, `benchmarks.vocabulary[].meaning`, `caseTables[].name`,
+  `caseTables[].groups[].title`, `environments[]`, `surface.couplingRule`, `surface.exports[].role`
+  and `ownDeclarations[].name`.
+
+  **The live instance was created by the unit that opened this entry, which is what makes it worth
+  reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
+  for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
+  missing direction, so the stratum now understates what verifies the field — and `ownDeclarations` is
+  inside `contractSnapshot`, so it says `one-directional` for the life of the major. Measured: `npm run
+  freeze` is green across that unit, which is the freeze keeping its promise rather than failing.
+  `correctionsToFrozenProse` does not reach it either, resolving its `about` against case identifiers.
+
+  **Where this looked**: `FIELD_MAP` and its four strata in `packages/registry/field-map.ts`;
+  `CONTRACT_STANDING_FIELDS` in `packages/registry/snapshot.ts`, which is the list of fields the
+  registry may change its mind about and which answers for five roots and no leaf; and
+  `packages/registry/against-the-catalogue.test.ts`, whose guards over the catalogue's prose are about
+  presence and about stamps.
+
+  **What would close the class is nothing**, and that is not a defect: permanent rule 5 makes a
+  contract public in full, prose has to live somewhere, and a sentence explaining a correct answer is
+  green everywhere. **What is reachable and is not taken here** is smaller and real — the intersection
+  above, declared and compared, so that a field entering the digest with no reader is an event instead
+  of a silence. It costs one guard and one declaration, it would be born green on today's seventeen,
+  and the event it would catch is the eighth contract's schema gaining a field nobody classed. Priced
+  and not taken. ADR-0175.
+
+- **That an address a frozen file cites is one that resolves where the file is frozen.** A citation
+  whose target is frozen beside it can never rot: the two move together or not at all. A citation
+  whose target is an ordinary source of this repository rots the day that source is renamed, and
+  permanent rule 6 forbids repairing the citation.
+
+  **Measured at `df5b367` over the 52 files of `contracts/`**: 31 backticked kebab-case addresses of
+  four words or more, **27 declared inside the frozen perimeter** — the contract's own folder, or one
+  of the two shared files every harness declares — and four not. Two of the four are deliberate
+  negatives, `number/round@1` saying in as many words that *there is no `places-out-of-range`*; one is
+  `found-in-the-wild`, a member of a union the compiler protects in its data position. **The fourth is
+  live**: `contracts/typescript/object/deep-equal/reference.ts:9` cites `states-its-own-signature`,
+  whose only declaration is `packages/validation/states-its-own-signature.ts` — a file this repository
+  may rename tomorrow, in a comment frozen for the life of that major.
+
+  **It is not the entry about a comment naming a guard.** That one's population is comments naming
+  *guards*, and this is a stage-1 rule identifier; more to the point, that entry is about a citation
+  nothing resolves, where this one is about a citation nothing may repair. Its fifty instances are in
+  files somebody can still edit.
+
+  **Where this looked**: `citationFaults` and `confirmationFaults` in `mutation/decisions.ts`, which
+  resolve what a *record* names in both directions and read nothing in `contracts/`; `theEditableSources`
+  in `mutation/history.ts`, which is the honest half already saying the citation sweep covers only what
+  this repository may still edit; and `THE_SHARED_FILES`, which is the perimeter's other half.
+
+  **The population is every backticked address in a file a published contract freezes**, and it grows
+  by seven files with each contract published. Nothing closes the existing instance — the file is
+  frozen. What stops the next is a sweep of three lines, and it is in the eighth contract's list rather
+  than here, because a guard over `contracts/` would be red on the instance it cannot repair.
+  ADR-0175.
+
 - **That an `extends` a configuration declares is one that resolves.**
   `packages/validation/fixtures/tsconfig.json` declared `"extends": "../../tsconfig.json"`, which from
   that folder is `packages/tsconfig.json` and does not exist. `tsc` answered TS5083 and fell back to
@@ -1662,9 +1747,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   the right answers, and the freeze sees a digest that does not move.
 
   **Where this looked**: `serialise.ts`'s reading of a case, which carries `rationale` as a string and
-  asks nothing of it; `field-map.ts`, where `caseTables[].cases[].rationale` is `documentary` - the
-  schema's own vocabulary saying nothing reads it; and `against-the-catalogue.test.ts`, whose guards
-  over the catalogue's prose are about presence and about stamps.
+  asks nothing of it; `field-map.ts`, where `caseTables[].cases[].rationale` is `structural` - a guard
+  refuses an empty one and no guard reads what it says; and `against-the-catalogue.test.ts`, whose
+  guards over the catalogue's prose are about presence and about stamps. **This entry read
+  `documentary`, and `git log -S` over the whole graph finds no commit where the map spelled it that
+  way** - it has read `structural` since `2905e08`. It changes nothing the entry claims, both strata
+  meaning that nothing reads the sentence; what it was is a citation of the code that the code
+  refutes, in the paragraph whose whole job is to name where somebody should look. ADR-0175.
 
   **A second instance came out of the same replay, and it is a comment on a guard rather than on a
   case.** `every-class-the-vocabulary-declares-is-sampled` re-declares the profile vocabulary by hand -
@@ -3077,24 +3166,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   half is still open — a population *derived from the lifecycle*, so the exemption is granted only
   by publishing, which is the moment the rule has already been met. Nobody can add a name to it.
   ADR-0171.
-- **That the alphabet a contract declares is no wider than what it emits.** GS-11 widens
-  `string/slugify@1`'s `outputAlphabet` by an underscore and both guards that read it go on passing:
-  every property asks whether an answer falls *outside* the declared alphabet and nothing asks whether
-  the alphabet is wider than the answers need, so a contract can promise a larger surface than it
-  keeps and a caller escaping on that promise escapes more than they have to.
-
-  **It was swept in with the entry above and it is not that shape.** A name is prose; this is an
-  anchored `RegExp`, and the missing direction is arithmetic over code points rather than a judgement
-  about words. So it does not close where that one fails to, and it is not refused for that one's
-  reason.
-
-  **What would close it is a witness requirement** — a declared character class with no witness among
-  the outputs the properties already generate is a promise nothing backs, which is vocabulary this
-  repository already has. **It is not bought here because the trigger has not been measured**: whether
-  `\p{M}` has a real witness in `string/slugify@1`'s generated outputs. If it has none, the guard would
-  be red on a legitimate declaration, which is worse than no guard at all — and the alphabet is inside
-  a published digest, so the only available repair would be forbidden. **That one measurement decides
-  it**, and it is the whole of what this entry is waiting for. ADR-0171.
 - **The rule that an alias must not name what its contract refuses to be**, argued in ADR-0023, which
   also carries the criterion. The eight liars are gone and nothing keeps it.
 
@@ -3360,6 +3431,55 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
   0 of 6, because it is the only one that was never published.
   `no-two-profiles-of-an-unpublished-contract-are-indistinguishable` holds every contract that can
   still act on it. ADR-0171.
+
+**What the next contract has to carry before it is frozen, and what it does not.** Every line below
+is on this list for one reason and states it: after the digest is minted, permanent rule 6 forbids the
+repair for the life of the major. A line that cannot say that does not belong here — closing it after
+publication closes it just as well, and the second half of this section is what was taken out when it
+could not. ADR-0175.
+
+1. **The alias review of ADR-0023, carried out before the contract enters the catalogue.**
+   `searchAliases` is a field of `identity` and `identity` is inside the digest. Afterwards the
+   registry may *add* a phrase through `alsoFoundBy` and may never correct or withdraw one, so a
+   phrase promising something the contract refuses is permanent. That review has caught eight liars.
+2. **The divergence replay, if the contract diverges from the language or the ecosystem.** A declared
+   file enters `harness` and `harness` is inside the digest, so `language.test.ts` is declarable on
+   the first day and on no day after it. Five published contracts can never carry one.
+3. **A name true of its own samples, for every benchmark profile.**
+   `no-two-profiles-of-an-unpublished-contract-are-indistinguishable` holds only while the frozen half
+   is open, and the *name* is read by nothing at all — `benchmarks.profiles[].name` is
+   `one-directional` and inside the digest.
+4. **An output alphabet no wider than the answers witness.**
+   `every-class-a-declared-pattern-names-is-one-the-answers-witness` reads the classes a bracket
+   expression names and refuses one no published answer carries; a character *outside* a bracket
+   expression it does not read, and the declaration is inside `contract.ts`.
+5. **A declared file list that is the list the contract meant.** `harnessOf` checks the declaration
+   against the folder and nothing checks the declaration, so a contract may name a tenth file, put it
+   there, and have both halves agree for ever.
+6. **Every sentence of the contract's own prose, read against what the contract does.** Seventeen
+   paths of the digest are read by nothing, and so is every comment in the declared files. Afterwards
+   `correctionsToFrozenProse` can say a sentence is wrong and nothing can make it right.
+7. **Every backticked address in those files resolving inside the contract's own folder or the shared
+   harness.** Measured over today's catalogue, 27 of 31 do; the four exceptions are two deliberate
+   negatives, one union member the compiler protects, and one live citation of a file this repository
+   may rename. The sweep is three lines and it is the whole of what stops the eighth adding a fifth.
+8. **The four entries of `contractAnatomy` that no stage will ever check**, which are a reader's
+   judgement made once, on a folder that is then frozen.
+9. **No guard that depends on elapsed time.** `CLOCK_DEPENDENCE_RULE` is declared, cited in prose and
+   imported by nothing executable, and the contract's guards are frozen with it.
+10. **No control character but tab and newline, no developer path, no undated declared absence, and no
+    setup hook that can throw on a defect in the code under test.** Measured at `210bc7c` over the 52
+    files of `contracts/`: zero of each. That is a reading of what seven contracts happen to hold and
+    never a property anything keeps, which is why it carries its coordinate; what makes it a line here
+    is that one written in is permanent.
+
+**And what was taken off this list after measuring it, which is the half that stops somebody putting
+it back.** The contract's **address**, because a fixture standing in the way can still be renamed
+afterwards — the collision is met at authoring time and the repair is outside the freeze. Its **use
+cases**, because `useCases` is standing since ADR-0118 and is rewritten the day it reads badly. Its
+**battery cells and pins**, because they live in `mutation/` and no digest covers them. Its **learned
+terms**, for the reason the aliases are on the list and these are not: `alsoFoundBy` is the standing
+field written precisely so that this one arrives late.
 
 ## Verification discipline
 

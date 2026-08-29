@@ -225,6 +225,10 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
    * saved, where a title that reads badly reads badly for ever - and not whether they can be
    * repaired. Neither can. Measured at `210bc7c` by walking the snapshot with `pathsIn`: 58 paths
    * inside the digest, and both of these are among them.
+   *
+   * **Seventeen of those fifty-eight are read by nothing**, this one among them, and that set is the
+   * subject of an entry of its own rather than a remark here: it is derivable from this map and from
+   * `contractSnapshot`, so it can be recomputed and cannot shrink in silence. ADR-0175.
    */
   'caseTables[].groups[].note': { visibility: 'public', verification: 'documentary' },
   // The partition, refused in both directions: an undeclared group, and a group no case sits in.
