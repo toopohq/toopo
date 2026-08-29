@@ -2224,6 +2224,38 @@ const mutants: readonly Mutant[] = [
     killed(['no-two-profiles-of-an-unpublished-contract-are-indistinguishable']),
   ),
 
+  /**
+   * The registry stops carrying what a case answers, and one guard in the whole suite notices.
+   *
+   * A case is a call: its fields begin with the parameters and what remains is the answer. Keeping
+   * only the leading `call.length` fields leaves every case still *beginning* with its call, so
+   * `CaseIsNotACall` is never thrown and the contract serialises - it simply arrives at the record
+   * with nothing after the arguments. A page could not render an answer, and a declared alphabet
+   * would be a promise about a set the registry no longer holds.
+   *
+   * **Measured at the commit that added the guard: 459 of 460 registry guards pass and this one is
+   * the failure**, which is the *alone* the open list records most guards here as never having been
+   * seen. It is what makes this cell worth more than its own subject - the reading below is that the
+   * answers a case publishes were, until this guard, carried by the schema and read by nothing that
+   * could tell they had gone.
+   */
+  sameOnEveryLens(
+    'I-74',
+    'keeps only a case\'s arguments, so every answer the catalogue publishes leaves the record while ' +
+      'each case still begins with the call that serialisation checks',
+    [
+      serialiseFile(
+        `  const data = Object.fromEntries(Object.entries(entry).filter(([name]) => !shared.includes(name)))`,
+        `  const data = Object.fromEntries(
+    Object.entries(entry)
+      .filter(([name]) => !shared.includes(name))
+      .slice(0, call.length),
+  )`,
+      ),
+    ],
+    killed(['every-class-a-declared-pattern-names-is-one-the-answers-witness']),
+  ),
+
 ]
 
 export const battery: Battery = {

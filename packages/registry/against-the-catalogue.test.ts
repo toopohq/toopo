@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest'
 import * as catalogue from '../catalogue/every-contract.js'
 import { caseAddressFaults, contractAddressFaults, renderContract } from './address.js'
 import { canonical } from './canonical.js'
-import type { Lifecycle } from './contract-record.js'
+import type { ContractRecord, Lifecycle } from './contract-record.js'
 import { PROFILE_SEPARATION_RULE, isASentence, stringsIn } from './contract-record.js'
 import type { CaseTableSource, ContractSource } from './serialise.js'
 import {
@@ -39,6 +39,149 @@ const sourceOf = (folder: string, file: string): string =>
   readFileSync(join(REPOSITORY_ROOT, folder, file), 'utf8').replace(/\r\n/g, '\n')
 
 const flattened = (text: string): string => text.replace(/\s+/g, ' ').trim()
+
+/**
+ * A member of a declared character class this reading does not know.
+ *
+ * Refused by name rather than approximated, which is the discipline `UnreadableSignature` already
+ * carries one file over: an escape nobody taught this reader would otherwise be swallowed as two
+ * literal characters and witness itself.
+ */
+class UnreadableCharacterClass extends Error {
+  constructor(source: string, member: string) {
+    super(
+      `the declared pattern \`${source}\` names \`${member}\` inside a character class, and ` +
+        `packages/registry/against-the-catalogue.test.ts reads only a Unicode property escape, a ` +
+        `single character and a range of two. Extend the reading deliberately rather than leaving a ` +
+        `class witnessed by nothing.`,
+    )
+  }
+}
+
+/**
+ * Every string an encoded value carries *as a value*, which is not the question `stringsIn` answers.
+ *
+ * That one collects every string anywhere in a structure, field names and `kind` labels included -
+ * right for the question it was written for, and wrong here: `big-integer` and `typed-array` would
+ * witness a hyphen no contract ever emitted, and `expected` would witness five letters.
+ */
+const stringValuesIn = (value: unknown, into: Set<string>): void => {
+  if (Array.isArray(value)) {
+    for (const entry of value) stringValuesIn(entry, into)
+    return
+  }
+
+  if (typeof value !== 'object' || value === null) return
+
+  const node = value as { readonly kind?: unknown; readonly value?: unknown }
+  if (node.kind === 'primitive' && typeof node.value === 'string') into.add(node.value)
+
+  for (const entry of Object.values(value)) stringValuesIn(entry, into)
+}
+
+/** Every pattern an encoded value carries, at any depth, found without knowing the union. */
+const patternsIn = (value: unknown, into: string[] = []): readonly string[] => {
+  if (Array.isArray(value)) {
+    for (const entry of value) patternsIn(entry, into)
+    return into
+  }
+
+  if (typeof value !== 'object' || value === null) return into
+
+  const node = value as { readonly kind?: unknown; readonly source?: unknown }
+  if (node.kind === 'pattern' && typeof node.source === 'string') into.push(node.source)
+
+  for (const entry of Object.values(value)) patternsIn(entry, into)
+  return into
+}
+
+/** What one bracket expression names, member by member, in code points rather than in units. */
+const membersOf = (inside: string, source: string): readonly string[] => {
+  const characters = [...inside]
+  const found: string[] = []
+  let at = 0
+
+  while (at < characters.length) {
+    const property = /^\\[pP]\{[A-Za-z_]+\}/u.exec(characters.slice(at).join(''))
+    if (property !== null) {
+      found.push(property[0])
+      at += [...property[0]].length
+      continue
+    }
+
+    if (characters[at] === '\\') throw new UnreadableCharacterClass(source, `\\${characters[at + 1] ?? ''}`)
+
+    if (characters[at + 1] === '-' && at + 2 < characters.length) {
+      found.push(`${characters[at]}-${characters[at + 2]}`)
+      at += 3
+      continue
+    }
+
+    found.push(characters[at]!)
+    at += 1
+  }
+
+  return found
+}
+
+/** The classes a pattern names, which is what its bracket expressions hold and nothing outside them. */
+const classesNamedBy = (source: string): readonly string[] => {
+  const found = new Set<string>()
+  for (const bracket of source.matchAll(/\[\^?((?:\\.|[^\\\]])*)\]/gu)) {
+    for (const member of membersOf(bracket[1] ?? '', source)) found.add(member)
+  }
+
+  return [...found]
+}
+
+/** Whether one answer carries a character the member stands for. */
+const admits = (member: string, answer: string): boolean => {
+  const property = /^\\([pP])\{([A-Za-z_]+)\}$/u.exec(member)
+  if (property !== null) return new RegExp(`\\${property[1]}{${property[2]}}`, 'u').test(answer)
+
+  const range = /^(.)-(.)$/u.exec(member)
+  if (range === null) return answer.includes(member)
+
+  const low = range[1]!.codePointAt(0)!
+  const high = range[2]!.codePointAt(0)!
+
+  return [...answer].some((character) => {
+    const point = character.codePointAt(0)!
+    return point >= low && point <= high
+  })
+}
+
+/**
+ * The answers a contract publishes, which is what a declared alphabet is a promise about.
+ *
+ * A case is a call: its fields begin with the answer's parameters in the signature's own order, and
+ * what remains is the answer - `signature.ts` carries that reading and `serialise.ts` refuses a
+ * contract whose rows do not begin with it. `theCallOf` applies the same rule one package over for
+ * the page that renders a call, and the two are deliberately not one function: `playground.ts` is
+ * served to a browser, `signature.ts` is not in `THE_BROWSER_GRAPH`, and sharing a two-line kernel
+ * would cost every reader an eleventh module for no claim either side gains.
+ */
+const publishedAnswersOf = (record: ContractRecord): readonly string[] => {
+  const answer = record.surface.exports.find((one) => one.name === record.identity.exportName)
+  if (answer === undefined) {
+    throw new Error(
+      `${renderContract(record.address)} names \`${record.identity.exportName}\` as its export and ` +
+        `its own surface declares no export by that name`,
+    )
+  }
+
+  const found = new Set<string>()
+  for (const table of record.caseTables) {
+    for (const entry of table.cases) {
+      if (entry.data.kind !== 'record') continue
+      for (const field of entry.data.fields.slice(answer.parameters.length)) {
+        stringValuesIn(field.value, found)
+      }
+    }
+  }
+
+  return [...found]
+}
 
 const { isObjectLiteralExpression, isPropertyAssignment, isStringLiteral } = TYPESCRIPT_SURFACE
 
@@ -385,6 +528,61 @@ describe('the five, read against their own source', () => {
     })
 
     expect(faults).toEqual([])
+  })
+
+  /**
+   * Every character class a declared pattern names is one the contract's own answers witness.
+   *
+   * **This is GS-11, and it is the missing direction rather than a second opinion.** That mutant
+   * widens `string/slugify@1`'s `outputAlphabet` by an underscore and survives: every property asks
+   * whether an answer falls *outside* the declared alphabet, and nothing asks whether the alphabet is
+   * wider than the answers need. A caller escaping on the declared promise then escapes more than
+   * they have to, for ever, because the declaration is inside `contract.ts` and `contract.ts` is
+   * inside the digest.
+   *
+   * **The entry this closes said it was waiting on one measurement, and the measurement is
+   * favourable.** The fear was that `\p{M}` had no real witness among `string/slugify@1`'s answers,
+   * which would have made this guard red on a legitimate declaration. Measured at `df5b367` over that
+   * contract's forty-one settled cases: `\p{L}` is witnessed by `日本語テキスト`, `\p{M}` by three
+   * answers - `हिन्दी`, `eَ` and `x́` - and `\p{Nd}` by `٤٢`. So the guard is total over the catalogue
+   * and exempts nobody, which is what a published contract passing it is worth.
+   *
+   * **The route that looked obvious was refused on its own arithmetic.** Deriving the population from
+   * `THE_FROZEN_HALF_IS_STILL_OPEN`, as the profile guard above does, would have scoped this to
+   * unpublished contracts - and `string/slugify@1` is the only contract in the catalogue declaring a
+   * pattern at all, so the population would have been empty and the guard could not have failed. The
+   * lifecycle shape is right where the six published contracts *cannot* satisfy a rule; here they can.
+   *
+   * **What it reads and what it refuses to guess.** A member of a bracket expression is a Unicode
+   * property escape, a single character, or a range of two; anything else is refused by name rather
+   * than approximated, so a vocabulary this does not know stops the suite instead of quietly
+   * witnessing itself. Characters *outside* a bracket expression are not read - for
+   * `string/slugify@1` that is the hyphen joining runs, which is a separator and not an alphabet -
+   * and that is the published limit of the reading. A misread member becomes a token with no witness,
+   * which is a loud red; it can never become a silent pass. That direction of failure is what makes a
+   * lexical reading affordable here, and it is `signature.ts`'s own argument one file over.
+   */
+  it('every-class-a-declared-pattern-names-is-one-the-answers-witness', () => {
+    const faults = theCatalogue.flatMap((source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+      const answers = publishedAnswersOf(record)
+
+      return record.ownDeclarations.flatMap((declaration) =>
+        patternsIn(declaration.value).flatMap((pattern) =>
+          classesNamedBy(pattern)
+            .filter((member) => !answers.some((answer) => admits(member, answer)))
+            .map(
+              (member) =>
+                `${renderContract(source.address)} ${declaration.name}: \`${member}\` is declared ` +
+                `and no answer this contract publishes carries it, so the alphabet promises more ` +
+                `than it keeps`,
+            ),
+        ),
+      )
+    })
+
+    expect(faults).toEqual([])
+    expect(theCatalogue.some((source) => source.ownDeclarations.length > 0)).toBe(true)
   })
 
   /**

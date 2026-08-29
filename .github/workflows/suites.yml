@@ -711,7 +711,7 @@ jobs:
   #
   # **A contract adds 33 guards to the registry suite and nothing else to either long battery.**
   # Derived file by file from `mutation/census.ts`, with no residue over eight files:
-  # `against-the-catalogue` 8n + 12, `coverage` 4n, `implementations` 3n + 3, `response` 7n + 18,
+  # `against-the-catalogue` 8n + 13, `coverage` 4n, `implementations` 3n + 3, `response` 7n + 18,
   # `snapshot` 7n + 11, `served-files` 2n, `signature` n + 9, `visibility` n + 5. It is not trusted on
   # its own: at five, six and seven contracts it reproduced to the unit the nine control counts the
   # battery logs print on the runner, from `c58c8cd` to `5559932`.
