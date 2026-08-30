@@ -1777,6 +1777,32 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   here, because a unit repairing a wordmark is not where one decides to add a tool to the repository.
   ADR-0184.
 
+- **That a word this site prints is a word a reader can read.** At 320 the method page breaks words in
+  half — `publishe|d`, `mu|tant`, `prod|ucedBy` — in the paragraphs that list the schema's field paths.
+  Measured at `c66a19a` by asking of the characters directly whether a line change falls between two
+  alphanumerics: **15 such breaks**, all in `p.meta`, all on that page, all at 320 alone.
+
+  **It is not repairable by a property, and that was measured rather than assumed.** `overflow-wrap:
+  break-word` gives an identical reading — 15 breaks, 0 elements overflowing — because the identifiers
+  are longer than the line they are given: a 272px column at 320, holding tokens like
+  `benchmarks.profiles[].description`. Something has to give, and the browser breaking the word is what
+  it chose over overflowing the window.
+
+  **It predates this unit and nothing overflows**, which is why it is an entry rather than a repair
+  held back. The page is readable, no element sits outside the viewport, and no page scrolls sideways —
+  the whole tree is clean on those two over 17 pages and 12 widths.
+
+  **Where this looked**: `p.meta` in `packages/site/methodology-page.ts`, which is prose carrying
+  schema paths; ADR-0135, which decided that code folds where the language allows and which does not
+  reach this because these paths are not marked as code; and the sweep in ADR-0185, which excludes
+  `code` and `pre` for that reason and therefore sees these.
+
+  The population is every paragraph of prose on this site that carries an identifier longer than a
+  narrow column. What would close it is a decision about what a schema path in prose **is** — marking
+  it as code would put it under ADR-0135's rule and let it fold rather than break, at the cost of
+  saying that a field path is code when it appears in a sentence. Priced as a page's own unit and not
+  taken. ADR-0185.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
