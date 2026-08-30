@@ -69,8 +69,13 @@ The artboard heads the list `Popular functions`. **Nothing in this repository ra
 permanent rule 1 forbids the runtime call that would produce a figure, and no download count, no
 telemetry and no usage signal exists anywhere — swept over `packages/`, `mutation/` and `packaging/`.
 
-So the heading is `What you can install`: exhaustive over the installable half, stating no order. The
-order it is in is the registry's own, which the catalogue, the sitemap and every column already use.
+So the heading is `What you can install`: exhaustive over the installable half, stating no order.
+
+**A reader still sees an order, and this record says which one rather than pretending there is none.**
+The cards are walked through the domains, so it is the registry's order grouped by domain - the
+arrangement `catalogue-page.ts` already uses, where `number/parse` and `number/round` sit together and
+the index has four contracts between them. *Stating no order* is a claim about what the page promises,
+not about what it does; nothing ranks the list, and that is the whole of what the heading says.
 
 **The guard asserts the count against the index**, and that is the arm a heading could quietly break: a
 page showing four of six would have every card right, every command runnable and nothing refused on it

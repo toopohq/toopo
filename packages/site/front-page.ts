@@ -90,8 +90,14 @@ const said = (count: number, one: string, many: string): string =>
  * that does not exist, on the first line a visitor reads.
  *
  * So the heading says what the list *is*: everything the catalogue can install. It is exhaustive over
- * the installable half, it states no order, and the order it happens to be in is the registry's own -
- * the same one the catalogue, the sitemap and every column already use.
+ * the installable half and it states no order.
+ *
+ * **The order it happens to be in is the registry's, grouped by domain** - the cards are walked through
+ * `domains` rather than through the index, so `number/parse` and `number/round` sit together where the
+ * index has four contracts between them. That is the arrangement `catalogue-page.ts` already uses, and
+ * it is written down here because *it states no order* is a claim about what is promised rather than
+ * about what happens: a reader sees an order, and the honest thing is to say which one it is and that
+ * nothing ranks it.
  */
 const WHAT_THE_SHELF_IS = 'What you can install'
 
