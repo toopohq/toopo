@@ -176,8 +176,8 @@ const offer = (held: Held): Node => {
         el('li', NOTHING, el('span', { class: 'language' }, text('TS'))),
       ),
     ),
-    line('pre', says.signature, { class: 'shape' }),
-    line('p', says.summary, { class: 'why' }),
+    line('pre', says.signature, { class: 'signature' }),
+    line('p', says.summary, { class: 'says' }),
     line('pre', says.command, { class: 'install' }),
   )
 }
@@ -250,7 +250,7 @@ const recently = (held: Held): Node => {
       'a',
       { class: 'row', href: linkTo(pageOf(held.contract.address)) },
       line('p', says.address, { class: 'call' }),
-      line('p', says.signature, { class: 'shape' }),
+      line('p', says.signature, { class: 'signature' }),
       line('p', readableDate(held.binding.publishedAt), { class: 'when' }),
     ),
   )
@@ -325,7 +325,7 @@ export const frontPage = (
         ),
         el(
           'section',
-          { class: 'why' },
+          { class: 'arguments' },
           ...THE_ARGUMENTS.map((one) =>
             el('div', { class: 'argument' }, line('h3', one.heading), line('p', one.says)),
           ),

@@ -430,7 +430,7 @@ describe('the controls a visitor touches, run against a document', () => {
     expect((shown[0] as HTMLElement).dataset['contract']).toBe('string/slugify')
 
     // The card left standing is the one the generator wrote, not one this control built.
-    expect(shown[0]?.querySelector('.shape')?.textContent).toContain('type Slugify =')
+    expect(shown[0]?.querySelector('.signature')?.textContent).toContain('type Slugify =')
     expect(shown[0]?.querySelector('.install')?.textContent).toContain(
       `${THE_INVOCATION} add string/slugify`,
     )

@@ -525,26 +525,10 @@ ul.names a { font-family: var(--mono); font-size: var(--t4) }
 /* The one word a reader needs before they click, in the colour that is not a verdict. */
 ul.names li { color: var(--dim); font-size: var(--t5) }
 
-.masthead {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--s6);
-  padding: var(--s3) var(--s6); margin: 0; border-bottom: 1px solid var(--rule);
-  position: sticky; top: 0; z-index: 20; background: var(--paper);
-}
-/* The one word on this site that may not be broken, and the body's own rule was breaking it: with
-   anywhere a word's min-content is one character, so a flex row squeezed the name to nothing.
-   ADR-0135. */
-.wordmark { margin: 0; font-family: var(--mono); font-size: var(--t3); color: var(--ink); overflow-wrap: normal }
-.wordmark a { color: var(--ink); text-decoration: none }
-/* Two gaps and not one: side by side these are three destinations and need telling apart, stacked
-   they are one list. It is also what the bar costs a phone, the menu being what decides the
-   masthead's height and never the wordmark. ADR-0135. */
-ul.menu {
-  display: flex; flex-wrap: wrap; gap: var(--s2) var(--s5);
-  list-style: none; padding: 0; margin: 0 0 0 auto; font-size: var(--t5);
-}
-ul.menu a { color: var(--body); text-decoration: none }
-ul.menu a:hover { color: var(--accent) }
-ul.menu .here { color: var(--dim) }
+/* The bar every page carries is the artboard's since ADR-0182, and its rules are with the front page
+   below rather than here - one masthead and not two, because two blocks for one element is the
+   collision this unit met in a browser with every guard green. What stays here are the two controls
+   that sit in it and are not the bar: the theme override and the field's own box. */
 
 /* The theme override, which is empty until a script fills it and is therefore a box with no size
    of its own. It is styled as the search field is styled - the same hairline, the same rule colour -
@@ -566,7 +550,7 @@ ul.menu .here { color: var(--dim) }
 /* The field is a phrase and never a paragraph, so it is the shortest line this palette declares -
    a length already argued for as one somebody reads across, rather than a width chosen for a box.
    It grows to that and stops, which leaves the menu where it was. ADR-0137. */
-.masthead .search { position: relative; flex: 1 1 var(--the-query-field); max-width: var(--aside); min-width: 0 }
+.masthead .search { position: relative; max-width: var(--aside); min-width: 0 }
 .masthead .search input {
   width: 100%; font-family: var(--mono); font-size: var(--t5); line-height: var(--the-line);
   color: var(--ink); background: var(--paper); border: var(--the-hairline) solid var(--rule);
@@ -1087,19 +1071,20 @@ a.chip .count { opacity: .55; margin-left: var(--s) }
 }
 /* A signature is one line a reader reads as a whole, so it is clipped rather than wrapped - the rule
    ADR-0135 wrote for a block narrower than its content, applied where the design asks for one line. */
-.offers .shape {
+.offers .signature {
   display: block; font-family: var(--mono); font-size: 12px; color: var(--body);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
 }
 /* Two lines and then an ellipsis, which is what keeps every card the same height in a row. */
-.offers .why {
+.offers .says {
   margin: 0; font-size: 12.5px; color: var(--body); line-height: 1.5;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .offers .install {
   display: flex; align-items: center; gap: 8px;
-  margin: 2px 0 0; padding: 9px 0 0; border-top: 1px solid var(--rule);
-  background: none; border-radius: 0; color: var(--dim);
+  margin: 2px 0 0; padding: 9px 0 0;
+  border: 0; border-top: 1px solid var(--rule); border-radius: 0;
+  background: none; color: var(--dim); max-width: 100%;
   font-family: var(--mono); font-size: 11px; overflow-wrap: anywhere; min-width: 0;
 }
 .offers .install .copy {
@@ -1127,20 +1112,20 @@ a.row {
 }
 a.row:hover { background: var(--card); text-decoration: none }
 a.row .call { margin: 0; font-family: var(--mono); font-size: 13px; font-weight: 500; min-width: var(--a-name-in-a-row); flex: none }
-a.row .shape {
+a.row .signature {
   margin: 0; flex: 1; min-width: 0; font-family: var(--mono); font-size: 12px; color: var(--body);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 a.row .when { margin: 0; font-size: 12px; color: var(--dim); white-space: nowrap; flex: none }
 
 /* The three arguments, ruled off from the catalogue above them. */
-.why {
+.arguments {
   border-top: 1px solid var(--rule);
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--aside)), 1fr)); gap: 28px;
   max-width: var(--the-page); margin: 0 auto; padding: 40px var(--s6) 44px;
 }
-.why h3 { font-size: 14.5px; font-weight: 600; margin: 0 0 6px; color: var(--ink) }
-.why p { font-size: 13px; color: var(--body); line-height: 1.6; margin: 0 }
+.arguments h3 { font-size: 14.5px; font-weight: 600; margin: 0 0 6px; color: var(--ink) }
+.arguments p { font-size: 13px; color: var(--body); line-height: 1.6; margin: 0 }
 
 /* Not on the artboard, and here because no page is removed in this unit: a page nothing links to is
    one every-page-is-reachable-from-the-front-page refuses. ADR-0182. */
