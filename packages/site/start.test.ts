@@ -590,4 +590,57 @@ describe('the controls a visitor touches, run against a document', () => {
     expect(theAnswersShown()?.childNodes.length).toBe(0)
     expect(slot?.contains(away)).toBe(false)
   })
+
+  /**
+   * Every command a page shows carries its own control, and the front page is why this exists.
+   *
+   * **The defect it was written for shipped and was found in a browser.** `copyControl` read
+   * `querySelector`, which is exactly right for every page that had ever carried an install line and
+   * exactly wrong the day one carried six: the shelf offered a control on six cards and delivered it on
+   * one. Nothing was red. The suite counted guards and never controls against commands, the page read
+   * perfectly, and the five cards that were missing one looked like cards whose design had no button.
+   *
+   * So the guard compares the two populations rather than asserting a number, which is what makes it
+   * hold when a seventh contract is published. ADR-0182.
+   */
+  it('every-command-a-page-shows-carries-its-own-copy-control', () => {
+    aServedFrontPage()
+    aClipboardThat(() => Promise.resolve())
+
+    const commands = [...document.querySelectorAll('pre.install')]
+    expect(commands.length).toBeGreaterThan(1)
+
+    copyControl()
+
+    expect(commands.map((one) => one.querySelectorAll('button.copy').length)).toEqual(
+      commands.map(() => 1),
+    )
+  })
+
+  /**
+   * The chord the badge names is the chord that reaches the field, and nothing else does.
+   *
+   * The badge is drawn because the shortcut exists, so a guard reading one without the other would
+   * establish half of what a reader is promised. The bare key is asserted too: a listener keyed on the
+   * letter alone would steal every `k` a reader types anywhere on the page. ADR-0182.
+   */
+  it('the-chord-the-badge-names-is-the-one-that-reaches-the-search', async () => {
+    aServedFrontPage()
+    const field = aSearchOnThePage()
+    const away = document.createElement('input')
+    document.body.append(away)
+    away.focus()
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', bubbles: true }))
+    expect(document.activeElement).toBe(away)
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }))
+    await settled()
+    expect(document.activeElement).toBe(field)
+
+    away.focus()
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'K', metaKey: true, bubbles: true }))
+    await settled()
+    expect(document.activeElement).toBe(field)
+  })
 })

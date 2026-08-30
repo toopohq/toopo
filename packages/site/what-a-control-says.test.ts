@@ -9,11 +9,13 @@ import type { WhereTheCatalogueIs } from './searching.js'
 import {
   THE_COPY_CONTROL_SAYS,
   THE_PANEL_IS_CLOSED,
+  isTheSearchShortcut,
   theAnswerIsStale,
   theArgumentsIn,
   theCommandWrittenFor,
   theCopyLabelFor,
   theRefusalShownFor,
+  theShortcutSpelledFor,
   theSpellingShownFor,
   theWayAlreadyChosen,
   whatThePanelShows,
@@ -472,5 +474,34 @@ describe('what the controls of this site say', () => {
     expect(theAnswerIsStale('  slug  ', 'slug')).toBe(false)
     expect(theAnswerIsStale('slugi', 'slug')).toBe(true)
     expect(theAnswerIsStale('', 'slug')).toBe(true)
+  })
+
+  /**
+   * The shortcut is spelled the way the reader's own keyboard spells it.
+   *
+   * A badge reading `⌘K` on a machine whose key is `Ctrl` is a wrong instruction rather than a
+   * stylistic choice, which is why the spelling is a function of the platform and not a constant. The
+   * two arms are asserted separately because a rendering that answered one string for everything would
+   * satisfy a guard that only checked it was non-empty. ADR-0182.
+   */
+  it('the-shortcut-is-spelled-the-way-the-readers-own-keyboard-spells-it', () => {
+    expect(theShortcutSpelledFor('MacIntel')).toBe('⌘K')
+    expect(theShortcutSpelledFor('Win32')).toBe('Ctrl K')
+    expect(theShortcutSpelledFor('Linux x86_64')).toBe('Ctrl K')
+  })
+
+  /**
+   * Which press reaches the search, in both directions.
+   *
+   * The false arms are the ones worth having: a listener keyed on the letter alone would take every
+   * `k` a reader types, and one keyed on a modifier alone would take every chord. ADR-0182.
+   */
+  it('the-press-that-reaches-the-search-is-the-letter-and-a-modifier', () => {
+    expect(isTheSearchShortcut('k', true, false)).toBe(true)
+    expect(isTheSearchShortcut('k', false, true)).toBe(true)
+    expect(isTheSearchShortcut('K', false, true)).toBe(true)
+    expect(isTheSearchShortcut('k', false, false)).toBe(false)
+    expect(isTheSearchShortcut('j', true, false)).toBe(false)
+    expect(isTheSearchShortcut('', true, true)).toBe(false)
   })
 })

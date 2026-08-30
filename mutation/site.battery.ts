@@ -206,7 +206,15 @@ const THE_PLAYGROUND_IS_WAITED_FOR = `  const { theAnswerShown, theFieldLabelFor
 const THE_REFUSAL_SITS_BESIDE_THE_COMMAND = `  install.after(refusal)`
 const EVERY_WAY_THE_PAGE_DECLARED_IS_OFFERED = `  const buttons = ways.map((way) => {`
 const THE_SEARCH_NEEDS_A_SLOT_THAT_DECLARED_ONE = `  if (!(slot instanceof HTMLElement) || declared === undefined) return null`
-const THE_COPY_CONTROL_NEEDS_A_BLOCK_AND_A_CLIPBOARD = `  if (install === null || !navigator.clipboard) return`
+/**
+ * The one refusal `copyControl` still makes.
+ *
+ * It used to read `install === null || !navigator.clipboard`, and the block half of that condition is
+ * gone rather than moved: the control walks every install block on the page, so a page holding none
+ * walks nothing and the defect W-127 was written for stopped being expressible. What remains is the
+ * clipboard, and W-127 is aimed at it. ADR-0182.
+ */
+const THE_COPY_CONTROL_NEEDS_A_CLIPBOARD = `  if (!navigator.clipboard) return`
 const THE_COMMAND_IS_READ_WHEN_THE_BUTTON_IS_PRESSED = `  button.addEventListener('click', () => {
     void navigator.clipboard.writeText(theCommandSpelled(install)).then(`
 const THE_COPY_CONTROL_IS_RELABELLED = `      const copy = install.querySelector('.copy')
@@ -1169,10 +1177,10 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
 
   sameOnEveryLens(
     'W-127',
-    'builds a copy control on a page carrying no install block, so the nine pages of this site that ' +
-      'name no contract fail on load',
-    [startFile(THE_COPY_CONTROL_NEEDS_A_BLOCK_AND_A_CLIPBOARD, `  if (!navigator.clipboard) return`)],
-    killed(['a-page-with-no-slots-on-it-has-nothing-built-into-it']),
+    'builds a copy control where the browser offers no clipboard, so a reader is given a button that ' +
+      'throws on the one thing it is for',
+    [startFile(THE_COPY_CONTROL_NEEDS_A_CLIPBOARD, `  if (false) return`)],
+    killed(['a-clipboard-that-refuses-is-said-so-and-one-that-is-not-there-builds-no-control']),
   ),
 
   /**
@@ -2349,8 +2357,8 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'is named and nothing but a template can be printed',
     [
       frontPageFile(
-        `            'is yours.',`,
-        `            'is yours. Start with npx toopo add domain/function.',`,
+        `  'contract — its signature and behaviour never change.'`,
+        `  'contract — its signature and behaviour never change. Start with npx toopo add domain/function.'`,
       ),
     ],
     killed(['the-page-a-reader-arrives-at-is-every-contract-they-can-install']),
@@ -2452,6 +2460,106 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'runs, and a reader is told this catalogue holds four functions',
     [frontPageFile(`...held.map(offer)`, `...held.slice(0, 4).map(offer)`)],
     killed(['the-page-a-reader-arrives-at-is-every-contract-they-can-install']),
+  ),
+
+  /**
+   * **The defect that shipped**, put back exactly as it was written.
+   *
+   * `copyControl` read `querySelector`, which is right for every page that had ever carried one
+   * install line and wrong the day one carried six: the shelf offered a control on six cards and gave
+   * it to one. Nothing was red, because the suite counted guards and never controls against commands -
+   * and five cards missing a button read as cards whose design has none.
+   *
+   * It is the argument for a guard that compares two populations rather than asserting a number: the
+   * page grows a card with every contract published, and a count would have to be edited each time by
+   * whoever is least likely to notice it has become wrong. ADR-0182.
+   */
+  sameOnEveryLens(
+    'W-147',
+    'builds the copy control for the first command on the page and none of the others, so a shelf of ' +
+      'six cards offers six and delivers one',
+    [
+      startFile(
+        `  for (const install of document.querySelectorAll('pre.install')) copyControlOn(install)`,
+        `  const only = document.querySelector('pre.install')
+  if (only !== null) copyControlOn(only)`,
+      ),
+    ],
+    killed(['every-command-a-page-shows-carries-its-own-copy-control']),
+  ),
+
+  /**
+   * **Two cells over the shortcut, and each reddens what the other does not.**
+   *
+   * The badge beside the search field is drawn because the chord exists, so the two halves fail
+   * differently: the predicate can take a press it has no business taking, and the badge can name a key
+   * the reader's own keyboard does not have. The first is a control doing more than it says, the second
+   * is a control saying more than it does.
+   *
+   * The letter arm is what makes the first one worth writing: a listener keyed on `k` alone takes every
+   * `k` a reader types anywhere on the page, and the page goes on looking exactly right to whoever is
+   * not typing. ADR-0182.
+   */
+  sameOnEveryLens(
+    'W-148',
+    'lets the bare letter reach the search, so every k a reader types anywhere on the page pulls the ' +
+      'cursor into the masthead',
+    [
+      controlFile(
+        `  key.toLowerCase() === THE_SEARCH_KEY && (withMeta || withControl)`,
+        `  key.toLowerCase() === THE_SEARCH_KEY || withMeta || withControl`,
+      ),
+    ],
+    killed([
+      'the-chord-the-badge-names-is-the-one-that-reaches-the-search',
+      'the-press-that-reaches-the-search-is-the-letter-and-a-modifier',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'W-149',
+    'spells the shortcut the same way for every keyboard, so a reader on Windows is told to press a ' +
+      'key their machine does not have',
+    [
+      controlFile(
+        `  /mac/i.test(platform) ? '⌘K' : 'Ctrl K'`,
+        `  platform === platform ? '⌘K' : 'Ctrl K'`,
+      ),
+    ],
+    killed(['the-shortcut-is-spelled-the-way-the-readers-own-keyboard-spells-it']),
+  ),
+
+  /**
+   * A control that presumes the page serves its slot, silencing the compiler rather than answering it.
+   *
+   * **It exists because the battery refused a run.** W-127 used to redden
+   * `a-page-with-no-slots-on-it-has-nothing-built-into-it` by making `copyControl` assume an install
+   * block; ADR-0182 gave that control a walk over every block, so a page holding none walks nothing and
+   * that defect stopped being expressible. The guard was left with nothing reddening it and the
+   * instrument said so by name rather than printing a total that looked healthy - which is the whole
+   * argument for an accounting that refuses a run where every declared cell did what it declared.
+   *
+   * The shape is the one a compiler invites: told the answer can be null, reach for a cast instead of a
+   * branch. Measured at the commit this lands on, it reddens the guard **and its neighbour** - both are
+   * about a control meeting a page that does not serve it, and neither is red alone here. ADR-0182.
+   */
+  sameOnEveryLens(
+    'W-150',
+    'casts the masthead away rather than reading it, so the search builds itself on a page that ' +
+      'serves no slot for it and the page fails where it should have done nothing',
+    [
+      startFile(
+        `  const declared = theCatalogueDeclaredIn('.masthead .search')
+  if (declared === null) return`,
+        `  const declared = theCatalogueDeclaredIn('.masthead .search') as NonNullable<
+    ReturnType<typeof theCatalogueDeclaredIn>
+  >`,
+      ),
+    ],
+    killed([
+      'a-page-with-no-slots-on-it-has-nothing-built-into-it',
+      'a-slot-that-declares-nothing-is-left-alone',
+    ]),
   ),
 
   /**

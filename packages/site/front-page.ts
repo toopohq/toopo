@@ -140,6 +140,12 @@ const theFrozenMark = (): Node =>
  * The order is the artboard's and so is every part of it. The install line is a block of its own at
  * the foot of the card, ruled off, because that is where the design puts the thing a reader acts on -
  * and `start.ts` appends the copy control to it, exactly as it does on a contract page.
+ *
+ * **The command names this contract and never a shape.** ADR-0140 took the template
+ * `toopo add domain/function` off this page on the argument that a command belongs to a contract, and
+ * ADR-0181 overruled where the page stands rather than that: six cards carry six commands, each about
+ * the function above it, which is what that record asked for. W-91 is the cell that puts a template
+ * back and it is red on the guard over this page. ADR-0140, ADR-0182.
  */
 const offer = (held: Held): Node => {
   const says = whatACardSays(held)

@@ -525,7 +525,9 @@ ul.names a { font-family: var(--mono); font-size: var(--t4) }
 /* The one word a reader needs before they click, in the colour that is not a verdict. */
 ul.names li { color: var(--dim); font-size: var(--t5) }
 
-/* The bar every page carries is the artboard's since ADR-0182, and its rules are with the front page
+/* The shelf this page is was decided by ADR-0181 and drawn by ADR-0182: that record is what the page
+   holds, this block is what it looks like, and every length below is the artboard's own.
+   The bar every page carries is the artboard's since ADR-0182, and its rules are with the front page
    below rather than here - one masthead and not two, because two blocks for one element is the
    collision this unit met in a browser with every guard green. What stays here are the two controls
    that sit in it and are not the bar: the theme override and the field's own box. */
