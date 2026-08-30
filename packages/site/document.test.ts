@@ -70,29 +70,30 @@ const theServedStyle = (): string =>
  *
  * **This is a debt and it is the owner's to settle, which is why it is a list and not a threshold.**
  * The values are his, read off the artboard ADR-0176 was built from; the readings are this file's own
- * arithmetic. Eleven pairs, two inks, and the guard below is exact in both directions - a twelfth
- * cannot arrive in silence, and a row cannot outlive the failure it names.
+ * arithmetic. The guard below is exact in both directions - a new pair cannot arrive in silence, and a
+ * row cannot outlive the failure it names.
  *
- * `--dim` is the artboard's `faint`, and it is the whole of the dark half and most of the light. It
- * carries the case identifier, the rail's label, the page you are on and the playground's labels: not
- * decoration, and not large. ADR-0115 removed a role for measuring 2.64:1 and this one measures 2.64:1.
+ * **It was eleven rows and two inks, and eight of them are gone.** `--dim` - the artboard's `faint` -
+ * was the whole of the dark half and most of the light, and it carried the case identifier, the rail's
+ * label, the page you are on and the playground's labels: not decoration, and not large. The owner
+ * ruled that it clears the floor, and ADR-0178 took the values ADR-0176's own reopening clause had
+ * already named. It answers 4.56:1 at its worst on dark and 4.53:1 on light.
  *
- * `--accent` is the other three, and they are the near miss rather than the failure: 4.47, 4.35 and
- * 4.22 against 4.5, and only on the three grounds that are not the paper. It clears the floor at
- * 4.76:1 where most links are, and it is the artboard's own darkened accent - the value this unit took
- * in order to lift the focus ring off 1.76:1, which is the one correction ADR-0176 made to the design.
+ * **What is left is one ink and three grounds, and they are the near miss rather than the failure**:
+ * 4.47, 4.35 and 4.22 against 4.5, and only on the three grounds that are not the paper. `--accent`
+ * clears the floor at 4.76:1 where most links are, and it is the artboard's own darkened accent - the
+ * value ADR-0176 took in order to lift the focus ring off 1.76:1, which is the one correction that
+ * unit made to the design.
+ *
+ * **The owner ruled on `--dim` and not on this, so it stays declared.** Measured at ADR-0178, the
+ * whole of what it would take is `#0c7f68` moved 3.6 % toward black, to `#0c7a64`, which clears every
+ * ground at 4.50:1 - a smaller move than the one already made to this colour. It is not made, because
+ * a stylesheet retuning a colour the owner chose is the thing ADR-0176 refused in as many words, and
+ * a near miss is not the failing indicator that bought the one exception.
  */
 const BELOW_THE_LEGIBLE_FLOOR: readonly string[] = [
-  'dark: dim on paper is 3.51:1',
-  'dark: dim on wash is 3.36:1',
-  'dark: dim on card is 3.12:1',
-  'dark: dim on target is 3.06:1',
-  'light: dim on paper is 2.81:1',
-  'light: dim on wash is 2.64:1',
   'light: accent on wash is 4.47:1',
-  'light: dim on card is 2.49:1',
   'light: accent on card is 4.22:1',
-  'light: dim on target is 2.56:1',
   'light: accent on target is 4.35:1',
 ]
 

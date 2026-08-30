@@ -80,14 +80,19 @@
  * 24px owes a reader. `dim` was 5.45:1, so there was no room underneath it for a fourth legible step,
  * and a colour that is only *nearly* legible is worse than one step fewer.
  *
- * **The palette above is the owner's and its third grey is back.** Measured at ADR-0176 over the
- * artboard's own values, `--dim` - the artboard calls it `faint` - answers **3.51:1 on dark paper and
- * 2.81:1 on light**, and it is the third grey of a three-grey palette rather than a fourth step under
- * two. So the role that was removed for measuring 2.64:1 has returned measuring 2.64:1 on wash, eight
- * months later, in a repository that exists so that figures do not drift. It is recorded and not
- * corrected: the design is the owner's, he has not ruled on this pair, and a stylesheet quietly
- * disagreeing with an artboard is worse than a disagreement somebody can read. ADR-0176 carries the
- * whole table and the two pairs beside it.
+ * **The palette above is the owner's and its third grey is back, at the value he ruled.** Measured at
+ * ADR-0176 over the artboard's own values, `--dim` - the artboard calls it `faint` - answered
+ * **3.51:1 on dark paper and 2.81:1 on light**, and worst of all **2.49:1 on light card**. So the role
+ * ADR-0115 removed for measuring 2.64:1 came back measuring 2.64:1 on wash, eight months later, in a
+ * repository that exists so that figures do not drift.
+ *
+ * **It was recorded rather than corrected for exactly one unit, because the design is the owner's and
+ * he had not ruled.** He ruled: the ink clears the floor against every ground it is painted on, in
+ * both themes. The values are the ones ADR-0176's own reopening clause named - `#7c868a` on dark and
+ * `#636d71` on light - so nothing here was invented, and they are taken because they measure rather
+ * than because they were written down. Re-measured at ADR-0178 over the four grounds: dark answers
+ * **5.23, 5.01, 4.65 and 4.56**, light answers **5.12, 4.81, 4.53 and 4.67**, and the binding ground
+ * is the card in both. ADR-0178.
  *
  * The prose is set in Geist since ADR-0176 and the monospace is still whatever the reader's own system
  * uses, which is the half of *downloads nothing* that survived.
@@ -257,7 +262,7 @@ ${THE_FONT_FACE}
      against a translucent token is read against a colour nobody sees - so the composition is done
      once, here, rather than left for a guard to guess at. */
   --paper: #0b0d0e; --wash: #101314; --card: #171b1d; --rule: #1f2426; --edge: #2d3336;
-  --ink: #e6e9ea; --body: #98a2a6; --dim: #606a6e;
+  --ink: #e6e9ea; --body: #98a2a6; --dim: #7c868a;
   --accent: #3fd6b7; --target: #101f1d;
 
   /* The span a line stays readable across, both ends of it, and what one character of this face
@@ -373,13 +378,13 @@ ${THE_FONT_FACE}
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
     --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
-    --ink: #151a1b; --body: #5b6569; --dim: #8f999d;
+    --ink: #151a1b; --body: #5b6569; --dim: #636d71;
     --accent: #0c7f68; --target: #e7f3f1;
   }
 }
 :root[data-theme='light'] {
   --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
-  --ink: #151a1b; --body: #5b6569; --dim: #8f999d;
+  --ink: #151a1b; --body: #5b6569; --dim: #636d71;
   --accent: #0c7f68; --target: #e7f3f1;
 }
 /* Two rules that carry no colour, so the button cannot introduce one. They exist so that a reader

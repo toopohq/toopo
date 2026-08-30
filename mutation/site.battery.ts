@@ -966,13 +966,16 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   sameOnEveryLens(
     'W-24b',
     'lifts the paper a shade, which is the plausible half of a palette edit - a ground that moves is ' +
-      'a taste somebody has, where an ink that moves is a decision. **What it produces changed with ' +
-      'ADR-0176 and the cell is better for it**: `dim` is already declared below the floor, so this ' +
-      'edit both carries `body` under - 7.47:1 to 3.94:1, an ink that was passing - and moves every ' +
-      'declared `dim` reading off the figure beside it. It reddens the guard in both of that guard\'s ' +
-      'directions at once, where it used to reach only one. Nothing on the rendered page looks ' +
-      'wrong: the text is there, the colours are roles, and the contrast is a number nobody reads ' +
-      'off a screen',
+      'a taste somebody has, where an ink that moves is a decision. **What it produces has changed ' +
+      'twice and it is measured each time rather than assumed.** At ADR-0176 `dim` was declared below ' +
+      'the floor, so this edit reached both of the guard\'s directions at once: it carried `body` ' +
+      'under and moved every declared `dim` reading off the figure beside it. ADR-0178 raised `dim` ' +
+      'to the floor and took those eight rows out, so it reaches one direction now - measured, the ' +
+      'injected palette puts `body on paper` at 3.94:1 and `dim on paper` at 2.75:1, and both are ' +
+      'pairs the declaration does not name. The reach is narrower and the cell is not weaker: the ' +
+      'dark half clears everywhere unperturbed, so those two readings exist only because of the edit. ' +
+      'Nothing on the rendered page looks wrong: the text is there, the colours are roles, and the ' +
+      'contrast is a number nobody reads off a screen',
     [
       styleFile(
         THE_DARK_PALETTE,
