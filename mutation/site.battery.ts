@@ -88,6 +88,7 @@ const indexingFile = (find: string, replace: string) => ({ file: 'indexing.ts', 
 const survivorsFile = (find: string, replace: string) => ({ file: 'survivors.ts', find, replace })
 const siteFile = (find: string, replace: string) => ({ file: 'site.ts', find, replace })
 const frontPageFile = (find: string, replace: string) => ({ file: 'front-page.ts', find, replace })
+const componentsFile = (find: string, replace: string) => ({ file: 'components.ts', find, replace })
 const servedHeadersFile = (find: string, replace: string) => ({
   file: 'served-headers.ts',
   find,
@@ -2514,6 +2515,81 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'the-chord-the-badge-names-is-the-one-that-reaches-the-search',
       'the-press-that-reaches-the-search-is-the-letter-and-a-modifier',
     ]),
+  ),
+
+  /**
+   * A component reaching outside itself, which is the direction the compiler does not hold.
+   *
+   * A drawing writes `&` and `paintedBy` is the only thing that turns it into a class, so a component
+   * has no way to spell a selector aimed elsewhere - but `&` is a string and a string can be left out.
+   * This is the edit that leaves it out: the pill's hover written against the container it happens to
+   * stand in, which is the shape every one of ADR-0183's four instances had.
+   *
+   * **It reddens the declaration guard and not the matcher beside it**, which is what says the two are
+   * about opposite directions. The rule still paints the pill correctly, so nothing outside the
+   * component has started painting it; what has changed is that the component has started painting
+   * something addressed by where it sits. ADR-0183.
+   */
+  sameOnEveryLens(
+    'W-149',
+    "writes the pill's hover against the container it stands in rather than against itself, so a " +
+      'component paints by where it happens to sit',
+    [
+      componentsFile(
+        '${OWN}:hover { border-color: var(--edge); color: var(--ink); text-decoration: none }',
+        'ul.pills a:hover { border-color: var(--edge); color: var(--ink); text-decoration: none }',
+      ),
+    ],
+    killed(['every-selector-a-component-declares-is-rooted-at-its-own-class']),
+  ),
+
+  /**
+   * The two halves of the one component this repository draws in two places drifting apart.
+   *
+   * `copy` is the only component whose markup is not built by `components.ts`: `start.ts` creates the
+   * button in the reader's browser. So the class is a literal over there and a union member over here,
+   * and this is the edit that parts them - a rename nobody thinks twice about, in the module that does
+   * not hold the registry.
+   *
+   * **What a reader would meet is a control with no paint at all**, on every install line of every
+   * page, because the rule is keyed to a class nothing now writes. It is the shape the copy control
+   * already had once, with the one half that usually prevents it - single-sourced markup - already in
+   * place. ADR-0183.
+   */
+  sameOnEveryLens(
+    'W-150',
+    'renames the class the browser writes on the copy control, so every install line on the site ' +
+      'offers a button the stylesheet has no rule for',
+    [startFile(`button.className = 'copy'`, `button.className = 'copy-button'`)],
+    killed(['the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints']),
+  ),
+
+  /**
+   * **The defect ADR-0183 was written for, put back in the one line it needs.**
+   *
+   * A page section painting a component from outside, addressed by neither the component's name nor
+   * anything the component declares. It is `.recent h2` exactly - the instance the matcher guard found
+   * on its own first run - and it is `ul.chips a` in miniature: the selector never names `.pill`, so no
+   * sweep of selector text can see it and only a matcher can.
+   *
+   * **It is the cell that guard was owing.** The three that reddened it before this were W-19, W-20 and
+   * W-92, none of which is about painting: each makes `theSite` throw, so the guard fell with every
+   * other guard that builds a page. A guard red only where its neighbours are red has not been shown to
+   * catch anything, which is what `attribution.ts` calls *never alone*. This one reddens it with the
+   * pages building perfectly. ADR-0183.
+   */
+  sameOnEveryLens(
+    'W-151',
+    'lets a section paint the pill inside it, so what a component looks like goes back to depending ' +
+      'on which page it stands on',
+    [
+      styleFile(
+        `ul.pills li { padding: 0; border: 0 }`,
+        `ul.pills li { padding: 0; border: 0 }
+.hero ul.pills .pill { border-radius: 1rem }`,
+      ),
+    ],
+    killed(['a-component-is-painted-by-its-own-rules-and-by-nothing-else']),
   ),
 
   sameOnEveryLens(
