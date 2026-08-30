@@ -1064,8 +1064,14 @@ main.shelf { display: block; padding: 0 }
    decorating - and a landing headline is a register the six do not carry: --t1 is 26px and is the
    title of a contract page, which is a different job on a different page. ADR-0182 records the
    overruling with its scope, which is this one element. */
+/* The headline is the artboard's 40px, stated so a reader's font setting reaches it - and it is not
+   fluid, which was considered and refused on a measurement rather than on effort. A clamp needs a
+   floor, and nothing here derives one: the longest word is 180px inside a 272px column at 320, so it
+   does not bind, and the artboard declares no size below the width it is drawn at because it declares
+   no width condition at all. A floor chosen here would be a familiar number wearing a derivation.
+   ADR-0185. */
 .hero h1 {
-  font-size: 40px; line-height: 1.14; font-weight: 600; letter-spacing: -.03em;
+  font-size: 2.5rem; line-height: 1.14; font-weight: 600; letter-spacing: -.03em;
   margin: 0 0 14px; text-wrap: pretty; color: var(--ink); font-family: var(--sans);
 }
 .hero .lede {
