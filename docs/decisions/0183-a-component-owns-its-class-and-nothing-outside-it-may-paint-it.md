@@ -81,10 +81,27 @@ it. `a-component-is-painted-by-its-own-rules-and-by-nothing-else` asks a matcher
 already a dev dependency — over every component element of every page the site emits. Every selector
 that matches one must be that component's own or the document's own typography: a bare tag, or `*`.
 
-**Three guards, each seen red alone before its green was believed.** The pill's hover written
+**Three guards, each seen red before its green was believed.** The pill's hover written
 `ul.pills a:hover` reddens the first; `ul.chips a` put back in the sheet with the front page's
 container renamed reddens the second, naming `index.html: ul.chips a paints .pill`; `start.ts` writing
 `copy-button` reddens the third. In each case the other two stayed green.
+
+**A red produced by hand is not a cell, and the battery is what said so.** The first run reported 151
+cells and zero disagreements - every declared cell killed what it named - and refused anyway: two of
+these three had nothing reddening them, and the third was red on W-19, W-20 and W-92, none of which is
+about painting. Each of those makes `theSite` throw, so the guard fell with every guard that builds a
+page: red by collateral rather than by detection. W-149, W-150 and W-151 are the cells that were owed,
+and the second run is green with **`UNACCOUNTED FOR (0)`** over 154 cells.
+
+**Two of the three are now red alone and the third cannot be, which is stated rather than left to
+look like an omission.** `every-selector-…-rooted-at-its-own-class` is alone on W-149;
+`a-component-is-painted-by-its-own-rules-and-by-nothing-else` is alone on W-151, with the pages
+building perfectly - measured over the whole suite, 1 failed and 194 passed.
+`the-class-the-browser-writes-on-a-copy-control-…` is red on W-150 and alone on nothing, and **no
+plausible mutant would change that**: it compares a literal in `start.ts` against a member of the
+union, renaming the literal reddens eight guards because seven of them query `.copy`, and renaming the
+member does not compile. That is a different state from *nobody wrote the cell*, and the two are
+indistinguishable in the instrument's own bucket.
 
 ### What the artboard decided, and where it argued against unifying
 

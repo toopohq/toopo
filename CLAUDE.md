@@ -1953,9 +1953,20 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   whose `unprobedRegions` is empty and whose `unreachableGuards` name neither; and `mutation/run.ts`,
   where a pin declares what a cell must produce and never what a guard has been alone on.
 
-  **The population is every guard the batteries leave in the *never alone* bucket**, and no reading
-  here has taken it - the artefacts under `mutation/results/` are refused by `npm run tally` as
-  measured before the commit they would describe. What would close it is a cell per guard, aimed at
+  **The population is every guard the batteries leave in the *never alone* bucket**, and one battery
+  of it has now been read. Measured at `9e41d44` off `npm run battery site`'s own attribution: **191
+  guards carry one, 88 have been seen red alone, and 103 have not** - so a little over half of what
+  that battery accounts for is red only in company. It is one battery of twenty-three and it is the
+  first figure this entry has ever carried; the other twenty-two are unread, and `npm run tally`
+  refuses the artefacts under `mutation/results/` as measured before the commit they would describe.
+
+  **One instance is now named with the reason it is not closeable, which the entry had never had
+  either.** `the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints` compares a
+  literal in `start.ts` with a member of the component union, and **both of its inputs have rendering
+  consequences**: W-150 renames the literal and reddens eight guards, seven of which query `.copy` and
+  find nothing, while renaming the union member does not compile. So *alone* is not reachable for it by
+  any plausible mutant - which is a different state from *nobody has written the cell*, and the two look
+  identical in the bucket. ADR-0183. What would close it is a cell per guard, aimed at
   that guard's own failure condition and at nothing else, which is what `attribution.ts` asks for in as
   many words: *reading it produces mutants instead of deletions*. Priced at a replay to find the
   population and a cell apiece to close it. ADR-0174.
