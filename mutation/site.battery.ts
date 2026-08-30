@@ -100,6 +100,7 @@ const controlFile = (find: string, replace: string) => ({
 })
 const searchingFile = (find: string, replace: string) => ({ file: 'searching.ts', find, replace })
 const startFile = (find: string, replace: string) => ({ file: 'start.ts', find, replace })
+const themeFile = (find: string, replace: string) => ({ file: 'theme.ts', find, replace })
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -145,6 +146,13 @@ const A_PROJECTION_CARRIES_WHAT_A_READER_MEETS = `    how.prose(document.descrip
 const THE_PAGE_DECLARES_ITS_LANGUAGE = `    '<html lang="en">',`
 
 const THE_STYLE_IS_THE_ONLY_THING_LOADED = `    \`<style>\${THE_SERVED_STYLESHEET}</style>\`,`
+
+const THE_THEME_IS_CARRIED_AND_NOT_FETCHED = `    \`<script>\${THE_THEME_SCRIPT}</script>\`,`
+
+const THE_SCRIPT_WRITES_WHAT_THE_SHEET_READS = `document.documentElement.setAttribute('data-theme',t)`
+
+const THE_BUTTON_HANDS_OUT_THE_SYSTEMS_PALETTE = `:root[data-theme='light'] {
+  --paper: #fafbfb;`
 
 const THE_MODULES_ARE_STRIPPED_BEFORE_THEY_ARE_SERVED = `  withoutItsArgument(stripTypeScriptTypes(typescript, { mode: 'strip' }))`
 const THE_TEMPLATE_IS_RESUMED = `        token = scanner.reScanTemplateToken(false)`
@@ -833,6 +841,68 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       ),
     ],
     killed(['a-page-fetches-nothing-but-the-face-this-repository-serves']),
+  ),
+
+  /**
+   * The other half of the claim W-24 is about, and the reason the guard it kills is a second guard.
+   *
+   * A page's behaviour is in the page. Fetching the theme instead of carrying it puts the way round
+   * a reader sees the site behind a request that can fail, on a host that can change what it
+   * answers - and it does it to the one script this site runs before anything is painted, so the
+   * failure a reader meets is the page arriving in the wrong theme and turning. ADR-0176.
+   */
+  sameOnEveryLens(
+    'W-137',
+    'fetches the theme script instead of carrying it, which puts the way round a reader sees the ' +
+      'page behind a request, before the first paint, on a host this project would then depend on',
+    [documentFile(THE_THEME_IS_CARRIED_AND_NOT_FETCHED, `    '<script src="/theme.js"></script>',`)],
+    killed(['nothing-a-page-runs-was-fetched-to-run-it']),
+  ),
+
+  /**
+   * **The plausible defect here is a rename and not a mistake**, which is what makes it worth a cell.
+   *
+   * The script is written out as text because a script element must never be assembled, and the price
+   * of that is a key and an attribute spelled twice in files that do not import each other. Somebody
+   * tidying one spelling leaves the other, and what a reader gets is a button that stores a
+   * preference no palette answers to: no error, no console, nothing on the page - the button simply
+   * does nothing, on every page, for as long as nobody notices. ADR-0176.
+   */
+  sameOnEveryLens(
+    'W-138',
+    'has the head script write an attribute the stylesheet does not select on, so the button stores ' +
+      'a preference nothing reads and a reader who presses it sees the page not change',
+    [
+      themeFile(
+        THE_SCRIPT_WRITES_WHAT_THE_SHEET_READS,
+        `document.documentElement.setAttribute('data-scheme',t)`,
+      ),
+    ],
+    killed(['the-script-that-sets-the-theme-agrees-with-the-stylesheet-that-reads-it']),
+  ),
+
+  /**
+   * The defect the duplication exists to make possible, which is why the duplication is guarded.
+   *
+   * ADR-0176 refused `light-dark()` on a browser floor and accepted writing the light palette twice.
+   * This is what that costs if nothing compares them: one value edited in one copy, and a reader who
+   * pressed the button gets a page a shade away from the one their own system would have painted.
+   * Both pages are legible, both palettes are roles, and no other guard here has an opinion.
+   */
+  sameOnEveryLens(
+    'W-139',
+    'edits one value of the light palette in the copy the button reaches and not in the copy the ' +
+      'system reaches, so which of the two a reader arrives by decides what they see',
+    [
+      styleFile(
+        THE_BUTTON_HANDS_OUT_THE_SYSTEMS_PALETTE,
+        `:root[data-theme='light'] {
+  --paper: #fafbfc;`,
+      ),
+    ],
+    killed([
+      'the-palette-a-reader-gets-from-the-button-is-the-palette-their-system-would-have-given-them',
+    ]),
   ),
 
   /**
