@@ -149,6 +149,28 @@ down appears here* cannot be reddened by a one-line edit, because `Domain.held` 
 installable — a refusal would have to be rendered from `turnedDown`, which is a different shape and a
 larger change. The arm is a claim about a future edit rather than a claim a mutant reaches today.
 
+### What the gate caught that this unit's own checking did not
+
+Five cells of this unit took identifiers the `site` battery already held — `W-140` and `W-141` are
+ADR-0176's — and `no-two-cells-of-one-battery-answer-to-one-address` refused the run on all three
+`suites` legs. Nothing was deployed: `site`, `batteries` and `publish` were skipped.
+
+**The cause of the collision is that a cell's identifier is typed and nothing derives it.** The search
+for a free number was run over `I-` in `registry-storage`, where these cells went into `site`.
+
+**The cause of it reaching CI is the one worth keeping.** `instrument.test.ts` asserts a clean tree, so
+on a dirty one it fails to *collect* — and vitest still prints `Tests 68 passed`. A clean run is
+`Test Files 10 passed (10)` and `115 passed`; the dirty one is 9 files. `npm run meta` was run before
+committing, the test count was read, and the file count in the same output was not. **The accounting
+guards never ran locally at all.**
+
+It is the third instance in one day of the same shape, and the rule that covers all three was already
+written in [ADR-0180](0180-what-a-card-says-is-shared-and-what-it-looks-like-is-not.md) about a probe
+reading a stale directory: **read the exit code, not the text.** `npm run site:build` exited 1, `npm
+run meta` exited 1, and a poll loop's `|| true` turns a failed call into silence — three surfaces, one
+verdict that was there to be read in each. A lesson written twice and repeated anyway is a lesson
+recorded in a form that does not fire, so it is generalised rather than noted a third time.
+
 ## What would reopen this
 
 **The day the shelf stops fitting on a screen.** That is the arithmetic `catalogue-page.ts` measured and

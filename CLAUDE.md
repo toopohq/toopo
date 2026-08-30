@@ -2822,6 +2822,31 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   waits. ADR-0146 carries the criterion that classifies one. **It is now two pushes in forty-three that
   pay a full replay rather than none**, which is where that cost first arrives in fact.
 
+- **That the deployment waits for what the instrument says about the commit it deploys.** It does
+  not. Measured at `92d0d5b` on run `33309448227`, watched while it ran: `site` reported success
+  while `batteries (site)` was still in progress. Read in the file: `site` declares
+  `needs: [suites, suites-on-windows]` and `batteries` declares `needs: [suites, which-batteries]`,
+  so the two are siblings — **a red battery does not un-deploy anything**, and nothing rolls a
+  deployment back.
+
+  **The asymmetry is with npm and it is deliberate there**: `publish` declares
+  `needs: [site, version, every-battery, every-battery-on-windows]`, so an irreversible act waits for
+  every battery and a revertible one does not. That may be exactly right — a page can be redeployed
+  from the next commit and a published version cannot — but **it is a reading of two `needs` lines
+  rather than a decision anybody took.**
+
+  **Where this looked**: ADR-0146, which decides *which* batteries run when — *on every push, the
+  batteries that can say something about the change; before a publication, all of them* — and says
+  nothing about what the deployment waits for; the comment above `site:` in `suites.yml`, which
+  argues at length why that job waits for the Windows suites and does not mention batteries at all;
+  and ADR-0109, which puts `publish` behind `site` and is about the publication.
+
+  **The population is the four `needs:` lines of `suites.yml`**, and it grows with each job. What
+  would close it is one sentence in the record that decides it, either way — and if the answer is
+  that a battery should gate the deployment, it is a `needs` edit and a minute of critical path per
+  push. Priced and not taken, because deciding what a deployment is worth is not a unit about a page.
+  ADR-0146.
+
 - **That the bound a battery runs under is one anybody compared with what a battery costs.** The two
   ubuntu gates declare `timeout-minutes: 40`, and the share the slowest job consumes is written beside
   them by hand: 1 649 s against 2 400 is 68 %, computed by a reader and by nothing else. It is a dated
