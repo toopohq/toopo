@@ -993,9 +993,26 @@ ul.toc > li.under { padding-left: var(--s3) }
 /* The column inside the bar, which is where the ceiling belongs. Auto margins on a grid item shrink
    it to its content instead of stretching it, so a ceiling on the bar itself took the rule under it
    down to 355px of a 1280 window - measured, and the reason these are two elements. */
+/* The bar's floor is a floor and not a height, and its row may break - which is what a reader who has
+   enlarged their text needs and what nobody else ever sees.
+
+   Both halves are measured. A fixed 56px cannot hold a doubled wordmark, so the bar overflowed the
+   window at a 200 % font setting; a min-height in rem grows with the setting and is 56px at the
+   default, identical at every width. And the break is written as the narrow case with the wide one
+   added, because that is the direction this stylesheet is read in now.
+
+   11rem is where the bar stops fitting, swept at 4px steps at a 32px root: it fits from 11rem and
+   fails at 10.88. At the default root that is 176px - narrower than any device - so nothing changes
+   for a reader who has not touched their font size, and everything changes for one who has. A
+   condition in rem asks whether the window is narrow *for the text in it*, which is the question, and
+   a condition in px cannot ask it at all. ADR-0185. */
 .masthead .bar {
-  display: flex; align-items: center; gap: var(--s4);
-  max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6); height: 56px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4);
+  max-width: var(--the-page); margin: 0 auto;
+  padding: var(--s2) var(--s6); min-height: 3.5rem;
+}
+@media (min-width: 11rem) {
+  .masthead .bar { flex-wrap: nowrap }
 }
 /* The four squares and the name, on one baseline. The mark takes the accent on one quarter, which is
    the second thing ADR-0115 lets the accent mean and the only decoration on this site.
