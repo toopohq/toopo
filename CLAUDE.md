@@ -1963,7 +1963,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **One instance is now named with the reason it is not closeable, which the entry had never had
   either.** `the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints` compares a
   literal in `start.ts` with a member of the component union, and **both of its inputs have rendering
-  consequences**: W-150 renames the literal and reddens eight guards, seven of which query `.copy` and
+  consequences**: W-153 renames the literal and reddens eight guards, seven of which query `.copy` and
   find nothing, while renaming the union member does not compile. So *alone* is not reachable for it by
   any plausible mutant - which is a different state from *nobody has written the cell*, and the two look
   identical in the bucket. ADR-0183. What would close it is a cell per guard, aimed at

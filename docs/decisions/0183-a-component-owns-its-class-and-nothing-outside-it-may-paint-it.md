@@ -90,14 +90,14 @@ container renamed reddens the second, naming `index.html: ul.chips a paints .pil
 cells and zero disagreements - every declared cell killed what it named - and refused anyway: two of
 these three had nothing reddening them, and the third was red on W-19, W-20 and W-92, none of which is
 about painting. Each of those makes `theSite` throw, so the guard fell with every guard that builds a
-page: red by collateral rather than by detection. W-149, W-150 and W-151 are the cells that were owed,
+page: red by collateral rather than by detection. W-152, W-153 and W-154 are the cells that were owed,
 and the second run is green with **`UNACCOUNTED FOR (0)`** over 154 cells.
 
 **Two of the three are now red alone and the third cannot be, which is stated rather than left to
-look like an omission.** `every-selector-…-rooted-at-its-own-class` is alone on W-149;
-`a-component-is-painted-by-its-own-rules-and-by-nothing-else` is alone on W-151, with the pages
+look like an omission.** `every-selector-…-rooted-at-its-own-class` is alone on W-152;
+`a-component-is-painted-by-its-own-rules-and-by-nothing-else` is alone on W-154, with the pages
 building perfectly - measured over the whole suite, 1 failed and 194 passed.
-`the-class-the-browser-writes-on-a-copy-control-…` is red on W-150 and alone on nothing, and **no
+`the-class-the-browser-writes-on-a-copy-control-…` is red on W-153 and alone on nothing, and **no
 plausible mutant would change that**: it compares a literal in `start.ts` against a member of the
 union, renaming the literal reddens eight guards because seven of them query `.copy`, and renaming the
 member does not compile. That is a different state from *nobody wrote the cell*, and the two are
