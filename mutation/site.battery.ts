@@ -906,6 +906,53 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   ),
 
   /**
+   * **The two cells below exist so that two guards are red alone, and nothing else about them is
+   * new.** W-24 and W-137 already redden them - by removing the style element and by replacing the
+   * script line - and both of those take neighbours with them, so the run could say only that each
+   * guard *would* catch its defect if the guard beside it went away. `attribution.ts` keeps a bucket
+   * for exactly that and this repository holds an open entry about it. These are narrow enough to
+   * land on one guard apiece, and they are the two guards this unit is about.
+   *
+   * A second thing fetched by the sheet is also the plausible edit: a background, a texture, an icon.
+   * The guard's `url(` arm is an equality since ADR-0176 precisely so that the *second* one reddens
+   * rather than only the class of them, and this is what says that equality does its work.
+   */
+  sameOnEveryLens(
+    'W-140',
+    'paints the body with an image, which is a second thing every page goes and fetches - and the ' +
+      'one this site has never had, so nothing about the page looks wrong while it loads',
+    [
+      styleFile(
+        `* { box-sizing: border-box }`,
+        `* { box-sizing: border-box }\nbody { background-image: url(/paper.png) }`,
+      ),
+    ],
+    killed(['a-page-fetches-nothing-but-the-face-this-repository-serves']),
+  ),
+
+  /**
+   * The theme kept where it is and a second script fetched beside it, so that what reddens is the
+   * fetching and not the theme going missing.
+   *
+   * It is the plausible shape of the defect too: nobody replaces the theme script with a request,
+   * they add an analytics tag or a widget under it. The page still works, the theme still arrives
+   * before the paint, and what a reader has gained is a third party who can change what this site
+   * does after it is served.
+   */
+  sameOnEveryLens(
+    'W-141',
+    'adds a fetched script beside the theme, so the page goes on working and a host this project ' +
+      'does not control decides what else runs on it',
+    [
+      documentFile(
+        THE_THEME_IS_CARRIED_AND_NOT_FETCHED,
+        `    \`<script>\${THE_THEME_SCRIPT}</script>\`,\n    '<script src="/measure.js"></script>',`,
+      ),
+    ],
+    killed(['nothing-a-page-runs-was-fetched-to-run-it']),
+  ),
+
+  /**
    * **The one cell of this battery written against a guard rather than against a defect somebody
    * would plausibly commit**, and the reason it exists is that nothing reddened that guard at all.
    * `every-pair-below-the-legible-floor-is-one-this-repository-declared` was reported unaccounted for
