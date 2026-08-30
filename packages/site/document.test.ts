@@ -2,7 +2,9 @@ import { describe, it, expect } from 'vitest'
 
 import type { Document, StructuredData } from './document.js'
 import { el, escapedForMarkdown, text, toHtml, toMarkdown, toText, wordsOf } from './document.js'
+import { THE_FONT_ADDRESS } from './font.js'
 import { THE_MARKDOWN_FILE } from './paths.js'
+import { THE_THEME_ATTRIBUTE, THE_THEME_KEY, THE_THEME_SCRIPT } from './theme.js'
 
 /**
  * The three projections, and the escaping that stands between contract prose and each of them.
@@ -25,6 +27,74 @@ const page = (...body: Parameters<typeof el>[2][]): Document => ({
   structuredData: null,
   body,
 })
+
+/**
+ * The blocks that hold the palette, in the order a reader of the sheet meets them.
+ *
+ * **A block is a palette when it declares an accent, and that test is the point rather than a
+ * convenience.** Since ADR-0176 the sheet carries five rules whose selector begins `:root` - the dark
+ * palette, the light one under a media query, the light one under an attribute, and two that set
+ * nothing but `color-scheme`. Matching on the selector would count five and matching on a fixed list
+ * of selectors would be a third statement of the arrangement. What a palette *is* is the thing that
+ * names the roles, and the accent is the role every palette must name exactly once.
+ *
+ * It is one function because two guards ask it, and two spellings of *where the colours are* would be
+ * two opinions about a stylesheet neither of them owns.
+ */
+const palettesIn = (style: string): readonly { selector: string; declares: string }[] =>
+  [...style.matchAll(/(:root[^{]*)\{([^}]*)\}/g)]
+    .map((found) => ({ selector: (found[1] as string).trim(), declares: found[2] as string }))
+    .filter((one) => one.declares.includes('--accent:'))
+
+/**
+ * The three selectors a palette may stand under, in the order the sheet writes them.
+ *
+ * **The selector is carried rather than dropped because a perturbation came back green without it.**
+ * Counting blocks and comparing their contents says nothing about whether anybody can reach one: with
+ * `[data-theme='light']` mistyped on the palette, the count stayed at three, the two light blocks
+ * stayed identical, and every guard here passed while the button set an attribute no palette answered
+ * to. The button would have done nothing, on every page, silently. ADR-0176.
+ */
+const THE_PALETTES_STAND_UNDER: readonly string[] = [
+  ':root',
+  ":root:not([data-theme='dark'])",
+  ":root[data-theme='light']",
+]
+
+/** The sheet as a reader is served it, which is the only form either palette guard reads. */
+const theServedStyle = (): string =>
+  (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
+
+/**
+ * Every pair of this palette a reader is owed 4.5:1 on and does not get it, with what it does get.
+ *
+ * **This is a debt and it is the owner's to settle, which is why it is a list and not a threshold.**
+ * The values are his, read off the artboard ADR-0176 was built from; the readings are this file's own
+ * arithmetic. Eleven pairs, two inks, and the guard below is exact in both directions - a twelfth
+ * cannot arrive in silence, and a row cannot outlive the failure it names.
+ *
+ * `--dim` is the artboard's `faint`, and it is the whole of the dark half and most of the light. It
+ * carries the case identifier, the rail's label, the page you are on and the playground's labels: not
+ * decoration, and not large. ADR-0115 removed a role for measuring 2.64:1 and this one measures 2.64:1.
+ *
+ * `--accent` is the other three, and they are the near miss rather than the failure: 4.47, 4.35 and
+ * 4.22 against 4.5, and only on the three grounds that are not the paper. It clears the floor at
+ * 4.76:1 where most links are, and it is the artboard's own darkened accent - the value this unit took
+ * in order to lift the focus ring off 1.76:1, which is the one correction ADR-0176 made to the design.
+ */
+const BELOW_THE_LEGIBLE_FLOOR: readonly string[] = [
+  'dark: dim on paper is 3.51:1',
+  'dark: dim on wash is 3.36:1',
+  'dark: dim on card is 3.12:1',
+  'dark: dim on target is 3.06:1',
+  'light: dim on paper is 2.81:1',
+  'light: dim on wash is 2.64:1',
+  'light: accent on wash is 4.47:1',
+  'light: dim on card is 2.49:1',
+  'light: accent on card is 4.22:1',
+  'light: dim on target is 2.56:1',
+  'light: accent on target is 4.35:1',
+]
 
 /** A page that does say something about itself to a machine, for the two guards that ask what. */
 const describing = (data: Partial<StructuredData>, ...body: Parameters<typeof el>[2][]): Document => ({
@@ -215,41 +285,105 @@ describe('a page and its two projections', () => {
   })
 
   /**
-   * No external request, no font, and nothing of the page's own that executes. It is a fact about
-   * referencing and a declaration at once, and it is cheap to state and easy to lose - a single tag
-   * added for a metric would take it.
+   * Everything a page goes and gets, which is one file, and it is a face this repository serves.
    *
-   * **It was `not.toMatch(/<script|<link|.../)` and the head now holds a `link`, so the assertion had to
-   * be reopened - which is the most dangerous edit in this unit and is written down as one.** A regular
-   * expression over the served string was an approximant of the claim: what a page must not do is
-   * *fetch* and *execute*, and `rel="alternate"` does neither - it declares that another representation
-   * of this same page exists, which a reader follows or does not. So the claim is now stated in three
-   * parts, each of which is the thing it means.
+   * **This was `a-page-loads-nothing-and-runs-nothing` and both halves of that name went false in one
+   * unit, so it is two guards now with a true name each.** ADR-0176 put Geist on the prose, which is a
+   * fetch, and a theme script in the head, which runs. Keeping the old name over either would have
+   * been the defect ADR-0017 names: falsifying the name and reddening the guard are meant to be the
+   * same event, and a name that has quietly stopped describing its own assertion breaks that.
    *
-   * The criterion for the reopening was that the mutant it existed for stays red, and W-24 - the
-   * stylesheet moved out into a file - is refused by the second part rather than by the first, because
-   * `/site.css` is relative and no absolute address appears. That is checked below on the mutant's own
-   * edit rather than argued.
+   * **The dangerous half is the second assertion and nothing in this unit touched it.** ADR-0115
+   * recorded, in advance, that a self-hosted face would have to reopen this guard *while keeping W-24
+   * refused* - W-24 being the mutant that moves the stylesheet out into a file. W-24 dies on the link
+   * list, not on the `url(`, because `/site.css` is relative and no absolute address appears. So the
+   * face was admitted by widening the first and third assertions and the trap ADR-0115 set was never
+   * approached. That is a property of where the edit landed rather than luck, and it is why the font
+   * is declared inside the stylesheet and not as a `<link rel="preload">`.
+   *
+   * **The `url(` arm went from a denial to an equality, which is the stronger of the two.** It used to
+   * say *no url() anywhere*; it now says *exactly this url(), and no other*. A second face, an image, a
+   * background, a cursor - each of them reddens this, where before only the class of them did. What is
+   * given up is that the shape is no longer impossible, and what is bought is that the one instance is
+   * pinned to an address derived from the bytes it serves.
    *
    * **This guard's population lost 25 007 B when ADR-0141 stopped serving the stylesheet's comments,
    * and the loss is nil.** That is a decision rather than a discovery, because this repository has
    * already paid for a population that shrank while nobody was told - so it is written here where
-   * somebody can disagree with it. The claim is *this page goes and fetches nothing*, and a comment
-   * fetches nothing: what left the sweep was never in the population for what the sweep asserts. A
-   * real `url(` is CSS, it survives the removal, and it is refused exactly as it was before. What
-   * would make this wrong is a served page carrying prose that is not CSS, and there is none.
+   * somebody can disagree with it. The claim is about what a page fetches, and a comment fetches
+   * nothing: what left the sweep was never in the population for what the sweep asserts. A real
+   * `url(` is CSS, it survives the removal, and it is read exactly as it was before.
    */
-  it('a-page-loads-nothing-and-runs-nothing', () => {
+  it('a-page-fetches-nothing-but-the-face-this-repository-serves', () => {
     const html = toHtml(page(el('p', {}, text('x'))))
 
-    // Nothing is fetched: no absolute address, no import, no url() reaching out of the document.
-    expect(html).not.toMatch(/https?:\/\/|@import|url\(/)
-    // The only thing linked is this page's own Markdown, beside it, and a link is not a fetch.
+    // Nothing third-party: no absolute address anywhere, and nothing pulled in by @import.
+    expect(html).not.toMatch(/https?:\/\/|@import/)
+
+    // The only thing linked is this page's own Markdown, beside it, and a link is not a fetch. This
+    // is the assertion W-24 dies on, and the font went nowhere near it.
     expect(html.match(/<link[^>]*>/g)).toEqual([
       `<link rel="alternate" type="text/markdown" href="${THE_MARKDOWN_FILE}">`,
     ])
-    // Nothing of the page's own runs: a page that publishes no structured data carries no script.
-    expect(html).not.toContain('<script')
+
+    // One url(), and it is the face, at the address the site derives from the face's own bytes.
+    expect(html.match(/url\([^)]*\)/g)).toEqual([`url(/${THE_FONT_ADDRESS})`])
+  })
+
+  /**
+   * Nothing a page runs was fetched in order to run it, which is the half of the old claim that the
+   * theme did not take.
+   *
+   * **It is a separate guard because it is a separate claim, and writing the neighbour is what made
+   * that legible.** The old assertion was `not.toContain('<script')`, which is a denial and stops
+   * being sayable the moment one script is right. What was worth keeping underneath it is narrower and
+   * survives intact: a page's behaviour is in the page. Nothing is downloaded to make it work, so
+   * there is no request whose failure leaves a reader with a control that does nothing, and no third
+   * party who can change what this site does after it is served.
+   *
+   * A bare page carries exactly one script, and it is the theme. `theme.ts` carries why it is inline
+   * and in the head rather than in the deferred module with every other control; what matters here is
+   * that it names no source, so it cannot be a fetch. A contract page carries a second, `start.js`,
+   * which is this repository's own module served from this repository's own tree - that one is out of
+   * this guard's population, and `served-modules.test.ts` is where it is answered for. ADR-0176.
+   */
+  it('nothing-a-page-runs-was-fetched-to-run-it', () => {
+    const html = toHtml(page(el('p', {}, text('x'))))
+    const opening = html.match(/<script[^>]*>/g) ?? []
+
+    expect(opening).toHaveLength(1)
+    expect(opening[0]).toBe('<script>')
+    expect(html).toContain(`<script>${THE_THEME_SCRIPT}</script>`)
+  })
+
+  /**
+   * The script that sets the theme and the stylesheet that reads it agree about the two names between
+   * them.
+   *
+   * **The script is written out as text rather than composed from the constants**, because the one
+   * thing a script element must never be is assembled out of values - and the price of that is two
+   * spellings of a key and two of an attribute, in files that do not import each other. This is what
+   * keeps them together: it reads the served script for what it actually says and compares it with
+   * what the stylesheet's selectors and the button's storage call the same things.
+   *
+   * Seen red on the rename it exists for: with `data-theme` in the stylesheet and `data-scheme` in the
+   * script, every page would have served a button that stored a preference nothing read. ADR-0176.
+   */
+  it('the-script-that-sets-the-theme-agrees-with-the-stylesheet-that-reads-it', () => {
+    const html = toHtml(page(el('p', {}, text('x'))))
+    const style = (/<style>([^]*?)<\/style>/.exec(html) ?? [])[1] ?? ''
+    const script = (/<script>([^]*?)<\/script>/.exec(html) ?? [])[1] ?? ''
+
+    // The script writes the attribute the palette's two overrides select on.
+    expect(script).toContain(THE_THEME_ATTRIBUTE)
+    expect(style).toContain(`[${THE_THEME_ATTRIBUTE}='light']`)
+    expect(style).toContain(`[${THE_THEME_ATTRIBUTE}='dark']`)
+
+    // The script reads the key the button writes.
+    expect(script).toContain(THE_THEME_KEY)
+
+    // And it names both themes, so a value stored by the button is one the script will accept back.
+    for (const theme of ['light', 'dark']) expect(script).toContain(`'${theme}'`)
   })
 
   /**
@@ -270,20 +404,57 @@ describe('a page and its two projections', () => {
    * `color: #c0392b` added to `.why`, the fault reads `#c0392b outside the palette`.
    */
   it('every-colour-the-stylesheet-paints-with-is-a-role-it-declared', () => {
-    const style = (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
-    const palettes = [...style.matchAll(/:root\s*\{([^}]*)\}/g)].map((found) => found[1] as string)
+    const style = theServedStyle()
+    const palettes = palettesIn(style)
 
-    // Two and only two: the palette, and the palette again under `prefers-color-scheme: dark`.
-    expect(palettes).toHaveLength(2)
+    // Three and only three: the dark palette, and the light one at each of the two conditions that
+    // can bring it about. ADR-0176 says why the light half is written twice and what holds the two
+    // copies together.
+    expect(palettes).toHaveLength(3)
 
-    // The rules are what is left once the two palettes are taken out, and no colour may survive there
-    // — including one that repeats a palette value, which is a second declaration of the same role.
-    const rules = style.replace(/:root\s*\{[^}]*\}/g, '')
+    // The rules are what is left once every palette is taken out, and no colour may survive there —
+    // including one that repeats a palette value, which is a second declaration of the same role.
+    const rules = style.replace(/:root[^{]*\{[^}]*\}/g, '')
 
     expect(rules.match(/#[0-9a-fA-F]{3,8}/g) ?? [], 'a colour outside the palette').toEqual([])
 
     // One accent per palette, so that a second hue cannot be introduced as a second name.
-    for (const block of palettes) expect(block.match(/--accent:/g) ?? []).toHaveLength(1)
+    for (const one of palettes) expect(one.declares.match(/--accent:/g) ?? []).toHaveLength(1)
+  })
+
+  /**
+   * The palette a reader gets from the button is the palette their system would have given them.
+   *
+   * **It exists because the light half is declared twice and CSS is why.** Light applies under two
+   * independent conditions - the system says light, or the reader pressed the button - and a selector
+   * list cannot cross a media query, so no arrangement of plain CSS states those values once.
+   * `light-dark()` does, and ADR-0176 measured and refused it: it needs Chrome 123 and Safari 17.5
+   * where this sheet's own `:has()` needs Chrome 105, so it would move the floor to May 2024 on two
+   * engines and hand a reader below it a page with no colours at all.
+   *
+   * So the duplication stays and stops being something anybody has to remember. The two blocks are
+   * compared character for character after their whitespace is collapsed, which is the treatment this
+   * repository gives every check that would otherwise depend on where a line was wrapped.
+   *
+   * Seen red on one character: with `--dim` a shade apart between the two blocks, a reader who pressed
+   * the button would get a page a shade different from the one their own system would have painted,
+   * and every other guard here would have been green. ADR-0176.
+   */
+  it('the-palette-a-reader-gets-from-the-button-is-the-palette-their-system-would-have-given-them', () => {
+    const palettes = palettesIn(theServedStyle())
+    const [dark, fromTheSystem, fromTheButton] = palettes
+    const said = (block: { declares: string } | undefined): string =>
+      (block?.declares ?? '').replace(/\s+/g, ' ').trim()
+
+    // Each palette stands where a reader can arrive at it, and the third is where the button sends
+    // them. Without this the two below can be identical and reached by nobody.
+    expect(palettes.map((one) => one.selector)).toEqual(THE_PALETTES_STAND_UNDER)
+
+    expect(said(fromTheSystem), 'the light palette, reached two ways').toBe(said(fromTheButton))
+
+    // And the dark one is a different palette rather than a third copy of the same, which is what
+    // would make the comparison above true and meaningless.
+    expect(said(dark)).not.toBe(said(fromTheSystem))
   })
 
   /**
@@ -368,15 +539,29 @@ describe('a page and its two projections', () => {
   })
 
   /**
-   * Every ink this palette can put on every ground it can paint clears the contrast a reader is owed.
+   * Every pair this palette paints below the contrast a reader is owed is one this repository has
+   * written down, with the reading that puts it there — and there are no others.
    *
-   * **Not born green, and that is the whole argument for it: it would have been red twice today.** The
-   * mock-ups' fourth grey answered 2.64:1 on light paper and 2.37:1 on a case somebody had just
-   * followed a link to, while carrying the case identifier; and the value they draw `dim` at answers
-   * 4.24:1 on that same targeted case. Both were found by reading the built pages in a browser, which
-   * is a thing somebody remembers to do. This is the same reading as arithmetic, and it is arithmetic
-   * because the palette is eight hex values — a browser was needed to *find* the defect and is not
-   * needed to keep it out.
+   * **This guard used to say that there were none, and ADR-0176 is where that stopped being true.**
+   * The claim it made was the stronger one and the repository could keep it while the palette was its
+   * own. The palette is the owner's now, it carries a third grey, and that grey is below the floor:
+   * `--dim` answers 3.51:1 at its best on dark and 2.49:1 at its worst on light, where text under
+   * 24px is owed 4.5:1. Nobody here may quietly retune a colour the owner chose, and nobody here may
+   * publish a guard that says a page is legible when its own arithmetic says otherwise. What is left
+   * is to say exactly which pairs are below the floor and how far.
+   *
+   * **The irony is the reason this is written at length rather than as a list.** ADR-0115 *removed* a
+   * role for this, measured at 2.64:1 on light paper. The role is back, and it measures **2.64:1 on
+   * light wash**. The same figure, eight months apart, in a repository that exists so that figures do
+   * not drift — and it is here rather than only in the record because this is the file somebody opens
+   * when they wonder why the number is allowed.
+   *
+   * **What is given up and what is bought, stated rather than implied.** Given up: the guard no longer
+   * refuses an illegible ink. Bought: it refuses a *new* one, and it refuses a stale declaration -
+   * `toEqual` is exact in both directions, so a pair that drifts by a hundredth reddens, a pair that
+   * appears reddens, and a pair that is repaired without its row being removed reddens too. The debt
+   * is counted rather than carried. It is the shape `unreachableGuards` and `leavesUnanswered` already
+   * have one folder over: a known gap that cannot grow in silence.
    *
    * The two lists are the vocabulary rather than a second statement of it: a ground is a surface a
    * page paints, an ink is something it writes with, and the guard requires every one of them to be
@@ -387,7 +572,7 @@ describe('a page and its two projections', () => {
    * somewhere: `dim` at 11px on a case identifier is the smallest. No exception is made for the
    * accent, which is a link and is read.
    */
-  it('every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible', () => {
+  it('every-pair-below-the-legible-floor-is-one-this-repository-declared', () => {
     const GROUNDS = ['paper', 'wash', 'card', 'target']
     const INKS = ['ink', 'body', 'dim', 'accent']
     /** A line, which owes 3:1 as a non-text distinction and is never a ground or an ink. */
@@ -412,12 +597,13 @@ describe('a page and its two projections', () => {
       return ((lighter as number) + 0.05) / ((darker as number) + 0.05)
     }
 
-    const style = (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
-    const palettes = [...style.matchAll(/:root\s*\{([^}]*)\}/g)].map((found) => found[1] as string)
+    // The first two and not all three: the third is the second, and the guard beside this one is what
+    // says so. Sweeping it as well would report every light failure twice.
+    const palettes = palettesIn(theServedStyle()).slice(0, 2).map((one) => one.declares)
     const failures: string[] = []
 
     for (const [at, block] of palettes.entries()) {
-      const scheme = at === 0 ? 'light' : 'dark'
+      const scheme = at === 0 ? 'dark' : 'light'
       const declared = new Map(
         [...block.matchAll(/--([a-z]+):\s*(#[0-9a-fA-F]{6})/g)].map((found) => [
           found[1] as string,
@@ -447,7 +633,9 @@ describe('a page and its two projections', () => {
       }
     }
 
-    expect(failures, 'an ink a reader cannot read on a ground this palette paints').toEqual([])
+    expect(failures, 'an ink below the floor that this repository has not declared').toEqual(
+      BELOW_THE_LEGIBLE_FLOOR,
+    )
   })
 
   /**

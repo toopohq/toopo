@@ -196,6 +196,7 @@ import { ENDPOINTS, contentTypeOf, pathTo } from '../registry/endpoints.js'
 import type { AddressingClass } from '../registry/response.js'
 import { cacheControlOf, cachePolicyFor } from '../registry/response.js'
 import { THE_BROWSER_GRAPH } from './browser.js'
+import { THE_FONT_ADDRESS } from './font.js'
 import {
   THE_FILES_FOUND_BY_CONVENTION,
   THE_PAGES_THE_SITE_HAS_OF_ITS_OWN,
@@ -283,6 +284,15 @@ const theSpacesTheEmissionWrites = (): ReadonlyMap<string, AddressingClass> => {
     ...THE_PAGES_THE_SITE_HAS_OF_ITS_OWN.flatMap((page) => [named(page), named(markdownOf(page))]),
     ...THE_FILES_FOUND_BY_CONVENTION.map(named),
     ...THE_BROWSER_GRAPH.map(named),
+    /**
+     * The face, which is the only thing this site serves that is addressed by its own digest.
+     *
+     * It is written as the space rather than as the file for the reason `theRuleCovering` encodes: an
+     * address with a segment above it takes a splat, so the day the face is replaced - which moves its
+     * digest, which moves its address - the rule that covers it does not move at all. `font.ts` carries
+     * why a font is `content-addressed` and what that buys a returning reader.
+     */
+    [theRuleCovering(THE_FONT_ADDRESS), 'content-addressed'],
     ...Object.values(THE_SPACE_A_LANGUAGE_LIVES_IN).map((space) => named(`${space}/`)),
     ...ENDPOINTS.flatMap((endpoint) => {
       const address = pathTo(endpoint, EVERY_ADDRESS).slice(1)

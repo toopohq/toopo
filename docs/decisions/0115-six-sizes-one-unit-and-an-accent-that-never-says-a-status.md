@@ -9,7 +9,7 @@ confirmed-by:
   - battery: site
     guard: every-colour-the-stylesheet-paints-with-is-a-role-it-declared
   - battery: site
-    guard: a-page-loads-nothing-and-runs-nothing
+    guard: a-page-fetches-nothing-but-the-face-this-repository-serves
 ---
 
 # Six sizes, one unit, and an accent that never says a status

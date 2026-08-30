@@ -225,7 +225,7 @@ const A_STRING_IS_NOT_READ_FOR_COMMENTS = `    if (character === '"' || characte
       continue
     }`
 
-const THE_LIGHT_PALETTE = `  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;`
+const THE_DARK_PALETTE = `  --paper: #0b0d0e; --wash: #101314; --card: #171b1d; --rule: #1f2426; --edge: #2d3336;`
 
 const THE_SHELL_HAS_NO_CEILING = `.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }`
 
@@ -832,13 +832,13 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
         `    '<link rel="stylesheet" href="/site.css">',`,
       ),
     ],
-    killed(['a-page-loads-nothing-and-runs-nothing']),
+    killed(['a-page-fetches-nothing-but-the-face-this-repository-serves']),
   ),
 
   /**
    * **The one cell of this battery written against a guard rather than against a defect somebody
    * would plausibly commit**, and the reason it exists is that nothing reddened that guard at all.
-   * `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` was reported unaccounted for
+   * `every-pair-below-the-legible-floor-is-one-this-repository-declared` was reported unaccounted for
    * by this battery at `81bf9bc` and at every commit since it was written, measured both ways - and
    * W-24 looked as though it covered it, because it takes the stylesheet out of the page. It does
    * not: with no style element the guard's loop runs zero times and it passes on an empty palette.
@@ -849,16 +849,20 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   sameOnEveryLens(
     'W-24b',
     'lifts the paper a shade, which is the plausible half of a palette edit - a ground that moves is ' +
-      'a taste somebody has, where an ink that moves is a decision. It carries `dim` under 4.5:1 on ' +
-      'every surface at once, and nothing on the rendered page looks wrong: the text is there, the ' +
-      'colours are roles, and the contrast is a number nobody reads off a screen',
+      'a taste somebody has, where an ink that moves is a decision. **What it produces changed with ' +
+      'ADR-0176 and the cell is better for it**: `dim` is already declared below the floor, so this ' +
+      'edit both carries `body` under - 7.47:1 to 3.94:1, an ink that was passing - and moves every ' +
+      'declared `dim` reading off the figure beside it. It reddens the guard in both of that guard\'s ' +
+      'directions at once, where it used to reach only one. Nothing on the rendered page looks ' +
+      'wrong: the text is there, the colours are roles, and the contrast is a number nobody reads ' +
+      'off a screen',
     [
       styleFile(
-        THE_LIGHT_PALETTE,
-        '  --paper: #d8d5cf; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;',
+        THE_DARK_PALETTE,
+        '  --paper: #3a4245; --wash: #101314; --card: #171b1d; --rule: #1f2426; --edge: #2d3336;',
       ),
     ],
-    killed(['every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible']),
+    killed(['every-pair-below-the-legible-floor-is-one-this-repository-declared']),
   ),
 
   /**
@@ -1999,7 +2003,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       ),
     ],
     killed([
-      'only-the-two-content-addressed-endpoints-are-cached-for-a-year',
+      'only-what-is-addressed-by-its-content-is-cached-for-a-year',
       'every-other-answer-is-revalidated-before-it-is-used',
     ]),
   ),
@@ -2387,7 +2391,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   /**
    * **The comment a comparison of syntax trees cannot see removed.** A source-map directive or a
    * purity annotation leaves the tree identical, so the total guard is blind exactly where the
-   * consequence is not syntactic. The answer is the one `a-page-loads-nothing-and-runs-nothing` gives
+   * consequence is not syntactic. The answer is the one `a-page-fetches-nothing-but-the-face-this-repository-serves` gives
    * about an address in a stylesheet: refuse the shape rather than detect the loss.
    *
    * The cell writes one into a module, which is the event that guard is born green waiting for.

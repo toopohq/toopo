@@ -1,5 +1,11 @@
 /**
- * The visual system, as the one string every page carries and nothing else loads.
+ * The visual system, as the one string every page carries.
+ *
+ * **That sentence used to end *and nothing else loads*, and ADR-0176 is what made it false.** The
+ * sheet now opens on an `@font-face` and a page therefore fetches one file: Geist's latin subset,
+ * same-origin, addressed by its own digest. It is the only thing a page goes and gets, it is 29 400 B,
+ * and the prose is the whole of what is set in it. `font.ts` holds the address, the licence and the
+ * measurement that decided the monospace is not part of the bargain.
  *
  * **It is a module of its own because `document.ts` reached the ceiling this repository sets for a
  * file, and because the split was already there**: that file holds a node model and three projections
@@ -41,8 +47,12 @@
  * length holds the value it holds, it is what the header of every section below exists for, and it
  * costs a reader nothing at all.
  *
- * No image, and no web font: ADR-0115 carries what the second refusal costs and what would reverse
- * it, measured rather than assumed.
+ * No image. **One web font, and that clause used to read *and no web font*.** ADR-0115 refused one and
+ * named the condition that would reopen it - coverage, and not weight. ADR-0176 measured a candidate
+ * against that condition and it closed half of it: Geist covers every code point this site's prose
+ * carries, so the prose is set in it, and Geist Mono is served in no subset that carries U+2192, so
+ * the monospace is not. The face is same-origin, 29 400 B, and addressed by its own digest. `font.ts`
+ * is where that argument lives, beside the bytes it is about.
  *
  * **This paragraph used to end "and no script", and the playground took that clause and not the one
  * after it.** What it was actually protecting survives untouched: *a contract page that needs
@@ -64,20 +74,23 @@
  * The colours are named for what they *do* - paper, wash, card, rule, edge, ink, body, dim - so that
  * the dark palette is the same document with different values and never a second stylesheet.
  *
- * **There are two greys and not three, and a measurement is what removed the third.** The mock-ups
- * carry a `faint` below `dim`, and it was carrying the case identifier, the rail's label and the page
- * you are on. Read in a browser: 2.64:1 on light paper, 3.37:1 on dark, and 2.37:1 on a case somebody
- * had just followed a link to - against the 4.5:1 that text under 24px owes a reader. `dim` itself is
- * 5.45:1, so there was no room underneath it for a fourth legible step, and a colour that is only
- * *nearly* legible is worse than one step fewer. What tells the identifier apart from the argument
- * beside it is now the size and the face, which is what a scale is for.
+ * **There are two greys and not three, and this is the paragraph the redesign walked back into.**
+ * ADR-0115 removed a `faint` below `dim` on a reading: it carried the case identifier, the rail's
+ * label and the page you are on, and answered 2.64:1 on light paper against the 4.5:1 that text under
+ * 24px owes a reader. `dim` was 5.45:1, so there was no room underneath it for a fourth legible step,
+ * and a colour that is only *nearly* legible is worse than one step fewer.
  *
- * `dim` itself is a shade lighter in the dark palette than the mock-ups draw it, for the same reason
- * and on the same reading: `#8b857d` clears 4.5:1 on paper and on wash and answers **4.24:1 on a case
- * somebody has just followed a link to**, which is the one row where a reader is certain to be looking.
- * A ground that lifts is a ground the ink has to lift with.
- * `system-ui` and `ui-monospace` first, so the page is set in whatever the reader's own system uses
- * and downloads nothing.
+ * **The palette above is the owner's and its third grey is back.** Measured at ADR-0176 over the
+ * artboard's own values, `--dim` - the artboard calls it `faint` - answers **3.51:1 on dark paper and
+ * 2.81:1 on light**, and it is the third grey of a three-grey palette rather than a fourth step under
+ * two. So the role that was removed for measuring 2.64:1 has returned measuring 2.64:1 on wash, eight
+ * months later, in a repository that exists so that figures do not drift. It is recorded and not
+ * corrected: the design is the owner's, he has not ruled on this pair, and a stylesheet quietly
+ * disagreeing with an artboard is worse than a disagreement somebody can read. ADR-0176 carries the
+ * whole table and the two pairs beside it.
+ *
+ * The prose is set in Geist since ADR-0176 and the monospace is still whatever the reader's own system
+ * uses, which is the half of *downloads nothing* that survived.
  *
  * ---------------------------------------------------------------------------
  * No line on this site is bounded, and what the measure still sizes
@@ -218,7 +231,11 @@
  * are squeezed by at most 5px. A switch that lands on the micron is not a derived threshold, it is one
  * nobody controls - ADR-0134 refused a candidate for exactly that.
  */
+
+import { THE_FONT_FACE, THE_SANS_STACK } from './font.js'
+
 export const STYLE = `
+${THE_FONT_FACE}
 :root {
   --s: .25rem;
   --s2: calc(var(--s) * 2); --s3: calc(var(--s) * 3); --s4: calc(var(--s) * 4);
@@ -228,9 +245,20 @@ export const STYLE = `
 
   --t1: 1.625rem; --t2: 1.1875rem; --t3: 1rem; --t4: .9375rem; --t5: .8125rem; --t6: .6875rem;
 
-  --paper: #fbfaf8; --wash: #f3f1ec; --card: #f6f4f0; --rule: #e2ded7; --edge: #d3cfc7;
-  --ink: #1c1b19; --body: #3a3833; --dim: #6b6660;
-  --accent: #a0491d; --target: #f6ece4;
+  /* The dark palette, and it is the default rather than the exception since ADR-0176. The values
+     are the owner's, read off the artboard; the role names are this repository's, because ADR-0115
+     decided that a colour is named for what it does and the artboard names its colours for what
+     they are. The two vocabularies map one to one - bg, bg2, bg3, line, line2, text, muted, faint
+     become paper, wash, card, rule, edge, ink, body, dim - so nothing was invented and nothing was
+     dropped. */
+  /* --target is the artboard's accent-dim, which it declares translucent. It is written opaque here
+     and it is the same colour a reader is shown: rgba(63, 214, 183, .09) composed over the paper it
+     is painted on. A ground has to be opaque for the legibility rule to mean anything - an ink read
+     against a translucent token is read against a colour nobody sees - so the composition is done
+     once, here, rather than left for a guard to guess at. */
+  --paper: #0b0d0e; --wash: #101314; --card: #171b1d; --rule: #1f2426; --edge: #2d3336;
+  --ink: #e6e9ea; --body: #98a2a6; --dim: #606a6e;
+  --accent: #3fd6b7; --target: #101f1d;
 
   /* The span a line stays readable across, both ends of it, and what one character of this face
      costs. Since ADR-0134 neither end bounds a line: the top sizes three boxes that are not lines
@@ -263,7 +291,12 @@ export const STYLE = `
      two is a judgement that will be taken again, and this is the whole of where it is taken. */
   --a-contract-in-a-list: var(--measure);
 
-  --sans: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  /* The prose is Geist and the monospace is the system's, which is one decision and not two halves
+     of an unfinished one. ADR-0115 refused a web font on coverage and named what would reopen it;
+     Geist Mono fails that condition on its first term, so the face this site downloads is asked for
+     the prose alone - where the whole population above U+007F is three code points it covers.
+     font.ts carries the measurement and what a second face would cost. */
+  --sans: ${THE_SANS_STACK};
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Declared because two rules need it and one of them is arithmetic. */
@@ -298,20 +331,62 @@ export const STYLE = `
     (var(--the-menu-at-its-tallest) - 1) * var(--s2)
   );
 
-  color-scheme: light dark;
+  /* Dark first, because it is the palette declared above and the one a reader gets when their
+     system has no preference to state. The two overrides below restate it for the case where a
+     reader has pressed the button, so that a form control and the page agree about which way round
+     they are. */
+  color-scheme: dark light;
 
   /* On the scroll container and not on each target: a list of selectors is a list that forgets
      one, and this one had - the playground section carried no offset at all. The bar, and the
      standing gap off it that a heading already takes from what precedes it. */
   scroll-padding-top: calc(var(--the-sticky-bar) + var(--s3));
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #171614; --wash: #201f1c; --card: #201f1c; --rule: #34322e; --edge: #45423c;
-    --ink: #e8e5df; --body: #c5c0b8; --dim: #918b83;
-    --accent: #e2905d; --target: #2a231d;
+/* The light palette, which a reader reaches two ways and which is therefore written twice.
+   ---------------------------------------------------------------------------
+
+   **The duplication is the language's and not a shortcut, and it is guarded rather than watched.**
+   Light has to apply under two independent conditions - the reader's system says light, or the
+   reader pressed the button - and a selector list cannot span a media query, so no arrangement of
+   plain CSS states these values once. light-dark() does, and it was measured and refused: it needs
+   Chrome 123 and Safari 17.5, where this sheet's own :has() already needs Firefox 121 and
+   Chrome 105, so it would raise the floor to May 2024 on two engines to save twelve declarations -
+   and a reader below that floor gets a page with no colours at all rather than a page that degrades.
+   What removes the risk instead is the-palette-a-reader-gets-from-the-button-is-the-palette-their-system-would-have-given-them,
+   which compares the two blocks and reddens on any character between them. ADR-0176.
+
+   **Nothing here is needed to read.** The first block is a media query, so a reader running no
+   JavaScript at all gets their own system's palette; the second is an attribute nothing sets unless
+   somebody presses a button. :not([data-theme='dark']) is what lets the dark override work without
+   a third copy: a reader who asked for dark falls back to :root above, which is already dark.
+
+   **--accent is #0c7f68 here and #3fd6b7 above, and that difference is the one correction this
+   unit made to the artboard.** The artboard declares two accent tokens - a vivid one it paints
+   buttons and rings with, and a darkened one it sets accent *text* in - and leaves the vivid one
+   unchanged in light. This sheet has had one accent role since ADR-0115 and it carries both jobs:
+   a { color: var(--accent) } and :focus-visible { outline: 2px solid var(--accent) }. Left
+   vivid, the ring measured **1.76:1** against light paper where WCAG 1.4.11 owes a non-text
+   indicator 3:1 - keyboard focus invisible on a light system. The value taken is the artboard's own
+   darkened one, so the fix introduces no colour the owner did not choose: the ring is **4.76:1** and
+   a link clears 4.5:1 on paper. What it does not clear is 4.5:1 on wash and card - 4.47 and 4.22 -
+   and that is the artboard's value, recorded in ADR-0176 rather than changed here. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme='dark']) {
+    --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
+    --ink: #151a1b; --body: #5b6569; --dim: #8f999d;
+    --accent: #0c7f68; --target: #e7f3f1;
   }
 }
+:root[data-theme='light'] {
+  --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
+  --ink: #151a1b; --body: #5b6569; --dim: #8f999d;
+  --accent: #0c7f68; --target: #e7f3f1;
+}
+/* Two rules that carry no colour, so the button cannot introduce one. They exist so that a reader
+   who has overridden their system gets form controls, scrollbars and a caret on the same side of the
+   page as the palette. */
+:root[data-theme='light'] { color-scheme: light }
+:root[data-theme='dark'] { color-scheme: dark }
 * { box-sizing: border-box }
 /* A full-bleed column: one gutter, the page, the same gutter, and the two elements that lay
    themselves out span the whole width. It is one declaration rather than a wrapper on every page.
@@ -449,6 +524,23 @@ ul.menu {
 ul.menu a { color: var(--body); text-decoration: none }
 ul.menu a:hover { color: var(--accent) }
 ul.menu .here { color: var(--dim) }
+
+/* The theme override, which is empty until a script fills it and is therefore a box with no size
+   of its own. It is styled as the search field is styled - the same hairline, the same rule colour -
+   because it sits beside it and the two are the only controls the masthead has. The word inside is
+   set in the mono face for the reason every other one-word control on this site is: it is a token
+   and not a sentence.
+
+   The button is served by nobody. A reader with no JavaScript meets this element empty, which is
+   what the slot is for, and gets their theme from prefers-color-scheme instead. ADR-0176. */
+.masthead .theme { display: flex; align-items: center }
+.theme-button {
+  font: inherit; font-family: var(--mono); font-size: var(--t6); line-height: var(--the-line);
+  color: var(--body); background: var(--paper);
+  border: var(--the-hairline) solid var(--rule); border-radius: 6px;
+  padding: 0 var(--s2); cursor: pointer;
+}
+.theme-button:hover { color: var(--ink); border-color: var(--edge) }
 
 /* The field is a phrase and never a paragraph, so it is the shortest line this palette declares -
    a length already argued for as one somebody reads across, rather than a width chosen for a box.

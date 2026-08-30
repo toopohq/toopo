@@ -118,6 +118,16 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
     ),
     el('div', { class: 'search', 'data-search': JSON.stringify(whereTheCatalogueIs(own)) }),
     el('ul', { class: 'menu' }, ...menu.map((entry) => destination(own, entry.page, entry.label))),
+    /**
+     * Where the theme button is built, and it is served empty for the reason the search field is.
+     *
+     * A reader with no JavaScript meets a masthead with nothing extra in it rather than a control
+     * that does nothing, which is what `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing`
+     * asks of every control on this site. There is nothing to fall back to here and that is the point:
+     * the palette answers `prefers-color-scheme` in CSS, so a reader who never gets this button still
+     * gets their own system's theme. It is an override and never a way in. ADR-0176.
+     */
+    el('div', { class: 'theme' }),
   )
 
 /**

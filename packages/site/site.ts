@@ -44,6 +44,7 @@ import { theMenu } from './chrome.js'
 import { contractPage } from './contract-page.js'
 import { domainPage } from './domain-page.js'
 import { domainsOf, heldByTheRegistry } from './catalogue.js'
+import { THE_FONT_ADDRESS, THE_FONT_BYTES } from './font.js'
 import { theCrawlerFiles } from './indexing.js'
 import { localSource } from './local-source.js'
 import { methodologyPage } from './methodology-page.js'
@@ -180,6 +181,12 @@ const running = (own: string, page: Document): Document => ({
  * its output folder and writes this map, so a file left next to the tree by hand would be deleted on
  * the first build or, worse, survive as a second statement of a policy that had moved. What tells the
  * host how to serve the tree is part of the tree.
+ *
+ * **The face is here for the same reason and it is the one entry that is not text.** The map has
+ * carried `string | Buffer` since the answers arrived, so nothing about the type changed; what did is
+ * that a reader of this list can no longer assume every value is something they could open. It is a
+ * single entry rather than a set because there is one face - ADR-0176 puts Geist on the prose and
+ * leaves the monospace to the system stack, so a second face is a decision and not an addition.
  */
 export const thePublishedTree = (
   pages: ReadonlyMap<string, Document>,
@@ -193,6 +200,7 @@ export const thePublishedTree = (
     ...theCrawlerFilesOf(pages),
     [THE_HEADERS_FILE, renderHeaders(theHeaderRules())],
     [THE_NOT_FOUND_FILE, toHtml(notFoundPage())],
+    [THE_FONT_ADDRESS, THE_FONT_BYTES],
     ...answers,
   ])
 

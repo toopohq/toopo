@@ -62,10 +62,15 @@ import {
   theArgumentsIn,
   theCommandWrittenFor,
   theCopyLabelFor,
+  theOtherTheme,
   theRefusalShownFor,
+  theThemeControlSays,
+  theThemeLabelFor,
   theWayAlreadyChosen,
   whatThePanelShows,
 } from './what-a-control-says.js'
+import type { Theme } from './theme.js'
+import { THE_THEME_ATTRIBUTE, THE_THEME_KEY, isATheme } from './theme.js'
 
 /** What the page hands over in `data-playground`, written by `contract-page.ts`. */
 type ThePlayground = {
@@ -197,6 +202,65 @@ export const managerControl = (): void => {
 
   head.append(list)
   install.after(refusal)
+}
+
+/**
+ * The theme button, built into the slot the masthead serves.
+ *
+ * **It is an override and never a way in.** The palette is dark by declaration and light under
+ * `prefers-color-scheme: light`, both in CSS, so a reader who never receives this file still gets
+ * their own system's theme and every word of the page. What this adds is the case the media query
+ * cannot answer: a reader whose system says one thing and who wants the other. ADR-0176.
+ *
+ * **What the button shows is derived and never remembered.** The theme in force is the attribute if
+ * the head script found one stored, and otherwise whatever the media query says - the same two
+ * conditions, in the same order, as the stylesheet. A copy of the answer kept in a variable here
+ * would be a third statement of it, and the first thing it would do is disagree with the page after
+ * a reader changed their system setting in another window.
+ *
+ * That last case is why the listener exists rather than for tidiness: with nothing stored, changing
+ * the system preference repaints the page through the media query and the button would go on naming
+ * the destination it was built with. It would be a control lying about what pressing it does.
+ */
+export const themeControl = (): void => {
+  const slot = document.querySelector('.masthead .theme')
+  if (!(slot instanceof HTMLElement)) return
+
+  const asked = window.matchMedia('(prefers-color-scheme: light)')
+
+  const inForce = (): Theme => {
+    const overridden = document.documentElement.getAttribute(THE_THEME_ATTRIBUTE)
+
+    return isATheme(overridden) ? overridden : asked.matches ? 'light' : 'dark'
+  }
+
+  const button = document.createElement('button')
+  button.type = 'button'
+  button.className = 'theme-button'
+
+  const show = (): void => {
+    const goingTo = theOtherTheme(inForce())
+
+    button.textContent = theThemeControlSays(goingTo)
+    button.setAttribute('aria-label', theThemeLabelFor(goingTo))
+  }
+
+  button.addEventListener('click', () => {
+    const goingTo = theOtherTheme(inForce())
+
+    document.documentElement.setAttribute(THE_THEME_ATTRIBUTE, goingTo)
+    try {
+      localStorage.setItem(THE_THEME_KEY, goingTo)
+    } catch {
+      // A browser with storage disabled still gets the theme for this page, and not for the next.
+    }
+    show()
+  })
+
+  asked.addEventListener('change', show)
+
+  show()
+  slot.append(button)
 }
 
 /**
@@ -470,6 +534,7 @@ export const playgroundControl = async (): Promise<void> => {
 const start = async (): Promise<void> => {
   copyControl()
   managerControl()
+  themeControl()
   searchControl(arrivingOnce(overHttp))
 
   await playgroundControl()

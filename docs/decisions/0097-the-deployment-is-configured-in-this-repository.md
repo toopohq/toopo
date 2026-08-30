@@ -16,7 +16,7 @@ confirmed-by:
   - battery: site
     guard: every-endpoint-carries-a-rule-at-an-address-that-names-it
   - battery: site
-    guard: only-the-two-content-addressed-endpoints-are-cached-for-a-year
+    guard: only-what-is-addressed-by-its-content-is-cached-for-a-year
   - battery: site
     guard: every-other-answer-is-revalidated-before-it-is-used
   - battery: site
@@ -47,7 +47,7 @@ found* holds as taken**, and the entry it left open is what ADR-0170 closes.
 than a name: W-78 misspells an endpoint's pattern, and while that pattern carried the cache rule it
 took the year policy with it. The policy is a space's now, so `/blob/*` keeps its year and only the
 type goes missing - W-78 reddens `every-endpoint-tells-the-host-what-its-answers-are` where it used to
-redden `only-the-two-content-addressed-endpoints-are-cached-for-a-year`. The table is left as it was
+redden `only-what-is-addressed-by-its-content-is-cached-for-a-year`. The table is left as it was
 read at `5547bcb`; ADR-0170 carries the reading at `6a73bc4` and the battery carries the pins.
 
 ## Context and Problem Statement
@@ -202,7 +202,7 @@ Read off `npm run battery`, at `5547bcb`:
 | `a-named-answer-is-public-and-revalidated-before-every-use` | I-59, I-60 |
 | `every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not` | I-58, I-59, I-60 |
 | `every-endpoint-carries-a-rule-at-an-address-that-names-it` | W-78 |
-| `only-the-two-content-addressed-endpoints-are-cached-for-a-year` | W-78, W-79 |
+| `only-what-is-addressed-by-its-content-is-cached-for-a-year` | W-78, W-79 |
 | `every-other-answer-is-revalidated-before-it-is-used` | W-79 |
 | `the-deployment-is-closed-to-robots-and-the-declared-origin-is-not` | W-80 |
 | `the-rendering-carries-every-rule-with-its-headers-indented-beneath-it` | W-81 |

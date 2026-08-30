@@ -44,6 +44,7 @@
 
 import { THE_MARKDOWN_FILE } from './paths.js'
 import { THE_SERVED_STYLESHEET } from './served-stylesheet.js'
+import { THE_THEME_SCRIPT } from './theme.js'
 
 export type Attributes = Readonly<Record<string, string>>
 
@@ -324,13 +325,26 @@ const asJsonLd = (data: StructuredData): string =>
 const THE_ALTERNATE_LINK = `<link rel="alternate" type="text/markdown" href="${THE_MARKDOWN_FILE}">`
 
 /**
- * The head of a page, and the one thing worth saying about it: **it names nothing a browser has to go
- * and fetch.** No stylesheet link, no font, no script but the playground's own module, no image.
+ * The head of a page, and what is worth saying about it is now two things rather than one.
  *
- * That is ADR-0115's decision arriving here rather than a habit of this file. The system it decides
- * lives in `style.ts`; what is left of it at this end is the `style` element, which is the whole
- * reason the rest of that record can be true of a page served once from a static host.
- * `a-page-loads-nothing-and-runs-nothing` is what holds it.
+ * **It names one thing a browser has to go and fetch, and it is a face.** That sentence read *nothing*
+ * until ADR-0176: no stylesheet link, no font, no script but the playground's own module, no image.
+ * What changed is the font, and the shape of the change is smaller than the sentence makes it sound -
+ * the fetch is declared inside the stylesheet rather than by an element here, so the head still names
+ * one link and it is still this page's own Markdown. That link being the only one is what refuses W-24,
+ * the stylesheet moved out into a file, and nothing in this unit went near it.
+ *
+ * **It carries one script, inline, and it is the theme.** `theme.ts` holds why it is here rather than
+ * in the deferred module beside every other control: it sets an attribute before the first paint, and
+ * a reader who chose a theme against their system would otherwise watch the page turn on every
+ * navigation. It fetches nothing, and it is not needed to read - the palette answers
+ * `prefers-color-scheme` in CSS, so a reader with no JavaScript gets their own system's theme.
+ *
+ * That is ADR-0115's decision arriving here, half kept and half overruled, rather than a habit of this
+ * file. The system it decides lives in `style.ts`; what is left of it at this end is the `style`
+ * element, which is the whole reason the rest of that record can be true of a page served once from a
+ * static host. `a-page-loads-nothing-and-runs-nothing` is what holds the part that stands, and it
+ * names the two fetches this page makes rather than denying that it makes any.
  *
  * **The sheet arrives here already stripped of its prose, and this file does not know that.** What
  * `served-stylesheet.ts` hands over is one string, exactly as `style.ts` used to hand one over; the
@@ -348,6 +362,7 @@ export const toHtml = (document: Document): string =>
     `<meta name="description" content="${escapeAttribute(document.description)}">`,
     ...(document.servedBesideItsMarkdown ? [THE_ALTERNATE_LINK] : []),
     ...(document.structuredData === null ? [] : [asJsonLd(document.structuredData)]),
+    `<script>${THE_THEME_SCRIPT}</script>`,
     `<style>${THE_SERVED_STYLESHEET}</style>`,
     '</head>',
     '<body>',

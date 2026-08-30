@@ -241,12 +241,12 @@ failed ones:
 | mutant | red on, and on nothing else |
 | --- | --- |
 | W-78 | `every-endpoint-carries-a-rule-at-an-address-that-names-it`, `every-endpoint-tells-the-host-what-its-answers-are`, `every-answer-in-the-tree-falls-under-the-rule-for-its-own-endpoint` |
-| W-79 | `only-the-two-content-addressed-endpoints-are-cached-for-a-year`, `every-other-answer-is-revalidated-before-it-is-used` |
+| W-79 | `only-what-is-addressed-by-its-content-is-cached-for-a-year`, `every-other-answer-is-revalidated-before-it-is-used` |
 | W-134 | `every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose` |
 | W-135 | `every-address-is-told-each-thing-once` |
 
 **W-78 lost a guard and gained one, and both halves are the shape of this change.** It used to redden
-`only-the-two-content-addressed-endpoints-are-cached-for-a-year`, because misspelling an endpoint's
+`only-what-is-addressed-by-its-content-is-cached-for-a-year`, because misspelling an endpoint's
 pattern took its cache rule with it; the cache rule is a space's now, so `/blob/*` keeps its year while
 `/blobs/*` carries the type. What it reddens instead is
 `every-endpoint-tells-the-host-what-its-answers-are`, which had never been pinned to it at all.

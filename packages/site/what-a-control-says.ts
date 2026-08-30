@@ -53,6 +53,7 @@ import type { AWayToRunIt } from '../registry/address.js'
 import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import type { Result, Search } from '../registry/search.js'
 import type { WhereTheCatalogueIs } from './searching.js'
+import type { Theme } from './theme.js'
 
 // ---------------------------------------------------------------------------
 // The copy control beside the install command
@@ -84,6 +85,41 @@ export const THE_COPY_CONTROL_SAYS = {
  * it, and a label captured at build time would go on naming the first spelling afterwards.
  */
 export const theCopyLabelFor = (command: string): string => `Copy ${command} to the clipboard`
+
+// ---------------------------------------------------------------------------
+// The theme
+// ---------------------------------------------------------------------------
+
+/**
+ * What the theme button carries, which is where pressing it goes and never where the reader is.
+ *
+ * **A control that names its own current state is one a reader has to guess the verb of.** *dark*,
+ * on a page that is already dark, is either a label or a destination and nothing on the button says
+ * which. Naming the destination makes the press readable without a second word: the button says
+ * `light`, and pressing it gives you light.
+ *
+ * It is a word and never an icon, for the reason the copy control's three words are words: a sun and
+ * a moon are a claim about what a reader will recognise, and this site has no other pictogram to
+ * teach them from. It is also what survives `toText` - the masthead is in every projection of every
+ * page, and a glyph in a font this site does not ship is a box in half of them.
+ */
+export const theThemeControlSays = (goingTo: Theme): Theme => goingTo
+
+/**
+ * What a screen reader is told the button does, spelled as the action rather than as the word on it.
+ *
+ * The visible word is a noun standing where a verb is understood, which is fine for somebody who can
+ * see the page it sits on and thin for somebody who meets it in a list of controls.
+ */
+export const theThemeLabelFor = (goingTo: Theme): string => `Use the ${goingTo} theme`
+
+/**
+ * The theme a press moves to, from the one the reader is looking at.
+ *
+ * Total over the union by construction rather than by a default arm: there are two themes and this is
+ * the other one, so a third would not compile here rather than falling silently to `dark`.
+ */
+export const theOtherTheme = (from: Theme): Theme => (from === 'dark' ? 'light' : 'dark')
 
 // ---------------------------------------------------------------------------
 // The choice of package manager

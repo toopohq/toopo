@@ -175,25 +175,46 @@ describe('what a crawler reads', () => {
   /**
    * Nothing about a second domain reaches this repository: a name that redirects is a fact about DNS.
    *
-   * **Three hosts are admitted and none of them is an address of this site**, which is the distinction
+   * **Five hosts are admitted and none of them is an address of this site**, which is the distinction
    * the guard is about rather than a list of exceptions. `toopo.dev` is where the site lives.
    * `www.sitemaps.org` and `schema.org` are the identifiers of two vocabularies: neither is ever
-   * fetched - `a-page-loads-nothing-and-runs-nothing` refuses any absolute address in a served page -
-   * and JSON-LD requires that exact IRI as the value of `@context`, so writing a different one would
-   * publish structured data no consumer reads.
+   * fetched - no served page carries an absolute address, which is the first thing
+   * `a-page-loads-nothing-and-runs-nothing` reads - and JSON-LD requires that exact IRI as the value of
+   * `@context`, so writing a different one would publish structured data no consumer reads.
+   *
+   * **The two that arrived with the face are each required rather than convenient, and that is why
+   * they are admitted rather than deleted.** `geist.ts` redistributes a font under the SIL Open Font
+   * License, whose clause 2 requires the copyright notice to travel with any copy - and the notice as
+   * its authors published it names their own repository, on `github.com`, inside the parentheses.
+   * Editing a host out of a copyright notice is modifying the notice. `fonts.gstatic.com` is where the
+   * exact bytes in that module came from, and it is what makes the digest beside them checkable: a
+   * reader who wants to know that this repository did not alter a typeface fetches that address and
+   * compares. Both are provenance, which is the opposite of a second name for this catalogue.
+   *
+   * **This guard caught its own comment on the first run, which is worth a sentence.** The paragraph
+   * above quoted the copyright notice in full, absolute address and all, and the sweep reads every
+   * `.ts` in this folder including this one. It is the rule holding against the person writing the
+   * exemption for it. ADR-0176.
    *
    * What stays refused is what the guard was written for: a second name for this catalogue, in code or
    * in a comment, which is one fact written twice with the copy in prose being the one nobody edits.
    */
   it('the-generator-knows-of-no-domain-but-the-one-it-publishes-on', () => {
     const VOCABULARIES = ['www.sitemaps.org', 'schema.org']
+    /** Where the face came from, and who holds its licence. `geist.ts` carries both and needs both. */
+    const THE_FACES_PROVENANCE = ['fonts.gstatic.com', 'github.com']
 
     const elsewhere = readdirSync(HERE)
       .filter((name) => name.endsWith('.ts'))
       .flatMap((name) =>
         [...readFileSync(join(HERE, name), 'utf8').matchAll(/https?:\/\/([\w.-]+)/g)]
           .map((match) => match[1] ?? '')
-          .filter((host) => host !== 'toopo.dev' && !VOCABULARIES.includes(host))
+          .filter(
+            (host) =>
+              host !== 'toopo.dev' &&
+              !VOCABULARIES.includes(host) &&
+              !(name === 'geist.ts' && THE_FACES_PROVENANCE.includes(host)),
+          )
           .map((host) => `${name} names ${host}`),
       )
 

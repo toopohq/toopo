@@ -11,7 +11,7 @@ confirmed-by:
   - battery: site
     guard: both-the-published-shape-and-the-preview-shape-are-closed
   - battery: site
-    guard: only-the-two-content-addressed-endpoints-are-cached-for-a-year
+    guard: only-what-is-addressed-by-its-content-is-cached-for-a-year
 ---
 
 # The site moves to the mechanism that serves the address it is given

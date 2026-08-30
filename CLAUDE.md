@@ -216,7 +216,8 @@ ADR-0141.
 
 **And it named a class this repository had not carried: a false-only region — a part of a guard's
 population where no true verdict is reachable and a false one is.** `a-page-loads-nothing-and-runs-nothing`
-refuses `url(` anywhere in a served page, comments included, so on the 25 007 B of comment it swept
+— renamed at ADR-0176, when both halves of that name went false in one unit —
+refused `url(` anywhere in a served page, comments included, so on the 25 007 B of comment it swept
 **a true positive was impossible and a false positive was possible**: a `url(` inside a CSS comment
 fetches nothing, so the guard could never have been right to fire there, and had anybody written one it
 would have fired and been wrong. Measured over the seventy-five comments: zero `url(` and zero `http`.
@@ -348,6 +349,48 @@ changed prose and nothing else, took **23 min 35 s on the same 134 cells**, so t
 runs of identical work is nearly twice that residue. **The commit carries 28 B and it was measured
 before the Escape repair was written** - the method was sound and the moment was not, which is
 ADR-0141's lesson arriving on a second unit. ADR-0165.
+
+**The site is being redesigned in four units and this is the first, the chassis — and what decided its
+hardest question was a condition somebody wrote down a year in advance.** ADR-0115 refused a web font
+*on coverage rather than on weight*, and named what would reopen it: *a monospace face that renders
+U+2192 and the scripts this catalogue settles cases on*. The owner's design asks for Geist and Geist
+Mono. **Measured, Geist Mono is served in no subset that carries U+2192** — it has the same `latin`
+block Plex had, U+2191 and U+2193 and not the arrow between them — and the emitted tree serves
+**241 of that arrow, over 51 distinct uncovered code points and 373 occurrences**. So the prose is set
+in Geist, self-hosted, one variable file of 29 400 B addressed by its own digest; the monospace is the
+system's, as it was. **The reading that settled the shape is that the two populations agree**: swept
+over all text and over `<code>` and `<pre>` alone, the uncovered count is the same, so every character
+the face cannot draw is already inside a monospace element and none is in prose. The archive is
+untouched — `files: ["dist"]` keeps `packages/site/` out of it — and the 73 answers do not move.
+
+**The property that fell is named, and the half that was load-bearing never was approached.**
+`a-page-loads-nothing-and-runs-nothing` made three assertions; ADR-0115 had recorded, in advance, that
+a face would have to reopen it *while keeping W-24 refused* — W-24 being the stylesheet moved out into
+a file. **W-24 dies on the link list and not on the `url(`**, so admitting the face went nowhere near
+it, which is why the font is declared inside the sheet and why there is deliberately no
+`<link rel="preload">`. Both halves of that name went false in one unit, so it is two guards now, and
+its `url(` arm got *stronger* in the trade: it said *no url() anywhere* and says *exactly this one*.
+The theme button ships — ADR-0115 refused one and named no reopening condition for it, so that half is
+recorded as an **overruling** rather than a discovery — and nothing is needed to read: the palette is
+dark by declaration and light under `prefers-color-scheme`, both in CSS. `light-dark()` would have
+written each colour once and was refused on a measurement, because it moves the Chrome and Safari floor
+to May 2024 where this sheet's own `:has()` already needs Firefox 121; the duplication it would have
+removed is compared by a guard instead. ADR-0176.
+
+**And the repository caught the redesign putting back a role it had removed for the same reason, at
+the same number.** ADR-0115 deleted a grey called `faint` because it measured 2.64:1 on light paper.
+The artboard reintroduces it and it measures **2.64:1 on light wash** — the same figure eight months
+later, in a repository that exists so that figures do not drift, found by running the arithmetic and
+by nobody remembering. **Eleven pairs of the owner's palette are below 4.5:1**, seven of them that one
+ink, and three are the accent missing by a twentieth. They are not corrected: the design is the
+owner's and he has not ruled. What *is* corrected is the focus ring, which measured **1.76:1** against
+light paper where WCAG owes a non-text indicator 3:1 — keyboard focus invisible on a light system —
+repaired to 4.76:1 with the artboard's own darkened accent, so no colour was invented.
+`every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` could not survive that and is now
+`every-pair-below-the-legible-floor-is-one-this-repository-declared`: eleven rows, exact in both
+directions, so a twelfth cannot arrive in silence and a row cannot outlive the failure it names. **It
+gives up refusing an illegible ink and buys refusing a new one and a stale exemption**, and that trade
+is the one thing in the unit taken on the assistant's judgement rather than the owner's. ADR-0176.
 
 **And that freeze now covers what a contract's guards call, which until this unit it did not.** A
 fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard

@@ -35,6 +35,7 @@ const { dirname, join } = await import('node:path')
 
 const { theRevision } = await import('../registry/revision.ts')
 const { THE_BROWSER_GRAPH, asABrowserModule } = await import('./browser.ts')
+const { THE_FONT_ADDRESS } = await import('./font.ts')
 const { THE_BUILT_TREE, THE_FILES_FOUND_BY_CONVENTION } = await import('./paths.ts')
 const { thePublication } = await import('./site.ts')
 
@@ -108,10 +109,18 @@ const pages = written.filter((path) => path.endsWith('index.html')).length
 const markdown = written.filter((path) => path.endsWith('.md')).length
 const scripts = written.filter((path) => path.endsWith('.js')).length
 const conventional = written.filter((path) => FOUND_BY_CONVENTION.has(path)).length
+/**
+ * The face is counted rather than left to fall through, and the comment above says why in advance:
+ * the answers are what is left once everything classified is taken out, so a file nobody classified
+ * is reported as an answer. It is the sixth arrival and the first that would have moved a figure
+ * this repository publishes - 73 answers is what the origin serves and what a client asks for, and
+ * a font is none of them.
+ */
+const fonts = written.filter((path) => path === THE_FONT_ADDRESS).length
 
 process.stdout.write(
   `${String(total).padStart(7)} B  ${tree.size} files: ${pages} pages, ${markdown} markdown, ` +
-    `${scripts} modules, ${conventional} found by convention, ` +
-    `${tree.size - pages - markdown - scripts - conventional} answers\n` +
+    `${scripts} modules, ${conventional} found by convention, ${fonts} font, ` +
+    `${tree.size - pages - markdown - scripts - conventional - fonts} answers\n` +
     `served from ${servedFrom}\n`,
 )

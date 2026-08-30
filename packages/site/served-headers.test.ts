@@ -63,13 +63,19 @@ describe('the host is told how to serve every answer', () => {
    * It is `the-endpoints-that-carry-the-bulk-are-the-cacheable-ones` asked one floor down, about the
    * strings a host reads instead of the record a function returns - and it is written as an answer
    * because deriving it from `cachePolicyFor` on both sides would make it incapable of failing.
+   *
+   * **It used to be named for the two endpoints and there are three spaces now, one of which is not an
+   * endpoint at all.** `/font/*` holds one file whose address is its own digest, so it is
+   * `content-addressed` by the same rule the other two are and gets the same year for the same reason.
+   * The name moved because it had stopped being true: the claim is about how an address is *made*, and
+   * an endpoint was only ever the way that had happened so far. ADR-0176.
    */
-  it('only-the-two-content-addressed-endpoints-are-cached-for-a-year', () => {
+  it('only-what-is-addressed-by-its-content-is-cached-for-a-year', () => {
     const forEver = aboutAPath()
       .filter((rule) => valueOf(rule, 'Cache-Control')?.includes('immutable') === true)
       .map((rule) => rule.url)
 
-    expect(forEver.sort()).toEqual(['/blob/*', '/snapshot/*'])
+    expect(forEver.sort()).toEqual(['/blob/*', '/font/*', '/snapshot/*'])
   })
 
   /**
