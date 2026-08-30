@@ -23,10 +23,17 @@ pages × 21 widths × 2 themes and fixed a wordmark that broke below about 479. 
 field is built by `start.ts`, in the reader's browser — so it is in none of those 294 renderings, and
 the geometry a reader meets at 390 is the geometry of a document this repository had never rendered.
 
-**It is not deployed.** `toopo.dev` still serves the masthead from before ADR-0182's bar: read at
-`6dadac2`, the live page carries no `.bar` element and a one-entry menu, and its wordmark is 43.98px
-wide on one line. The defect entered with `f1a8cbf` and `bedf227` and would have reached readers on
-the next push.
+**It is not deployed, and the reason is worth writing down so nobody hunts a cause that does not
+exist.** `toopo.dev` still serves the masthead from before ADR-0182's bar: read at `6dadac2`, the live
+page carries no `.bar` element and a one-entry menu, and its wordmark is 43.98px wide on one line.
+**That is not a deployment that went wrong — none of the redesign is deployed at all.** Measured at
+`f2ea3a1`, `origin/main` stands at `a9236dd` and the branch is fourteen commits ahead of it: the five
+that built the front page from the artboard and the bar, and the nine of ADR-0183 and this record. The
+defect entered with `f1a8cbf` and `bedf227`, and one `git push` carries every one of the fourteen.
+
+**So the state of the origin is evidence about what has been pushed and about nothing else.** A
+session comparing the live site against this tree and looking for a cause in the code is looking for
+something that is not there.
 
 **It is not ADR-0183's.** That unit's component layer was suspected first and cleared by measurement:
 removing all 3 376 B of its rules from the served sheet leaves the wordmark at **129.53px, identical**,
@@ -45,9 +52,24 @@ what was squeezing it.
 
 **The masthead is still broken at 390, and the first reading of this repair missed it.** The probe that
 confirmed the wordmark asked for the wordmark's box, the bar's height, the viewport's overflow and the
-elements outside it - all four came back right, and **none of them can see text wrapping inside a box
+elements outside it — **four good measurements, none of them able to see text breaking inside a box
 that fits**. Looking at the rendered page is what found it: the menu now takes the squeeze the wordmark
 was taking, and `How we verify` wraps to `w / we / verif / y`.
+
+**That is this record's own subject arriving on this record.** The entry below says a sweep over
+emitted pages cannot see what a script adds; this says a sweep over boxes cannot see what happens
+inside one. Both are the same mistake in different clothes — treating the thing that was measured as
+the thing that was asked — and the second was made by the author of the first, in the act of writing
+it. It is the best statement this repository has of what measurement does not replace, and it is here
+rather than in a commit message because a commit message is not somewhere anybody looks twice.
+
+**Two smaller instances of the same family came out of the same unit**, and they are named because
+three make a shape where one makes an anecdote. `README.md` was swept for a guard count and reported
+as carrying no figure this unit moves; it carries three, all counting cells, and the meta suite found
+them. And `W-148` was read as the last address of the battery's cell list, which is not ordered — W-149
+and W-150 already existed further down, so three new cells landed on two taken addresses. **Each was a
+reading taken for a measurement**: a grep answered honestly, and the question it answered was not the
+question asked of it.
 
 **Each candidate moves the squeeze rather than removing it, and that is the finding.** Measured at
 `abbc12a` at 390: the menu is 147.16px tall with links at 125 and 147px; giving the menu the same
@@ -55,6 +77,21 @@ treatment as the wordmark - `white-space: nowrap` and `flex: none` - takes it to
 links at 38px, and **crushes the search field to 2px wide**. The bar holds a wordmark, a search field,
 two links and a theme button, and at 390 it cannot hold them on one row. Something has to give and
 nothing here declares what.
+
+### The specification stops at one width, and what is below it is a decision
+
+**The artboard carries no responsive rule at all.** Measured over `Toopo.dc.html`: **zero `@media`,
+zero `@container`, zero `@supports`**. Its `min-width` declarations are `0` three times — flex
+shrink guards — and `150px` on one row's name column; its seven `max-width` declarations are content
+ceilings, 1100 for the page, 760 for the hero, 640, 620 and 600 for prose and the dialog, 300 for the
+aside and 38% for a code cell. **Not one of them is a breakpoint.**
+
+So the mock-up is a desktop mock-up, and *reproduce the artboard* has literally no answer at 390. That
+is a gap in the source rather than in the implementation, and it changes what the open question is:
+below the width the specification covers, the masthead's behaviour is **a decision and not a
+deduction**. Nobody can derive it, measure it out of the artboard, or be shown to have got it wrong by
+comparison — which is why the three candidates below are put to the owner rather than chosen here, and
+why this record repairs the one thing that was wrong on its own terms and stops.
 
 **So this record repairs one thing and defers the decision.** A flex item shrinking below its content
 with no decision behind it is a defect on its own terms, and five lines of one letter is strictly worse
@@ -87,10 +124,13 @@ says nothing keeps it.
 
 - **A browser in the suites**, which closes the entry rather than this record, and which would be red
   on its first run over the widths ADR-0135 used — the rare shape of a guard not born green.
-- **The masthead's narrow widths, which this record deliberately leaves open.** The bar's contents
-  already exceed it at 390 and nothing declares what gives; the three candidates are the bar wrapping,
-  the search collapsing and the menu going behind a control, and each is a design decision rather than
-  a repair. Whoever takes it should take the reading at 320 as well, which this record did not.
+- **The masthead's narrow widths, which this record deliberately leaves open — and which are the
+  owner's to rule on rather than anybody's to derive.** The bar's contents already exceed it at 390 and
+  nothing declares what gives; the three candidates are the bar wrapping to two rows, the search
+  collapsing to an icon and the menu going behind a control. The artboard settles none of them, because
+  it carries no responsive rule at all, so this is the one part of the redesign where there is nothing
+  to reproduce and something to decide. The three are with the owner. **Whoever takes it takes 320 with
+  it**, which this record did not read.
 - **The search field becoming a palette-opening button**, which ADR-0183 leaves open: it is narrower
   than the input, so the squeeze that produced this defect would be smaller and the measurement worth
   retaking rather than assumed to hold.
