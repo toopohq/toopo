@@ -146,7 +146,30 @@ The assertion that keeps it was added before the suite was believed, and `W-91` 
 
 **One arm has no cheap mutant and it is named rather than left implied.** *Nothing the catalogue turned
 down appears here* cannot be reddened by a one-line edit, because `Domain.held` holds only what is
-installable — a refusal would have to be rendered from `turnedDown`, which is a different shape and a
+installable
+
+### A second declaration of that shape was written, and the replay refuted it
+
+`a-page-that-serves-no-shelf-is-left-alone` was declared under `unprobedRegions` on the strength of one
+measurement: a cell was written against it — the slot reader falling back to the masthead's — and it
+**survived**, because three independent early returns each refuse to build a shelf field on a page with
+no shelf, so defeating one leaves the other two refusing.
+
+**That measurement was then generalised into a claim about every possible edit**, and the first full
+replay of the battery refused it: the guard is red on **W-02, W-19 and W-20**, and alone on none of
+them. Those three reach it through doors the reasoning never considered — an attribute escaped as text,
+and two that give the refused contract a page — so what they break is the *document the guard builds
+on* rather than the control it is about.
+
+**The declaration was stale and the instrument said so in as many words**: *declared silent and a
+mutant reddened it*. It is removed. The guard is accounted for, and what is true of it is that it is
+never red *alone*, which is `attribution.ts`'s own bucket and an open entry of `CLAUDE.md`.
+
+**It cost two CI runs and is the sharper half of this unit's confirmation.** The arm above it — *nothing
+turned down appears here* — is a genuine no-cheap-mutant claim, and this one looked identical while
+being an argument rather than a reading. What separates them is that the first is held by a type and
+the second was held by an inference over paths nobody enumerated: a negative over every edit asserted
+from one edit is the sweep rule arriving on a declaration. — a refusal would have to be rendered from `turnedDown`, which is a different shape and a
 larger change. The arm is a claim about a future edit rather than a claim a mutant reaches today.
 
 ### What the gate caught that this unit's own checking did not

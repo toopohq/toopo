@@ -449,6 +449,22 @@ describe('the controls a visitor touches, run against a document', () => {
    * Every page of this site carries the masthead's search and only one carries the shelf, so this is
    * the ordinary case rather than an exotic one: a control that assumed its slot would throw on twelve
    * pages of thirteen.
+   *
+   * **It is never red alone, and the road to knowing that is worth more than the fact.** A cell was
+   * written against it - the slot reader falling back to the masthead's - and it *survived*: three
+   * independent early returns each refuse to build here, so defeating one leaves the other two
+   * refusing. That measurement was then generalised into a declaration saying no mutant reaches this
+   * guard at all, and the first full replay refuted it: it is red on **W-02, W-19 and W-20**, and
+   * alone on none of them.
+   *
+   * Those three reach it by doors the reasoning never considered - an attribute escaped as text, and
+   * two that give the refused contract a page - so what they break is the document this guard builds
+   * on rather than the control it is about. **A negative over every possible edit was asserted from
+   * one attempted edit**, which is the sweep rule one level up: a reading that does not reach the
+   * branch it argues about says nothing about it.
+   *
+   * So the guard is accounted for and it sits in `attribution.ts`'s *never alone* bucket, which
+   * `CLAUDE.md` already carries an open entry about. ADR-0181.
    */
   it('a-page-that-serves-no-shelf-is-left-alone', () => {
     aServedContractPage()
