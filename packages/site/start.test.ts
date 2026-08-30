@@ -5,11 +5,11 @@ import { describe, it, expect } from 'vitest'
 import { THE_INVOCATION, THE_WAYS_TO_RUN_IT } from '../registry/address.js'
 import { toHtml } from './document.js'
 import { localSource } from './local-source.js'
-import { pageOf } from './paths.js'
+import { FRONT_PAGE, pageOf } from './paths.js'
 import type { ReadOneAnswer, WhereTheCatalogueIs } from './searching.js'
 import { arrivingOnce } from './searching.js'
 import { theSite } from './site.js'
-import { copyControl, managerControl, playgroundControl, searchControl } from './start.js'
+import { copyControl, managerControl, playgroundControl, searchControl, siftControl } from './start.js'
 import { THE_COPY_CONTROL_SAYS } from './what-a-control-says.js'
 
 /**
@@ -140,6 +140,30 @@ const servedFromThisTree =
           ? { status: 200, body: JSON.stringify(source.refusals()) }
           : { status: 404, body: '' },
     )
+
+/** The front page as it is served, which is the one page of this site that carries a shelf. */
+const aServedFrontPage = (): void => {
+  const built = theSite(source).get(FRONT_PAGE)
+  if (built === undefined) throw new Error(`the generator writes no ${FRONT_PAGE}`)
+
+  document.open()
+  document.write(toHtml(built))
+  document.close()
+}
+
+/** The shelf's field, built into the slot the front page serves. */
+const aSiftOnThePage = (): HTMLInputElement => {
+  const slot = document.querySelector('.sift')
+  const declared = slot instanceof HTMLElement ? slot.dataset['search'] : undefined
+  if (declared === undefined) throw new Error('the shelf declares no catalogue')
+
+  siftControl(arrivingOnce(servedFromThisTree(JSON.parse(declared) as WhereTheCatalogueIs)))
+
+  const field = document.querySelector('.sift input')
+  if (!(field instanceof HTMLInputElement)) throw new Error('the sift built no field')
+
+  return field
+}
 
 /** The search, built and answered by this tree's own catalogue. */
 const aSearchOnThePage = (): HTMLInputElement => {
@@ -374,6 +398,63 @@ describe('the controls a visitor touches, run against a document', () => {
     copyControl()
 
     expect(document.querySelector('pre.install button.copy')).toBeNull()
+  })
+
+  /**
+   * A query narrows the shelf to the cards it names, and every card it leaves is the one served.
+   *
+   * **This is the property unit 2 was built on, asked of a document rather than of a type.**
+   * `what-a-query-narrows-the-shelf-to-is-addresses-and-never-cards` establishes that the decision
+   * answers addresses; this establishes that the wiring hides the rest and touches nothing else. The
+   * two together are what makes *a searched card cannot show less than a static one* a fact: the card
+   * a reader is left looking at is the same element the generator wrote, with its signature and its
+   * command still in it.
+   *
+   * The signature is read back off the surviving card for exactly that reason - a control that rebuilt
+   * a card would pass a guard that only counted them. ADR-0181.
+   */
+  it('a-query-hides-the-cards-it-does-not-name-and-leaves-the-others-as-served', async () => {
+    aServedFrontPage()
+    const field = aSiftOnThePage()
+
+    const before = [...document.querySelectorAll('[data-contract]')]
+    expect(before.length).toBeGreaterThan(1)
+
+    field.value = 'slugify'
+    field.dispatchEvent(new Event('input', { bubbles: true }))
+    await settled()
+
+    const shown = before.filter((card) => !(card as HTMLElement).hidden)
+
+    expect(shown).toHaveLength(1)
+    expect((shown[0] as HTMLElement).dataset['contract']).toBe('string/slugify')
+
+    // The card left standing is the one the generator wrote, not one this control built.
+    expect(shown[0]?.querySelector('.shape')?.textContent).toContain('type Slugify =')
+    expect(shown[0]?.querySelector('.install')?.textContent).toContain(
+      `${THE_INVOCATION} add string/slugify`,
+    )
+
+    // And clearing the field brings every one of them back.
+    field.value = ''
+    field.dispatchEvent(new Event('input', { bubbles: true }))
+    await settled()
+
+    expect(before.filter((card) => (card as HTMLElement).hidden)).toEqual([])
+  })
+
+  /**
+   * A page that serves no shelf gets no field, and the control does nothing at all.
+   *
+   * Every page of this site carries the masthead's search and only one carries the shelf, so this is
+   * the ordinary case rather than an exotic one: a control that assumed its slot would throw on twelve
+   * pages of thirteen.
+   */
+  it('a-page-that-serves-no-shelf-is-left-alone', () => {
+    aServedContractPage()
+    siftControl(arrivingOnce(servedFromThisTree(theCatalogueAsThisPageDeclaresIt().where)))
+
+    expect(document.querySelector('.sift input')).toBeNull()
   })
 
   it('typing-answers-from-the-catalogue-the-masthead-declared', async () => {

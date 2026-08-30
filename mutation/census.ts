@@ -465,8 +465,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/served-modules.test.ts': 4,
     'packages/site/served-stylesheet.test.ts': 3,
     'packages/site/source.test.ts': 8,
-    'packages/site/start.test.ts': 12,
-    'packages/site/what-a-control-says.test.ts': 16,
+    'packages/site/start.test.ts': 14,
+    'packages/site/what-a-control-says.test.ts': 19,
   },
 
   'packaging/vitest.config.ts': {

@@ -17,6 +17,7 @@ import {
   theSpellingShownFor,
   theWayAlreadyChosen,
   whatThePanelShows,
+  whatTheShelfShows,
 } from './what-a-control-says.js'
 
 /**
@@ -293,6 +294,77 @@ describe('what the controls of this site say', () => {
 
     expect(shows.said.join('\n')).not.toContain('No contract mentions')
     expect(shows.said.every((one) => one.trim().length > 0)).toBe(true)
+  })
+
+  /**
+   * The shelf answers a set of addresses and never a set of cards, which is the whole property.
+   *
+   * **This is what makes *a searched card cannot show less than a static one* a fact about a type
+   * rather than a promise in a comment.** Every card is served with the page; a query decides which of
+   * them a reader is looking at. So what comes back is addresses, and there is no shape in this return
+   * type that could carry a summary, a signature or a command - nothing here can build a card, and
+   * nothing downstream can be handed one that is thinner than the one already served. ADR-0181.
+   */
+  it('what-a-query-narrows-the-shelf-to-is-addresses-and-never-cards', () => {
+    const shows = whatTheShelfShows({ kind: 'answered', found: ANSWERED })
+
+    expect(shows.kind).toBe('these')
+    if (shows.kind !== 'these') return
+
+    expect(shows.addresses.length).toBeGreaterThan(0)
+    for (const address of shows.addresses) expect(typeof address).toBe('string')
+
+    // Every address it names is one the catalogue holds, so a card exists for each.
+    const held = new Set(
+      localSource().contractIndex().entries.map((entry) => entry.address.name),
+    )
+
+    expect(shows.addresses.filter((one) => !held.has(one))).toEqual([])
+  })
+
+  /**
+   * A contract the catalogue refused is dropped from what the shelf narrows to, and from its count.
+   *
+   * ADR-0179 keeps a refusal answerable in `npx toopo search` and off every surface somebody browses,
+   * so the shelf has no card for one. **Dropping it here rather than relying on the missing card is
+   * what keeps the count honest**: *showing 2 of* is a claim about this shelf, and counting a result
+   * it can never show would make that sentence wrong by one whenever a query reached the refusal.
+   */
+  it('a-refusal-is-not-among-what-the-shelf-narrows-to', () => {
+    const index = localSource().contractIndex()
+    const refused = index.entries.filter((entry) => !entry.installable)
+
+    expect(refused.length).toBeGreaterThan(0)
+
+    const asked = asking(refused.map((entry) => entry.address.name.split('/')[1] ?? '').join(' '))
+
+    expect(asked.results.some((result) => !result.installable)).toBe(true)
+
+    const shows = whatTheShelfShows({ kind: 'answered', found: asked })
+    const named = shows.kind === 'these' ? shows.addresses : []
+
+    expect(named.filter((one) => refused.some((entry) => entry.address.name === one))).toEqual([])
+  })
+
+  /**
+   * A reader who cleared the box, and a reader the catalogue could not be fetched for, both keep the
+   * shelf.
+   *
+   * **A shelf that went blank on either would be the failure the matching rule exists to avoid**,
+   * arriving in the surface instead of in the rule: an empty field is not a query, and a search that
+   * asked nobody knows nothing about what matches. Hiding cards on the strength of an answer that
+   * never arrived would be a page claiming a search happened.
+   */
+  it('an-empty-field-and-a-catalogue-that-cannot-be-read-both-keep-the-whole-shelf', () => {
+    const empty = whatTheShelfShows({ kind: 'was-not-asked' })
+    const broken = whatTheShelfShows({ kind: 'could-not-be-read', thrown: new Error('offline') })
+
+    expect(empty.kind).toBe('everything')
+    expect(broken.kind).toBe('a-failure')
+    if (broken.kind !== 'a-failure') return
+
+    expect(broken.showing).toBe('everything')
+    expect(broken.said).toContain('offline')
   })
 
   /**

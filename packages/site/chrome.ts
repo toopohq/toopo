@@ -116,7 +116,7 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
         ? text('toopo')
         : el('a', { href: rootFrom(own) }, text('toopo')),
     ),
-    el('div', { class: 'search', 'data-search': JSON.stringify(whereTheCatalogueIs(own)) }),
+    el('div', { class: 'search', 'data-search': theCatalogueFrom(own) }),
     el('ul', { class: 'menu' }, ...menu.map((entry) => destination(own, entry.page, entry.label))),
     /**
      * Where the theme button is built, and it is served empty for the reason the search field is.
@@ -161,6 +161,17 @@ const whereTheCatalogueIs = (own: string): WhereTheCatalogueIs => ({
   root: rootFrom(own),
   examples: THE_EXAMPLES,
 })
+
+/**
+ * The same two addresses, for a page that serves a second slot of its own.
+ *
+ * **Exported so that the front page's sift and this masthead ask one function where the catalogue is**,
+ * rather than two composing the same pair from `pathTo`. The value is the slot's own `data-search`, so
+ * what crosses into the browser is a string either way and neither side reaches `endpoints.ts`.
+ * ADR-0181.
+ */
+export const theCatalogueFrom = (own: string): string =>
+  JSON.stringify(whereTheCatalogueIs(own))
 
 /**
  * The column beside a page: where you are in the catalogue, and then whatever that page adds.

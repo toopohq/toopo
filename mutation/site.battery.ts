@@ -175,16 +175,11 @@ const A_WAY_THAT_RUNS_CARRIES_NO_REFUSAL = `export const theRefusalShownFor = (w
 const A_REFUSED_WAY_SHOWS_WHAT_WORKS = `  theRefusalShownFor(way) === null ? way.spelling : THE_INVOCATION`
 const A_QUERY_NOTHING_ANSWERS_STILL_SAYS_SOMETHING = `    return {
       kind: 'no-answer',
-      said: [
-        \`Nothing in the catalogue answers "\${found.query}".\`,
-        found.unknownWords.length === 0
-          ? NO_CONTRACT_CARRIES_THEM_ALL
-          : \`No contract mentions: \${found.unknownWords.join(', ')}\`,
-      ],
+      said: [\`Nothing in the catalogue answers "\${found.query}".\`, whyNothingAnswered(found)],
     }`
-const A_WORD_LIST_IS_SHOWN_ONLY_WHERE_THERE_IS_ONE = `        found.unknownWords.length === 0
-          ? NO_CONTRACT_CARRIES_THEM_ALL
-          : \`No contract mentions: \${found.unknownWords.join(', ')}\`,`
+const A_WORD_LIST_IS_SHOWN_ONLY_WHERE_THERE_IS_ONE = `  found.unknownWords.length === 0
+    ? NO_CONTRACT_CARRIES_THEM_ALL
+    : \`No contract mentions: \${found.unknownWords.join(', ')}\``
 const A_RESULT_LINKS_UNDER_THE_ROOT = `    href: \`\${root}\${rendered}/\`,`
 const AN_ANSWER_IS_COMPARED_AGAINST_THE_TRIMMED_FIELD = `export const theAnswerIsStale = (typed: string, asked: string): boolean => typed.trim() !== asked`
 
@@ -210,7 +205,7 @@ const THE_PLAYGROUND_IS_WAITED_FOR = `  const { theAnswerShown, theFieldLabelFor
 // to redden a named guard before it was written down here.
 const THE_REFUSAL_SITS_BESIDE_THE_COMMAND = `  install.after(refusal)`
 const EVERY_WAY_THE_PAGE_DECLARED_IS_OFFERED = `  const buttons = ways.map((way) => {`
-const THE_SEARCH_NEEDS_A_SLOT_THAT_DECLARED_ONE = `  if (!(slot instanceof HTMLElement) || declared === undefined) return`
+const THE_SEARCH_NEEDS_A_SLOT_THAT_DECLARED_ONE = `  if (!(slot instanceof HTMLElement) || declared === undefined) return null`
 const THE_COPY_CONTROL_NEEDS_A_BLOCK_AND_A_CLIPBOARD = `  if (install === null || !navigator.clipboard) return`
 const THE_COMMAND_IS_READ_WHEN_THE_BUTTON_IS_PRESSED = `  button.addEventListener('click', () => {
     void navigator.clipboard.writeText(theCommandSpelled(install)).then(`
@@ -218,7 +213,9 @@ const THE_COPY_CONTROL_IS_RELABELLED = `      const copy = install.querySelector
       if (copy !== null) {`
 const A_REFUSAL_IS_SHOWN_WHEN_THERE_IS_ONE = `      refusal.hidden = refused === null`
 const A_CLIPBOARD_THAT_REFUSES_IS_SAID_SO = `        button.textContent = THE_COPY_CONTROL_SAYS.whenTheClipboardRefuses`
-const TYPING_ASKS_THE_CATALOGUE = `  field.addEventListener('input', () => void run())`
+const TYPING_ASKS_THE_CATALOGUE = `  field.addEventListener('input', () => void run())
+  /**
+   * The examples are offered when the field is engaged rather than when the page loads.`
 const A_FOCUS_FROM_INSIDE_THE_SLOT_IS_NOT_A_READER_ARRIVING = `    if (from instanceof Node && slot.contains(from)) return`
 const LEAVING_THE_SLOT_CLOSES_THE_PANEL = `    if (!(moved instanceof Node) || !slot.contains(moved)) paint(THE_PANEL_IS_CLOSED)`
 const ESCAPE_MOVES_THE_FOCUS_BEFORE_IT_CLOSES = `    field.focus()
@@ -1164,7 +1161,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     [
       startFile(
         THE_SEARCH_NEEDS_A_SLOT_THAT_DECLARED_ONE,
-        `  if (!(slot instanceof HTMLElement)) return`,
+        `  if (!(slot instanceof HTMLElement)) return null`,
       ),
     ],
     killed(['a-slot-that-declares-nothing-is-left-alone']),
@@ -1237,7 +1234,14 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     'W-131',
     'wires typing to nothing, so the search field a reader types into answers only when it is ' +
       'focused - a control that works the first time and never again',
-    [startFile(TYPING_ASKS_THE_CATALOGUE, `  field.addEventListener('input', () => void 0)`)],
+    [
+      startFile(
+        TYPING_ASKS_THE_CATALOGUE,
+        `  field.addEventListener('input', () => void 0)
+  /**
+   * The examples are offered when the field is engaged rather than when the page loads.`,
+      ),
+    ],
     killed([
       'typing-answers-from-the-catalogue-the-masthead-declared',
       'escape-closes-a-panel-of-answers-and-it-stays-closed',
@@ -2353,6 +2357,102 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   ),
 
   /**
+   * The sift hides a card it was told to show, which is the wiring half of the shelf's property.
+   *
+   * The decision answers addresses; this is what happens to them. Inverting the test leaves a reader
+   * who typed a word looking at every card the query did *not* answer - and the count above them still
+   * says how many matched, so the sentence and the shelf disagree with nothing saying so.
+   */
+  sameOnEveryLens(
+    'W-144',
+    'hides the cards a query named and shows the rest, so a reader who typed `slugify` is left looking ' +
+      'at every function except the one they asked for',
+    [
+      startFile(
+        `        ;(card as HTMLElement).hidden = !wanted.has((card as HTMLElement).dataset['contract'] ?? '')`,
+        `        ;(card as HTMLElement).hidden = wanted.has((card as HTMLElement).dataset['contract'] ?? '')`,
+      ),
+    ],
+    killed(['a-query-hides-the-cards-it-does-not-name-and-leaves-the-others-as-served']),
+  ),
+
+  /**
+   * The sift builds a field on a page that serves no shelf.
+   *
+   * Twelve of this site's thirteen pages carry the masthead's search and no shelf, so a control that
+   * assumed its slot would throw on all twelve - which is the ordinary case rather than an exotic one,
+   * and the reason the reader below returns nothing rather than an element.
+   */
+  sameOnEveryLens(
+    'W-145',
+    'goes on building the field of a shelf when the page declares no shelf, so twelve pages of ' +
+      'thirteen get a control reading a slot that is not there',
+    [
+      startFile(
+        `  const declared = theCatalogueDeclaredIn('.sift')`,
+        `  const declared = theCatalogueDeclaredIn('.sift') ?? theCatalogueDeclaredIn('.masthead .search')`,
+      ),
+    ],
+    killed(['a-page-that-serves-no-shelf-is-left-alone']),
+  ),
+
+  /**
+   * The shelf narrows to something other than an address, which is the property this unit rests on.
+   *
+   * A card is served with the page and a query decides which of them a reader is looking at. Answering
+   * with anything but an address is how that stops being true: the caller would have something it has
+   * to interpret rather than a key it can match, and the card it showed would stop being the card the
+   * page served.
+   */
+  sameOnEveryLens(
+    'W-141',
+    'narrows the shelf to the summaries of the contracts that answered rather than to their ' +
+      'addresses, so the caller matches cards against prose and shows none of them',
+    [
+      controlFile(
+        `    addresses: installable.map((result) => result.address.name),`,
+        `    addresses: installable.map((result) => result.summary),`,
+      ),
+    ],
+    killed(['what-a-query-narrows-the-shelf-to-is-addresses-and-never-cards']),
+  ),
+
+  /**
+   * A refusal counted among what the shelf shows, which makes the sentence above it wrong by one.
+   *
+   * ADR-0179 keeps a refused contract answerable in a search and off every browsing surface, so the
+   * shelf has no card for one. The count is a claim about *this shelf*, so a result it can never show
+   * has to leave before it is counted rather than be lost by having no card.
+   */
+  sameOnEveryLens(
+    'W-142',
+    'counts a refused contract among what the shelf narrowed to, so a query reaching the refusal is ' +
+      'answered `showing 2 of` beside one card',
+    [controlFile(`  const installable = found.results.filter((result) => result.installable)`, `  const installable = found.results`)],
+    killed(['a-refusal-is-not-among-what-the-shelf-narrows-to']),
+  ),
+
+  /**
+   * The shelf empties when nobody asked, which is the failure the matching rule exists to avoid
+   * arriving in the surface instead of in the rule.
+   *
+   * An empty field is not a query. A reader who cleared the box and met an empty page would conclude
+   * the catalogue was empty, on a page whose whole job is to show them it is not.
+   */
+  sameOnEveryLens(
+    'W-143',
+    'treats an empty field as a query that matched nothing, so a reader who clears the box is shown ' +
+      'a shelf with no functions on it',
+    [
+      controlFile(
+        `  if (did.kind === 'was-not-asked') return { kind: 'everything' }`,
+        `  if (did.kind === 'was-not-asked') return { kind: 'these', addresses: [], said: theyAre(0) }`,
+      ),
+    ],
+    killed(['an-empty-field-and-a-catalogue-that-cannot-be-read-both-keep-the-whole-shelf']),
+  ),
+
+  /**
    * The shelf starts choosing, which is the defect the artboard's own heading invited.
    *
    * **It is the arm W-91 does not reach.** That cell puts a command back where none belongs; this one
@@ -2727,7 +2827,7 @@ export const escaped = (character: string): string => {`,
     [
       controlFile(
         A_WORD_LIST_IS_SHOWN_ONLY_WHERE_THERE_IS_ONE,
-        `        \`No contract mentions: \${found.unknownWords.join(', ')}\`,`,
+        `  \`No contract mentions: \${found.unknownWords.join(', ')}\``,
       ),
     ],
     killed(['a-query-whose-every-word-is-known-is-told-that-and-not-an-empty-list']),

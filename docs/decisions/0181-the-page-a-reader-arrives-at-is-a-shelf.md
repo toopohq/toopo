@@ -122,11 +122,27 @@ Control: **183 passed**. Verdicts read from vitest's JSON reporter, tree restore
 | a template command comes back in the lede — W-91's defect, put back | the same, **alone** |
 | a card drops its signature | the same, **alone** |
 
-**The second row is the check that the rewrite kept what it inherited.** W-91 is ADR-0140's own cell,
-and the first draft of this guard would have left it green: the new claim was about coverage and said
-nothing about templates, so the half of ADR-0140 that was *argued* would have been enforced by nothing.
-It was found by reading the cell rather than by running it, and the assertion that keeps it was added
-before the suite was believed.
+**The second row is the finding of this unit, and it is a shape rather than an incident.**
+
+A guard was replaced because its subject changed. The replacement was about coverage — every installable
+contract is here, nothing refused is, the count is exhaustive — and it was a better claim than the one
+it replaced. **It would also have carried off its neighbour's claim in silence.** ADR-0140's guard had
+two halves, and only the first was about the page's shape; the second refused a *template* command, and
+the record argued that half at length. The new claim said nothing about templates, `W-91` — ADR-0140's
+own cell, whose whole defect is a template put back — would have gone on passing, and the half that was
+argued would have been enforced by nothing at all.
+
+**Nothing would have been red.** The suite was green on the first draft: 183 passed. The cell was green.
+The census was unmoved. A replacement that is strictly better about its own subject, and quietly weaker
+about the one next to it, is invisible to every mechanism this repository has — because each mechanism
+asks whether *this* guard holds and none asks what left with the one it replaced.
+
+**It was caught by reading the cell rather than by running it**, which is the part worth keeping: the
+question that found it is *what was the guard I am deleting also doing*, asked of a cell rather than of
+a name. It is the session's own class — a guard going quiet in a way that looks like success — arriving
+on the one act where the usual answer, *run it and see*, returns green by construction.
+
+The assertion that keeps it was added before the suite was believed, and `W-91` reddens the new guard.
 
 **One arm has no cheap mutant and it is named rather than left implied.** *Nothing the catalogue turned
 down appears here* cannot be reddened by a one-line edit, because `Domain.held` holds only what is

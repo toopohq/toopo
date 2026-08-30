@@ -1239,8 +1239,14 @@ describe('the site', () => {
         .find((found) => found !== null) ?? [],
     )
 
-    // The name, the promise, the shelf's label, the domains, the cards, and the way to the rest.
-    expect(inside.map((node) => node.tag)).toEqual(['h1', 'p', 'h2', 'ul', 'ul', 'p'])
+    /**
+     * The name, the promise, the shelf's label, the slot the field is built into, the line that
+     * reports what a query narrowed it to, the domains, the cards, and the way to the rest.
+     *
+     * The two empty ones are the arrangement ADR-0137 established: a reader with nothing running meets
+     * a shelf and no box, so what is *served* is a slot and a status region with nothing in them.
+     */
+    expect(inside.map((node) => node.tag)).toEqual(['h1', 'p', 'h2', 'div', 'p', 'ul', 'ul', 'p'])
 
     const reading = toText(page(FRONT_PAGE))
     const index = source.contractIndex()
@@ -1282,7 +1288,8 @@ describe('the site', () => {
      * appear. What this refuses is a shelf that has started choosing, which is the claim
      * `WHAT_THE_SHELF_IS` makes and the one nothing in this repository could compute.
      */
-    const cards = elementsOf(inside[4]?.children ?? [])
+    const shelf = inside.find((node) => (node.attributes as Record<string, string>)['class'] === 'offers plain')
+    const cards = elementsOf(shelf?.children ?? [])
 
     expect(cards).toHaveLength(installable.length)
 

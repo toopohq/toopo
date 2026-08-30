@@ -54,10 +54,11 @@ import type { ParameterRecord } from '../registry/contract-record.js'
 import type { PlaygroundField } from './playground.js'
 import type { TheCatalogueAsItArrives, WhereTheCatalogueIs } from './searching.js'
 import { answering, arrivingOnce, overHttp } from './searching.js'
-import type { WhatThePanelShows } from './what-a-control-says.js'
+import type { WhatThePanelShows, WhatTheShelfShows } from './what-a-control-says.js'
 import {
   THE_COPY_CONTROL_SAYS,
   THE_PANEL_IS_CLOSED,
+  whatTheShelfShows,
   theAnswerIsStale,
   theArgumentsIn,
   theCommandWrittenFor,
@@ -264,6 +265,27 @@ export const themeControl = (): void => {
 }
 
 /**
+ * A slot that declared where the catalogue is, or nothing where the page serves no such slot.
+ *
+ * **Two controls read one arrangement**, since the shelf gained a field beside the masthead's: both are
+ * an empty element carrying `data-search`, and both are absent on pages that do not serve them. Written
+ * twice, the two would be two opinions about what an unserved slot means - and the one that matters is
+ * that a control finding none does nothing at all rather than throwing on the first keystroke.
+ *
+ * The parse is here for the same reason. A slot present and carrying nothing is the same case as a slot
+ * that is not there: there is no catalogue to ask. ADR-0181.
+ */
+const theCatalogueDeclaredIn = (
+  selector: string,
+): { readonly slot: HTMLElement; readonly where: WhereTheCatalogueIs } | null => {
+  const slot = document.querySelector(selector)
+  const declared = slot instanceof HTMLElement ? slot.dataset['search'] : undefined
+  if (!(slot instanceof HTMLElement) || declared === undefined) return null
+
+  return { slot, where: JSON.parse(declared) as WhereTheCatalogueIs }
+}
+
+/**
  * The search field, built into the slot the masthead serves.
  *
  * **What a reader without JavaScript meets is a masthead with nothing extra in it**, which is the
@@ -275,11 +297,10 @@ export const themeControl = (): void => {
  * and a terminal disagree about presentation and about nothing else.
  */
 export const searchControl = (arriving: TheCatalogueAsItArrives): void => {
-  const slot = document.querySelector('.masthead .search')
-  const declared = slot instanceof HTMLElement ? slot.dataset['search'] : undefined
-  if (!(slot instanceof HTMLElement) || declared === undefined) return
+  const declared = theCatalogueDeclaredIn('.masthead .search')
+  if (declared === null) return
 
-  const where = JSON.parse(declared) as WhereTheCatalogueIs
+  const { slot, where } = declared
   const field = document.createElement('input')
   const label = document.createElement('label')
   const answers = document.createElement('div')
@@ -526,16 +547,107 @@ export const playgroundControl = async (): Promise<void> => {
 }
 
 /**
+ * The shelf's own field, which narrows what is already on the page and builds nothing.
+ *
+ * **This is the property unit 2 was built on and it is a fact about this function's return rather than
+ * a claim in a comment.** Every card is served with the page - its signature, its summary, its command -
+ * and what a query decides is which of them a reader is looking at. So this reads addresses off
+ * `whatTheShelfShows` and sets `hidden` on the cards that are not among them. There is no branch here
+ * that could render a card, and therefore no branch in which a searched card shows less than a static
+ * one.
+ *
+ * It runs the same query the masthead runs - `packages/registry/search.ts` against `contract-index` and
+ * `refusals` - and shares its fetch, because `arrivingOnce` is handed in rather than reached for. Two
+ * fields on one page ask the host once.
+ *
+ * **`hidden` and never a class**, because the claim is that the card is not there for this query: a
+ * screen reader and `document.hidden` agree about the attribute, where a class is a look.
+ * ADR-0181.
+ */
+export const siftControl = (arriving: TheCatalogueAsItArrives): void => {
+  const declared = theCatalogueDeclaredIn('.sift')
+  const said = document.querySelector('.sifted')
+  const cards = [...document.querySelectorAll('[data-contract]')]
+  if (declared === null) return
+  if (!(said instanceof HTMLElement) || cards.length === 0) return
+
+  const { slot, where } = declared
+  const field = document.createElement('input')
+  const label = document.createElement('label')
+
+  field.type = 'search'
+  field.id = 'sift-query'
+  field.placeholder = 'narrow this list…'
+  field.setAttribute('spellcheck', 'false')
+  field.setAttribute('autocapitalize', 'off')
+  field.setAttribute('autocomplete', 'off')
+  label.htmlFor = field.id
+  label.className = 'visually-hidden'
+  label.textContent = 'Narrow the list of functions'
+
+  const show = (shows: WhatTheShelfShows): void => {
+    if (shows.kind === 'these') {
+      const wanted = new Set(shows.addresses)
+      for (const card of cards) {
+        ;(card as HTMLElement).hidden = !wanted.has((card as HTMLElement).dataset['contract'] ?? '')
+      }
+      said.textContent = shows.said
+
+      return
+    }
+
+    /**
+     * Everything comes back, and the two remaining shapes differ only in what is said above it.
+     *
+     * A query nothing answers leaves the shelf whole rather than emptying it: a reader who typed a
+     * word this catalogue does not know is better off looking at six functions than at a blank page,
+     * and the sentence is what tells them the search failed rather than the catalogue.
+     */
+    for (const card of cards) (card as HTMLElement).hidden = false
+
+    said.textContent =
+      shows.kind === 'everything' ? '' : shows.kind === 'a-failure' ? shows.said : shows.said.join(' ')
+  }
+
+  const run = async (): Promise<void> => {
+    const query = field.value.trim()
+    if (query === '') return show(whatTheShelfShows({ kind: 'was-not-asked' }))
+
+    try {
+      const found = await answering(arriving, where, query)
+      if (theAnswerIsStale(field.value, query)) return
+
+      show(whatTheShelfShows({ kind: 'answered', found }))
+    } catch (thrown) {
+      show(whatTheShelfShows({ kind: 'could-not-be-read', thrown }))
+    }
+  }
+
+  field.addEventListener('input', () => void run())
+  slot.append(label, field)
+}
+
+/**
  * Every control this page carries, in the order a reader meets them.
  *
- * It is the one name here a guard does not import: what it composes is four builders each reached on
- * its own, and a guard over the composition would be a guard over four calls in a row.
+ * It is the one name here a guard does not import: what it composes is five builders each reached on
+ * its own, and a guard over the composition would be a guard over five calls in a row.
  */
 const start = async (): Promise<void> => {
   copyControl()
   managerControl()
   themeControl()
-  searchControl(arrivingOnce(overHttp))
+
+  /**
+   * One fetch for both fields, which is what handing the port in rather than reaching for it buys.
+   *
+   * The masthead's search and the shelf's sift read the same two answers, so `arrivingOnce` is built
+   * here and given to both: a reader who types in one and then the other asks the host once.
+   */
+  const arriving = arrivingOnce(overHttp)
+
+  searchControl(arriving)
+  siftControl(arriving)
 
   await playgroundControl()
 }

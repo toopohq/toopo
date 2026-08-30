@@ -192,6 +192,20 @@ export type WhatTheCatalogueDid =
   | { readonly kind: 'could-not-be-read'; readonly thrown: unknown }
 
 /**
+ * Why a query found nothing, in the reader's own words rather than in a count.
+ *
+ * **One sentence and two controls**, since the shelf gained a field: the panel says it about the whole
+ * catalogue and the shelf says it about what can be installed, and the *reason* is the same either way
+ * - either a word reached nobody, or every word is known and no one contract carries them all. Written
+ * twice, the two would drift on the day either is reworded, and a reader would be told two different
+ * things about one failure depending on which box they typed in. ADR-0181.
+ */
+const whyNothingAnswered = (found: Search): string =>
+  found.unknownWords.length === 0
+    ? NO_CONTRACT_CARRIES_THEM_ALL
+    : `No contract mentions: ${found.unknownWords.join(', ')}`
+
+/**
  * What stands in the panel, which is never nothing while somebody is searching.
  *
  * `nothing` is in this union and `whatThePanelShows` never answers it - it is what the control shows
@@ -261,12 +275,7 @@ export const whatThePanelShows = (
   if (found.results.length === 0) {
     return {
       kind: 'no-answer',
-      said: [
-        `Nothing in the catalogue answers "${found.query}".`,
-        found.unknownWords.length === 0
-          ? NO_CONTRACT_CARRIES_THEM_ALL
-          : `No contract mentions: ${found.unknownWords.join(', ')}`,
-      ],
+      said: [`Nothing in the catalogue answers "${found.query}".`, whyNothingAnswered(found)],
     }
   }
 
@@ -285,3 +294,68 @@ export const whatThePanelShows = (
  * them.
  */
 export const theAnswerIsStale = (typed: string, asked: string): boolean => typed.trim() !== asked
+
+/**
+ * What the shelf shows when somebody types, which is a set of addresses and never a set of cards.
+ *
+ * **The whole property this unit is built on is in the return type.** A card is served with the page,
+ * with its signature, its summary and its command; a query decides which of them a reader is looking
+ * at. So this answers *which addresses*, the caller hides the rest, and **a searched card cannot show
+ * less than a static one because there is only one card**. Nothing here builds anything, and there is
+ * no shape in which it could.
+ *
+ * `everything` is what an empty field means, and it is a member rather than an absence for the reason
+ * `THE_PANEL_IS_CLOSED` is one: a shelf that went blank when a reader cleared the box would be the
+ * failure the matching rule exists to avoid, arriving in the surface instead of in the rule.
+ *
+ * **A failure shows everything and says so.** The catalogue could not be read, so nothing is known
+ * about what matches - and hiding cards on the strength of an answer nobody received would be a page
+ * claiming a search happened. The reader keeps the shelf and is told the search is the part that
+ * broke. ADR-0181.
+ */
+export type WhatTheShelfShows =
+  | { readonly kind: 'everything' }
+  | { readonly kind: 'these'; readonly addresses: readonly string[]; readonly said: string }
+  | { readonly kind: 'none'; readonly said: readonly string[] }
+  | { readonly kind: 'a-failure'; readonly said: string; readonly showing: 'everything' }
+
+/** What is said above the shelf when a query has narrowed it, counted rather than written. */
+const theyAre = (count: number): string =>
+  `Showing ${count} of the catalogue's installable functions.`
+
+export const whatTheShelfShows = (did: WhatTheCatalogueDid): WhatTheShelfShows => {
+  if (did.kind === 'was-not-asked') return { kind: 'everything' }
+
+  if (did.kind === 'could-not-be-read') {
+    return {
+      kind: 'a-failure',
+      showing: 'everything',
+      said: did.thrown instanceof Error ? did.thrown.message : THE_CATALOGUE_COULD_NOT_BE_READ,
+    }
+  }
+
+  const { found } = did
+  /**
+   * A refusal is an answer in a search and it is not on this shelf, so it is dropped here rather than
+   * hidden by having no card. ADR-0179 is the split: somebody who types a refused contract's name gets
+   * it from `npx toopo search`, and a shelf holds what can be used.
+   *
+   * Dropping it here rather than relying on the absence of a card is what keeps the count honest -
+   * *showing 2 of* is a claim about this shelf, and counting a result the shelf can never show would
+   * make it wrong by one whenever a query reached the refusal.
+   */
+  const installable = found.results.filter((result) => result.installable)
+
+  if (installable.length === 0) {
+    return {
+      kind: 'none',
+      said: [`Nothing you can install answers "${found.query}".`, whyNothingAnswered(found)],
+    }
+  }
+
+  return {
+    kind: 'these',
+    addresses: installable.map((result) => result.address.name),
+    said: theyAre(installable.length),
+  }
+}

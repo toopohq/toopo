@@ -59,7 +59,7 @@ import type { Domain, Held } from './catalogue.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { MenuEntry } from './chrome.js'
-import { masthead } from './chrome.js'
+import { masthead, theCatalogueFrom } from './chrome.js'
 import { grouped } from './quantity.js'
 import { whatACardSays } from './what-a-card-says.js'
 import {
@@ -118,7 +118,7 @@ const offer = (held: Held): Node => {
 
   return el(
     'li',
-    { class: 'offer' },
+    { class: 'offer', 'data-contract': says.address },
     el(
       'h3',
       { class: 'call' },
@@ -198,6 +198,22 @@ export const frontPage = (
           ),
         ),
         line('h2', WHAT_THE_SHELF_IS),
+        /**
+         * The field a reader types into, served as an empty slot and never as a control.
+         *
+         * **A reader with nothing running meets the whole shelf and no box**, which is the
+         * arrangement ADR-0137 established for the masthead and what
+         * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` asks for. There
+         * is nothing to fall back to and nothing is claimed: every contract is already on the page,
+         * so a reader who cannot narrow it has lost a convenience rather than an answer.
+         *
+         * It carries the same two addresses the masthead's does, from `chrome.ts`, because the query
+         * it runs is the same query - `packages/registry/search.ts` against `contract-index` and
+         * `refusals`. What differs is what is done with the answer: the masthead paints a panel, and
+         * this hides cards.
+         */
+        el('div', { class: 'sift', 'data-search': theCatalogueFrom(FRONT_PAGE) }),
+        el('p', { class: 'sifted', role: 'status', 'aria-live': 'polite' }),
         el('ul', { class: 'chips plain' }, ...domains.filter((one) => one.held.length > 0).map(chip)),
         el('ul', { class: 'offers plain' }, ...held.map(offer)),
         /**
