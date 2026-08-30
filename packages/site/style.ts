@@ -950,6 +950,12 @@ ul.toc > li.under { padding-left: var(--s3) }
   border-bottom: 1px solid var(--rule);
   background: color-mix(in srgb, var(--paper) 88%, transparent);
   backdrop-filter: blur(10px);
+  margin: 0; padding: 0;
+}
+/* The column inside the bar, which is where the ceiling belongs. Auto margins on a grid item shrink
+   it to its content instead of stretching it, so a ceiling on the bar itself took the rule under it
+   down to 355px of a 1280 window - measured, and the reason these are two elements. */
+.masthead .bar {
   display: flex; align-items: center; gap: var(--s4);
   max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6); height: 56px;
 }

@@ -146,7 +146,19 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
   el(
     'header',
     { class: 'masthead' },
+    /**
+     * The bar spans the window and the column inside it does not, which is two elements and not one.
+     *
+     * **Measured before it was believed**: written as one, the rule under the bar ran 355px across the
+     * middle of a 1280 window rather than edge to edge. A grid item with auto margins on both sides
+     * shrinks to its content instead of stretching, so the ceiling that was meant to hold the column
+     * held the border with it. The artboard draws the same two elements for the same reason.
+     * ADR-0182.
+     */
     el(
+      'div',
+      { class: 'bar' },
+      el(
       'p',
       { class: 'wordmark' },
       own === FRONT_PAGE
@@ -188,7 +200,8 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
      * the palette answers `prefers-color-scheme` in CSS, so a reader who never gets this button still
      * gets their own system's theme. It is an override and never a way in. ADR-0176.
      */
-    el('div', { class: 'theme' }),
+      el('div', { class: 'theme' }),
+    ),
   )
 
 /**
