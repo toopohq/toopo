@@ -12,25 +12,29 @@
  * below is *visibly* one rather than plausibly one.
  *
  * ---------------------------------------------------------------------------
- * The version is false on purpose
+ * The version was false on purpose, and it is not false any more
  * ---------------------------------------------------------------------------
  *
- * The five have never been published. `ImplementationRecord.version` is `null` for all of them, and a
- * null cannot be walked - `mustHold` compares an address's `string` version against a record's, so an
- * unpublished implementation is unreachable by construction, which is the schema being right rather
- * than in the way. So a version has to be minted here for anything to be installable at all.
+ * `ImplementationRecord.version` is `null` in a contract's own record, and a null cannot be walked -
+ * `mustHold` compares an address's `string` version against a record's, so an implementation with no
+ * version is unreachable by construction, which is the schema being right rather than in the way. So a
+ * version has to be minted here for anything to be installable at all.
  *
- * It is `0.0.0-local`, and the shape is the whole point. `1.0.0` in a `toopo.lock` would name a
- * version that exists nowhere, and a reader would have no way to tell it from one that does - which
- * turns the lockfile's own argument against itself, since the value of a lockfile is that it can be
- * checked offline against a published fact. A reader who sees `0.0.0-local` knows immediately that
- * nothing was published, and the day publication exists these entries are greppable in any lockfile in
- * the world.
+ * **This block used to argue for `0.0.0-local` and the catalogue was published underneath it.** The
+ * argument was that `1.0.0` in a `toopo.lock` would name a version existing nowhere, and a reader would
+ * have no way to tell it from one that does. That was exactly right while nothing was published; since
+ * ADR-0106 `1.0.0` is a version that does exist, `THE_PUBLISHED_VERSION` below says so, and what makes
+ * a lockfile entry checkable is no longer a visibly fake string but the binding itself - whose commit
+ * is rebuilt and compared. The paragraph is rewritten rather than deleted because the argument it makes
+ * is the right one for the state it was written in, and it is the state this file spent most of its
+ * life in.
  *
- * The instant is false in the same direction and matters less, because nothing reads it: a binding
- * minted here is not a publication, so it carries the epoch rather than the clock. Reading the clock
- * would also make two runs of one guard disagree, which `CLOCK_DEPENDENCE_RULE` forbids for a reason
- * that applies here unchanged.
+ * **The instant used to be false in the same direction, and this file is one of the three places that
+ * made it false for longer than it had to be.** A binding minted here anchors nothing, so the commit it
+ * records is forty zeros; the *date* it records is read from `THE_PUBLICATIONS` and is the catalogue's
+ * own. The two answer different questions, which is why one of them can be true here and the other
+ * cannot. Reading a clock would make two runs of one guard disagree, which `CLOCK_DEPENDENCE_RULE`
+ * forbids for a reason that applies here unchanged. ADR-0177.
  *
  * ---------------------------------------------------------------------------
  * Two reads of one file, deliberately
@@ -68,7 +72,11 @@ import {
   publishImplementation,
   refuseContract,
 } from '../registry/snapshot.js'
-import { THE_PUBLICATION_INSTANT } from '../registry/publication.js'
+import {
+  THE_PUBLICATIONS,
+  THE_PUBLICATION_INSTANT,
+  THE_UNPUBLISHED_PUBLICATION,
+} from '../registry/publication.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import {
   REPOSITORY_ROOT,
@@ -151,6 +159,18 @@ const gather = (): {
     }
 
     /**
+     * When the catalogue published this, taken from the one declaration that says so.
+     *
+     * **A stand-in dates its bindings correctly and still anchors nothing**, which is the split
+     * `snapshot.ts` draws between the two fields: the instant is a fact about the catalogue and is
+     * true wherever it is served, while the commit is a claim that *this* tree can be rebuilt at it -
+     * and a working tree cannot make that claim. So `from` stays forty zeros below and this is read.
+     * ADR-0177.
+     */
+    const publication =
+      THE_PUBLICATIONS[renderContract(record.address)] ?? THE_UNPUBLISHED_PUBLICATION
+
+    /**
      * A contract the catalogue decided against never enters the published half, and its
      * implementation is never bound at all.
      *
@@ -172,7 +192,7 @@ const gather = (): {
         publishContract(ledger, {
           address: record.address,
           digest: contractDigest,
-          publishedAt: THE_PUBLICATION_INSTANT,
+          publishedAt: publication.at,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { lifecycle: record.lifecycle },
         }),
@@ -183,7 +203,7 @@ const gather = (): {
             version: THE_PUBLISHED_VERSION,
           },
           digest: implementationDigest,
-          publishedAt: THE_PUBLICATION_INSTANT,
+          publishedAt: publication.at,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { status: implementation.status },
         },

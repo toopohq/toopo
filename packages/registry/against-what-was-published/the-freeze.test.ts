@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
 import { theLocalLedger } from '../local-read-api.js'
-import { bindingsOf, rebindingFaults, unanchoredBindings } from '../rebinding.js'
-import { bindingsAtRevision } from '../rebuild.js'
+import { bindingsOf, misdatedBindings, rebindingFaults, unanchoredBindings } from '../rebinding.js'
+import { bindingsAtRevision, dateOfRevision } from '../rebuild.js'
 import { REPOSITORY_ROOT } from '../serialise.js'
 
 /**
@@ -34,10 +34,26 @@ import { REPOSITORY_ROOT } from '../serialise.js'
  * false the year `registry-storage` gains a survivor, because `agreesWith` stops tolerating an extra
  * red the moment a cell is pinned `survived`.
  *
- * **The price is stated here and not discovered.** No mutant of this repository ever reddens the two
+ * **The price is stated here and not discovered.** No mutant of this repository ever reddens the three
  * guards below, so their detecting power is not measured by the instrument. That is the same price
  * `packaging/against-the-origin/` pays, accepted for the same reason, and what stands in its place is
- * the same thing: they were seen red on their real conditions, and the reds are in ADR-0107.
+ * the same thing: they were seen red on their real conditions, and the reds are in ADR-0107 and
+ * ADR-0177.
+ *
+ * ---------------------------------------------------------------------------
+ * The third guard is about the other field of the same pair
+ * ---------------------------------------------------------------------------
+ *
+ * A binding records a digest and a commit, and the first guard asks whether the digest still holds. It
+ * also records an *instant*, and until ADR-0177 nothing asked anything of that at all - so when a
+ * second publication added a commit to the map in `local-read-api.ts`, the constant one file over went
+ * on answering *17 August* for bindings minted on the 20th and the 24th. Every guard here was green
+ * through it, because the field was in no digest, in no lockfile and in no page: the only place it was
+ * wrong was the audit surface, which is the one surface this repository is for.
+ *
+ * It costs one `git show` per distinct commit - three today - where the two guards above cost a
+ * checkout and a child of node apiece. It is here rather than in the registry's suite because its
+ * subject is this catalogue at this commit, which is what this file is for.
  */
 
 const theFaults = (): readonly string[] =>
@@ -74,5 +90,23 @@ describe('what this repository published, against what it produces today', () =>
 
     expect(unanchoredBindings(ledger)).toEqual([])
     expect(bindingsOf(ledger).size).toBeGreaterThan(0)
+  })
+
+  /**
+   * And every one of them is dated by the commit it names, rather than by a constant beside it.
+   *
+   * The faults are asserted whole for the reason the first guard's are: `misdatingFor` has three arms -
+   * a commit whose date git cannot render, an instant the registry serves that is not one, and the two
+   * disagreeing - and a count would be satisfied by any of them.
+   *
+   * **What this does not claim is which spelling of the instant is served.** Both sides are normalised
+   * before they are compared, so a coordinate written in a local offset would pass. That is deliberate:
+   * the claim here is that the registry dates a binding by the commit it names, and a rule about the
+   * rendering is a second claim nobody has asked for. ADR-0177.
+   */
+  it('every-published-binding-is-dated-by-the-commit-it-names :: the instant is read and not declared', () => {
+    expect(
+      misdatedBindings(theLocalLedger(), (revision) => dateOfRevision(REPOSITORY_ROOT, revision)),
+    ).toEqual([])
   })
 })

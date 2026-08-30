@@ -16,7 +16,12 @@
  * engine range of `toopo@1.0.0` are what they were the moment it was published, for as long as that
  * version is installable. Correcting one costs a version, exactly as correcting a contract's address
  * costs `name@2` - and a reader who installed the old one is never told.
+ *
+ * The one import is the null object identifier a stand-in mints, taken from where it is argued rather
+ * than restated: `revision.ts` keeps forty zeros beside the function that asks git.
  */
+
+import { THE_UNPUBLISHED_REVISION } from './revision.js'
 
 /**
  * Where the source is, in the spelling npm's own documentation gives for `repository.url`.
@@ -177,23 +182,150 @@ export const THE_PACKAGE_VERSION = '1.1.0'
 export const THE_PUBLISHED_IMPLEMENTATION_VERSION = '1.0.0'
 
 /**
- * When this catalogue was published, to the day, and the reason it is not to the second.
+ * One publication of this catalogue: the commit it was made at, and when it was made.
  *
- * `publishedAt` says when somebody decided; `publishedFrom` says what they decided about, and only the
- * second is checkable. A clock reading is neither derivable nor falsifiable here, so what is written
- * is the coarsest true thing: the date the decision was taken, at midnight UTC. A time-of-day would
- * be a precision nobody measured, which is the rule ADR-0018 states about every other figure this
- * repository publishes.
+ * **The two halves are one fact and they used to live in two files**, which is the whole of what
+ * ADR-0177 repairs. `local-read-api.ts` held the commit, per address, because a second publication
+ * anchors at a second commit; `publication.ts` held the date, as one constant, because the first
+ * publication was the only one there had been. Nothing tied them, so the map grew a third row and the
+ * constant did not move - and the registry went on answering *17 August* for a binding made on the
+ * 24th, on a field `CONTRACT_BINDING_NATURES` classes `bound-for-life`.
  *
- * It is a constant and never `new Date()`. A publication instant read from a clock would differ on
- * every launch, so the ledger a reader rebuilds would never be the ledger they were served - and
- * `snapshot.ts` keeps it out of the frozen half for the neighbouring reason, so nothing here moves a
- * digest.
+ * A pair rather than two maps, because the failure is exactly a row moving in one of them alone.
+ */
+export type Publication = {
+  /** The commit that minted this binding, and the one a reader rebuilds it at. */
+  readonly from: string
+  /** When it was minted, read off that commit rather than declared beside it. */
+  readonly at: string
+}
+
+/**
+ * The commit that published the four founding contracts, and the first publication this catalogue had.
  *
- * **The three copies of the epoch this replaces were tied by nothing whatever** - not exported, not
- * asserted, not injected into - so the three stand-ins were free to disagree about when the catalogue
- * was published, on a field a client records. One declaration is the closure, and it is a shape rather
- * than a guard: there is no second statement left to drift.
+ * It could not name itself: `implementationSnapshot` carries the version, so the commit that mints
+ * `reference@1.0.0` creates addresses no earlier commit binds. The anchoring is therefore the commit
+ * after it, which is why this coordinate is written down rather than computed. ADR-0106.
+ */
+const THE_FIRST_PUBLICATION: Publication = {
+  from: 'd3a5166347cf334ee699097673ada179e8f06b60',
+  at: '2026-08-17T10:57:32.000Z',
+}
+
+/**
+ * The commit that published `number/round@1`, and the second publication this catalogue has had.
+ *
+ * It is the same shape as the first and for the same reason: that commit minted two addresses no
+ * earlier commit binds, so it could not name itself, and this is the commit that can. It moves no
+ * digest of its own - measured, the ledger is byte-identical either side - which is what makes a
+ * coordinate written afterwards a true statement rather than a convenient one.
+ *
+ * **One commit sits between the two and it is not this coordinate's business.** `35d7115` corrected
+ * four pins the replay disagreed with, and a pin is not in `contractSnapshot`'s frozen half: the
+ * ledger it prints is byte-identical to the ledger `50ff990` prints, so rebuilding there still
+ * produces what this tree produces. ADR-0144.
+ */
+const THE_SIXTH_CONTRACT: Publication = {
+  from: '50ff9906be9a00e033cb41b5443a3b5a08e96e8f',
+  at: '2026-08-20T21:40:02.000Z',
+}
+
+/**
+ * The commit that published `object/deep-equal@1`, and the third publication of this catalogue.
+ *
+ * The same shape a third time, and it is what `local-read-api.ts` predicted in as many words: a
+ * coordinate per publication, because a commit that mints an address cannot name itself. What it
+ * publishes is unlike the two before it - it is the first contract whose cases hold values the
+ * registry had no model for, so the commit it names moves `packages/registry/value.ts` as well as the
+ * catalogue.
+ *
+ * **`symbolFields` is absent where there is none, and that is what keeps this coordinate honest for
+ * the five bindings above it**: every record published before this one is byte-identical across the
+ * change, so rebuilding at their commits still produces what this tree produces. Measured -
+ * `every-published-binding-still-hashes-to-what-it-was-published-as` is green either side. ADR-0160.
+ */
+const THE_SEVENTH_CONTRACT: Publication = {
+  from: '3ec621cc6f8f3af1cfcb4116831f4e68cd7de4ce',
+  at: '2026-08-24T20:39:38.000Z',
+}
+
+/**
+ * What this catalogue has published, by rendered address.
+ *
+ * **The instant is the commit's own author date, in UTC, and the resolution changed with the
+ * mechanism.** The constant this replaces was written to the day, at midnight, on a stated argument:
+ * *a clock reading is neither derivable nor falsifiable here, so what is written is the coarsest true
+ * thing.* Both halves of that are now false - the commit is where the reading comes from, and
+ * `every-published-binding-is-dated-by-the-commit-it-names` is what falsifies it - so the coarse form
+ * stopped being the honest one and became a rounding away from a fact in hand. Midnight is also a
+ * moment at which the binding did not exist, which the day-resolution was quietly asserting.
+ *
+ * **The author date and not the committer date**, and the reason is this repository's own history: it
+ * has been reissued twice under a record and reserves the right to be reissued again, and a rewrite
+ * moves a committer date where it leaves an author date alone. The two already differ here - `d3a5166`
+ * was authored at 12:57:32+02:00 and committed at 13:02:48+02:00 - so the choice is measured rather
+ * than theoretical. It is also the one that answers the field's own question: `publishedAt` says *when
+ * somebody decided*, and that is when the work was authored.
+ *
+ * **An address this map does not hold is not a publication**, which is a door rather than a default.
+ * It is the state a contract stands in between the commit that publishes it and the commit that can
+ * say where - the one window this repository cannot close, because no commit names itself - and
+ * `nothing-this-tree-binds-escapes-the-freeze-check` is what refuses to let a tree be pushed while
+ * standing in it.
+ *
+ * **They are transcribed and they are not trusted.** `packages/registry/against-what-was-published/`
+ * checks each commit out, runs *its* `ledger` script and compares, so a coordinate naming the wrong
+ * commit is a red rather than a note - and since ADR-0177 the same suite resolves the date against the
+ * commit, so a row whose two halves part company is a red as well. ADR-0093 is why the past is rebuilt
+ * rather than recorded, and ADR-0144 is the publication that made this a map.
+ */
+export const THE_PUBLICATIONS: Readonly<Record<string, Publication | undefined>> = {
+  'typescript/number/parse@1': THE_FIRST_PUBLICATION,
+  'typescript/date/add@1': THE_FIRST_PUBLICATION,
+  'typescript/string/levenshtein@1': THE_FIRST_PUBLICATION,
+  'typescript/string/slugify@1': THE_FIRST_PUBLICATION,
+  'typescript/number/round@1': THE_SIXTH_CONTRACT,
+  'typescript/object/deep-equal@1': THE_SEVENTH_CONTRACT,
+}
+
+/**
+ * What an address `THE_PUBLICATIONS` does not hold is bound at, which is nothing, said twice.
+ *
+ * Forty zeros is git's own spelling of *no object*, and the epoch is the same gesture on a clock -
+ * `imagined-source.ts` already dates its imagined graph that way, and the resemblance is named rather
+ * than shared, because that one is a fixture's date and this one is the absence of a publication.
+ * Neither half is a plausible-looking value: the whole argument `THE_UNPUBLISHED_REVISION` carries is
+ * that a reader who meets it knows at once that nothing was published, and a date that looked ordinary
+ * would undo it on the field beside it.
+ *
+ * **The stand-ins take the `from` and never the `at`, and the split is the one `snapshot.ts` draws.**
+ * `publishedAt` is a fact about the catalogue and is true wherever it is served; `publishedFrom` is a
+ * claim that *this* tree can be rebuilt at that commit, which a working tree serving a stand-in cannot
+ * make. So a stand-in anchors nothing and still dates its bindings correctly, which is what lets a page
+ * built from one say when a contract arrived.
+ */
+export const THE_UNPUBLISHED_PUBLICATION: Publication = {
+  from: THE_UNPUBLISHED_REVISION,
+  at: '1970-01-01T00:00:00.000Z',
+}
+
+/**
+ * When this catalogue itself was published, which is the day the ledger a reader fetches first existed.
+ *
+ * **It is no longer what any binding is dated by**, and that is the repair rather than a narrowing:
+ * one publication instant answered for every binding, which was true while there had been one
+ * publication and false from the second onwards. `THE_PUBLICATIONS` above is what a binding reads now.
+ *
+ * What is left is the refusal. `refuseContract` records that this catalogue decided against a
+ * contract, and a refusal mints no binding, names no commit and can be rebuilt at nothing - so there
+ * is no coordinate to read a date off, and what it carries is the moment the refusal entered a
+ * published ledger. **Whether that is the date the decision was taken is a question this repository
+ * has not answered**, and it is deliberately not answered here: it is a second field with a second
+ * meaning, and repairing it inside a unit about `publishedAt` would be two decisions in one commit.
+ *
+ * It is a constant and never `new Date()`. A reading from a clock would differ on every launch, so the
+ * ledger a reader rebuilds would never be the ledger they were served - and `snapshot.ts` keeps it out
+ * of the frozen half for the neighbouring reason, so nothing here moves a digest.
  */
 export const THE_PUBLICATION_INSTANT = '2026-08-17T00:00:00.000Z'
 

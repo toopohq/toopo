@@ -392,6 +392,29 @@ directions, so a twelfth cannot arrive in silence and a row cannot outlive the f
 gives up refusing an illegible ink and buys refusing a new one and a stale exemption**, and that trade
 is the one thing in the unit taken on the assistant's judgement rather than the owner's. ADR-0176.
 
+**A binding was dated by a constant beside it rather than by the commit it names, and the registry
+served that for ten days with every guard green.** `publishedAt` says *when a binding was made* and
+`CONTRACT_BINDING_NATURES` classes it `bound-for-life`. Measured on the live origin at `22ccd46`, all
+**twelve** named answers carrying it — six contract bindings and six implementation bindings —
+answered `2026-08-17T00:00:00.000Z`, while `PUBLISHED_FROM` said `number/round@1` was minted at
+`50ff990` and `object/deep-equal@1` at `3ec621c`. **Four of the twelve were wrong, two by three days
+and two by seven.** **The cause is where the halves lived and not a typo**: the commit was a map in
+`local-read-api.ts`, the instant was one constant in `publication.ts`, and nothing tied them — so the
+seventh contract added a row to the map and the constant went on answering for the first publication.
+Each half was edited correctly and the pair went wrong. **Nothing was red because the field is in no
+digest, no lockfile and no page** — measured rather than recalled: `npm run ledger` is byte-identical
+across the repair, a real `npx toopo@1.1.0 add number/round` writes `installedAt` and `servedFrom` and
+never this, and `npm pack toopo@1.1.0` holds no such value. The only surface it was wrong on is the
+audit surface. `THE_PUBLICATIONS` is the two halves written once, `{ from, at }` per address;
+`every-published-binding-is-dated-by-the-commit-it-names` reads the instant back off the commit.
+**The author date and not the committer date**, because a rewrite moves one and leaves the other, and
+this history has been reissued twice — the two part on `d3a5166` by five minutes, and swapping `%aI`
+for `%cI` reddens the guard, so the choice is read rather than asserted. **The day resolution went
+with the repair**: the old constant's own argument was *a clock reading is neither derivable nor
+falsifiable here*, and both halves of that died the moment the commit became the source. The defect
+put back reddens the new guard **alone**, and the two guards already watching that ledger stay green —
+which is what says they were never its subject. ADR-0177.
+
 **And that freeze now covers what a contract's guards call, which until this unit it did not.** A
 fingerprint covered the seven files of a folder and nothing they import, so emptying one shared guard
 left all eight ledger digests identical to the byte while a contract the guard exists to refuse went
@@ -1671,6 +1694,30 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   of a silence. It costs one guard and one declaration, it would be born green on today's seventeen,
   and the event it would catch is the eighth contract's schema gaining a field nobody classed. Priced
   and not taken. ADR-0175.
+
+- **That the date a refusal carries is the date the refusal was taken.** `refuseContract` records
+  `decidedOn`, `/refusals` serves it, and it is fed by `THE_PUBLICATION_INSTANT` — so
+  `array/group-by@1` is published as decided against on **2026-08-17**, which is the day the
+  *catalogue* was published and not a day anybody established for that decision. The contract was
+  refused before publication, so the true date is earlier and this repository has never written it
+  down.
+
+  **It is the entry ADR-0177 did not close, and the reason is that it is a different field.** That
+  unit repaired `publishedAt` by reading it off the commit a binding names; a refusal mints no
+  binding, names no commit and can be rebuilt at nothing, so there is no coordinate to read a date
+  off and the same mechanism does not reach it. Repairing it inside a unit about `publishedAt` would
+  have been two decisions in one commit, which is the move this list exists to refuse.
+
+  **Where this looked**: `refuseContract` in `snapshot.ts`, whose `RefusedContract` carries
+  `decidedOn` and nothing else about when; the three call sites in `local-read-api.ts` and the two
+  stand-ins, all three of which hand it the same constant; and `THE_PUBLICATION_INSTANT` in
+  `publication.ts`, which now has this one use and says so.
+
+  **The population is every refusal the catalogue publishes, which is one**, and it grows with each
+  contract turned down. What would close it is a decision about what a refusal's date *is* — the
+  commit that recorded the lifecycle is one candidate and is not obviously right, because a refusal
+  is argued in a record before it is written into a source. Priced as its own unit and not taken.
+  ADR-0177.
 
 - **That an address a frozen file cites is one that resolves where the file is frozen.** A citation
   whose target is frozen beside it can never rot: the two move together or not at all. A citation

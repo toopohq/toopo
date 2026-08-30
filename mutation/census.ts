@@ -292,6 +292,17 @@
  * `packages/cli/` therefore cost five files**, and the run that taught it named every battery and
  * every guard. ADR-0168.
  *
+ * A twenty-eighth on the date a binding carries: **no new file and one count moved**, under the
+ * registry's - `rebinding.test.ts` from 13 to 19. It is the cheapest shape this table has, and it is a
+ * line here for what sits *outside* it: the guard that catches the real defect is in
+ * `against-what-was-published/`, which no battery replays and which this file therefore never counts.
+ * So the six that are counted prove the comparison with the commit's date handed in, and the one that
+ * is not is the only one that asks the question about this catalogue at this commit. **That is the
+ * twentieth's finding arriving on a repair rather than on a reading** - a suite this file cannot count
+ * is a suite nothing can compose-check - and it was accepted here rather than worked around, because
+ * moving the total guard into the registry's suite would put a `git show` per binding inside a replay
+ * that runs it sixty times. ADR-0177.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -400,7 +411,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/snapshot.test.ts': 60,
     'packages/registry/frozen-for-life.test.ts': 4,
     'packages/registry/publication.test.ts': 9,
-    'packages/registry/rebinding.test.ts': 13,
+    'packages/registry/rebinding.test.ts': 19,
     'packages/registry/rebuild.test.ts': 9,
     'packages/registry/the-sixth-contract.test.ts': 15,
     'packages/registry/verifiability.test.ts': 13,

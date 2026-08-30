@@ -7,6 +7,7 @@ import {
   RenderingsCollide,
   bindingsFrom,
   bindingsOf,
+  misdatedBindings,
   readBindings,
   rebindingFaults,
   renderBindings,
@@ -45,14 +46,21 @@ const AS_IT_STANDS = 'd'.repeat(64)
 
 const PUBLISHED: ContractStanding = { lifecycle: { state: 'published' } }
 
+/** What a commit this fixture's reader knows about was authored at, in an offset that is not UTC. */
+const WHEN_A_COMMIT_WAS_AUTHORED = '2026-08-16T02:00:00+02:00'
+
+/** The same instant as the line above, spelled the way the registry serves one. */
+const THE_SAME_INSTANT = '2026-08-16T00:00:00.000Z'
+
 const entry = (
   address: typeof ADDRESS,
   digest: string,
   publishedFrom: string,
+  publishedAt: string = THE_SAME_INSTANT,
 ): PublishedContract => ({
   address,
   digest,
-  publishedAt: '2026-08-16T00:00:00.000Z',
+  publishedAt,
   publishedFrom,
   standing: PUBLISHED,
 })
@@ -214,6 +222,144 @@ describe('the population this check runs over, named rather than counted', () =>
     expect(
       ledger.implementations.every((held) => held.publishedFrom !== THE_UNPUBLISHED_REVISION),
     ).toBe(true)
+  })
+})
+
+/**
+ * The other field of the pair a binding records, with the commit's date supplied rather than asked for.
+ *
+ * **The reader is a stub here for the reason it is a stub above.** Asking git is a process; the rule is
+ * a comparison of two instants. What no guard in this file can establish is that the rule holds for
+ * *this* catalogue at *this* commit - `against-what-was-published/` is where the real commits are asked,
+ * and it is a suite of its own because it spawns.
+ *
+ * **What is being kept out is a class that survived two publications in silence.** The commit lived in
+ * a map keyed by address and the instant lived one file over as a single constant, so the second and
+ * third publications added a row to the map and left the constant answering for the first - and the
+ * registry served *17 August* for bindings minted on the 20th and the 24th. Nothing was red: the field
+ * is in no digest, no lockfile and no page. ADR-0177.
+ */
+describe('a binding is dated by the commit it names, and this is what says so', () => {
+  /**
+   * The claim of the unit. An instant that is not the commit's is the registry answering a question
+   * about its own past with something nobody measured, on a field it declares bound-for-life.
+   */
+  it('a-binding-dated-by-something-other-than-its-own-commit-is-refused :: the instant is not the commit\'s', () => {
+    const faults = misdatedBindings(
+      ledgerOf(entry(ADDRESS, AS_PUBLISHED, A_COMMIT, '2026-08-17T00:00:00.000Z')),
+      () => WHEN_A_COMMIT_WAS_AUTHORED,
+    )
+
+    expect(faults).toHaveLength(1)
+    expect(faults[0]).toContain(renderContract(ADDRESS))
+    expect(faults[0]).toContain('2026-08-17T00:00:00.000Z')
+  })
+
+  /**
+   * And the green direction, which is the one that proves the comparison is about instants.
+   *
+   * The two sides are written in different offsets on purpose: git renders a commit date where it was
+   * made and the registry serves UTC, so a rule comparing strings would refuse a correct pair. **The
+   * spelling is deliberately not this rule's subject** - what is claimed is the moment.
+   */
+  it('a-binding-dated-by-its-own-commit-is-accepted-whatever-the-offset :: two spellings, one moment', () => {
+    expect(
+      misdatedBindings(
+        ledgerOf(entry(ADDRESS, AS_PUBLISHED, A_COMMIT, THE_SAME_INSTANT)),
+        () => WHEN_A_COMMIT_WAS_AUTHORED,
+      ),
+    ).toEqual([])
+  })
+
+  /**
+   * A stand-in anchors nothing, so there is no commit to date it against and none is asked for.
+   *
+   * A reader that was never called is what proves it, rather than an empty fault list - which would
+   * look the same if the rule did nothing at all. It is the same partition `isAnchored` draws for the
+   * rebinding check, and it has to hold here too: every binding of a working tree is unanchored, so a
+   * rule that asked anyway would spawn git on forty zeros on every run of the site's own build.
+   */
+  it('a-binding-that-names-no-commit-is-not-dated-against-one :: nothing to ask', () => {
+    let asked = 0
+    const authored = () => {
+      asked += 1
+
+      return WHEN_A_COMMIT_WAS_AUTHORED
+    }
+
+    expect(
+      misdatedBindings(
+        ledgerOf(
+          entry(ADDRESS, AS_PUBLISHED, THE_UNPUBLISHED_REVISION, '2026-08-17T00:00:00.000Z'),
+          entry(OTHER, AS_PUBLISHED, 'not-a-commit', '2026-08-17T00:00:00.000Z'),
+        ),
+        authored,
+      ),
+    ).toEqual([])
+    expect(asked).toBe(0)
+  })
+
+  /**
+   * A commit git cannot date is refused by name rather than compared against.
+   *
+   * The event this catches is a reader asking git for the wrong thing - `%aI` mistyped, or traded for
+   * a format that renders a name - at which point every binding would disagree at once and the message
+   * would be about six mismatched instants instead of about the one reader that stopped working.
+   */
+  it('a-commit-whose-date-cannot-be-read-is-refused :: an unreadable answer is not a mismatch', () => {
+    const faults = misdatedBindings(
+      ledgerOf(entry(ADDRESS, AS_PUBLISHED, A_COMMIT)),
+      () => 'Mathis Perron',
+    )
+
+    expect(faults).toHaveLength(1)
+    expect(faults[0]).toContain('which is not an instant')
+  })
+
+  /**
+   * And an instant the registry serves that nobody can read is refused on its own side.
+   *
+   * It is the neighbour of the guard above and it is a different defect: that one is this repository
+   * failing to ask git properly, and this one is what it would be serving to a reader. An unreadable
+   * `publishedAt` is worse than an absent one, because it looks like an answer.
+   */
+  it('a-binding-serving-an-instant-nobody-can-read-is-refused :: it looks like an answer', () => {
+    const faults = misdatedBindings(
+      ledgerOf(entry(ADDRESS, AS_PUBLISHED, A_COMMIT, 'the day it was decided')),
+      () => WHEN_A_COMMIT_WAS_AUTHORED,
+    )
+
+    expect(faults).toHaveLength(1)
+    expect(faults[0]).toContain('is not an instant')
+    expect(faults[0]).toContain('the day it was decided')
+  })
+
+  /**
+   * The commit is asked once however many bindings share it, which is the cost this check has.
+   *
+   * A contract and its reference are published together, so every commit here dates two addresses -
+   * and asking git is a spawn. It is the same claim `the-past-is-read-once-per-commit-…` makes one
+   * screen up about a far more expensive reader, and it is worth making twice because the two
+   * memoisations are two pieces of code.
+   *
+   * **The verdict is deliberately not asserted here.** It was, and a perturbation of the normalisation
+   * one guard up reddened this one as well - which is a guard covering its neighbour's claim rather
+   * than its own, and it says nothing on the day the two disagree. What is claimed here is the count.
+   */
+  it('the-commit-is-asked-once-however-many-bindings-share-it :: spawning is the cost', () => {
+    let asked = 0
+    const authored = () => {
+      asked += 1
+
+      return WHEN_A_COMMIT_WAS_AUTHORED
+    }
+
+    misdatedBindings(
+      ledgerOf(entry(ADDRESS, AS_PUBLISHED, A_COMMIT), entry(OTHER, AS_PUBLISHED, A_COMMIT)),
+      authored,
+    )
+
+    expect(asked).toBe(1)
   })
 })
 

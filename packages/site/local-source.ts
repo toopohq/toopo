@@ -70,7 +70,11 @@ import {
   publishImplementation,
   refuseContract,
 } from '../registry/snapshot.js'
-import { THE_PUBLICATION_INSTANT } from '../registry/publication.js'
+import {
+  THE_PUBLICATIONS,
+  THE_PUBLICATION_INSTANT,
+  THE_UNPUBLISHED_PUBLICATION,
+} from '../registry/publication.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
 import { theCatalogue } from '../registry/the-catalogue.js'
@@ -134,6 +138,18 @@ const gather = (): {
     const contractDigest = digestOfSnapshot(contractShot)
     const implementationDigest = digestOfSnapshot(implementationShot)
 
+    /**
+     * When the catalogue published this, taken from the one declaration that says so.
+     *
+     * **A stand-in dates its bindings correctly and still anchors nothing**, which is the split
+     * `snapshot.ts` draws between the two fields: the instant is a fact about the catalogue and is
+     * true wherever it is served, while the commit is a claim that *this* tree can be rebuilt at it -
+     * and a working tree cannot make that claim. So `from` stays forty zeros below and this is read.
+     * ADR-0177.
+     */
+    const publication =
+      THE_PUBLICATIONS[renderContract(record.address)] ?? THE_UNPUBLISHED_PUBLICATION
+
     snapshots.set(contractDigest, servedSnapshot(contractShot))
     snapshots.set(implementationDigest, servedSnapshot(implementationShot))
 
@@ -155,7 +171,7 @@ const gather = (): {
         publishContract(ledger, {
           address: record.address,
           digest: contractDigest,
-          publishedAt: THE_PUBLICATION_INSTANT,
+          publishedAt: publication.at,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: {
             lifecycle: record.lifecycle,
@@ -176,7 +192,7 @@ const gather = (): {
             version: THE_PUBLISHED_VERSION,
           },
           digest: implementationDigest,
-          publishedAt: THE_PUBLICATION_INSTANT,
+          publishedAt: publication.at,
           publishedFrom: THE_UNPUBLISHED_REVISION,
           standing: { status: implementation.status },
         },

@@ -60,11 +60,13 @@ const everyBinding = (ledger: Ledger): readonly AnchoredBinding[] => [
     what: renderContract(entry.address),
     digest: entry.digest,
     publishedFrom: entry.publishedFrom,
+    publishedAt: entry.publishedAt,
   })),
   ...ledger.implementations.map((entry) => ({
     what: renderImplementation(entry.address),
     digest: entry.digest,
     publishedFrom: entry.publishedFrom,
+    publishedAt: entry.publishedAt,
   })),
 ]
 
@@ -101,6 +103,8 @@ export type AnchoredBinding = {
   readonly what: string
   readonly digest: string
   readonly publishedFrom: string
+  /** What the registry answers about when this was bound, which the commit above is what settles. */
+  readonly publishedAt: string
 }
 
 /**
@@ -162,6 +166,94 @@ export const rebindingFaults = (ledger: Ledger, bindingsAt: BindingsAt): readonl
 
       return fault === null ? [] : [fault]
     })
+}
+
+/**
+ * How a commit's own date is read. `the-freeze.test.ts` supplies git; a test supplies its own.
+ *
+ * The reader is a parameter for the reason `BindingsAt` above is one: asking git is a process, and the
+ * rule is a comparison. Written together, one guard would cover two claims and neither would say
+ * anything on the day they disagree.
+ */
+export type DateOfCommit = (revision: string) => string
+
+/**
+ * One instant, however it was spelled, or `null` when it is not an instant at all.
+ *
+ * Both sides are normalised before they are compared, because git renders a commit date in the offset
+ * it was made in and the registry serves UTC - `2026-08-17T12:57:32+02:00` and
+ * `2026-08-17T10:57:32.000Z` are one moment written twice. **The spelling is deliberately not this
+ * rule's subject**: what is claimed is that the registry dates a binding by the commit it names, and a
+ * claim about which of the two forms is served would be a second one, wanted by nobody yet.
+ */
+const instantOf = (written: string): string | null => {
+  const parsed = Date.parse(written)
+
+  return Number.isNaN(parsed) ? null : new Date(parsed).toISOString()
+}
+
+const misdatingFor = (entry: AnchoredBinding, authored: string): string | null => {
+  const commit = instantOf(authored)
+  if (commit === null) {
+    return (
+      `${entry.what} records that it was published from ${entry.publishedFrom}, and asking that ` +
+      `commit for its date answered \`${authored}\`, which is not an instant. A date nobody can read ` +
+      `is not a date the registry can be held to.`
+    )
+  }
+
+  const served = instantOf(entry.publishedAt)
+  if (served === null) {
+    return (
+      `${entry.what} is served as published at \`${entry.publishedAt}\`, which is not an instant. ` +
+      `\`publishedAt\` is what a reader is told about when this address was bound, and an unreadable ` +
+      `one is worse than none: it looks like an answer.`
+    )
+  }
+
+  if (served === commit) return null
+
+  return (
+    `${entry.what} is served as published at ${served} and was published from ${entry.publishedFrom}, ` +
+    `which was authored at ${commit}. \`CONTRACT_BINDING_NATURES\` classes this field bound-for-life, ` +
+    `so what is wrong is the answer and never the promise: either the coordinate names the wrong ` +
+    `commit, or the instant beside it was not moved when the commit was. \`THE_PUBLICATIONS\` in ` +
+    `\`publication.ts\` is where the two are declared together, and \`git show -s --format=%aI ` +
+    `${entry.publishedFrom}\` is what settles it.`
+  )
+}
+
+/**
+ * Why the registry may be dating a binding by something other than the commit it names. Empty when it
+ * is not. ADR-0177.
+ *
+ * **This is the neighbour of `rebindingFaults` and it is about the other field of the same pair.**
+ * That one asks whether the *digest* a binding records is still what its commit produces; this one
+ * asks whether the *instant* it records is when that commit happened. The two were one declaration
+ * split across two files until ADR-0177, and the class of defect this closes is exactly what that
+ * split allowed: a second publication added a commit to one half while the other half went on
+ * answering for the first - measured, `number/round@1` and `object/deep-equal@1` were served as
+ * published on 17 August, three and seven days before the commits that bound them.
+ *
+ * **A binding that anchors nothing is not asked**, which is `isAnchored`'s partition doing the same
+ * work it does above: a stand-in mints forty zeros on purpose, there is no commit to ask, and
+ * `unanchoredBindings` is what refuses to let that emptiness go unnamed.
+ *
+ * The commit is read once per distinct revision, because two artefacts published together share one -
+ * and asking git is the expensive half here exactly as rebuilding is above.
+ */
+export const misdatedBindings = (ledger: Ledger, dateOf: DateOfCommit): readonly string[] => {
+  const anchored = everyBinding(ledger).filter(isAnchored)
+  const authored = new Map<string, string>()
+
+  return anchored.flatMap((entry) => {
+    const when = authored.get(entry.publishedFrom) ?? dateOf(entry.publishedFrom)
+    authored.set(entry.publishedFrom, when)
+
+    const fault = misdatingFor(entry, when)
+
+    return fault === null ? [] : [fault]
+  })
 }
 
 /**

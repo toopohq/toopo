@@ -126,6 +126,26 @@ const entryPointOf = (worktree: string, revision: string): string => {
 }
 
 /**
+ * When one commit of this repository was authored, which is what dates the bindings it minted.
+ *
+ * **It is here rather than beside its caller because this is the module that talks to git about the
+ * past**, and a fourth ad-hoc spawn in a test file would be a fourth thing to keep in step with the
+ * refusal above. It is also the cheap end of that job: no checkout, no worktree, no child of node -
+ * one `git show`, where `bindingsAtRevision` below costs a checkout and a process.
+ *
+ * **The author date and not the committer date**, for the reason `THE_PUBLICATIONS` states: this
+ * repository has reissued its history twice under a record, a rewrite moves a committer date and
+ * leaves an author date alone, and `publishedAt` asks *when somebody decided* - which is when the work
+ * was authored. Measured on this history: `d3a5166` was authored at 12:57:32+02:00 and committed at
+ * 13:02:48+02:00, so the two really do part here.
+ *
+ * The offset is git's own and is not normalised here. `misdatedBindings` compares instants rather than
+ * spellings, so the conversion belongs where the comparison is rather than in the reader. ADR-0177.
+ */
+export const dateOfRevision = (root: string, revision: string): string =>
+  git(root, 'show', '-s', '--format=%aI', revision)
+
+/**
  * The bindings one commit of this repository minted, by checking it out and asking it.
  *
  * The checkout is removed in a `finally`, because a worktree left registered would make `git status`

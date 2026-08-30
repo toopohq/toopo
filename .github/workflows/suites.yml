@@ -735,10 +735,22 @@ jobs:
   # cells that are worth watching, which is the opposite of what this comment used to say.
   #
   # **A cell costs 17 s and a contract costs 56 s, so one contract is worth 3.3 cells.** Twelve cells
-  # over 78 commits is four contracts of budget, spent with nothing saying so. At today's 94 cells the
+  # over 78 commits is four contracts of budget, spent with nothing saying so. At 94 cells the
   # bound is reached at the twenty-first contract, between the nineteenth and the twenty-fifth at one
   # standard error; at seven contracts it is reached at 138 cells. The joint line is 133 cells at eight
-  # contracts, 125 at ten, 108 at fifteen - and at twenty contracts today's 94 is already the ceiling.
+  # contracts, 125 at ten, 108 at fifteen - and at twenty contracts 94 is already the ceiling.
+  #
+  # **The 94 is a reading and not a present tense, and this line is what makes it one.** It was written
+  # `today's 94 cells`, which is the shape ADR-0018 refuses: a dated number with a present-tense clause
+  # beside it, where it is the clause a reader believes. Measured, `registry-storage` held **94 at
+  # `3daae2f`**, where the sentence was written and where it was true; **97 at `22ccd46`**; and **103**
+  # with this unit - so it was already three out before anything here moved it, and six more after.
+  # **The extrapolation is not re-derived**, for
+  # the reason the paragraph above gives about the 56 s and the 3.3: recomputing it needs the
+  # fifty-nine runs the regression was taken over, which is a reading and not an edit. What is
+  # corrected is the tense, and the direction is the safe one - more cells than the figure assumes
+  # means the bound is reached sooner than these lines say, so a reader is not being told the margin is
+  # larger than it is. ADR-0177.
   #
   # **The method is half the finding, because the raw duration says nothing.** Two runs of identical
   # work - 88 cells over 409 guards, at `f761de0` and `643bf7e` - measured 1 017 s and 1 464 s, and

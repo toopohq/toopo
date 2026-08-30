@@ -80,8 +80,10 @@ import {
   refuseContract,
 } from './snapshot.js'
 import {
+  THE_PUBLICATIONS,
   THE_PUBLICATION_INSTANT,
   THE_PUBLISHED_IMPLEMENTATION_VERSION,
+  THE_UNPUBLISHED_PUBLICATION,
 } from './publication.js'
 import { THE_UNPUBLISHED_REVISION } from './revision.js'
 import { theCatalogue } from './the-catalogue.js'
@@ -103,76 +105,22 @@ import { servedMethodology } from './verifiability.js'
  */
 
 /**
- * A publication, named by the commit that carried it out.
+ * Where the publication coordinates went, and why they are not here any more.
  *
- * **A commit cannot contain its own identifier, so the commit that mints a digest can never record
- * where it was minted.** Publishing and anchoring are two acts: `d3a5166` marked the first four
- * contracts published and bound their implementations at `1.0.0`, and the commit after it is the one
- * that could name it. That second commit moved no digest of its own - neither snapshot carries
- * anything from this module - so rebuilding `d3a5166` produces exactly what this tree produces for
- * those eight addresses, which is what makes a coordinate written afterwards a true statement rather
- * than a convenient one. ADR-0106.
+ * **They lived here as commits, per address, while the instant they were paired with lived one file
+ * over as a single constant.** Nothing tied the two, so a third row could be added to this map with
+ * nothing saying the constant beside it had stopped answering for it. It had: two bindings were dated
+ * three and seven days before they existed, on a field `CONTRACT_BINDING_NATURES` classes
+ * `bound-for-life`. `THE_PUBLICATIONS` in `publication.ts` is the two halves of one fact written once,
+ * and this file reads it rather than holding half of it. ADR-0177.
+ *
+ * **What did not change is why a coordinate is transcribed here at all.** A commit cannot contain its
+ * own identifier, so the commit that mints a digest can never record where it was minted: publishing
+ * and anchoring are two acts, and the second is the commit after the first - ADR-0106. That is why the
+ * map exists rather than being computed, ADR-0144 is the publication that turned one constant into a
+ * map, and ADR-0107 is why the transcription is not trusted: `against-what-was-published/` checks each
+ * commit out and asks it, so a coordinate naming the wrong commit is a red and not a note.
  */
-const THE_FIRST_PUBLICATION = 'd3a5166347cf334ee699097673ada179e8f06b60'
-
-/**
- * The commit each published address was minted at, and the only transcriptions this file carries.
- *
- * **It was one constant until the day its own comment named.** That comment read *one constant for
- * eight bindings because one publication minted all eight; a catalogue that publishes a sixth
- * contract later anchors it at a different commit, and this becomes a map keyed by address - which is
- * a change this file should take on the day it happens and not before.* A second publication mints
- * its bindings at its own commit, and one string could only ever have answered for one of them.
- *
- * **An address this map does not hold falls back to `THE_UNPUBLISHED_REVISION`, and that is a door
- * rather than a default.** It is the state a contract stands in between the commit that publishes it
- * and the commit that can say where - the one window this repository cannot close, because no commit
- * names itself - and `nothing-this-tree-binds-escapes-the-freeze-check` is what refuses to let a tree
- * be pushed while standing in it.
- *
- * **They are transcribed and they are not trusted.** `packages/registry/against-what-was-published/`
- * checks each commit out, runs *its* `ledger` script and compares, so a coordinate naming the wrong
- * commit is a red rather than a note - measured, and the reds are in ADR-0107. ADR-0093 is why the
- * past is rebuilt rather than recorded, and ADR-0144 is the publication that made this a map.
- */
-/**
- * The commit that published `number/round@1`, and the second publication this catalogue has had.
- *
- * It is the same shape as the first and for the same reason: that commit minted two addresses no
- * earlier commit binds, so it could not name itself, and this is the commit that can. It moves no
- * digest of its own - measured, the ledger is byte-identical either side - which is what makes a
- * coordinate written afterwards a true statement rather than a convenient one.
- *
- * **One commit sits between the two and it is not this coordinate's business.** `35d7115` corrected
- * four pins the replay disagreed with, and a pin is not in `contractSnapshot`'s frozen half: the
- * ledger it prints is byte-identical to the ledger `50ff990` prints, so rebuilding there still
- * produces what this tree produces. ADR-0144.
- */
-const THE_SIXTH_CONTRACT = '50ff9906be9a00e033cb41b5443a3b5a08e96e8f'
-
-/**
- * The commit that published `object/deep-equal@1`, and the third publication of this catalogue.
- *
- * The same shape a third time, and the map is what the comment above said would happen: a coordinate
- * per publication, because a commit that mints an address cannot name itself. What it publishes is
- * unlike the two before it - it is the first contract whose cases hold values the registry had no
- * model for, so the commit it names moves `packages/registry/value.ts` as well as the catalogue.
- *
- * **`symbolFields` is absent where there is none, and that is what keeps this coordinate honest for
- * the five bindings above it**: every record published before this one is byte-identical across the
- * change, so rebuilding at their commits still produces what this tree produces. Measured -
- * `every-published-binding-still-hashes-to-what-it-was-published-as` is green either side. ADR-0160.
- */
-const THE_SEVENTH_CONTRACT = '3ec621cc6f8f3af1cfcb4116831f4e68cd7de4ce'
-
-const PUBLISHED_FROM: Readonly<Record<string, string | undefined>> = {
-  'typescript/number/parse@1': THE_FIRST_PUBLICATION,
-  'typescript/date/add@1': THE_FIRST_PUBLICATION,
-  'typescript/string/levenshtein@1': THE_FIRST_PUBLICATION,
-  'typescript/string/slugify@1': THE_FIRST_PUBLICATION,
-  'typescript/number/round@1': THE_SIXTH_CONTRACT,
-  'typescript/object/deep-equal@1': THE_SEVENTH_CONTRACT,
-}
 
 type Holding = {
   readonly address: ContractAddress
@@ -210,7 +158,15 @@ const gather = (): {
 
     const contractShot = contractSnapshot(record)
     const implementationShot = implementationSnapshot(implementation)
-    const publishedFrom = PUBLISHED_FROM[renderContract(record.address)] ?? THE_UNPUBLISHED_REVISION
+    /**
+     * One lookup for both artefacts, because a contract and its reference are published together.
+     *
+     * They are two addresses and one event: the commit that marks a contract published is the commit
+     * that binds its reference at `1.0.0`, so reading the coordinate twice would be inviting the two
+     * to disagree about a moment they share.
+     */
+    const publication =
+      THE_PUBLICATIONS[renderContract(record.address)] ?? THE_UNPUBLISHED_PUBLICATION
 
     snapshots.set(digestOfSnapshot(contractShot), servedSnapshot(contractShot))
     snapshots.set(digestOfSnapshot(implementationShot), servedSnapshot(implementationShot))
@@ -232,8 +188,8 @@ const gather = (): {
         publishContract(ledger, {
           address: record.address,
           digest: digestOfSnapshot(contractShot),
-          publishedAt: THE_PUBLICATION_INSTANT,
-          publishedFrom,
+          publishedAt: publication.at,
+          publishedFrom: publication.from,
           standing: {
             lifecycle: record.lifecycle,
             ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
@@ -253,8 +209,8 @@ const gather = (): {
             version: THE_PUBLISHED_IMPLEMENTATION_VERSION,
           },
           digest: digestOfSnapshot(implementationShot),
-          publishedAt: THE_PUBLICATION_INSTANT,
-          publishedFrom,
+          publishedAt: publication.at,
+          publishedFrom: publication.from,
           standing: { status: implementation.status },
         },
       )

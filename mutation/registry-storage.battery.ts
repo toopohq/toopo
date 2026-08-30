@@ -208,6 +208,23 @@ const A_RENDERING_ADDRESSES_ONE_BINDING =
 
 const A_PAST_COMMIT_ANSWERS_DIGESTS = '        if (!DIGEST.test(digest)) {'
 
+// --- The other field of the pair a binding records: the date it carries. ADR-0177 ---
+
+const THE_INSTANT_IS_THE_ONE_THE_COMMIT_HAPPENED_AT = '  if (served === commit) return null'
+
+const AN_INSTANT_IS_A_MOMENT_AND_NOT_A_SPELLING =
+  '  return Number.isNaN(parsed) ? null : new Date(parsed).toISOString()'
+
+const A_COMMIT_DATE_NOBODY_CAN_READ_IS_REFUSED = '  if (commit === null) {'
+
+const A_SERVED_INSTANT_NOBODY_CAN_READ_IS_REFUSED = '  if (served === null) {'
+
+const A_STAND_IN_IS_NOT_DATED_AGAINST_A_COMMIT =
+  '  const anchored = everyBinding(ledger).filter(isAnchored)'
+
+const A_COMMIT_IS_ASKED_ONCE =
+  '    const when = authored.get(entry.publishedFrom) ?? dateOf(entry.publishedFrom)'
+
 /** The separator the two processes agree on, on the writing side. `readBindings` splits on it. */
 const A_BINDING_IS_SEPARATED_BY_ONE_TAB = '`${what}\\t${digest}\\n`'
 
@@ -1439,6 +1456,95 @@ const mutants: readonly Mutant[] = [
      * a ledger built to hold a stand-in, which is the claim this mutant is actually about.
      */
     killed(['a-binding-that-names-no-commit-is-not-asked-about']),
+  ),
+
+  // --- The date a binding carries, which is the other half of the same coordinate. ADR-0177 ---
+
+  /**
+   * The comparison, inverted, on the field nothing was watching for ten days.
+   *
+   * It is the cheapest defect on the rule and it is the one that was live: the registry answered
+   * *17 August* for two bindings minted on the 20th and the 24th, because the commit lived in a map
+   * and the instant lived one file over as a constant. Every guard this repository held was green
+   * through it - the field is in no digest, no lockfile and no page - so the only surface it was wrong
+   * on was the one a reader audits.
+   */
+  sameOnEveryLens(
+    'I-75',
+    'accepts a binding dated by anything at all and refuses one dated by its own commit, so a ' +
+      'published address can carry an instant nobody measured with the check green',
+    [rebindingFile(THE_INSTANT_IS_THE_ONE_THE_COMMIT_HAPPENED_AT, '  if (true) return null')],
+    killed(['a-binding-dated-by-something-other-than-its-own-commit-is-refused']),
+  ),
+
+  /**
+   * Two spellings of one moment, compared as text.
+   *
+   * git renders a commit date in the offset it was made in and the registry serves UTC, so a rule that
+   * compared strings would refuse every correct pair at once - which is the shape of a check that has
+   * to be turned off rather than one that found something.
+   */
+  sameOnEveryLens(
+    'I-76',
+    'compares the two instants as they are written rather than as the moments they are, so a ' +
+      'correctly dated binding is refused for being spelled in its own offset',
+    [rebindingFile(AN_INSTANT_IS_A_MOMENT_AND_NOT_A_SPELLING, '  return Number.isNaN(parsed) ? null : written')],
+    killed(['a-binding-dated-by-its-own-commit-is-accepted-whatever-the-offset']),
+  ),
+
+  /**
+   * A commit date git cannot render, compared instead of refused.
+   *
+   * The event is a reader asking git for the wrong thing - `%aI` traded for a format that answers a
+   * name - and without this arm every binding would disagree at once, so the report would be about six
+   * mismatched instants instead of about the one reader that stopped working.
+   */
+  sameOnEveryLens(
+    'I-77',
+    'compares an unreadable commit date against a served instant rather than refusing it, so a ' +
+      'broken reader reports itself as six wrong dates',
+    [rebindingFile(A_COMMIT_DATE_NOBODY_CAN_READ_IS_REFUSED, '  if (false) {')],
+    killed(['a-commit-whose-date-cannot-be-read-is-refused']),
+  ),
+
+  /**
+   * And the same silence on the other side, which is what a reader would be receiving.
+   *
+   * An unreadable `publishedAt` is worse than an absent one, because it looks like an answer. The two
+   * arms are one defect wearing each other's clothes: this one is what the registry serves, and the one
+   * above is this repository failing to ask.
+   */
+  sameOnEveryLens(
+    'I-78',
+    'compares a served instant nobody can read rather than refusing it, so an unreadable date leaves ' +
+      'the check with nothing to say about it',
+    [rebindingFile(A_SERVED_INSTANT_NOBODY_CAN_READ_IS_REFUSED, '  if (false) {')],
+    killed(['a-binding-serving-an-instant-nobody-can-read-is-refused']),
+  ),
+
+  /**
+   * Forty zeros dated against. A stand-in anchors nothing, so there is no commit to ask - and asking
+   * anyway would spawn git on the null object identifier on every run of the site's own build.
+   */
+  sameOnEveryLens(
+    'I-79',
+    'dates a binding that names no commit against one anyway, so every binding of a working tree is ' +
+      'asked about a revision that names nothing',
+    [rebindingFile(A_STAND_IN_IS_NOT_DATED_AGAINST_A_COMMIT, '  const anchored = everyBinding(ledger)')],
+    killed(['a-binding-that-names-no-commit-is-not-dated-against-one']),
+  ),
+
+  /**
+   * The memory dropped. A contract and its reference are published together, so every commit here
+   * dates two addresses and asking git is a spawn - the same cost the rebuilding memo one screen up
+   * exists for, on a reader that is cheaper and still a process.
+   */
+  sameOnEveryLens(
+    'I-80',
+    'asks git for a commit date once per binding rather than once per commit, so a publication that ' +
+      'minted two addresses is asked about twice',
+    [rebindingFile(A_COMMIT_IS_ASKED_ONCE, '    const when = dateOf(entry.publishedFrom)')],
+    killed(['the-commit-is-asked-once-however-many-bindings-share-it']),
   ),
 
   /**
