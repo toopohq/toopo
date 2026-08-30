@@ -2531,7 +2531,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * something addressed by where it sits. ADR-0183.
    */
   sameOnEveryLens(
-    'W-149',
+    'W-152',
     "writes the pill's hover against the container it stands in rather than against itself, so a " +
       'component paints by where it happens to sit',
     [
@@ -2557,7 +2557,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * place. ADR-0183.
    */
   sameOnEveryLens(
-    'W-150',
+    'W-153',
     'renames the class the browser writes on the copy control, so every install line on the site ' +
       'offers a button the stylesheet has no rule for',
     [startFile(`button.className = 'copy'`, `button.className = 'copy-button'`)],
@@ -2579,7 +2579,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * pages building perfectly. ADR-0183.
    */
   sameOnEveryLens(
-    'W-151',
+    'W-154',
     'lets a section paint the pill inside it, so what a component looks like goes back to depending ' +
       'on which page it stands on',
     [
