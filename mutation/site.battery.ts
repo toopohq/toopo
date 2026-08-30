@@ -2386,7 +2386,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * page served.
    */
   sameOnEveryLens(
-    'W-141',
+    'W-145',
     'narrows the shelf to the summaries of the contracts that answered rather than to their ' +
       'addresses, so the caller matches cards against prose and shows none of them',
     [
@@ -2447,7 +2447,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    * each card is well formed.
    */
   sameOnEveryLens(
-    'W-140',
+    'W-146',
     'shows four of the six installable contracts on the shelf, so every card is right, every command ' +
       'runs, and a reader is told this catalogue holds four functions',
     [frontPageFile(`...held.map(offer)`, `...held.slice(0, 4).map(offer)`)],
