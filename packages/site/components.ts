@@ -110,7 +110,12 @@ export const drawn = (
 /**
  * The pill: a way into a part of the catalogue, and the mark of the part you are already in.
  *
- * Every length is the artboard's. **`line-height` is `normal` rather than a number**, because the
+ * Every length is the artboard's, and every *type* size is stated in `--a-point` or in a step of the
+ * scale rather than in pixels - because a pixel ignores the reader's own font-size setting, and a
+ * component whose text will not grow is a component somebody cannot read. `style.ts` declares the unit
+ * and says what the fourteen-against-six conflict behind it is. ADR-0185.
+ *
+ * **`line-height` is `normal` rather than a number**, because the
  * artboard declares none and a button's initial value is what draws its 28px box; inheriting this
  * site's `--the-line` is what made the one correct pill 31.44px tall.
  *
@@ -121,7 +126,7 @@ export const drawn = (
 const THE_PILL: Drawing = {
   rules: `
 ${OWN} {
-  display: inline-block; font-family: var(--mono); font-size: 12px; line-height: normal;
+  display: inline-block; font-family: var(--mono); font-size: calc(12 * var(--a-point)); line-height: normal;
   padding: 5px 11px; border-radius: 6px; text-decoration: none;
   border: 1px solid var(--rule); background: var(--wash); color: var(--body);
   transition: border-color .15s, color .15s;
@@ -171,7 +176,7 @@ const THE_BADGE: Drawing = {
 ${OWN} {
   ${A_BADGE_BORDER}: 0px;
   display: flex; align-items: center; gap: 4px; flex: none;
-  font-size: 10.5px; border-radius: 4px;
+  font-size: calc(10.5 * var(--a-point)); border-radius: 4px;
   padding: calc(2px - var(${A_BADGE_BORDER})) calc(6px - var(${A_BADGE_BORDER}));
 }
 ${OWN}[data-badge='frozen'] { font-weight: 500; color: var(--accent); background: var(--target) }
@@ -227,7 +232,7 @@ const THE_COPY: Drawing = {
   rules: `
 ${OWN} {
   margin-left: auto; flex: none;
-  font-family: var(--mono); font-size: 11px; line-height: normal;
+  font-family: var(--mono); font-size: var(--t6); line-height: normal;
   background: var(--card); border: 1px solid var(--rule); border-radius: 5px;
   padding: 3px 8px; color: var(--body); cursor: pointer;
   transition: color .15s, border-color .15s;
@@ -276,19 +281,19 @@ ${OWN} ul.${AN_OFFER_MARKS} {
 }
 ${OWN} ul.${AN_OFFER_MARKS} li { padding: 0; border: 0 }
 ${OWN} a.${AN_OFFER_CALL} {
-  font-family: var(--mono); font-size: 13.5px; font-weight: 500;
+  font-family: var(--mono); font-size: calc(13.5 * var(--a-point)); font-weight: 500;
   flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   color: var(--ink); text-decoration: none;
 }
 ${OWN} a.${AN_OFFER_CALL}:hover { text-decoration: underline }
 ${OWN} a.${AN_OFFER_CALL} .${AN_OFFER_DOMAIN} { color: var(--body) }
 ${OWN} .${AN_OFFER_SIGNATURE} {
-  display: block; font-family: var(--mono); font-size: 12px; color: var(--body);
+  display: block; font-family: var(--mono); font-size: calc(12 * var(--a-point)); color: var(--body);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
   margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
 }
 ${OWN} .${AN_OFFER_SAYS} {
-  margin: 0; font-size: 12.5px; color: var(--body); line-height: 1.5;
+  margin: 0; font-size: calc(12.5 * var(--a-point)); color: var(--body); line-height: 1.5;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 ${OWN} .${AN_OFFER_INSTALL} {
@@ -296,7 +301,7 @@ ${OWN} .${AN_OFFER_INSTALL} {
   margin: 2px 0 0; padding: 9px 0 0;
   border: 0; border-top: 1px solid var(--rule); border-radius: 0;
   background: none; color: var(--dim); max-width: 100%;
-  font-family: var(--mono); font-size: 11px; overflow-wrap: anywhere; min-width: 0;
+  font-family: var(--mono); font-size: var(--t6); overflow-wrap: anywhere; min-width: 0;
 }
 `,
 }
@@ -357,7 +362,7 @@ const THE_EYEBROW: Drawing = {
 ${OWN} {
   margin: 0; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--dim);
 }
-${OWN}[data-eyebrow='section'] { font-size: 12.5px }
+${OWN}[data-eyebrow='section'] { font-size: calc(12.5 * var(--a-point)) }
 ${OWN}[data-eyebrow='field'] { font-size: var(--t6) }
 `,
 }

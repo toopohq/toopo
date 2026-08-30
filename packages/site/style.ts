@@ -251,6 +251,20 @@ ${THE_FONT_FACE}
 
   --t1: 1.625rem; --t2: 1.1875rem; --t3: 1rem; --t4: .9375rem; --t5: .8125rem; --t6: .6875rem;
 
+  /* The artboard's own type sizes, for the ten it uses that the scale above has no step for.
+     ADR-0115 declares six steps and no seventh; the artboard draws fourteen distinct sizes across
+     eighty-one declarations, of which four land on the scale - 11, 13, 15 and 16 - and ten do not.
+     That conflict is real and it is not this unit's to settle: it is an entry of the open list, and
+     the owner rules on it.
+
+     What this unit settles is the half that is not a design question. Those ten were written as
+     pixels, and a pixel ignores the reader's own font-size setting - so somebody who enlarged their
+     text because they cannot read small print received nothing. A size stated in this unit follows
+     that setting exactly as a rem does, because it is one: a sixteenth of the root, multiplied by the
+     artboard's own number. The number therefore stays legible against the source it came from, and
+     every remaining call site is greppable as a size that is not on the scale. ADR-0185. */
+  --a-point: calc(1rem / 16);
+
   /* The dark palette, and it is the default rather than the exception since ADR-0176. The values
      are the owner's, read off the artboard; the role names are this repository's, because ADR-0115
      decided that a colour is named for what it does and the artboard names its colours for what
@@ -567,7 +581,7 @@ ul.names li { color: var(--dim); font-size: var(--t5) }
 }
 .masthead .search .shortcut {
   position: absolute; right: var(--s); top: 50%; transform: translateY(-50%);
-  font-family: var(--mono); font-size: 10px; color: var(--dim);
+  font-family: var(--mono); font-size: calc(10 * var(--a-point)); color: var(--dim);
   border: var(--the-hairline) solid var(--rule); border-radius: 4px; padding: 2px 5px;
   background: var(--wash); pointer-events: none;
 }
@@ -975,7 +989,7 @@ ul.toc > li.under { padding-left: var(--s3) }
    emitted pages could meet it a second time. Measured in a browser: 38.05px wide and 129.53px tall
    without this declaration, 69.39px and 25.91px with it, and the bar stays 56px either way - which is
    the trap ADR-0135 recorded, a wordmark repaired at the menu's expense. ADR-0184. */
-.masthead .wordmark { flex: none; margin: 0; font-family: var(--mono); font-size: 16px; font-weight: 600; letter-spacing: -.02em }
+.masthead .wordmark { flex: none; margin: 0; font-family: var(--mono); font-size: var(--t3); font-weight: 600; letter-spacing: -.02em }
 .masthead .wordmark a, .masthead .wordmark > span {
   display: flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none;
 }
@@ -988,7 +1002,7 @@ ul.toc > li.under { padding-left: var(--s3) }
 .masthead ul.menu { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0 }
 .masthead ul.menu li { padding: 0; border: 0 }
 .masthead ul.menu a, .masthead ul.menu .here {
-  display: block; font-size: 13.5px; color: var(--body);
+  display: block; font-size: calc(13.5 * var(--a-point)); color: var(--body);
   padding: var(--s2) var(--s3); border-radius: 6px; text-decoration: none;
 }
 .masthead ul.menu a:hover { color: var(--ink); text-decoration: none }
@@ -1009,7 +1023,7 @@ main.shelf { display: block; padding: 0 }
   margin: 0 0 14px; text-wrap: pretty; color: var(--ink); font-family: var(--sans);
 }
 .hero .lede {
-  font-size: 16px; color: var(--body); margin: 0 auto 30px; line-height: 1.55;
+  font-size: var(--t3); color: var(--body); margin: 0 auto 30px; line-height: 1.55;
   max-width: var(--the-lede-line); text-wrap: pretty;
 }
 /* The field is built into this by start.ts and the box is drawn here, so that what a reader sees is
@@ -1022,7 +1036,7 @@ main.shelf { display: block; padding: 0 }
 .hero .find input {
   width: 100%; height: 54px; padding: 0 66px 0 44px;
   background: var(--wash); border: 1px solid var(--edge); border-radius: 8px;
-  color: var(--ink); font: inherit; font-size: 15.5px;
+  color: var(--ink); font: inherit; font-size: calc(15.5 * var(--a-point));
   transition: border-color .15s, box-shadow .15s;
 }
 .hero .find input::placeholder { color: var(--dim) }
@@ -1086,13 +1100,13 @@ a.row {
   transition: background .15s; min-width: 0;
 }
 a.row:hover { background: var(--card); text-decoration: none }
-a.row .call { margin: 0; font-family: var(--mono); font-size: 13px; font-weight: 500; min-width: var(--a-name-in-a-row); flex: none }
+a.row .call { margin: 0; font-family: var(--mono); font-size: var(--t5); font-weight: 500; min-width: var(--a-name-in-a-row); flex: none }
 a.row .signature {
-  margin: 0; flex: 1; min-width: 0; font-family: var(--mono); font-size: 12px; color: var(--body);
+  margin: 0; flex: 1; min-width: 0; font-family: var(--mono); font-size: calc(12 * var(--a-point)); color: var(--body);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-a.row .when { margin: 0; font-size: 12px; color: var(--dim); white-space: nowrap; flex: none }
-a.row .onward { margin: 0; font-size: 15px; color: var(--dim); flex: none; line-height: 1 }
+a.row .when { margin: 0; font-size: calc(12 * var(--a-point)); color: var(--dim); white-space: nowrap; flex: none }
+a.row .onward { margin: 0; font-size: var(--t4); color: var(--dim); flex: none; line-height: 1 }
 a.row:hover .onward { color: var(--body) }
 
 /* The three arguments, ruled off from the catalogue above them. */
@@ -1101,8 +1115,8 @@ a.row:hover .onward { color: var(--body) }
   display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--aside)), 1fr)); gap: 28px;
   max-width: var(--the-page); margin: 0 auto; padding: 40px var(--s6) 44px;
 }
-.arguments h3 { font-size: 14.5px; font-weight: 600; margin: 0 0 6px; color: var(--ink) }
-.arguments p { font-size: 13px; color: var(--body); line-height: 1.6; margin: 0 }
+.arguments h3 { font-size: calc(14.5 * var(--a-point)); font-weight: 600; margin: 0 0 6px; color: var(--ink) }
+.arguments p { font-size: var(--t5); color: var(--body); line-height: 1.6; margin: 0 }
 
 /* Not on the artboard, and here because no page is removed in this unit: a page nothing links to is
    one every-page-is-reachable-from-the-front-page refuses. ADR-0182. */
@@ -1118,7 +1132,7 @@ a.row:hover .onward { color: var(--body) }
   display: flex; align-items: center; gap: var(--s4); flex-wrap: wrap;
   max-width: var(--the-page); margin: 0 auto; padding: 20px var(--s6);
 }
-.foot .wordmark { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 13px; font-weight: 600 }
+.foot .wordmark { display: flex; align-items: center; gap: 9px; margin: 0; font-size: var(--t5); font-weight: 600 }
 .foot .wordmark a { color: var(--ink); text-decoration: none }
 .foot .wordmark a:hover { text-decoration: underline }
 .foot .terms { margin: 0; font-size: var(--t6); color: var(--dim) }
