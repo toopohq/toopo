@@ -1718,6 +1718,41 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
 **Still open, and what each one now costs.**
 
+- **That a layout a script produces is one somebody has looked at.** Every sweep this repository has
+  ever taken over its own pages reads the *emitted* tree - the HTML `build.ts` writes. A control
+  `start.ts` adds in the reader's browser is in none of them, so **a sweep over emitted pages cannot
+  see what a script adds**, and the geometry a reader actually meets is the geometry of a document
+  this repository has never rendered.
+
+  **It is not hypothetical and the instance is what opened the entry.** ADR-0135 swept 14 pages × 21
+  widths × 2 themes and repaired a wordmark that broke below 479. The masthead search field is built
+  by `start.ts`, so it was in none of those 294 renderings. Measured at `6dadac2` in a browser, at 390
+  with the module running: the wordmark is squeezed to **38.05px wide and 129.53px tall** - this site
+  introducing itself as five lines of one letter - and removing the field returns it to 69.39px.
+  Every suite was green, and `every-page-is-reachable-from-the-front-page` and its neighbours were
+  looking at a document in which the defect cannot occur.
+
+  **Half the machinery to close it exists and half does not, which is the correction this entry
+  carries.** `start.test.ts` already runs `start.ts`'s builders against a happy-dom document, so
+  *reaching* the enriched DOM is solved and costs nothing new. **Measuring it is not**: probed at
+  `6dadac2`, happy-dom's `getBoundingClientRect()` answers `{width: 0, height: 0}` for an element
+  declared `width: 200px; height: 40px`, and `getComputedStyle(el).width` answers `200px` by echoing
+  the declaration back. It parses and cascades; it does not lay out. So a guard over the enriched
+  layout needs the thing that lays text out, which is the headless browser this list already prices and
+  refuses in four other entries - and this is the first of them whose subject is a page *after a script
+  has run* rather than the page as served.
+
+  **Where this looked**: `pages.test.ts`, whose 44 guards build documents and read their text;
+  `published-tree.test.ts`, which reads what `build.ts` wrote; and `start.test.ts`, which runs the
+  builders and asserts what they put in the DOM and never where it lands.
+
+  **The population is every control `start.ts` adds** - the copy controls, the theme button, the search
+  field and its answers panel, the playground's form - on every page that carries one. What would close
+  it is one browser and a sweep at the widths ADR-0135 used, and it would be **red on its first run**,
+  which is the rare shape on this list: a guard that is not born green. Priced there and not taken
+  here, because a unit repairing a wordmark is not where one decides to add a tool to the repository.
+  ADR-0184.
+
 - **That a class a page writes is one a component owns.** ADR-0183 gives this site a component layer:
   five shapes whose class is derived from a closed union, whose rules sit beside their markup, and
   which nothing outside may paint. Two of the three properties are the compiler's. **The third is not

@@ -966,8 +966,16 @@ ul.toc > li.under { padding-left: var(--s3) }
   max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6); height: 56px;
 }
 /* The four squares and the name, on one baseline. The mark takes the accent on one quarter, which is
-   the second thing ADR-0115 lets the accent mean and the only decoration on this site. */
-.masthead .wordmark { margin: 0; font-family: var(--mono); font-size: 16px; font-weight: 600; letter-spacing: -.02em }
+   the second thing ADR-0115 lets the accent mean and the only decoration on this site.
+
+   The name does not give up its width, and that is what flex would otherwise take: a flex item
+   defaults to shrinking below its content, so at 390 the search and the menu squeezed the wordmark to
+   38.05px and this site introduced itself as five lines of one letter. ADR-0135 repaired that once,
+   before the search field existed in the bar; the field is added by start.ts, so no sweep over the
+   emitted pages could meet it a second time. Measured in a browser: 38.05px wide and 129.53px tall
+   without this declaration, 69.39px and 25.91px with it, and the bar stays 56px either way - which is
+   the trap ADR-0135 recorded, a wordmark repaired at the menu's expense. ADR-0184. */
+.masthead .wordmark { flex: none; margin: 0; font-family: var(--mono); font-size: 16px; font-weight: 600; letter-spacing: -.02em }
 .masthead .wordmark a, .masthead .wordmark > span {
   display: flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none;
 }
