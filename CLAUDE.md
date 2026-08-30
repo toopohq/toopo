@@ -1169,6 +1169,30 @@ either side. **What it does not buy is written where somebody reaching for it ar
 still write a class by hand, the compiler refusing one is an entry of the list below, and that entry
 carries a number that descends — 80 hand-written class names before, 70 after. ADR-0183.
 
+**And the site is written from the narrow width up, with every type size following the reader.** The
+owner read the front page at 320 and found the masthead unreadable — `How we verify` in four vertical
+pieces, `GitHub` a letter to a line, the field truncated to `Sea`, a bar rendering about 180px where it
+declares 56. **Two faults were tangled and they are separate**: measured at `f2ea3a1`, `style.ts` held
+46 pixel lengths and **no pixel type size** before the redesign and 99 of which **13 were type sizes**
+after it, and a pixel type size ignores a reader's own font-size setting — but the breaking at 320 is
+not caused by the pixels, because five flex children do not fit in 272px at any unit. **Twenty-one
+pixel type sizes are now none**, eight on the scale's own steps and twelve in `--a-point`, and every
+one is byte-identical at the default while doubling at a 200 % root. **Three of the five techniques
+proposed were already in use** — a container query, `auto-fill`/`minmax`/`min()` at seven and fifteen
+occurrences, `:has()` at ten — and two more were refused on measurements rather than on effort: a
+container query on the offer card, because the card is **342.7px at 1440 and 342px at 390** and a query
+on a box whose width does not move buys nothing; and a fluid headline, because a clamp needs a floor
+and nothing derives one, the longest word being 180px inside a 272px column. **Two of the three repairs
+needed no width condition at all** — the bar fits once the menu carries a mark, and the row's name took
+a basis where it took a floor. The three that were added are derived: **26rem** where the field first
+shows its placeholder, **11rem** where the bar stops breaking, **12.5rem** where the row does. **The
+last two are in rem and that is the point**: a condition in rem asks whether the window is narrow *for
+the text in it*, 320px being 20rem at the default and 10rem at 200 %. Swept over 17 pages and 12
+widths from 320 to 2560, and the front page at every 2px from 320 to 520: **zero faults**. What the
+reading could not reach is published — in a media query `rem` resolves against the *initial* font size,
+so a scripted root override moves every length and no condition, and whether a real 200 % setting fires
+those two is the one part of the acceptance this repository cannot take for itself. ADR-0184, ADR-0185.
+
 **The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
 name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The
 shape of every command at once stood there as `add domain/function` so that no contract was privileged
@@ -1752,6 +1776,38 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   which is the rare shape on this list: a guard that is not born green. Priced there and not taken
   here, because a unit repairing a wordmark is not where one decides to add a tool to the repository.
   ADR-0184.
+
+- **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
+  system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
+  eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
+  `--t5`, `--t4` and `--t3` - and ten do not: 10.5, 11.5, 12, 12.5, 13.5, 14, 14.5, 15.5, 25 and 40.
+  The design and a recorded decision are in direct conflict.
+
+  **It was being settled silently, by writing pixels.** Measured at `f2ea3a1` inside the `STYLE`
+  literal with comments stripped, `style.ts` held 46 pixel lengths and **no pixel type size** at
+  `a9236dd` before the redesign, and 99 of which **13 were type sizes** after it, with eight more in
+  the component layer. Nobody decided that; it is what *reproduce the artboard* comes to when the
+  artboard and the scale disagree and nothing names the disagreement.
+
+  **The distribution is the argument and it is why this is a real question rather than a tidy-up.**
+  Twelve of the fourteen sit between **10.5 and 16**, separated by half-pixels. That is not a scale; it
+  is the residue of adjustment by eye, and *reproduce it exactly* would mean reproducing the
+  adjustments. Landing them on six moves the design. Widening the scale to fourteen is not a scale.
+
+  **What is done rather than deferred is the half that is not a design question.** ADR-0185 puts every
+  type size in `rem` - eight on the scale's own steps, twelve in `--a-point`, a sixteenth of the root
+  multiplied by the artboard's number - so the sizes follow the reader's font setting and none moves at
+  the default. **The count of call sites that are not on the scale is therefore greppable**, which is
+  the number this entry descends by: `var(--a-point)` occurs twelve times today.
+
+  **Where this looked**: `--t1` to `--t6` in `packages/site/style.ts`, which is the whole declared
+  scale; ADR-0115, which settles it and gives the reason; and `packages/site/components.ts`, where the
+  eight the component layer introduced now live.
+
+  The population is every type size this site draws. What would close it is a ruling on which of the
+  three it is - the artboard lands on the scale, the scale grows, or the two are held apart on purpose
+  with the reason written down - and that is the owner's. Priced as its own unit and not taken.
+  ADR-0115, ADR-0185.
 
 - **That a class a page writes is one a component owns.** ADR-0183 gives this site a component layer:
   five shapes whose class is derived from a closed union, whose rules sit beside their markup, and
