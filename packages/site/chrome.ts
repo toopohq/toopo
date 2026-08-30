@@ -38,6 +38,7 @@
  */
 
 import { endpointOf, pathTo } from '../registry/endpoints.js'
+import { THE_SOURCE_REPOSITORY } from '../registry/publication.js'
 import type { Domain } from './catalogue.js'
 import { shortNameOf } from './catalogue.js'
 import type { WhereTheCatalogueIs } from './searching.js'
@@ -53,6 +54,20 @@ import {
 } from './paths.js'
 
 const NOTHING = {} as const
+
+/**
+ * Where this project's source is, as a browser opens it rather than as a clone does.
+ *
+ * **Derived and never typed**, for a guard rather than for tidiness:
+ * `the-generator-knows-of-no-domain-but-the-one-it-publishes-on` sweeps every `.ts` of this folder for
+ * a host that is not `toopo.dev`, and a link written out would name one. `THE_SOURCE_REPOSITORY` is
+ * the manifest's own field, `publication.ts` argues its `git+` prefix as npm's convention, and what a
+ * reader needs is that string with the prefix and the `.git` taken off.
+ *
+ * So the one address this site sends a reader away to is the one npm already publishes, and there is
+ * no second statement of it here to drift. ADR-0182.
+ */
+const THE_REPOSITORY_ADDRESS = THE_SOURCE_REPOSITORY.replace(/^git\+/, '').replace(/\.git$/, '')
 
 /** One destination of the masthead: what it is called, and the page it is. */
 export type MenuEntry = {
@@ -98,26 +113,72 @@ const destination = (own: string, page: string, label: string): Node =>
     : el('li', NOTHING, el('a', { href: `${rootFrom(own)}${linkTo(page)}` }, text(label)))
 
 /**
+ * The four squares the artboard opens on, one of them the accent.
+ *
+ * `aria-hidden`, so it is a picture of the name rather than a second reading of it - the wordmark
+ * beside it is what a screen reader and every projection carry. It is inline rather than a background,
+ * because `a-page-fetches-nothing-but-the-face-this-repository-serves` admits exactly one `url()` and
+ * it is the font. ADR-0182.
+ */
+const theMark = (): Node =>
+  el(
+    'svg',
+    { class: 'mark', width: '18', height: '18', viewBox: '0 0 18 18', 'aria-hidden': 'true' },
+    el('rect', { x: '1', y: '1', width: '7', height: '7', rx: '1.5', class: 'quiet' }),
+    el('rect', { x: '10', y: '1', width: '7', height: '7', rx: '1.5', class: 'lit' }),
+    el('rect', { x: '1', y: '10', width: '7', height: '7', rx: '1.5', class: 'quiet' }),
+    el('rect', { x: '10', y: '10', width: '7', height: '7', rx: '1.5', class: 'quiet' }),
+  )
+
+/**
  * The masthead of one page.
  *
  * The wordmark is a paragraph holding a link rather than a bare link, and that is the reading and not
  * the look: two elements that each carry content and neither of which separates run into one another,
  * which is what `no-element-runs-into-the-one-beside-it` exists for. The menu is a list for the same
  * reason - three anchors side by side are one word in a screen reader.
+ *
+ * **It is a `header` since ADR-0182**, which is the artboard's own element and the landmark a reader
+ * navigating by region expects at the top of a page. It held a `nav` and still does: the menu is the
+ * navigation, and the bar around it is the header.
  */
 export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
   el(
-    'nav',
+    'header',
     { class: 'masthead' },
     el(
       'p',
       { class: 'wordmark' },
       own === FRONT_PAGE
-        ? text('toopo')
-        : el('a', { href: rootFrom(own) }, text('toopo')),
+        ? el('span', NOTHING, theMark(), text('toopo'))
+        : el('a', { href: rootFrom(own) }, theMark(), text('toopo')),
     ),
     el('div', { class: 'search', 'data-search': theCatalogueFrom(own) }),
-    el('ul', { class: 'menu' }, ...menu.map((entry) => destination(own, entry.page, entry.label))),
+    el(
+      'ul',
+      { class: 'menu' },
+      ...menu.map((entry) => destination(own, entry.page, entry.label)),
+      /**
+       * The repository, which the artboard puts here and this project can now answer.
+       *
+       * The artboard's own `Docs` and `GitHub ↗` are both `href="#"` - placeholders, as a mock-up's
+       * links are. **One of the two is a destination this repository really has**: `gh repo view`
+       * answers `PUBLIC`, and `THE_SOURCE_REPOSITORY` is the address the manifest already publishes,
+       * so the link is composed from it rather than typed. The other is `/docs`, which is unit 4's,
+       * and a link to a page that does not exist is the control-that-does-nothing this site refuses.
+       *
+       * The arrow is the artboard's and it says the same thing `rel` does to a machine. ADR-0182.
+       */
+      el(
+        'li',
+        NOTHING,
+        el(
+          'a',
+          { href: THE_REPOSITORY_ADDRESS, rel: 'noreferrer' },
+          text('GitHub ↗'),
+        ),
+      ),
+    ),
     /**
      * Where the theme button is built, and it is served empty for the reason the search field is.
      *

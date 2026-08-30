@@ -153,13 +153,13 @@ const aServedFrontPage = (): void => {
 
 /** The shelf's field, built into the slot the front page serves. */
 const aSiftOnThePage = (): HTMLInputElement => {
-  const slot = document.querySelector('.sift')
+  const slot = document.querySelector('.find')
   const declared = slot instanceof HTMLElement ? slot.dataset['search'] : undefined
   if (declared === undefined) throw new Error('the shelf declares no catalogue')
 
   siftControl(arrivingOnce(servedFromThisTree(JSON.parse(declared) as WhereTheCatalogueIs)))
 
-  const field = document.querySelector('.sift input')
+  const field = document.querySelector('.find input')
   if (!(field instanceof HTMLInputElement)) throw new Error('the sift built no field')
 
   return field
@@ -486,7 +486,7 @@ describe('the controls a visitor touches, run against a document', () => {
     siftControl(arrivingOnce(servedFromThisTree(theCatalogueAsThisPageDeclaresIt().where)))
 
     expect(document.querySelectorAll('input')).toHaveLength(0)
-    expect(document.querySelector('.sift input')).toBeNull()
+    expect(document.querySelector('.find input')).toBeNull()
   })
 
   it('typing-answers-from-the-catalogue-the-masthead-declared', async () => {

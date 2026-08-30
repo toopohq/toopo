@@ -565,7 +565,7 @@ export const playgroundControl = async (): Promise<void> => {
  * ADR-0181.
  */
 export const siftControl = (arriving: TheCatalogueAsItArrives): void => {
-  const declared = theCatalogueDeclaredIn('.sift')
+  const declared = theCatalogueDeclaredIn('.find')
   const said = document.querySelector('.sifted')
   const cards = [...document.querySelectorAll('[data-contract]')]
   if (declared === null) return

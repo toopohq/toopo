@@ -76,6 +76,7 @@ export type Attributes = Readonly<Record<string, string>>
  * entry nothing keeps honest.
  */
 export type Tag =
+  | 'header'
   | 'h1'
   | 'h2'
   | 'h3'
@@ -92,6 +93,10 @@ export type Tag =
   | 'a'
   | 'code'
   | 'strong'
+  | 'span'
+  | 'svg'
+  | 'rect'
+  | 'path'
   | 'script'
 
 export type TextNode = { readonly kind: 'text'; readonly text: string }
@@ -245,6 +250,7 @@ const THE_READING: Projection = {
   prose: (value) => value,
   verbatim: new Set(),
   element: {
+    header: ends('\n\n'),
     h1: ends('\n\n'),
     h2: ends('\n\n'),
     h3: ends('\n\n'),
@@ -261,6 +267,10 @@ const THE_READING: Projection = {
     a: ends(''),
     code: ends(''),
     strong: ends(''),
+    span: ends(''),
+    svg: ends(''),
+    rect: ends(''),
+    path: ends(''),
     script: ends(''),
   },
 }
@@ -462,6 +472,7 @@ const THE_MARKDOWN: Projection = {
   prose: escapedForMarkdown,
   verbatim: new Set(['code', 'pre']),
   element: {
+    header: ends('\n\n'),
     h1: wraps('# ', '\n\n'),
     h2: wraps('## ', '\n\n'),
     h3: wraps('### ', '\n\n'),
@@ -482,6 +493,10 @@ const THE_MARKDOWN: Projection = {
     },
     code: (_, children) => codeSpan(children),
     strong: wraps('**', '**'),
+    span: ends(''),
+    svg: ends(''),
+    rect: ends(''),
+    path: ends(''),
     script: ends(''),
   },
 }

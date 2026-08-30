@@ -296,6 +296,22 @@ ${THE_FONT_FACE}
      two is a judgement that will be taken again, and this is the whole of where it is taken. */
   --a-contract-in-a-list: var(--measure);
 
+  /* The four lengths the artboard measures the front page in, declared here so that every ceiling and
+     every track on that page is a name rather than a number - which is what
+     every-ceiling-on-a-box-is-derived-and-never-typed and its neighbour ask of one.
+
+     They are the design's own and they are in rem so that a reader who has changed their text size
+     takes the whole page with them: 1100, 760, 600 and 300 at the browser's default. The page is
+     wider than the prose pages on purpose, and the reason is that a grid of cards is not a column of
+     text - --measure bounds a line and has no opinion about a row of three. ADR-0182. */
+  --the-page: 68.75rem;
+  --the-opening: 47.5rem;
+  --the-lede-line: 37.5rem;
+  --a-card: 18.75rem;
+  /* What a contract's name takes in a row of arrivals, so the four signatures beside them start on
+     one edge. The artboard writes 150px; it is a name and not a ceiling, which is why it is here. */
+  --a-name-in-a-row: 9.375rem;
+
   /* The prose is Geist and the monospace is the system's, which is one decision and not two halves
      of an unfinished one. ADR-0115 refused a web font on coverage and named what would reopen it;
      Geist Mono fails that condition on its first term, so the face this site downloads is asked for
@@ -938,71 +954,198 @@ ul.toc > li.under { padding-left: var(--s3) }
   .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, var(--measure)) }
 }
 
-/* --- The front page, which is a shelf: the name, the promise, and everything a reader can install.
-       Read from the top like every other page and never centred in the window - centring was tried
-       and refused for the door, because it opens a void whose height is the reader's window rather
-       than anything this page decides, and a shelf has more to hold than a door had. ADR-0181.
+/* --- The front page, implemented from the artboard. Every length below is the design's own, and
+       where one is not, ADR-0182 says which and why.
 
-       **The door's own rules are gone with the door.** main.door, .doors and a.door-to were
-       rendered by front-page.ts and by nothing else - measured before they were removed - so
-       keeping them would have been a stylesheet describing a page that no longer exists. ADR-0140
-       is where the arrangement they drew is argued, and the record is where it stays. --- */
+       The bar, the hero and the grid all sit in a 1100px column with a 24px gutter - the artboard's
+       one measurement that repeats, and the reason the front page is wider than the prose pages: a
+       grid of cards is not a column of text and the measure has no opinion about it. --- */
 
-main.shelf { display: grid; align-content: start; gap: var(--s5); padding: var(--s12) 0 var(--s24) }
-main.shelf h1 { font-family: var(--mono); font-weight: 700; margin: 0 }
-main.shelf .lede { margin: 0 }
-/* The shelf's own heading is a label over a list rather than a section of an argument, so it takes
-   the size the card's field labels take and not the one an h2 takes elsewhere. */
-main.shelf h2 {
-  margin: var(--s8) 0 0; font-size: var(--t6); font-weight: 600;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--dim);
+.masthead {
+  position: sticky; top: 0; z-index: 40;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(10px);
+  display: flex; align-items: center; gap: var(--s4);
+  max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6); height: 56px;
 }
+/* The four squares and the name, on one baseline. The mark takes the accent on one quarter, which is
+   the second thing ADR-0115 lets the accent mean and the only decoration on this site. */
+.masthead .wordmark { margin: 0; font-family: var(--mono); font-size: 16px; font-weight: 600; letter-spacing: -.02em }
+.masthead .wordmark a, .masthead .wordmark > span {
+  display: flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none;
+}
+.mark { flex: none }
+.mark .quiet { fill: currentColor; opacity: .32 }
+.mark .lit { fill: var(--accent) }
+/* The bar pushes everything after the wordmark to the right, which is the artboard's spacer div
+   expressed as a margin rather than as an empty element carrying no content. */
+.masthead .search { margin-left: auto }
+.masthead ul.menu { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0 }
+.masthead ul.menu li { padding: 0; border: 0 }
+.masthead ul.menu a, .masthead ul.menu .here {
+  display: block; font-size: 13.5px; color: var(--body);
+  padding: var(--s2) var(--s3); border-radius: 6px; text-decoration: none;
+}
+.masthead ul.menu a:hover { color: var(--ink); text-decoration: none }
+.masthead ul.menu .here { color: var(--dim) }
 
-/* The domains, as ways into the part of the shelf filed under each. They are links and never
-   controls: a domain page lists exactly what a filtered grid would show, so nothing has to run for
-   a reader to get the same answer. */
-.chips { display: flex; flex-wrap: wrap; gap: var(--s3); margin: 0; padding: 0; list-style: none }
-.chips > li { padding: 0; border: 0 }
+main.shelf { display: block; padding: 0 }
+
+/* The opening: centred, in a column narrower than the grid under it, so the headline and the sentence
+   read as one block rather than spanning the page. */
+.hero { max-width: var(--the-opening); margin: 0 auto; padding: 72px var(--s6) 0; text-align: center }
+/* Forty pixels, which is a seventh step this scale did not have. ADR-0115 declared six sizes and no
+   seventh on the argument that a page needing one more has stopped distinguishing and started
+   decorating - and a landing headline is a register the six do not carry: --t1 is 26px and is the
+   title of a contract page, which is a different job on a different page. ADR-0182 records the
+   overruling with its scope, which is this one element. */
+.hero h1 {
+  font-size: 40px; line-height: 1.14; font-weight: 600; letter-spacing: -.03em;
+  margin: 0 0 14px; text-wrap: pretty; color: var(--ink); font-family: var(--sans);
+}
+.hero .lede {
+  font-size: 16px; color: var(--body); margin: 0 auto 30px; line-height: 1.55;
+  max-width: var(--the-lede-line); text-wrap: pretty;
+}
+/* The field is built into this by start.ts and the box is drawn here, so that what a reader sees is
+   the artboard's control rather than a browser's default input. */
+.hero .find { position: relative; text-align: left }
+.hero .find input {
+  width: 100%; height: 54px; padding: 0 66px 0 var(--s6);
+  background: var(--wash); border: 1px solid var(--edge); border-radius: 8px;
+  color: var(--ink); font: inherit; font-size: 15.5px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.hero .find input::placeholder { color: var(--dim) }
+.hero .find input:focus-visible {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--target);
+}
+.hero .sifted { margin: var(--s3) 0 0; font-size: var(--t6); color: var(--dim); text-align: left }
+.hero .sifted:empty { display: none }
+
+/* The domains, as ways into the part of the catalogue filed under each. */
+.chips {
+  display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: center;
+  margin: 18px 0 0; padding: 0; list-style: none;
+}
+.chips li { padding: 0; border: 0 }
 a.chip {
-  display: inline-block; font-family: var(--mono); font-size: var(--t6);
-  text-decoration: none; color: var(--body);
-  border: 1px solid var(--rule); border-radius: 4px; padding: var(--s2) var(--s4);
+  display: inline-block; font-family: var(--mono); font-size: 12px;
+  padding: 5px 11px; border-radius: 6px; text-decoration: none;
+  border: 1px solid var(--rule); background: var(--wash); color: var(--body);
+  transition: border-color .15s, color .15s;
 }
-a.chip:hover { color: var(--ink); border-color: var(--edge); text-decoration: none }
+a.chip:hover { border-color: var(--edge); color: var(--ink); text-decoration: none }
+a.chip .count { opacity: .55; margin-left: var(--s) }
 
-/* One card per contract, as many abreast as the column allows and no more. The floor is the measure,
-   which is what ul.contracts one screen up already uses for the same question - a card is as wide
-   as a readable line and the count is the column's business rather than a breakpoint's. */
-.offers {
-  display: grid; gap: var(--s5); margin: var(--s5) 0 0; padding: 0; list-style: none;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--a-contract-in-a-list)), 1fr));
+.listing { max-width: var(--the-page); margin: 0 auto; padding: 52px var(--s6) 20px }
+.recent { max-width: var(--the-page); margin: 0 auto; padding: 16px var(--s6) 48px }
+/* The label over a list, which is the artboard's one heading style on this page: small, spaced,
+   upper case, and the colour of secondary matter. */
+.listing h2, .recent h2 {
+  font-size: 12.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--body); margin: 0 0 14px;
 }
-/* The border is the card's own and not ul.plain's rule between items: these sit side by side, so a
-   line above each one would draw a grid of fragments rather than a stack of entries. */
+.recent h2 { margin-bottom: 10px }
+
+/* As many cards abreast as a 300px floor allows, which is what puts three on a 1100px column and one
+   on a phone with no width written anywhere. */
+.offers {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--a-card)), 1fr)); gap: 12px;
+  margin: 0; padding: 0; list-style: none;
+}
 .offers > li {
-  display: grid; gap: var(--s3); align-content: start; min-width: 0;
-  border: 1px solid var(--rule); border-radius: 6px; padding: var(--s5); background: var(--wash);
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--wash); border: 1px solid var(--rule); border-radius: 8px;
+  padding: 14px 16px 12px; min-width: 0;
+  transition: border-color .15s;
 }
 .offers > li:hover { border-color: var(--edge) }
-.offers .call { margin: 0; font-size: var(--t3) }
-.offers .call a { color: var(--ink); text-decoration: none }
-.offers .call a:hover { text-decoration: underline }
-/* A signature does not wrap and a summary does: the first is a line a reader reads as one thing and
-   the second is prose. So the signature scrolls inside its own box, which is the rule ADR-0135 wrote
-   for a code block narrower than its content. */
+.offers .head { display: flex; align-items: center; gap: 8px; min-width: 0 }
+.offers .named { margin: 0; flex: 1; min-width: 0 }
+.offers ul.marks { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; flex: none }
+.offers ul.marks li { padding: 0; border: 0 }
+.offers a.call {
+  font-family: var(--mono); font-size: 13.5px; font-weight: 500;
+  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  color: var(--ink); text-decoration: none;
+}
+.offers a.call:hover { text-decoration: underline }
+.offers a.call .of { color: var(--body) }
+/* The mark and the language, which say what is frozen and in what. Neither is a link and neither is
+   a status the accent may carry - the accent here is the frozen mark's own ground, which is the one
+   place ADR-0115 lets it mean this is settled rather than you can act. */
+.offers .stable {
+  display: flex; align-items: center; gap: 4px; flex: none;
+  font-size: 10.5px; font-weight: 500; color: var(--accent);
+  background: var(--target); border-radius: 4px; padding: 2px 6px;
+}
+.offers .language {
+  flex: none; font-family: var(--mono); font-size: 10.5px; color: var(--body);
+  border: 1px solid var(--edge); border-radius: 4px; padding: 1px 5px;
+}
+/* A signature is one line a reader reads as a whole, so it is clipped rather than wrapped - the rule
+   ADR-0135 wrote for a block narrower than its content, applied where the design asks for one line. */
 .offers .shape {
-  margin: 0; font-size: var(--t6); color: var(--body);
-  overflow-x: auto; max-width: 100%;
+  display: block; font-family: var(--mono); font-size: 12px; color: var(--body);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
 }
-.offers .why { margin: 0; font-size: var(--t5) }
-.offers .meta { margin: 0 }
-/* Smaller than the contract page's, which is *the* install command on a page about one contract.
-   Here there are six, and six of that size would be the loudest thing on the shelf - the accent
-   still says you can act on this, at the weight a card can carry. */
+/* Two lines and then an ellipsis, which is what keeps every card the same height in a row. */
+.offers .why {
+  margin: 0; font-size: 12.5px; color: var(--body); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
 .offers .install {
-  font-size: var(--t5); padding: var(--s3) var(--s4); border-left-width: 2px;
+  display: flex; align-items: center; gap: 8px;
+  margin: 2px 0 0; padding: 9px 0 0; border-top: 1px solid var(--rule);
+  background: none; border-radius: 0; color: var(--dim);
+  font-family: var(--mono); font-size: 11px; overflow-wrap: anywhere; min-width: 0;
 }
+.offers .install .copy {
+  margin-left: auto; flex: none;
+  font-family: var(--mono); font-size: 11px;
+  background: var(--card); border: 1px solid var(--rule); border-radius: 5px;
+  padding: 3px 8px; color: var(--body); cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.offers .install .copy:hover { color: var(--ink); border-color: var(--edge) }
 
-/* What the shelf does not hold, and the way to the catalogue that does. */
-.aside-line { margin: var(--s8) 0 0; font-size: var(--t5); color: var(--dim) }
+/* One rule between rows and none around them, which is what a list of four reads as when it is a
+   table of arrivals rather than a set of cards. */
+.recent-rows {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--rule); border-radius: 8px; overflow: hidden;
+  margin: 0; padding: 0; list-style: none;
+}
+.recent-rows li { padding: 0; border: 0 }
+.recent-rows li + li a.row { border-top: 1px solid var(--rule) }
+a.row {
+  display: flex; align-items: center; gap: 14px; padding: 11px 16px;
+  background: var(--wash); color: var(--ink); text-decoration: none;
+  transition: background .15s; min-width: 0;
+}
+a.row:hover { background: var(--card); text-decoration: none }
+a.row .call { margin: 0; font-family: var(--mono); font-size: 13px; font-weight: 500; min-width: var(--a-name-in-a-row); flex: none }
+a.row .shape {
+  margin: 0; flex: 1; min-width: 0; font-family: var(--mono); font-size: 12px; color: var(--body);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+a.row .when { margin: 0; font-size: 12px; color: var(--dim); white-space: nowrap; flex: none }
+
+/* The three arguments, ruled off from the catalogue above them. */
+.why {
+  border-top: 1px solid var(--rule);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--aside)), 1fr)); gap: 28px;
+  max-width: var(--the-page); margin: 0 auto; padding: 40px var(--s6) 44px;
+}
+.why h3 { font-size: 14.5px; font-weight: 600; margin: 0 0 6px; color: var(--ink) }
+.why p { font-size: 13px; color: var(--body); line-height: 1.6; margin: 0 }
+
+/* Not on the artboard, and here because no page is removed in this unit: a page nothing links to is
+   one every-page-is-reachable-from-the-front-page refuses. ADR-0182. */
+.elsewhere {
+  max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6) 48px;
+  font-size: var(--t6); color: var(--dim);
+}
 `.trim()

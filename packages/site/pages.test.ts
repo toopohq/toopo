@@ -17,6 +17,7 @@ import {
   renderContract,
 } from '../registry/address.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
+import { THE_SOURCE_REPOSITORY } from '../registry/publication.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { search } from '../registry/search.js'
 import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
@@ -1240,13 +1241,19 @@ describe('the site', () => {
     )
 
     /**
-     * The name, the promise, the shelf's label, the slot the field is built into, the line that
-     * reports what a query narrowed it to, the domains, the cards, and the way to the rest.
+     * The four sections the artboard draws, in its order, and the line the constraints add.
      *
-     * The two empty ones are the arrangement ADR-0137 established: a reader with nothing running meets
-     * a shelf and no box, so what is *served* is a slot and a status region with nothing in them.
+     * The opening, the catalogue, what arrived last, and why any of it is worth taking - then a
+     * sentence pointing at the contracts this page does not list, which is not on the artboard and is
+     * here because no page of this site may be unreachable. ADR-0182.
      */
-    expect(inside.map((node) => node.tag)).toEqual(['h1', 'p', 'h2', 'div', 'p', 'ul', 'ul', 'p'])
+    expect(inside.map((node) => node.tag)).toEqual([
+      'section',
+      'section',
+      'section',
+      'section',
+      'p',
+    ])
 
     const reading = toText(page(FRONT_PAGE))
     const index = source.contractIndex()
@@ -1274,7 +1281,18 @@ describe('the site', () => {
      * command to it at all and it passes over one in silence.
      */
     const named = new Set(index.entries.map((entry) => entry.address.name))
-    const printed = [...reading.matchAll(/toopo add ([^\s]+)/g)].map((found) => found[1] as string)
+
+    /**
+     * **An install command is recognised by the fact that it names an address**, which is the rule
+     * `every-command-the-site-tells-a-reader-to-run-carries-the-invocation` already uses and which
+     * this guard dropped when it was written.
+     *
+     * The page says `npx toopo add copies plain source into lib/toopo/` in one of its three closing
+     * arguments - the artboard's own sentence - and a sweep for whatever follows `add` read `copies`
+     * as a contract. That is a false positive, and the repair is the discrimination the site already
+     * had: what follows names a domain and a function, so it carries a slash.
+     */
+    const printed = [...reading.matchAll(/toopo add (\S+\/\S+)/g)].map((found) => found[1] as string)
 
     expect(printed.filter((one) => !named.has(one))).toEqual([])
     expect(printed).toHaveLength(installable.length)
@@ -1288,8 +1306,9 @@ describe('the site', () => {
      * appear. What this refuses is a shelf that has started choosing, which is the claim
      * `WHAT_THE_SHELF_IS` makes and the one nothing in this repository could compute.
      */
-    const shelf = inside.find((node) => (node.attributes as Record<string, string>)['class'] === 'offers plain')
-    const cards = elementsOf(shelf?.children ?? [])
+    const shelf = inside.find((node) => (node.attributes as Record<string, string>)['class'] === 'listing')
+    const grid = elementsOf(shelf?.children ?? []).find((node) => node.tag === 'ul')
+    const cards = elementsOf(grid?.children ?? [])
 
     expect(cards).toHaveLength(installable.length)
 
@@ -1351,9 +1370,25 @@ describe('the site', () => {
     const waiting = [FRONT_PAGE]
     const leadingNowhere: string[] = []
 
+    /**
+     * The one address this site sends a reader away to, and it is the one npm already publishes.
+     *
+     * **The claim was *no link out at all*, and the artboard put a repository link in the masthead.**
+     * Widening it to *no link out but this one* keeps every tooth it had: an address nobody decided
+     * on is still refused, a typo is still refused, and the exemption is not a string typed here - it
+     * is `THE_SOURCE_REPOSITORY`, the field the manifest publishes, put through the same derivation
+     * `chrome.ts` links with. So a second external address cannot arrive without this line moving,
+     * and this line cannot name somewhere the package does not. ADR-0182.
+     */
+    const theRepository = THE_SOURCE_REPOSITORY.replace(/^git\+/, '').replace(/\.git$/, '')
+
     for (const path of pages().keys())
       for (const href of linksOf(path))
-        if (!href.startsWith('#') && !byHref.has(new URL(href, urlOf(path)).pathname))
+        if (
+          !href.startsWith('#') &&
+          href !== theRepository &&
+          !byHref.has(new URL(href, urlOf(path)).pathname)
+        )
           leadingNowhere.push(`${path} links ${href}`)
 
     while (waiting.length > 0) {

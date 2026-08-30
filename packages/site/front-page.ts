@@ -1,57 +1,40 @@
 /**
- * The page a reader arrives at, which is the shelf the catalogue can be taken off.
- * ADR-0181 is what it holds and what it deliberately leaves out; ADR-0140 is the door it replaces.
+ * The page a reader arrives at, implemented from the owner's artboard.
+ * ADR-0182 is that implementation and what it deviates from; ADR-0181 is the shelf it replaces.
  *
  * ---------------------------------------------------------------------------
- * It was a door for a year, and the owner replaced it with what is on the shelf
+ * The artboard is the specification, and the last version of this page was not
  * ---------------------------------------------------------------------------
  *
- * ADR-0140 made this page a name and two doors, on an argument about who arrives: *somebody searching
- * for a function does not arrive here - they arrive on a contract page, from outside*. The owner has
- * overruled it, and the reason is the one this project is sold on: a developer comes to find functions
- * they can use, and a page that describes a catalogue without showing one asks them to take a second
- * step before they have seen anything.
+ * ADR-0181 built a shelf that satisfied every constraint it was given - six contracts, their
+ * signatures, their commands, readable with nothing running - and looked nothing like the design. The
+ * briefs had given constraints and never the artboard as a test, and the shared card it reached for
+ * carried the *existing* visual language, which is what that module was for.
  *
- * **It is recorded as an overruling rather than as a discovery**, which is the treatment ADR-0176 gave
- * the theme button: nothing measured here made ADR-0140 wrong, and the owner decided.
+ * So the order of authority is written down here rather than left implied. **`Toopo.dc.html` decides
+ * every size, colour, spacing, word and order on this page.** Three things outrank it and they are the
+ * only three:
  *
- * **Half of ADR-0140 survives untouched, and it is the half that was argued rather than concluded.**
- * That record refused `add domain/function` on this page - the shape of every command at once, so that
- * no contract was privileged - because *the constraint was right and its form was a template, which is
- * a thing a reader sees*. Every command here names a real contract and runs. What fell is the sentence
- * it generalised to, *a command belongs on no page that is about the catalogue*; what stands is that a
- * reader is never shown a command they cannot type.
+ * 1. the page is readable with no JavaScript - the six contracts, their signatures and their commands
+ *    are in the served HTML, and the palette, the live search and the theme toggle are added on top;
+ * 2. every pair of the palette clears the contrast floor, which
+ *    `every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` holds;
+ * 3. the 73 addresses of the origin do not move.
  *
- * ---------------------------------------------------------------------------
- * Six and not seven, and the rule it overturns is named with its scope
- * ---------------------------------------------------------------------------
- *
- * The shelf lists what is installable. `array/group-by@1` is refused, so it is not here - the owner's
- * rule is that a showcase holds what can be used, and a refusal on a shelf is noise. **It is still an
- * answer in a search**: somebody who types its name asked for that thing, and `npx toopo search` gives
- * them the refusal with its reason. ADR-0179 carries the split and why the contract stays in the
- * repository at all.
- *
- * **`catalogue-page.ts` carries a measured rule this page breaks**: *one field is added per level and
- * never two - this page names; a domain page names and summarises; a contract page is the contract*,
- * with the figure behind it, that one entry cost 443 bytes of the emitted tree and that a summary under
- * every name *is the page at five contracts and is the whole page at a hundred*.
- *
- * That rule is not wrong and this page is not an index. **A shelf is a different thing from a
- * catalogue**: it exists to be read rather than navigated, and at six contracts five fields fit on one
- * screen. The arithmetic behind the rule does not go away, so it is a reopening condition rather than
- * an objection nobody wrote down: **the day this page stops fitting on a screen it stops being a
- * shelf**, and what it becomes is the question ADR-0181 declines to guess at.
+ * Where this page departs from the artboard for any other reason, the departure is named in ADR-0182
+ * with what forced it. *I did not notice* is not one of the reasons available.
  *
  * ---------------------------------------------------------------------------
- * Nothing here needs JavaScript, and the search does not fabricate a card
+ * The card is this page's own, and the arithmetic behind it is still shared
  * ---------------------------------------------------------------------------
  *
- * Every contract is in the served HTML with its signature, its summary and its command. That is the
- * constraint the owner set and it is what makes the search cheap: a query filters cards that are
- * already on the page rather than building them from `contract-index`, so **a searched card cannot show
- * less than a static one, by construction rather than by vigilance**. It is also why no field was added
- * to `contract-index` - ADR-0180 has the derivation, and `what-a-card-says.ts` is where it lives.
+ * The artboard carries two layouts: the shelf's card and, under `isDetail`, a different and complete
+ * one. They are two things, so the markup is not shared - which is what ADR-0180 decided and what the
+ * last unit then failed to act on, by reaching for a card that already existed instead of building the
+ * one the design draws.
+ *
+ * `what-a-card-says.ts` stays exactly as it is. What it holds is the arithmetic - the four figures
+ * that were written twice, to the character - and none of it is markup.
  */
 
 import type { ServedIndex } from '../registry/response.js'
@@ -60,58 +43,103 @@ import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { MenuEntry } from './chrome.js'
 import { masthead, theCatalogueFrom } from './chrome.js'
-import { grouped } from './quantity.js'
 import { whatACardSays } from './what-a-card-says.js'
-import {
-  CATALOGUE_PAGE,
-  FRONT_PAGE,
-  WHAT_A_CONTRACT_IS_PAGE,
-  domainPageOf,
-  linkTo,
-  pageOf,
-} from './paths.js'
+import { CATALOGUE_PAGE, FRONT_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
 
 const NOTHING = {} as const
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
-/** A count and the word it counts, so that a seventh contract does not need a sentence rewritten. */
+/** A count and the word it counts, so that a seventh contract needs no sentence rewritten. */
 const said = (count: number, one: string, many: string): string =>
   `${count} ${count === 1 ? one : many}`
 
 /**
- * What this page calls the shelf, which promises an order nothing here computes.
+ * The headline and the sentence under it, taken from the artboard verbatim.
  *
- * **The artboard's heading is `Popular functions` and there is no such thing in this repository.**
- * Nothing measures popularity: permanent rule 1 forbids the runtime call that would produce a figure,
- * and no download count, no telemetry and no usage signal exists anywhere in the tree - swept over
- * `packages/`, `mutation/` and `packaging/`. A heading naming a ranking would be a claim about data
- * that does not exist, on the first line a visitor reads.
- *
- * So the heading says what the list *is*: everything the catalogue can install. It is exhaustive over
- * the installable half and it states no order.
- *
- * **The order it happens to be in is the registry's, grouped by domain** - the cards are walked through
- * `domains` rather than through the index, so `number/parse` and `number/round` sit together where the
- * index has four contracts between them. That is the arrangement `catalogue-page.ts` already uses, and
- * it is written down here because *it states no order* is a claim about what is promised rather than
- * about what happens: a reader sees an order, and the honest thing is to say which one it is and that
- * nothing ranks it.
+ * They are declarations rather than literals in the tree because they are the one part of this page
+ * that is the *owner's copy*: a reader meets them before anything the registry produces, and a unit
+ * that reworded them while moving a box would be editing the design.
  */
-const WHAT_THE_SHELF_IS = 'What you can install'
+const THE_HEADLINE = 'Tested functions, copied into your project.'
+
+const THE_SENTENCE_UNDER_IT =
+  'No package to install, no dependency tree. Every function ships as plain source with a frozen ' +
+  'contract — its signature and behaviour never change.'
 
 /**
- * One contract on the shelf: what it is called, what it does, what it is, and how to take it.
+ * What the shelf is called, and it is the one word of the artboard this page does not use.
  *
- * The sentence is `what-a-card-says.ts`'s and the markup is this page's, which is ADR-0180's split. An
- * `h3` under the shelf's `h2`, because the outline of this page is its name, its one section and the
- * contracts in it - a heading level is a fact about a page rather than about a card.
+ * The artboard heads the list `Popular functions`. **Nothing in this repository ranks anything** -
+ * permanent rule 1 forbids the runtime call that would produce a figure, and no download count, no
+ * telemetry and no usage signal exists anywhere in the tree. A heading naming a ranking would be a
+ * claim about data that does not exist, on the first list a visitor reads, in a catalogue whose whole
+ * argument is that nothing here is asserted without a measurement behind it.
  *
- * **The signature is the form the frozen record holds** and never a declaration composed from it: the
- * artboard writes `slugify(input: string): string`, and turning the record's type into that needs the
- * type parsed, which ADR-0026 refuses. A reader who meets a signature here and the same signature on
- * the contract page meets one string.
+ * So the register is kept - a short uppercase label over the grid - and the word is what the list
+ * actually is. ADR-0182 carries it as the one deviation taken on a truth rather than on a constraint.
+ */
+const WHAT_THE_LIST_IS = 'All functions'
+
+/**
+ * The three arguments the artboard closes on, in its own words.
+ *
+ * The command and the install root are the artboard's own spelling of two facts this repository
+ * publishes elsewhere. They are read back by a guard rather than trusted here.
+ */
+const THE_ARGUMENTS: readonly { readonly heading: string; readonly says: string }[] = [
+  {
+    heading: 'No dependencies',
+    says:
+      'npx toopo add copies plain source into lib/toopo/. Nothing is added to your package.json, ' +
+      'ever.',
+  },
+  {
+    heading: 'Frozen contracts',
+    says:
+      "A function's signature and behaviour never change. Updates can fix internals — they can " +
+      'never break callers.',
+  },
+  {
+    heading: 'Tested continuously',
+    says:
+      'Every function carries its own test suite, run on every commit against the frozen contract.',
+  },
+]
+
+/**
+ * The mark that says a contract's definition is frozen, drawn as the artboard draws it.
+ *
+ * `aria-hidden` on the drawing and the word beside it in text, which is the split `isChrome` already
+ * makes: a padlock is a picture of the claim and the claim is the word. So a screen reader hears
+ * `stable` once and every projection carries it once.
+ */
+const theFrozenMark = (): Node =>
+  el(
+    'span',
+    { class: 'stable' },
+    el(
+      'svg',
+      { width: '9', height: '9', viewBox: '0 0 16 16', 'aria-hidden': 'true' },
+      el('rect', { x: '3', y: '7', width: '10', height: '7', rx: '1.5', fill: 'currentColor' }),
+      el('path', {
+        d: 'M5 7 V5 a3 3 0 0 1 6 0 V7',
+        fill: 'none',
+        stroke: 'currentColor',
+        'stroke-width': '1.6',
+      }),
+    ),
+    text('stable'),
+  )
+
+/**
+ * One contract as the shelf draws it: the name, what it is frozen as, its shape, what it does, and
+ * the command that takes it.
+ *
+ * The order is the artboard's and so is every part of it. The install line is a block of its own at
+ * the foot of the card, ruled off, because that is where the design puts the thing a reader acts on -
+ * and `start.ts` appends the copy control to it, exactly as it does on a contract page.
  */
 const offer = (held: Held): Node => {
   const says = whatACardSays(held)
@@ -119,47 +147,114 @@ const offer = (held: Held): Node => {
   return el(
     'li',
     { class: 'offer', 'data-contract': says.address },
+    /**
+     * The name and the two marks, on one row and as three blocks in the reading.
+     *
+     * **They were three phrasing elements side by side and `no-element-runs-into-the-one-beside-it`
+     * refused it**, correctly: the reading ran `number/parse` into `stable` into `TS` as one word,
+     * which is exactly what that guard exists for. The row is a flex container either way; what
+     * changed is that each part is a block a projection separates rather than three spans nothing
+     * does. ADR-0025 is the rule - a separator belongs to a block, and a phrasing element gets none.
+     */
     el(
-      'h3',
-      { class: 'call' },
+      'div',
+      { class: 'head' },
       el(
-        'a',
-        { href: linkTo(pageOf(held.contract.address)) },
-        text(`${says.domain}/${says.name}`),
+        'p',
+        { class: 'named' },
+        el(
+          'a',
+          { class: 'call', href: linkTo(pageOf(held.contract.address)) },
+          el('span', { class: 'of' }, text(`${says.domain}/`)),
+          text(says.name),
+        ),
+      ),
+      el(
+        'ul',
+        { class: 'marks' },
+        el('li', NOTHING, theFrozenMark()),
+        el('li', NOTHING, el('span', { class: 'language' }, text('TS'))),
       ),
     ),
     line('pre', says.signature, { class: 'shape' }),
     line('p', says.summary, { class: 'why' }),
-    line(
-      'p',
-      `${said(says.costs.cases, 'settled case', 'settled cases')} · ` +
-        `${grouped(says.costs.bytes)} bytes · ` +
-        `${says.costs.imports === 0 ? 'no imports' : said(says.costs.imports, 'import', 'imports')}`,
-      { class: 'meta' },
-    ),
     line('pre', says.command, { class: 'install' }),
   )
 }
 
 /**
- * A domain, as a way into the part of the shelf that is filed under it.
+ * A domain, as a way into the part of the catalogue filed under it.
  *
- * **They are links and never controls**, which is what makes them work with nothing running: the
- * artboard's chips filter the grid in the browser, and a domain already has a page that lists exactly
- * what a filtered grid would show. So the chip goes to that page, a reader with no JavaScript gets the
- * same answer as a reader with it, and `every-page-is-reachable-from-the-front-page` reaches every
- * domain page from here rather than through the catalogue.
+ * **The artboard's chips filter the grid in the browser and these are links**, which is constraint 1
+ * deciding a shape: a chip that narrows the page needs JavaScript, and a domain already has a page
+ * listing exactly what a filtered grid would show. So a reader with nothing running gets the same
+ * answer as a reader with everything, and `every-page-is-reachable-from-the-front-page` reaches every
+ * domain page from here. ADR-0182.
  */
-const chip = (domain: Domain): Node =>
+const chip = (name: string, count: number, href: string): Node =>
   el(
     'li',
     NOTHING,
+    el('a', { class: 'chip', href }, text(name), el('span', { class: 'count' }, text(String(count)))),
+  )
+
+/** The month a reader reads, from the instant the registry publishes. */
+const THE_MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+] as const
+
+/**
+ * When a contract was published, in the artboard's own spelling.
+ *
+ * **This section exists because ADR-0177 gave it a source.** It was the one part of the design nothing
+ * here could answer: `publishedAt` was one constant for the whole catalogue, so *Recently added* would
+ * have been four rows in an arbitrary order under a heading claiming a chronology. It is per contract
+ * now, read off the commit that minted each binding, so the order is a fact rather than the order of a
+ * file.
+ */
+const readableDate = (instant: string): string => {
+  const when = new Date(instant)
+
+  return `${THE_MONTHS[when.getUTCMonth()] as string} ${when.getUTCDate()}, ${when.getUTCFullYear()}`
+}
+
+/** How many rows the artboard shows under *Recently added*. */
+const THE_RECENT_ROWS = 4
+
+const recently = (held: Held): Node => {
+  const says = whatACardSays(held)
+
+  return el(
+    'li',
+    NOTHING,
+    /**
+     * The whole row is the target, which is what the artboard draws, and its three parts are blocks.
+     *
+     * They were three spans and `no-element-runs-into-the-one-beside-it` read the name into the
+     * signature into the date as one sentence - the same defect the card's head carried, on the
+     * section under it. An anchor may hold flow content, so each part is a paragraph a projection
+     * separates and the row is still one thing a reader clicks.
+     */
     el(
       'a',
-      { class: 'chip', href: linkTo(domainPageOf(domain.address)) },
-      text(`${domain.name} ${domain.held.length}`),
+      { class: 'row', href: linkTo(pageOf(held.contract.address)) },
+      line('p', says.address, { class: 'call' }),
+      line('p', says.signature, { class: 'shape' }),
+      line('p', readableDate(held.binding.publishedAt), { class: 'when' }),
     ),
   )
+}
 
 export const frontPage = (
   index: ServedIndex,
@@ -170,6 +265,10 @@ export const frontPage = (
   const installable = index.entries.filter((entry) => entry.installable).length
   const turnedDown = index.entries.length - installable
 
+  const newest = [...held]
+    .sort((one, other) => other.binding.publishedAt.localeCompare(one.binding.publishedAt))
+    .slice(0, THE_RECENT_ROWS)
+
   return {
     title: 'Toopo — utility functions with a public, executable contract',
     servedBesideItsMarkdown: true,
@@ -179,65 +278,76 @@ export const frontPage = (
       `invariants, and every edge case named and settled. The source is copied into your project.`,
     body: [
       masthead(FRONT_PAGE, menu),
-      /**
-       * No `.shell`, for the reason ADR-0139 measured: a shell exists to stand a navigation column
-       * beside the content, this page has none, and a shell with one child hands on no inset of its
-       * own - so it ran edge to edge at 320, 390 and 768.
-       */
       el(
         'main',
         { class: 'shelf' },
-        el('h1', NOTHING, text('Toopo')),
+        /**
+         * The opening: the headline, the sentence, the field and the domains, centred in a column
+         * narrower than the grid under it. Every length is the artboard's.
+         */
         el(
-          'p',
-          { class: 'lede' },
-          text(
-            'Utility functions you copy into your project, each verified against a public, ' +
-              'executable contract. Not a dependency: the source lands in your repository and it ' +
-              'is yours.',
+          'section',
+          { class: 'hero' },
+          line('h1', THE_HEADLINE),
+          line('p', THE_SENTENCE_UNDER_IT, { class: 'lede' }),
+          /**
+           * The field a reader types into, served as an empty slot and never as a control.
+           *
+           * A reader with nothing running meets the headline, the sentence and the whole catalogue,
+           * and no box. It is the arrangement ADR-0137 established for the masthead and what
+           * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` asks of every
+           * control on this site.
+           */
+          el('div', { class: 'find', 'data-search': theCatalogueFrom(FRONT_PAGE) }),
+          el('p', { class: 'sifted', role: 'status', 'aria-live': 'polite' }),
+          el(
+            'ul',
+            { class: 'chips' },
+            chip('all', installable, linkTo(CATALOGUE_PAGE)),
+            ...domains
+              .filter((domain) => domain.held.length > 0)
+              .map((domain) =>
+                chip(domain.name, domain.held.length, linkTo(domainPageOf(domain.address))),
+              ),
           ),
         ),
-        line('h2', WHAT_THE_SHELF_IS),
+        el(
+          'section',
+          { class: 'listing' },
+          line('h2', WHAT_THE_LIST_IS),
+          el('ul', { class: 'offers' }, ...held.map(offer)),
+        ),
+        el(
+          'section',
+          { class: 'recent' },
+          line('h2', 'Recently added'),
+          el('ul', { class: 'recent-rows' }, ...newest.map(recently)),
+        ),
+        el(
+          'section',
+          { class: 'why' },
+          ...THE_ARGUMENTS.map((one) =>
+            el('div', { class: 'argument' }, line('h3', one.heading), line('p', one.says)),
+          ),
+        ),
         /**
-         * The field a reader types into, served as an empty slot and never as a control.
+         * What the shelf does not hold, and the way to the catalogue that does.
          *
-         * **A reader with nothing running meets the whole shelf and no box**, which is the
-         * arrangement ADR-0137 established for the masthead and what
-         * `a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing` asks for. There
-         * is nothing to fall back to and nothing is claimed: every contract is already on the page,
-         * so a reader who cannot narrow it has lost a convenience rather than an answer.
-         *
-         * It carries the same two addresses the masthead's does, from `chrome.ts`, because the query
-         * it runs is the same query - `packages/registry/search.ts` against `contract-index` and
-         * `refusals`. What differs is what is done with the answer: the masthead paints a panel, and
-         * this hides cards.
-         */
-        el('div', { class: 'sift', 'data-search': theCatalogueFrom(FRONT_PAGE) }),
-        el('p', { class: 'sifted', role: 'status', 'aria-live': 'polite' }),
-        el('ul', { class: 'chips plain' }, ...domains.filter((one) => one.held.length > 0).map(chip)),
-        el('ul', { class: 'offers plain' }, ...held.map(offer)),
-        /**
-         * What the shelf does not show, and the way to it.
-         *
-         * **It is composed rather than written**, so a second refusal lands in this sentence with
-         * nobody editing it - the treatment a domain page's opening already gets. It is also what
-         * keeps `/catalogue/` reachable from here: no page is removed in this unit, and a page nothing
-         * links to is one `every-page-is-reachable-from-the-front-page` refuses.
+         * **It is not on the artboard and it is here for a constraint**: no page is removed in this
+         * unit, and a page nothing links to is one `every-page-is-reachable-from-the-front-page`
+         * refuses. It is composed from the index, so a second refusal lands in it with nobody editing
+         * anything. ADR-0182 carries it as an addition rather than a deviation.
          */
         el(
           'p',
-          { class: 'aside-line' },
+          { class: 'elsewhere' },
           text(
             turnedDown === 0
-              ? 'The catalogue is every one of these, with what each was measured against. '
+              ? 'Every contract this catalogue holds is above. '
               : `${said(turnedDown, 'contract', 'contracts')} the catalogue considered and turned ` +
-                `down ${turnedDown === 1 ? 'is' : 'are'} not on this shelf. The catalogue holds ` +
-                `${said(index.entries.length, 'contract', 'contracts')} in all, with the argument ` +
-                `for each. `,
+                `down ${turnedDown === 1 ? 'is' : 'are'} not listed here. `,
           ),
-          el('a', { href: linkTo(CATALOGUE_PAGE) }, text('The catalogue')),
-          text(' · '),
-          el('a', { href: linkTo(WHAT_A_CONTRACT_IS_PAGE) }, text('What a contract is')),
+          el('a', { href: linkTo(CATALOGUE_PAGE) }, text('The whole catalogue')),
         ),
       ),
     ],
