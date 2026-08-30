@@ -52,8 +52,8 @@
  * for the same reason. ADR-0128.
  */
 
-import { THE_INVOCATION } from '../registry/address.js'
 import type { Domain, Held, TurnedDown } from './catalogue.js'
+import { whatACardSays, whatItCosts } from './what-a-card-says.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { grouped } from './quantity.js'
@@ -67,12 +67,13 @@ const NOTHING = {} as const
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
 
-/** What one contract settles, weighs and pulls in - the three figures a reader is choosing on. */
-const casesOf = (held: Held): number =>
-  held.contract.caseTables.reduce((count, table) => count + table.cases.length, 0)
-
-const bytesOf = (held: Held): number =>
-  held.implementation.files.reduce((total, file) => total + file.bytes, 0)
+/**
+ * What one contract settles, weighs and pulls in - the three figures a reader is choosing on.
+ *
+ * The arithmetic moved to `what-a-card-says.ts` at ADR-0180: it was written here and in
+ * `contract-page.ts` in identical expressions, and two statements of one figure are two things that
+ * can come to disagree about what a reader is choosing on.
+ */
 
 /**
  * What a domain's contracts import between them, counted as a set and never as a sum.
@@ -96,8 +97,8 @@ const importedBy = (held: readonly Held[]): ReadonlySet<string> =>
  */
 const whatIsHere = (domain: Domain): string => {
   const contracts = domain.held.length
-  const cases = domain.held.reduce((total, held) => total + casesOf(held), 0)
-  const bytes = domain.held.reduce((total, held) => total + bytesOf(held), 0)
+  const cases = domain.held.reduce((total, held) => total + whatItCosts(held).cases, 0)
+  const bytes = domain.held.reduce((total, held) => total + whatItCosts(held).bytes, 0)
   const imports = importedBy(domain.held)
   const refused = domain.turnedDown.length
 
@@ -146,9 +147,8 @@ const whatIsHere = (domain: Domain): string => {
  * should not have to learn a new layout to answer it.
  */
 const entry = (held: Held, own: string): Node => {
-  const cases = casesOf(held)
-  const bytes = bytesOf(held)
-  const imports = held.implementation.dependsOn.length
+  const says = whatACardSays(held)
+  const { cases, bytes, imports } = says.costs
 
   return el(
     'li',
@@ -159,17 +159,17 @@ const entry = (held: Held, own: string): Node => {
       el(
         'a',
         { href: `${rootFrom(own)}${linkTo(pageOf(held.contract.address))}` },
-        text(shortNameOf(held.contract.address.name)),
+        text(says.name),
       ),
     ),
-    line('p', held.contract.identity.summary, { class: 'why' }),
+    line('p', says.summary, { class: 'why' }),
     line(
       'p',
       `${cases} settled ${cases === 1 ? 'case' : 'cases'} · ${grouped(bytes)} bytes · ` +
         `${imports === 0 ? 'no imports' : `${imports} ${imports === 1 ? 'import' : 'imports'}`}`,
       { class: 'meta' },
     ),
-    line('p', `${THE_INVOCATION} add ${held.contract.address.name}`, { class: 'meta' }),
+    line('p', says.command, { class: 'meta' }),
   )
 }
 

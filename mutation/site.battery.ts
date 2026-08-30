@@ -101,6 +101,7 @@ const controlFile = (find: string, replace: string) => ({
 const searchingFile = (find: string, replace: string) => ({ file: 'searching.ts', find, replace })
 const startFile = (find: string, replace: string) => ({ file: 'start.ts', find, replace })
 const themeFile = (find: string, replace: string) => ({ file: 'theme.ts', find, replace })
+const cardFile = (find: string, replace: string) => ({ file: 'what-a-card-says.ts', find, replace })
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -279,7 +280,7 @@ const A_HEADING_CARRIES_ITS_OWN_ADDRESS = `  addressed(heading, group.id, group.
 
 const ONE_ANSWER_IS_WRITTEN_BARE = `    answered.length === 1`
 
-const THE_COST_IS_WHAT_LANDS = `  const bytes = implementation.files.reduce((total, file) => total + file.bytes, 0)`
+const THE_COST_IS_WHAT_LANDS = `  bytes: held.implementation.files.reduce((total, file) => total + file.bytes, 0),`
 
 const THE_DESCRIPTION_IS_NOT_THE_SUMMARY = `      \`\${cases} named edge cases, settled and frozen. TypeScript source copied into your project: \` +`
 
@@ -358,7 +359,7 @@ const A_PIN_IS_NOT_AN_OBSERVATION = `    paragraph(THE_PINS_ARE_AN_ASSERTION),`
  * sentence it carries goes on being read by `every-figure-on-the-method-page-comes-from-what-it-was-
  * built-from`, which would redden on any edit that touched the figures instead.
  */
-const A_CONTRACT_NAME_IS_A_TITLE = `    line('p', held.contract.identity.summary, { class: 'why' }),`
+const A_CONTRACT_NAME_IS_A_TITLE = `    line('p', says.summary, { class: 'why' }),`
 
 const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `paragraph(silence.reason)`
 
@@ -644,9 +645,9 @@ const mutants: readonly Mutant[] = [
     'states the size of the test harness where the page promises the size of what lands, two true ' +
       'figures about one contract that differ by an order of magnitude',
     [
-      contractPageFile(
+      cardFile(
         THE_COST_IS_WHAT_LANDS,
-        `  const bytes = contract.harness.reduce((total, file) => total + file.bytes, 0)`,
+        `  bytes: held.contract.harness.reduce((total, file) => total + file.bytes, 0),`,
       ),
     ],
     killed(['the-cost-a-page-states-is-what-lands-and-not-what-is-served']),
@@ -1856,7 +1857,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     [
       domainPageFile(
         A_CONTRACT_NAME_IS_A_TITLE,
-        `    line('code', held.contract.identity.summary, { class: 'why' }),`,
+        `    line('code', says.summary, { class: 'why' }),`,
       ),
     ],
     killed(['no-element-runs-into-the-one-beside-it']),

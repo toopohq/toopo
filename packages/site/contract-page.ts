@@ -46,12 +46,7 @@
  * room for the number, and the number is the argument. `readableBytes` stays where it is.
  */
 
-import {
-  THE_INVOCATION,
-  THE_WAYS_TO_RUN_IT,
-  contractUrl,
-  renderContract,
-} from '../registry/address.js'
+import { THE_WAYS_TO_RUN_IT, contractUrl, renderContract } from '../registry/address.js'
 import type { TheMeasurement, WhySurviving } from '../../mutation/published.js'
 import { WHAT_A_SURVIVOR_MEANS_TO_A_READER } from '../../mutation/published.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
@@ -69,6 +64,7 @@ import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { figure, grouped } from './quantity.js'
 import type { Domain, Held } from './catalogue.js'
+import { theAnswerOf, whatACardSays } from './what-a-card-says.js'
 import type { MenuEntry } from './chrome.js'
 import { beside, masthead } from './chrome.js'
 import { literal } from './literal.js'
@@ -502,14 +498,20 @@ export const contractPage = (
    */
   measured: TheMeasurement,
 ): Document => {
-  const { contract, implementation } = held
+  const { contract } = held
   const name = renderContract(contract.address)
   const own = pageOf(contract.address)
-  const answer = contract.surface.exports.find((entry) => entry.role === 'the-answer') as ExportRecord
-  const cases = contract.caseTables.reduce((count, table) => count + table.cases.length, 0)
-  const bytes = implementation.files.reduce((total, file) => total + file.bytes, 0)
-  const files = implementation.files.length
-  const imports = implementation.dependsOn.length
+  /**
+   * The card's own sentence, taken from where every surface that shows a card takes it.
+   *
+   * **The four figures and the answer's export were computed here and in `domain-page.ts` in
+   * identical expressions until ADR-0180.** A card is one claim about a contract and it is made on
+   * three pages; the arithmetic behind it is now made once, and the `as ExportRecord` that used to
+   * stand here - a cast over a `find` that can miss - is a refusal with a sentence in it.
+   */
+  const says = whatACardSays(held)
+  const answer = theAnswerOf(held)
+  const { cases, bytes, files, imports } = says.costs
   const playground = playgroundOf(contract, name)
 
   /**
@@ -985,13 +987,13 @@ export const contractPage = (
                 'div',
                 { class: 'get', 'data-ways': JSON.stringify(THE_WAYS_TO_RUN_IT) },
                 el('div', { class: 'get-head' }, line('p', 'Install', { class: 'label' })),
-                line('pre', `${THE_INVOCATION} add ${contract.address.name}`, { class: 'install' }),
+                line('pre', says.command, { class: 'install' }),
               ),
               el(
                 'div',
                 { class: 'sig' },
                 line('p', 'Signature', { class: 'label' }),
-                line('pre', `type ${answer.typeName} = ${answer.text}`, { class: 'answer' }),
+                line('pre', says.signature, { class: 'answer' }),
               ),
             ),
             el(
