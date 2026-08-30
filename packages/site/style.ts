@@ -1141,11 +1141,19 @@ ${THE_COMPONENT_RULES}
 .recent-rows li { padding: 0; border: 0 }
 .recent-rows li + li a.row { border-top: 1px solid var(--rule) }
 a.row {
-  display: flex; align-items: center; gap: 14px; padding: 11px 16px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 11px 16px;
   background: var(--wash); color: var(--ink); text-decoration: none;
   transition: background .15s; min-width: 0;
 }
 a.row:hover { background: var(--card); text-decoration: none }
+/* The row breaks where it cannot hold its four parts, which is the bar's rule one section down and
+   for the same reader. Swept at 6px steps: it fits from 12.5rem and fails at 12.13, so at the default
+   root that is 200px and no device meets it, and at a 200 % font setting it is 400px and every phone
+   does. ADR-0185. */
+@media (min-width: 12.5rem) {
+  a.row { flex-wrap: nowrap }
+}
+
 /* A basis rather than a floor, which is what lets this need no width condition at all: the name sits
    at its declared width wherever there is room and gives way where there is not. Written as a
    flex: none with a min-width, it held its 150px at 320 and pushed the row's own mark 12px outside
