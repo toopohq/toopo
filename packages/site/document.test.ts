@@ -65,38 +65,6 @@ const THE_PALETTES_STAND_UNDER: readonly string[] = [
 const theServedStyle = (): string =>
   (/<style>([^]*?)<\/style>/.exec(toHtml(page(el('p', {}, text('x'))))) ?? [])[1] ?? ''
 
-/**
- * Every pair of this palette a reader is owed 4.5:1 on and does not get it, with what it does get.
- *
- * **This is a debt and it is the owner's to settle, which is why it is a list and not a threshold.**
- * The values are his, read off the artboard ADR-0176 was built from; the readings are this file's own
- * arithmetic. The guard below is exact in both directions - a new pair cannot arrive in silence, and a
- * row cannot outlive the failure it names.
- *
- * **It was eleven rows and two inks, and eight of them are gone.** `--dim` - the artboard's `faint` -
- * was the whole of the dark half and most of the light, and it carried the case identifier, the rail's
- * label, the page you are on and the playground's labels: not decoration, and not large. The owner
- * ruled that it clears the floor, and ADR-0178 took the values ADR-0176's own reopening clause had
- * already named. It answers 4.56:1 at its worst on dark and 4.53:1 on light.
- *
- * **What is left is one ink and three grounds, and they are the near miss rather than the failure**:
- * 4.47, 4.35 and 4.22 against 4.5, and only on the three grounds that are not the paper. `--accent`
- * clears the floor at 4.76:1 where most links are, and it is the artboard's own darkened accent - the
- * value ADR-0176 took in order to lift the focus ring off 1.76:1, which is the one correction that
- * unit made to the design.
- *
- * **The owner ruled on `--dim` and not on this, so it stays declared.** Measured at ADR-0178, the
- * whole of what it would take is `#0c7f68` moved 3.6 % toward black, to `#0c7a64`, which clears every
- * ground at 4.50:1 - a smaller move than the one already made to this colour. It is not made, because
- * a stylesheet retuning a colour the owner chose is the thing ADR-0176 refused in as many words, and
- * a near miss is not the failing indicator that bought the one exception.
- */
-const BELOW_THE_LEGIBLE_FLOOR: readonly string[] = [
-  'light: accent on wash is 4.47:1',
-  'light: accent on card is 4.22:1',
-  'light: accent on target is 4.35:1',
-]
-
 /** A page that does say something about itself to a machine, for the two guards that ask what. */
 const describing = (data: Partial<StructuredData>, ...body: Parameters<typeof el>[2][]): Document => ({
   ...page(...body),
@@ -543,26 +511,28 @@ describe('a page and its two projections', () => {
    * Every pair this palette paints below the contrast a reader is owed is one this repository has
    * written down, with the reading that puts it there — and there are no others.
    *
-   * **This guard used to say that there were none, and ADR-0176 is where that stopped being true.**
-   * The claim it made was the stronger one and the repository could keep it while the palette was its
-   * own. The palette is the owner's now, it carries a third grey, and that grey is below the floor:
-   * `--dim` answers 3.51:1 at its best on dark and 2.49:1 at its worst on light, where text under
-   * 24px is owed 4.5:1. Nobody here may quietly retune a colour the owner chose, and nobody here may
-   * publish a guard that says a page is legible when its own arithmetic says otherwise. What is left
-   * is to say exactly which pairs are below the floor and how far.
+   * **It said that for a year, gave the claim up for one unit, and has it back.** ADR-0176 landed the
+   * owner's palette with eleven pairs under the floor, and a guard may not say a page is legible when
+   * its own arithmetic says otherwise - so it became a declaration of which pairs were below and how
+   * far, exact in both directions. That was the honest shape for a debt somebody else had to settle.
+   *
+   * **ADR-0178 is where it was settled, and the asymmetry is what decided it.** Leaving the last three
+   * rows cost a mechanism: the guard would have stayed a declaration for ever, protecting no future
+   * change. Moving the ink cost 3.6 % of one green. `--dim` took the values ADR-0176's own reopening
+   * clause had named, and `--accent` moved from `#0c7f68` to `#0c7a64` - which is a smaller move than
+   * ADR-0176 already made to that same colour to lift the focus ring off 1.76:1.
    *
    * **The irony is the reason this is written at length rather than as a list.** ADR-0115 *removed* a
-   * role for this, measured at 2.64:1 on light paper. The role is back, and it measures **2.64:1 on
-   * light wash**. The same figure, eight months apart, in a repository that exists so that figures do
-   * not drift — and it is here rather than only in the record because this is the file somebody opens
-   * when they wonder why the number is allowed.
+   * role for this, measured at 2.64:1 on light paper. The role came back measuring **2.64:1 on light
+   * wash** — the same figure, eight months apart, in a repository that exists so that figures do not
+   * drift. It clears now, and the paragraph stays because this is the file somebody opens when they
+   * wonder why a grey is allowed to be that light.
    *
-   * **What is given up and what is bought, stated rather than implied.** Given up: the guard no longer
-   * refuses an illegible ink. Bought: it refuses a *new* one, and it refuses a stale declaration -
-   * `toEqual` is exact in both directions, so a pair that drifts by a hundredth reddens, a pair that
-   * appears reddens, and a pair that is repaired without its row being removed reddens too. The debt
-   * is counted rather than carried. It is the shape `unreachableGuards` and `leavesUnanswered` already
-   * have one folder over: a known gap that cannot grow in silence.
+   * **The binding ground is the card, and neither record that named a value had measured against it.**
+   * ADR-0176's reopening clause named `#7c868a` and `#636d71` from readings on paper and wash, where
+   * the ink sits 0.4 to 0.6 better off than at its worst. They clear anyway. The lesson is the one
+   * ADR-0178 writes down: a clause that names a value names it against the ground it was written
+   * from, and that is not necessarily the ground that decides.
    *
    * The two lists are the vocabulary rather than a second statement of it: a ground is a surface a
    * page paints, an ink is something it writes with, and the guard requires every one of them to be
@@ -573,7 +543,7 @@ describe('a page and its two projections', () => {
    * somewhere: `dim` at 11px on a case identifier is the smallest. No exception is made for the
    * accent, which is a link and is read.
    */
-  it('every-pair-below-the-legible-floor-is-one-this-repository-declared', () => {
+  it('every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible', () => {
     const GROUNDS = ['paper', 'wash', 'card', 'target']
     const INKS = ['ink', 'body', 'dim', 'accent']
     /** A line, which owes 3:1 as a non-text distinction and is never a ground or an ink. */
@@ -634,9 +604,7 @@ describe('a page and its two projections', () => {
       }
     }
 
-    expect(failures, 'an ink below the floor that this repository has not declared').toEqual(
-      BELOW_THE_LEGIBLE_FLOOR,
-    )
+    expect(failures, 'an ink this palette paints below the floor a reader is owed').toEqual([])
   })
 
   /**

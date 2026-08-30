@@ -379,13 +379,13 @@ ${THE_FONT_FACE}
   :root:not([data-theme='dark']) {
     --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
     --ink: #151a1b; --body: #5b6569; --dim: #636d71;
-    --accent: #0c7f68; --target: #e7f3f1;
+    --accent: #0c7a64; --target: #e7f3f1;
   }
 }
 :root[data-theme='light'] {
   --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
   --ink: #151a1b; --body: #5b6569; --dim: #636d71;
-  --accent: #0c7f68; --target: #e7f3f1;
+  --accent: #0c7a64; --target: #e7f3f1;
 }
 /* Two rules that carry no colour, so the button cannot introduce one. They exist so that a reader
    who has overridden their system gets form controls, scrollbars and a caret on the same side of the

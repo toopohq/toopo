@@ -15,7 +15,7 @@ confirmed-by:
   - battery: site
     guard: a-page-fetches-nothing-but-the-face-this-repository-serves
   - battery: site
-    guard: every-pair-below-the-legible-floor-is-one-this-repository-declared
+    guard: every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible
 ---
 
 # A condition written in advance is what decided the font
@@ -238,7 +238,7 @@ allowed.
 red on the artboard's values. Its claim cannot survive a palette that fails it, and nobody here may
 retune a colour the owner chose.
 
-It is now `every-pair-below-the-legible-floor-is-one-this-repository-declared`: **eleven rows, each
+It became `every-pair-below-the-legible-floor-is-one-this-repository-declared`: **eleven rows, each
 naming a pair and the ratio it measures, exact in both directions.**
 
 - **Given up:** the guard no longer refuses an illegible ink.
@@ -249,6 +249,12 @@ naming a pair and the ratio it measures, exact in both directions.**
 The debt is counted rather than carried, which is the shape `unreachableGuards` and `leavesUnanswered`
 already have one folder over. **This is the owner's to ratify or overturn**, and it is the one thing
 in this unit taken on the assistant's judgement rather than on his.
+
+**He overturned it, and the guard carries its old name again.**
+[ADR-0178](0178-every-ink-clears-the-floor-and-an-asymmetry-is-what-decided-the-last-one.md) raised both inks, took the
+eleven rows out and put the strong claim back, so the trade above lasted one unit. The paragraph stays
+as it was written because it is the account of a decision that was really taken, and because what it
+gave up is exactly what the next unit had to buy back.
 
 ## Consequences
 

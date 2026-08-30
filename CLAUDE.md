@@ -386,11 +386,28 @@ ink, and three are the accent missing by a twentieth. They are not corrected: th
 owner's and he has not ruled. What *is* corrected is the focus ring, which measured **1.76:1** against
 light paper where WCAG owes a non-text indicator 3:1 — keyboard focus invisible on a light system —
 repaired to 4.76:1 with the artboard's own darkened accent, so no colour was invented.
-`every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` could not survive that and is now
+`every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible` could not survive that and became
 `every-pair-below-the-legible-floor-is-one-this-repository-declared`: eleven rows, exact in both
 directions, so a twelfth cannot arrive in silence and a row cannot outlive the failure it names. **It
-gives up refusing an illegible ink and buys refusing a new one and a stale exemption**, and that trade
+gave up refusing an illegible ink and bought refusing a new one and a stale exemption**, and that trade
 is the one thing in the unit taken on the assistant's judgement rather than the owner's. ADR-0176.
+
+**The trade lasted one unit, and what ended it was an asymmetry rather than a number.** The owner ruled
+that every ink clears the floor. `--dim` took the values ADR-0176's own reopening clause had already
+named, and **the reading that matters is that the binding ground is the card in both themes** — the one
+neither record had measured against, where the ink sits 0.4 to 0.6 below its headline figure. They
+clear anyway, which is luck rather than method: **a reopening clause that names a value names it
+against the ground it was written from, and that is not necessarily the ground that decides.** A walk
+along the owner's own hue at one part in a thousand found the nearest clearing values sit *on* the
+floor — 4.51 and 4.50 — so his are taken for their margin, because **a design seated on a threshold is
+one a re-measurement moves off**. `--accent` moved 3.6 % to `#0c7a64`, and the assistant's refusal to
+move it was overruled with the argument that decides: leaving three rows cost a **mechanism** — the
+guard stays a declaration for ever and protects no future change — where moving cost a green nobody can
+pick out of a line-up. **`--tk-c` was named in the instruction and does not exist**: ADR-0176 left the
+six syntax tokens undeclared because nothing paints with them, and the artboard's card uses `--body`
+for its signature; they arrive with the contract page, and the floor applies the moment they do. The
+guard has its old name back and is seen red on an illegible ink in each theme — **and on the accent put
+back where ADR-0176 left it**, which is the mechanism the trade bought, made concrete. ADR-0178.
 
 **A binding was dated by a constant beside it rather than by the commit it names, and the registry
 served that for ten days with every guard green.** `publishedAt` says *when a binding was made* and
