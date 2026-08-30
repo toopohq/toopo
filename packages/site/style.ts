@@ -568,10 +568,13 @@ ul.names li { color: var(--dim); font-size: var(--t5) }
    a length already argued for as one somebody reads across, rather than a width chosen for a box.
    It grows to that and stops, which leaves the menu where it was. ADR-0137. */
 .masthead .search { position: relative; max-width: var(--aside); min-width: 0 }
+/* Mobile-first: what is written here is the narrow case, and the condition below adds to it. The
+   field keeps only the room its magnifier needs, because at 320 the bar has 95px to give it and a
+   chord badge would take 40 of them. ADR-0185. */
 .masthead .search input {
   width: 100%; font-family: var(--mono); font-size: var(--t5); line-height: var(--the-line);
   color: var(--ink); background: var(--paper); border: var(--the-hairline) solid var(--rule);
-  padding: var(--s) 40px var(--s) 28px; border-radius: 7px;
+  padding: var(--s) var(--s2) var(--s) 28px; border-radius: 7px;
 }
 /* The two marks the artboard draws inside the field. Both are placed against the field rather than
    in the flow, so neither takes a column from what a reader is typing. */
@@ -587,7 +590,22 @@ ul.names li { color: var(--dim); font-size: var(--t5) }
 }
 /* The accent means *you can act on this*, which is exactly what a focused field is. ADR-0115. */
 .masthead .search input:focus-visible { outline: none; border-color: var(--accent) }
-.masthead .search input::placeholder { color: var(--dim) }
+
+/* Below the width where the field can say what it is, it says nothing and the magnifier beside it
+   does the saying. Measured at 35cf5b2 in a browser: the placeholder is 122px, the field's own marks
+   take 68 more, and the bar's other children take 225 - so the field first gets what it needs at a
+   window of 415px, and shows "Search f" at 320 even with the chord badge gone. A truncated sentence
+   is worse than none where a mark already carries the meaning.
+
+   26rem is 416px, which is that measurement and not a familiar number. ADR-0185. */
+.masthead .search .shortcut { display: none }
+.masthead .search input::placeholder { color: transparent }
+
+@media (min-width: 26rem) {
+  .masthead .search input { padding-right: 40px }
+  .masthead .search .shortcut { display: block }
+  .masthead .search input::placeholder { color: var(--dim) }
+}
 
 /* A panel over the page rather than in it: the masthead is sticky, so results that pushed the
    document down would move the text a reader was reading. Its ceiling is the room under the bar and
@@ -1007,6 +1025,17 @@ ul.toc > li.under { padding-left: var(--s3) }
 }
 .masthead ul.menu a:hover { color: var(--ink); text-decoration: none }
 .masthead ul.menu .here { color: var(--dim) }
+/* The repository, as a square the size of the theme button beside it. It answers to the same shape
+   because they are the same thing to a reader - two controls at the end of the bar - and because a
+   mark needs a box where a word carries its own. ADR-0185. */
+.masthead .to-the-repository {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; padding: 0; flex: none;
+  color: var(--body); background: var(--paper);
+  border: var(--the-hairline) solid var(--rule); border-radius: 7px;
+}
+.masthead .to-the-repository:hover { color: var(--ink); border-color: var(--edge) }
+.masthead .to-the-repository .lit-path { fill: currentColor }
 
 main.shelf { display: block; padding: 0 }
 
@@ -1100,7 +1129,16 @@ a.row {
   transition: background .15s; min-width: 0;
 }
 a.row:hover { background: var(--card); text-decoration: none }
-a.row .call { margin: 0; font-family: var(--mono); font-size: var(--t5); font-weight: 500; min-width: var(--a-name-in-a-row); flex: none }
+/* A basis rather than a floor, which is what lets this need no width condition at all: the name sits
+   at its declared width wherever there is room and gives way where there is not. Written as a
+   flex: none with a min-width, it held its 150px at 320 and pushed the row's own mark 12px outside
+   the window - measured, and found by a sweep that asks which elements sit outside the viewport.
+   ADR-0185. */
+a.row .call {
+  margin: 0; font-family: var(--mono); font-size: var(--t5); font-weight: 500;
+  flex: 0 1 var(--a-name-in-a-row); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
 a.row .signature {
   margin: 0; flex: 1; min-width: 0; font-family: var(--mono); font-size: calc(12 * var(--a-point)); color: var(--body);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;

@@ -47,7 +47,6 @@ import type { Attributes, Node } from './document.js'
 import { el, text } from './document.js'
 import {
   FRONT_PAGE,
-  METHOD_PAGE,
   domainPageOf,
   linkTo,
   pageOf,
@@ -77,28 +76,28 @@ export type MenuEntry = {
 }
 
 /**
- * The page the masthead offers, which is one and used to be three.
+ * The pages the masthead offers, which is none - it was three, then one, and now the bar carries no
+ * destination of its own at all.
  *
- * The catalogue is not among them: it is what the wordmark is for, and two links to one address is a
- * reader's choice they gain nothing by making.
+ * The catalogue was never among them: it is what the wordmark is for, and two links to one address is
+ * a reader's choice they gain nothing by making. What went in this unit is *How we verify*, and the
+ * argument that kept it - that a masthead is for the thing a reader needs before they know they need
+ * it - is not refuted. **It is outweighed by a measurement.** At 320, with the module running, that
+ * label occupied ten line boxes for three words, one letter to a line, on a bar declaring 56px and
+ * rendering about 180: five flex children do not fit in 272px of content at any type size. A link
+ * nobody can read is not a way in.
  *
- * **What a masthead is for is the thing a reader needs before they know they need it**, and only one
- * of the three was that. *How we verify* is the claim this whole catalogue rests on and the one a
- * reader evaluating the project goes looking for without being told it exists.
- *
- * The other two are reached where they are asked for instead of everywhere. *What a contract is* is
- * linked from the phrase on a contract page that uses the word - the seam, where the page stops
- * describing a function and starts quoting a binding - and from the front page. *What we refuse* is
- * linked from the front page and from the domain that turned something down, which is where somebody
- * meets a refusal rather than where they would go looking for the set of them.
+ * **It is not replaced, and that is the owner's ruling rather than a consequence.** A contract's own
+ * page is this project's documentation and there will be no `/docs`, so the shape this menu was built
+ * for - a short list of standing destinations - has no second instance coming.
  *
  * **No address is lost and none was ever going to be**: an address this tree has served goes on being
- * written, and what changes is what points at it. ADR-0125 is that rule and it is about the address
- * rather than about the navigation.
+ * written, and what changes is what points at it. `/method/` is reached from `/catalogue/` and from
+ * `/what-a-contract-is/`, and `every-page-is-reachable-from-the-front-page` walks the graph rather
+ * than one hop, so it is what says the walk still closes. ADR-0125 is the rule about the address;
+ * ADR-0185 is this removal.
  */
-export const theMenu = (): readonly MenuEntry[] => [
-  { label: 'How we verify', page: METHOD_PAGE },
-]
+export const theMenu = (): readonly MenuEntry[] => []
 
 /**
  * A destination as it is reached from one page, or the plain words where it is the page you are on.
@@ -112,6 +111,35 @@ const destination = (own: string, page: string, label: string): Node =>
   own === page
     ? el('li', { class: 'here', 'aria-current': 'page' }, text(label))
     : el('li', NOTHING, el('a', { href: `${rootFrom(own)}${linkTo(page)}` }, text(label)))
+
+/**
+ * The repository, drawn rather than spelled.
+ *
+ * **The words did not fit and that was measured rather than judged.** At 320, with the module running,
+ * `GitHub` occupied six line boxes for two words and `How we verify` occupied ten for three - one
+ * letter per line, on a bar declaring 56px and rendering about 180. Five flex children do not fit in
+ * 272px of content at any type size, so the repair is what the bar carries and not how it is measured.
+ *
+ * It is the mark and an `aria-label`, so what a screen reader hears is a sentence where what a reader
+ * sees is a square. The arrow the artboard drew beside the word goes with the word: an arrow with no
+ * text to trail is decoration, and `rel` already says the same thing to a machine. ADR-0185.
+ */
+const theRepositoryMark = (): Node =>
+  el(
+    'svg',
+    { class: 'mark', width: '16', height: '16', viewBox: '0 0 24 24', 'aria-hidden': 'true' },
+    el('path', {
+      class: 'lit-path',
+      d:
+        'M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2' +
+        '-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19' +
+        ' 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26' +
+        '.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3' +
+        '.17-1.18 3.17-1.18.63 1.59.23 2.76.12 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.4' +
+        '1.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .31.21.67.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5' +
+        '.73 18.27.5 12 .5Z',
+    }),
+  )
 
 /**
  * The four squares the artboard opens on, one of them the accent.
@@ -187,8 +215,8 @@ export const masthead = (own: string, menu: readonly MenuEntry[]): Node =>
         NOTHING,
         el(
           'a',
-          { href: THE_REPOSITORY_ADDRESS, rel: 'noreferrer' },
-          text('GitHub ↗'),
+          { class: 'to-the-repository', href: THE_REPOSITORY_ADDRESS, rel: 'noreferrer', 'aria-label': 'The source on GitHub' },
+          theRepositoryMark(),
         ),
       ),
     ),
