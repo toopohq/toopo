@@ -406,6 +406,42 @@ export const theCatalogue: readonly ContractSource[] = [
     ],
   },
 
+  /**
+   * **Nothing a developer browses shows this contract, and it stays. Here is why, as conditions.**
+   *
+   * The owner has ruled that a refused contract leaves every surface somebody *browses* - the front
+   * page, the catalogue, the pages of the site - because a showcase is for what can be used. It stays
+   * in `npx toopo search`, with its mark and its reason, because somebody who types its name has asked
+   * for that thing and silence would tell them the catalogue holds nothing on the subject.
+   *
+   * **So it becomes a contract nothing displays and only tests reach, which is exactly the shape a
+   * dead-code sweep proposes to delete.** ADR-0174 wrote the rule for that: an unnoticed removal is a
+   * question with three answers, and the third is *declared silent - leave it, and make the saying
+   * reachable from the thing*. This is the saying, and it is here rather than only in a record because
+   * here is where the sweep arrives.
+   *
+   * **Two things are load-bearing today, and each names what would end it.**
+   *
+   * 1. **It is the only contract whose frozen half is still open.** Every other entry below is
+   *    `PUBLISHED`. So it is the whole population of
+   *    `no-two-profiles-of-an-unpublished-contract-are-indistinguishable` - a guard that would be born
+   *    over nothing without it - and it is what `registry-storage` anchors its unpublished-contract
+   *    region at. **This ends the day an eighth contract is written and not yet published**, and on
+   *    that day the reason here is a different one.
+   * 2. **It is the whole of `/refusals`.** `refuseContract` is reached only from `never-published`, so
+   *    deleting this entry takes the refused count to zero, empties a served answer and stops the
+   *    refusals page being emitted at all. **This ends the day the catalogue refuses a second
+   *    contract**, and the served answer stops depending on one row.
+   *
+   * **A third reason is often given and it is not a reason to keep code**: this is the third prototype
+   * the contract format was settled on. That is a fact about the past, it cannot expire, and the past
+   * does not need the source to go on being true. It is named here so that nobody counts it twice.
+   *
+   * **A fourth was given and it is false, which is why these are conditions.** *The only instance of
+   * `the-marking-alone` a guard can exercise* was true when ADR-0159 wrote it and stopped being true
+   * when `object/deep-equal@1` was published carrying the same form - measured, ADR-0172 read a real
+   * install landing it. A reason nobody re-reads is a reason that outlives its own truth.
+   */
   {
     address: GROUP_BY,
     /**
@@ -419,14 +455,20 @@ export const theCatalogue: readonly ContractSource[] = [
       keptAs: groupBy.catalogueAdmission.keptAs,
     },
     /**
-     * The one contract of the catalogue whose copied file carries the current banner, and it can
-     * because it is the one the ledger binds nothing for. ADR-0159.
+     * The first contract whose copied file carried the current banner, because it is the one the
+     * ledger binds nothing for. ADR-0159.
      *
      * It is not a special case made for it: the rule is that a contract not yet published carries
-     * `THE_CURRENT_BANNER`, and this contract has never been published. What it buys is that the
-     * second branch of `licenceHeaderOf` has an instance from the day it exists, so
-     * `every-file-the-installer-copies-is-marked-mit-0` is exercised on both forms rather than on one
-     * and a branch nothing reaches.
+     * `THE_CURRENT_BANNER`, and this contract has never been published. What it bought is that the
+     * second branch of `licenceHeaderOf` had an instance from the day it existed, so
+     * `every-file-the-installer-copies-is-marked-mit-0` was exercised on both forms rather than on one
+     * and a branch nothing reached.
+     *
+     * **It read *the one contract* until ADR-0179, and it had been two since the seventh was
+     * published.** `object/deep-equal@1` was the first contract written after ADR-0159 and carries
+     * this same form; ADR-0172 measured a real install landing it. The sentence was true when it was
+     * written and expired at a publication, with nothing pointing at it - which is why the paragraph
+     * above this entry is written as conditions rather than as facts.
      */
     banner: 'the-marking-alone',
     folder: 'contracts/typescript/array/group-by',
