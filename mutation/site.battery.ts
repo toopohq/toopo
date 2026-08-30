@@ -2376,25 +2376,6 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     killed(['a-query-hides-the-cards-it-does-not-name-and-leaves-the-others-as-served']),
   ),
 
-  /**
-   * The sift builds a field on a page that serves no shelf.
-   *
-   * Twelve of this site's thirteen pages carry the masthead's search and no shelf, so a control that
-   * assumed its slot would throw on all twelve - which is the ordinary case rather than an exotic one,
-   * and the reason the reader below returns nothing rather than an element.
-   */
-  sameOnEveryLens(
-    'W-145',
-    'goes on building the field of a shelf when the page declares no shelf, so twelve pages of ' +
-      'thirteen get a control reading a slot that is not there',
-    [
-      startFile(
-        `  const declared = theCatalogueDeclaredIn('.sift')`,
-        `  const declared = theCatalogueDeclaredIn('.sift') ?? theCatalogueDeclaredIn('.masthead .search')`,
-      ),
-    ],
-    killed(['a-page-that-serves-no-shelf-is-left-alone']),
-  ),
 
   /**
    * The shelf narrows to something other than an address, which is the property this unit rests on.
@@ -3124,6 +3105,27 @@ export const battery: Battery = {
    * that has stopped being unprobed reads exactly like one that never was.
    */
   unprobedRegions: [
+    /**
+     * A claim three independent checks each hold, so no single edit reaches it.
+     *
+     * `siftControl` appends its field once, at the end, behind three early returns: no slot declaring
+     * a catalogue, no status line, and no card carrying an address. A page with no shelf fails all
+     * three, so defeating any one of them leaves the other two refusing - **measured**, a cell that
+     * made the slot reader fall back to the masthead's was written, injected, and survived with every
+     * guard green, because the status line was still absent.
+     *
+     * It is a region rather than a gap: the guard is real, it is the ordinary case on twelve pages of
+     * thirteen, and what cannot be built is a *single* defect that reaches it. A mutant editing three
+     * lines at once would reach it and would say nothing about which of them is load-bearing.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'three independent early returns each refuse to build a shelf field on a page with no ' +
+        'shelf, so no single edit reaches the claim - measured, a cell defeating the slot reader ' +
+        'survived with every guard green',
+      guards: ['a-page-that-serves-no-shelf-is-left-alone'],
+    },
     {
       nature: 'documents a decision',
       reason:

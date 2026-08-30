@@ -452,8 +452,24 @@ describe('the controls a visitor touches, run against a document', () => {
    */
   it('a-page-that-serves-no-shelf-is-left-alone', () => {
     aServedContractPage()
+
+    /**
+     * **Every field on the page and not the shelf's own, which is what the instrument corrected.**
+     *
+     * This asked whether `.sift input` was null, and `W-145` survived: the mutant falls back to the
+     * masthead's slot when there is no shelf, so it builds a field *somewhere else* and the shelf's
+     * selector goes on answering nothing. A guard asking about the place a control was supposed to
+     * build in cannot see one that built in the wrong place.
+     *
+     * So it counts inputs across the document, before and after. `searchControl` is not called here,
+     * so a served contract page carries none - and the claim is that this builder added nothing at
+     * all rather than that one selector stayed empty.
+     */
+    expect(document.querySelectorAll('input')).toHaveLength(0)
+
     siftControl(arrivingOnce(servedFromThisTree(theCatalogueAsThisPageDeclaresIt().where)))
 
+    expect(document.querySelectorAll('input')).toHaveLength(0)
     expect(document.querySelector('.sift input')).toBeNull()
   })
 
