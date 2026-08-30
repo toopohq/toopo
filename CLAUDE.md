@@ -1145,6 +1145,30 @@ reds, each alone. **One arm has no cheap mutant and is named**: *nothing turned 
 cannot be reddened by a one-line edit, because `Domain.held` holds only what is installable.
 ADR-0179, ADR-0180, ADR-0181.
 
+**The site has a component layer, and the owner's eye found the defect that argues for it — with the
+victim inverted.** He saw the `all` pill drawn squarer than its neighbours. Measured at `f5bab84` in a
+browser, `all` rendered at the artboard's **6px, `5px 11px`, 12px** and its four neighbours at **16px,
+`4px 12px`, 11px** — so the one pill that looked wrong was the only one that was right, and the four
+that looked right were the four that were wrong. `ul.chips a`, written for the contract page's group
+bar, beat `a.chip` by one type of specificity; `all` escaped only by being a `span`, which no `a`
+selector reaches. **Three more instances were found by reading and a fourth by the new guard on its
+first run**: the copy control, whose markup `start.ts` already single-sourced and whose paint was two —
+radius `0px`, 13px, 37.05px tall against radius `5px`, 11px, 25.81px, both measured live; the section
+label at `.08em` against `.09em`; the card, reached as `.offers > li` because `.card` meant something
+else already; and `.recent h2`, which nobody had read. Every one is one fault: **a component painted
+from its container**, so its look belonged to whichever page it stood in. Five components now derive
+their class from a closed union and carry their rules beside their markup, so a second drawing of one
+thing is a duplicate key rather than a thing nobody noticed, and a drawing writes its selectors against
+`&` so it cannot spell one aimed elsewhere. **The half no type reaches is the half the defect came
+through** — `ul.chips a` never names `.chip` — so a guard asks happy-dom's matcher over every component
+element of every page instead of sweeping selector text, and restoring the defect reddens it alone.
+**The badge keeps two paddings and that is an intention**: measured on the artboard, `2px 6px` with no
+border and `1px 5px` with a `1px` one are **both 18px tall**, so the rule subtracts the border rather
+than declaring two numbers that differ by it. The addresses do not move, 130 files and 73 answers
+either side. **What it does not buy is written where somebody reaching for it arrives**: a page can
+still write a class by hand, the compiler refusing one is an entry of the list below, and that entry
+carries a number that descends — 80 hand-written class names before, 70 after. ADR-0183.
+
 **The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
 name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The
 shape of every command at once stood there as `add domain/function` so that no contract was privileged
@@ -1693,6 +1717,40 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   outside the frozen folder. ADR-0150.
 
 **Still open, and what each one now costs.**
+
+- **That a class a page writes is one a component owns.** ADR-0183 gives this site a component layer:
+  five shapes whose class is derived from a closed union, whose rules sit beside their markup, and
+  which nothing outside may paint. Two of the three properties are the compiler's. **The third is not
+  yet**: a page can still write `class:` by hand, and until it cannot, the layer is a place components
+  live rather than the only place they can.
+
+  **What would close it is measured rather than estimated.** `Attributes` losing `class` — spelled
+  `Readonly<Partial<Record<AttributeName, string>>>` over a closed set of about twenty-three attribute
+  names — makes `el('span', { class: 'chip' }, …)` a `TS2353` at the call site. Probed at `f5bab84`
+  before the layer was written, with the ordinary attribute still compiling beside it. Every remaining
+  site has to move in the same commit, because a legacy channel for the unconverted pages is the
+  convention this layer exists to replace.
+
+  **The number is what keeps it from becoming an oversight, and it descends.** Distinct class names
+  still written by hand outside `components.ts` and `style.ts`: **80 across 11 modules before ADR-0183,
+  70 after**, over 163 sites and then 148. `contract-page.ts` holds 31 of the 70 and `chrome.ts` 18, so
+  the two units that would move it most are the contract page's redesign and the masthead's.
+
+  **The published limit is that the compiler would not close it alone.** Probed at `f5bab84` under both
+  candidate shapes, a page building a `Record<string, string>` and passing it compiles either way — the
+  index signature satisfies the specific keys. So the direct spelling dies at the compiler and the
+  indirect one dies at `a-component-is-painted-by-its-own-rules-and-by-nothing-else`, and the pair is
+  total where neither half is. An entry naming only the type would be describing half a mechanism.
+
+  **Where this looked**: `Attributes` in `packages/site/document.ts`, which is
+  `Readonly<Record<string, string>>` and takes any key; `drawn` in `packages/site/components.ts`, which
+  is the only thing that puts a component's class on an element and writes it last so a caller's cannot
+  win; and the three guards of `packages/site/components.test.ts`, none of which reads a page module's
+  source for what it writes.
+
+  The population is every `class:` a page module writes. Priced as its own unit — 148 mechanical edits
+  moving no behaviour — and not taken, because landing it beside a page's reconstruction would make
+  every change in the diff unrecoverable. ADR-0183.
 
 - **That a field the digest freezes is one something reads.** Measured at `df5b367` by walking
   `contractSnapshot`'s own output with `pathsIn` and classing each path by `FIELD_MAP`: **58 paths

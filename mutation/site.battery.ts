@@ -2305,7 +2305,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'the same shape and nothing saying which of them is the one to run',
     [
       contractPageFile(
-        `el('div', { class: 'get-head' }, line('p', 'Install', { class: 'label' })),`,
+        `el('div', { class: 'get-head' }, eyebrow('field', 'p', 'Install')),`,
         `el('div', { class: 'get-head' }),`,
       ),
     ],
@@ -2458,7 +2458,7 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     'W-146',
     'shows four of the six installable contracts on the shelf, so every card is right, every command ' +
       'runs, and a reader is told this catalogue holds four functions',
-    [frontPageFile(`...held.map(offer)`, `...held.slice(0, 4).map(offer)`)],
+    [frontPageFile(`...held.map(offerFor)`, `...held.slice(0, 4).map(offerFor)`)],
     killed(['the-page-a-reader-arrives-at-is-every-contract-they-can-install']),
   ),
 

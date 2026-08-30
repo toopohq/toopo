@@ -114,7 +114,13 @@ const THE_ARGUMENTS: readonly { readonly heading: string; readonly says: string 
  *
  * What a card *says* is `what-a-card-says.ts`'s - the four figures written twice to the character -
  * and what it *looks like* is the component's. This function is the seam between them and holds
- * neither: it is a translation from a held contract to the data an offer shows. ADR-0180, ADR-0183.
+ * neither: it is a translation from a held contract to the data an offer shows.
+ *
+ * **The command names this contract and never a shape.** ADR-0140 took the template
+ * `toopo add domain/function` off this page on the argument that a command belongs to a contract, and
+ * ADR-0181 overruled where the page stands rather than that: six cards carry six commands, each about
+ * the function above it. W-91 is the cell that puts a template back and it is red on the guard over
+ * this page. ADR-0140, ADR-0180, ADR-0183.
  */
 const offerFor = (held: Held): Node => {
   const says = whatACardSays(held)

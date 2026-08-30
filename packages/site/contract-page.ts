@@ -63,6 +63,13 @@ import type { FrozenContract } from '../registry/snapshot.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { figure, grouped } from './quantity.js'
+/*
+ * The label over a field of the card, and the bar over a table of cases, are this page's two seams
+ * with the component layer. The label is the `eyebrow` component - it was drawn here at `.09em` and on
+ * the front page at `.08em`, which is one shape drawn twice. The bar kept its own look and lost the
+ * name it shared: it was called `chips`, the front page reused that for a list of pills, and
+ * `ul.chips a` then painted them. ADR-0183.
+ */
 import { eyebrow } from './components.js'
 import type { Domain, Held } from './catalogue.js'
 import { theAnswerOf, whatACardSays } from './what-a-card-says.js'
