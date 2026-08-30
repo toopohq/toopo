@@ -22,6 +22,7 @@ import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { search } from '../registry/search.js'
 import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
 import { whatACardSays } from './what-a-card-says.js'
+import { classOf } from './components.js'
 import { THE_EXAMPLES } from './chrome.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import type { Element, Node } from './document.js'
@@ -888,7 +889,8 @@ describe('the site', () => {
         const own = node.attributes['class'] ?? ''
         const block = own === 'get' || own === 'sig' ? own : within
 
-        if (block !== null && own === 'label') found.push(`${block} is labelled ${readingOf(node).trim()}`)
+        if (block !== null && own === classOf('eyebrow'))
+          found.push(`${block} is labelled ${readingOf(node).trim()}`)
         if (block !== null && node.tag === 'pre') found.push(`${block} holds pre.${own}`)
 
         for (const child of node.children) walk(child, block)

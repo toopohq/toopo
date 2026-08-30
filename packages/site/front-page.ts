@@ -44,6 +44,7 @@ import { el, text } from './document.js'
 import type { MenuEntry } from './chrome.js'
 import { footer, masthead, theCatalogueFrom } from './chrome.js'
 import { whatACardSays } from './what-a-card-says.js'
+import { eyebrow, offer, pill } from './components.js'
 import { CATALOGUE_PAGE, FRONT_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
 
 const NOTHING = {} as const
@@ -109,122 +110,26 @@ const THE_ARGUMENTS: readonly { readonly heading: string; readonly says: string 
 ]
 
 /**
- * The mark that says a contract's definition is frozen, drawn as the artboard draws it.
+ * One contract as the shelf draws it, which is the `offer` component fed from the registry.
  *
- * `aria-hidden` on the drawing and the word beside it in text, which is the split `isChrome` already
- * makes: a padlock is a picture of the claim and the claim is the word. So a screen reader hears
- * `stable` once and every projection carries it once.
+ * What a card *says* is `what-a-card-says.ts`'s - the four figures written twice to the character -
+ * and what it *looks like* is the component's. This function is the seam between them and holds
+ * neither: it is a translation from a held contract to the data an offer shows. ADR-0180, ADR-0183.
  */
-const theFrozenMark = (): Node =>
-  el(
-    'span',
-    { class: 'stable' },
-    el(
-      'svg',
-      { width: '9', height: '9', viewBox: '0 0 16 16', 'aria-hidden': 'true' },
-      el('rect', { x: '3', y: '7', width: '10', height: '7', rx: '1.5', fill: 'currentColor' }),
-      el('path', {
-        d: 'M5 7 V5 a3 3 0 0 1 6 0 V7',
-        fill: 'none',
-        stroke: 'currentColor',
-        'stroke-width': '1.6',
-      }),
-    ),
-    text('stable'),
-  )
-
-/**
- * One contract as the shelf draws it: the name, what it is frozen as, its shape, what it does, and
- * the command that takes it.
- *
- * The order is the artboard's and so is every part of it. The install line is a block of its own at
- * the foot of the card, ruled off, because that is where the design puts the thing a reader acts on -
- * and `start.ts` appends the copy control to it, exactly as it does on a contract page.
- *
- * **The command names this contract and never a shape.** ADR-0140 took the template
- * `toopo add domain/function` off this page on the argument that a command belongs to a contract, and
- * ADR-0181 overruled where the page stands rather than that: six cards carry six commands, each about
- * the function above it, which is what that record asked for. W-91 is the cell that puts a template
- * back and it is red on the guard over this page. ADR-0140, ADR-0182.
- */
-const offer = (held: Held): Node => {
+const offerFor = (held: Held): Node => {
   const says = whatACardSays(held)
 
-  return el(
-    'li',
-    { class: 'offer', 'data-contract': says.address },
-    /**
-     * The name and the two marks, on one row and as three blocks in the reading.
-     *
-     * **They were three phrasing elements side by side and `no-element-runs-into-the-one-beside-it`
-     * refused it**, correctly: the reading ran `number/parse` into `stable` into `TS` as one word,
-     * which is exactly what that guard exists for. The row is a flex container either way; what
-     * changed is that each part is a block a projection separates rather than three spans nothing
-     * does. ADR-0025 is the rule - a separator belongs to a block, and a phrasing element gets none.
-     */
-    el(
-      'div',
-      { class: 'head' },
-      el(
-        'p',
-        { class: 'named' },
-        el(
-          'a',
-          { class: 'call', href: linkTo(pageOf(held.contract.address)) },
-          el('span', { class: 'of' }, text(`${says.domain}/`)),
-          text(says.name),
-        ),
-      ),
-      el(
-        'ul',
-        { class: 'marks' },
-        el('li', NOTHING, theFrozenMark()),
-        el('li', NOTHING, el('span', { class: 'language' }, text('TS'))),
-      ),
-    ),
-    line('pre', says.signature, { class: 'signature' }),
-    line('p', says.summary, { class: 'says' }),
-    line('pre', says.command, { class: 'install' }),
-  )
+  return offer({
+    domain: says.domain,
+    name: says.name,
+    href: linkTo(pageOf(held.contract.address)),
+    address: says.address,
+    signature: says.signature,
+    summary: says.summary,
+    command: says.command,
+    language: 'TS',
+  })
 }
-
-/**
- * A domain, as a way into the part of the catalogue filed under it.
- *
- * **The artboard's chips filter the grid in the browser and these are links**, which is constraint 1
- * deciding a shape: a chip that narrows the page needs JavaScript, and a domain already has a page
- * listing exactly what a filtered grid would show. So a reader with nothing running gets the same
- * answer as a reader with everything, and `every-page-is-reachable-from-the-front-page` reaches every
- * domain page from here. ADR-0182.
- */
-const chip = (name: string, count: number, href: string): Node =>
-  el(
-    'li',
-    NOTHING,
-    el('a', { class: 'chip', href }, text(name), el('span', { class: 'count' }, text(String(count)))),
-  )
-
-/**
- * The chip for the list a reader is already looking at, which the artboard draws as the selected one.
- *
- * It is marked and never linked, for the reason `chrome.ts` marks the page you are on: a link to what
- * is already in front of you is a control that does nothing. `aria-current` is the declaration for it
- * rather than a class this repository invented, and it is the same one the masthead uses.
- *
- * The catalogue keeps its way in - the closing line links it - so nothing became unreachable by this.
- * ADR-0182.
- */
-const theChipYouAreOn = (name: string, count: number): Node =>
-  el(
-    'li',
-    NOTHING,
-    el(
-      'span',
-      { class: 'chip here', 'aria-current': 'true' },
-      text(name),
-      el('span', { class: 'count' }, text(String(count))),
-    ),
-  )
 
 /** The month a reader reads, from the instant the registry publishes. */
 const THE_MONTHS = [
@@ -336,25 +241,29 @@ export const frontPage = (
           el('p', { class: 'sifted', role: 'status', 'aria-live': 'polite' }),
           el(
             'ul',
-            { class: 'chips' },
-            theChipYouAreOn('all', installable),
+            { class: 'pills' },
+            el('li', NOTHING, pill('all', installable, null)),
             ...domains
               .filter((domain) => domain.held.length > 0)
               .map((domain) =>
-                chip(domain.name, domain.held.length, linkTo(domainPageOf(domain.address))),
+                el(
+                  'li',
+                  NOTHING,
+                  pill(domain.name, domain.held.length, linkTo(domainPageOf(domain.address))),
+                ),
               ),
           ),
         ),
         el(
           'section',
           { class: 'listing' },
-          line('h2', WHAT_THE_LIST_IS),
-          el('ul', { class: 'offers' }, ...held.map(offer)),
+          eyebrow('section', 'h2', WHAT_THE_LIST_IS),
+          el('ul', { class: 'offers' }, ...held.map(offerFor)),
         ),
         el(
           'section',
           { class: 'recent' },
-          line('h2', 'Recently added'),
+          eyebrow('section', 'h2', 'Recently added'),
           el('ul', { class: 'recent-rows' }, ...newest.map(recently)),
         ),
         el(

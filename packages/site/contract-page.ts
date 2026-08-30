@@ -63,6 +63,7 @@ import type { FrozenContract } from '../registry/snapshot.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import { figure, grouped } from './quantity.js'
+import { eyebrow } from './components.js'
 import type { Domain, Held } from './catalogue.js'
 import { theAnswerOf, whatACardSays } from './what-a-card-says.js'
 import type { MenuEntry } from './chrome.js'
@@ -297,7 +298,7 @@ const renderedGroup = (
 const theGroupBar = (table: CaseTableRecord): Node =>
   el(
     'ul',
-    { class: 'chips' },
+    { class: 'groups' },
     ...table.groups.map((group) =>
       el(
         'li',
@@ -986,13 +987,13 @@ export const contractPage = (
               el(
                 'div',
                 { class: 'get', 'data-ways': JSON.stringify(THE_WAYS_TO_RUN_IT) },
-                el('div', { class: 'get-head' }, line('p', 'Install', { class: 'label' })),
+                el('div', { class: 'get-head' }, eyebrow('field', 'p', 'Install')),
                 line('pre', says.command, { class: 'install' }),
               ),
               el(
                 'div',
                 { class: 'sig' },
-                line('p', 'Signature', { class: 'label' }),
+                eyebrow('field', 'p', 'Signature'),
                 line('pre', says.signature, { class: 'answer' }),
               ),
             ),

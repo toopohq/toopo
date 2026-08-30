@@ -237,6 +237,7 @@
  * nobody controls - ADR-0134 refused a candidate for exactly that.
  */
 
+import { THE_COMPONENT_RULES } from './components.js'
 import { THE_FONT_FACE, THE_SANS_STACK } from './font.js'
 
 export const STYLE = `
@@ -738,12 +739,7 @@ pre.install {
   padding: var(--s4) var(--s5); color: var(--ink);
   max-width: 100%; font-size: var(--t3); overflow-wrap: anywhere;
 }
-/* A field of a card and never a section of the page: it names what the block under it is, which is
-   what tells the command from the signature before either is read. A heading here would be a rail
-   entry pointing at nothing. */
-.label {
-  margin: 0; font-size: var(--t6); letter-spacing: .09em; text-transform: uppercase; color: var(--dim);
-}
+
 .get, .sig { display: grid; gap: var(--s2); min-width: 0 }
 /* The label on the left and the choice on the right, on one baseline. The row wraps rather than
    squeezing, because four manager names beside a word is the first thing to run out of room. */
@@ -762,15 +758,6 @@ ul.managers button[aria-pressed='true'] { color: var(--ink); border-bottom-color
    reader has to be able to read both the name and the reason under it. */
 ul.managers button[data-refused] { text-decoration: line-through }
 p.refusal { margin: 0; font-size: var(--t5); color: var(--dim) }
-/* As wide as its own label and never narrower: a control is not text that reflows. Left to shrink
-   it took the command's anywhere and offered a reader cop over y. */
-pre.install .copy {
-  flex: none;
-  margin-left: auto; border: 0; border-left: 1px solid var(--edge); background: none;
-  padding: var(--s2) 0 var(--s2) var(--s4); font: inherit; font-size: var(--t5);
-  color: var(--dim); cursor: pointer;
-}
-pre.install .copy:hover { color: var(--accent) }
 /* What a reader reads rather than runs, so it takes the frame off instead of putting one on: no
    ground, no border, one hairline under it. The distance from the command above is the whole point -
    they carry the same face and must not carry the same weight. */
@@ -799,12 +786,17 @@ pre.shape code { color: var(--ink) }
 /* No top of its own: under a heading the standing gap applies, and elsewhere the margin above
    collapses into it. Declaring one made a gap of 16 and then of 0, in both directions, where every
    other section heading is followed by 12. */
-ul.chips { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin-bottom: 0 }
-ul.chips a {
+/* The bar over a table of cases, which is this page's own shape and not the front page's pill. It was
+   called chips, the front page reused that name for a list of pills, and the rule ul.chips a - one
+   type more specific than a.chip - then painted them: 16px where the artboard draws 6px, on every
+   pill but the one that happened to be a span. The rule did nothing wrong; the name was shared.
+   ADR-0183. */
+ul.groups { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin-bottom: 0 }
+ul.groups a {
   display: inline-block; font-family: var(--mono); font-size: var(--t6); color: var(--body);
   border: 1px solid var(--edge); border-radius: 1rem; padding: var(--s) var(--s3); text-decoration: none;
 }
-ul.chips a:hover { border-color: var(--accent); color: var(--ink) }
+ul.groups a:hover { border-color: var(--accent); color: var(--ink) }
 
 /* The line the page is read in two halves across. It is heavier than a section rule and takes the
    largest step of the scale above it, because what it separates is not two sections but two ways of
@@ -1032,101 +1024,44 @@ main.shelf { display: block; padding: 0 }
 .hero .sifted { margin: var(--s3) 0 0; font-size: var(--t6); color: var(--dim); text-align: left }
 .hero .sifted:empty { display: none }
 
-/* The domains, as ways into the part of the catalogue filed under each. */
-.chips {
+/* The row the domains stand in. It places pills and paints none: what one looks like is the pill's
+   own, in components.ts, which is what stops a container deciding how the thing inside it is drawn.
+   ADR-0183. */
+ul.pills {
   display: flex; flex-wrap: wrap; gap: var(--s2); justify-content: center;
   margin: 18px 0 0; padding: 0; list-style: none;
 }
-.chips li { padding: 0; border: 0 }
-a.chip, .chip.here {
-  display: inline-block; font-family: var(--mono); font-size: 12px;
-  padding: 5px 11px; border-radius: 6px; text-decoration: none;
-  border: 1px solid var(--rule); background: var(--wash); color: var(--body);
-  transition: border-color .15s, color .15s;
-}
-a.chip:hover { border-color: var(--edge); color: var(--ink); text-decoration: none }
-a.chip .count, .chip.here .count { opacity: .55; margin-left: var(--s) }
-/* The list a reader is already looking at, drawn as the artboard draws the selected chip. The accent
-   means you are here, which is one of the two things ADR-0115 lets it mean and never a verdict. */
-.chip.here { border-color: var(--accent); color: var(--accent); background: var(--target) }
+ul.pills li { padding: 0; border: 0 }
 
-.listing { max-width: var(--the-page); margin: 0 auto; padding: 52px var(--s6) 20px }
-.recent { max-width: var(--the-page); margin: 0 auto; padding: 16px var(--s6) 48px }
+/* Every component's own rules, assembled from the drawings that sit beside the markup producing them.
+   They stand after the element defaults so a component outranks the document's typography, and after
+   nothing else: a rule below this point that painted one of them would be the fault ADR-0183 exists
+   to remove, and a-component-is-painted-by-its-own-rules-and-by-nothing-else is what refuses it. */
+${THE_COMPONENT_RULES}
+
+/* The space under each section's label is the section's own, declared as a gap rather than as a margin
+   on the label - because a margin on the label would be this container deciding how the eyebrow inside
+   it is drawn, which is the fault this layer removes. The two values are the artboard's and they
+   differ there too: 14 under the shelf's heading, 10 under the arrivals'. ADR-0183. */
+.listing {
+  display: grid; gap: 14px;
+  max-width: var(--the-page); margin: 0 auto; padding: 52px var(--s6) 20px;
+}
+.recent {
+  display: grid; gap: 10px;
+  max-width: var(--the-page); margin: 0 auto; padding: 16px var(--s6) 48px;
+}
 /* The label over a list, which is the artboard's one heading style on this page: small, spaced,
    upper case, and the colour of secondary matter. */
-.listing h2, .recent h2 {
-  font-size: 12.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--body); margin: 0 0 14px;
-}
-.recent h2 { margin-bottom: 10px }
+
 
 /* As many cards abreast as a 300px floor allows, which is what puts three on a 1100px column and one
-   on a phone with no width written anywhere. */
+   on a phone with no width written anywhere. The track is this section's; what stands in it is the
+   offer component's own, in components.ts. ADR-0183. */
 .offers {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--a-card)), 1fr)); gap: 12px;
   margin: 0; padding: 0; list-style: none;
 }
-.offers > li {
-  display: flex; flex-direction: column; gap: 8px;
-  background: var(--wash); border: 1px solid var(--rule); border-radius: 8px;
-  padding: 14px 16px 12px; min-width: 0;
-  transition: border-color .15s;
-}
-.offers > li:hover { border-color: var(--edge) }
-.offers .head { display: flex; align-items: center; gap: 8px; min-width: 0 }
-.offers .named { margin: 0; flex: 1; min-width: 0 }
-.offers ul.marks { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0; flex: none }
-.offers ul.marks li { padding: 0; border: 0 }
-.offers a.call {
-  font-family: var(--mono); font-size: 13.5px; font-weight: 500;
-  flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  color: var(--ink); text-decoration: none;
-}
-.offers a.call:hover { text-decoration: underline }
-.offers a.call .of { color: var(--body) }
-/* The mark and the language, which say what is frozen and in what. Neither is a link and neither is
-   a status the accent may carry - the accent here is the frozen mark's own ground, which is the one
-   place ADR-0115 lets it mean this is settled rather than you can act. */
-.offers .stable {
-  display: flex; align-items: center; gap: 4px; flex: none;
-  font-size: 10.5px; font-weight: 500; color: var(--accent);
-  background: var(--target); border-radius: 4px; padding: 2px 6px;
-}
-.offers .language {
-  flex: none; font-family: var(--mono); font-size: 10.5px; color: var(--body);
-  border: 1px solid var(--edge); border-radius: 4px; padding: 1px 5px;
-}
-/* A signature is one line a reader reads as a whole, so it is clipped rather than wrapped - the rule
-   ADR-0135 wrote for a block narrower than its content, applied where the design asks for one line.
-
-   The frame is taken off deliberately and it was found in a browser rather than read: the generic
-   pre rule paints a ground, a border and padding, this rule set none of them, and every card grew a
-   box the design does not draw. The card is the frame; what is inside it is a line. */
-.offers .signature {
-  display: block; font-family: var(--mono); font-size: 12px; color: var(--body);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
-  margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
-}
-/* Two lines and then an ellipsis, which is what keeps every card the same height in a row. */
-.offers .says {
-  margin: 0; font-size: 12.5px; color: var(--body); line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-}
-.offers .install {
-  display: flex; align-items: center; gap: 8px;
-  margin: 2px 0 0; padding: 9px 0 0;
-  border: 0; border-top: 1px solid var(--rule); border-radius: 0;
-  background: none; color: var(--dim); max-width: 100%;
-  font-family: var(--mono); font-size: 11px; overflow-wrap: anywhere; min-width: 0;
-}
-.offers .install .copy {
-  margin-left: auto; flex: none;
-  font-family: var(--mono); font-size: 11px;
-  background: var(--card); border: 1px solid var(--rule); border-radius: 5px;
-  padding: 3px 8px; color: var(--body); cursor: pointer;
-  transition: color .15s, border-color .15s;
-}
-.offers .install .copy:hover { color: var(--ink); border-color: var(--edge) }
 
 /* One rule between rows and none around them, which is what a list of four reads as when it is a
    table of arrivals rather than a set of cards. */
