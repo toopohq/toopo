@@ -540,10 +540,10 @@ ul.names li { color: var(--dim); font-size: var(--t5) }
    what the slot is for, and gets their theme from prefers-color-scheme instead. ADR-0176. */
 .masthead .theme { display: flex; align-items: center }
 .theme-button {
-  font: inherit; font-family: var(--mono); font-size: var(--t6); line-height: var(--the-line);
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; padding: 0;
   color: var(--body); background: var(--paper);
-  border: var(--the-hairline) solid var(--rule); border-radius: 6px;
-  padding: 0 var(--s2); cursor: pointer;
+  border: var(--the-hairline) solid var(--rule); border-radius: 7px; cursor: pointer;
 }
 .theme-button:hover { color: var(--ink); border-color: var(--edge) }
 
@@ -554,7 +554,19 @@ ul.names li { color: var(--dim); font-size: var(--t5) }
 .masthead .search input {
   width: 100%; font-family: var(--mono); font-size: var(--t5); line-height: var(--the-line);
   color: var(--ink); background: var(--paper); border: var(--the-hairline) solid var(--rule);
-  padding: var(--s) var(--s2);
+  padding: var(--s) 40px var(--s) 28px; border-radius: 7px;
+}
+/* The two marks the artboard draws inside the field. Both are placed against the field rather than
+   in the flow, so neither takes a column from what a reader is typing. */
+.masthead .search .magnifier {
+  position: absolute; left: var(--s2); top: 50%; transform: translateY(-50%);
+  color: var(--dim); pointer-events: none;
+}
+.masthead .search .shortcut {
+  position: absolute; right: var(--s); top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 10px; color: var(--dim);
+  border: var(--the-hairline) solid var(--rule); border-radius: 4px; padding: 2px 5px;
+  background: var(--wash); pointer-events: none;
 }
 /* The accent means *you can act on this*, which is exactly what a focused field is. ADR-0115. */
 .masthead .search input:focus-visible { outline: none; border-color: var(--accent) }
@@ -1001,8 +1013,12 @@ main.shelf { display: block; padding: 0 }
 /* The field is built into this by start.ts and the box is drawn here, so that what a reader sees is
    the artboard's control rather than a browser's default input. */
 .hero .find { position: relative; text-align: left }
+.hero .find .magnifier {
+  position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+  color: var(--dim); pointer-events: none;
+}
 .hero .find input {
-  width: 100%; height: 54px; padding: 0 66px 0 var(--s6);
+  width: 100%; height: 54px; padding: 0 66px 0 44px;
   background: var(--wash); border: 1px solid var(--edge); border-radius: 8px;
   color: var(--ink); font: inherit; font-size: 15.5px;
   transition: border-color .15s, box-shadow .15s;
@@ -1020,14 +1036,17 @@ main.shelf { display: block; padding: 0 }
   margin: 18px 0 0; padding: 0; list-style: none;
 }
 .chips li { padding: 0; border: 0 }
-a.chip {
+a.chip, .chip.here {
   display: inline-block; font-family: var(--mono); font-size: 12px;
   padding: 5px 11px; border-radius: 6px; text-decoration: none;
   border: 1px solid var(--rule); background: var(--wash); color: var(--body);
   transition: border-color .15s, color .15s;
 }
 a.chip:hover { border-color: var(--edge); color: var(--ink); text-decoration: none }
-a.chip .count { opacity: .55; margin-left: var(--s) }
+a.chip .count, .chip.here .count { opacity: .55; margin-left: var(--s) }
+/* The list a reader is already looking at, drawn as the artboard draws the selected chip. The accent
+   means you are here, which is one of the two things ADR-0115 lets it mean and never a verdict. */
+.chip.here { border-color: var(--accent); color: var(--accent); background: var(--target) }
 
 .listing { max-width: var(--the-page); margin: 0 auto; padding: 52px var(--s6) 20px }
 .recent { max-width: var(--the-page); margin: 0 auto; padding: 16px var(--s6) 48px }
@@ -1076,10 +1095,15 @@ a.chip .count { opacity: .55; margin-left: var(--s) }
   border: 1px solid var(--edge); border-radius: 4px; padding: 1px 5px;
 }
 /* A signature is one line a reader reads as a whole, so it is clipped rather than wrapped - the rule
-   ADR-0135 wrote for a block narrower than its content, applied where the design asks for one line. */
+   ADR-0135 wrote for a block narrower than its content, applied where the design asks for one line.
+
+   The frame is taken off deliberately and it was found in a browser rather than read: the generic
+   pre rule paints a ground, a border and padding, this rule set none of them, and every card grew a
+   box the design does not draw. The card is the frame; what is inside it is a line. */
 .offers .signature {
   display: block; font-family: var(--mono); font-size: 12px; color: var(--body);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+  margin: 0; padding: 0; border: 0; border-radius: 0; background: none;
 }
 /* Two lines and then an ellipsis, which is what keeps every card the same height in a row. */
 .offers .says {
@@ -1123,6 +1147,8 @@ a.row .signature {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 a.row .when { margin: 0; font-size: 12px; color: var(--dim); white-space: nowrap; flex: none }
+a.row .onward { margin: 0; font-size: 15px; color: var(--dim); flex: none; line-height: 1 }
+a.row:hover .onward { color: var(--body) }
 
 /* The three arguments, ruled off from the catalogue above them. */
 .arguments {
@@ -1136,7 +1162,27 @@ a.row .when { margin: 0; font-size: 12px; color: var(--dim); white-space: nowrap
 /* Not on the artboard, and here because no page is removed in this unit: a page nothing links to is
    one every-page-is-reachable-from-the-front-page refuses. ADR-0182. */
 .elsewhere {
-  max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6) 48px;
+  max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6) 40px;
   font-size: var(--t6); color: var(--dim);
 }
+
+/* The foot the artboard closes on: what this is, and the two ways out. Same shape as the bar at the
+   top and for the same reason - the rule spans the window and the column inside it does not. */
+.foot { border-top: 1px solid var(--rule); background: var(--wash) }
+.foot .bar {
+  display: flex; align-items: center; gap: var(--s4); flex-wrap: wrap;
+  max-width: var(--the-page); margin: 0 auto; padding: 20px var(--s6);
+}
+.foot .wordmark { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 13px; font-weight: 600 }
+.foot .wordmark a { color: var(--ink); text-decoration: none }
+.foot .wordmark a:hover { text-decoration: underline }
+.foot .terms { margin: 0; font-size: var(--t6); color: var(--dim) }
+.foot ul.ways {
+  display: flex; align-items: center; gap: var(--s4);
+  margin: 0 0 0 auto; padding: 0; list-style: none;
+}
+.foot ul.ways li { padding: 0; border: 0; font-size: var(--t6) }
+.foot ul.ways a { color: var(--dim); text-decoration: none }
+.foot ul.ways a:hover { color: var(--ink) }
+.foot ul.ways .here { color: var(--body) }
 `.trim()

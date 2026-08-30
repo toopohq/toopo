@@ -72,11 +72,19 @@ export type Attributes = Readonly<Record<string, string>>
  * is that rule read backwards - matter a reader may skip has to be skippable, and `complementary` is
  * what says so to somebody who is not looking at the columns. ADR-0116, ADR-0123.
  * Eight tags the separator table used to carry - `table`, `tr`, `ol`, `dl`, `dt`, `dd`, `header`,
- * `footer` - had no call site at all and are gone with it, because an entry nothing exercises is an
- * entry nothing keeps honest.
+ * `footer` - had no call site at all and went with it, because an entry nothing exercises is an entry
+ * nothing keeps honest.
+ *
+ * **Two of the eight came back, and what brought them back is the rule that removed them.** The
+ * artboard draws a banner at the top of the page and a contentinfo at the foot; both are now written by
+ * `chrome.ts`, so both have a call site and neither is an entry nobody exercises. Five tags entered
+ * with them - `span`, `svg`, `rect`, `path` for the marks the design draws, and `footer` for the foot -
+ * and the compiler refused each until both projections had said what it does, which is the whole of
+ * what this union is for. ADR-0182.
  */
 export type Tag =
   | 'header'
+  | 'footer'
   | 'h1'
   | 'h2'
   | 'h3'
@@ -251,6 +259,7 @@ const THE_READING: Projection = {
   verbatim: new Set(),
   element: {
     header: ends('\n\n'),
+    footer: ends('\n\n'),
     h1: ends('\n\n'),
     h2: ends('\n\n'),
     h3: ends('\n\n'),
@@ -473,6 +482,7 @@ const THE_MARKDOWN: Projection = {
   verbatim: new Set(['code', 'pre']),
   element: {
     header: ends('\n\n'),
+    footer: ends('\n\n'),
     h1: wraps('# ', '\n\n'),
     h2: wraps('## ', '\n\n'),
     h3: wraps('### ', '\n\n'),

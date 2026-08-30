@@ -62,7 +62,9 @@ import {
   theAnswerIsStale,
   theArgumentsIn,
   theCommandWrittenFor,
+  isTheSearchShortcut,
   theCopyLabelFor,
+  theShortcutSpelledFor,
   theOtherTheme,
   theRefusalShownFor,
   theThemeControlSays,
@@ -108,9 +110,20 @@ const theCommandSpelled = (install: Element): string => theCommandIn(install)?.n
  * have done anyway.
  */
 export const copyControl = (): void => {
-  const install = document.querySelector('pre.install')
-  if (install === null || !navigator.clipboard) return
+  if (!navigator.clipboard) return
 
+  for (const install of document.querySelectorAll('pre.install')) copyControlOn(install)
+}
+
+/**
+ * The control beside one command, which is every command on the page and used to be the first of them.
+ *
+ * **Measured**: this read `querySelector`, which was right for every page that had ever carried an
+ * install line and wrong the day one carried six. The front page offered a copy control on six cards
+ * and delivered it on one - a promise a green suite could not see, because nothing counted the
+ * controls against the commands. ADR-0182.
+ */
+const copyControlOn = (install: Element): void => {
   const button = document.createElement('button')
 
   button.type = 'button'
@@ -223,6 +236,56 @@ export const managerControl = (): void => {
  * the system preference repaints the page through the media query and the button would go on naming
  * the destination it was built with. It would be a control lying about what pressing it does.
  */
+/**
+ * The disc the artboard draws on the theme control: a sun for the light it would go to, a moon for the
+ * dark. `aria-hidden`, because the button already carries the sentence.
+ */
+const theThemeMark = (goingTo: Theme): SVGElement => {
+  const svg = document.createElementNS(THE_SVG_NAMESPACE, 'svg')
+  const disc = document.createElementNS(THE_SVG_NAMESPACE, 'circle')
+
+  svg.setAttribute('class', 'theme-mark')
+  svg.setAttribute('width', '14')
+  svg.setAttribute('height', '14')
+  svg.setAttribute('viewBox', '0 0 16 16')
+  svg.setAttribute('aria-hidden', 'true')
+  disc.setAttribute('cx', '8')
+  disc.setAttribute('cy', '8')
+  disc.setAttribute('fill', 'currentColor')
+  svg.append(disc)
+
+  if (goingTo === 'light') {
+    disc.setAttribute('r', '3.4')
+
+    for (let ray = 0; ray < 8; ray += 1) {
+      const angle = (ray * Math.PI) / 4
+      const spoke = document.createElementNS(THE_SVG_NAMESPACE, 'path')
+      const from = { x: 8 + Math.cos(angle) * 5.4, y: 8 + Math.sin(angle) * 5.4 }
+      const to = { x: 8 + Math.cos(angle) * 7, y: 8 + Math.sin(angle) * 7 }
+
+      spoke.setAttribute('d', `M${from.x} ${from.y} L${to.x} ${to.y}`)
+      spoke.setAttribute('stroke', 'currentColor')
+      spoke.setAttribute('stroke-width', '1.4')
+      spoke.setAttribute('stroke-linecap', 'round')
+      svg.append(spoke)
+    }
+
+    return svg
+  }
+
+  // A moon is the disc with a second one bitten out of it, which needs no path and no mask.
+  const bite = document.createElementNS(THE_SVG_NAMESPACE, 'circle')
+
+  disc.setAttribute('r', '6')
+  bite.setAttribute('cx', '11')
+  bite.setAttribute('cy', '5')
+  bite.setAttribute('r', '5.4')
+  bite.setAttribute('fill', 'var(--paper)')
+  svg.append(bite)
+
+  return svg
+}
+
 export const themeControl = (): void => {
   const slot = document.querySelector('.masthead .theme')
   if (!(slot instanceof HTMLElement)) return
@@ -239,10 +302,18 @@ export const themeControl = (): void => {
   button.type = 'button'
   button.className = 'theme-button'
 
+  /**
+   * The face of the control, which is the artboard's disc and never the word.
+   *
+   * **The word did not go anywhere**: it is the accessible name, which it already was, so a screen
+   * reader hears exactly what it heard before and a sighted reader gets the mark the design draws.
+   * `theThemeControlSays` still decides which of the two is meant and is now read by the drawing
+   * rather than by `textContent` - one statement of what the button is about, in one place. ADR-0182.
+   */
   const show = (): void => {
     const goingTo = theOtherTheme(inForce())
 
-    button.textContent = theThemeControlSays(goingTo)
+    button.replaceChildren(theThemeMark(theThemeControlSays(goingTo)))
     button.setAttribute('aria-label', theThemeLabelFor(goingTo))
   }
 
@@ -296,6 +367,41 @@ const theCatalogueDeclaredIn = (
  * The results are built from the same `Search` value `toopo search` renders on a terminal, so a page
  * and a terminal disagree about presentation and about nothing else.
  */
+/** The one namespace an SVG element built in a browser has to be created in. */
+const THE_SVG_NAMESPACE = 'http://www.w3.org/2000/svg'
+
+/**
+ * The magnifier the artboard draws inside a field, which is a picture of the field and never a second
+ * statement of it.
+ *
+ * `aria-hidden`, so it leaves the reading exactly as the frozen mark and the row chevron do: the label
+ * beside the field is what a screen reader hears, and it is there whether or not this draws. ADR-0182.
+ */
+const theMagnifier = (): SVGElement => {
+  const svg = document.createElementNS(THE_SVG_NAMESPACE, 'svg')
+  const ring = document.createElementNS(THE_SVG_NAMESPACE, 'circle')
+  const handle = document.createElementNS(THE_SVG_NAMESPACE, 'path')
+
+  svg.setAttribute('class', 'magnifier')
+  svg.setAttribute('width', '13')
+  svg.setAttribute('height', '13')
+  svg.setAttribute('viewBox', '0 0 16 16')
+  svg.setAttribute('aria-hidden', 'true')
+  ring.setAttribute('cx', '7')
+  ring.setAttribute('cy', '7')
+  ring.setAttribute('r', '4.5')
+  ring.setAttribute('fill', 'none')
+  ring.setAttribute('stroke', 'currentColor')
+  ring.setAttribute('stroke-width', '1.6')
+  handle.setAttribute('d', 'M10.5 10.5 L14 14')
+  handle.setAttribute('stroke', 'currentColor')
+  handle.setAttribute('stroke-width', '1.6')
+  handle.setAttribute('stroke-linecap', 'round')
+  svg.append(ring, handle)
+
+  return svg
+}
+
 export const searchControl = (arriving: TheCatalogueAsItArrives): void => {
   const declared = theCatalogueDeclaredIn('.masthead .search')
   if (declared === null) return
@@ -307,7 +413,7 @@ export const searchControl = (arriving: TheCatalogueAsItArrives): void => {
 
   field.type = 'search'
   field.id = 'search-query'
-  field.placeholder = 'describe what you need…'
+  field.placeholder = 'Search functions…'
   field.setAttribute('spellcheck', 'false')
   field.setAttribute('autocapitalize', 'off')
   field.setAttribute('autocomplete', 'off')
@@ -455,7 +561,25 @@ export const searchControl = (arriving: TheCatalogueAsItArrives): void => {
     paint(THE_PANEL_IS_CLOSED)
   })
 
-  slot.append(label, field, answers)
+  const badge = document.createElement('kbd')
+
+  badge.className = 'shortcut'
+  badge.setAttribute('aria-hidden', 'true')
+  badge.textContent = theShortcutSpelledFor(navigator.platform)
+
+  slot.append(theMagnifier(), label, field, badge, answers)
+
+  /**
+   * The chord that reaches the field from anywhere on the page, which is what the badge beside it
+   * claims. It is prevented so the browser's own find does not open on top of it.
+   */
+  document.addEventListener('keydown', (event) => {
+    if (!isTheSearchShortcut(event.key, event.metaKey, event.ctrlKey)) return
+
+    event.preventDefault()
+    field.focus()
+    field.select()
+  })
 }
 
 /**
@@ -577,7 +701,7 @@ export const siftControl = (arriving: TheCatalogueAsItArrives): void => {
 
   field.type = 'search'
   field.id = 'sift-query'
-  field.placeholder = 'narrow this list…'
+  field.placeholder = 'Search a function…'
   field.setAttribute('spellcheck', 'false')
   field.setAttribute('autocapitalize', 'off')
   field.setAttribute('autocomplete', 'off')
@@ -624,7 +748,7 @@ export const siftControl = (arriving: TheCatalogueAsItArrives): void => {
   }
 
   field.addEventListener('input', () => void run())
-  slot.append(label, field)
+  slot.append(theMagnifier(), label, field)
 }
 
 /**

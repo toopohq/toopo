@@ -200,7 +200,13 @@ describe('what a crawler reads', () => {
    * in a comment, which is one fact written twice with the copy in prose being the one nobody edits.
    */
   it('the-generator-knows-of-no-domain-but-the-one-it-publishes-on', () => {
-    const VOCABULARIES = ['www.sitemaps.org', 'schema.org']
+    /**
+     * Names a machine reads as identifiers and never fetches: two vocabularies a page declares itself
+     * in, and the namespace `createElementNS` requires to build an SVG element at all. None of them is
+     * an address this site sends a reader to, which is what the guard is about. `www.w3.org` arrived
+     * with the marks the redesign draws and the guard is what said so. ADR-0182.
+     */
+    const VOCABULARIES = ['www.sitemaps.org', 'schema.org', 'www.w3.org']
     /** Where the face came from, and who holds its licence. `geist.ts` carries both and needs both. */
     const THE_FACES_PROVENANCE = ['fonts.gstatic.com', 'github.com']
 

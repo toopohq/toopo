@@ -42,7 +42,7 @@ import type { Domain, Held } from './catalogue.js'
 import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { MenuEntry } from './chrome.js'
-import { masthead, theCatalogueFrom } from './chrome.js'
+import { footer, masthead, theCatalogueFrom } from './chrome.js'
 import { whatACardSays } from './what-a-card-says.js'
 import { CATALOGUE_PAGE, FRONT_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
 
@@ -198,6 +198,28 @@ const chip = (name: string, count: number, href: string): Node =>
     el('a', { class: 'chip', href }, text(name), el('span', { class: 'count' }, text(String(count)))),
   )
 
+/**
+ * The chip for the list a reader is already looking at, which the artboard draws as the selected one.
+ *
+ * It is marked and never linked, for the reason `chrome.ts` marks the page you are on: a link to what
+ * is already in front of you is a control that does nothing. `aria-current` is the declaration for it
+ * rather than a class this repository invented, and it is the same one the masthead uses.
+ *
+ * The catalogue keeps its way in - the closing line links it - so nothing became unreachable by this.
+ * ADR-0182.
+ */
+const theChipYouAreOn = (name: string, count: number): Node =>
+  el(
+    'li',
+    NOTHING,
+    el(
+      'span',
+      { class: 'chip here', 'aria-current': 'true' },
+      text(name),
+      el('span', { class: 'count' }, text(String(count))),
+    ),
+  )
+
 /** The month a reader reads, from the instant the registry publishes. */
 const THE_MONTHS = [
   'Jan',
@@ -252,6 +274,12 @@ const recently = (held: Held): Node => {
       line('p', says.address, { class: 'call' }),
       line('p', says.signature, { class: 'signature' }),
       line('p', readableDate(held.binding.publishedAt), { class: 'when' }),
+      /**
+       * The mark the artboard puts at the end of a row, which is a picture of the link and not a
+       * second statement of it. `aria-hidden`, so `isChrome` drops it from both projections and a
+       * screen reader hears the row once.
+       */
+      el('p', { class: 'onward', 'aria-hidden': 'true' }, text('›')),
     ),
   )
 }
@@ -303,7 +331,7 @@ export const frontPage = (
           el(
             'ul',
             { class: 'chips' },
-            chip('all', installable, linkTo(CATALOGUE_PAGE)),
+            theChipYouAreOn('all', installable),
             ...domains
               .filter((domain) => domain.held.length > 0)
               .map((domain) =>
@@ -350,6 +378,7 @@ export const frontPage = (
           el('a', { href: linkTo(CATALOGUE_PAGE) }, text('The whole catalogue')),
         ),
       ),
+      footer(FRONT_PAGE, menu),
     ],
   }
 }

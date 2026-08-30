@@ -38,6 +38,7 @@
  */
 
 import { endpointOf, pathTo } from '../registry/endpoints.js'
+import { THE_REPOSITORY_LICENCE } from '../registry/licence.js'
 import { THE_SOURCE_REPOSITORY } from '../registry/publication.js'
 import type { Domain } from './catalogue.js'
 import { shortNameOf } from './catalogue.js'
@@ -354,3 +355,47 @@ const line = (
     : el(tag, attributes, el('a', { href: `${rootFrom(own)}${linkTo(page)}` }, text(label)))
 
 /** The last segment of a contract's name, which is what tells it apart inside its own domain. */
+
+/**
+ * What the artboard closes the page on: what this project is, and the two ways out.
+ *
+ * **Every word of it is composed and none is typed.** The licence is the manifest's own field, which
+ * `the-public-fields-npm-shows-are-the-ones-this-code-declares` resolves against `package.json`; the
+ * repository is the same derivation the masthead links; the destinations are the menu the masthead was
+ * handed, so a page cannot offer one at the top and a different one at the foot.
+ *
+ * **It is the front page's and not yet the site's.** The artboard draws one page, and putting a footer
+ * on the other twelve moves `the-rail-of-a-page-names-every-section-of-it-and-only-those` and the
+ * reachability walk on all of them at once - which is a decision about the site rather than about this
+ * page. ADR-0182 carries it as a deviation with that reason.
+ */
+export const footer = (own: string, menu: readonly MenuEntry[]): Node =>
+  el(
+    'footer',
+    { class: 'foot' },
+    el(
+      'div',
+      { class: 'bar' },
+      el(
+        'p',
+        { class: 'wordmark' },
+        theMark(),
+        el('a', { href: `${rootFrom(own)}${linkTo(FRONT_PAGE)}` }, text('toopo')),
+      ),
+      el(
+        'p',
+        { class: 'terms' },
+        text(`Open source · ${THE_REPOSITORY_LICENCE} licence · No account required`),
+      ),
+      el(
+        'ul',
+        { class: 'ways' },
+        el(
+          'li',
+          NOTHING,
+          el('a', { href: THE_REPOSITORY_ADDRESS, rel: 'noreferrer' }, text('GitHub ↗')),
+        ),
+        ...menu.map((entry) => destination(own, entry.page, entry.label)),
+      ),
+    ),
+  )

@@ -86,6 +86,31 @@ export const THE_COPY_CONTROL_SAYS = {
  */
 export const theCopyLabelFor = (command: string): string => `Copy ${command} to the clipboard`
 
+/**
+ * The key a reader reaches the search with, and how it is spelled on the two kinds of keyboard.
+ *
+ * **The badge is drawn only because the shortcut exists.** The artboard draws `⌘K` beside the field,
+ * and a badge naming a key that does nothing is the thing this site refuses everywhere else - the same
+ * class as an inert control and a link wearing a search field's clothes, which `chrome.ts` sets out in
+ * its own header. So the shortcut was written first and the badge says what it does.
+ *
+ * The spelling is read off the platform rather than fixed, because `⌘K` on a machine whose key is
+ * `Ctrl` is a wrong instruction rather than a stylistic choice. ADR-0182.
+ */
+export const THE_SEARCH_KEY = 'k'
+
+export const theShortcutSpelledFor = (platform: string): string =>
+  /mac/i.test(platform) ? '⌘K' : 'Ctrl K'
+
+/**
+ * Whether a key press is the one that reaches the search.
+ *
+ * Either modifier answers, so a reader on either kind of keyboard reaches it with the chord their own
+ * system uses and neither has to learn the other's.
+ */
+export const isTheSearchShortcut = (key: string, withMeta: boolean, withControl: boolean): boolean =>
+  key.toLowerCase() === THE_SEARCH_KEY && (withMeta || withControl)
+
 // ---------------------------------------------------------------------------
 // The theme
 // ---------------------------------------------------------------------------
