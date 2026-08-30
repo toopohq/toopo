@@ -303,6 +303,18 @@
  * moving the total guard into the registry's suite would put a `git show` per binding inside a replay
  * that runs it sixty times. ADR-0177.
  *
+ * A twenty-ninth on what draws a shape: **one new file under the site's, carrying three, and no count
+ * moved**. It is the tenth's shape - a module of its own gets a file of its own - and it is a line here
+ * for what one of the three costs that no guard in this table had cost before. Two of them read text:
+ * a component's own selectors, and the class a browser module writes. The third parses **every page
+ * the site emits** and asks a matcher, for every component element on it, which selectors of the
+ * served sheet reach it - because the defect it exists for, `ul.chips a` painting a pill, never names
+ * the pill and no sweep of selector text can find it. That is the site suite's second file needing a
+ * document, and it declares the environment itself for the reason `start.test.ts` does.
+ *
+ * **It found its own instance on its first run**, which no row here has recorded before: `.recent h2`
+ * was painting a component from outside, and nobody had read it. ADR-0183.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -452,6 +464,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'packages/site/vitest.config.ts': {
+    'packages/site/components.test.ts': 3,
     'packages/site/document.test.ts': 20,
     'packages/site/indexing.test.ts': 11,
     'packages/site/links.test.ts': 1,
