@@ -41,6 +41,29 @@ no sideways scroll and **the bar at 56px either way** — which is the trap ADR-
 words, a wordmark repaired at the menu's expense, and it does not fire here because the menu is not
 what was squeezing it.
 
+### The repair is correct and it is not sufficient, which was found by looking rather than by measuring
+
+**The masthead is still broken at 390, and the first reading of this repair missed it.** The probe that
+confirmed the wordmark asked for the wordmark's box, the bar's height, the viewport's overflow and the
+elements outside it - all four came back right, and **none of them can see text wrapping inside a box
+that fits**. Looking at the rendered page is what found it: the menu now takes the squeeze the wordmark
+was taking, and `How we verify` wraps to `w / we / verif / y`.
+
+**Each candidate moves the squeeze rather than removing it, and that is the finding.** Measured at
+`abbc12a` at 390: the menu is 147.16px tall with links at 125 and 147px; giving the menu the same
+treatment as the wordmark - `white-space: nowrap` and `flex: none` - takes it to 37.86px with both
+links at 38px, and **crushes the search field to 2px wide**. The bar holds a wordmark, a search field,
+two links and a theme button, and at 390 it cannot hold them on one row. Something has to give and
+nothing here declares what.
+
+**So this record repairs one thing and defers the decision.** A flex item shrinking below its content
+with no decision behind it is a defect on its own terms, and five lines of one letter is strictly worse
+than a wrapped menu; the rest is a layout question - whether the bar wraps to two rows, whether the
+search collapses to an icon at that width, whether the menu goes behind a control - and it belongs to
+the unit that owns the masthead. It is ADR-0135's own trap seen a second time, one child along: that
+record wrote that repairing the wordmark took the height from the menu, and here repairing it takes the
+*words* from the menu.
+
 **The finding is worth more than the repair, and it is an entry of `CLAUDE.md`'s open list rather than
 a mechanism here.** Every sweep this repository takes over its own pages reads what `build.ts` wrote,
 and a control `start.ts` adds is in none of them. The population is every control the module builds —
@@ -64,9 +87,10 @@ says nothing keeps it.
 
 - **A browser in the suites**, which closes the entry rather than this record, and which would be red
   on its first run over the widths ADR-0135 used — the rare shape of a guard not born green.
-- **A second control added to the masthead bar.** The wordmark now holds its width; what has no
-  declaration is what happens when the bar's contents exceed it, and the next thing put there is the
-  reading that decides whether the bar wraps or the menu does.
+- **The masthead's narrow widths, which this record deliberately leaves open.** The bar's contents
+  already exceed it at 390 and nothing declares what gives; the three candidates are the bar wrapping,
+  the search collapsing and the menu going behind a control, and each is a design decision rather than
+  a repair. Whoever takes it should take the reading at 320 as well, which this record did not.
 - **The search field becoming a palette-opening button**, which ADR-0183 leaves open: it is narrower
   than the input, so the squeeze that produced this defect would be smaller and the measurement worth
   retaking rather than assumed to hold.
