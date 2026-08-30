@@ -2349,7 +2349,28 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
         `            'is yours. Start with npx toopo add domain/function.',`,
       ),
     ],
-    killed(['the-page-a-reader-arrives-at-is-a-name-and-two-doors']),
+    killed(['the-page-a-reader-arrives-at-is-every-contract-they-can-install']),
+  ),
+
+  /**
+   * The shelf starts choosing, which is the defect the artboard's own heading invited.
+   *
+   * **It is the arm W-91 does not reach.** That cell puts a command back where none belongs; this one
+   * leaves every card correct and shows four of the six. Each card that survives is right, every
+   * command runs, nothing refused appears - and a visitor is told the catalogue holds four functions.
+   *
+   * The artboard headed this list `Popular functions`, and nothing in this repository ranks anything:
+   * permanent rule 1 forbids the call that would produce a figure, and no usage signal exists in the
+   * tree. So a page that had quietly become a selection would read exactly as intended under that
+   * heading, which is why the guard asserts the count against the index rather than asserting that
+   * each card is well formed.
+   */
+  sameOnEveryLens(
+    'W-140',
+    'shows four of the six installable contracts on the shelf, so every card is right, every command ' +
+      'runs, and a reader is told this catalogue holds four functions',
+    [frontPageFile(`...held.map(offer)`, `...held.slice(0, 4).map(offer)`)],
+    killed(['the-page-a-reader-arrives-at-is-every-contract-they-can-install']),
   ),
 
   /**

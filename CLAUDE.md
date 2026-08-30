@@ -1120,6 +1120,31 @@ and never the wordmark's, so giving the name its width back took it from the men
 row further and paid the height straight back — 89.1px to 130.1px at 320, measured, which is why the
 menu's own row gap is in that unit. ADR-0135.
 
+**The page a reader arrives at is a shelf now, and two recorded decisions were overruled with their
+scope written down.** It lists every contract a reader can install — six, each with the signature its
+record froze, its summary and the command that installs it — and nothing on it needs JavaScript.
+**ADR-0140's conclusion falls and its argument does not**: it refused `add domain/function` here
+because *the constraint was right and its form was a template*, and a shelf privileges no contract by
+showing all of them, so the template refusal is kept in the form that suits the page — every `toopo
+add` names an address this catalogue holds, asserted. **The first draft of the rewritten guard would
+have left W-91 green**, because the new claim was about coverage and said nothing about templates; the
+half of ADR-0140 that was *argued* would have been enforced by nothing, and it was found by reading the
+cell rather than by running it. **`catalogue-page.ts`'s measured rule is suspended rather than
+refuted** — *one field per level and never two*, with the figure that one entry cost 443 bytes and that
+a summary under every name *is the whole page at a hundred* — so *the day the shelf stops fitting on a
+screen* is a reopening condition rather than an objection nobody recorded. **The heading names what the
+data carries**: the artboard's is `Popular functions`, nothing here ranks anything, permanent rule 1
+forbids the call that would produce a figure, and no usage signal exists in the tree — so it reads
+*What you can install*, and the guard asserts the count against the index, which is the arm a heading
+could quietly break. **The site shows six where `README.md` names seven**, deliberately: two surfaces,
+two audiences, and **no guard asserted the two were equal** — swept before the page was written, the
+README compares itself to the catalogue and the site to the index, both pointing at the registry rather
+than at each other. The domains are links to domain pages rather than controls, which is what keeps
+them working with nothing running and what keeps `/catalogue/` reachable. Three perturbations, three
+reds, each alone. **One arm has no cheap mutant and is named**: *nothing turned down appears here*
+cannot be reddened by a one-line edit, because `Domain.held` holds only what is installable.
+ADR-0179, ADR-0180, ADR-0181.
+
 **The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
 name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The
 shape of every command at once stood there as `add domain/function` so that no contract was privileged

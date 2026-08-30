@@ -20,6 +20,7 @@ import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { search } from '../registry/search.js'
 import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
+import { whatACardSays } from './what-a-card-says.js'
 import { THE_EXAMPLES } from './chrome.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import type { Element, Node } from './document.js'
@@ -1190,27 +1191,33 @@ describe('the site', () => {
   })
 
   /**
-   * The page a reader arrives at is a name and two doors, and it tells nobody to run anything.
+   * The page a reader arrives at is every contract they can install, and nothing they cannot.
    *
-   * **It is the third version of that page and the owner said he would not look at a fourth**, so what
-   * this keeps is the decision rather than a property of it: a static element carrying the name, one
-   * way into the catalogue, one way to understand what is in there. A block added to it is the event,
-   * and the event is cheap to cause - every page of this site grew by somebody having one more true
-   * thing to say, which is exactly how the two rejected versions were built.
+   * **It was `the-page-a-reader-arrives-at-is-a-name-and-two-doors` and the owner overruled it**, which
+   * is why this is a rewrite rather than a deletion: the page's claim changed and the guard's subject
+   * followed it. That version's own comment read *it is the third version of that page and the owner
+   * said he would not look at a fourth*, and this is the fourth - kept in view because a guard whose
+   * premise expired is worth more read than struck out.
    *
-   * **The second half is the defect a visitor actually met.** The first version printed the shape of
-   * every command at once, `add domain/function`, so that no contract was privileged on the page that
-   * represents them all. The constraint was right and its form was a template, which a reader sees.
-   * A command belongs to a contract, so it is on every contract's page and on none of the pages that
-   * are about the catalogue - and `every-command-the-site-tells-a-reader-to-run-carries-the-invocation`
-   * has no opinion here, because it asks whether a command is *runnable* and this asks that there be
-   * none.
+   * **The half of ADR-0140 that was argued survives and is enforced elsewhere.** That record refused
+   * `add domain/function` on this page because *the constraint was right and its form was a template,
+   * which is a thing a reader sees*. Every command here names a real contract, and
+   * `every-command-the-site-tells-a-reader-to-run-carries-the-invocation` is what asks that each one
+   * runs. What fell is the sentence it generalised to - *a command belongs on no page about the
+   * catalogue* - and what this asserts in its place is stronger, because it is about coverage rather
+   * than about absence.
    *
-   * **Written beside the guard above it**, which is about the site staying connected: that one would be
-   * green with a fourth door, a paragraph and a command on this page, because everything it reaches is
-   * still reached. ADR-0140.
+   * **Four claims, and the third is the one a heading could quietly break.** Every installable
+   * contract is here; nothing refused is; the count is exhaustive rather than a selection; and every
+   * card carries the signature its contract froze. A shelf showing four of six would satisfy the first
+   * two and be a page that had started choosing - which is what `Popular functions` would have been,
+   * on data this repository does not have. ADR-0181.
+   *
+   * **Written beside the guard below it**, which is about the site staying connected: that one is green
+   * whatever this page holds, as long as the links go somewhere. This one is about what a reader is
+   * shown; that one is about what they can reach.
    */
-  it('the-page-a-reader-arrives-at-is-a-name-and-two-doors', () => {
+  it('the-page-a-reader-arrives-at-is-every-contract-they-can-install', () => {
     const elementsOf = (nodes: readonly Node[]): readonly Element[] =>
       nodes.filter((node): node is Element => node.kind === 'element')
 
@@ -1232,14 +1239,57 @@ describe('the site', () => {
         .find((found) => found !== null) ?? [],
     )
 
-    // The name, the line under it, and the doors - and no fourth block.
-    expect(inside.map((node) => node.tag)).toEqual(['h1', 'p', 'div'])
-    expect(elementsOf(inside[2]?.children ?? []).map((node) => node.tag)).toEqual(['a', 'a'])
+    // The name, the promise, the shelf's label, the domains, the cards, and the way to the rest.
+    expect(inside.map((node) => node.tag)).toEqual(['h1', 'p', 'h2', 'ul', 'ul', 'p'])
 
-    // And nothing here tells a reader to run anything: a command belongs to a contract.
-    const commands = /toopo (add|remove|update|init|search|list)\b/g
+    const reading = toText(page(FRONT_PAGE))
+    const index = source.contractIndex()
+    const installable = index.entries.filter((entry) => entry.installable)
+    const refused = index.entries.filter((entry) => !entry.installable)
 
-    expect(toText(page(FRONT_PAGE)).match(commands) ?? []).toEqual([])
+    // Every contract a reader can install is on the shelf, with the command that installs it.
+    expect(
+      installable.filter((entry) => !reading.includes(`${THE_INVOCATION} add ${entry.address.name}`)),
+    ).toEqual([])
+
+    // And nothing the catalogue turned down is, by name or by command.
+    expect(refused.filter((entry) => reading.includes(entry.address.name))).toEqual([])
+
+    /**
+     * Every command on the shelf names a contract, which is the half of ADR-0140 that was argued.
+     *
+     * That record refused `add domain/function` here because *the constraint was right and its form
+     * was a template, which is a thing a reader sees*. A shelf privileges no contract by showing all
+     * of them, so the reason to print a template is gone - and the refusal is kept in the form that
+     * suits the page: what follows `add` is an address this catalogue holds.
+     *
+     * `every-command-the-site-tells-a-reader-to-run-carries-the-invocation` cannot stand in for it.
+     * It recognises an install command *by* the fact that it names a contract, so a template is not a
+     * command to it at all and it passes over one in silence.
+     */
+    const named = new Set(index.entries.map((entry) => entry.address.name))
+    const printed = [...reading.matchAll(/toopo add ([^\s]+)/g)].map((found) => found[1] as string)
+
+    expect(printed.filter((one) => !named.has(one))).toEqual([])
+    expect(printed).toHaveLength(installable.length)
+
+    /**
+     * The shelf is exhaustive over the installable half rather than a selection of it.
+     *
+     * **This is the half a heading could quietly break.** The artboard's own heading is
+     * `Popular functions`, and a page that showed four of six under it would satisfy every other
+     * assertion here - each card would be right, each command would run, and nothing refused would
+     * appear. What this refuses is a shelf that has started choosing, which is the claim
+     * `WHAT_THE_SHELF_IS` makes and the one nothing in this repository could compute.
+     */
+    const cards = elementsOf(inside[4]?.children ?? [])
+
+    expect(cards).toHaveLength(installable.length)
+
+    // Every card carries the signature its contract froze, in the form the record holds.
+    for (const held of heldByTheRegistry(source)) {
+      expect(reading).toContain(whatACardSays(held).signature)
+    }
   })
 
   /**

@@ -89,7 +89,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
   const domains = domainsOf(source, heldByTheRegistry(source))
 
   const pages = new Map<string, Document>([
-    [FRONT_PAGE, frontPage(index, menu)],
+    [FRONT_PAGE, frontPage(index, domains, menu)],
     [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu, theMeasurement())],
     [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
     [WHAT_A_CONTRACT_IS_PAGE, whatAContractIsPage(menu)],

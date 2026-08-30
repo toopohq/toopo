@@ -9,7 +9,7 @@ governs:
   - packages/site/style.ts
 confirmed-by:
   - battery: site
-    guard: the-page-a-reader-arrives-at-is-a-name-and-two-doors
+    guard: the-page-a-reader-arrives-at-is-every-contract-they-can-install
   - battery: site
     guard: every-page-is-reachable-from-the-front-page
 ---

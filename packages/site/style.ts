@@ -938,33 +938,71 @@ ul.toc > li.under { padding-left: var(--s3) }
   .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, var(--measure)) }
 }
 
-/* --- The front page, which is a door: the name, the way in, and the way to understand what is in
-       there. Read from the top like every other page and never centred in the window - centring was
-       tried and refused, because it opens a void whose height is the reader's window rather than
-       anything this page decides. ADR-0140. --- */
+/* --- The front page, which is a shelf: the name, the promise, and everything a reader can install.
+       Read from the top like every other page and never centred in the window - centring was tried
+       and refused for the door, because it opens a void whose height is the reader's window rather
+       than anything this page decides, and a shelf has more to hold than a door had. ADR-0181.
 
-main.door { display: grid; align-content: start; gap: var(--s5); padding: var(--s12) 0 var(--s24) }
-main.door h1 { font-family: var(--mono); font-weight: 700; margin: 0 }
-main.door .lede { margin: 0 }
+       **The door's own rules are gone with the door.** main.door, .doors and a.door-to were
+       rendered by front-page.ts and by nothing else - measured before they were removed - so
+       keeping them would have been a stylesheet describing a page that no longer exists. ADR-0140
+       is where the arrangement they drew is argued, and the record is where it stays. --- */
 
-/* Two doors, side by side where there is room for two whole readable lines and stacked where there
-   is not. The floor is --aside, the shortest line this palette declares, which is what a door's
-   second line is: one sentence saying what is behind it. */
-.doors {
-  display: grid; gap: var(--s5); margin: var(--s8) 0 0;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--aside)), 1fr));
+main.shelf { display: grid; align-content: start; gap: var(--s5); padding: var(--s12) 0 var(--s24) }
+main.shelf h1 { font-family: var(--mono); font-weight: 700; margin: 0 }
+main.shelf .lede { margin: 0 }
+/* The shelf's own heading is a label over a list rather than a section of an argument, so it takes
+   the size the card's field labels take and not the one an h2 takes elsewhere. */
+main.shelf h2 {
+  margin: var(--s8) 0 0; font-size: var(--t6); font-weight: 600;
+  letter-spacing: .09em; text-transform: uppercase; color: var(--dim);
 }
 
-/* A door is the one thing on this page a reader can act on, so it carries the accent - the first of
-   the two things ADR-0115 lets the accent mean. The whole block is the target, so a reader aiming at
-   a door does not have to hit the words. */
-a.door-to {
-  display: grid; gap: var(--s2); align-content: start;
+/* The domains, as ways into the part of the shelf filed under each. They are links and never
+   controls: a domain page lists exactly what a filtered grid would show, so nothing has to run for
+   a reader to get the same answer. */
+.chips { display: flex; flex-wrap: wrap; gap: var(--s3); margin: 0; padding: 0; list-style: none }
+.chips > li { padding: 0; border: 0 }
+a.chip {
+  display: inline-block; font-family: var(--mono); font-size: var(--t6);
   text-decoration: none; color: var(--body);
-  border: 1px solid var(--accent); border-left-width: var(--s2);
-  background: var(--target); padding: var(--s5) var(--s6);
+  border: 1px solid var(--rule); border-radius: 4px; padding: var(--s2) var(--s4);
 }
-a.door-to:hover { background: var(--paper) }
-a.door-to .name { margin: 0; font-family: var(--mono); font-size: var(--t2); font-weight: 700; color: var(--ink) }
-a.door-to .what { margin: 0; font-size: var(--t4) }
+a.chip:hover { color: var(--ink); border-color: var(--edge); text-decoration: none }
+
+/* One card per contract, as many abreast as the column allows and no more. The floor is the measure,
+   which is what ul.contracts one screen up already uses for the same question - a card is as wide
+   as a readable line and the count is the column's business rather than a breakpoint's. */
+.offers {
+  display: grid; gap: var(--s5); margin: var(--s5) 0 0; padding: 0; list-style: none;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--a-contract-in-a-list)), 1fr));
+}
+/* The border is the card's own and not ul.plain's rule between items: these sit side by side, so a
+   line above each one would draw a grid of fragments rather than a stack of entries. */
+.offers > li {
+  display: grid; gap: var(--s3); align-content: start; min-width: 0;
+  border: 1px solid var(--rule); border-radius: 6px; padding: var(--s5); background: var(--wash);
+}
+.offers > li:hover { border-color: var(--edge) }
+.offers .call { margin: 0; font-size: var(--t3) }
+.offers .call a { color: var(--ink); text-decoration: none }
+.offers .call a:hover { text-decoration: underline }
+/* A signature does not wrap and a summary does: the first is a line a reader reads as one thing and
+   the second is prose. So the signature scrolls inside its own box, which is the rule ADR-0135 wrote
+   for a code block narrower than its content. */
+.offers .shape {
+  margin: 0; font-size: var(--t6); color: var(--body);
+  overflow-x: auto; max-width: 100%;
+}
+.offers .why { margin: 0; font-size: var(--t5) }
+.offers .meta { margin: 0 }
+/* Smaller than the contract page's, which is *the* install command on a page about one contract.
+   Here there are six, and six of that size would be the loudest thing on the shelf - the accent
+   still says you can act on this, at the weight a card can carry. */
+.offers .install {
+  font-size: var(--t5); padding: var(--s3) var(--s4); border-left-width: 2px;
+}
+
+/* What the shelf does not hold, and the way to the catalogue that does. */
+.aside-line { margin: var(--s8) 0 0; font-size: var(--t5); color: var(--dim) }
 `.trim()
