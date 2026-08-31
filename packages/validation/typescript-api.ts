@@ -54,7 +54,7 @@
  * stopped exporting arrives here as `undefined`, and `missingFromTheSurface` names it.
  *
  * **It has three readers now and the wider word is the point.** Stage 1 reads the tree and the
- * checker; `packages/site/served-modules.ts` reads the scanner; `packages/registry/` reads the two
+ * checker; `packages/site/scanning.ts` reads the scanner; `packages/registry/` reads the two
  * literal predicates, to ask a benchmark profile what its own `samples` initialiser says. A second
  * import of `typescript/unstable/*` would have been the cheaper thing to write and would have cost
  * the sentence at the top of this file - one module, one door, one place a moved path is discovered.
@@ -88,12 +88,13 @@ export const TYPESCRIPT_SURFACE = {
   /**
    * The lexer, which is read by the generator rather than by the analyser.
    *
-   * `packages/site/served-modules.ts` takes this repository's prose out of the modules a reader
-   * downloads, and it needs a correct reading of JavaScript in process - where a parser cannot go,
-   * because the only route to one spawns the compiler. It comes through this object rather than
-   * through a second import so that the sentence at the head of this file stays true: one module here
-   * imports a compiler API, and a package that moved this path is discovered by `undefined` at one
-   * door instead of by a wrong answer at two. ADR-0156.
+   * `packages/site/scanning.ts` drives it for the two readers the site has - the module stripping of
+   * `served-modules.ts` and the contract page's highlighting - and it needs a correct reading of
+   * JavaScript in process, where a parser cannot go, because the only route to one spawns the
+   * compiler. It comes through this object rather than through a second import so that the sentence
+   * at the head of this file stays true: one module here imports a compiler API, and a package that
+   * moved this path is discovered by `undefined` at one door instead of by a wrong answer at two.
+   * ADR-0156.
    */
   createScanner: ast.createScanner,
 

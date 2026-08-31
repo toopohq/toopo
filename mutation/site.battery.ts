@@ -62,6 +62,7 @@ const servedModulesFile = (find: string, replace: string) => ({
   find,
   replace,
 })
+const scanningFile = (find: string, replace: string) => ({ file: 'scanning.ts', find, replace })
 const servedStylesheetFile = (find: string, replace: string) => ({
   file: 'served-stylesheet.ts',
   find,
@@ -157,7 +158,7 @@ const THE_BUTTON_HANDS_OUT_THE_SYSTEMS_PALETTE = `:root[data-theme='light'] {
   --paper: #fafbfb;`
 
 const THE_MODULES_ARE_STRIPPED_BEFORE_THEY_ARE_SERVED = `  withoutItsArgument(stripTypeScriptTypes(typescript, { mode: 'strip' }))`
-const THE_TEMPLATE_IS_RESUMED = `        token = scanner.reScanTemplateToken(false)`
+const THE_TEMPLATE_IS_RESUMED = `          token = scanner.reScanTemplateToken(false)`
 const A_COMMENT_ENDS_WHERE_IT_ENDS = `to: scanner.getTokenEnd()`
 const A_REFERENCE_KEEPS_ITS_ARGUMENT = `  return asAContractsReference(blob.bytes.toString('utf8'))`
 const A_MODULE_CARRIES_NO_DIRECTIVE = `export const escaped = (character: string): string => {`
@@ -2778,16 +2779,24 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     'stops resuming a template literal after a substitution, so the reader loses its place at the ' +
       'first substitution in a module and reads the code that follows as prose - leaving comments ' +
       'in what is served while reporting that it removed them all',
-    [servedModulesFile(THE_TEMPLATE_IS_RESUMED, `        braces -= 1`)],
+    [scanningFile(THE_TEMPLATE_IS_RESUMED, `          braces -= 1`)],
     // Three rather than one since ADR-0162, and the reason is that this mutant stopped answering
     // wrongly and started not answering: the reader lost its place and spun, so the guard written for
-    // it hung with it and the cell measured nothing at all. `theCommentRangesIn` refuses to spin now -
-    // a correct reading of n characters takes at most n + 1 steps - and every guard that reads a
-    // served module reddens on the refusal. Measured: 2.1 s where it used to run for ever.
+    // it hung with it and the cell measured nothing at all. The drive refuses to spin now - a correct
+    // reading of n characters takes at most n + 1 steps - and every guard that reads a served module
+    // reddens on the refusal. Measured: 2.1 s where it used to run for ever.
+    //
+    // Four rather than three since the drive moved to scanning.ts, and the fourth was owed before the
+    // move: playground.test.ts has reached the reader through asABrowserModule since fed2334, and
+    // injecting this mutant by hand at the commit before the move reddens the same four guards - so
+    // the pin of three was already stale against a direct run of the suite. The last green replay of
+    // this battery predates nothing that explains it, and no cause is named here for that
+    // disagreement; the next replay is what settles which environment reads true.
     killed([
       'every-module-a-reader-runs-carries-no-comment',
       'a-module-a-reader-runs-is-the-program-its-source-declares',
       'no-module-a-reader-runs-carries-a-comment-a-tool-reads',
+      'every-import-a-browser-module-keeps-is-a-module-the-site-writes',
     ]),
   ),
 
@@ -2798,10 +2807,10 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
    */
   sameOnEveryLens(
     'W-98',
-    'takes two bytes past the end of every comment, which is right about where each one starts and ' +
-      'wrong about where it stops - a removal no reading of the served bytes would call a comment, ' +
-      'in a language where a byte beside a comment decides where a statement ends',
-    [servedModulesFile(A_COMMENT_ENDS_WHERE_IT_ENDS, `to: scanner.getTokenEnd() + 2`)],
+    'takes two bytes past the end of every token the drive reports - which the removal reads as two ' +
+      'past the end of every comment, right about where each one starts and wrong about where it ' +
+      'stops, in a language where a byte beside a comment decides where a statement ends',
+    [scanningFile(A_COMMENT_ENDS_WHERE_IT_ENDS, `to: scanner.getTokenEnd() + 2`)],
     killed(['a-module-a-reader-runs-is-the-program-its-source-declares']),
   ),
 
