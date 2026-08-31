@@ -523,10 +523,12 @@ const mutants: readonly Mutant[] = [
     'drops the code from the reading order, so every rendered call disappears from the projection ' +
       'this unit measures the page with and the reading looks tidier for it',
     [documentFile(CHROME_IS_NOT_READ_ALOUD, `  if (isChrome(node) || node.tag === 'code') return ''`)],
+    // Eight guards redden on this, so the pin names the two the cell was written to exercise -
+    // ADR-0076's arm above five. It named a third, over the settled cases, and that guard left the
+    // site with the section it read.
     killed([
       'every-word-of-the-page-is-in-every-projection',
       'every-word-of-every-page-survives-every-projection',
-      'a-case-is-rendered-as-the-call-its-signature-declares',
     ]),
   ),
 
@@ -562,7 +564,15 @@ const mutants: readonly Mutant[] = [
     p: ends(''),`,
       ),
     ],
-    killed(['a-label-and-the-sentence-under-it-are-two-lines']),
+    // The guard this named read a contract page's property and profile labels, and left with them.
+    // **The defect did not**: a paragraph that separates nothing runs every label into the sentence
+    // under it on every page of the site, and two guards catch it - the one about two elements read
+    // as one sentence, and the domain page's opening, whose four figures become one line. Measured
+    // rather than reasoned: the cell was injected and the suite read.
+    killed([
+      'no-element-runs-into-the-one-beside-it',
+      'the-sentence-a-domain-page-opens-on-is-computed-from-what-it-lists',
+    ]),
   ),
 
   sameOnEveryLens(
@@ -575,12 +585,15 @@ const mutants: readonly Mutant[] = [
         `  \`'\${value.replaceAll('\\\\', '\\\\\\\\').replaceAll("'", "\\\\'")}'\``,
       ),
     ],
+    // Six red, so the pin names what the cell exercises. **Two of its names were stale and only one
+    // of the two could be reported**: the settled-case guard is gone, which
+    // `assertEveryAddressResolves` refuses, and `every-word-of-every-page-survives-every-projection`
+    // is alive and does not redden on this - an address that resolves and a verdict that does not
+    // hold, which nothing but a replay says.
     killed([
       'two-inputs-that-look-alike-are-written-apart',
       'an-invisible-character-is-written-as-its-code-point',
       'a-combining-mark-is-written-apart-from-its-base',
-      'a-case-is-rendered-as-the-call-its-signature-declares',
-      'every-word-of-every-page-survives-every-projection',
     ]),
   ),
 
@@ -594,11 +607,15 @@ const mutants: readonly Mutant[] = [
         `const INVISIBLE = /[\\p{Cc}\\p{Cf}\\p{Cs}\\p{M}\\p{Zl}\\p{Zp}\\p{Zs}]/gu`,
       ),
     ],
+    // Exactly five redden, which is ADR-0076's line: at five or fewer the pin names all of them.
+    // Two of these were never named - the quoted key and the code point a reader typed - and they
+    // came out of measuring rather than of striking the dead name out.
     killed([
       'two-inputs-that-look-alike-are-written-apart',
       'an-invisible-character-is-written-as-its-code-point',
       'a-combining-mark-is-written-apart-from-its-base',
-      'a-case-is-rendered-as-the-call-its-signature-declares',
+      'a-key-that-is-not-an-identifier-is-quoted',
+      'an-invisible-code-point-a-reader-typed-is-named-in-the-output',
     ]),
   ),
 
