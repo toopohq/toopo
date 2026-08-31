@@ -1,6 +1,8 @@
 /**
  * The shapes this site draws more than once, each owning its markup and the rules that paint it.
- * ADR-0183 is the layer and the mechanism under it; ADR-0182 is the artboard it draws from.
+ * ADR-0183 is the layer and the mechanism under it; ADR-0182 is the artboard it draws from; ADR-0187
+ * is the contract page, which brought the last four - the snippet, the primary control, the callout
+ * and the breadcrumb.
  *
  * ---------------------------------------------------------------------------
  * What this is for, which is a mechanism rather than a folder of helpers

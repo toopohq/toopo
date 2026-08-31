@@ -826,7 +826,8 @@ pre.shape code { color: var(--ink) }
   .beside { padding: var(--s10) 0 0 }
 }
 
-/* --- The contract page, implemented from the artboard's isDetail state. Every length below is the
+/* --- The contract page, implemented from the artboard's isDetail state. ADR-0187 is that page,
+       what it costs and the two fields it stops showing a reader. Every length below is the
        design's own; the two columns fold by the arithmetic of their declared bases and no width
        condition is typed anywhere. What outranks the artboard here is the same three things the
        front page names, and the departures - the folding pre, the aside's verification block, the

@@ -11,8 +11,6 @@ confirmed-by:
     guard: a-case-that-is-not-a-call-is-refused
   - battery: registry-storage
     guard: a-plain-signature-names-its-parameters
-  - battery: site
-    guard: a-case-is-rendered-as-the-call-its-signature-declares
 ---
 
 # A case of block 4.4 is a call

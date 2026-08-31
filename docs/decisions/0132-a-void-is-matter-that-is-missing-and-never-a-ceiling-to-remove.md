@@ -3,11 +3,8 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/site/contract-page.ts
   - packages/site/style.ts
 confirmed-by:
-  - battery: site
-    guard: the-rail-of-a-page-names-every-section-of-it-and-only-those
   - battery: site
     guard: every-word-of-every-page-survives-every-projection
   - battery: site

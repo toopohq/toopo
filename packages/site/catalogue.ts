@@ -19,6 +19,11 @@
  * Three answers per contract, which is the read API's shape rather than a cost
  * ---------------------------------------------------------------------------
  *
+ * ADR-0187 is why a `Held` now carries the implementation's own bytes as well: a contract page
+ * renders the source whole, and a page whose subject is that everything on it can be checked may not
+ * show a program nobody compared. The check is here rather than there for the reason every other one
+ * is - this is the frontier.
+ *
  * The binding says which digest the name resolves to today; the contract snapshot is the frozen
  * definition; the implementation snapshot is what an installation would write. `response.ts` predicts
  * exactly this - *a contract page needs all three, and it makes three requests* - and the reason is

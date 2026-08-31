@@ -4,14 +4,11 @@ date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
   - packages/site/style.ts
-  - packages/site/contract-page.ts
 confirmed-by:
   - battery: site
     guard: every-ceiling-on-a-box-is-derived-and-never-typed
   - battery: site
     guard: every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length
-  - battery: site
-    guard: the-rail-of-a-page-names-every-section-of-it-and-only-those
 ---
 
 # A width stated in characters and a layout that follows the screen

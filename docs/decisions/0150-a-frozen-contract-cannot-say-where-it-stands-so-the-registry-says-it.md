@@ -9,12 +9,9 @@ governs:
   - packages/registry/serialise.ts
   - packages/registry/response.ts
   - packages/registry/the-catalogue.ts
-  - packages/site/contract-page.ts
 confirmed-by:
   - battery: registry-storage
     guard: every-re-examination-carries-the-commit-it-was-taken-at
-  - battery: site
-    guard: a-re-examination-reaches-the-reader
 ---
 
 # A frozen contract cannot say where it stands against a language that moved, so the registry says it

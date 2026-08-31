@@ -1,6 +1,13 @@
 /**
  * The page a contract has, implemented from the owner's artboard - the `isDetail` state of
- * `Toopo.dc.html`. ADR-0027 is what this page publishes and what it leaves out.
+ * `Toopo.dc.html`. ADR-0187 is this page and what it costs; ADR-0027 is what a contract page
+ * publishes and what it leaves out; ADR-0182 is the order of authority every page of the redesign is
+ * built under.
+ *
+ * Four decisions bind what is written here and are cited where they bite: ADR-0096 is how a
+ * playground field is read, ADR-0151 is why the frozen half and the standing half are never one
+ * section, ADR-0180 is the sentence a card makes about a contract, and ADR-0183 is why this page
+ * composes components and draws nothing.
  *
  * ---------------------------------------------------------------------------
  * The artboard is the specification, and what outranks it is the same three things
@@ -111,6 +118,9 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
  * Read off the fields rather than written per contract: a page asserting `each field holds a
  * literal` beside a form of text fields is the defect ADR-0157 exists against, and it is not
  * repaired by writing the opposite sentence somewhere a reader can check it against nothing.
+ *
+ * Which fields those are is the playground's own reading of the contract, and ADR-0096 is the rule
+ * it makes: a field is typed or it is spelled, and the type decides.
  */
 const spelledFields = (fields: readonly PlaygroundField[]): string => {
   const spelled = fields.filter((field) => field.reads.kind === 'a-literal')
@@ -166,6 +176,11 @@ export const contractPage = (
   const { contract } = held
   const name = renderContract(contract.address)
   const own = pageOf(contract.address)
+  /**
+   * The sentence every surface that shows this contract makes about it, decided once. ADR-0180 is
+   * why the arithmetic is shared and the markup is not - a card on this page, on a domain page and
+   * on the front page are three outlines of one sentence.
+   */
   const says = whatACardSays(held)
   const answer = theAnswerOf(held)
   const { cases, bytes, files, imports } = says.costs
@@ -303,7 +318,12 @@ export const contractPage = (
             ),
             /**
              * What the function is for, which the artboard does not draw because its own data has
-             * no such field. It is the frozen half - `identity.description`, the relation to the
+             * no such field.
+             *
+             * **It is frozen prose and it is under a heading of its own, which ADR-0151 requires.**
+             * The caveats under Examples are standing - the registry may rewrite them - and one
+             * heading carrying both makes one promise out of two, leaving a reader believing the
+             * weaker of them about the whole. It is the frozen half - `identity.description`, the relation to the
              * language where one is declared, and the boundary `identity.inputDomain` draws - and a
              * reader has to meet all three before relying on the thing, so it is on the page and
              * not in the aside.

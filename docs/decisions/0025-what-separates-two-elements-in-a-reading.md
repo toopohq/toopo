@@ -8,8 +8,6 @@ confirmed-by:
   - battery: site
     guard: no-element-runs-into-the-one-beside-it
   - battery: site
-    guard: a-label-and-the-sentence-under-it-are-two-lines
-  - battery: site
     guard: nesting-does-not-widen-the-gap-between-two-blocks
   - battery: site
     guard: every-anchor-on-a-page-is-held-by-one-element

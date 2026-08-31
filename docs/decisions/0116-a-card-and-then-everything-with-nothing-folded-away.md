@@ -3,16 +3,11 @@ status: accepted
 date: 2026-08-18
 decision-makers: Mathis Perron
 governs:
-  - packages/site/contract-page.ts
   - packages/site/chrome.ts
   - packages/site/start.ts
 confirmed-by:
   - battery: site
-    guard: the-rail-of-a-page-names-every-section-of-it-and-only-those
-  - battery: site
     guard: a-page-with-no-javascript-is-prose-and-never-a-control-that-does-nothing
-  - battery: site
-    guard: every-case-is-anchored-by-the-identifier-its-address-is-made-of
   - battery: site
     guard: what-runs-in-your-browser-is-said-once-and-beside-the-playground
 ---

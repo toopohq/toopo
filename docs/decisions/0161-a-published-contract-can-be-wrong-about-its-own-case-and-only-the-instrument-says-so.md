@@ -6,15 +6,12 @@ governs:
   - packages/registry/contract-record.ts
   - packages/registry/snapshot.ts
   - packages/registry/the-catalogue.ts
-  - packages/site/contract-page.ts
   - mutation/run.ts
 confirmed-by:
   - battery: registry-storage
     guard: a-correction-names-a-case-the-contract-settles-and-quotes-what-it-says
   - battery: registry-storage
     guard: a-correction-carries-the-commit-it-was-taken-at
-  - battery: site
-    guard: a-correction-reaches-the-reader-beside-the-sentence-it-corrects
 ---
 
 # A published contract can be wrong about its own case, and only the instrument says so

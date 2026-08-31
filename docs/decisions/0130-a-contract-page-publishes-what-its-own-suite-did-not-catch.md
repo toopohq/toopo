@@ -3,7 +3,6 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/site/contract-page.ts
   - packages/site/survivors.ts
   - mutation/published.ts
 confirmed-by:
