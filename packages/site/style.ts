@@ -280,6 +280,24 @@ ${THE_FONT_FACE}
   --ink: #e6e9ea; --body: #98a2a6; --dim: #7c868a;
   --accent: #3fd6b7; --target: #101f1d;
 
+  /* The six inks code is set in - keyword, string, number, function, type, comment - which are the
+     artboard's syntax tokens. ADR-0176 left them undeclared because nothing painted with them; the
+     contract page is what paints with them, and ADR-0178 wrote in advance that the floor applies
+     the moment they arrive. Measured at 878b4b4 against all four grounds: --tk-c fails in both
+     themes (3.02:1 on this theme's binding ground, which is the target and not the card), and in
+     light --tk-s and --tk-f fail on the card at 4.45 and 4.22 - the artboard's light comment ink
+     is #8f999d, the very grey ADR-0115 deleted and ADR-0176 met again at 2.64:1.
+
+     Each failing value was repaired by ADR-0178's method - a walk along the artboard's own hue at
+     one part in a thousand - and taken at the step that clears 4.7 on its worst ground rather than
+     at the first step past 4.5, for two reasons. A value seated on the threshold is one a
+     re-measurement moves off. And the first-clearing values land on colours this palette already
+     means something by: light --tk-f at its 4.5 step is #0c7a64, which is the accent - a function
+     name indistinguishable from a link - and light --tk-c at its 4.5 step is #636d71, which is
+     --dim. The four values that clear as drawn are the artboard's, untouched. */
+  --tk-k: #6cc4e8; --tk-s: #a3d47f; --tk-n: #e2b374;
+  --tk-f: #4fdec1; --tk-t: #cdb4ee; --tk-c: #7d898d;
+
   /* The span a line stays readable across, both ends of it, and what one character of this face
      costs. Since ADR-0134 neither end bounds a line: the top sizes three boxes that are not lines
      and the bottom is the column of secondary matter, which is a bound already argued for rather
@@ -396,27 +414,34 @@ ${THE_FONT_FACE}
    somebody presses a button. :not([data-theme='dark']) is what lets the dark override work without
    a third copy: a reader who asked for dark falls back to :root above, which is already dark.
 
-   **--accent is #0c7f68 here and #3fd6b7 above, and that difference is the one correction this
-   unit made to the artboard.** The artboard declares two accent tokens - a vivid one it paints
-   buttons and rings with, and a darkened one it sets accent *text* in - and leaves the vivid one
-   unchanged in light. This sheet has had one accent role since ADR-0115 and it carries both jobs:
-   a { color: var(--accent) } and :focus-visible { outline: 2px solid var(--accent) }. Left
-   vivid, the ring measured **1.76:1** against light paper where WCAG 1.4.11 owes a non-text
-   indicator 3:1 - keyboard focus invisible on a light system. The value taken is the artboard's own
-   darkened one, so the fix introduces no colour the owner did not choose: the ring is **4.76:1** and
-   a link clears 4.5:1 on paper. What it does not clear is 4.5:1 on wash and card - 4.47 and 4.22 -
-   and that is the artboard's value, recorded in ADR-0176 rather than changed here. */
+   **--accent is darkened here against the #3fd6b7 above, and the darkening was decided twice.**
+   The artboard declares two accent tokens - a vivid one it paints buttons and rings with, and a
+   darkened one it sets accent *text* in - and leaves the vivid one unchanged in light. This sheet
+   has had one accent role since ADR-0115 and it carries both jobs: a { color: var(--accent) } and
+   :focus-visible { outline: 2px solid var(--accent) }. Left vivid, the ring measured **1.76:1**
+   against light paper where WCAG 1.4.11 owes a non-text indicator 3:1 - keyboard focus invisible
+   on a light system - so ADR-0176 took the artboard's own darkened #0c7f68, which cleared the ring
+   at 4.76:1 and the paper and not the card: 4.22, the artboard's value, recorded rather than
+   changed. When the owner ruled that every ink clears the floor, ADR-0178 moved it 3.6 % along its
+   own hue to #0c7a64, which holds 4.50:1 on the card - the ground that binds this theme. This
+   paragraph read *--accent is #0c7f68 here* from the commit ADR-0178's move landed at - which did
+   not touch the sentence - until the unit that declared the syntax inks, which is the class this
+   repository keeps meeting: a present-tense claim beside the declaration that expired it. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
     --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
     --ink: #151a1b; --body: #5b6569; --dim: #636d71;
     --accent: #0c7a64; --target: #e7f3f1;
+    --tk-k: #0a6fa8; --tk-s: #45741c; --tk-n: #96560f;
+    --tk-f: #0b7661; --tk-t: #7549bd; --tk-c: #606a6e;
   }
 }
 :root[data-theme='light'] {
   --paper: #fafbfb; --wash: #f2f4f4; --card: #e9eeee; --rule: #e3e8e9; --edge: #cfd7d8;
   --ink: #151a1b; --body: #5b6569; --dim: #636d71;
   --accent: #0c7a64; --target: #e7f3f1;
+  --tk-k: #0a6fa8; --tk-s: #45741c; --tk-n: #96560f;
+  --tk-f: #0b7661; --tk-t: #7549bd; --tk-c: #606a6e;
 }
 /* Two rules that carry no colour, so the button cannot introduce one. They exist so that a reader
    who has overridden their system gets form controls, scrollbars and a caret on the same side of the

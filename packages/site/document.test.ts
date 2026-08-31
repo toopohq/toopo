@@ -545,7 +545,16 @@ describe('a page and its two projections', () => {
    */
   it('every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible', () => {
     const GROUNDS = ['paper', 'wash', 'card', 'target']
-    const INKS = ['ink', 'body', 'dim', 'accent']
+    /**
+     * The six `tk-` names are the syntax inks the contract page sets code in - keyword, string,
+     * number, function, type, comment - and they are inks like any other: the cross product with
+     * every ground is deliberately total, because a subset per ink would be a standing exemption
+     * list, which is the mechanism ADR-0178 gave three rows up to be rid of. The hyphen in their
+     * names is why the token pattern above takes `[a-z-]`: with `[a-z]` alone, a declared `--tk-c`
+     * was invisible to this guard - measured at 878b4b4, the whole suite green over a served comment
+     * ink at 2.49:1 - which is the exact class the totality arms exist for, defeated by a spelling.
+     */
+    const INKS = ['ink', 'body', 'dim', 'accent', 'tk-k', 'tk-s', 'tk-n', 'tk-f', 'tk-t', 'tk-c']
     /** A line, which owes 3:1 as a non-text distinction and is never a ground or an ink. */
     const NEITHER = ['rule', 'edge']
 
@@ -576,7 +585,7 @@ describe('a page and its two projections', () => {
     for (const [at, block] of palettes.entries()) {
       const scheme = at === 0 ? 'dark' : 'light'
       const declared = new Map(
-        [...block.matchAll(/--([a-z]+):\s*(#[0-9a-fA-F]{6})/g)].map((found) => [
+        [...block.matchAll(/--([a-z-]+):\s*(#[0-9a-fA-F]{6})/g)].map((found) => [
           found[1] as string,
           found[2] as string,
         ]),

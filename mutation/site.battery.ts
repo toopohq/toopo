@@ -241,6 +241,7 @@ const A_STRING_IS_NOT_READ_FOR_COMMENTS = `    if (character === '"' || characte
     }`
 
 const THE_DARK_PALETTE = `  --paper: #0b0d0e; --wash: #101314; --card: #171b1d; --rule: #1f2426; --edge: #2d3336;`
+const THE_COMMENT_INK_CLEARS_THE_FLOOR = `  --tk-f: #4fdec1; --tk-t: #cdb4ee; --tk-c: #7d898d;`
 
 const THE_SHELL_HAS_NO_CEILING = `.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }`
 
@@ -987,6 +988,36 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       styleFile(
         THE_DARK_PALETTE,
         '  --paper: #3a4245; --wash: #101314; --card: #171b1d; --rule: #1f2426; --edge: #2d3336;',
+      ),
+    ],
+    killed(['every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible']),
+  ),
+
+  /**
+   * The permanent witness of the guard's widened token pattern, which W-24b cannot be.
+   *
+   * The six syntax inks are the first palette roles whose names carry a hyphen, and the guard's
+   * pattern read `--([a-z]+):` - it stopped at the hyphen, so a declared `--tk-c` was invisible to
+   * it. Measured at `878b4b4` before the pattern was widened: the whole site suite green over a
+   * served comment ink at 2.49:1, which is the guard's own totality arms - a colour nobody classed,
+   * a role nobody declared - defeated by a spelling. W-24b perturbs a ground the old pattern could
+   * already see, so it stayed green-blind to exactly this hole and could not have reported it.
+   *
+   * The edit is the plausible one, not a sabotage: the artboard is the specification everywhere
+   * else on this page, so returning a repaired ink to the artboard's own value looks like a
+   * correction. Nothing on the rendered page looks wrong - 3.02:1 on the binding ground reads
+   * comfortably on a bright monitor - and the reader it abandons is the one reading comments in
+   * code, which is where this catalogue prints every example's answer.
+   */
+  sameOnEveryLens(
+    'W-24c',
+    'returns the dark comment ink to the artboard’s value, which reads as a correction toward ' +
+      'the specification and puts every example’s answer at 3.02:1 on the ground that binds - ' +
+      'an edit the guard could not see at all before its token pattern learnt the hyphen',
+    [
+      styleFile(
+        THE_COMMENT_INK_CLEARS_THE_FLOOR,
+        `  --tk-f: #4fdec1; --tk-t: #cdb4ee; --tk-c: #5f696d;`,
       ),
     ],
     killed(['every-ink-the-palette-can-put-on-every-ground-it-paints-is-legible']),
