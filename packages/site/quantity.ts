@@ -47,3 +47,33 @@ export const grouped = (value: number): string =>
  */
 export const figure = (value: string, counts: string): Node =>
   el('p', { class: 'figure' }, el('strong', NOTHING, text(value)), text(` ${counts}`))
+
+/** The month a reader reads, from the instant the registry publishes. */
+const THE_MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+] as const
+
+/**
+ * When something was published, in the artboard's own spelling.
+ *
+ * It lived in `front-page.ts` while that page was the only one showing a date; the contract page's
+ * aside is the second, and a second copy of a rendering decision is the drift this module's header
+ * already tells at length. UTC on both reads, because `publishedAt` is an instant read off a commit
+ * and a build machine's zone must not move the day a reader is shown.
+ */
+export const readableDate = (instant: string): string => {
+  const when = new Date(instant)
+
+  return `${THE_MONTHS[when.getUTCMonth()] as string} ${when.getUTCDate()}, ${when.getUTCFullYear()}`
+}

@@ -42,12 +42,28 @@ export class ThePageCannotBeBuilt extends Error {
   }
 }
 
+/** One file as an installation writes it: the path a reader would hold, and the bytes as text. */
+export type HeldSource = {
+  readonly path: string
+  readonly text: string
+}
+
 /** One contract, as everything a page about it needs and nothing else. */
 export type Held = {
   readonly binding: ServedContractBinding
   readonly contract: FrozenContract
   /** The implementation `toopo add` would write, which is what the cost on the page is about. */
   readonly implementation: FrozenImplementation
+  /**
+   * The implementation's own bytes, fetched and checked against the digest the snapshot announces.
+   *
+   * The page shows the source whole since the redesign, and it may only show bytes the digest
+   * covers: a blob that hashed to something other than the address it was asked by would put an
+   * unverified program on the one page whose subject is that everything on it can be checked. The
+   * check is here, at the same frontier every snapshot already crosses, so no page can render a
+   * source nobody compared.
+   */
+  readonly sources: readonly HeldSource[]
 }
 
 const frozen = (source: RegistrySource, digest: string, what: string, unit: string): Snapshot => {
@@ -112,7 +128,23 @@ export const heldByTheRegistry = (source: RegistrySource): readonly Held[] =>
         throw new ThePageCannotBeBuilt(what, 'a snapshot arrived as the wrong kind of artefact')
       }
 
-      return { binding, contract: contract.frozen, implementation: implementation.frozen }
+      const sources = implementation.frozen.files.map((file) => {
+        const blob = source.blob(file.sha256)
+        if (blob === null) {
+          throw new ThePageCannotBeBuilt(what, `the registry holds no blob for ${file.path}`)
+        }
+        if (blob.addressedBy !== file.sha256) {
+          throw new ThePageCannotBeBuilt(
+            what,
+            `the bytes served for ${file.path} hash to ${blob.addressedBy} and not to the ` +
+              `${file.sha256} its snapshot announces`,
+          )
+        }
+
+        return { path: file.path, text: blob.bytes.toString('utf8') }
+      })
+
+      return { binding, contract: contract.frozen, implementation: implementation.frozen, sources }
     })
 
 /**

@@ -127,7 +127,19 @@ const copyControlOn = (install: Element): void => {
   const button = document.createElement('button')
 
   button.type = 'button'
-  button.className = 'copy'
+  /**
+   * The quiet control everywhere, and the primary one on the bar that declares the ways to run it:
+   * the artboard puts the one accent-coloured action of a contract page on its install bar, and the
+   * bar is recognisable by the declaration it already carries rather than by a class this file would
+   * have to be told about. Two literals rather than one expression, because
+   * `the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints` reads the
+   * assignments off this source and an expression is an assignment it cannot read.
+   */
+  if (install.closest('[data-ways]') === null) {
+    button.className = 'copy'
+  } else {
+    button.className = 'prime'
+  }
   button.textContent = THE_COPY_CONTROL_SAYS.atRest
   button.setAttribute('aria-label', theCopyLabelFor(theCommandSpelled(install)))
 
@@ -160,10 +172,9 @@ const copyControlOn = (install: Element): void => {
  */
 export const managerControl = (): void => {
   const block = document.querySelector('.get')
-  const head = block?.querySelector('.get-head')
   const install = block?.querySelector('pre.install')
   const declared = block instanceof HTMLElement ? block.dataset['ways'] : undefined
-  if (!(head instanceof HTMLElement) || install === null || install === undefined) return
+  if (install === null || install === undefined) return
   if (declared === undefined) return
 
   const ways = JSON.parse(declared) as readonly AWayToRunIt[]
@@ -201,7 +212,7 @@ export const managerControl = (): void => {
       refusal.textContent = refused ?? ''
       refusal.hidden = refused === null
 
-      const copy = install.querySelector('.copy')
+      const copy = install.querySelector('.copy, .prime')
       if (copy !== null) {
         copy.textContent = THE_COPY_CONTROL_SAYS.atRest
         copy.setAttribute('aria-label', theCopyLabelFor(written))
@@ -214,7 +225,16 @@ export const managerControl = (): void => {
     return button
   })
 
+  /**
+   * The row the choice stands in, created here rather than served. The page serves the artboard's
+   * bare bar, and a reader with no JavaScript is offered no choice - so the row that holds the
+   * choice arrives with the script that makes it work, which is the slot arrangement every other
+   * control here already has, taken one step further: not even an empty box is served.
+   */
+  const head = document.createElement('div')
+  head.className = 'get-head'
   head.append(list)
+  install.before(head)
   install.after(refusal)
 }
 

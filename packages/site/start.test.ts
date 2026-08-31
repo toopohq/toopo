@@ -188,13 +188,13 @@ describe('the controls a visitor touches, run against a document', () => {
     aSearchOnThePage()
 
     expect({
-      copy: document.querySelector('pre.install > button.copy') !== null,
+      prime: document.querySelector('pre.install > button.prime') !== null,
       ways: document.querySelector('.get .get-head > ul.managers') !== null,
       refusal: document.querySelector('pre.install + p.refusal') !== null,
       field: document.querySelector('.masthead .search > input') !== null,
       label: document.querySelector('.masthead .search > label') !== null,
       answers: document.querySelector('.masthead .search > .answers') !== null,
-    }).toEqual({ copy: true, ways: true, refusal: true, field: true, label: true, answers: true })
+    }).toEqual({ prime: true, ways: true, refusal: true, field: true, label: true, answers: true })
   })
 
   /**
@@ -294,7 +294,7 @@ describe('the controls a visitor touches, run against a document', () => {
 
     expect(theCommandOnThePage()).toBe(`${THE_INVOCATION} add string/slugify`)
 
-    const copy = document.querySelector('pre.install button.copy')
+    const copy = document.querySelector('pre.install button.prime')
     if (!(copy instanceof HTMLElement)) throw new Error('no copy control')
     copy.click()
     await settled()
@@ -335,7 +335,7 @@ describe('the controls a visitor touches, run against a document', () => {
       'false',
       'false',
     ])
-    expect(document.querySelector('button.copy')?.getAttribute('aria-label')).toContain(
+    expect(document.querySelector('button.prime')?.getAttribute('aria-label')).toContain(
       'pnpm dlx toopo add string/slugify',
     )
   })
@@ -383,7 +383,7 @@ describe('the controls a visitor touches, run against a document', () => {
     aClipboardThat(() => Promise.reject(new Error('the reader refused permission')))
 
     copyControl()
-    const copy = document.querySelector('pre.install button.copy')
+    const copy = document.querySelector('pre.install button.prime')
     if (!(copy instanceof HTMLElement)) throw new Error('no copy control')
 
     expect(copy.textContent).toBe(THE_COPY_CONTROL_SAYS.atRest)
@@ -397,7 +397,7 @@ describe('the controls a visitor touches, run against a document', () => {
     Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined })
     copyControl()
 
-    expect(document.querySelector('pre.install button.copy')).toBeNull()
+    expect(document.querySelector('pre.install button.prime')).toBeNull()
   })
 
   /**

@@ -66,6 +66,8 @@
 
 import type { Attributes, Node, Tag } from './document.js'
 import { el, text } from './document.js'
+import type { HighlightedRun } from './highlight.js'
+import { THE_SYNTAX_INKS } from './highlight.js'
 
 const NOTHING = {} as const
 
@@ -76,7 +78,16 @@ const NOTHING = {} as const
  * union is what makes a second drawing a duplicate key, and a union that could be widened by writing a
  * string would be a convention with a type annotation on it.
  */
-export type Component = 'pill' | 'badge' | 'copy' | 'offer' | 'eyebrow'
+export type Component =
+  | 'pill'
+  | 'badge'
+  | 'copy'
+  | 'offer'
+  | 'eyebrow'
+  | 'snippet'
+  | 'prime'
+  | 'callout'
+  | 'crumbs'
 
 /**
  * What paints one component: CSS whose every selector is rooted at `&`.
@@ -150,9 +161,16 @@ const A_COUNT = 'count'
  * carrying `aria-current`. That was true before this module and is kept; what changed is that both
  * spellings now take the same rule, where the `span` used to be the only one the container's selector
  * could not reach.
+ *
+ * The count is `null` where the pill stands somewhere a magnitude answers no question - the contract
+ * page's aside names the one domain a reader is already inside, and a figure beside it would be the
+ * bare digit `chrome.ts` already refuses in a column. The artboard draws that pill without one too.
  */
-export const pill = (name: string, count: number, href: string | null): Node => {
-  const says = [text(name), el('span', { class: A_COUNT }, text(String(count)))]
+export const pill = (name: string, count: number | null, href: string | null): Node => {
+  const says = [
+    text(name),
+    ...(count === null ? [] : [el('span', { class: A_COUNT }, text(String(count)))]),
+  ]
 
   return href === null
     ? drawn('pill', 'span', { 'aria-current': 'true' }, ...says)
@@ -189,15 +207,17 @@ ${OWN}[data-badge='language'] {
 }
 
 /**
- * The padlock the frozen badge draws, `aria-hidden` because the claim is the word beside it.
+ * The padlock the frozen badge and the callout draw, `aria-hidden` because the claim is the word
+ * beside it.
  *
  * A picture of the claim and the claim itself would be heard twice; this is the split `isChrome`
- * already makes for the wordmark's own mark.
+ * already makes for the wordmark's own mark. The size is the caller's because the artboard draws it
+ * at two - nine on a badge, sixteen on the callout - and the path is one thing.
  */
-const thePadlock = (): Node =>
+const thePadlock = (size = '9'): Node =>
   el(
     'svg',
-    { width: '9', height: '9', viewBox: '0 0 16 16', 'aria-hidden': 'true' },
+    { width: size, height: size, viewBox: '0 0 16 16', 'aria-hidden': 'true' },
     el('rect', { x: '3', y: '7', width: '10', height: '7', rx: '1.5', fill: 'currentColor' }),
     el('path', {
       d: 'M5 7 V5 a3 3 0 0 1 6 0 V7',
@@ -360,7 +380,8 @@ export const offer = (shows: WhatAnOfferShows): Node =>
 const THE_EYEBROW: Drawing = {
   rules: `
 ${OWN} {
-  margin: 0; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--dim);
+  margin: 0; padding: 0; border: 0;
+  font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--dim);
 }
 ${OWN}[data-eyebrow='section'] { font-size: calc(12.5 * var(--a-point)) }
 ${OWN}[data-eyebrow='field'] { font-size: var(--t6) }
@@ -369,8 +390,159 @@ ${OWN}[data-eyebrow='field'] { font-size: var(--t6) }
 
 export type EyebrowSize = 'section' | 'field'
 
-export const eyebrow = (size: EyebrowSize, tag: Tag, says: string): Node =>
-  drawn('eyebrow', tag, { 'data-eyebrow': size }, text(says))
+/**
+ * The attributes are the caller's because a section heading carries the address a reader links -
+ * `#signature` on the contract page - and an address is the page's to give, not the look's.
+ */
+export const eyebrow = (
+  size: EyebrowSize,
+  tag: Tag,
+  says: string,
+  attributes: Attributes = NOTHING,
+): Node => drawn('eyebrow', tag, { ...attributes, 'data-eyebrow': size }, text(says))
+
+/**
+ * A block of code, set in the six syntax inks and readable with nothing running.
+ *
+ * The runs are `highlight.ts`'s - decided at emission, so the colour is in the served HTML - and the
+ * folding is this site's rather than the artboard's `overflow-x`: ADR-0135 decided that a `pre`
+ * folds where the language allows and scrolls only where it does not, and a recorded decision
+ * outranks the mock-up. `width: auto` restates the element default because the site's own `pre`
+ * rule says `fit-content`, and the artboard draws this block the full width of its column.
+ */
+const THE_SNIPPET: Drawing = {
+  rules: `
+${OWN} {
+  margin: 0; padding: 14px 16px; width: auto; max-width: 100%; overflow-x: auto;
+  background: var(--wash); border: 1px solid var(--rule); border-radius: 8px; color: var(--ink);
+  font-family: var(--mono); font-size: calc(13 * var(--a-point)); line-height: 1.65;
+  white-space: pre-wrap; overflow-wrap: normal;
+}
+${Object.values(THE_SYNTAX_INKS)
+  .map((token) => `${OWN} .${token} { color: var(--${token}) }`)
+  .join('\n')}
+`,
+}
+
+/**
+ * A highlighted source as an element: plain runs are bare text and inked runs are spans, so what a
+ * projection reads is the source and nothing else.
+ */
+export const snippet = (runs: readonly HighlightedRun[], attributes: Attributes = NOTHING): Node =>
+  drawn(
+    'snippet',
+    'pre',
+    attributes,
+    ...runs.map((run) =>
+      run.ink === null
+        ? text(run.text)
+        : el('span', { class: THE_SYNTAX_INKS[run.ink] }, text(run.text)),
+    ),
+  )
+
+/**
+ * The control that copies the install command, on the accent: the one primary action a contract page
+ * has. `start.ts` builds it the way it builds the quiet copy control, so this module paints it and
+ * does not build it - a reader with no JavaScript meets the command with nothing beside it.
+ *
+ * The ink on the accent is `--paper`, not a token of its own. The artboard declares `--accent-ink`
+ * and the palette does not, because the legibility guard's model is every ink against every ground
+ * and an ink that exists for one ground would fail everywhere else by construction. Measured at
+ * `acdd14c`: paper on the accent is 10.68:1 dark and 5.09:1 light, against the artboard's own
+ * accent-ink at 9.27 - so the pair clears with margin in both themes and no token was added. The
+ * reading is by hand because the guard cannot model a bound pair, and that limit is written here
+ * rather than smoothed.
+ */
+const THE_PRIME: Drawing = {
+  rules: `
+${OWN} {
+  flex: none; font-family: var(--mono); font-size: calc(12 * var(--a-point)); font-weight: 500;
+  background: var(--accent); color: var(--paper); border: 0; border-radius: 6px;
+  padding: 6px 12px; cursor: pointer; transition: opacity .15s; line-height: normal;
+}
+${OWN}:hover { opacity: .88 }
+`,
+}
+
+/** The class `start.ts` writes on the primary control, exported so the guard has one side to read. */
+export const THE_PRIME_CONTROL_CLASS = classOf('prime')
+
+/** The parts of a callout, named once so the markup and the rules cannot part. */
+const A_CALLOUT_TITLE = 'title'
+const A_CALLOUT_SAYS = 'says'
+
+/**
+ * The claim a page sets apart on the accent's own ground: a title, a sentence, and the padlock at
+ * the artboard's sixteen pixels. The border is the accent at the artboard's 28 %, which is a
+ * distinction and not text, so the floor it owes is 1.4.11's and the ground behind the words is
+ * `--target` - the same composed ground every `:target` highlight already reads on.
+ */
+const THE_CALLOUT: Drawing = {
+  rules: `
+${OWN} {
+  display: flex; gap: 12px; margin: 0;
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  background: var(--target); border-radius: 8px; padding: 14px 16px;
+}
+${OWN} > svg { color: var(--accent); flex: none; margin-top: 2px }
+${OWN} .${A_CALLOUT_TITLE} { margin: 0 0 3px; font-weight: 600; font-size: calc(13.5 * var(--a-point)); color: var(--ink) }
+${OWN} .${A_CALLOUT_SAYS} { margin: 0; font-size: calc(13 * var(--a-point)); color: var(--body); line-height: 1.6 }
+${OWN} .${A_CALLOUT_SAYS} code { color: var(--ink) }
+`,
+}
+
+export const callout = (title: string, ...says: readonly Node[]): Node =>
+  drawn(
+    'callout',
+    'div',
+    NOTHING,
+    thePadlock('16'),
+    el(
+      'div',
+      NOTHING,
+      el('p', { class: A_CALLOUT_TITLE }, text(title)),
+      el('p', { class: A_CALLOUT_SAYS }, ...says),
+    ),
+  )
+
+/**
+ * Where a page stands, as the steps down to it. A list rather than a run of anchors - three links
+ * side by side are one word to a screen reader - and the separator is the rule's and not the
+ * document's, so no projection carries a bare slash as if it were a word.
+ */
+const THE_CRUMBS: Drawing = {
+  rules: `
+${OWN} { margin: 0 0 20px; font-family: var(--mono); font-size: calc(12.5 * var(--a-point)); color: var(--dim) }
+${OWN} ol { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; list-style: none; margin: 0; padding: 0 }
+${OWN} li { padding: 0; border: 0 }
+${OWN} li + li::before { content: '/'; margin-right: 7px }
+${OWN} a { color: var(--body); text-decoration: none }
+${OWN} a:hover { color: var(--ink) }
+${OWN} [aria-current='page'] { color: var(--ink) }
+`,
+}
+
+/** One step of the path: where it goes, or - as the last one - the page already under the cursor. */
+export type CrumbStep = {
+  readonly label: string
+  readonly href: string | null
+}
+
+export const crumbs = (steps: readonly CrumbStep[]): Node =>
+  drawn(
+    'crumbs',
+    'nav',
+    { 'aria-label': 'Breadcrumb' },
+    el(
+      'ol',
+      NOTHING,
+      ...steps.map((step) =>
+        step.href === null
+          ? el('li', { 'aria-current': 'page' }, text(step.label))
+          : el('li', NOTHING, el('a', { href: step.href }, text(step.label))),
+      ),
+    ),
+  )
 
 /**
  * Every component, which the compiler will not let be partial and will not let hold one name twice.
@@ -384,6 +556,10 @@ export const THE_COMPONENTS: Record<Component, Drawing> = {
   copy: THE_COPY,
   offer: THE_OFFER,
   eyebrow: THE_EYEBROW,
+  snippet: THE_SNIPPET,
+  prime: THE_PRIME,
+  callout: THE_CALLOUT,
+  crumbs: THE_CRUMBS,
 }
 
 /** One component's rules with `&` resolved to the class it stands for. */

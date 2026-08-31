@@ -43,6 +43,7 @@ import type { Document, Node, Tag } from './document.js'
 import { el, text } from './document.js'
 import type { MenuEntry } from './chrome.js'
 import { footer, masthead, theCatalogueFrom } from './chrome.js'
+import { readableDate } from './quantity.js'
 import { whatACardSays } from './what-a-card-says.js'
 import { eyebrow, offer, pill } from './components.js'
 import { CATALOGUE_PAGE, FRONT_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
@@ -137,36 +138,13 @@ const offerFor = (held: Held): Node => {
   })
 }
 
-/** The month a reader reads, from the instant the registry publishes. */
-const THE_MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-] as const
-
-/**
- * When a contract was published, in the artboard's own spelling.
- *
- * **This section exists because ADR-0177 gave it a source.** It was the one part of the design nothing
- * here could answer: `publishedAt` was one constant for the whole catalogue, so *Recently added* would
+/*
+ * The date a row carries is `readableDate`'s, and the section it stands in exists because ADR-0177
+ * gave it a source: `publishedAt` was one constant for the whole catalogue, so *Recently added* would
  * have been four rows in an arbitrary order under a heading claiming a chronology. It is per contract
- * now, read off the commit that minted each binding, so the order is a fact rather than the order of a
- * file.
+ * now, read off the commit that minted each binding, so the order is a fact rather than the order of
+ * a file.
  */
-const readableDate = (instant: string): string => {
-  const when = new Date(instant)
-
-  return `${THE_MONTHS[when.getUTCMonth()] as string} ${when.getUTCDate()}, ${when.getUTCFullYear()}`
-}
 
 /** How many rows the artboard shows under *Recently added*. */
 const THE_RECENT_ROWS = 4

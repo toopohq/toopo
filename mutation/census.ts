@@ -315,6 +315,14 @@
  * **It found its own instance on its first run**, which no row here has recorded before: `.recent h2`
  * was painting a component from outside, and nobody had read it. ADR-0183.
  *
+ * A thirty-first on the contract page, which is the first row here to go *down*: the settled cases,
+ * the properties, the profiles, the re-examinations, the checking sentence and the batteries' own
+ * measurement stopped being laid out, so nine guards of `pages.test.ts` went with them and the row
+ * reads **44 to 35**. No file arrived and none left. Three cells went with the guards they
+ * accounted for, and five were re-anchored rather than dropped because each was the *only*
+ * accounting for a guard that survived - which is the thing this table makes visible and a reading
+ * of the diff would not.
+ *
  * A thirtieth on the six inks: **one new file under the site's, carrying five, and no count moved**.
  * It is the tenth's shape - a module of its own gets a file of its own - and it is a line here for
  * how three of the five are accounted: `highlight.ts` classifies what `scanning.ts` reads, the drive
@@ -478,7 +486,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/indexing.test.ts': 11,
     'packages/site/links.test.ts': 1,
     'packages/site/literal.test.ts': 12,
-    'packages/site/pages.test.ts': 44,
+    'packages/site/pages.test.ts': 35,
     'packages/site/playground.test.ts': 19,
     'packages/site/published-tree.test.ts': 11,
     'packages/site/read-literal.test.ts': 10,

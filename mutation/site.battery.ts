@@ -224,7 +224,7 @@ const THE_SEARCH_NEEDS_A_SLOT_THAT_DECLARED_ONE = `  if (!(slot instanceof HTMLE
 const THE_COPY_CONTROL_NEEDS_A_CLIPBOARD = `  if (!navigator.clipboard) return`
 const THE_COMMAND_IS_READ_WHEN_THE_BUTTON_IS_PRESSED = `  button.addEventListener('click', () => {
     void navigator.clipboard.writeText(theCommandSpelled(install)).then(`
-const THE_COPY_CONTROL_IS_RELABELLED = `      const copy = install.querySelector('.copy')
+const THE_COPY_CONTROL_IS_RELABELLED = `      const copy = install.querySelector('.copy, .prime')
       if (copy !== null) {`
 const A_REFUSAL_IS_SHOWN_WHEN_THERE_IS_ONE = `      refusal.hidden = refused === null`
 const A_CLIPBOARD_THAT_REFUSES_IS_SAID_SO = `        button.textContent = THE_COPY_CONTROL_SAYS.whenTheClipboardRefuses`
@@ -251,7 +251,7 @@ const THE_COMMENT_INK_CLEARS_THE_FLOOR = `  --tk-f: #4fdec1; --tk-t: #cdb4ee; --
 
 const THE_SHELL_HAS_NO_CEILING = `.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }`
 
-const THE_THREE_COLUMNS_ARE_DECLARED_LENGTHS = `  .shell:has(.rail) { grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside) }`
+const THE_ASIDE_COLUMN_IS_A_DECLARED_LENGTH = `  .shell:has(.aside) { grid-template-columns: minmax(0, 1fr) var(--aside) }`
 
 const THE_INVISIBLE_IS_MADE_VISIBLE = `  \`'\${value.replaceAll('\\\\', '\\\\\\\\').replaceAll("'", "\\\\'").replace(INVISIBLE, escaped)}'\``
 
@@ -283,15 +283,9 @@ const A_KEY_IS_QUOTED_WHEN_IT_MUST_BE = `const IDENTIFIER = /^[A-Za-z_$][A-Za-z0
 
 const A_SYMBOL_KEEPS_ITS_DESCRIPTION = `        value.description === null ? 'Symbol()' : \`Symbol(\${quoted(value.description)})\`,`
 
-const THE_ANCHOR_IS_THE_CASE_IDENTIFIER = `    { id: entry.id, class: 'case' },`
 
-const THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER = `  ...table.groups.flatMap((group) =>
-    renderedGroup(group, table, answer, fields, corrections, alone ? 'h3' : 'h4'),
-  ),`
 
-const A_HEADING_CARRIES_ITS_OWN_ADDRESS = `  addressed(heading, group.id, group.title),`
 
-const ONE_ANSWER_IS_WRITTEN_BARE = `    answered.length === 1`
 
 const THE_COST_IS_WHAT_LANDS = `  bytes: held.implementation.files.reduce((total, file) => total + file.bytes, 0),`
 
@@ -412,7 +406,19 @@ const A_USE_CASE_CARRIES_ITS_WARNING = `    paragraph(entry.caveat, { class: 'wh
 
 const A_USE_CASE_SHOWS_WHAT_CAME_BACK = `  const result = answered.map((field) => literal(field.value)).join(', ')`
 
-const WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN = `        marked('h3', 'What it is for, and what it is not', { id: 'what-it-is-for' }),`
+/**
+ * The frozen boundary where the page puts it, and the examples it must not be mixed into. W-95 needs
+ * both halves: the sentence has to leave the frozen heading and arrive under the revisable one, or
+ * the page simply prints it twice and the guard is right to stay green.
+ */
+const THE_BOUNDARY_STANDS_WITH_THE_FROZEN_HALF = `              paragraph(contract.identity.inputDomain, { class: 'bounds' }),`
+const THE_EXAMPLES_ARE_THE_CALLS_AND_THE_CAVEATS = `                    eyebrow('section', 'h2', 'Examples', { id: 'examples' }),`
+
+/** The address the source section answers to, which no other section may take. */
+const THE_SOURCE_HAS_ITS_OWN_ADDRESS = `                eyebrow('section', 'h2', 'Source', { id: 'source' }),`
+
+/** The signature set in the six inks, which is what tells it from the command a reader runs. */
+const THE_SIGNATURE_IS_SET_IN_THE_INKS = `              snippet(highlighted(says.signature)),`
 
 const A_NUMBER_IS_READ_AS_ITSELF = `  if (number !== null) return Number(number)`
 
@@ -641,19 +647,6 @@ const mutants: readonly Mutant[] = [
   ),
 
   sameOnEveryLens(
-    'W-11',
-    'anchors a case on its position instead of its identifier, so every link into a contract page ' +
-      'works today and points at a different case the day one is inserted',
-    [
-      contractPageFile(
-        THE_ANCHOR_IS_THE_CASE_IDENTIFIER,
-        `    { id: \`case-\${entry.rationale.length}\`, class: 'case' },`,
-      ),
-    ],
-    killed(['every-case-is-anchored-by-the-identifier-its-address-is-made-of']),
-  ),
-
-  sameOnEveryLens(
     'W-12',
     'states the size of the test harness where the page promises the size of what lands, two true ' +
       'figures about one contract that differ by an order of magnitude',
@@ -738,32 +731,31 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
-   * The registry's own prose put back beside the contract's, which is where it was until ADR-0151.
+   * A frozen sentence put under a heading whose other sentences the registry may rewrite.
    *
-   * **It is the plausible edit and not an attack**: somebody with a re-examination to render reaches
-   * for the section that already answers *what does this function do*, and the page that comes out is
-   * not broken - it reads well, every sentence on it is true, and the block simply arrives before the
-   * one nobody skips. What is lost is that a reader can no longer tell which half of that heading is
-   * frozen for the life of the major and which half the registry may rewrite tomorrow.
+   * **It is the plausible edit and not an attack**: the boundary reads like a caveat - *not written
+   * for a DNS label* is exactly the shape of the one thing to know before relying on something - so
+   * somebody moves it beside the examples, and the page that comes out is not broken. It reads well
+   * and every sentence on it is true. What is lost is that a reader can no longer tell which of them
+   * is frozen for the life of the major and which the registry may rewrite tomorrow.
    *
-   * **`a-re-examination-reaches-the-reader` is green under it**, and that is the reason this cell is
-   * worth its line: the three statements still arrive on the page, twice over. A guard about arrival
-   * cannot see a defect about company.
+   * **The cell it replaces moved the re-examination**, which this page no longer lays out; the claim
+   * is unchanged and only the reachable edit moved. ADR-0151.
    */
   sameOnEveryLens(
     'W-95',
-    'renders the re-examination beside the frozen description again, so one heading carries a ' +
-      'sentence a reader may rely on for the life of the major and one the registry may rewrite, ' +
-      'with nothing on the page telling them apart',
+    'renders the frozen boundary among the examples, so one heading carries a sentence a reader may ' +
+      'rely on for the life of the major and sentences the registry may rewrite, with nothing on the ' +
+      'page telling them apart',
     [
       contractPageFile(
-        WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN,
-        `        ...reExaminations.flatMap((entry) => [
-          paragraph(entry.whatMoved),
-          paragraph(entry.measurement),
-          paragraph(entry.whatItEstablishes),
-        ]),
-${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
+        THE_BOUNDARY_STANDS_WITH_THE_FROZEN_HALF,
+        ``,
+      ),
+      contractPageFile(
+        THE_EXAMPLES_ARE_THE_CALLS_AND_THE_CAVEATS,
+        `                    eyebrow('section', 'h2', 'Examples', { id: 'examples' }),
+                    paragraph(contract.identity.inputDomain, { class: 'bounds' }),`,
       ),
     ],
     killed(['what-is-frozen-and-what-the-registry-may-rewrite-are-never-one-section']),
@@ -811,14 +803,6 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'binding and therefore no frozen definition to render',
     [catalogueFile(ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE, `    .entries.filter(() => true)`)],
     killed(['every-contract-the-index-lists-has-a-page-at-its-own-address']),
-  ),
-
-  sameOnEveryLens(
-    'W-21',
-    'names every answer field even when there is only one, so `levenshtein(a, b) → 3` is published ' +
-      'as `expected 3` and the page reads like a fixture instead of a call',
-    [contractPageFile(ONE_ANSWER_IS_WRITTEN_BARE, `    answered.length === 0`)],
-    killed(['a-case-is-rendered-as-the-call-its-signature-declares']),
   ),
 
   sameOnEveryLens(
@@ -1063,25 +1047,24 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
 
   /**
    * W-85 one door along. That cell gives the shell a ceiling it no longer has; this one types the
-   * tracks under it, which is where the layout moved when it stopped being one column and became
-   * three - and the guard W-85 belongs to says in its own comment that it reads `max-width` and
-   * nothing else.
+   * track under it, which is where the layout lives now that the three-column arrangement went with
+   * the table of contents - and the guard W-85 belongs to says in its own comment that it reads
+   * \`max-width\` and nothing else.
    *
-   * The two lengths it writes are the ones this stylesheet derives, to the pixel on the machine the
+   * The length it writes is the one this stylesheet derives, to the pixel on the machine the
    * arithmetic was taken on. That is what makes it the plausible edit rather than a vandalism: the
    * pages render identically here and stop being derived everywhere else.
    */
   sameOnEveryLens(
     'W-86',
-    'types the two columns beside the content instead of deriving them, on the arrangement that ' +
-      'carries a table of contents. Nothing on the rendered page looks wrong on the machine the ' +
-      'numbers were read on - the three columns are there and the content column between them is ' +
-      'exactly as wide as it was - and on any face whose zero is a different width the rail and the ' +
-      'column beside it stop being what they were derived from',
+    'types the column of secondary matter instead of deriving it, on the arrangement that carries ' +
+      'one. Nothing on the rendered page looks wrong on the machine the number was read on - the ' +
+      'two columns are there and the content column beside it is exactly as wide as it was - and on ' +
+      'any face whose zero is a different width the column stops being what it was derived from',
     [
       styleFile(
-        THE_THREE_COLUMNS_ARE_DECLARED_LENGTHS,
-        '  .shell:has(.rail) { grid-template-columns: 240px minmax(0, 1fr) 268px }',
+        THE_ASIDE_COLUMN_IS_A_DECLARED_LENGTH,
+        '  .shell:has(.aside) { grid-template-columns: minmax(0, 1fr) 268px }',
       ),
     ],
     killed(['every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length']),
@@ -1339,51 +1322,24 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   ),
 
   /**
-   * The grouping arrived to make fifty cases findable, and this is the defect that takes that back
-   * while leaving every check about presence green.
+   * An address that names two things, which is W-11's old defect on the page that replaced it.
    *
-   * Every heading is on the page, every case is on the page, every anchor resolves, and the order
-   * the contract argued for is gone - `string/slugify@1` puts `the-surprise-in-front` first on a
-   * written argument about what a reader arriving from "slugify javascript" meets, and this reverses
-   * it. Only a guard that reads the page in document order can see it, which is why one exists.
-   */
-  sameOnEveryLens(
-    'W-30',
-    'renders a table\'s groups in reverse, so the order a contract argued for is inverted and every ' +
-      'case reads under the wrong heading',
-    [
-      contractPageFile(
-        THE_GROUPS_RENDER_IN_THEIR_DECLARED_ORDER,
-        `  ...[...table.groups].reverse().flatMap((group) =>
-    renderedGroup(group, table, answer, fields, corrections, alone ? 'h3' : 'h4'),
-  ),`,
-      ),
-    ],
-    killed(['every-group-is-a-heading-and-its-cases-follow-it']),
-  ),
-
-  /**
-   * A heading anchored on a case rather than on itself.
-   *
-   * The page still shows the right title, and `#ordinary-integer` now lands on the *IEEE-754 limits*
-   * heading instead of on the case it names. It is W-11's defect one level up - an address that is
-   * not the thing's own - and it is the reason the serialiser refuses the collision in the data as
-   * well: the two failures meet on one page and only one of them is visible from the record.
+   * The settled cases and their groups left this page, and with them every anchor a reader followed
+   * into a table. What is left is the addresses a contract page publishes for its own sections, and
+   * the failure is unchanged: a shared link resolves and lands on the wrong element, silently, and
+   * only once somebody has shared it.
    */
   sameOnEveryLens(
     'W-31',
-    'anchors a group heading on the first case of its table, so two elements answer to one address ' +
-      'and a shared link lands on the wrong one',
+    'gives the source section the address the signature already answers to, so two headings hold ' +
+      'one address and a link into one of them lands on the other',
     [
       contractPageFile(
-        A_HEADING_CARRIES_ITS_OWN_ADDRESS,
-        `  addressed(heading, (table.cases[0] as { readonly id: string }).id, group.title),`,
+        THE_SOURCE_HAS_ITS_OWN_ADDRESS,
+        `                eyebrow('section', 'h2', 'Source', { id: 'signature' }),`,
       ),
     ],
-    killed([
-      'every-group-is-a-heading-and-its-cases-follow-it',
-      'every-anchor-on-a-page-is-held-by-one-element',
-    ]),
+    killed(['every-anchor-on-a-page-is-held-by-one-element']),
   ),
 
   // -------------------------------------------------------------------------
@@ -2325,29 +2281,25 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
   ),
 
   /**
-   * The state the card was actually in, injected back.
+   * The state the page was actually in, injected back.
    *
-   * The command and the signature were two `pre`s of the same size in matching frames, and the owner
-   * could not tell which of them to run on a page he had just been shown. Taking the label off the
-   * command is the smallest edit that returns the page to that, and it is the edit somebody makes
-   * while tidying markup they think is decorative.
+   * The command and the signature were two \`pre\`s of the same size in matching frames, and the owner
+   * could not tell which of them to run on a page he had just been shown. Setting the signature as a
+   * plain block rather than in the six syntax inks is the smallest edit that returns the page to
+   * that, and it is the edit somebody makes while tidying markup they think is decorative.
    *
-   * **It reddens the structural half and nothing else, which is what the guard claims.** The accent,
-   * the ground and the larger face survive this mutant untouched - a stylesheet is not what this cell
-   * perturbs - and the guard it kills says so in as many words rather than implying a coverage it
-   * does not have.
+   * **It reddens the structural half and nothing else, which is what the guard claims.** The accent
+   * on the one control a reader acts on survives this mutant untouched - a stylesheet is not what
+   * this cell perturbs - and the guard it kills says so in as many words rather than implying a
+   * coverage it does not have.
    */
   sameOnEveryLens(
     'W-89',
-    'takes the label off the install command, so the card offers a visitor two monospaced blocks of ' +
-      'the same shape and nothing saying which of them is the one to run',
-    [
-      contractPageFile(
-        `el('div', { class: 'get-head' }, eyebrow('field', 'p', 'Install')),`,
-        `el('div', { class: 'get-head' }),`,
-      ),
-    ],
-    killed(['the-command-and-the-signature-of-a-card-are-two-labelled-blocks']),
+    'sets the signature as a plain block instead of in the inks the source is set in, so the page ' +
+      'offers a visitor two monospaced blocks of the same shape and nothing saying which of them is ' +
+      'the one to run',
+    [contractPageFile(THE_SIGNATURE_IS_SET_IN_THE_INKS, `              line('pre', says.signature),`)],
+    killed(['the-command-a-reader-runs-and-the-signature-they-read-are-two-shapes']),
   ),
 
   /**

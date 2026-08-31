@@ -32,7 +32,7 @@
  * `mutation/` - for the reason the serialisation frontier one paragraph along exists.
  */
 
-import { theMeasurement, theMeasurementOf } from '../../mutation/published.js'
+import { theMeasurement } from '../../mutation/published.js'
 import { emitted } from '../registry/emit.js'
 import { localReadApi } from '../registry/local-read-api.js'
 import { theReferenceModules } from './browser.js'
@@ -107,17 +107,7 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
      */
     ...domains.flatMap((domain) =>
       domain.held.map(
-        (one) =>
-          [
-            pageOf(one.contract.address),
-            contractPage(
-              one,
-              domain,
-              domains,
-              menu,
-              theMeasurementOf(one.contract.address.language, one.contract.address.name),
-            ),
-          ] as const,
+        (one) => [pageOf(one.contract.address), contractPage(one, domain, menu)] as const,
       ),
     ),
     /**

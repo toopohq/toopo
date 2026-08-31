@@ -312,10 +312,16 @@ ${THE_FONT_FACE}
   /* The navigation column, named rather than repeated: a rail declared in two places is a rail
      that drifts. */
   --rail: 15rem;
-  /* The floor a figure of the card's strip needs before another may stand beside it, which is the
-     widest label one carries set on one line. Measured in a browser over the three of every
+  /* The floor a figure of a contract page's strip needs before another may stand beside it, which
+     is the widest label one carries set on one line. Measured in a browser over the three of every
      published contract page: the widest is "bytes, one file" at 116px, and 9rem is 144px, so the
-     three go abreast wherever the card is wider than 27rem and stack under it. */
+     three go abreast wherever the strip is wider than 27rem and stack under it.
+
+     It was named for the card and the card is gone; the measurement is about the labels, and the
+     three labels have not moved. It stays on the contract page's own strip and is deliberately not
+     given to the shared .figures rule: the catalogue's aside draws "defect cells injected" beside
+     "caught by the suite", which are wider words, and a floor measured over one population applied
+     to another is exactly what this repository refuses. */
   --a-figure: 9rem;
   /* What one contract of a list needs before another may stand beside it: a second column appears
      only where each track is still a whole readable line, and the count follows the screen from
@@ -345,6 +351,17 @@ ${THE_FONT_FACE}
      one edge. The artboard writes 150px; it is a name and not a ceiling, which is why it is here. */
   --a-name-in-a-row: 9.375rem;
 
+  /* The four lengths the artboard measures the contract page's two columns in: 560px of content
+     against 230px of aside capped at 300, across a 44px gutter, and the 640px the opening prose is
+     allowed. They are flex bases and not width conditions - the fold is the arithmetic of the bases,
+     so no breakpoint is typed anywhere - and they are in rem so a reader who has enlarged their text
+     takes the whole layout with them. */
+  --the-detail-column: 35rem;
+  --the-detail-aside: 14.375rem;
+  --the-aside-at-most: 18.75rem;
+  --the-detail-gutter: 2.75rem;
+  --the-detail-lede: 40rem;
+
   /* The prose is Geist and the monospace is the system's, which is one decision and not two halves
      of an unfinished one. ADR-0115 refused a web font on coverage and named what would reopen it;
      Geist Mono fails that condition on its first term, so the face this site downloads is asked for
@@ -359,13 +376,6 @@ ${THE_FONT_FACE}
   /* The one hairline this site draws, named because two things now depend on it: the rules that draw
      a border, and the arithmetic that has to know how tall a bordered box is. */
   --the-hairline: 1px;
-
-  /* The narrowest a query field may be before it stops being one. Measured rather than derived, the
-     way the row count below is: at this basis the field takes its own row under 390 and leaves the
-     menu a single row from 600 up, which is the bar at its shortest on both sides of that. It is in
-     characters because what the box holds is characters. ADR-0137. */
-  --the-shortest-query: 14;
-  --the-query-field: calc(var(--the-shortest-query) * 1ch);
 
   /* What a linked-to element has to clear: the sticky bar, in the bar's own terms. The header says
      why the terms are shared and which one of them is data rather than a length. ADR-0135.
@@ -513,12 +523,6 @@ pre {
 /* The same trap a fourth time: the shorthand's top outranks the gap under a heading, and the
    refusals page opened each refusal's summary touching the address above it. */
 .why { margin-bottom: 0; color: var(--dim) }
-/* The tag is the outline and the class is the look: a group sits at h3 or at h4 depending on
-   whether its contract has one table or two, and it must read the same either way. */
-.table { color: var(--dim); font-weight: 600; margin: var(--s10) 0 0 }
-.group:target { background: var(--target); box-shadow: 0 0 0 var(--s2) var(--target); border-radius: 2px }
-.anchor { color: var(--dim); text-decoration: none; font-size: var(--t6); float: right }
-.anchor:hover { color: var(--accent) }
 /* The title line of a list item, at whatever tag the outline asks for: a contract's name on the front
    page is a heading because it titles a section, and must not take the standing margin of one - nor
    its rule, which the list item already draws. Measured: a domain page listing its contracts at h2
@@ -683,10 +687,6 @@ a.answer .mark { display: block; font-size: var(--t6); color: var(--dim) }
    bounds every arrangement at every width is the viewport. Narrow is one column and never had a
    ceiling to give. ADR-0123, ADR-0134. */
 .shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }
-/* The container a settled case reads its own width from. Named rather than anonymous, so the
-   query below says which box it is asking about and a second container added later cannot
-   silently answer for this one. */
-main { container-type: inline-size; container-name: the-page; min-width: 0 }
 .beside { padding: var(--s6) var(--s6) 0 }
 .aside { padding: var(--s6) var(--s6) 0 }
 /* Three blocks in one column, told apart by a line and the space around it. On the adjacent sibling
@@ -705,11 +705,6 @@ main { container-type: inline-size; container-name: the-page; min-width: 0 }
 }
 .rail-label a { color: inherit; text-decoration: none }
 .rail-label a:hover { color: var(--ink) }
-ul.toc { list-style: none; padding: 0; margin: 0 }
-ul.toc > li { padding: var(--s) 0 }
-ul.toc a { color: var(--dim); text-decoration: none; font-size: var(--t5) }
-ul.toc a:hover { color: var(--ink) }
-
 /* Where you are in the catalogue, above what is on the page you are reading. The two are separate
    elements rather than one list, because the rail names sections of this page and this names other
    pages, and one guard walks the first. */
@@ -723,7 +718,6 @@ ul.siblings > li.here, ul.domains > li.here {
   color: var(--ink); background: var(--wash);
   border-left: 2px solid var(--accent); border-radius: 0 5px 5px 0; padding-left: var(--s2);
 }
-.rail { margin: 0 }
 /* No ceiling of its own, and the sentence that used to stand here was right about the wrong element.
    It read: capped at what its widest block needs and not at what is left over. That is what a card,
    a case table and a code block each now say about themselves, so the column has nothing left to
@@ -731,73 +725,12 @@ ul.siblings > li.here, ul.domains > li.here {
    wide. ADR-0122. */
 main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
 
-/* The column's width, and read across rather than down.
-
-   It was as wide as its own content, which is right for a block and was wrong for this one: the card
-   is the first thing on the page and the thing that tells a reader how wide the page is, and at 580
-   in a 933 column it said 580 while every table under it said 905. Measured at 0cec957: 353px of
-   nothing to the right of it, identical at 1280, 1440, 1920 and 2560.
-
-   **Widening it alone was measured and refused**: the void moved inside, 727px unused beside the
-   address and 590 beside the command, which is the reading ADR-0122 had already recorded one floor
-   up. So what changed is the arrangement and not the width - what it is, how to get it and what it
-   answers on one side, what it costs on the other.
-
-   The fold is the sum of the two bases and the gap, which is two shortest lines and a gutter: no
-   width is written here and none was read off a screen. ADR-0132. */
-/* **A certificate head and not a panel.** The card is ruled at the top, sits on the paper, and puts
-   the three figures in a strip under the identity rather than a column beside it. What a contract
-   page is - a measurement, stated with its method and bound to a digest - is a document with a
-   rule across it, and a rounded box on a tinted ground says panel.
-
-   The arrangement above was two halves side by side, and the reading that produced it is kept in the
-   comment above because it was right about the void it was fixing. What replaced it is not a wider
-   card: it is a card that stops competing with the prose under it for the reader's first look. */
-.card {
-  display: grid; gap: var(--s6);
-  border: 0; border-top: 2px solid var(--ink); border-radius: 0; background: none;
-  padding: var(--s5) 0 0; max-width: 100%;
-}
-/* The half that carries a signature grows and the half that carries three numbers does not: a pre
-   does not wrap at any width, so a signature in the narrow half is a signature a reader scrolls.
-   Measured on number/parse@1 at 1440 with the two halves even: 455px of type in a 422px box. */
-.card > .identity { display: grid; gap: var(--s5); min-width: 0 }
-/* A datasheet strip: what lands on a reader's disk, ruled top and bottom and read across. The
-   registry that leads this distribution model does not state this at all, so it is the one figure
-   on the page that nobody else offers - which is why it stopped being secondary matter in a column. */
-.card > .figures {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--a-figure)), 1fr));
-  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); min-width: 0;
-}
 /* No bottom margin: the identity is a grid and its gap is what separates these. A shorthand here
    adds to the gap instead of replacing it, which is the trap this stylesheet already names four
    times above - it cost 20px between the address and the title the first time the card became a
    grid. */
 .address { margin: 0; font-size: var(--t5); color: var(--dim) }
-/* The mono face names what the registry addresses - a contract, a command, a value - and never a
-   sentence. A contract page's title is a function's name; "Nothing is served at this address" is not. */
-.card h1 { font-family: var(--mono); font-weight: 700; margin: 0 }
-/* The ceiling is only what the card's is: the block is as wide as its own command, which the rule
-   over every pre already says, and 44ch was a guess at the longest one. It is restated because it is
-   more specific than that rule, and 44ch left the block 34px past a 390 viewport once the card
-   stopped handing it a width. */
-/* The command folds inside its own half of the row and the control keeps its place beside it, at
-   every width - nothing here wraps the row. anywhere and not the pre rule's normal, because a
-   command is not a signature: its longest token is an address a reader has to be able to read and
-   copy in full, and a line break inserts no character. ADR-0135. */
-/* **The one thing on this page a reader can act on, and the only thing carrying the accent.**
-   ADR-0115 gives the accent two meanings and this is the first of them. It is the largest monospace
-   on the page, on a wash, behind a heavy left edge - none of which the signature has, because the
-   two were the same shape in the same box and a visitor arriving from a search could not tell which
-   of them to run. */
-pre.install {
-  display: flex; align-items: center; gap: var(--s4);
-  background: var(--target); border: 1px solid var(--accent); border-left-width: var(--s2);
-  padding: var(--s4) var(--s5); color: var(--ink);
-  max-width: 100%; font-size: var(--t3); overflow-wrap: anywhere;
-}
-
-.get, .sig { display: grid; gap: var(--s2); min-width: 0 }
+.get { display: grid; gap: var(--s2); min-width: 0 }
 /* The label on the left and the choice on the right, on one baseline. The row wraps rather than
    squeezing, because four manager names beside a word is the first thing to run out of room. */
 .get-head { display: flex; align-items: baseline; gap: var(--s4); flex-wrap: wrap }
@@ -815,14 +748,6 @@ ul.managers button[aria-pressed='true'] { color: var(--ink); border-bottom-color
    reader has to be able to read both the name and the reason under it. */
 ul.managers button[data-refused] { text-decoration: line-through }
 p.refusal { margin: 0; font-size: var(--t5); color: var(--dim) }
-/* What a reader reads rather than runs, so it takes the frame off instead of putting one on: no
-   ground, no border, one hairline under it. The distance from the command above is the whole point -
-   they carry the same face and must not carry the same weight. */
-pre.answer {
-  margin: 0; padding: 0 0 var(--s3); background: none;
-  border: 0; border-bottom: 1px solid var(--rule); border-radius: 0;
-  font-size: var(--t4);
-}
 /* The shape of a command rather than a command: the front page's, which names every address at once
    and therefore none. It takes the install block's size and not its class, because the class is what
    a copy control looks for and this is the one command on the site that would answer nothing if a
@@ -840,64 +765,6 @@ pre.shape code { color: var(--ink) }
 .figure { margin: 0; font-size: var(--t5); color: var(--dim) }
 .figure strong { display: block; font-family: var(--mono); font-size: var(--t2); font-weight: 500; color: var(--ink) }
 
-/* No top of its own: under a heading the standing gap applies, and elsewhere the margin above
-   collapses into it. Declaring one made a gap of 16 and then of 0, in both directions, where every
-   other section heading is followed by 12. */
-/* The bar over a table of cases, which is this page's own shape and not the front page's pill. It was
-   called chips, the front page reused that name for a list of pills, and the rule ul.chips a - one
-   type more specific than a.chip - then painted them: 16px where the artboard draws 6px, on every
-   pill but the one that happened to be a span. The rule did nothing wrong; the name was shared.
-   ADR-0183. */
-ul.groups { display: flex; flex-wrap: wrap; gap: var(--s2); list-style: none; padding: 0; margin-bottom: 0 }
-ul.groups a {
-  display: inline-block; font-family: var(--mono); font-size: var(--t6); color: var(--body);
-  border: 1px solid var(--edge); border-radius: 1rem; padding: var(--s) var(--s3); text-decoration: none;
-}
-ul.groups a:hover { border-color: var(--accent); color: var(--ink) }
-
-/* The line the page is read in two halves across. It is heavier than a section rule and takes the
-   largest step of the scale above it, because what it separates is not two sections but two ways of
-   reading: everything above answers "is this the one", everything below is the binding itself. */
-h2.divides { font-size: var(--t2); margin-top: var(--s16); padding-top: var(--s5); border-top-width: 2px; border-top-color: var(--ink) }
-ul.toc > li.divides { margin-top: var(--s3); padding-top: var(--s3); border-top: 1px solid var(--rule) }
-ul.toc > li.divides a { color: var(--body) }
-ul.toc > li.under { padding-left: var(--s3) }
-
-/* One card per job. The grid is the look; what makes these read differently from a case is that they
-   carry a sans-serif heading and no address, which is the record's own decision showing through. */
-/* The track is wide enough that four cards land two by two rather than three and an orphan, which is
-   what 17rem gave at 1240 and is the only thing about this section a browser had to be asked. The
-   min() is what keeps one column from overflowing a narrow viewport: auto-fit honours the minimum
-   even when the container is smaller than it. No backtick in this comment - the whole stylesheet is
-   one template literal, and one would end it.
-
-   It carried a ceiling of two measures until ADR-0134, and the sentence that argued it is the whole
-   of why it is gone: at 2 560 the four cards stood alone in a row 1 892px wide while nothing else on
-   the page passed 950. What made them stand alone was the page being capped and this block not; with
-   the cap gone the complaint has no subject, and a ceiling whose argument has been withdrawn is a
-   length nobody is deriving any more. */
-.use-cases {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
-  gap: var(--s4); margin: 0 0 var(--s4);
-}
-.use-case { border: 1px solid var(--edge); border-radius: 9px; background: var(--card); padding: var(--s5) }
-.use-case h3 { margin: 0 0 var(--s2); font-size: var(--t4) }
-/* The bottom only, and it is the same trap this stylesheet names four times above: a shorthand on a
-   class outranks the standing gap under a heading, so a use case opened 8px under its own title where
-   every other heading on the site is followed by 12. Found by the sweep this unit built rather than by
-   an eye, and pre-dating it - measured on string/slugify@1 at all four widths. */
-.use-case > p { margin-bottom: var(--s3); font-size: var(--t4) }
-.use-case .call {
-  margin: 0 0 var(--s3); padding: var(--s3); background: var(--paper);
-  border: 1px solid var(--rule); border-radius: 6px;
-}
-.use-case .call code { color: var(--ink); line-height: 1.55; overflow-wrap: anywhere }
-.use-case .why { margin: 0; font-size: var(--t5) }
-
-/* One width for every row, so the rules between them line up, and that width is what a case asks
-   for. On the container and not on the row: a row sized to its own content would leave the
-   separators ragged, which is the one thing a table of forty-one cases must not be. */
-.cases { margin: 0; width: fit-content; max-width: 100% }
 /* A row whose halves are an identifier and an argument, and which does NOT become two columns.
 
    Measured at 1440 over the method page's hundred rows, three ways: committed, 283 prose lines
@@ -910,17 +777,9 @@ ul.toc > li.under { padding-left: var(--s3) }
    The whole of the gain is that the argument is a cell with a width, which it already had.
    ADR-0139. */
 .stacked { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
-.case {
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s2) var(--s10);
-  padding: var(--s5) 0; border-top: 1px solid var(--rule);
-}
-.case:target { background: var(--target); box-shadow: 0 0 0 var(--s3) var(--target); border-radius: 2px }
 .what { min-width: 0 }
 .what .call { margin: 0 0 var(--s2) }
 .what code { color: var(--ink); line-height: 1.55; overflow-wrap: anywhere }
-.case-id { margin: 0; font-size: var(--t6) }
-.case-id a { font-family: var(--mono); color: var(--dim); text-decoration: none }
-.case-id a:hover { color: var(--accent) }
 /* The argument is a cell of a table and a cell has a width, which is what makes it a column. It
    carries this one whether the row is split or stacked, so a reader gets the same line either side
    of the threshold below - without it, the stacked row let an argument fill the content column and
@@ -967,39 +826,95 @@ ul.toc > li.under { padding-left: var(--s3) }
   .beside { padding: var(--s10) 0 0 }
 }
 
-/* --rail + --s6 + (2 * --measure + --s10) + --s6 + --aside + 2 * --s6 = 96.04rem.
-   The value did not move; what came back is its arithmetic. The header says how. */
-@media (min-width: 97rem) {
-  .shell:has(.rail) { grid-template-columns: var(--rail) minmax(0, 1fr) var(--aside) }
-  /* The column beside the content becomes its two halves, which is the one way a table of contents
-     crosses to the other side of the page without leaving its parent in the document. Reparenting is
-     what CSS cannot do; dissolving the box around two things already written in order is what it can,
-     and the reading a screen reader gets is the one it got before. */
-  .shell:has(.rail) .beside { display: contents }
-  .shell:has(.rail) .where {
-    grid-area: 1 / 1; position: sticky; top: var(--s12); align-self: start;
-    margin: 0; padding: var(--s10) 0 0;
-  }
-  .shell:has(.rail) .rail {
-    grid-area: 1 / 3; position: sticky; top: var(--s12); align-self: start;
-    padding: var(--s10) 0 0 var(--s6); border-left: 1px solid var(--rule);
-  }
-}
-/* The row's own two tracks and the gutter between them:
-     2 * --measure + --s10 = 58.30rem, rounded DOWN to 58.
-   The header says why this is a container query and why the rounding goes that way. */
-@container the-page (min-width: 58rem) {
-  /* Two measures and not a measure beside whatever is left. The second track was 1fr, so the
-     argument grew with the screen and read 354 characters at 2560 - which is an artefact rather
-     than a reading, on the half of this page a reader actually reads.
+/* --- The contract page, implemented from the artboard's isDetail state. Every length below is the
+       design's own; the two columns fold by the arithmetic of their declared bases and no width
+       condition is typed anywhere. What outranks the artboard here is the same three things the
+       front page names, and the departures - the folding pre, the aside's verification block, the
+       absent second-language rows - are argued in contract-page.ts where they are made. --- */
 
-     The width was arrived at twice and the two agree to a pixel. Measured in a browser over the 41
-     arguments of string/slugify@1 at 1920, the widest column at which no argument line exceeds 75
-     characters is 28rem, or 448px; --measure, which is this stylesheet's own 75 characters taken
-     through its declared density and drift, resolves to 447px. So the row is symmetric by
-     construction rather than by a constant somebody chose for the right-hand side. */
-  .case { grid-template-columns: minmax(0, var(--measure)) minmax(0, var(--measure)) }
+main.detail { max-width: var(--the-page); margin: 0 auto; padding: 36px var(--s6) 64px; width: 100% }
+.detail .columns { display: flex; flex-wrap: wrap; gap: var(--the-detail-gutter); align-items: flex-start }
+.detail .chief { flex: 1 1 var(--the-detail-column); min-width: 0 }
+.detail .about { flex: 1 1 var(--the-detail-aside); max-width: var(--the-aside-at-most) }
+
+/* The name and what it is frozen as, on one line that wraps. The h1 is the artboard's 25px mono,
+   which the scale has no step for - the same class as the hero's headline, stated in the unit that
+   follows a reader's font setting. */
+.detail .named { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 10px }
+.detail .named h1 {
+  margin: 0; font-family: var(--mono); font-size: calc(25 * var(--a-point));
+  font-weight: 600; letter-spacing: -.02em;
 }
+/* The domain is its own box so that the address has somewhere to break, and that is the whole of
+   the repair: CSS offers no soft-wrap opportunity after a slash, so string/levenshtein was one
+   unbreakable word and the body's overflow-wrap: anywhere - declared for the 64-character digest -
+   broke it wherever it ran out. Measured at 320 in a browser: the title read "string/levenshte" then
+   "in" before, and reads "string/" then "levenshtein" after, with nothing past the column either way.
+
+   It is derived from what an address is rather than from a width, so no condition is written and a
+   name longer than any this catalogue holds is answered by the same rule. object/deep-equal was
+   already breaking at its own hyphen, which is where a hyphenated name breaks, and it is unmoved.
+
+   No backtick in this comment, for the reason the use-case grid's comment gives one screen up. */
+.detail .named .of { color: var(--body); display: inline-block }
+.detail .named ul.badges { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0 }
+.detail .named ul.badges li { padding: 0; border: 0 }
+
+/* What it is, then the boundary it draws. The lede is the artboard's 15px on the body ink; the
+   boundary is a register down, because it is the sentence that talks a reader out of installing
+   and must not outweigh the one that talks them in. */
+/* One sentence at the artboard's 15px, then the frozen prose under it, then the boundary it draws.
+   Three registers and not one: the summary is what a reader decides on, the description is what they
+   read once they have, and the boundary is the sentence that talks them out of it - which must be
+   met and must not outweigh either. */
+.detail .lede { font-size: var(--t4); line-height: 1.6; color: var(--body); margin: 0 0 16px; max-width: var(--the-detail-lede) }
+.detail .says { font-size: var(--t5); line-height: 1.65; color: var(--body); margin: 0 0 16px; max-width: var(--the-detail-lede) }
+.detail .bounds { font-size: var(--t5); color: var(--dim); margin: 0 0 20px; max-width: var(--the-detail-lede) }
+
+/* The install bar: the artboard's quiet box, with the dollar the artboard draws supplied by the
+   rule rather than the document - generated content reaches no projection and no clipboard, so what
+   a reader copies and what a guard reads is the command alone. The accent lives on the primary
+   control start.ts builds into it, not on the box. */
+.detail pre.install {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 18px; width: auto;
+  background: var(--wash); border: 1px solid var(--edge); border-radius: 8px;
+  padding: 11px 14px; color: var(--ink);
+  font-size: calc(13.5 * var(--a-point)); max-width: 100%; overflow-wrap: anywhere;
+}
+.detail pre.install::before { content: '$'; color: var(--dim); flex: none }
+
+/* The measured floor, on the strip it was measured over. The shared rule above sizes the
+   catalogue's aside, whose labels are longer and whose floor is its own. */
+.detail .figures {
+  margin: 0 0 18px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--a-figure)), 1fr));
+}
+
+/* One section: its small heading, then its matter, at the artboard's ten pixels. Every space here
+   is a gap on the container and never a margin on what stands in it, because half of what stands in
+   it is a component and a component is painted by its own rules alone - the callout's 32px above,
+   the eyebrow's 10px below, all of it is the containers' geometry. */
+.detail .chief > section { margin: 32px 0 0; display: grid; gap: 10px }
+/* A call and the one thing to know before relying on it are one example, so the pair holds
+   together and the examples stand apart: measured at 1440 before this, both gaps were the section's
+   own 10px and nothing said which caveat belonged to which call. The two values are steps of the
+   declared scale rather than numbers chosen here, and what is being said is the relation - inside a
+   pair is closer than between two. */
+.detail .example { display: grid; gap: var(--s2) }
+.detail .example + .example { margin-top: var(--s4) }
+.detail .source-head { display: flex; align-items: center; flex-wrap: wrap; gap: 10px }
+.detail .lands-at { font-size: calc(11.5 * var(--a-point)); color: var(--dim) }
+
+/* The aside: blocks separated by the artboard's 24 pixels of air and by nothing drawn. The values
+   carry their own class rather than being reached as bare paragraphs, because a bare-paragraph rule
+   here would reach the eyebrow standing over them. justify-items keeps the pill at its own width
+   where a grid would stretch it, and is the container's geometry rather than a paint. */
+.detail .about { display: flex; flex-direction: column; gap: 24px; font-size: var(--t5) }
+.detail .about section { display: grid; gap: 8px; justify-items: start }
+.detail .datum { margin: 0; color: var(--body) }
+.detail .datum code { font-size: calc(12.5 * var(--a-point)); color: var(--ink) }
+.detail ul.channel { display: flex; align-items: center; gap: 8px; list-style: none; margin: 0; padding: 0 }
+.detail ul.channel li { padding: 0; border: 0 }
 
 /* --- The front page, implemented from the artboard. Every length below is the design's own, and
        where one is not, ADR-0182 says which and why.

@@ -92,6 +92,7 @@ export type Tag =
   | 'p'
   | 'pre'
   | 'ul'
+  | 'ol'
   | 'li'
   | 'div'
   | 'section'
@@ -267,6 +268,7 @@ const THE_READING: Projection = {
     p: ends('\n\n'),
     pre: ends('\n\n'),
     ul: ends('\n'),
+    ol: ends('\n'),
     li: ends('\n'),
     div: ends(''),
     section: ends('\n\n'),
@@ -490,6 +492,11 @@ const THE_MARKDOWN: Projection = {
     p: ends('\n\n'),
     pre: (_, children) => codeBlock(children),
     ul: ends('\n'),
+    /**
+     * An ordered list keeps its bullet rather than gaining numbers, because the one `ol` this site
+     * writes is a breadcrumb: the order is the path's and a rendered `1.` would read as a ranking.
+     */
+    ol: ends('\n'),
     li: (_, children) => `- ${indented(children.trimEnd())}\n`,
     div: ends(''),
     section: ends('\n\n'),

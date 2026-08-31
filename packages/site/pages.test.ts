@@ -13,16 +13,15 @@ import {
   THE_INVOCATION,
   THE_WAYS_TO_RUN_IT,
   contractUrl,
-  renderCase,
   renderContract,
 } from '../registry/address.js'
+import { askedAt } from '../registry/endpoints.js'
 import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { THE_SOURCE_REPOSITORY } from '../registry/publication.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { search } from '../registry/search.js'
 import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
 import { whatACardSays } from './what-a-card-says.js'
-import { classOf } from './components.js'
 import { THE_EXAMPLES } from './chrome.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
 import type { Element, Node } from './document.js'
@@ -305,139 +304,6 @@ describe('the site', () => {
   })
 
   /**
-   * **The payment of a decision taken ten units ago.** A case identifier was frozen with the major
-   * version so that a URL could anchor on it, and `renderCase` has rendered
-   * `number/parse@1#ordinary-integer` since `packages/registry/address.ts` was written, read by nothing. That
-   * string is now the address of a case on the web: the page is the part before the `#` and the anchor
-   * is the part after it.
-   *
-   * A page that anchored on anything else - a slug, an index, a rendering of the case's own data -
-   * would be a second name for a thing that already has one, and the two would come apart.
-   */
-  it('every-case-is-anchored-by-the-identifier-its-address-is-made-of', () => {
-    for (const held of heldByTheRegistry(source)) {
-      const rendered = html(pageOf(held.contract.address))
-
-      for (const table of held.contract.caseTables) {
-        for (const entry of table.cases) {
-          const address = renderCase({ contract: held.contract.address, case: entry.id })
-
-          expect(address).toBe(`${renderContract(held.contract.address)}#${entry.id}`)
-          expect(rendered).toContain(` id="${entry.id}"`)
-          expect(rendered).toContain(`href="#${entry.id}"`)
-        }
-      }
-    }
-  })
-
-  /**
-   * A group is a heading with its own address, and a case sits under the heading it names.
-   *
-   * The reading is the measurement, not the markup: `toText` is what a stranger, a crawler and a
-   * screen reader get, so the guard asks that every group title appears there, in the order the
-   * record declares, and that the cases following a title are exactly that group's - which is the
-   * one thing a reader can check at a glance and a presence guard cannot.
-   *
-   * The mutant it exists for renders every case under the first heading. Every title is still on the
-   * page, every case is still on the page, every anchor still resolves, and the reading is a lie.
-   */
-  it('every-group-is-a-heading-and-its-cases-follow-it', () => {
-    for (const held of heldByTheRegistry(source)) {
-      const rendered = html(pageOf(held.contract.address))
-      const reading = toText(page(pageOf(held.contract.address)))
-
-      for (const table of held.contract.caseTables) {
-        for (const group of table.groups) {
-          expect(rendered).toContain(` id="${group.id}" class="group">`)
-          expect(rendered).toContain(`href="#${group.id}"`)
-        }
-
-        // Where each title sits in the reading, and where each of its cases sits after it.
-        const titles = table.groups.map((group) => ({
-          group,
-          at: reading.indexOf(`\n${group.title}\n`),
-        }))
-
-        expect(titles.filter(({ at }) => at < 0).map(({ group }) => group.id)).toEqual([])
-        expect(titles.map(({ at }) => at)).toEqual([...titles.map(({ at }) => at)].sort((a, b) => a - b))
-
-        for (const entry of table.cases) {
-          const own = titles.findIndex(({ group }) => group.id === entry.group)
-          const after = titles[own + 1]?.at ?? reading.length
-          const sits = reading.indexOf(asRead(entry.rationale))
-
-          expect(
-            sits > (titles[own] as (typeof titles)[number]).at && sits < after,
-            `${entry.id} does not read under ${entry.group}`,
-          ).toBe(true)
-        }
-      }
-    }
-  })
-
-  /**
-   * A group's note reaches the reading, between its heading and its first case.
-   *
-   * The field exists because putting that prose in a comment took it off the page it asked to be on,
-   * so a guard that only checked the field was carried would be checking the thing that was already
-   * true. What has to hold is that a reader sees it, and where.
-   *
-   * **The note is compared through `asRead`, like the rationale one line below it.** It was compared
-   * raw until a note carried a mark: every note that existed happened to be plain prose, so a guard
-   * that searched a converted reading for unconverted text was green for want of an instance.
-   *
-   * A minority of groups carry one, and the count is not asserted: it is a number that grows
-   * whenever somebody has something to say, which is exactly the shape a guard must not pin.
-   */
-  it('a-group-note-is-read-between-the-heading-and-the-first-case', () => {
-    for (const held of heldByTheRegistry(source)) {
-      const reading = toText(page(pageOf(held.contract.address)))
-
-      for (const table of held.contract.caseTables) {
-        for (const group of table.groups) {
-          if (group.note === null) continue
-
-          const first = table.cases.find((entry) => entry.group === group.id)
-          const title = reading.indexOf(`\n${group.title}\n`)
-          const note = reading.indexOf(asRead(group.note))
-
-          expect(note, `${group.id}: the note is not in the reading`).toBeGreaterThan(-1)
-          expect(note, `${group.id}: the note reads before its heading`).toBeGreaterThan(title)
-          expect(
-            note,
-            `${group.id}: the note reads after its first case`,
-          ).toBeLessThan(reading.indexOf(asRead((first as NonNullable<typeof first>).rationale)))
-        }
-      }
-    }
-  })
-
-  /**
-   * A heading is a title, and a table's purpose is only a title when it separates two tables.
-   *
-   * On the three contracts carrying one table the purpose is a sentence in the lower case a sentence
-   * is written in, and a heading that is not a title enters the document outline and is announced as
-   * a section by a screen reader - with nothing on the other side of it, because there is no second
-   * table. So it is a paragraph there, and the groups take `h3`; where two tables genuinely separate
-   * something, the purpose keeps its heading and the groups sit at `h4`.
-   */
-  it('a-table-purpose-is-a-heading-only-when-it-separates-two-tables', () => {
-    for (const held of heldByTheRegistry(source)) {
-      const rendered = html(pageOf(held.contract.address))
-      const alone = held.contract.caseTables.length === 1
-      const level = alone ? 'h3' : 'h4'
-
-      for (const table of held.contract.caseTables) {
-        expect(rendered.includes(`<h3 class="table">${table.purpose}</h3>`)).toBe(!alone)
-
-        for (const group of table.groups) {
-          expect(rendered).toContain(`<${level} id="${group.id}" class="group">`)
-        }
-      }
-    }
-  })
-
-  /**
    * No two things on one page answer to one `#id`.
    *
    * A group and a case are anchored in the same space, so a duplicate is a link that silently lands
@@ -445,50 +311,6 @@ describe('the site', () => {
    * `every-case-is-addressed` asks this of a contract's data; this asks it of the document, which is
    * where the collision would actually happen and which carries every table at once.
    */
-  /**
-   * The rail of a contract page names every section of it, in order, and names nothing else.
-   *
-   * **What this is worth, and what it is not, stated rather than left to a reader.** Both halves are
-   * built from one array in `contract-page.ts`, so today the guard cannot fail — which is exactly the
-   * trap ADR-0087 names: perturbing an object derived from a claim establishes that the derivation is
-   * self-consistent, and a derivation with a hole in it is self-consistent too.
-   *
-   * It is written anyway, and for a named event rather than for today: **a rail written out by hand.**
-   * That is the ordinary way a table of contents comes into existence, it is what the first draft of
-   * this page nearly was, and its cost is a section a reader cannot reach on the page that will be
-   * most of this site — silently, because every link still resolves and every heading is still there.
-   * The day somebody writes `['What it does', 'Signature', ...]` beside the sections, this reddens on
-   * the first section added after it. ADR-0116.
-   */
-  it('the-rail-of-a-page-names-every-section-of-it-and-only-those', () => {
-    for (const held of heldByTheRegistry(source)) {
-      const document = page(pageOf(held.contract.address))
-      const railed: string[] = []
-      const sectioned: string[] = []
-
-      const walk = (node: Parameters<typeof readingOf>[0], inRail: boolean): void => {
-        if (node.kind !== 'element') return
-
-        const rail = inRail || node.attributes['class'] === 'rail'
-        const href = node.attributes['href']
-        const id = node.attributes['id']
-
-        if (rail && node.tag === 'a' && href !== undefined) railed.push(href.replace('#', ''))
-        if (!rail && node.tag === 'h2' && id !== undefined) sectioned.push(id)
-
-        for (const child of node.children) walk(child, rail)
-      }
-
-      for (const node of document.body) walk(node, false)
-
-      expect(sectioned.length, `${held.contract.address.name}: the page has no addressed sections`)
-        .toBeGreaterThan(0)
-      expect(railed, `${held.contract.address.name}: the rail and the sections disagree`).toEqual(
-        sectioned,
-      )
-    }
-  })
-
   it('every-anchor-on-a-page-is-held-by-one-element', () => {
     for (const [path, document] of pages()) {
       const ids = [...toHtml(document).matchAll(/ id="([^"]+)"/g)].map((found) => found[1] as string)
@@ -496,32 +318,6 @@ describe('the site', () => {
 
       expect(twice, `${path} anchors the same address twice`).toEqual([])
     }
-  })
-
-  /**
-   * A case is rendered as the call it is, which is what the parameter names were carried into the
-   * record for. The arguments come from the signature, in the signature's order, and what is left is
-   * the answer.
-   */
-  it('a-case-is-rendered-as-the-call-its-signature-declares', () => {
-    const parse = toText(
-      page(pageOf({ language: 'typescript', name: 'number/parse', major: 1 })),
-    )
-    const distance = toText(
-      page(pageOf({ language: 'typescript', name: 'string/levenshtein', major: 1 })),
-    )
-
-    // Two answer fields, so both are named; one answer field, so it is written bare.
-    expect(parse).toContain("parseNumber('42') → expected 42, reason null")
-    expect(distance).toContain("levenshtein('kitten', 'sitting') → 3")
-
-    // The two arguments of a two-parameter signature, in the signature's order and not the table's.
-    expect(distance).toContain("levenshtein('abc', '') → 3")
-    expect(distance).toContain("levenshtein('', 'abc') → 3")
-
-    // And an input a page must never print as it is, because another case prints the same glyphs.
-    expect(parse).toContain("parseNumber('1\\u00A0000') → expected null, reason 'separator'")
-    expect(parse).toContain("parseNumber('1 000') → expected null, reason 'not-decimal'")
   })
 
   /**
@@ -536,9 +332,14 @@ describe('the site', () => {
    * to refuse. `a-case-is-rendered-as-the-call-its-signature-declares` is the same guard for the
    * settled cases, and this is its counterpart for the cards above them.
    *
-   * The caveat is asserted by name rather than by counting the cards, because the caveat is the field
-   * a use case is worth reading for: a card without it is four confident lines telling somebody that
-   * `C++` and `C#` both answer `c` is fine. ADR-0118.
+   * The caveat is asserted by name rather than by counting the blocks, because the caveat is the
+   * field a use case is worth reading for: an example without it is a confident line telling
+   * somebody that `C++` and `C#` both answer `c` is fine. ADR-0118.
+   *
+   * **The situation is deliberately no longer asserted.** The redesign renders an example as the
+   * artboard draws one - the call with its answer as a comment - and the owner ruled that the calls
+   * and the caveats reach the reader; the name and the situation stay served and stop being laid
+   * out, exactly as the settled cases did.
    */
   it('a-use-case-shows-its-call-its-answer-and-its-caveat', () => {
     const faults: string[] = []
@@ -553,117 +354,13 @@ describe('the site', () => {
 
       for (const entry of held.binding.useCases ?? []) {
         const { written, answered } = theCallOf(entry, answer)
-        const call = `${answer.name}(${written.join(', ')}) → ${answered
+        const call = `${answer.name}(${written.join(', ')})  // ${answered
           .map((field) => literal(field.value))
           .join(', ')}`
 
         if (!reading.includes(call)) faults.push(`${what}: the page does not read \`${call}\``)
         if (!reading.includes(asRead(entry.caveat))) {
           faults.push(`${what}: the caveat of "${entry.name}" does not reach the reader`)
-        }
-        if (!reading.includes(asRead(entry.situation))) {
-          faults.push(`${what}: the situation of "${entry.name}" does not reach the reader`)
-        }
-      }
-    }
-
-    expect(declaring.length).toBeGreaterThan(0)
-    expect(faults).toEqual([])
-  })
-
-  /**
-   * A re-examination reaches the reader whole, all three statements of it.
-   *
-   * The registry can hold this and the page can drop it, and the failure would be silent in the worst
-   * way available here: a contract page that says nothing about the language is exactly what a contract
-   * page said before ADR-0150, so nothing would look wrong. What a reader loses is the answer to the
-   * question they arrived with.
-   *
-   * **All three are asserted rather than the block being counted**, because they are three different
-   * kinds of statement and losing any one of them leaves something worse than silence. Without
-   * `whatMoved` the measurement has no subject; without `measurement` the conclusion is the assertion
-   * ADR-0042 refuses; without `whatItEstablishes` a reader is handed a divergence count and left to
-   * infer that the contract is obsolete, which is the opposite of what it says.
-   *
-   * `a-use-case-shows-its-call-its-answer-and-its-caveat` is the same guard one section along, and the
-   * neighbour worth naming is `every-re-examination-carries-the-commit-it-was-taken-at`: that one is
-   * about what the registry holds, this one about what arrives on screen, and neither can see the
-   * other's defect.
-   */
-  it('a-re-examination-reaches-the-reader', () => {
-    const faults: string[] = []
-    const declaring = heldByTheRegistry(source).filter(
-      (held) => held.binding.againstTheLanguage !== undefined,
-    )
-
-    for (const held of declaring) {
-      const what = renderContract(held.contract.address)
-      const reading = toText(page(pageOf(held.contract.address)))
-
-      for (const entry of held.binding.againstTheLanguage ?? []) {
-        for (const [field, prose] of Object.entries(entry)) {
-          if (!reading.includes(asRead(prose))) {
-            faults.push(`${what}: the ${field} of a re-examination does not reach the reader`)
-          }
-        }
-      }
-    }
-
-    expect(declaring.length).toBeGreaterThan(0)
-    expect(faults).toEqual([])
-  })
-
-  /**
-   * A correction to a frozen sentence reaches the reader, and reaches them beside that sentence.
-   *
-   * **Two claims and the second is the one worth a guard.** That the correction appears at all is the
-   * shape `a-re-examination-reaches-the-reader` already keeps for its own field. That it appears
-   * *inside the case it corrects* is what this repair is for: a reader who reads a rationale and meets
-   * its correction three screens down has already believed the rationale, and a correction they meet
-   * afterwards repairs nothing.
-   *
-   * The second half is read by cutting the page at the case's own anchor and requiring the correction
-   * to be on the near side of the next one - which is the weakest true statement of *beside*, and the
-   * strongest this file can make without transcribing a layout into an expectation.
-   *
-   * **What it does not check is that the frozen sentence is still there.** It has to be, and nothing
-   * here could remove it: it comes out of the digest. `a-correction-names-a-case-the-contract-settles-and-quotes-what-it-says`
-   * is the neighbour, and it reads the registry where this reads the screen. ADR-0161.
-   */
-  it('a-correction-reaches-the-reader-beside-the-sentence-it-corrects', () => {
-    const faults: string[] = []
-    const declaring = heldByTheRegistry(source).filter(
-      (held) => held.binding.correctionsToFrozenProse !== undefined,
-    )
-
-    for (const held of declaring) {
-      const what = renderContract(held.contract.address)
-      const reading = toText(page(pageOf(held.contract.address)))
-      const cases = held.contract.caseTables.flatMap((table) => table.cases)
-
-      for (const entry of held.binding.correctionsToFrozenProse ?? []) {
-        const at = reading.indexOf(asRead(entry.published))
-        if (at === -1) {
-          faults.push(`${what}: the sentence ${entry.about} corrects does not reach the reader`)
-          continue
-        }
-
-        for (const [field, prose] of Object.entries(entry)) {
-          if (field === 'about') continue
-          if (!reading.includes(asRead(prose))) {
-            faults.push(`${what}: the ${field} of the correction to ${entry.about} does not reach the reader`)
-          }
-        }
-
-        // The next case's rationale, whichever it is, bounds what counts as beside.
-        const after = cases
-          .map((one) => reading.indexOf(asRead(one.rationale)))
-          .filter((where) => where > at)
-        const bound = after.length === 0 ? reading.length : Math.min(...after)
-        const said = reading.indexOf(asRead(entry.whatItEstablishes))
-
-        if (said < at || said > bound) {
-          faults.push(`${what}: the correction to ${entry.about} is not beside the case it corrects`)
         }
       }
     }
@@ -850,31 +547,23 @@ describe('the site', () => {
    * `2 / 4`, and with the count taken out of the sentence the section no longer names it.
    */
   /**
-   * The command and the signature are two labelled blocks, and this keeps the half of that a
-   * document can carry.
+   * The command a reader runs and the signature they read are two shapes, and this keeps the half of
+   * that a document can carry.
    *
    * They were two `pre`s of the same size in matching frames, stacked one under the other, and the
-   * owner could not tell which of them to run on a page he had just been shown. A visitor arriving
-   * from a search wants the first.
+   * owner could not tell which of them to run on a page he had just been shown. The artboard settles
+   * it with two different things - a bar the primary control lands in, and a section titled
+   * Signature whose block is set in the syntax inks - and what a document can be asked is that both
+   * exist in exactly those shapes: the command inside the block that declares the ways to run it,
+   * and the signature under its own addressed heading, as a snippet and never as a bare `pre`.
    *
-   * **What the stylesheet now does is not readable here, and saying so is the point.** The accent,
-   * the ground, the heavy edge and the larger face are a browser reading; what a document can be
-   * asked is that each block exists, that each is labelled, and that the two labels differ. This
-   * guard does not pretend to the other half.
+   * Its red event is somebody flattening the page back to two indistinguishable `pre`s - the state
+   * this page was in, and the one no stylesheet can repair from the outside.
    *
-   * Its red event is somebody flattening the card back to two bare `pre`s or dropping a label -
-   * which is the state this page was in, and the one no stylesheet can repair from the outside.
-   *
-   * **The neighbour it is not**:
-   * `nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed` asks whether the
-   * command is there at all and carries no opinion about what stands beside it. This one asks what
-   * the two blocks are, and is blind to whether the command is the right one -
-   * `every-command-the-site-tells-a-reader-to-run-carries-the-invocation` owns that.
-   *
-   * The refused contract is rendered by another page entirely, so the assertion over it is that none
-   * of these four parts is present rather than that some of them are.
+   * The refused contract is rendered by another page entirely, so the assertion over it is that
+   * neither shape is present rather than that some of them are.
    */
-  it('the-command-and-the-signature-of-a-card-are-two-labelled-blocks', () => {
+  it('the-command-a-reader-runs-and-the-signature-they-read-are-two-shapes', () => {
     const installable = new Set(
       index.entries
         .filter((entry) => entry.installable)
@@ -886,12 +575,28 @@ describe('the site', () => {
       const walk = (node: Parameters<typeof readingOf>[0], within: string | null): void => {
         if (node.kind !== 'element') return
 
-        const own = node.attributes['class'] ?? ''
-        const block = own === 'get' || own === 'sig' ? own : within
+        /** The section is recognised by the addressed heading it opens on, which is the address a
+         * reader links and therefore the one part of the shape that cannot quietly move. */
+        const opensOnTheSignature =
+          node.tag === 'section' &&
+          node.children.some(
+            (child) => child.kind === 'element' && child.attributes['id'] === 'signature',
+          )
 
-        if (block !== null && own === classOf('eyebrow'))
-          found.push(`${block} is labelled ${readingOf(node).trim()}`)
-        if (block !== null && node.tag === 'pre') found.push(`${block} holds pre.${own}`)
+        const block =
+          node.attributes['data-ways'] !== undefined
+            ? 'the install bar'
+            : opensOnTheSignature
+              ? 'the signature section'
+              : within
+
+        if (block !== null && node.tag === 'pre') {
+          found.push(
+            block === 'the install bar'
+              ? `the install bar holds pre.${node.attributes['class'] ?? ''}`
+              : `the signature is pre.${node.attributes['class'] ?? ''}`,
+          )
+        }
 
         for (const child of node.children) walk(child, block)
       }
@@ -903,16 +608,11 @@ describe('the site', () => {
 
     for (const held of heldByTheRegistry(source)) {
       const rendered = renderContract(held.contract.address)
-      const parts = partsOf(page(pageOf(held.contract.address)))
+      const document = page(pageOf(held.contract.address))
 
-      expect(parts, rendered).toEqual(
+      expect(partsOf(document), rendered).toEqual(
         installable.has(rendered)
-          ? [
-              'get is labelled Install',
-              'get holds pre.install',
-              'sig is labelled Signature',
-              'sig holds pre.answer',
-            ]
+          ? ['the install bar holds pre.install', 'the signature is pre.snippet']
           : [],
       )
     }
@@ -1025,24 +725,6 @@ describe('the site', () => {
         const value = (/^[\d ]+/.exec(reading) ?? [''])[0].replaceAll(' ', '')
         expect(value, `"${reading}" opens on a quantity`).toMatch(/^\d+$/)
         expect(reading, `"${reading}" is one count and not a proportion`).not.toMatch(/\bof\b|\//)
-      }
-
-      const properties = held.contract.properties.universal
-      const checked = properties.filter((property) => property.applicable).length
-      const said = underEachHeading(document).get('Properties') ?? ''
-
-      /**
-       * The opening sentence and not the whole section, because the whole section holds every reason
-       * written out and a stray digit anywhere in it would satisfy a search for a count. It is the
-       * sentence rather than a transcription of it: a guard holding a copy of the words goes stale on
-       * the first reword, which is what `asRead` exists one file along to stop.
-       */
-      const opening = `${said.split('.')[0] as string}.`
-
-      expect(opening, 'the opening names how many are checked').toContain(String(checked))
-      expect(opening, 'the opening names how many there are').toContain(String(properties.length))
-      for (const property of properties) {
-        expect(said, `${property.name} carries its verdict`).toContain(property.name)
       }
     }
   })
@@ -1384,12 +1066,29 @@ describe('the site', () => {
      */
     const theRepository = THE_SOURCE_REPOSITORY.replace(/^git\+/, '').replace(/\.git$/, '')
 
+    /**
+     * A link to an answer the origin serves is a link inside this site, not a link out.
+     *
+     * The contract page's aside links the frozen definition - `snapshot/{digest}` - which is one of
+     * the answers the emitted tree writes and no page. `askedAt` is the registry's own inverse of
+     * `pathTo`, so the recognition is the one statement of what an answer's address looks like; and
+     * a content-addressed answer is admitted only when the registry resolves the address, because a
+     * shape alone would let an invented digest read as a served document.
+     */
+    const servedBesideThePages = (pathname: string): boolean => {
+      const asked = askedAt(pathname)
+      if (asked === null) return false
+
+      return asked.endpoint.id !== 'snapshot' || source.snapshot(asked.address) !== null
+    }
+
     for (const path of pages().keys())
       for (const href of linksOf(path))
         if (
           !href.startsWith('#') &&
           href !== theRepository &&
-          !byHref.has(new URL(href, urlOf(path)).pathname)
+          !byHref.has(new URL(href, urlOf(path)).pathname) &&
+          !servedBesideThePages(new URL(href, urlOf(path)).pathname)
         )
           leadingNowhere.push(`${path} links ${href}`)
 
@@ -1527,8 +1226,22 @@ describe('the site', () => {
    * somebody has to remember.
    */
   it('no-mark-a-sentence-carries-reaches-the-reader-as-itself', () => {
+    /**
+     * The prose alone, because the claim is about sentences and the page now shows source whole:
+     * a contract's own `reference.ts` is full of backticks in its comments, and every one of them
+     * is the file's content rather than a mark somebody failed to parse. `pre` and `code` are the
+     * two elements whose text is verbatim by declaration - the same pair `toMarkdown` fences - so
+     * the sweep walks the tree and reads everything outside them.
+     */
+    const proseOf = (node: Parameters<typeof readingOf>[0]): string => {
+      if (node.kind === 'text') return node.text
+      if (node.tag === 'pre' || node.tag === 'code') return ''
+
+      return node.children.map(proseOf).join(' ')
+    }
+
     for (const [path, document] of pages()) {
-      const reading = toText(document)
+      const reading = document.body.map(proseOf).join(' ')
 
       expect(reading.match(/\*\*[^*]+\*\*/g) ?? [], `unparsed bold on ${path}`).toEqual([])
       expect(reading.match(/`[^`]+`/g) ?? [], `unparsed code on ${path}`).toEqual([])
@@ -1644,6 +1357,12 @@ describe('the site', () => {
 
       const walk = (node: Parameters<typeof readingOf>[0]): void => {
         if (node.kind === 'text') return
+        /**
+         * Inside a `pre` the text is verbatim and the elements are the syntax inks, so two
+         * adjacent spans are two colours of one program and never two sentences run together -
+         * the code separates itself, character by character, and the reading is the code.
+         */
+        if (node.tag === 'pre') return
 
         const carrying = node.children
           .map((child) => ({ child, reading: readingOf(child) }))
@@ -1714,28 +1433,6 @@ describe('the site', () => {
     }
   })
 
-  /**
-   * A label and the sentence under it are two lines, not one.
-   *
-   * Two instances of the class above, kept for the half that is not separation: these assert the label's
-   * own *rendering* - the em dash, and the words `checked` and `not applicable` - so a label reformatted
-   * without breaking apart reddens here and nowhere else. Neither guard subsumes the other, which is why
-   * both are affordable: this one is blind to the front page, and that one is blind to the em dash.
-   */
-  it('a-label-and-the-sentence-under-it-are-two-lines', () => {
-    for (const held of heldByTheRegistry(source)) {
-      const reading = toText(page(pageOf(held.contract.address)))
-
-      for (const property of held.contract.properties.universal) {
-        expect(reading).toContain(
-          `${property.name} — ${property.applicable ? 'checked' : 'not applicable'}\n`,
-        )
-      }
-      for (const profile of held.contract.benchmarks.profiles) {
-        expect(reading).toContain(`${profile.name} — ${profile.class}\n`)
-      }
-    }
-  })
 })
 
 /**
