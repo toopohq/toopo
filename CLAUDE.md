@@ -1756,19 +1756,36 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   Every suite was green, and `every-page-is-reachable-from-the-front-page` and its neighbours were
   looking at a document in which the defect cannot occur.
 
-  **Half the machinery to close it exists and half does not, which is the correction this entry
-  carries.** `start.test.ts` already runs `start.ts`'s builders against a happy-dom document, so
-  *reaching* the enriched DOM is solved and costs nothing new. **Measuring it is not**: probed at
-  `6dadac2`, happy-dom's `getBoundingClientRect()` answers `{width: 0, height: 0}` for an element
-  declared `width: 200px; height: 40px`, and `getComputedStyle(el).width` answers `200px` by echoing
-  the declaration back. It parses and cascades; it does not lay out. So a guard over the enriched
-  layout needs the thing that lays text out, which is the headless browser this list already prices and
-  refuses in four other entries - and this is the first of them whose subject is a page *after a script
-  has run* rather than the page as served.
+  **Half the machinery to close it exists and half does not, and the half that exists cost more than
+  this entry said.** The clause that fell is *reaching the enriched DOM is solved and costs nothing
+  new*: `start.test.ts` does run `start.ts`'s builders against a happy-dom document, and for the copy
+  control, the manager row and the search panel that is the whole of it. **For the playground it is
+  not.** ADR-0187 wrote the first two guards over that form and the reason nobody had is measured: the
+  builder resolves its module against `document.baseURI`, which under that suite is `http:`, a scheme
+  node's loader refuses. Reaching it took handing the reference over as a `data:` URL - the route
+  `playground.test.ts` already takes to run the shipped module - **and that substitution establishes
+  nothing about whether the relative address resolves in a browser**, which is a second thing this
+  entry's population is not covered for.
 
-  **Where this looked**: `pages.test.ts`, whose 44 guards build documents and read their text;
+  **Measuring it is still not solved**: probed at `6dadac2`, happy-dom's `getBoundingClientRect()`
+  answers `{width: 0, height: 0}` for an element declared `width: 200px; height: 40px`, and
+  `getComputedStyle(el).width` answers `200px` by echoing the declaration back. It parses and cascades;
+  it does not lay out. So a guard over the enriched *layout* needs the thing that lays text out, which
+  is the headless browser this list already prices and refuses in four other entries - and this is the
+  first of them whose subject is a page *after a script has run* rather than the page as served.
+
+  **What ADR-0187 narrowed is a different claim, and the distinction is the point.** The playground's
+  form was named in the population below and was read by **nothing at all** - not its layout, not its
+  structure. It has two guards now, and they read what it *built*: a field per argument, a label that
+  names its own field, an answer in the block the registry paints code in. That closes *nobody has
+  looked at this markup* and closes none of *nobody has looked at this geometry*. The old panel it
+  replaced is what says so: it wore the previous site's language through the whole redesign, and no
+  guard here had an opinion about how it looked either before or after.
+
+  **Where this looked**: `pages.test.ts`, whose 35 guards build documents and read their text;
   `published-tree.test.ts`, which reads what `build.ts` wrote; and `start.test.ts`, which runs the
-  builders and asserts what they put in the DOM and never where it lands.
+  builders and asserts what they put in the DOM and never where it lands. That last sentence is the
+  one that survives ADR-0187 unchanged, over a file that gained two guards.
 
   **The population is every control `start.ts` adds** - the copy controls, the theme button, the search
   field and its answers panel, the playground's form - on every page that carries one. What would close
