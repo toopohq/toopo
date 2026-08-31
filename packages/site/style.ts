@@ -790,18 +790,18 @@ pre.shape code { color: var(--ink) }
 .argument > p { margin: 0 0 var(--s2); font-size: var(--t4) }
 .argument > p:last-child { margin-bottom: 0 }
 
-#playground { display: block; margin: var(--s4) 0 0; padding: var(--s4); background: var(--wash); border: 1px solid var(--edge); border-radius: 8px }
-#playground p { margin: 0 0 var(--s3) }
-#playground label { display: block; color: var(--dim); font-size: var(--t5); font-family: var(--mono); margin-bottom: var(--s) }
-#playground .why { display: block; font-size: var(--t6); margin-top: var(--s) }
-#playground input {
-  width: 100%; padding: var(--s2) var(--s3); color: var(--ink); background: var(--paper);
-  border: 1px solid var(--edge); border-radius: 6px; font-family: var(--mono); font-size: var(--t4);
-}
-/* A call and what it answered, which is the settled cases' own content arriving live - so it breaks
-   where they break rather than where a pre does. The two were rendering one shape and wrapping two
-   ways. */
-#playground pre { margin: 0; background: var(--paper); border-color: var(--edge); overflow-wrap: anywhere }
+/* The playground is a section like the three above it and no longer a panel.
+
+   It wore a bordered, tinted box from the old site, which was the one place on this page where two
+   visual languages met: every other block here is a component on the paper, and this was a container
+   with a frame round a form. What is left in this rule is geometry - the rows and the air between
+   them - because the field and the answer are components now and a container may not paint what
+   stands in it.
+
+   The gap is the section's own ten pixels, so the form reads as part of the section rather than as a
+   thing inside a thing. */
+#playground { display: grid; gap: 10px; margin: 0 }
+#playground .form { display: grid; gap: 10px }
 
 /* The wider of the two arrangements below:
      main | aside   --measure + --s6 + --aside + 2 * --s6  = 49.14rem

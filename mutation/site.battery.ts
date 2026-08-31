@@ -2550,7 +2550,76 @@ const mutants: readonly Mutant[] = [
     'renames the class the browser writes on the copy control, so every install line on the site ' +
       'offers a button the stylesheet has no rule for',
     [startFile(`button.className = 'copy'`, `button.className = 'copy-button'`)],
-    killed(['the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints']),
+    killed(['every-component-class-the-browser-writes-is-one-this-registry-paints']),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-159 to W-161 - the form a visitor types into
+  // -------------------------------------------------------------------------
+  //
+  // The first cells this battery has had over what the playground *builds*. Nothing had ever read
+  // that DOM: sixteen guards ran against a served contract page and not one named the form, and
+  // `playground.test.ts` reads the value a call answers rather than the markup around it. So the
+  // form could have been built with no labels, with one field for four arguments, or answering into
+  // a bare element, and every suite here would have been green. ADR-0187.
+
+  /**
+   * A label that names no field, which is the defect only somebody who cannot see the form meets.
+   *
+   * The page looks right: the words are there, the boxes are there, and the two are beside each other.
+   * What is gone is the one statement that ties them - so a screen reader announces a label with
+   * nothing under it and a reader who clicks the words focuses nothing.
+   */
+  sameOnEveryLens(
+    'W-159',
+    'builds every playground label naming no field, so the form reads correctly to anybody who can ' +
+      'see it and offers a reader who cannot a name with nothing attached',
+    [startFile(`    label.htmlFor = input.id`, `    label.htmlFor = ''`)],
+    killed(['the-playground-builds-a-field-per-argument-and-answers-in-a-code-block']),
+  ),
+
+  /**
+   * One field for a contract that declares two, which is the cell that made the guard a sweep.
+   *
+   * **It was written, injected, and came back green**, because the page this suite is built around is
+   * `string/slugify@1` and that contract takes one argument: *one field* and *a field per argument*
+   * are the same sentence there, and the arm that counts had nothing to count. The guard reads every
+   * contract with a playground now, and this cell reddens on `date/add@1` - two arguments, one field.
+   *
+   * What a reader would meet is a form that runs and answers, with the second argument silently the
+   * one the case opens on whatever they type.
+   */
+  sameOnEveryLens(
+    'W-160',
+    'builds one field however many arguments a contract declares, so a two-argument function offers ' +
+      'a form that answers about an argument nobody can reach',
+    [
+      startFile(
+        `  form.append(...playground.fields.map(labelled))`,
+        `  form.append(...playground.fields.slice(0, 1).map(labelled))`,
+      ),
+    ],
+    killed(['the-playground-builds-a-field-per-argument-and-answers-in-a-code-block']),
+  ),
+
+  /**
+   * A form that is built and never answers again, which is the whole of what a playground is.
+   *
+   * The opening call is still printed, so the section reads exactly as it should until somebody types
+   * - and then it goes on saying what the case says. It is the plausible edit too: a listener name is
+   * a string, and nothing but this notices when it stops naming an event.
+   */
+  sameOnEveryLens(
+    'W-161',
+    'listens for an event no field fires, so the playground shows the case it opens on and answers ' +
+      'nothing a reader types - the one thing this section exists to do',
+    [
+      startFile(
+        `  form.addEventListener('input', run)`,
+        `  form.addEventListener('change', run)`,
+      ),
+    ],
+    killed(['typing-into-the-playground-answers-again']),
   ),
 
   /**

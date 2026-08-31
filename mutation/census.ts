@@ -315,6 +315,14 @@
  * **It found its own instance on its first run**, which no row here has recorded before: `.recent h2`
  * was painting a component from outside, and nobody had read it. ADR-0183.
  *
+ * A thirty-second on the form a visitor types into: **no new file and one count moved**, under the
+ * site's - the nineteenth's shape. It is a line here for *why* it moved. Sixteen guards ran against a
+ * served contract page and not one named the playground, so what that form builds was read by
+ * nothing: no labels, one field for four arguments, an answer in a bare element - every one of those
+ * would have left this table and every suite green. The two guards that close it needed the module
+ * handed over as a data URL, because the builder resolves it against the document's own base and
+ * this one is http. ADR-0187.
+ *
  * A thirty-first on the contract page, which is the first row here to go *down*: the settled cases,
  * the properties, the profiles, the re-examinations, the checking sentence and the batteries' own
  * measurement stopped being laid out, so nine guards of `pages.test.ts` went with them and the row
@@ -495,7 +503,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/served-modules.test.ts': 4,
     'packages/site/served-stylesheet.test.ts': 3,
     'packages/site/source.test.ts': 8,
-    'packages/site/start.test.ts': 16,
+    'packages/site/start.test.ts': 18,
     'packages/site/what-a-control-says.test.ts': 21,
   },
 

@@ -90,6 +90,7 @@ export type Component =
   | 'prime'
   | 'callout'
   | 'crumbs'
+  | 'field'
 
 /**
  * What paints one component: CSS whose every selector is rooted at `&`.
@@ -265,6 +266,67 @@ ${OWN}:hover { color: var(--ink); border-color: var(--edge) }
 
 /** The class `start.ts` writes on the control it builds, exported so that guard has one side to read. */
 export const THE_COPY_CONTROL_CLASS = classOf('copy')
+
+/**
+ * One argument of the playground: what it is called, the box a reader types into, and the note that
+ * says how the value is built where the field cannot hold it.
+ *
+ * **It has no builder here, for the reason `copy` has none**: `start.ts` creates it in the reader's
+ * browser, so what this module owns is the paint and the name. The limit that comes with that is the
+ * same one and is declared rather than discovered -
+ * `a-component-is-painted-by-its-own-rules-and-by-nothing-else` sweeps the emitted pages, and an
+ * element no page emits is outside it.
+ *
+ * **The artboard draws no field inside a section, so every value is taken from the control it draws
+ * that is nearest in job, and each is named.** The ground, the border and the focus ring are the
+ * hero's search input - the one editable box the artboard draws - which is `--wash` behind a
+ * hairline of `--edge` at 8px, ringed on `--target` when it takes focus. The padding is the install
+ * bar's, which is the artboard's own in-section box. The type is the snippet's, because what a reader
+ * types here is a **value** and this site sets a value in mono wherever it appears. Nothing here is a
+ * number chosen for this component.
+ *
+ * The label is the eyebrow's register and not the eyebrow: it names an argument rather than a
+ * section, a `label` is what a field is titled by, and a component drawn inside another is the
+ * collision the union exists to refuse.
+ */
+const THE_FIELD: Drawing = {
+  rules: `
+${OWN} { display: block; margin: 0 }
+${OWN} label {
+  display: block; margin-bottom: var(--s);
+  font-family: var(--mono); font-size: var(--t6); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--dim);
+}
+${OWN} input {
+  width: 100%; padding: 11px 14px;
+  font-family: var(--mono); font-size: calc(13 * var(--a-point)); line-height: var(--the-line);
+  color: var(--ink); background: var(--wash);
+  border: 1px solid var(--edge); border-radius: 8px;
+  transition: border-color .15s, box-shadow .15s;
+}
+${OWN} input:focus-visible {
+  outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--target);
+}
+${OWN} .why { display: block; margin-top: var(--s); font-size: var(--t6); color: var(--dim) }
+`,
+}
+
+/** The class `start.ts` writes on one argument's row, exported for the guard that ties the two. */
+export const THE_FIELD_CLASS = classOf('field')
+
+/**
+ * The block the playground answers in, which is the snippet's box carrying text nobody coloured.
+ *
+ * **The inks cannot reach it, and that is a fact about where the highlighter runs.** `highlight.ts`
+ * drives the compiler's own scanner through `typescript/unstable/ast`, which is a package no
+ * browser loads, so a call composed from what a reader has just typed is coloured by nothing. The
+ * alternative is the artboard's own ten ordered regular expressions shipped to the browser, and
+ * ADR-0156 measured what that class of reader does to this repository's own text.
+ *
+ * So the answer takes the box and not the colour: the same ground, border, radius and face as the
+ * source above it, and plain inside. A reader sees a code block; nothing claims it was parsed.
+ */
+export const THE_ANSWER_CLASS = classOf('snippet')
 
 /**
  * One contract as the shelf draws it: the name, what it is frozen as, its shape, what it does, and the
@@ -562,6 +624,7 @@ export const THE_COMPONENTS: Record<Component, Drawing> = {
   prime: THE_PRIME,
   callout: THE_CALLOUT,
   crumbs: THE_CRUMBS,
+  field: THE_FIELD,
 }
 
 /** One component's rules with `&` resolved to the class it stands for. */

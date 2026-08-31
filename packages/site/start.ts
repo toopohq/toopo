@@ -637,11 +637,26 @@ export const playgroundControl = async (): Promise<void> => {
   const form = document.createElement('div')
   const answer = document.createElement('pre')
 
+  /**
+   * The two classes this builds with, written as literals because a browser module may not import the
+   * component layer - `components.ts` reaches `document.ts`, which is the generator's. The literal
+   * over here and the union member over there are tied by
+   * `every-component-class-the-browser-writes-is-one-this-registry-paints`, which is the arrangement
+   * the copy control has had since ADR-0183.
+   *
+   * The answer takes the **snippet's** class rather than one of its own: it is the same box as the
+   * source above it and it carries no inks, because the highlighter drives the compiler's scanner and
+   * no browser loads that. `components.ts` says so where the class is named.
+   */
+  form.className = 'form'
+  answer.className = 'snippet'
+
   const labelled = (field: PlaygroundField, at: number): HTMLElement => {
     const row = document.createElement('p')
     const label = document.createElement('label')
     const input = document.createElement('input')
 
+    row.className = 'field'
     input.id = `playground-argument-${at}`
     input.value = field.opensOn
     input.setAttribute('spellcheck', 'false')

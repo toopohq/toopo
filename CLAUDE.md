@@ -2043,7 +2043,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   refuses the artefacts under `mutation/results/` as measured before the commit they would describe.
 
   **One instance is now named with the reason it is not closeable, which the entry had never had
-  either.** `the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints` compares a
+  either.** `every-component-class-the-browser-writes-is-one-this-registry-paints` compares a
   literal in `start.ts` with a member of the component union, and **both of its inputs have rendering
   consequences**: W-153 renames the literal and reddens eight guards, seven of which query `.copy` and
   find nothing, while renaming the union member does not compile. So *alone* is not reachable for it by

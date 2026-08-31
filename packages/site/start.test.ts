@@ -3,9 +3,13 @@
 import { describe, it, expect } from 'vitest'
 
 import { THE_INVOCATION, THE_WAYS_TO_RUN_IT } from '../registry/address.js'
+import { renderContract } from '../registry/address.js'
+import { theReferenceModules } from './browser.js'
+import type { Held } from './catalogue.js'
+import { heldByTheRegistry } from './catalogue.js'
 import { toHtml } from './document.js'
 import { localSource } from './local-source.js'
-import { FRONT_PAGE, pageOf } from './paths.js'
+import { FRONT_PAGE, THE_REFERENCE_MODULE, pageOf } from './paths.js'
 import type { ReadOneAnswer, WhereTheCatalogueIs } from './searching.js'
 import { arrivingOnce } from './searching.js'
 import { theSite } from './site.js'
@@ -66,6 +70,58 @@ const THE_PAGE_A_READER_LANDS_ON = { language: 'typescript', name: 'string/slugi
 /** The contract page as it is served, loaded into the document the builders will read. */
 const aServedContractPage = (): void => {
   const path = pageOf(THE_PAGE_A_READER_LANDS_ON)
+  const built = theSite(source).get(path)
+  if (built === undefined) throw new Error(`the generator writes no ${path}`)
+
+  document.open()
+  document.write(toHtml(built))
+  document.close()
+}
+
+/**
+ * The playground built against the module a browser would fetch, handed over as a data URL.
+ *
+ * `playgroundControl` resolves `module` against `document.baseURI`, which under this document is
+ * `http:` - a scheme node's loader refuses, and the reason nothing had ever run this builder in a
+ * test. The reference is therefore handed over already absolute, by the route
+ * `playground.test.ts` takes to run the shipped module: the bytes `build.ts` writes, base64 in a
+ * `data:` URL, needing no disk and no socket.
+ *
+ * **What this does not establish is that the relative address resolves in a browser.** It swaps the
+ * one thing the loader cannot do here and asserts nothing about it; the address itself is
+ * `THE_REFERENCE_MODULE` beside the page, which `every-page-is-reachable-from-the-front-page` and the
+ * emitted tree answer for.
+ */
+const aPlaygroundRunningItsOwnReference = async (held: Held): Promise<void> => {
+  const slot = document.getElementById('playground')
+  const declared = slot instanceof HTMLElement ? slot.dataset['playground'] : undefined
+  if (slot === null || declared === undefined) throw new Error('the page declares no playground')
+
+  const path = `${renderContract(held.contract.address)}/${THE_REFERENCE_MODULE}`
+  const js = theReferenceModules(source, [held]).get(path) as string
+
+  slot.dataset['playground'] = JSON.stringify({
+    ...(JSON.parse(declared) as Record<string, unknown>),
+    module: `data:text/javascript;base64,${Buffer.from(js, 'utf8').toString('base64')}`,
+  })
+
+  await playgroundControl()
+}
+
+/**
+ * Every contract this catalogue publishes, so the guards below read a form of one argument and a form
+ * of two rather than whichever the page this file is built around happens to take.
+ *
+ * **It is a sweep because a mutant came back green.** With the builder made to build one field
+ * whatever the contract declares, the guard over `string/slugify@1` alone stayed green: that contract
+ * takes one argument, so *one field* and *a field per argument* are the same sentence there. The arm
+ * that counts had nothing to count.
+ */
+const EVERY_CONTRACT_WITH_A_PLAYGROUND: readonly Held[] = heldByTheRegistry(source)
+
+/** That contract's page as it is served, loaded into the document the builders will read. */
+const aServedPageFor = (held: Held): void => {
+  const path = pageOf(held.contract.address)
   const built = theSite(source).get(path)
   if (built === undefined) throw new Error(`the generator writes no ${path}`)
 
@@ -213,6 +269,98 @@ describe('the controls a visitor touches, run against a document', () => {
 
     expect(offered).toEqual(declared)
     expect(offered.length).toBeGreaterThan(1)
+  })
+
+  /**
+   * The playground builds one field per argument and answers in a code block.
+   *
+   * **Nothing had ever read what this builds**, which is why it is here. Sixteen guards ran against
+   * this document and not one named the playground; `playground.test.ts` reads the *data* -
+   * `playgroundOf`, `theCallOf`, `theAnswerShown` - and stops at the value. So the form could have
+   * been built with no labels, with one field for four arguments, or answering into a bare element,
+   * and every suite in this repository would have been green.
+   *
+   * It found that on its first run: the form was a bordered panel from the old site standing in the
+   * middle of the page the artboard draws, and no guard had an opinion about it. ADR-0187.
+   *
+   * What is asserted is the shape and never the answer's text: what the function replies is
+   * `theAnswerShown`'s and is read by its own guards, and a copy of it here would be a second
+   * statement of a value that moves whenever a contract does.
+   */
+  it('the-playground-builds-a-field-per-argument-and-answers-in-a-code-block', async () => {
+    let sweptAFormOfSeveral = false
+
+    for (const held of EVERY_CONTRACT_WITH_A_PLAYGROUND) {
+      const what = renderContract(held.contract.address)
+      aServedPageFor(held)
+      await aPlaygroundRunningItsOwnReference(held)
+
+      const declared = document.getElementById('playground')?.dataset['playground']
+      if (declared === undefined) throw new Error(`${what} declares no playground`)
+      const fields = (
+        JSON.parse(declared) as { readonly fields: readonly { readonly opensOn: string }[] }
+      ).fields
+
+      const rows = [...document.querySelectorAll('#playground .field')]
+
+      expect(rows.length, `${what}: one row per declared argument`).toBe(fields.length)
+      expect(rows.length, `${what} declares arguments`).toBeGreaterThan(0)
+      if (fields.length > 1) sweptAFormOfSeveral = true
+
+      for (const [at, row] of rows.entries()) {
+        const label = row.querySelector('label')
+        const input = row.querySelector('input')
+
+        expect(label, `${what} argument ${at} carries a label`).not.toBeNull()
+        expect(input, `${what} argument ${at} carries a field`).not.toBeNull()
+        // A label nobody can follow to its field is one a screen reader announces beside nothing.
+        expect(
+          label?.getAttribute('for'),
+          `${what} argument ${at}: the label names its own field`,
+        ).toBe(input?.id)
+        expect(
+          input?.value,
+          `${what} argument ${at} opens on the case the page declared`,
+        ).toBe(fields[at]?.opensOn)
+      }
+
+      const answer = document.querySelector('#playground pre')
+
+      expect(answer?.className, `${what}: the answer is the block the registry paints code in`).toBe(
+        'snippet',
+      )
+      expect((answer?.textContent ?? '').trim().length, `${what}: the answer is not empty`).toBeGreaterThan(0)
+    }
+
+    // Without a form of more than one argument, *one field per argument* and *one field* are the same
+    // sentence, and the arm that counts has nothing to count. Measured: on a one-argument contract
+    // alone, a builder that builds one field whatever is declared stays green.
+    expect(sweptAFormOfSeveral, 'no contract in the sweep takes more than one argument').toBe(true)
+  })
+
+  /**
+   * Typing into a field answers again, which is the whole of what a playground is.
+   *
+   * The neighbour above asks what was built and would be green on a form that never runs; this asks
+   * what happens when somebody uses it. Neither implies the other - a form with no `input` listener
+   * builds perfectly, and a form that runs on every keystroke can still be built without labels.
+   */
+  it('typing-into-the-playground-answers-again', async () => {
+    const held = EVERY_CONTRACT_WITH_A_PLAYGROUND[0] as Held
+    aServedPageFor(held)
+    await aPlaygroundRunningItsOwnReference(held)
+
+    const input = document.querySelector('#playground .field input')
+    const answer = document.querySelector('#playground pre')
+    if (!(input instanceof HTMLInputElement) || answer === null) {
+      throw new Error('the playground built no field to type into')
+    }
+
+    const before = answer.textContent
+    input.value = `${input.value} and something nobody settled`
+    input.dispatchEvent(new Event('input', { bubbles: true }))
+
+    expect(answer.textContent, 'the answer follows what was typed').not.toBe(before)
   })
 
   /**

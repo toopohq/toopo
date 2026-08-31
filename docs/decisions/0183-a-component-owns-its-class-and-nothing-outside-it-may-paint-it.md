@@ -13,7 +13,7 @@ confirmed-by:
   - battery: site
     guard: every-selector-a-component-declares-is-rooted-at-its-own-class
   - battery: site
-    guard: the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints
+    guard: every-component-class-the-browser-writes-is-one-this-registry-paints
 ---
 
 # A component owns its class, and nothing outside it may paint it
@@ -97,7 +97,7 @@ and the second run is green with **`UNACCOUNTED FOR (0)`** over 154 cells.
 look like an omission.** `every-selector-…-rooted-at-its-own-class` is alone on W-152;
 `a-component-is-painted-by-its-own-rules-and-by-nothing-else` is alone on W-154, with the pages
 building perfectly - measured over the whole suite, 1 failed and 194 passed.
-`the-class-the-browser-writes-on-a-copy-control-…` is red on W-153 and alone on nothing, and **no
+`every-component-class-the-browser-writes-…` is red on W-153 and alone on nothing, and **no
 plausible mutant would change that**: it compares a literal in `start.ts` against a member of the
 union, renaming the literal reddens eight guards because seven of them query `.copy`, and renaming the
 member does not compile. That is a different state from *nobody wrote the cell*, and the two are

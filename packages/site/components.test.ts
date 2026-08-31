@@ -192,33 +192,46 @@ describe('the components', () => {
   })
 
   /**
-   * The class the browser writes on a copy control is the one this registry paints.
+   * Every component class the browser writes is one this registry paints, and every one it is said to
+   * write it writes.
    *
-   * `copy` is the one component whose markup this module does not build: `start.ts` creates the button
-   * in the reader's browser, on every `pre.install`. So the two halves are a literal over there and a
-   * union member over here, and nothing but this compares them.
+   * Four components are built in the reader's browser rather than by a page: `start.ts` creates the
+   * copy control on every install block, the primary control on the one that declares the ways to run
+   * it, a field for each argument of the playground, and the box the playground answers in. A browser
+   * module may not import the component layer - `components.ts` reaches `document.ts`, which is the
+   * generator's - so each of the four is a literal over there and a union member over here, and
+   * nothing but this compares them.
    *
-   * It is why the component exists at all. The markup was already single-sourced and the *paint* was
-   * two - `pre.install .copy` and `.offers .install .copy` - which is the fault with the one half that
-   * usually prevents it already in place.
+   * **It asked one direction about one component until the playground was redrawn**, and that was the
+   * hole: it required `copy` to be among the classes written and had no opinion about the rest, so
+   * `prime` was added and painted with nothing tying the literal to the union. Both directions are
+   * asked now - a component class written and not declared here, and a class declared here the module
+   * has stopped writing.
    *
-   * Seen red before it was believed: with `start.ts` writing `copy-button`, the fault reads that the
-   * module writes no class this registry paints.
+   * The declaration is a list in this guard rather than a constant in `start.ts`, because what it
+   * states is a fact about *two* files and belongs to neither: a constant over there would be the
+   * module marking its own paper.
+   *
+   * Seen red before it was believed, in both directions: with `start.ts` writing `copy-button` the
+   * fault names `copy` as declared and unwritten, and with the answer's `snippet` taken out of the
+   * list below it names `snippet` as written and undeclared.
    */
-  it('the-class-the-browser-writes-on-a-copy-control-is-the-one-this-registry-paints', () => {
+  it('every-component-class-the-browser-writes-is-one-this-registry-paints', () => {
+    /** The components `start.ts` builds, which is what this guard is the second statement of. */
+    const THE_BROWSER_PAINTS: readonly Component[] = ['copy', 'prime', 'field', 'snippet']
+
     const start = readFileSync(join(ROOT, 'packages', 'site', 'start.ts'), 'utf8')
-    const written = [...start.matchAll(/\bbutton\.className = '([^']+)'/g)].map(
-      (found) => found[1] as string,
-    )
+    const written = [...start.matchAll(/\.className = '([^']+)'/g)].map((found) => found[1] as string)
 
     expect(written.length, 'no class assignment to read in start.ts').toBeGreaterThan(0)
 
-    // `start.ts` writes several classes and only one of them is a component's. What is asked is that
-    // the registry's name for the copy control is among them: rename either half and this is red,
-    // which is the whole of what the two halves owe each other.
+    // Only the ones that are component names: the module writes page classes too - the panel, the
+    // refusal, the row of managers - and those are the page's own, not this layer's.
+    const painted = new Set(written.filter((name) => EVERY_COMPONENT.includes(name as Component)))
+
     expect(
-      written,
-      'the browser writes no class on a control that this registry paints as the copy control',
-    ).toContain(classOf('copy'))
+      [...painted].sort(),
+      'the component classes the browser writes are not the ones declared here',
+    ).toEqual([...THE_BROWSER_PAINTS].sort())
   })
 })

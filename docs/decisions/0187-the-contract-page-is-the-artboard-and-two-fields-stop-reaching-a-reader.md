@@ -166,13 +166,57 @@ the four slots empty but for the one command measured to run with nothing instal
 
 The tree writes 130 files and **73 answers**, unmoved.
 
+### The four rulings, and what the last of them cost
+
+The owner ruled all four, and three cost nothing: **the three figures stay**, rendered as they are -
+what lands, what it pulls in, what it settles, which is the argument of the product in three numbers
+and the last place on the site that states any of them. **The 185 `decision-makers:` stay**, because
+in a repository whose thesis is traceability, removing them makes 185 decisions anonymous. And
+**`correctionsToFrozenProse` is left served and unlaid-out**, the same split `refusals` and the method
+page already make: an auditor fetching the binding finds it, a visitor choosing a function does not
+need it.
+
+**The playground stays and was redrawn**, and that is the one that cost work. It was left untouched
+while the ruling was awaited, so it wore the old site's language into the new page - a bordered,
+tinted panel wrapped round a form, standing between two sections that are blocks on the paper. It was
+the only place on this site where two visual languages met.
+
+The artboard draws no playground, so there was nothing to reproduce and something to compose. The
+field is a component now, and every value in it is taken from the control the artboard *does* draw
+that is nearest in job: the ground, the hairline and the focus ring are the hero's search input, the
+padding is the install bar's, and the type is the snippet's, because what a reader types here is a
+value. The answer takes the snippet's own box. The section's rule holds nothing but geometry.
+
+**The answer carries no inks and cannot**, which is a fact about where the highlighter runs rather
+than a shortcut: `highlight.ts` drives the compiler's scanner through `typescript/unstable/ast`, a
+package no browser loads, so a call composed from what somebody has just typed is coloured by nothing.
+The alternative is the artboard's ten ordered regular expressions shipped to the browser, and ADR-0156
+measured what that class of reader does to this repository's own text. So the answer is the same box
+as the source above it, and plain inside: a reader sees a code block and nothing claims it was parsed.
+
+**Nothing had ever read what that form builds.** Sixteen guards ran against a served contract page and
+not one named the playground; `playground.test.ts` reads the value a call answers and stops there. So
+a form with no labels, one field for four arguments, or an answer in a bare element would have left
+every suite in this repository green - and the panel that had to be redrawn is the proof, because it
+sat there through the whole rewrite with nothing to say about it.
+
+Two guards close it, and the reason they had never been written is worth the line: the builder
+resolves its module against the document's own base, which under this suite is `http:` - a scheme
+node's loader refuses. The reference is handed over as a `data:` URL instead, the route
+`playground.test.ts` already takes to run the shipped module. **What that does not establish is that
+the relative address resolves in a browser**, and it is written where the helper is.
+
+**The first of the two was written, injected and came back green**, which is the finding. The page
+this suite is built around is `string/slugify@1`, which takes one argument - so *one field* and *a
+field per argument* are the same sentence there, and a builder made to build one field whatever a
+contract declares was invisible. The guard reads every contract with a playground now, and the cell
+reddens on `date/add@1`: **expected 1 to be 2**.
+
 ## What would reopen this
 
-- **The owner's ruling on the playground and on the four figures**, both still rendered and neither the
-  artboard's, because a capability is not removed by a mock-up that does not show it and a figure is
-  not removed by omission.
 - **A surface for `againstTheLanguage` or `correctionsToFrozenProse`**, if either earns one. The
-  consequence above is the argument; the decision is not this record's.
+  owner ruled the second stays served and unlaid-out; the first is unruled and the consequence above
+  is its argument.
 - **A contract whose implementation is more than one file.** The Source section renders a snippet per
   file already and shows the entry file's own path; what the extra files are labelled is that unit's,
   with the installer's relocation in view.
