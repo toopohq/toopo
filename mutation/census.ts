@@ -315,6 +315,14 @@
  * **It found its own instance on its first run**, which no row here has recorded before: `.recent h2`
  * was painting a component from outside, and nobody had read it. ADR-0183.
  *
+ * A thirtieth on the six inks: **one new file under the site's, carrying five, and no count moved**.
+ * It is the tenth's shape - a module of its own gets a file of its own - and it is a line here for
+ * how three of the five are accounted: `highlight.ts` classifies what `scanning.ts` reads, the drive
+ * was carved out of `served-modules.ts` in the same unit, and its two existing mutants turned out to
+ * redden a highlight guard apiece - so W-97 and W-98 gained a name each instead of a cell being
+ * written whose one-line mutant nobody could plausibly commit. The four cells that were written each
+ * landed on the guard whose claim they falsify, measured by hand before being pinned.
+ *
  * A twentieth on the address that goes on being written: one new file under the packaging's and no
  * count moved, which is the tenth's shape once more - a module of its own gets a file of its own. It is
  * a line here for what it says about *where* a network guard lands: the reading opens a socket, so the
@@ -466,6 +474,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'packages/site/vitest.config.ts': {
     'packages/site/components.test.ts': 3,
     'packages/site/document.test.ts': 20,
+    'packages/site/highlight.test.ts': 5,
     'packages/site/indexing.test.ts': 11,
     'packages/site/links.test.ts': 1,
     'packages/site/literal.test.ts': 12,

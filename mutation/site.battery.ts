@@ -63,6 +63,7 @@ const servedModulesFile = (find: string, replace: string) => ({
   replace,
 })
 const scanningFile = (find: string, replace: string) => ({ file: 'scanning.ts', find, replace })
+const highlightFile = (find: string, replace: string) => ({ file: 'highlight.ts', find, replace })
 const servedStylesheetFile = (find: string, replace: string) => ({
   file: 'served-stylesheet.ts',
   find,
@@ -159,6 +160,10 @@ const THE_BUTTON_HANDS_OUT_THE_SYSTEMS_PALETTE = `:root[data-theme='light'] {
 
 const THE_MODULES_ARE_STRIPPED_BEFORE_THEY_ARE_SERVED = `  withoutItsArgument(stripTypeScriptTypes(typescript, { mode: 'strip' }))`
 const THE_TEMPLATE_IS_RESUMED = `          token = scanner.reScanTemplateToken(false)`
+const A_COMMENT_TAKES_ITS_INK = `  if (A_COMMENT.has(token.kind)) return 'comment'`
+const THE_TYPE_WORDS_ARE_READ = `  if (THE_TYPE_WORDS.has(text)) return 'type'`
+const A_REGEX_IS_STRING_SHAPED = `  SyntaxKind.RegularExpressionLiteral,`
+const A_CALL_IS_THE_NEXT_TOKENS_PARENTHESIS = `  return next !== undefined && next.kind === SyntaxKind.OpenParenToken`
 const A_COMMENT_ENDS_WHERE_IT_ENDS = `to: scanner.getTokenEnd()`
 const A_REFERENCE_KEEPS_ITS_ARGUMENT = `  return asAContractsReference(blob.bytes.toString('utf8'))`
 const A_MODULE_CARRIES_NO_DIRECTIVE = `export const escaped = (character: string): string => {`
@@ -2786,17 +2791,24 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
     // reading of n characters takes at most n + 1 steps - and every guard that reads a served module
     // reddens on the refusal. Measured: 2.1 s where it used to run for ever.
     //
-    // Four rather than three since the drive moved to scanning.ts, and the fourth was owed before the
-    // move: playground.test.ts has reached the reader through asABrowserModule since fed2334, and
-    // injecting this mutant by hand at the commit before the move reddens the same four guards - so
-    // the pin of three was already stale against a direct run of the suite. The last green replay of
-    // this battery predates nothing that explains it, and no cause is named here for that
-    // disagreement; the next replay is what settles which environment reads true.
+    // Four rather than three since the drive moved to scanning.ts, and the fourth was owed before
+    // the move: playground.test.ts has reached the reader through asABrowserModule since fed2334,
+    // and injecting this mutant by hand at the commit before the move reddened the same four. What
+    // let every replay stay green through that is the mechanism and never the environment:
+    // agreesWith in run.ts checks a pin by inclusion - every named guard red, extra reds never
+    // disagree - so ADR-0076's five-or-fewer-names-all-of-them is a writing convention no replay
+    // can enforce, and auditing a pin means injecting its mutant by hand and reading the suite.
+    //
+    // Five rather than four when the highlighter became the drive's second reader: a template that
+    // never resumes misclassifies without breaking the tiling, so the resumption guard reddens and
+    // the totality guard does not. Measured by hand with the mutant injected: exactly these five
+    // red, 195 of 200 green.
     killed([
       'every-module-a-reader-runs-carries-no-comment',
       'a-module-a-reader-runs-is-the-program-its-source-declares',
       'no-module-a-reader-runs-carries-a-comment-a-tool-reads',
       'every-import-a-browser-module-keeps-is-a-module-the-site-writes',
+      'a-template-resumes-in-the-string-ink-after-its-substitution',
     ]),
   ),
 
@@ -2811,7 +2823,90 @@ ${WHAT_THE_CONTRACT_SAYS_IS_ON_ITS_OWN}`,
       'past the end of every comment, right about where each one starts and wrong about where it ' +
       'stops, in a language where a byte beside a comment decides where a statement ends',
     [scanningFile(A_COMMENT_ENDS_WHERE_IT_ENDS, `to: scanner.getTokenEnd() + 2`)],
-    killed(['a-module-a-reader-runs-is-the-program-its-source-declares']),
+    // Two names out of a measured six, which is ADR-0076's other arm: with the highlighter reading
+    // the drive, overlapping tokens redden every classification guard beside the two this mutant
+    // exercises - the tree comparison it was written for, and the totality of the highlighted runs,
+    // which no plausible one-line mutant of highlight.ts alone can redden and which this pin is
+    // therefore the accounting for. Measured by hand: 6 failed, 194 of 200 green.
+    killed([
+      'a-module-a-reader-runs-is-the-program-its-source-declares',
+      'every-character-of-a-highlighted-source-reaches-the-reader',
+    ]),
+  ),
+
+  // -------------------------------------------------------------------------
+  // W-155 to W-158 - the classifier over the drive
+  // -------------------------------------------------------------------------
+  //
+  // The four cells below inject into `highlight.ts` and never into the drive: the drive's own
+  // mutants are W-97 and W-98 above, whose pins each gained a highlight guard when the highlighter
+  // became the drive's second reader. What is left to break here is the classification, and each
+  // cell lands on the guard whose claim it falsifies - measured by hand before being pinned, every
+  // one red on exactly the guards its pin names.
+
+  /**
+   * The ink the redesign exists to bring, dropped at the classifier rather than at the palette.
+   * W-24c is the palette half of this defect; this is the other half, and either alone leaves every
+   * example's answer unreadable as an answer. `return null` rather than the line removed, because
+   * the compiler refuses the removal - `A_COMMENT` would go unread - and a cell the typechecker
+   * kills measures the compiler instead of the guard.
+   */
+  sameOnEveryLens(
+    'W-155',
+    'stops classing a comment, so every answer this page prints - the artboard writes each one as ' +
+      'a comment - is set in the page’s own ink. Nothing looks wrong: the text is all there, ' +
+      'and an ink is a colour nobody reads off a screen',
+    [highlightFile(A_COMMENT_TAKES_ITS_INK, `  if (A_COMMENT.has(token.kind)) return null`)],
+    killed(['an-answer-written-as-a-comment-takes-the-comment-ink']),
+  ),
+
+  /**
+   * The plausible merge of two inks into one, since the type words are keywords to the scanner
+   * anyway for half the list - `string`, `number`, `null` - and the difference only shows on the
+   * globals beside them.
+   */
+  sameOnEveryLens(
+    'W-156',
+    'sets the type words in the keyword ink, which reads as a simplification - the scanner calls ' +
+      'half of them keywords already - and erases the one distinction the artboard’s two word ' +
+      'lists exist to draw',
+    [highlightFile(THE_TYPE_WORDS_ARE_READ, `  if (THE_TYPE_WORDS.has(text)) return 'keyword'`)],
+    killed(['a-word-takes-the-ink-of-what-it-says']),
+  ),
+
+  /**
+   * The edit that reads as a correction - a regular expression is not a string - and unpaints the
+   * one token kind whose misreading ADR-0156 measured inventing comments. The drive still reads the
+   * regex right; what is lost is only that a reader sees it as the literal it is.
+   */
+  sameOnEveryLens(
+    'W-157',
+    'takes the regular expression out of the string shapes, so a pattern reads as plain text and ' +
+      'the slash rule the drive resolves is invisible on the one page that shows code',
+    [highlightFile(A_REGEX_IS_STRING_SHAPED, ``)],
+    killed(['a-slash-is-inked-for-what-it-does']),
+  ),
+
+  /**
+   * The flipped comparison anybody writes, and it inverts the function ink exactly: every name
+   * loses it and every word followed by anything else gains it, so the page still glows with the
+   * right number of colours in roughly the right places.
+   */
+  sameOnEveryLens(
+    'W-158',
+    'inverts the parenthesis test, so a call reads as a name and a name as a call - three guards ' +
+      'see it because the function ink leaks onto words all over their samples',
+    [
+      highlightFile(
+        A_CALL_IS_THE_NEXT_TOKENS_PARENTHESIS,
+        `  return next !== undefined && next.kind !== SyntaxKind.OpenParenToken`,
+      ),
+    ],
+    killed([
+      'a-word-takes-the-ink-of-what-it-says',
+      'an-answer-written-as-a-comment-takes-the-comment-ink',
+      'a-template-resumes-in-the-string-ink-after-its-substitution',
+    ]),
   ),
 
   /**
