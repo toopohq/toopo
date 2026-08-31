@@ -3,12 +3,10 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/site/contract-page.ts
+  nothing: what it decided was a removal, and a removal is not implemented anywhere - the section it took out is still absent and the page it measured has been rebuilt since
 confirmed-by:
   - battery: site
     guard: the-cost-a-page-states-is-what-lands-and-not-what-is-served
-  - battery: site
-    guard: the-rail-of-a-page-names-every-section-of-it-and-only-those
 ---
 
 # What a page is long in is measured, and it is not the wrapping

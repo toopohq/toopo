@@ -3,10 +3,8 @@ status: accepted
 date: 2026-08-18
 decision-makers: Mathis Perron
 governs:
-  - packages/site/contract-page.ts
+  nothing: the two halves it settled were rebuilt out of the contract page, and no file implements the divider, the rail or the split it decided
 confirmed-by:
-  - battery: site
-    guard: the-rail-of-a-page-names-every-section-of-it-and-only-those
 ---
 
 # The page is read in two halves

@@ -130,18 +130,46 @@ export type RecordLink = {
 }
 
 /**
+ * What a decision rules: the files, or the declared absence of any.
+ *
+ * **This is ADR-0001's own sentence taking its first instance.** That record required `governs` to be
+ * present and non-empty, and wrote down what the day would take when one was owed: *the day a decision
+ * genuinely rules no code, what it takes is an absence declared with its reason - never a field left
+ * out, which reads exactly like a field forgotten.* It was written with no instance, and ADR-0186 is
+ * the day.
+ *
+ * **A union rather than a string convention**, which is the shape ADR-0054 asks for: a reader of
+ * `governs` has to say which of the two it has, and the compiler is what asks. A sentinel path - a
+ * literal `nothing` among the files - would have been a convention with a comment in front of it, and
+ * every one of the three readers below would have had to remember it.
+ *
+ * The absence carries a reason and not a flag, because *what it takes is an absence declared with its
+ * reason*: a record that rules no code is one somebody has to be able to ask **why** about, and the
+ * answer is not derivable from anything - a decision may rule nothing because it was superseded, or
+ * because what it decided was a removal, or because it settled a question about the project rather
+ * than about its code.
+ */
+export type TheCodeADecisionRules =
+  | { readonly kind: 'these-files'; readonly files: readonly string[] }
+  | { readonly kind: 'no-code'; readonly because: string }
+
+/**
  * One decision record, reduced to the references it makes.
  *
  * `governs` and `confirmedBy` are `null` for a field that is absent or malformed, never an empty
  * array standing in for one. A field nobody wrote and a field declaring nothing are different
  * mistakes, and collapsing them would make every guard below quietly pass on a record whose front
  * matter somebody deleted - `declarationFaults` is what keeps the other seven from being vacuous.
+ *
+ * **A declared absence is a third state and not a fourth mistake.** `null` is a field nobody wrote,
+ * an empty list is a field that says nothing, and `no-code` is a field that says *no code, and here
+ * is why* - which is the one of the three that is correct.
  */
 export type Decision = {
   /** The address, which is the number and never the slug. */
   readonly id: string
   readonly file: string
-  readonly governs: readonly string[] | null
+  readonly governs: TheCodeADecisionRules | null
   readonly confirmedBy: readonly GuardAddress[] | null
   readonly links: readonly RecordLink[]
   readonly reopens: boolean
@@ -168,15 +196,40 @@ const blockOf = (frontMatter: string, key: string): Block | null => {
   }
 }
 
-const governsOf = (block: Block | null): readonly string[] | null => {
+/**
+ * The one spelling of a declared absence, which is a key rather than an item.
+ *
+ * `nothing:` and not `- nothing`, so the two forms cannot be confused by anything reading this front
+ * matter: a list of paths is a sequence and an absence is a mapping, and no path can be spelled to
+ * look like one.
+ */
+const RULES_NO_CODE = /^ {2}nothing: (\S.*)$/
+
+const governsOf = (block: Block | null): TheCodeADecisionRules | null => {
   if (block === null) return null
-  if (block.inline === '[]') return []
+  if (block.inline === '[]') return { kind: 'these-files', files: [] }
   if (block.inline !== '') return null
+
+  const declared = block.entries.length === 1 ? RULES_NO_CODE.exec(block.entries[0] as string) : null
+  if (declared !== null) return { kind: 'no-code', because: declared[1] as string }
 
   const paths = block.entries.map((line) => /^ {2}- (\S.*)$/.exec(line)?.[1])
 
-  return paths.every((path) => path !== undefined) ? (paths as readonly string[]) : null
+  return paths.every((path) => path !== undefined)
+    ? { kind: 'these-files', files: paths as readonly string[] }
+    : null
 }
+
+/**
+ * The files a decision names, which is none where it declares that it rules no code.
+ *
+ * The three readers below ask about paths, and a record that names none has nothing for them to be
+ * wrong about. The distinction between *no files* and *an absence declared* is `declarationFaults`'s
+ * and is kept there rather than in each of them, which is where it can be got wrong once instead of
+ * three times.
+ */
+const theFilesOf = (decision: Decision): readonly string[] =>
+  decision.governs?.kind === 'these-files' ? decision.governs.files : []
 
 /**
  * The pairs, read two lines at a time.
@@ -341,7 +394,9 @@ const isFile = (path: string): boolean => {
 export const declarationFaults = (decisions: readonly Decision[]): readonly string[] =>
   decisions.flatMap((decision) => [
     ...(decision.governs === null ? [of(decision, 'governs is absent or malformed')] : []),
-    ...(decision.governs?.length === 0 ? [of(decision, 'governs declares nothing')] : []),
+    ...(decision.governs?.kind === 'these-files' && decision.governs.files.length === 0
+      ? [of(decision, 'governs declares nothing, where an absence is declared with its reason')]
+      : []),
     ...(decision.confirmedBy === null ? [of(decision, 'confirmed-by is absent or malformed')] : []),
   ])
 
@@ -354,7 +409,7 @@ export const declarationFaults = (decisions: readonly Decision[]): readonly stri
  */
 export const guardFileFaults = (decisions: readonly Decision[]): readonly string[] =>
   decisions.flatMap((decision) =>
-    (decision.governs ?? [])
+    theFilesOf(decision)
       .filter((path) => A_TEST_FILE.test(path))
       .map((path) =>
         of(decision, `governs ${path}, which holds guards - a guard is named under confirmed-by`),
@@ -370,7 +425,7 @@ export const guardFileFaults = (decisions: readonly Decision[]): readonly string
  */
 export const pathFaults = (decisions: readonly Decision[]): readonly string[] =>
   decisions.flatMap((decision) =>
-    (decision.governs ?? [])
+    theFilesOf(decision)
       .filter((path) => !isFile(path))
       .map((path) => of(decision, `governs ${path}, and no file is there`)),
   )
@@ -384,7 +439,7 @@ export const pathFaults = (decisions: readonly Decision[]): readonly string[] =>
  */
 export const backCitationFaults = (decisions: readonly Decision[]): readonly string[] =>
   decisions.flatMap((decision) =>
-    (decision.governs ?? [])
+    theFilesOf(decision)
       .filter(isFile)
       .filter((path) => !readFileSync(join(THE_REPOSITORY, path), 'utf8').includes(`ADR-${decision.id}`))
       .map((path) => of(decision, `governs ${path}, and nothing in it cites ADR-${decision.id}`)),
