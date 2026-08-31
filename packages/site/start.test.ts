@@ -116,8 +116,19 @@ const aPlaygroundRunningItsOwnReference = async (held: Held): Promise<void> => {
  * whatever the contract declares, the guard over `string/slugify@1` alone stayed green: that contract
  * takes one argument, so *one field* and *a field per argument* are the same sentence there. The arm
  * that counts had nothing to count.
+ *
+ * **It is a function and not a constant, and that is a rule rather than a style.** Written as a
+ * constant it ran while this file was being collected, so a defect in the code under test took the
+ * whole file down instead of reddening a guard: measured, `site · W-20` - which gives the refused
+ * contract a page it has no binding for - made `heldByTheRegistry` throw at collection, and the run
+ * reported **0 guards collected and none of them failed**, which is a verdict nobody can attribute.
+ * The instrument refused it on the first replay.
+ *
+ * It is the class `CLAUDE.md` carries as an open entry - *a test file goes on answering when the code
+ * under it is wrong* - arriving on a second file. Nothing fallible belongs in a setup here; a guard is
+ * where a defect in the code under test has to land.
  */
-const EVERY_CONTRACT_WITH_A_PLAYGROUND: readonly Held[] = heldByTheRegistry(source)
+const everyContractWithAPlayground = (): readonly Held[] => heldByTheRegistry(source)
 
 /** That contract's page as it is served, loaded into the document the builders will read. */
 const aServedPageFor = (held: Held): void => {
@@ -290,7 +301,7 @@ describe('the controls a visitor touches, run against a document', () => {
   it('the-playground-builds-a-field-per-argument-and-answers-in-a-code-block', async () => {
     let sweptAFormOfSeveral = false
 
-    for (const held of EVERY_CONTRACT_WITH_A_PLAYGROUND) {
+    for (const held of everyContractWithAPlayground()) {
       const what = renderContract(held.contract.address)
       aServedPageFor(held)
       await aPlaygroundRunningItsOwnReference(held)
@@ -346,7 +357,7 @@ describe('the controls a visitor touches, run against a document', () => {
    * builds perfectly, and a form that runs on every keystroke can still be built without labels.
    */
   it('typing-into-the-playground-answers-again', async () => {
-    const held = EVERY_CONTRACT_WITH_A_PLAYGROUND[0] as Held
+    const held = everyContractWithAPlayground()[0] as Held
     aServedPageFor(held)
     await aPlaygroundRunningItsOwnReference(held)
 
