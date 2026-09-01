@@ -8,11 +8,14 @@ confirmed-by: []
 
 # The search below the bound is conducted on the language's own surface
 
-> **This record is committed in two halves and the order is the evidence.** Everything under
-> *The method, declared before the first probe* was written and committed before any candidate had
-> been looked at; the findings were added afterwards. A criterion written after the results bends to
-> them, and a record claiming otherwise is worth exactly what its own history says — so the history is
-> the claim.
+> **This record is committed in two halves and the order is the evidence.** *The method, declared
+> before the first probe* and the prediction closing it were written and committed at **`998b6f7`**,
+> before any candidate had been looked at; everything else was added afterwards. A criterion written
+> after the results bends to them, and a record claiming otherwise is worth exactly what its own
+> history says — so the history is the claim, and it is checkable: **that section is byte-identical
+> between `998b6f7` and this commit**, heading to the last line of the prediction. What did move
+> afterwards is named here so the claim is not read as wider than it is — *What would reopen this*,
+> the consequences, the coordinates, and this note, which cannot describe a commit it precedes.
 > [ADR-0176](0176-a-condition-written-in-advance-is-what-decided-the-font.md) is the discipline this
 > follows, where a condition written a year in advance is what decided a question nobody could have
 > argued down on the day.
