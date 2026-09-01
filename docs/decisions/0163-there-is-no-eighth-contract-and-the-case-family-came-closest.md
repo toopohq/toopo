@@ -8,6 +8,23 @@ confirmed-by: []
 
 # There is no eighth contract, and the case family came closest
 
+> **The reopening entry below — *A better demand signal than npm downloads* — is answered and closed,
+> and *now leaned on twice more* carries the same defect as the sentence it restates.**
+> [ADR-0191](0191-a-demand-signal-decides-what-is-measured-and-never-what-is-refused.md) applied the
+> rule both records imply — strike every clause carrying an install figure and see whether a refusal
+> still stands — and this record adds three figure-carrying refusals and no leaning one:
+> `string/camel-case` keeps leg C, `object/flatten` keeps three product choices, and
+> `string/compare-natural` keeps ECMA-402. The figures are not corrected here, because this record is
+> stamped. **No refusal in this catalogue's history now depends on a demand figure**, this record's own
+> line 292 being what took the last one away from `array/binary-search`.
+>
+> **Two things below are load-bearing on what replaced the entry.** Line 386 —
+> *144.68 M weekly, which is what made it worth measuring rather than dismissing* — is the criterion's
+> permitted half, practised correctly here before it was named. And line 447, the ecosystem below about
+> 20 M weekly left out, is where the demand dependence actually was: it is an entry of `CLAUDE.md`'s
+> open list now, because a bound nothing revisits makes a selection error as silent as a refusal error.
+> Nothing else below is retracted.
+
 ## Context and Problem Statement
 
 The catalogue holds seven contracts and six installable ones. ADR-0158 chose the seventh and, more

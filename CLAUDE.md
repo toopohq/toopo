@@ -1962,6 +1962,38 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   is argued in a record before it is written into a source. Priced as its own unit and not taken.
   ADR-0177.
 
+- **That the ecosystem a search looked at is the ecosystem the rule decides over.** ADR-0191 settles
+  that a demand signal may decide what is *measured* and never what is refused, and the argument for
+  permitting the first half is that a selection error self-corrects — the candidate is measured, rule 7
+  decides, a false alarm costs a probe. **That clause has a premise, and one standing bound breaks
+  it**: below the bound the candidate is never measured at all, so the error is as final and as silent
+  as a refusal error while wearing the shape of no decision.
+
+  **It is not hypothetical and it is declared rather than discovered.** ADR-0163 states, at its line
+  447, that *what was left out is the ecosystem below about 20 M weekly downloads, which is where a
+  function with a real disagreement and no audience would sit*, and calls it a deliberate narrowing.
+  Two searches have now run under it. **The failure has no event**: a candidate nobody looked at files
+  no dossier, reddens nothing, and appears in no table of refusals — so the eighth search reads twenty-
+  seven refusals and cannot tell which questions were never asked.
+
+  **The sweep that classed every install figure in both records found it before it was classed**, as
+  the one figure clause in either record attached to no refusal. That is the reading that separates it
+  from the entry it survives: the demand dependence was never in a refusal, it was in the bound.
+
+  **Where this looked**: the ten refused briefly in ADR-0163 and the four in ADR-0158, every one of
+  which names a candidate somebody proposed rather than one a sweep returned; `theCatalogue` in
+  `packages/registry/the-catalogue.ts`, which knows what was published and nothing about what was
+  considered; and ADR-0191's own calibration, which is over the 34 addresses this catalogue has ruled
+  on and therefore inherits the narrowing whole — a signal shown to fail above the bound is not shown
+  to fail below it.
+
+  **The population is every candidate the two searches did not reach**, and nothing here bounds it,
+  because the set of functions somebody might want is not enumerable from this repository. What would
+  close it is not a guard: it is a search conducted below the bound, whose result is publishable
+  whether or not it finds anything — ADR-0163 having established that a negative is a result. Priced as
+  its own unit and not taken, because a unit whose subject is what a signal may decide is not where one
+  decides to run a search. ADR-0163, ADR-0191.
+
 - **That an address a frozen file cites is one that resolves where the file is frozen.** A citation
   whose target is frozen beside it can never rot: the two move together or not at all. A citation
   whose target is an ordinary source of this repository rots the day that source is renamed, and
@@ -3895,6 +3927,19 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
   0 of 6, because it is the only one that was never published.
   `no-two-profiles-of-an-unpublished-contract-are-indistinguishable` holds every contract that can
   still act on it. ADR-0171.
+- **A demand signal decides what is measured and never what is refused.** The asymmetry is what makes
+  it derivable rather than a taste: a selection error self-corrects — the candidate is measured, rule 7
+  decides, and a false alarm costs one probe — where a refusal error is final and silent. So a figure
+  may say *this is worth measuring* and may never appear in the sentence that turns a candidate down.
+  **No refusal in this catalogue's history now depends on one**: seven of the twenty-seven carry an
+  install figure, six stand whole once it is struck, and `array/binary-search` — the one that did not —
+  took a second and independent motive at ADR-0163. **No signal available separates the published from
+  the refused**: measured at `3cec9a8` over all 34 addresses, npm downloads reach an AUC of 0.296,
+  manifest adoption 0.414 and hand-rolled implementations 0.475, where 0.5 is a coin flip. The cause is
+  why no better one is coming — a demand signal measures where an ecosystem is busy, rule 7 asks where
+  the language is wrong, and where the language is wrong there is no busy ecosystem, because the
+  incumbent is the language itself. `number/parse@1`, `date/add@1` and `number/round@1` rank 33rd, 32nd
+  and 31st of 34. ADR-0191.
 
 **What the next contract has to carry before it is frozen, and what it does not.** Every line below
 is on this list for one reason and states it: after the digest is minted, permanent rule 6 forbids the

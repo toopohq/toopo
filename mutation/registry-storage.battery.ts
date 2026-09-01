@@ -382,6 +382,8 @@ const THE_SOURCE_CARRIES_NPM_S_PREFIX = `export const THE_SOURCE_REPOSITORY = 'g
 
 const THE_ADDRESS_IS_THE_PROJECT_S = `  email: 'hello@toopo.dev',`
 
+const THE_NAME_IS_THE_PROJECT_S = `  name: 'Toopo',`
+
 const AN_EDGE_READS_THE_DIGEST_OFF_THE_ARTEFACT =
   '    digest: digestOfSnapshot(implementationSnapshot(target)),'
 
@@ -1096,6 +1098,28 @@ const mutants: readonly Mutant[] = [
     'publishes a personal e-mail as the package author instead of the project address, in a manifest ' +
       'field that is immutable once a version exists',
     [publicationFile(THE_ADDRESS_IS_THE_PROJECT_S, `  email: 'mathis.perron@example.com',`)],
+    killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
+  ),
+
+  /**
+   * The author's name becomes a person's, which is what the field held until ADR-0190.
+   *
+   * **It is not I-34 with the other half of the field edited, and the pin is where the difference
+   * is.** Until ADR-0190 one constant fed both this field and `THE_COPYRIGHT`, so this exact edit
+   * reddened the manifest guard *and* the marking guards over the five copied files, and said nothing
+   * about which of them reads a manifest. That record parted the two, and the name now reaches the
+   * manifest alone. So the cell names one guard, and naming one is the assertion: re-couple the
+   * holder to the author and this cell reddens two, disagreeing with what its battery pins for it.
+   * The parting is otherwise kept by nothing that runs - ADR-0190 demonstrated it by hand, once.
+   *
+   * It closes that record's own declared absence, which said in as many words that the name was a
+   * mutable point no cell aimed at. ADR-0190, ADR-0191.
+   */
+  sameOnEveryLens(
+    'I-81',
+    "publishes a person's name as the package author instead of the project's, in a manifest field " +
+      'that is immutable once a version exists',
+    [publicationFile(THE_NAME_IS_THE_PROJECT_S, `  name: 'Mathis Perron',`)],
     killed(['the-public-fields-npm-shows-are-the-ones-this-code-declares']),
   ),
 

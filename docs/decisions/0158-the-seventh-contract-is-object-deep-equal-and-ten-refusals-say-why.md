@@ -8,6 +8,22 @@ confirmed-by: []
 
 # The seventh contract is `object/deep-equal`, and ten refusals say why
 
+> **The reopening entry below — *A better demand signal than npm downloads* — is answered and closed,
+> and the count in it was wrong when it was written.**
+> [ADR-0191](0191-a-demand-signal-decides-what-is-measured-and-never-what-is-refused.md) applied the
+> rule this record implies — strike every clause carrying an install figure and see whether a refusal
+> still stands — and found **one** refusal leaning on demand rather than two, `array/binary-search`;
+> and nought today, since ADR-0163 gave that candidate a second and independent motive. The figure is
+> not corrected here, because this record is stamped, on the treatment
+> [ADR-0190](0190-the-name-comes-out-of-everywhere-a-digest-does-not-reach.md) gave ADR-0187's 185 and
+> for [ADR-0018](0018-a-published-count-carries-its-coordinates.md)'s reason.
+>
+> **What the entry asked for does not exist, and ADR-0191 measured that rather than waiting.** Over
+> all 34 addresses this catalogue has ruled on, npm downloads, manifest adoption and hand-rolled
+> implementations reach AUC 0.296, 0.414 and 0.475, where 0.5 is a coin flip. What replaces the entry
+> is a rule needing no instrument: **a demand signal decides what is measured and never what is
+> refused.** Nothing else below is retracted, and the refusals stand as they are written.
+
 ## Context and Problem Statement
 
 The catalogue holds six contracts and five installable ones. What makes the product more useful is
