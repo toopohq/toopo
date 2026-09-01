@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-19
-decision-makers: Mathis Perron
 governs:
   - packages/registry/address.ts
   - packages/site/contract-page.ts

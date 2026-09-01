@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-15
-decision-makers: Mathis Perron
 governs:
   - packages/cli/remove-directory.ts
   - vitest-entry-point.ts

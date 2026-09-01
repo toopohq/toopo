@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-15
-decision-makers: Mathis Perron
 governs:
   - packages/catalogue/identifier.ts
   - packages/catalogue/every-contract.ts

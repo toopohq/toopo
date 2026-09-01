@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-31
-decision-makers: Mathis Perron
 governs:
   - packages/site/contract-page.ts
   - packages/site/style.ts

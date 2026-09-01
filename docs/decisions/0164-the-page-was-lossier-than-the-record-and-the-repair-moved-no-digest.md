@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-25
-decision-makers: Mathis Perron
 governs:
   - packages/site/literal.ts
   - packages/site/read-literal.ts

@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-27
-decision-makers: Mathis Perron
 governs:
   - packages/cli/command.ts
   - packages/cli/published.ts

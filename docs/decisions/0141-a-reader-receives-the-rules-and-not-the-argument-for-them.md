@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-20
-decision-makers: Mathis Perron
 governs:
   - packages/site/served-stylesheet.ts
   - packages/site/document.ts

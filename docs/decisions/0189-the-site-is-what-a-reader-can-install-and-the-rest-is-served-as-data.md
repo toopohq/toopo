@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-09-01
-decision-makers: Mathis Perron
 governs:
   - packages/site/site.ts
   - packages/site/paths.ts

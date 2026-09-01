@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-20
-decision-makers: Mathis Perron
 governs:
   - packages/registry/address.ts
   - packages/registry/imagined-addresses.ts

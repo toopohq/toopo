@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-19
-decision-makers: Mathis Perron
 governs:
   nothing: what it decided was a removal, and a removal is not implemented anywhere - the section it took out is still absent and the page it measured has been rebuilt since
 confirmed-by:

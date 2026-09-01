@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-19
-decision-makers: Mathis Perron
 governs:
   - packages/site/searching.ts
   - packages/site/chrome.ts

@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-30
-decision-makers: Mathis Perron
 governs:
   - packages/site/what-a-card-says.ts
   - packages/site/contract-page.ts

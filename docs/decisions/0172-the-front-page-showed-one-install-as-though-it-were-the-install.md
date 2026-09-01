@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-28
-decision-makers: Mathis Perron
 governs:
   - mutation/root-documents.ts
 confirmed-by:

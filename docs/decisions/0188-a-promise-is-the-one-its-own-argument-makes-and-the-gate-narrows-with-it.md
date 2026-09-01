@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-09-01
-decision-makers: Mathis Perron
 governs:
   - packages/site/not-found-page.ts
   - packaging/what-the-origin-lists.ts

@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-18
-decision-makers: Mathis Perron
 governs:
   - .github/workflows/suites.yml
   - packaging/what-the-origin-lists.ts

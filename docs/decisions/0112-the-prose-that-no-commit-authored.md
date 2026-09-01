@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-18
-decision-makers: Mathis Perron
 governs:
   - mutation/hands.ts
 confirmed-by:

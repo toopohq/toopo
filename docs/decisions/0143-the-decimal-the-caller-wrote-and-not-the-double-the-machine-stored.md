@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-20
-decision-makers: Mathis Perron
 governs:
   - contracts/typescript/number/round/contract.ts
   - contracts/typescript/number/round/reference.ts

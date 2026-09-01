@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-23
-decision-makers: Mathis Perron
 governs:
   - packages/registry/licence.ts
   - packages/registry/serialise.ts

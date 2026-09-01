@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-24
-decision-makers: Mathis Perron
 governs:
   - packages/registry/contract-record.ts
   - packages/registry/snapshot.ts

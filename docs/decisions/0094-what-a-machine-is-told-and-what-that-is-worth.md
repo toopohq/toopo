@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-16
-decision-makers: Mathis Perron
 governs:
   - packages/site/document.ts
   - packages/site/indexing.ts

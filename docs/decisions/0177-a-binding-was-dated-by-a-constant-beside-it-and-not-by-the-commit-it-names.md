@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-30
-decision-makers: Mathis Perron
 governs:
   - packages/registry/publication.ts
   - packages/registry/local-read-api.ts

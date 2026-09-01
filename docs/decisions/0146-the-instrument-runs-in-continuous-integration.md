@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-21
-decision-makers: Mathis Perron
 governs:
   - mutation/selection.ts
   - mutation/print-which-batteries-to-replay.ts

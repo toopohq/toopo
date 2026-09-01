@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-19
-decision-makers: Mathis Perron
 governs:
   nothing: ADR-0189 reversed it - a contract the catalogue turned down has no page on this site at all, so the arm of `theSite` this ruled is gone and no file implements it
 confirmed-by:

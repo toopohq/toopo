@@ -1,7 +1,6 @@
 ---
 status: accepted
 date: 2026-08-17
-decision-makers: Mathis Perron
 governs:
   - packages/registry/serialise.ts
   - packages/registry/contract-record.ts
