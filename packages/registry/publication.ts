@@ -61,19 +61,20 @@ export const THE_SOURCE_REPOSITORY = 'git+https://github.com/toopohq/toopo.git'
  * identity a future commit takes is `user.email` in a local config no clone carries, so this paragraph
  * is the whole of what a reader of a fresh checkout is told.
  *
- * The name is declared here and nowhere else: `THE_COPYRIGHT` composes the copyright line from it, so
- * the holder of the licence and the author of the package are one string rather than two that agree
- * today. What keeps that recomposition honest is not a new guard but an old one - every copied file is
- * compared against `licenceHeaderOf` byte for byte, so a composition that drifts by a character
- * reddens the marking guard.
+ * **The name is the project's and not a person's, and it parted from the copyright at ADR-0190.** One
+ * constant used to feed both this field and `THE_COPYRIGHT`, so that the holder of the licence and the
+ * author of the package were one string rather than two that agree today. The two are not the same
+ * kind of value: the copyright line is inside the digests of the five contracts published under
+ * `a-copyright-beside-the-marking` and is frozen for the life of those majors, where this field is
+ * rewritten by any release. Sharing a literal across that boundary does not keep them equal - it holds
+ * the free one at whatever the frozen one says.
  *
- * **The name reaches two things and only one of them is the copyright.** `THE_AUTHOR_FIELD` below
- * composes the manifest's `author` from it, and that is unconditional; `THE_COPYRIGHT` composes the
- * second line of the contracts that declare `a-copyright-beside-the-marking`, which is every published
- * one and no future one. ADR-0159.
+ * So `THE_COPYRIGHT_HOLDER` is declared in `licence.ts` beside the line it composes, and this is the
+ * author npm shows: the project, reachable at an address that survives whoever answers it. ADR-0159,
+ * ADR-0190.
  */
 export const THE_AUTHOR = {
-  name: 'Mathis Perron',
+  name: 'Toopo',
   email: 'hello@toopo.dev',
 } as const
 

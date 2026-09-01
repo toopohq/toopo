@@ -3327,8 +3327,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   graph would be red the day it was written, and **those seventeen are what this entry will never
   cover.** Taking them out costs a second `filter-repo` over four hundred commits, and that was priced
   and refused knowingly: a folder path is not harvestable the way the address ADR-0095 removed is, and
-  the given name it reveals is already published by the manifest, by `LICENSE`, by every installed
-  header and by the `decision-makers` of every record in `docs/decisions/`. **What is worth keeping is
+  the given name it reveals is already published by `LICENSE` and by the second line of every file the
+  five contracts published under `a-copyright-beside-the-marking` install. **ADR-0190 took two surfaces
+  off that list and the argument came out stronger rather than thinner**: the manifest and the
+  `decision-makers` of 189 records were the two that a release or an edit could withdraw, and the two
+  that remain are the two nothing can — `LICENSE` is where the owner has decided the name belongs, and
+  the five headers are inside digests other people's lockfiles hold. A name published by what cannot be
+  withdrawn is not made private by rewriting what can. **What is worth keeping is
   the recurrence and not the frozen seventeen** — a stack trace pasted into a comment, a path copied out
   of an error message — and that arrives in the working tree, where a reading is green today and red on
   the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in

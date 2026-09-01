@@ -309,7 +309,7 @@ describe('a binding is dated by the commit it names, and this is what says so', 
   it('a-commit-whose-date-cannot-be-read-is-refused :: an unreadable answer is not a mismatch', () => {
     const faults = misdatedBindings(
       ledgerOf(entry(ADDRESS, AS_PUBLISHED, A_COMMIT)),
-      () => 'Mathis Perron',
+      () => 'An Author Name',
     )
 
     expect(faults).toHaveLength(1)

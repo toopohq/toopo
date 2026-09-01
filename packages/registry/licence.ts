@@ -85,13 +85,35 @@
 
 import type { ContractAddress } from './address.js'
 import { contractUrl, renderContract } from './address.js'
-import { THE_AUTHOR } from './publication.js'
 
 /** What this repository is under, and the value `package.json` carries. */
 export const THE_REPOSITORY_LICENCE = 'MIT'
 
 /** What the installer's copies are under. An SPDX identifier, because the marking has to be machine-read. */
 export const THE_COPIED_LICENCE = 'MIT-0'
+
+/**
+ * Whose name the frozen headers carry, and the one place in this repository it is still spelled.
+ *
+ * **It was the author of the package until ADR-0190 and it is not one any more.** A single constant
+ * fed both, on the argument that two literals of one person's name agree on the day they are written
+ * and are two things to correct afterwards. What that argument did not carry is that only one of the
+ * two can ever be corrected: this string is inside the contract and implementation digests of the
+ * five contracts published while `a-copyright-beside-the-marking` was the current banner, so it is
+ * frozen for the life of those majors, where the manifest's `author` is rewritten by any release. A
+ * shared literal between a frozen value and a free one does not keep the two equal - it holds the
+ * free one still.
+ *
+ * So the name is spelled here, reaches the line below and reaches nothing else. `THE_AUTHOR` composes
+ * the manifest's own field from the project's name, which is what a reader of `package.json` is
+ * looking for and what a personal name was standing in for.
+ *
+ * **The recomposition needs no guard of its own**: `every-file-the-installer-copies-is-marked-mit-0`
+ * compares every copied file against `licenceHeaderOf` byte for byte, so a composition off by a
+ * character is already red - and `every-published-binding-still-hashes-to-what-it-was-published-as`
+ * refuses it a second time, rebuilding each of the five at the commit it was published from.
+ */
+export const THE_COPYRIGHT_HOLDER = 'Mathis Perron'
 
 /**
  * The holder and the year, written once.
@@ -101,21 +123,12 @@ export const THE_COPIED_LICENCE = 'MIT-0'
  * between runs. It moves when somebody publishes a new contract in a new year, which is the correct
  * behaviour for a copyright line and the reason it is not derived from anything.
  *
- * **The holder is the author of the package**, so it is composed from `THE_AUTHOR` rather than spelled
- * a second time. Two literals of one person's name agree on the day they are written and are two things
- * to correct afterwards, and the second is always the one nobody remembers - which is this repository's
- * oldest failure, met here on a string that is frozen into other people's repositories. The
- * recomposition needs no guard of its own: `every-file-the-installer-copies-is-marked-mit-0` compares
- * every copied file against `licenceHeaderOf` byte for byte, so a composition off by a character is
- * already red.
- *
  * **It reaches fewer files than it used to and it is not dead code.** Only the contracts declaring
  * `a-copyright-beside-the-marking` compose from it now - the published ones, whose bytes are frozen -
- * and every one of them carries this exact string, so the guard above holds it as tightly as it ever
- * did. `THE_AUTHOR.name` is unaffected either way: `THE_AUTHOR_FIELD` composes the manifest's author
- * from it.
+ * and every one of them carries this exact string, so `every-file-the-installer-copies-is-marked-mit-0`
+ * holds it as tightly as it ever did.
  */
-export const THE_COPYRIGHT = `Copyright (c) 2026 ${THE_AUTHOR.name}`
+export const THE_COPYRIGHT = `Copyright (c) 2026 ${THE_COPYRIGHT_HOLDER}`
 
 /**
  * Which of the two second lines a contract's copied file carries.

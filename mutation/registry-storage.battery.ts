@@ -1084,10 +1084,12 @@ const mutants: readonly Mutant[] = [
    * publish somebody's personal inbox into an immutable version, where it is harvested and cannot be
    * withdrawn from the copies that carried it.
    *
-   * It edits the address and not the name on purpose. The name reaches `THE_COPYRIGHT` and therefore the
-   * five copied files, so a mutant on it would redden the marking guards too and say nothing about which
-   * guard reads the manifest. The address is in no licence header, so this cell reddens exactly the one
-   * assertion it was written for.
+   * It edits the address and not the name, and what chose that has expired without changing the cell.
+   * `THE_AUTHOR.name` fed `THE_COPYRIGHT` and therefore the five copied files, so a mutant on it would
+   * have reddened the marking guards too and said nothing about which guard reads the manifest;
+   * ADR-0190 parted the two, and the name here now reaches the manifest alone. The address is what the
+   * cell is about either way - a personal inbox is the half that is harvested and cannot be withdrawn -
+   * and it is in no licence header, so this cell reddens exactly the one assertion it was written for.
    */
   sameOnEveryLens(
     'I-34',
