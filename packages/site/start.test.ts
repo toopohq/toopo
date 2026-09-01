@@ -13,7 +13,14 @@ import { FRONT_PAGE, THE_REFERENCE_MODULE, pageOf } from './paths.js'
 import type { ReadOneAnswer, WhereTheCatalogueIs } from './searching.js'
 import { arrivingOnce } from './searching.js'
 import { theSite } from './site.js'
-import { copyControl, managerControl, playgroundControl, searchControl, siftControl } from './start.js'
+import {
+  copyControl,
+  managerControl,
+  playgroundControl,
+  searchControl,
+  siftControl,
+  themeControl,
+} from './start.js'
 import { THE_COPY_CONTROL_SAYS } from './what-a-control-says.js'
 
 /**
@@ -375,23 +382,45 @@ describe('the controls a visitor touches, run against a document', () => {
   })
 
   /**
-   * A page with none of the slots is left alone, which is what makes the four builders this guard
-   * calls safe on all seven pages rather than only on the six that carry a playground.
+   * A page with none of the slots is left alone, which is what makes every builder this module
+   * exports safe on a page that serves none of them.
    *
-   * **Four of the six, and the two it leaves are named rather than counted in.** `themeControl` is
-   * called by no guard of this file and `siftControl` only where a shelf is served, so the claim
-   * above is established for the four called here and asserted for neither of the others.
+   * **Every one of them, and the assertion is total rather than a list.** It used to call four and
+   * count the kinds of element those four would have built - a hand-written enumeration of what a
+   * population builds, which is what goes quietly out of date the day the population grows. It had:
+   * `themeControl` was reached by no guard of this folder at all, and measured at `0e97bc0` the
+   * defect `W-163` injects left the whole site suite green. What is asserted now is that the page is
+   * the page it was, so a builder added to this module joins this claim by being called and by
+   * nothing else. ADR-0196.
+   *
+   * **What each arm is worth here is not the same, and saying so is the point of writing it down.**
+   * The theme is the one nothing else reaches, and `W-163` is its cell. The copy control, the
+   * manager row and the search each redden this guard and a neighbour with it. The shelf's sift is
+   * established by `a-page-that-serves-no-shelf-is-left-alone` on a page this site really serves,
+   * and is called here so the claim is over the module rather than over a list: measured, no single
+   * edit makes it build, because three independent early returns each refuse on their own. The
+   * playground's null container is held by the compiler and not by this guard - reaching that path
+   * is `TS18047`, which the refusal further down records at length.
+   *
+   * **What it does not reach is the head and the root element.** Every builder here appends to
+   * something it found inside the body, so a control that wrote outside it would be invisible to
+   * this reading. The one write to the root element this module makes is the theme's, and it is on
+   * the click rather than on the build - so it is unreachable on a page where no button was built,
+   * and this guard would be the wrong place to look for it.
    */
   it('a-page-with-no-slots-on-it-has-nothing-built-into-it', async () => {
-    aPageOf('<p>a page about a contract, and no controls at all</p>')
+    const theWholeOfThePage = '<p>a page about a contract, and no controls at all</p>'
+    aPageOf(theWholeOfThePage)
     aClipboardThat(() => Promise.resolve())
 
     copyControl()
     managerControl()
+    themeControl()
     searchControl(arrivingOnce(() => Promise.resolve({ status: 404, body: '' })))
+    siftControl(arrivingOnce(() => Promise.resolve({ status: 404, body: '' })))
     await playgroundControl()
 
-    expect(document.querySelectorAll('button, input, ul, .answers').length).toBe(0)
+    expect(document.body.innerHTML, 'a page serving no slot is the page it was').toBe(theWholeOfThePage)
   })
 
   /**
