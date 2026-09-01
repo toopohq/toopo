@@ -375,8 +375,12 @@ describe('the controls a visitor touches, run against a document', () => {
   })
 
   /**
-   * A page with none of the slots is left alone, which is what makes the four builders safe on all
-   * thirteen pages rather than on the four that carry a command.
+   * A page with none of the slots is left alone, which is what makes the four builders this guard
+   * calls safe on all seven pages rather than only on the six that carry a playground.
+   *
+   * **Four of the six, and the two it leaves are named rather than counted in.** `themeControl` is
+   * called by no guard of this file and `siftControl` only where a shelf is served, so the claim
+   * above is established for the four called here and asserted for neither of the others.
    */
   it('a-page-with-no-slots-on-it-has-nothing-built-into-it', async () => {
     aPageOf('<p>a page about a contract, and no controls at all</p>')
@@ -606,8 +610,8 @@ describe('the controls a visitor touches, run against a document', () => {
    * A page that serves no shelf gets no field, and the control does nothing at all.
    *
    * Every page of this site carries the masthead's search and only one carries the shelf, so this is
-   * the ordinary case rather than an exotic one: a control that assumed its slot would throw on twelve
-   * pages of thirteen.
+   * the ordinary case rather than an exotic one: a control that assumed its slot would throw on six
+   * pages of seven.
    *
    * **It is never red alone, and the road to knowing that is worth more than the fact.** A cell was
    * written against it - the slot reader falling back to the masthead's - and it *survived*: three

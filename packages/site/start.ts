@@ -603,9 +603,9 @@ export const searchControl = (arriving: TheCatalogueAsItArrives): void => {
 }
 
 /**
- * The playground, on the four pages of thirteen that serve a container for one.
+ * The playground, on the six pages of seven that serve a container for one.
  *
- * It answers nothing on the other nine, and that is the whole of its guard: the container is the
+ * It answers nothing on the seventh, and that is the whole of its guard: the container is the
  * page's declaration that this contract has a form, so a page without one is left alone rather than
  * asked about.
  */
@@ -615,12 +615,15 @@ export const playgroundControl = async (): Promise<void> => {
   if (container === null || declared === undefined) return
 
   /**
-   * The playground arrives here rather than at the top of this file, and nine pages are why.
+   * The playground arrives here rather than at the top of this file, and one page is why.
    *
-   * Every page runs this module since the masthead gained a field, and four of the thirteen carry a
+   * Every page runs this module since the masthead gained a field, and six of the seven carry a
    * form. A static import would put `playground.js`, `read-literal.js`, `literal.js` and `value.js` on
    * every one of them, for a section that is not there - the larger half of the graph, fetched by the
-   * pages that cannot use it. `browser.ts` declares which half loads before a reader acts.
+   * page that cannot use it. `browser.ts` declares which half loads before a reader acts.
+   *
+   * The two counts here were written when the site had thirteen pages and four playgrounds, and they
+   * stayed written after it had seven and six. ADR-0195 measured them.
    */
   const { theAnswerShown, theFieldLabelFor, theWhatWentWrong, argumentsOf, declaredBy } =
     await import('./playground.js')

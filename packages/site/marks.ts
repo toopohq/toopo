@@ -10,8 +10,13 @@
  * ---------------------------------------------------------------------------
  *
  * These lived in `methodology-page.ts`, which was right while one page took prose written for a
- * reader of source. Two pages take it now - the method page from `mutation/`, and every contract page
- * from the catalogue's own records - and ADR-0026 named that arrival as what would reopen its scope.
+ * reader of source. Six pages take it now - every contract page, from the catalogue's own records -
+ * and ADR-0026 named that arrival as what would reopen its scope.
+ *
+ * **The method page was the second and it is gone.** ADR-0189 retired it and serves the methodology
+ * as data, so the arrival that reopened the scope has outlived the page that made it; what keeps this
+ * module is the six that remain, and a copy of the parser would be a copy six pages share. This
+ * paragraph went on naming that page for as long as it took somebody to count. ADR-0195.
  *
  * **A copy of a parser is not a second opinion, it is the same statement written where nobody will
  * maintain it.** That sentence is ADR-0026's and it decided this file: the alternative was a second

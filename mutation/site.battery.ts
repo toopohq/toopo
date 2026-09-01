@@ -3108,17 +3108,22 @@ export const escaped = (character: string): string => {`,
   // count. What said so is that this instrument declines to be silent about a guard it never saw red.
 
   /**
-   * **The playground on nine pages that cannot use it.** `start.ts` waits for that module so the nine
-   * pages with no form fetch none of it - the larger half of the graph. Reaching for it at the top is
-   * the tidying anybody does, it changes nothing a reader sees, and it puts four modules on every page
-   * of this site.
+   * **The playground on the one page that cannot use it.** `start.ts` waits for that module so the
+   * one page with no form fetches none of it - the larger half of the graph. Reaching for it at the
+   * top is the tidying anybody does, it changes nothing a reader sees, and it puts four modules on
+   * every page of this site.
+   *
+   * **This cell's own description is prose and nothing reads it**, which ADR-0195 measured before
+   * correcting it: the verdict is `killed`, so `published.ts` never reaches the field, and a run
+   * reports a cell by its identifier. The defect is unchanged and its reach is not - it was nine
+   * pages of thirteen and it is the front page alone.
    */
   sameOnEveryLens(
     'W-116',
-    'imports the playground at the top of the entry point instead of waiting for it, so nine of the ' +
-      'thirteen pages fetch four modules for a section that is not on them - a page that renders ' +
-      'identically, loads identically as far as anybody looks, and costs every reader the larger ' +
-      'half of the module graph',
+    'imports the playground at the top of the entry point instead of waiting for it, so one of the ' +
+      'seven pages fetches four modules for a section that is not on it - a page that renders ' +
+      'identically, loads identically as far as anybody looks, and costs every reader arriving at ' +
+      'the front page the larger half of the module graph',
     [
       startFile(
         THE_PLAYGROUND_IS_NOT_IMPORTED_AT_THE_TOP,

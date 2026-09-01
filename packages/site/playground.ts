@@ -3,8 +3,9 @@
  * ADR-0028 is what a playground demonstrates and what it refuses to show.
  * ADR-0096 is which of the two readings each field gets, and why the answer names its own call.
  * ADR-0157 is why the form's own decisions are here rather than in `start.ts` or beside the other
- * controls: nine of the thirteen pages never fetch this module, and a decision about a form belongs
+ * controls: one of the seven pages never fetches this module, and a decision about a form belongs
  * with the form rather than in what every page loads.
+ * ADR-0195 is why that count reads one of seven and not nine of thirteen.
  *
  *
  * ---------------------------------------------------------------------------

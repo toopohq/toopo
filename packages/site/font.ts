@@ -32,12 +32,16 @@
  * Every href a page writes is composed by `rootFrom`, so a page four folders down says `../../../../`
  * and a walk over the tree cannot be confused with a walk over the source. **The stylesheet cannot do
  * that**, because there is one of it: `THE_SERVED_STYLESHEET` is a single string inlined into all
- * seventeen pages, and a `url()` inside it resolves against the *page* rather than against a
- * stylesheet, so one relative spelling would mean seventeen different addresses.
+ * eight files of HTML, and a `url()` inside it resolves against the *page* rather than against a
+ * stylesheet, so one relative spelling would mean seven different addresses. **Eight and seven are
+ * not one number stated twice**: the front page and the 404 share a folder, so they would share the
+ * address a relative spelling produced, and the other six sit one per contract. Both read
+ * *seventeen* until ADR-0195 measured them, which is one stale figure standing for two quantities
+ * that were never equal.
  *
  * The alternatives were both refused rather than overlooked. A per-page stylesheet makes `toHtml` take
- * a path it has never needed and writes the face seventeen times. A `data:` URI costs 39 200 B in
- * every page - 666 kB across the tree - which is twenty-six times what ADR-0141 removed from the sheet
+ * a path it has never needed and writes the face eight times. A `data:` URI costs 39 200 B in
+ * every page - 314 kB across the tree - which is twelve times what ADR-0141 removed from the sheet
  * and paid by every reader on every page.
  *
  * What it assumes is that the tree is served from the root of an origin, which `_headers` has assumed

@@ -123,10 +123,13 @@ export const THE_BROWSER_GRAPH: readonly string[] = [
 /**
  * The modules a page loads before a reader has done anything, as against the ones it waits for.
  *
- * Every page carries the search, and four of the thirteen carry a playground. `start.ts` reaches the
- * playground through `await import` for that reason, so the nine pages with no form on them fetch
+ * Every page carries the search, and six of the seven carry a playground. `start.ts` reaches the
+ * playground through `await import` for that reason, so the one page with no form on it fetches
  * none of it. A static import would have put both on every page the day the masthead gained a field,
  * and the playground is the larger half - `build.ts` prints what each module weighs.
+ *
+ * Those two counts said *four of the thirteen* and *nine pages* until ADR-0195 measured them; what
+ * the argument needs is neither number, only that some page cannot use the module.
  *
  * It is declared rather than derived because it is a claim about *when*, and nothing in a module
  * graph carries that. `a-module-loaded-before-a-reader-acts-is-one-the-entry-point-imports-outright`

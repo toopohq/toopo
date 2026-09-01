@@ -126,8 +126,8 @@ const underEachHeading = (document: Parameters<typeof toText>[0]): ReadonlyMap<s
 
 describe('the site', () => {
   /**
-   * Five pages for five contracts, four for the domains the index files them under, and three that are
-   * about no contract at all.
+   * Six pages for the six installable contracts, none for the domains the index files them under,
+   * and one that is about no contract at all.
    *
    * **This guard was `every-installable-contract-has-a-page-and-a-refused-one-does-not` and the rename
    * is the decision rather than a tidying.** ADR-0027 settled that a refused contract has no page, on

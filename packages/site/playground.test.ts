@@ -370,9 +370,9 @@ describe('the playground, against the catalogue it opens on', () => {
       /**
        * Both spellings, because one of them arrived with a hole in this guard.
        *
-       * `start.ts` reaches the playground through `await import('./playground.js')` so that nine
-       * pages do not fetch it, and a dynamic import carries no `from` - so the edge it adds was
-       * invisible here the moment it was written, and this guard would have stayed green over a
+       * `start.ts` reaches the playground through `await import('./playground.js')` so that the one
+       * page with no form does not fetch it, and a dynamic import carries no `from` - so the edge it
+       * adds was invisible here the moment it was written, and this guard would have stayed green over a
        * graph naming a module the site does not write. Measured: with only the first pattern, the
        * playground's four modules are reachable from the entry point and unreferenced by it as far
        * as this guard could see.
@@ -397,8 +397,8 @@ describe('the playground, against the catalogue it opens on', () => {
    * A module loaded before a reader acts is one the entry point imports outright.
    *
    * **The neighbour above is about *what* a browser loads and this one is about *when*.** Every page
-   * runs `start.ts` since the masthead gained a field, and four of the thirteen carry a playground -
-   * so the playground is reached through `await import` and the nine pages with no form fetch none of
+   * runs `start.ts` since the masthead gained a field, and six of the seven carry a playground -
+   * so the playground is reached through `await import` and the one page with no form fetches none of
    * it. A static import would put the larger half of the graph on every page, and no page would look
    * any different.
    *
