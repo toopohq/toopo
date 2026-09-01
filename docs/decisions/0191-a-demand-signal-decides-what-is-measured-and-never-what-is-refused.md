@@ -345,3 +345,11 @@ published for that reason, and the four ADR-0163 enumerated reproduce its own su
 ruled on, so it inherits ADR-0163's narrowing whole. A signal that only fails above 20 M weekly is not
 shown to fail below it — which is the open entry, stated here so the entry is not read as smaller than
 it is.
+
+### Where the probes live
+
+The four probes and their raw output are not in this repository — stage rule 5 keeps working material
+out — and every figure above names the population it was taken over so that it can be rebuilt. The
+population sweep is a declaration checked against the two records at `3cec9a8`, and it reads them by
+line: the head notes this unit added to both shift those lines, so it is rebuilt at its own commit
+rather than against the tree that carries this record.
