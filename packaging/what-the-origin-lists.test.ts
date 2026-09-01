@@ -8,6 +8,7 @@ import {
   WhatTheOriginListsCannotBeRead,
   theAddressesListedIn,
   theAddressesTheOriginLists,
+  whatNoDeploymentMayStopServing,
   whatWouldStopBeingServed,
 } from './what-the-origin-lists.js'
 
@@ -164,5 +165,46 @@ describe('what the origin lists', () => {
 
     expect(whatWouldStopBeingServed(served, written)).toEqual([`${THE_ORIGIN}/refused/`])
     expect(whatWouldStopBeingServed(written, written)).toEqual([])
+  })
+
+  /**
+   * Of the addresses that would stop being served, the ones no deployment may drop.
+   *
+   * **The two halves fail in opposite directions and only one of them is quiet.** Refusing too much
+   * stops a deployment and somebody reads the list; refusing too little lets a contract's address go,
+   * and what a reader then meets is a 404 saying nothing was ever served at an address this catalogue
+   * promised to serve for ever. So the guard states both, and the negative half is written from the
+   * pages this site really has rather than from invented strings. ADR-0188.
+   *
+   * **The addresses are built with `urlOf` and never typed**, for the reason the first guard in this
+   * file reaches `packages/site/`: what is being classified is the string the sitemap really carries,
+   * and a fixture spelled by hand would establish that the classifier agrees with whatever somebody
+   * typed here — including about the trailing slash, which is exactly the character `urlOf` exists to
+   * get right.
+   *
+   * The last row is the unreadable one, and it is refused rather than allowed. A `<loc>` that is not a
+   * URL cannot be classified, and of the two ways to treat that only one fails safely: allowing it
+   * makes a malformed listing a way past this gate.
+   */
+  it('a-deployment-may-retire-a-page-of-the-site-and-never-an-address-of-a-contract', () => {
+    const CONTRACTS = [
+      urlOf('typescript/number/parse@1/index.html'),
+      urlOf('typescript/array/group-by@1/index.html'),
+    ]
+
+    const THE_SITES_OWN = [
+      urlOf('index.html'),
+      urlOf('catalogue/index.html'),
+      urlOf('method/index.html'),
+      urlOf('what-a-contract-is/index.html'),
+      urlOf('refused/index.html'),
+      urlOf('typescript/number/index.html'),
+    ]
+
+    const UNREADABLE = 'not a url at all'
+
+    expect(whatNoDeploymentMayStopServing([...THE_SITES_OWN, ...CONTRACTS])).toEqual(CONTRACTS)
+    expect(whatNoDeploymentMayStopServing(THE_SITES_OWN)).toEqual([])
+    expect(whatNoDeploymentMayStopServing([UNREADABLE])).toEqual([UNREADABLE])
   })
 })

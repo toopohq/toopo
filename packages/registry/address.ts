@@ -44,6 +44,16 @@ import { isFrozenIdentifier } from '../catalogue/identifier.js'
 export type Language = 'typescript'
 
 /**
+ * The languages there are, as a map the compiler will not let be partial.
+ *
+ * `Language` is a union and a union is not a value, so anything reading a language *back* out of a
+ * string needs a list — and a list written as an array can silently miss a member. A total map over
+ * the union cannot: a second language does not compile until it has a row here. It is the shape
+ * `THE_COMPONENTS` already has one folder over, for the same reason.
+ */
+const THE_LANGUAGES: Record<Language, true> = { typescript: true }
+
+/**
  * A contract's domain and name - `number/parse`, `array/group-by`. Two kebab-case segments, because
  * that is what the five carry and because the domain is what the site's navigation is built on.
  */
@@ -364,3 +374,47 @@ export const guardAddressFaults = (address: GuardAddress): readonly string[] => 
   ...(address.battery.trim() === '' ? ['the battery is unnamed'] : []),
   ...(isFrozenIdentifier(address.guard) ? [] : [`"${address.guard}" is not a frozen identifier`]),
 ]
+
+/**
+ * The inverse of `renderContract`: a rendered address read back, or `null` where the string is not one.
+ *
+ * **It exists because something outside this repository now has to be classified by it.** A deployment
+ * may retire a page this site invented and may never stop serving a contract, so the gate in
+ * `packaging/what-the-origin-lists.ts` has to look at an address the origin lists and say which of the
+ * two it is. That question is about the *grammar* of an address and never about what the catalogue
+ * holds today — a contract withdrawn from the catalogue is exactly the case the promise protects, so a
+ * classification derived from `theCatalogue` would stop recognising an address at the moment it began
+ * to matter. ADR-0188.
+ *
+ * **So it is here rather than beside the caller, and it reuses the validation rather than restating
+ * it.** `contractAddressFaults` already decides what a well-formed address is; a second opinion in
+ * `packaging/` would be a parser written twice, which is the one thing a parser may never be. What
+ * this adds is the split into parts, and `renderContract` of the result is the string it was given —
+ * which is a property rather than a claim, and `a-rendered-contract-address-reads-back-as-itself`
+ * is what holds it.
+ *
+ * The major is read digit by digit rather than with `Number`, which accepts `1e2`, ` 1` and `0x1` and
+ * would let three spellings of one address exist.
+ */
+export const readContract = (rendered: string): ContractAddress | null => {
+  const at = rendered.lastIndexOf('@')
+  if (at === -1) return null
+
+  const major = rendered.slice(at + 1)
+  if (!/^[0-9]+$/.test(major)) return null
+
+  const before = rendered.slice(0, at)
+  const firstSlash = before.indexOf('/')
+  if (firstSlash === -1) return null
+
+  const language = before.slice(0, firstSlash)
+  if (!Object.hasOwn(THE_LANGUAGES, language)) return null
+
+  const address = {
+    language: language as Language,
+    name: before.slice(firstSlash + 1),
+    major: Number(major),
+  }
+
+  return contractAddressFaults(address).length === 0 ? address : null
+}

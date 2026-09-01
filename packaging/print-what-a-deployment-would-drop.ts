@@ -6,7 +6,8 @@
  *   node packaging/print-what-a-deployment-would-drop.ts
  *
  * It prints what the origin lists, what this tree writes, and the difference in the one direction that
- * is a fault. **The printing is not decoration**: the job that runs this is the only place a reader can
+ * can be a fault — split into the pages this site may retire and the contract addresses it may not
+ * drop, which is ADR-0188. **The printing is not decoration**: the job that runs this is the only place a reader can
  * afterwards see why a deployment went ahead, and a verdict with neither of its two sides beside it is
  * a verdict nobody can check. It is the argument `print-whether-to-publish.ts` makes, on the other
  * thing this repository does that cannot be undone.
@@ -57,6 +58,7 @@ const {
   overHttp,
   theAddressesListedIn,
   theAddressesTheOriginLists,
+  whatNoDeploymentMayStopServing,
   whatWouldStopBeingServed,
 } = await import('./what-the-origin-lists.ts')
 
@@ -72,6 +74,18 @@ const built = join(REPOSITORY, 'packages', 'site', THE_BUILT_TREE, SITEMAP)
 const written = theAddressesListedIn(built, readFileSync(built, 'utf8'))
 const served = await theAddressesTheOriginLists(overHttp)
 const dropped = whatWouldStopBeingServed(served, written)
+const refused = whatNoDeploymentMayStopServing(dropped)
+
+/**
+ * Both halves are printed and only one of them stops the deployment.
+ *
+ * A page this site retires is worth a line on its own: it is a real change to what a reader can reach,
+ * and a run log that mentioned it only when it was a fault would leave the ordinary case invisible.
+ * The verdict is the last line, so what a reader checks is the list above it. ADR-0188.
+ */
+const retired = dropped.filter((address) => !refused.includes(address))
+const listed = (addresses: readonly string[]): string =>
+  addresses.map((address) => `  ${address}\n`).join('')
 
 process.stdout.write(
   `${THE_ORIGIN} lists ${served.size} address${served.size === 1 ? '' : 'es'}\n` +
@@ -79,12 +93,24 @@ process.stdout.write(
     `${
       dropped.length === 0
         ? 'and every address the origin serves is still one of them, so this may be deployed\n'
-        : `and ${dropped.length} of the origin's would stop being written:\n` +
-          `${dropped.map((address) => `  ${address}\n`).join('')}` +
-          `\nAn address this tree has served goes on being written. A reader following one of the ` +
-          `above would be told that nothing has ever been served at it, which is what the 404 of ` +
-          `this catalogue promises and what this deployment would make false. Serve them, or take ` +
-          `the promise off the 404 first.\n`
+        : `and ${dropped.length} of the origin's would stop being written.\n\n` +
+          `${
+            retired.length === 0
+              ? ''
+              : `${retired.length} of them ${retired.length === 1 ? 'is a page' : 'are pages'} ` +
+                `this site invented, which it may retire:\n${listed(retired)}\n`
+          }` +
+          `${
+            refused.length === 0
+              ? 'None is the address of a contract, so this may be deployed.\n'
+              : `${refused.length} of them ${refused.length === 1 ? 'is the address' : 'are addresses'} ` +
+                `of a contract:\n${listed(refused)}\n` +
+                `A contract major is frozen for the life of the catalogue, so the address it stands ` +
+                `at goes on being served — by permanent rule 6 and not by this script's opinion. A ` +
+                `reader following one of the above would be told that nothing has ever been served ` +
+                `at it, and the 404 of this catalogue promises exactly the opposite about a ` +
+                `contract. Serve them.\n`
+          }`
     }`,
 )
 
@@ -93,6 +119,6 @@ process.stdout.write(
  *
  * The two ways this file can exit non-zero are worth telling apart by what a reader sees: an origin
  * that could not be read throws `WhatTheOriginListsCannotBeRead` and prints why, and a deployment that
- * would drop an address prints the addresses and stops here.
+ * would drop the address of a contract prints the addresses and stops here.
  */
-if (dropped.length > 0) process.exitCode = 1
+if (refused.length > 0) process.exitCode = 1

@@ -1,7 +1,9 @@
 /**
  * Which addresses the origin still publishes, asked as a listing.
  * ADR-0125 is why an address this tree has served goes on being written, and why the reading is taken
- * before a deployment rather than after one.
+ * before a deployment rather than after one. ADR-0188 is why that is now asked of a contract's address
+ * and not of every address: the promise was narrowed to what its own argument covers, and this gate was
+ * narrowed with it rather than lifted.
  *
  * ---------------------------------------------------------------------------
  * The listing is the sitemap, and it is the only listing there is
@@ -34,7 +36,7 @@
  * knowing is not the same as knowing there is nothing.
  */
 
-import { THE_ORIGIN } from '../packages/registry/address.js'
+import { THE_ORIGIN, readContract } from '../packages/registry/address.js'
 import { SITEMAP } from '../packages/site/paths.js'
 import type { ReadOneAddress } from './what-npm-holds.js'
 // The same reduction of a throw to a sentence, imported from the module that wrote it rather than
@@ -152,3 +154,52 @@ export const whatWouldStopBeingServed = (
   served: ReadonlySet<string>,
   written: ReadonlySet<string>,
 ): readonly string[] => [...served].filter((address) => !written.has(address))
+
+/**
+ * Of those, the ones no deployment may drop: the addresses a contract stands at.
+ *
+ * ---------------------------------------------------------------------------
+ * The promise is the one the 404 argues for, and it argues about contracts
+ * ---------------------------------------------------------------------------
+ *
+ * `not-found-page.ts` gave its reason in the sentence before its conclusion — *a contract major is
+ * frozen for the life of the catalogue* — and then concluded about every address this site has ever
+ * served. The justification covers contracts; the conclusion covered the site's own pages too, which
+ * nothing freezes. This is the conclusion cut back to its own argument, and the promise beside it is
+ * cut back in the same commit. ADR-0188.
+ *
+ * So a page this site invented — `/catalogue/`, `/method/`, a domain's listing — may be retired, and
+ * the address of a contract may not, ever, by anybody. That is permanent rule 6 arriving at the one
+ * place a deployment could break it.
+ *
+ * ---------------------------------------------------------------------------
+ * Read from the address and never from the catalogue
+ * ---------------------------------------------------------------------------
+ *
+ * The classification asks `readContract`, which is a question about the grammar of an address. It
+ * deliberately does not ask what the catalogue holds today, and the inversion that would cause is the
+ * whole point: a contract withdrawn from the catalogue is *exactly* the case this refuses, so a
+ * reading keyed to `theCatalogue` would stop recognising an address at the instant it began to
+ * matter — green on the one deployment it exists to refuse.
+ *
+ * ---------------------------------------------------------------------------
+ * An address that cannot be read is refused rather than allowed
+ * ---------------------------------------------------------------------------
+ *
+ * A `<loc>` that is not a URL cannot be classified, and the two ways to treat it are not symmetric:
+ * allowing it makes a malformed listing a way past this gate, and refusing it makes a malformed
+ * listing a red somebody reads. It is the direction this module already chose for a 404 — **a reading
+ * whose failure mode is a green is not a reading** — applied one level down, to a single entry
+ * instead of the whole document.
+ */
+export const whatNoDeploymentMayStopServing = (dropped: readonly string[]): readonly string[] =>
+  dropped.filter((address) => {
+    let path: string
+    try {
+      path = new URL(address).pathname
+    } catch {
+      return true
+    }
+
+    return readContract(path.replace(/^\/+/, '').replace(/\/+$/, '')) !== null
+  })

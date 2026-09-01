@@ -428,7 +428,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   },
 
   'packages/registry/vitest.config.ts': {
-    'packages/registry/address.test.ts': 3,
+    'packages/registry/address.test.ts': 4,
     'packages/registry/against-the-catalogue.test.ts': 69,
     'packages/registry/attestation.test.ts': 3,
     'packages/registry/coverage.test.ts': 28,
@@ -510,7 +510,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'packaging/vitest.config.ts': {
     'packaging/archive.test.ts': 9,
     'packaging/what-npm-holds.test.ts': 6,
-    'packaging/what-the-origin-lists.test.ts': 8,
+    'packaging/what-the-origin-lists.test.ts': 9,
   },
 
   'mutation/fixture/vitest.config.ts': {

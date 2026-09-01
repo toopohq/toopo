@@ -117,6 +117,8 @@ const THE_SITEMAP_IS_WHAT_IS_ASKED_FOR = '  const url = `${origin}/${SITEMAP}`'
 
 const WHAT_THE_ORIGIN_KEEPS_AND_THIS_TREE_DROPS = `): readonly string[] => [...served].filter((address) => !written.has(address))`
 
+const THE_TRAILING_SLASH_IS_TAKEN_OFF_BEFORE_THE_ADDRESS_IS_READ = `    return readContract(path.replace(/^\\/+/, '').replace(/\\/+$/, '')) !== null`
+
 const NOTHING_IS_DROPPED = buildFile(
   `const dropped = every(DIST).filter((file) => !reachable.has(file))`,
   `const dropped: readonly string[] = []`,
@@ -431,6 +433,28 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['only-an-address-the-origin-serves-and-this-tree-drops-is-reported']),
+  ),
+
+  /**
+   * The defect that would empty the promise while leaving the gate looking exactly as it does.
+   *
+   * A sitemap names a page with its trailing slash, and `readContract` reads a rendered address, which
+   * carries none. Forget the strip and every contract address classifies as a page this site invented
+   * - so the deployment that drops all seven at once prints them under *pages this site may retire*
+   * and goes through. It is the one edit in this folder that makes permanent rule 6 unenforceable at
+   * the exact moment it is being broken, and nothing about the code looks wrong. ADR-0188.
+   */
+  sameOnEveryLens(
+    'A-28',
+    'classifies a listed address without taking its trailing slash off, so every contract address ' +
+      'reads as a page of the site and a deployment may drop the lot',
+    [
+      originFile(
+        THE_TRAILING_SLASH_IS_TAKEN_OFF_BEFORE_THE_ADDRESS_IS_READ,
+        `    return readContract(path.replace(/^\\/+/, '')) !== null`,
+      ),
+    ],
+    killed(['a-deployment-may-retire-a-page-of-the-site-and-never-an-address-of-a-contract']),
   ),
 
   // -------------------------------------------------------------------------

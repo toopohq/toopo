@@ -90,6 +90,11 @@ const RENDERINGS: Readonly<Record<keyof typeof ADDRESS, Rendering>> = {
       '`GuardAddress` records',
   },
   sameContract: { holdsNoContract: 'it compares two addresses and renders neither' },
+  readContract: {
+    holdsNoContract:
+      'it goes the other way - a rendering in, an address or nothing out - so it renders no string ' +
+      'for the guard above to look for a coordinate in. What holds it is the round trip below',
+  },
   contractAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
   caseAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
   guardAddressFaults: { holdsNoContract: 'it says why an address is malformed, and renders nothing' },
@@ -163,6 +168,60 @@ describe('how the registry addresses what it serves', () => {
    * way of getting past the compiler. It is the shape `every-uncarried-export-carries-a-reason` already
    * has one floor down, and it is here for the same reason it is there.
    */
+  /**
+   * A rendered address reads back as itself, and a string that is not one reads back as nothing.
+   *
+   * **Both halves are load-bearing and the second is the one with a consumer.** `readContract` exists
+   * so that a deployment can tell an address of a contract from a page this site invented, and what
+   * decides that is the refusals: `catalogue` and `typescript/number` are the two shapes the site
+   * really writes beside a contract, and reading either as an address would put the site's own pages
+   * under a promise made about contracts. ADR-0188.
+   *
+   * The four numeric spellings are the reason the major is read digit by digit. `Number('1e2')` is
+   * `100`, `Number(' 1')` is `1` and `Number('0x1')` is `1`, so a lenient reading would let three
+   * strings resolve to one address — and an address with three spellings is the thing
+   * `a-rendered-address-is-the-spelling-frozen-with-the-major` freezes one of.
+   *
+   * `imagined-number/round@1` reads back, deliberately: it is well formed and it is refused by the
+   * catalogue, which are two different judgements, and this one is about the grammar. Nothing is lost
+   * by that here — an imagined address reaches no sitemap — and a parser that also decided what the
+   * catalogue accepts would be `isImagined` written a second time.
+   */
+  it('a-rendered-contract-address-reads-back-as-itself', () => {
+    const ADDRESSES: readonly ContractAddress[] = [
+      PROBE,
+      { language: 'typescript', name: 'array/group-by', major: 1 },
+      { language: 'typescript', name: 'imagined-number/round', major: 1 },
+      { language: 'typescript', name: 'object/deep-equal', major: 12 },
+    ]
+
+    expect(ADDRESSES.map((address) => ADDRESS.readContract(renderContract(address)))).toEqual([
+      ...ADDRESSES,
+    ])
+
+    const NOT_AN_ADDRESS: readonly string[] = [
+      // The pages this site writes beside a contract, which is the whole reason this half exists.
+      'catalogue',
+      'method',
+      'what-a-contract-is',
+      'refused',
+      'typescript/number',
+      '',
+      // A major that is not a whole number written out, four ways.
+      'typescript/number/parse@1e2',
+      'typescript/number/parse@ 1',
+      'typescript/number/parse@0x1',
+      'typescript/number/parse@',
+      // A major below one, a language nothing is published in, and a name that is not two segments.
+      'typescript/number/parse@0',
+      'python/number/parse@1',
+      'typescript/parse@1',
+      'typescript/Number/Parse@1',
+    ]
+
+    expect(NOT_AN_ADDRESS.filter((one) => ADDRESS.readContract(one) !== null)).toEqual([])
+  })
+
   it('every-export-that-renders-no-contract-says-why', () => {
     const unexplained = Object.entries(RENDERINGS)
       .filter(([, rendering]) => 'holdsNoContract' in rendering && rendering.holdsNoContract.trim() === '')
