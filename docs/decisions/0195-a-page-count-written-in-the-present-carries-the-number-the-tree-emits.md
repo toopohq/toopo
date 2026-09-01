@@ -187,7 +187,8 @@ not be written at all. **Neither, and the test that decides it is already ADR-00
 
 - Where it does not, the number is decoration and the repair is to delete it, not to date it. *So the
   nine pages with no form fetch none of it* argues that a module is deferred because some pages cannot
-  use it, and that is true at every ratio. Seven of the fourteen repaired here are this shape.
+  use it, and that is true at every ratio. `browser.ts`, `playground.ts`, `playground.test.ts` and
+  `start.ts` each state that one argument with a number inside it.
 - Where it does, the number is load-bearing and must carry its coordinate. `font.ts`'s eight-and-seven
   **is** the argument, `pages.test.ts`'s enumeration is the guard's subject, and W-116's *one of
   seven* sizes a defect.

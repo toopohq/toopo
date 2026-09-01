@@ -3398,9 +3398,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   does not close**, because nothing keeps the class and the fourteen repaired sentences are present-
   tense counts of a tree the next redesign moves. What is named and deliberately not written is the
   rule that would close it: *a count in a present-tense sentence is deleted where the argument
-  survives its removal, and carries its commit where it does not* — seven of the fourteen are the
-  first shape, and stamping them instead would publish ADR-0018's own dated-number-and-present-clause
-  in fourteen new places. ADR-0195.
+  survives its removal, and carries its commit where it does not*. The deferral argument in
+  `browser.ts`, `playground.ts`, `playground.test.ts` and `start.ts` is the first shape and
+  `font.ts`'s eight-and-seven is the second; **no rank is published over the two**, because which of
+  them a sentence is is a reading rather than a measurement. Stamping the first shape instead of
+  deleting it would publish ADR-0018's own dated-number-beside-a-present-clause in new places.
+  ADR-0195.
 
 - **That the catalogue this file names is the catalogue the registry holds.** `theCatalogue` knows how
   many contracts there are; the sentence above naming them is prose, and nothing compares the two.
