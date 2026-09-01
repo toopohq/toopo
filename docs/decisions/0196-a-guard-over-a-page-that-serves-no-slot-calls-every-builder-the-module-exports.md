@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-09-01
 governs:
-  - packages/site/start.test.ts
+  - mutation/site.battery.ts
 confirmed-by:
   - battery: site
     guard: a-page-with-no-slots-on-it-has-nothing-built-into-it
