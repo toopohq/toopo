@@ -169,9 +169,13 @@ describe('what this stylesheet paints', () => {
    *
    * Seen red before it was believed, one perturbation per row: the comma split removed, the depth
    * stack dropped, the at-rule prelude kept, `focus` written before `focus-visible`, and a selector
-   * that is nothing but a state left as the empty string. All five redden this guard; **the first two
-   * redden it alone**, and the other three redden the sweep below with it, which is what a reader
-   * feeding a population looks like when it goes wrong.
+   * that is nothing but a state left as the empty string. All five redden this guard.
+   *
+   * **Read over the whole site suite rather than over this file, they redden 2, 1, 3, 2 and 3 guards**
+   * — and the population matters, because measured over this file alone the first two look like reds
+   * of their own. The one that is genuinely alone is the depth stack, and W-166 is the cell for it.
+   * What the others carry with them is `a-component-is-painted-by-its-own-rules-and-by-nothing-else`,
+   * which asks this same reader what a sheet declares, and the sweep below, which is fed by it.
    */
   it('what-this-reads-as-a-selector-is-what-a-browser-reads-as-one', () => {
     // A comma group is as many selectors as it has members, because one can die without the other.

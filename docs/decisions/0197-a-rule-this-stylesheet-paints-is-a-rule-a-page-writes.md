@@ -141,7 +141,14 @@ beside it.
 
 The reader's guard was seen red on five perturbations, one per row: the comma split removed, the depth
 stack dropped, the at-rule prelude kept, `focus` written before `focus-visible`, and a state-only
-selector left as the empty string. All five red; **the first two red alone**.
+selector left as the empty string. All five red.
+
+**Read over the whole site suite they redden 2, 1, 3, 2 and 3 guards, and the population is the point.**
+Measured over `painting.test.ts` alone the first two look like reds of their own; the one that is
+genuinely alone is the depth stack. What the others carry with them is
+`a-component-is-painted-by-its-own-rules-and-by-nothing-else`, which asks the same reader what a sheet
+declares. **The battery is what said so**: W-165 was pinned on one guard and reddens two, and the
+correction came off the replay's own artefact rather than off a second reading of the code.
 
 ## What would reopen this
 
@@ -250,10 +257,13 @@ over every occurrence of their two guard names in `mutation/*.ts` and `packages/
 the only pin its guard has**. W-85 now types a contract page's ceiling and W-86 the body's own
 gutters, which is the outermost track this site has.
 
-**W-164 and W-165 are the two new cells.** W-164 puts `ul.contracts` back — the rule ADR-0195 named
-and deliberately did not repair, made into a red. W-165 reads a comma group as one selector, which is
-a dead member hiding behind a live one: `body > .masthead, body > .shell` was exactly that shape when
-this unit swept it.
+**W-164, W-165 and W-166 are the three new cells.** W-164 puts `ul.contracts` back — the rule ADR-0195
+named and deliberately did not repair, made into a red, and it is **red alone**. W-165 reads a comma
+group as one selector, which is a dead member hiding behind a live one: `body > .masthead, body > .shell`
+was exactly that shape when this unit swept it. W-166 reads a sheet at the top level only, so every
+rule inside a media query leaves the population in silence — **seven selectors of this sheet are
+declared only inside a `@media`**, one of them the light palette's own root — and it is the one cell
+that reddens the reader's guard alone.
 
 ### The commands
 

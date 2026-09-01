@@ -2667,15 +2667,43 @@ ul.contracts {
    * either matches - so the live member covers the dead one for ever and the sweep above reports
    * nothing.
    *
-   * It reddens the reader's own guard and leaves the sweep green, which is what says the two are
-   * separate claims: today every member of every group is alive, so the group answers what its
-   * members answer and only the crafted row can tell them apart.
+   * It leaves the sweep green, which is what says the two are separate claims: today every member of
+   * every group is alive, so a group answers what its members answer and only the crafted row can
+   * tell them apart. **It does not leave the component guard green**, and that is the reader being
+   * shared rather than a second defect - both guards ask `selectorsIn` what a sheet declares, so a
+   * reader that stops splitting narrows two populations at once.
    */
   sameOnEveryLens(
     'W-165',
     'reads a comma group as one selector rather than as the several claims it is, so a rule that ' +
       'paints nothing is covered for ever by the live selector written beside it',
     [paintingFile(`    .flatMap((one) => one.split(','))`, `    .flatMap((one) => [one])`)],
+    killed([
+      'what-this-reads-as-a-selector-is-what-a-browser-reads-as-one',
+      'a-component-is-painted-by-its-own-rules-and-by-nothing-else',
+    ]),
+  ),
+
+  /**
+   * **The one cell that reddens the reader's guard alone**, which is why it stands beside W-165 rather
+   * than instead of it. Measured over the whole site suite, the five perturbations of that reader
+   * redden 2, 1, 3, 2 and 3 guards; this is the 1.
+   *
+   * The defect is a reader that stops at the top level, so every rule inside an at-rule leaves the
+   * population in silence. It is not hypothetical on this sheet: **seven selectors are declared only
+   * inside a `@media`**, and one of them is the light palette's own root. A sweep that lost them would
+   * be green, shorter and wrong, which is the shape of every finding this unit is built on.
+   */
+  sameOnEveryLens(
+    'W-166',
+    'reads a stylesheet at the top level only, so every rule inside a media query leaves the ' +
+      'population of every guard that reads one - silently, and with the sweep still green',
+    [
+      paintingFile(
+        `      holdsRules.push(isAtRule ? GROUPING.test(prelude) : false)`,
+        `      holdsRules.push(false)`,
+      ),
+    ],
     killed(['what-this-reads-as-a-selector-is-what-a-browser-reads-as-one']),
   ),
 
