@@ -116,7 +116,7 @@ longer the same string: one is a person and one is a project.
 
 ### Where each remaining occurrence lives, and why
 
-Twelve remain, and each is here for a stated reason rather than by omission:
+Twelve remain outside this record, and each is here for a stated reason rather than by omission:
 
 | Where | Count | Why it stays |
 | --- | --- | --- |
@@ -186,7 +186,16 @@ depend on it.
 
 ## Consequences
 
-**191 occurrences are gone and one moved**, leaving 12. The name is no longer in the manifest npm
+**191 occurrences are gone and one moved.** Twelve remain in the tree this record describes, and the
+tree that ships it carries **15 across 12 files**, because this record names the person three times
+itself: once as the subject of the census, and twice quoting a perturbation and the assertion it
+failed on. They are kept rather than paraphrased, on the same ground as the three citations in
+ADR-0159, ADR-0167 and ADR-0172 — a record that cannot name what it removed is not a record of the
+removal, and an assertion's output quoted verbatim is worth more than a description of it. **The
+count is stated here because the table above would otherwise be a census that excludes the page it is
+printed on**, which is the shape this repository keeps finding in its own prose.
+
+The name is no longer in the manifest npm
 serves, no longer in the front matter of any record, and no longer in a test fixture. It is in the
 licence, in five frozen headers, in the constant that composes them, in three records quoting one of
 them, and in a README block quoting the same.
