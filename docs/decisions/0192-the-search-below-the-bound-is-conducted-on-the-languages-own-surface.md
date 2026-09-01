@@ -223,6 +223,10 @@ a figure.**
   answers `12345678901234567000` — and the language has shipped both halves of the fix. A serialiser
   that survives more types is a **superset grammar somebody invents**, which is R4 and
   `string/parse-query-string`'s refusal.
+* **`Object.entries` and `Object.values`** — they carry `Object.keys`'s two traps and are refused on the
+  half that is not already published. The `Set` hole is `object/deep-equal@1`'s. The other is the
+  ordering, integer-like keys coming first whatever the source order: that is **R2**, ECMA-262
+  specifying it exactly, and **R5** behind it, since nothing in the ecosystem answers differently.
 * **`structuredClone`, `Object.assign`, `Object.freeze`** — shallow against deep is `object/deep-merge`'s
   and `object/deep-clone`'s refusal already taken: **R1** for the clone, **R4** for the merge, where
   concatenating or replacing an array is a product choice no measurement settles.
