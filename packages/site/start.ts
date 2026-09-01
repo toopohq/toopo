@@ -792,8 +792,12 @@ export const siftControl = (arriving: TheCatalogueAsItArrives): void => {
 /**
  * Every control this page carries, in the order a reader meets them.
  *
- * It is the one name here a guard does not import: what it composes is five builders each reached on
- * its own, and a guard over the composition would be a guard over five calls in a row.
+ * It is the one name here a guard does not import: what it composes is builders each reached on their
+ * own, and a guard over the composition would be a guard over a row of calls.
+ *
+ * There is no count in that sentence, and its absence is ADR-0195's rule rather than an oversight: a
+ * count written in the present is deleted where the argument survives its removal, and this argument
+ * is that each builder is reached on its own. It read `five` for six calls until somebody counted.
  */
 const start = async (): Promise<void> => {
   copyControl()
