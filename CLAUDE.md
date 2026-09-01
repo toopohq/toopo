@@ -3382,6 +3382,26 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   repaired: a re-measurement that also repairs cannot say which of the two moved the figure.
   ADR-0193.
 
+  **They are repaired, and rebuilding the sweep moved every part of the answer above.** The rule was
+  restated rather than relayed — the `*` leading a continuation line is removed *before* the
+  whitespace collapses, because otherwise `the nine\n * pages` collapses to `the nine * pages` and no
+  sweep for the phrase can see it. Measured at `e80b5fc` over 306 tracked `.ts` and `.yml`: **33
+  statements across 23 files**, of which **14 were present-tense and false**, against 20 and 9. The
+  difference is scope, declared rather than discovered: this rule also takes counts of *subsets* of
+  the site's pages and the three spellings of `files of HTML`. **Two of the fourteen are in files the
+  earlier reading did not name** — `pages.test.ts`, which opened on *five, four and three* pages and
+  said **The one page that is not about a contract is named here** four paragraphs below, in the same
+  comment; and `marks.ts`, which said *Two pages take it now* and named the method page ADR-0189
+  retired. **The premise about the mutant was refused by measurement**: nothing reads W-116's
+  description, because `killed()` carries no `onlyOn` and `published.ts` reaches the field only for a
+  survivor or a platform cell, so correcting it changed nothing the instrument prints. **The entry
+  does not close**, because nothing keeps the class and the fourteen repaired sentences are present-
+  tense counts of a tree the next redesign moves. What is named and deliberately not written is the
+  rule that would close it: *a count in a present-tense sentence is deleted where the argument
+  survives its removal, and carries its commit where it does not* — seven of the fourteen are the
+  first shape, and stamping them instead would publish ADR-0018's own dated-number-and-present-clause
+  in fourteen new places. ADR-0195.
+
 - **That the catalogue this file names is the catalogue the registry holds.** `theCatalogue` knows how
   many contracts there are; the sentence above naming them is prose, and nothing compares the two.
   Measured: this file read **The catalogue is six contracts** for the two days between
