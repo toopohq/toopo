@@ -3920,6 +3920,31 @@ of the thesis.
   measured twice, ten units apart, on subjects sharing nothing. It is the cheapest test for a guard
   that cannot fail: ask whether what the guard perturbs is the claim or something computed from it.
   ADR-0087.
+- **A sweep that decides a change is a sweep nothing checks, and this one survived being hunted.**
+  ADR-0189 deleted ten battery cells, and which of them could go was decided by a probe: for each
+  doomed cell, does it pin a guard that survives? It built the set of surviving guards by matching
+  `it('…')` across the site's test files — and `links.test.ts` puts its title on the line below
+  `it(`. So one guard was invisible to the probe, the probe reported that it had gone with its cell,
+  the cell was deleted, and `every-address-a-page-links-to-is-composed-and-never-typed` was left with
+  nothing reddening it.
+
+  **What makes it worth a line is not the regular expression.** It is the same defect this repository
+  had spent that day finding in four published sentences — *a population narrower than the claim* —
+  committed in the tool that was doing the finding. A sweep aimed at somebody else's blind spot has
+  one of its own, and being the thing currently hunting the class is no protection at all.
+
+  **Nothing but the replay could have said so.** Every suite was green, the typecheck was green, the
+  anchors all applied, and the guard went on passing — because a guard with no mutant aimed at it
+  passes. `npm run battery site` refused the run under `UNACCOUNTED FOR`, with the sentence that
+  exists for exactly this: *nothing reddens it, and the battery does not say why. Either it is out of
+  this battery's reach, or it is a debt — both are declared, neither is silence.*
+
+  **The rule it produces is cheap**: a probe whose answer decides a deletion states the population it
+  read and how, in the commit that deletes. The two disagreeing cells found in the same run make the
+  same point from the other side — W-56 filtered a page that no longer exists and W-65 was re-aimed at
+  prose carrying no marks, so both edited a file and changed no answer. **A mutant can be inert on the
+  data rather than wrong about the code, and that is what a replay says and a reading does not.**
+  ADR-0189.
 - **Checking that a change does not move what you feared says nothing about what it moves.**
   ADR-0129 reordered a shared list of seven filenames and checked `npm run freeze`, because the
   order could have entered a published digest. It had not. What the order *was* load-bearing for was
