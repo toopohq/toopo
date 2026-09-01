@@ -265,8 +265,20 @@ rule inside a media query leaves the population in silence — **seven selectors
 declared only inside a `@media`**, one of them the light palette's own root — and it is the one cell
 that reddens the reader's guard alone.
 
+### What the replay says, read off its own artefact
+
+| guard | red on | alone on |
+| --- | --- | --- |
+| `every-rule-this-sheet-paints-is-one-a-page-writes` | 19 cells | **W-164** |
+| `what-this-reads-as-a-selector-is-what-a-browser-reads-as-one` | W-165, W-166 | **W-166** |
+| `the-sheet-a-page-carries-is-the-whole-sheet-this-site-composes` | W-19, W-20, W-24 | — |
+
+All five cells this unit wrote or moved are `killed` and agree with their pins. The battery exits 0
+with **nothing unaccounted for**.
+
 ### The commands
 
-`pnpm site` is 18 files and 187 tests green, against 17 and 184. `pnpm anchors` is 773 anchors across
-104 files with none loose. Nothing under `contracts/` is touched, no digest moves, and
-`THE_PACKAGE_VERSION` stays at `1.1.0`.
+`pnpm site` is 18 files and 187 tests green, against 17 and 184. `pnpm anchors` is 774 anchors across
+104 files with none loose. `pnpm meta` is 10 files and 115 tests green, `pnpm freeze` is green,
+`tsc -p tsconfig.json` is clean, and `pnpm battery site` exits 0. Nothing under `contracts/` is
+touched, no digest moves, and `THE_PACKAGE_VERSION` stays at `1.1.0`.
