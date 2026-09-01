@@ -128,7 +128,7 @@ would have to carry it is published.
 
 ```sh
 pnpm install
-pnpm run mutation    # tens of minutes; replays all 838 cells and prints the total
+pnpm run mutation    # tens of minutes; replays all 839 cells and prints the total
 pnpm run tally       # prints it again from what the replay left, measuring nothing
 ```
 
