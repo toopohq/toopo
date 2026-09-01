@@ -3355,6 +3355,53 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   still among them — and what is **not** closed is the general case: nothing in this repository requires
   a deletion to be proved by a listing, and the next one written will be as free to ask a question that
   cannot answer.
+- **That the address a deployment keeps is the address a reader gets.** ADR-0188's gate is what stops
+  this tree dropping an address a contract was published at, and it decides by comparing **two
+  sitemaps** — the one the origin publishes against the one the build just wrote. It asks the origin
+  for a document. It never asks the origin for an address.
+
+  **Measured on the live origin at `18c0b38`, over the ten addresses ADR-0189 retired: nine still
+  answer 200**, in two groups that fail for different reasons.
+
+  | | answers | `Cache-Control` | `Age` |
+  | --- | --- | --- | --- |
+  | `/catalogue/`, `/method/`, `/what-a-contract-is/`, `/refused/` | 200 | `public, s-maxage=604800` | ≈132 700 s |
+  | the five domain pages | 200 | `public, max-age=0, must-revalidate` | 132 599–164 099 s |
+  | `/typescript/array/group-by@1/` | 404 | `no-store` | — |
+
+  **`s-maxage` is written nowhere in this repository** — zero occurrences under `packages/` and
+  `packaging/` — so four of them are held for seven days at the edge under a rule nobody here chose,
+  and the other five are being served stale under the rule this repository does write. Roughly
+  thirty-seven to forty-six hours old at the reading.
+
+  **What happened is benign and the class is not.** The promise was over-kept by accident: a reader
+  meets a stale page instead of a false 404. **The dangerous direction is the mirror** — an address
+  the sitemap still lists and the edge stops answering. The gate would compare two documents, find
+  the address in both, and say nothing, while a reader meets a 404 at an address frozen for the life
+  of a major. That is the one event this whole mechanism exists to prevent, and the reading it is
+  built on cannot see it.
+
+  **It is the same class as everything else this week, arriving on the mechanism that keeps the
+  promise: the thing measured is not the thing promised.** The promise is about what a reader
+  receives; the measurement is about what a file declares. It was found by the owner reading the
+  deployed origin, which is the one place the gate does not look.
+
+  **Where this looked**: `theAddressesTheOriginLists` in `packaging/what-the-origin-lists.ts`, which
+  does reach the network and still fetches a document; `print-what-a-deployment-would-drop.ts`, which
+  runs before the deployment and so is the only reading that *could* ask about the previous one; and
+  `packaging/against-the-origin/`, which runs after the upload and therefore sees this commit at every
+  address, which is the guard that cannot fail ADR-0125 already refuses to write.
+
+  **The population is every address the origin lists**, seventeen today and seven once the edge
+  expires. What would close it is asking the origin for each address rather than for its sitemap — one
+  request per listed address, before the deployment. **The price is not the requests**: a 200 from a
+  cache and a 200 from the origin are the same answer, so such a reading has to interpret `Age` and
+  `cf-cache-status`, which are facts about the zone rather than about this tree. That is **the third
+  instance of the gap `wrangler.jsonc` records in its own words** — *a gap in this file's own claim to
+  hold every decision* — after the custom domain and the four hours below. The real repair is three
+  zone settings on the far side of it, and they are the owner's. Priced and not taken. ADR-0188,
+  ADR-0189.
+
 - **That the four hours a returning reader holds a module for are decided by anything in this
   repository.** The entry this replaces had two halves and only one of them was ever this repository's
   to close. The declaration half is closed and is recorded below with ADR-0170; **this is the half
