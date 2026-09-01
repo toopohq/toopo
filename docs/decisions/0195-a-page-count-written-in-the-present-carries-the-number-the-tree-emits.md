@@ -29,7 +29,7 @@ answer: the rule, the population, the count, and which files hold a defect.
 
 ## Decision Drivers
 
-- **[ADR-0018](0018-a-measurement-carries-its-coordinates.md) is the rule this repository invokes more
+- **[ADR-0018](0018-a-published-count-carries-its-coordinates.md) is the rule this repository invokes more
   than any other, and it had just been broken nine times in its own prose.** A count with no
   coordinate, in a present-tense clause, is the exact shape it names.
 - **No mechanical replacement works.** The nine do not share one true number: seven pages and eight
