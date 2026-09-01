@@ -3333,9 +3333,9 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `decision-makers` of 189 records were the two that a release or an edit could withdraw, and the two
   that remain are the two nothing can — `LICENSE` is where the owner has decided the name belongs, and
   the five headers are inside digests other people's lockfiles hold. A name published by what cannot be
-  withdrawn is not made private by rewriting what can. **What is worth keeping is
-  the recurrence and not the frozen seventeen** — a stack trace pasted into a comment, a path copied out
-  of an error message — and that arrives in the working tree, where a reading is green today and red on
+  withdrawn is not made private by rewriting what can. **What is worth keeping is the recurrence and
+  not the frozen seventeen** — a stack trace pasted into a comment, a path copied out of an error
+  message — and that arrives in the working tree, where a reading is green today and red on
   the day it happens. **It closes on that reading**, beside `refusedAddressFaults` in
   `mutation/history.ts`, whose halves are already this shape: a declaration of what is refused, a sweep
   over a named population, and a fault that reports where without reprinting what.
