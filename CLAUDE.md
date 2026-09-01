@@ -1990,9 +1990,15 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **The population is every candidate the two searches did not reach**, and nothing here bounds it,
   because the set of functions somebody might want is not enumerable from this repository. What would
   close it is not a guard: it is a search conducted below the bound, whose result is publishable
-  whether or not it finds anything — ADR-0163 having established that a negative is a result. Priced as
-  its own unit and not taken, because a unit whose subject is what a signal may decide is not where one
-  decides to run a search. ADR-0163, ADR-0191.
+  whether or not it finds anything — ADR-0163 having established that a negative is a result.
+
+  **That search is being conducted, and its method was committed before its first probe.** ADR-0192
+  declares the window, the enumeration and the acceptance rule in advance, on ADR-0176's discipline,
+  so that finding nothing cannot be answered by widening anything. Its axis is not a lower floor: a
+  threshold recreates this entry at a new number, so the axis is the language's own surface, which is
+  finite and needs no floor. What that leaves unreached is declared in advance rather than discovered
+  at the end — a candidate that is neither a language trap nor above the old bound. ADR-0163,
+  ADR-0191, ADR-0192.
 
 - **That an address a frozen file cites is one that resolves where the file is frozen.** A citation
   whose target is frozen beside it can never rot: the two move together or not at all. A citation
