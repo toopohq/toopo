@@ -4,7 +4,6 @@ date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
   - packages/registry/the-seven-files.ts
-  - packages/site/paths.ts
 confirmed-by:
   - battery: site
     guard: every-contract-the-index-lists-has-a-page-at-its-own-address

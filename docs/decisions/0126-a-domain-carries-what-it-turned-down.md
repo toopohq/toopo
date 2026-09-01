@@ -4,7 +4,6 @@ date: 2026-08-18
 decision-makers: Mathis Perron
 governs:
   - packages/site/catalogue.ts
-  - packages/site/chrome.ts
 confirmed-by:
   - battery: site
     guard: every-contract-the-index-lists-has-a-page-at-its-own-address
