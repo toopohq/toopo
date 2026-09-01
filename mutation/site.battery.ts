@@ -308,7 +308,7 @@ const THE_INDEX_ENDPOINT = `  contractIndex: 'contract-index',`
  */
 const NOTHING_IS_DEFERRED = `export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {}`
 
-const A_SUMMARY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `paragraph(contract.identity.summary, { class: 'lede' })`
+const A_DESCRIPTION_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `paragraph(contract.identity.description, { class: 'says' })`
 
 const A_PAGE_IS_WRITTEN_AT_THE_FILE_IT_IS =
   '    ...[...pages].map(([path, page]) => [path, toHtml(page)] as const),'
@@ -1554,14 +1554,17 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'W-56',
-    'leaves the method page out of the sitemap. The page is written, linked and served; it is only ' +
-      'invisible to whoever would have found it by searching - which is the half of the site that ' +
-      'has no reader coming to it from anywhere else',
+    'leaves a contract page out of the sitemap. The page is written, linked and served; it is only ' +
+      'invisible to whoever would have found it by searching - which for a contract page is most of ' +
+      'the readers it has, since a stranger arrives at one from a search and not from this site. ' +
+      '**It named the method page until ADR-0189 retired it**, and a filter that matches nothing is ' +
+      'a mutant that edits the file and changes no answer: it was pinned `killed` and measured ' +
+      '`survived`, which is the replay reporting a cell whose subject had left',
     [
       siteFile(
         THE_SITEMAP_IS_THE_PAGES,
         `  return theCrawlerFiles(\n` +
-          `    listed.filter((page) => !page.path.startsWith('method/')),\n` +
+          `    listed.filter((page) => !page.path.startsWith('typescript/string/slugify@1/')),\n` +
           `    root ?? { path: FRONT_PAGE, title: '', description: '' },\n` +
           `  )`,
       ),
@@ -1681,16 +1684,19 @@ const mutants: readonly Mutant[] = [
    */
   sameOnEveryLens(
     'W-65',
-    'renders a contract\'s own summary without parsing the two marks it is written with, so the ' +
-      'asterisks and the backticks reach the reader as themselves - in the first sentence of the ' +
-      'page. `inline` goes on existing and goes on being right: what the edit removes is a paragraph ' +
-      'going through it, which is the shape every failure of this rule has taken, including the one ' +
-      'this repository published. **It aimed at the method page until ADR-0189** and moved to the ' +
-      'contract page with the rule, which is where the catalogue\'s prose is parsed now',
+    'renders a contract\'s own description without parsing the two marks it is written with, so the ' +
+      'asterisks and the backticks reach the reader as themselves - under *What it does*, which is ' +
+      'the longest prose on the page. `inline` goes on existing and goes on being right: what the ' +
+      'edit removes is a paragraph going through it, which is the shape every failure of this rule ' +
+      'has taken, including the one this repository published. **It aimed at the method page until ' +
+      'ADR-0189** and moved to the contract page with the rule. **It aimed at the summary first and ' +
+      'survived**: no contract\'s summary carries a mark, so bypassing the parser there changed ' +
+      'nothing a reader could see - the mutant was inert on the data rather than wrong about the ' +
+      'code, which is the one thing a replay says and a reading does not',
     [
       contractPageFile(
-        A_SUMMARY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
-        `line('p', contract.identity.summary, { class: 'lede' })`,
+        A_DESCRIPTION_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
+        `line('p', contract.identity.description, { class: 'says' })`,
       ),
     ],
     killed(['no-mark-a-sentence-carries-reaches-the-reader-as-itself']),
@@ -2094,6 +2100,37 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['the-ways-a-page-hands-over-are-the-declared-ways-and-the-one-it-prints-runs']),
+  ),
+
+  /**
+   * The rarest shape this battery carries: a defect that changes no byte of the emitted site.
+   *
+   * `rootFrom` counts the segments of the page it is handed, a contract page has four, and
+   * `'../../../'` is the string this replaces it with - so every page renders identically, the walk
+   * over the page graph resolves every link, and the tree is the same to the byte. Nothing that reads
+   * a rendering can disagree with it, because there is nothing to disagree with until a contract page
+   * changes depth.
+   *
+   * **It aimed at a domain page until ADR-0189, and the way it nearly went missing is worth the
+   * line.** The domain page was deleted, and a probe written to ask which of the doomed cells pinned
+   * a *surviving* guard read the site's test files for `it('…')` — while `links.test.ts` puts its
+   * title on the line below `it(`. So the probe answered that this guard had gone with its cell, the
+   * cell was deleted, and the guard was left with nothing reddening it. **The battery is what said
+   * so**, under `UNACCOUNTED FOR`, which is the accounting refusing a run in which a guard has no
+   * witness and the report does not say why.
+   */
+  sameOnEveryLens(
+    'W-136',
+    'types the root of a contract page back into the address of its own frozen definition, so a ' +
+      'link builder stops following the page it is rendered onto and every rendered byte stays ' +
+      'identical',
+    [
+      contractPageFile(
+        "const theFrozenDefinition = `${rootFrom(own)}${pathTo(endpointOf('snapshot'), held.binding.digest).slice(1)}`",
+        "const theFrozenDefinition = `../../../${pathTo(endpointOf('snapshot'), held.binding.digest).slice(1)}`",
+      ),
+    ],
+    killed(['every-address-a-page-links-to-is-composed-and-never-typed']),
   ),
 
   /**
