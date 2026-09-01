@@ -2530,6 +2530,39 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
+   * The other control that meets a page serving no slot for it, and the one nothing was watching.
+   *
+   * **`themeControl` was reached by no guard of `packages/site/` at all.** Measured at `0e97bc0` by
+   * casting its slot check away instead: the whole site suite came back **184 of 184 green**. What
+   * made the defect visible is `a-page-with-no-slots-on-it-has-nothing-built-into-it` calling every
+   * builder the module exports rather than the four it happened to name. ADR-0196.
+   *
+   * **The fallback rather than the cast, and the difference is which sentence reddens.** Cast away,
+   * the missing slot throws at `slot.append` and the guard fails before its own assertion runs;
+   * falling back to the body builds the button and the assertion is what refuses it. Both are red and
+   * both are red alone - this one is red on the sentence the guard is named after.
+   *
+   * **No reader meets it today, and that is written here rather than smoothed.** The tree writes
+   * eight files of HTML: seven carry `.masthead .theme`, and `404.html` is the one that does not -
+   * it carries the masthead and loads no module, so nothing runs there. What this cell buys is the
+   * day a page gains the script or loses the slot, which is the argument `CLAUDE.md` asks a guard
+   * born green to make.
+   */
+  sameOnEveryLens(
+    'W-163',
+    'falls back to the body when the masthead serves no slot for the theme, so a page that asked ' +
+      'for no theme control is handed one at the end of it',
+    [
+      startFile(
+        `  const slot = document.querySelector('.masthead .theme')
+  if (!(slot instanceof HTMLElement)) return`,
+        `  const slot = (document.querySelector('.masthead .theme') ?? document.body) as HTMLElement`,
+      ),
+    ],
+    killed(['a-page-with-no-slots-on-it-has-nothing-built-into-it']),
+  ),
+
+  /**
    * **Three cells over one removal, and each reddens exactly one of its three guards** - which was
    * measured rather than arranged, and is the whole reason the three guards are not one.
    *

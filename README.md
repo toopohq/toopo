@@ -109,9 +109,9 @@ so *is this the code I was given* is a question your own checkout answers with n
 
 ## Why you can believe any of it
 
-23 mutation batteries inject **838 deliberate defects** into this repository — each one a committed
+23 mutation batteries inject **839 deliberate defects** into this repository — each one a committed
 file naming the exact edit it makes and the verdict it must produce — and re-run the whole suite once
-per defect. **796 are caught.**
+per defect. **797 are caught.**
 
 To be exact about what *caught* means: a few of these defects cannot occur on every operating system,
 because what they break is a rule of the filesystem rather than of this code. Each is caught where it
