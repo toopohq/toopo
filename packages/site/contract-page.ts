@@ -216,11 +216,22 @@ export const contractPage = (
      * Composed rather than borrowed from the summary, which the title already carries. A search
      * result showing one sentence twice wastes the only two lines it gets, and the differentiator -
      * how many decisions are settled, and what installing costs - is the half a reader cannot guess.
+     *
+     * **It says the shape of what lands and never its magnitude, and that is a repair rather than a
+     * trim.** It used to end `one file, ${grouped(bytes)} bytes, no dependencies`, so every contract
+     * page stated its installed total twice - here and in the card's own figure - off one derivation,
+     * `whatACardSays`. `the-cost-a-page-states-is-what-lands-and-not-what-is-served` asks whether that
+     * total is *somewhere* in the page's reading, so the second statement answered for the first:
+     * measured at `aff4bdd`, taking the card's cost figure away left the guard **green** on all six
+     * pages, and a reader lost the one figure on the card that says what installing costs. ADR-0194.
+     *
+     * The magnitude belongs to the card, where a reader acts on it and where the guard reads it; the
+     * shape belongs here, where a search result has two lines and `one file, no dependencies` is the
+     * half a summary cannot guess. Neither surface lost a claim - the number is now made once.
      */
     description:
       `${cases} named edge cases, settled and frozen. TypeScript source copied into your project: ` +
-      `${files === 1 ? 'one file' : `${files} files`}, ` +
-      `${grouped(bytes)} bytes, no dependencies.`,
+      `${files === 1 ? 'one file' : `${files} files`}, no dependencies.`,
     body: [
       masthead(own, menu),
 

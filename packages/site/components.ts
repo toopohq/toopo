@@ -146,7 +146,7 @@ ${OWN} {
   transition: border-color .15s, color .15s;
 }
 ${OWN}:hover { border-color: var(--edge); color: var(--ink); text-decoration: none }
-${OWN} .count { opacity: .55; margin-left: var(--s) }
+${OWN} .count { opacity: .55 }
 ${OWN}[aria-current='true'] {
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
   background: var(--target); color: var(--accent);
@@ -156,6 +156,30 @@ ${OWN}[aria-current='true'] {
 
 /** The part of a pill that says how many, named once so the markup and the rule cannot part. */
 const A_COUNT = 'count'
+
+/**
+ * What stands between a domain's name and its magnitude, in the prose rather than in the stylesheet.
+ *
+ * **A margin separated them for a reader with CSS and for nobody else.** The count used to be
+ * `text(String(count))` under `margin-left: var(--s)`, so the served Markdown twin of the front page
+ * read `- all6`, `- number2`, `- date1`, `- string2`, `- object1` - a name and a figure as one token,
+ * on the one projection that can rely on no stylesheet at all. ADR-0193 measured it and ADR-0194
+ * repairs it.
+ *
+ * **The separator is prose because that is the only thing every projection carries**, and this
+ * repository had already answered that twice before this line existed: `quantity.ts`'s `figure` writes
+ * the space into the label's own text node, and its header records this very defect met once already -
+ * a column that left the space out published `**672**defect cells injected`. `contract-page.ts` writes
+ * ` · ` into the date beside a version. So the shape is reused rather than invented, and the middle dot
+ * rather than the space is the half that is chosen here: a bare space repairs `all6` and produces
+ * `number 2`, `date 1` and `object 1`, which read as ordinals. Two values side by side are what
+ * `contract-page.ts` uses this character for, and that is what these are.
+ *
+ * `margin-left` goes with it. The gap is now stated once, in the markup, where both projections read
+ * it - and the paint moves by design: one mono space at `calc(12 * var(--a-point))` in place of a
+ * `.25rem` margin.
+ */
+const BEFORE_A_COUNT = ' · '
 
 /**
  * A way into a domain, or - with no address - the mark of the list already in front of the reader.
@@ -172,7 +196,9 @@ const A_COUNT = 'count'
 export const pill = (name: string, count: number | null, href: string | null): Node => {
   const says = [
     text(name),
-    ...(count === null ? [] : [el('span', { class: A_COUNT }, text(String(count)))]),
+    ...(count === null
+      ? []
+      : [el('span', { class: A_COUNT }, text(`${BEFORE_A_COUNT}${count}`))]),
   ]
 
   return href === null

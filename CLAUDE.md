@@ -1193,6 +1193,28 @@ reading could not reach is published — in a media query `rem` resolves against
 so a scripted root override moves every length and no condition, and whether a real 200 % setting fires
 those two is the one part of the acceptance this repository cannot take for itself. ADR-0184, ADR-0185.
 
+**A separator only a stylesheet carried was a separator for nobody, and the guard that could not see it
+now can.** The shelf's domain filter drew a name and a count told apart by `margin-left: var(--s)`, so
+`https://toopo.dev/index.md` served `- all6`, `- number2`, `- date1`, `- string2`, `- object1` — the one
+shape a page can be wrong in that only a projection shows. **The repair was searched for before it was
+invented and this repository had already answered twice**: `quantity.ts`'s `figure` writes the separator
+into the second fragment's own text node, and its header records *this very defect met once already*, a
+column that left the space out publishing `**672**defect cells injected`. So the mechanism is settled
+and only the character was chosen — ` · ` rather than a space, because a space repairs `all6` and
+produces `- number 2`, `- date 1` and `- object 1`, which read as ordinals. `margin-left` went with it,
+the gap being stated once now. **The projection table was the shape to reach for and one fact refuses
+it**: `span` is the tag the count uses *and* the tag an address split for highlighting uses, so making
+it separate renders `number/ parse` on every page; and no inline tag separates in the reading at all.
+**The guard is widened rather than left**, on a rule and never a list — between two elements only white
+space can make a boundary visible, and between an element and prose the character the author typed can,
+so what remains is a seam between two word characters. Over ADR-0193's 22 pairs it reports **5 and
+allows 17**, exactly. `W-162` is the cell the arm was owing — the entry's own witness `W-64` had been
+deleted by ADR-0189 — and it is **red alone, 183 guards green beside it**. **And the second defect's
+witness was misnamed in both records that carry it**: `W-12` is *killed*, because the description and
+the card read one derivation and it moves them together. What the duplication shielded is the card's
+cost figure being removed — **green on six of six before, red on six of six after**. `/index.md` goes
+3 592 → **3 612 B**, twenty bytes of arithmetic. ADR-0194.
+
 **The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
 name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The
 shape of every command at once stood there as `add domain/function` so that no contract was privileged
@@ -1598,6 +1620,19 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   so that guard would have been born on an empty population and could not have failed. It leaves
   behind the reading's published limit, which is that a character outside a bracket expression is not
   read, and `outputAlphabet`'s own frozen stratum, which is an entry below.
+- **two things a reader sees side by side, where one of them is not an element** — ADR-0194, and it
+  is the first entry this list has closed by **widening the guard whose blindness it was about**. The
+  entry priced that widening as *a population that moves across every page of the tree, whose green has
+  to be re-earned everywhere at once*, and the price was not paid, because the population separates by a
+  rule: between two elements only white space can make a boundary visible, and between an element and
+  prose the character the author typed can — so what is left is a seam falling between two word
+  characters, which is one word broken in half. Measured at `aff4bdd` over the 22 pairs, **5 reported
+  and 17 allowed**, with no exemption list. The five are repaired at the same time, the separator being
+  prose rather than a margin, and `W-162` is the cell — **red alone, 183 guards green beside it**. What
+  it leaves behind is written where somebody reaching for it arrives: the entry's own witness, `W-64`,
+  had been deleted by ADR-0189, so it cited a cell nobody could replay; and the widened arm is exact
+  over the seventeen that exist and has no exemption for a pair whose seam is two word characters and
+  which is right — `1<span>st</span>` is that shape, and this site writes none.
 - **a word broken in half at 320** — ADR-0193, and it is the first entry this list has closed because
   **a later unit deleted the thing it measured**. It read fifteen breaks on `/method/`, *all on that
   page*, and named `packages/site/methodology-page.ts` in its **Where this looked**; `11e0f54` deleted
@@ -2540,50 +2575,23 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `no-element-runs-into-the-one-beside-it` and its neighbours were written to avoid. Priced and not
   taken. ADR-0130.
 
-- **That two things a reader sees side by side are told apart, where one of them is not an element.**
-  `no-element-runs-into-the-one-beside-it` walks a node's children and skips any pair where either
-  side is a text node — read in the guard: `if (left.child.kind !== 'element' || right.child.kind
-  !== 'element') continue`. So a phrasing element followed by bare text is outside its reach by
-  construction, and the separator between them is the author's and kept by nothing.
+  **The instance is gone and the class is untouched, and what the repair found is that neither record
+  had named the right mutant.** Measured at `aff4bdd`: **W-12 is killed**, not survived. It injects
+  into `whatItCosts`, which is the one derivation the description *and* the card read, so it moves them
+  together and the page states `60 371 bytes` twice - which is why *pointing the card's figure at the
+  harness* was never the mutant this duplication shielded. What it shielded is a mutant at the call
+  site, and it is worse: with the card's cost figure removed the guard was **green on all six pages**,
+  so a reader could lose the one figure that says what installing costs and nothing would say. After
+  the repair the same perturbation is **red on all six**. So the paragraph above is right about the
+  class and wrong about its own witness, in both records that carry it. ADR-0194.
 
-  **It was found by a surviving mutant and not by a reading**, which is the whole reason it is worth
-  an entry rather than a note. W-64 was re-anchored onto the front page's turned-down mark — take the
-  ` — ` off and the page reads `group-byturned down` — and the cell **survived**. Nothing was red. A
-  guard whose subject is exactly that defect could not see it, and the instrument is what said so.
-
-  **The population is every place this site writes text beside a phrasing element, and this entry
-  declared it zero.** It is **22**, and **five of them are the defect**. Measured at `ccc9fca` over
-  the seven documents `theSite` yields, by the guard's own loop with its `left.child.kind !==
-  'element'` line removed: 22 pairs where one side is a text node and neither reading separates,
-  against **0** element-against-element, which is the guard passing correctly. Seventeen are correct
-  by construction — an address split for highlighting, `number/|parse` in an `h1`, and a `code`
-  followed by its punctuation, `toFixed|, which answers a string` — where the author writes the
-  spacing into the prose and is right to. The five are the shelf's domain filter, and the served
-  Markdown twin of the front page is what settles them: `- all6`, `- number2`, `- date1`, `- string2`,
-  `- object1`, at `/index.md`.
-
-  **The closure was false when it was written and not merely stale**, which is rule 3 of this section
-  arriving on a closure. `A_COUNT` entered `pill` at `fc70d3c` on 2026-08-30; the sweep's coordinate
-  `dd0effe` is 2026-09-01; and `git show dd0effe:packages/site/front-page.ts` already carries
-  `pill('all', installable, null)`. **The sweep cannot be replayed either, because the entry published
-  its verdict and not its rule** — which is ADR-0189's own discipline, written for a probe deciding a
-  deletion and never applied to one declaring an emptiness. ADR-0193.
-
-  **The neighbouring reading has the same shape.** `no-element-runs-into-the-one-beside-it`'s own
-  comment says *with text nodes admitted the predicate holds 53 pairs across the seven pages and 48 of
-  them are ordinary inline markup*; **53 reproduces under none of four rules** at `ccc9fca` — every
-  kind of pair with `pre` skipped is 22, with `pre` admitted 570, element-against-element 0,
-  one-side-text 22 — and the five sit in a remainder that reading does not name. It is left as taken,
-  being a measurement in the file that holds the guard. ADR-0167, ADR-0189, ADR-0193.
-
-  **What would close it is one of two things, and one of the two prices has already been paid.**
-  Widening the guard to element-against-text changes its population across every page of the tree, and
-  a guard whose population moves is one whose green has to be re-earned everywhere at once. Or the
-  mark becomes an element — and this entry refused that on `Tag` having no `span`, which **stopped
-  being true at `fc70d3c`**, so the union it did not want widened is widened, for another reason, and
-  what remains of that half is only the layout decision. The five are not repaired here: a
-  re-measurement that also repairs makes it impossible to say which of the two moved the figure.
-  ADR-0193.
+  **What closed the instance is not what this entry proposes.** The price of *where* rather than
+  *whether* is real and is still refused; the duplicate was removed instead, which the entry's own
+  sentence allows for - *the guard is not too broad and the page is not wrong; what is wrong is that
+  they met*. The description states the shape of what lands and the card states its magnitude, so the
+  number is made once. **The population is unchanged at the two figure guards of `pages.test.ts`**,
+  nothing reads a page for repeated values, and the instance count is **0 of 6** where it was six of
+  six. ADR-0194.
 
 - **That a citation inside a file a published contract freezes ever resolves again.** The two shared
   files carry three identifiers of a history that no longer exists — `3ec99c5…` twice in prose, and

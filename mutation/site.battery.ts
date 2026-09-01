@@ -2456,6 +2456,33 @@ const mutants: readonly Mutant[] = [
     killed(['a-component-is-painted-by-its-own-rules-and-by-nothing-else']),
   ),
 
+  /**
+   * **The defect ADR-0194 repaired, put back in the one line that carries it.**
+   *
+   * A name and a magnitude with nothing between them, told apart by a stylesheet and by nothing else -
+   * so the HTML is right and the served Markdown twin reads `- all6`, `- number2`, `- date1`,
+   * `- string2`, `- object1`. It is the one shape a page can be wrong in that only a projection shows,
+   * and it stood on `https://toopo.dev/index.md` for two days.
+   *
+   * **It is the cell the widened guard was owing, and it is red alone.** The arm this exercises -
+   * an element beside prose, judged on whether its seam falls between two word characters - had no
+   * witness at all: `no-element-runs-into-the-one-beside-it` is accounted for by W-29, which breaks
+   * `p: ends('')` in the projection and reddens the element-against-element arm that has always
+   * existed. W-64 was this arm's cell and ADR-0189 deleted it. Measured at `aff4bdd` with the
+   * separator emptied: **183 guards green and this one red**, the pages building perfectly - which is
+   * what `attribution.ts` calls *red alone* and what most of this battery cannot say.
+   *
+   * The anchor is the constant rather than the template line beside it, because a `find` holding
+   * `${...}` is a `find` somebody has to escape twice and read once.
+   */
+  sameOnEveryLens(
+    'W-162',
+    'runs a domain name into the count beside it, so the front page tells a reader with a stylesheet ' +
+      'about six functions and tells every other reader about `all6`',
+    [componentsFile(`const BEFORE_A_COUNT = ' · '`, `const BEFORE_A_COUNT = ''`)],
+    killed(['no-element-runs-into-the-one-beside-it']),
+  ),
+
   sameOnEveryLens(
     'W-149',
     'spells the shortcut the same way for every keyboard, so a reader on Windows is told to press a ' +

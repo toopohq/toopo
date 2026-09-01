@@ -69,6 +69,20 @@ const html = (path: string): string => toHtml(page(path))
 const asRead = (prose: string): string => inline(prose).map(readingOf).join('')
 
 /**
+ * The characters that read as part of a word, for `no-element-runs-into-the-one-beside-it`.
+ *
+ * Letters, numbers and combining marks, rather than `[A-Za-z0-9]`: this catalogue settles cases on
+ * `日本語`, `हिन्दी` and `٤٢`, and an ASCII class would read every one of them as punctuation - which
+ * is to say as a separator - and go quiet on the pages that carry the most of them. Combining marks
+ * are in because a seam falling between a letter and its own mark is inside a grapheme, which is the
+ * same defect one floor down.
+ */
+const WORD_MATTER = /[\p{L}\p{N}\p{M}]/u
+
+/** What a node is called in a fault, which a text node has no tag to answer. */
+const nameOf = (node: Node): string => (node.kind === 'text' ? 'prose' : `<${node.tag}>`)
+
+/**
  * What a reader reads under each `h2` of a page, by the title of that `h2`.
  *
  * **It walks the value because searching the reading stopped working, and the reason is worth having
@@ -1191,13 +1205,38 @@ describe('the site', () => {
    * that an element with no separator was put where a block belonged, and the element after it began
    * mid-line.
    *
-   * The two siblings must both be **elements**, and that is a measurement rather than a caution. With
-   * text nodes admitted the predicate holds 53 pairs across the seven pages and 48 of them are ordinary
-   * inline markup - `<strong>...</strong>: the sentence continues`, `<code>x</code>, ` - where the
-   * author writes the spacing into the prose and is right to. Restricted to element pairs it held
-   * exactly the five defects and nothing else. It is also what keeps the guard true of a link written
-   * *inside* a sentence, which is `text + a + text` and correctly invisible here: the question of what
-   * an inline anchor becomes in a projection never arises, because its neighbours carry the spaces.
+   * **What separates the two siblings is asked of the seam, and what counts as separation depends on
+   * whether a person wrote the character there.** The guard used to require both siblings to be
+   * elements, on a reading that reproduces under no rule this repository can state - ADR-0193 measured
+   * `53 pairs, 48 of them ordinary inline markup` against every kind of pair with `pre` skipped at 22,
+   * with `pre` admitted at 570, and element-against-element at 0. What that restriction cost is
+   * measured instead: with the kind test off, **22 pairs**, of which **5 were a defect a reader met on
+   * the front page** and 17 are correct by construction.
+   *
+   * So there are two questions and one subject - *is this boundary visible to somebody reading a
+   * projection?*
+   *
+   * - **Between two elements, only white space can make it visible.** An element boundary is not a
+   *   character: `toText` and `toMarkdown` throw the markup away, and two boxes with nothing between
+   *   them become one string. Any missing white space is therefore a collision, which is what this
+   *   guard has always said and is unchanged.
+   * - **Between an element and prose, the character the author typed can make it visible too.** All
+   *   seventeen are that shape: an address split for highlighting, `<span>number/</span>parse`, and a
+   *   `code` followed by its punctuation, `<code>toFixed</code>, which answers a string`. The `/` and
+   *   the `,` *are* the boundary, and a space beside either would be wrong. What has nothing making it
+   *   visible is a seam between two word characters, which is one word broken in half - `all|6`.
+   *
+   * `WORD_MATTER` is letters, numbers and combining marks rather than `[A-Za-z0-9]`, because this
+   * catalogue settles cases on `日本語`, `हिन्दी` and `٤٢`, and a rule that reads those as punctuation
+   * would go quiet on the pages that need it most.
+   *
+   * **Seen red on the five before they were repaired and green on the seventeen throughout**, which is
+   * the pair that matters: a guard catching the five by reporting the seventeen would be worse than the
+   * one it replaces. ADR-0194.
+   *
+   * It is still true of a link written *inside* a sentence, which is `text + a + text`: the question of
+   * what an inline anchor becomes in a projection never arises, because its neighbours carry the
+   * spaces and the white-space test retires the pair before either arm is asked.
    */
   it('no-element-runs-into-the-one-beside-it', () => {
     for (const [path, document] of pages()) {
@@ -1220,11 +1259,17 @@ describe('the site', () => {
           const right = carrying[at + 1]
 
           if (right === undefined) continue
-          if (left.child.kind !== 'element' || right.child.kind !== 'element') continue
           if (/\s$/.test(left.reading) || /^\s/.test(right.reading)) continue
 
+          const bothElements = left.child.kind === 'element' && right.child.kind === 'element'
+          const runsTogether =
+            WORD_MATTER.test(left.reading.at(-1) as string) &&
+            WORD_MATTER.test(right.reading[0] as string)
+
+          if (!bothElements && !runsTogether) continue
+
           collide.push(
-            `<${node.tag}>: <${left.child.tag}> runs into <${right.child.tag}> — ` +
+            `<${node.tag}>: ${nameOf(left.child)} runs into ${nameOf(right.child)} — ` +
               `"${left.reading.slice(-30)}|${right.reading.slice(0, 30)}"`,
           )
         }
@@ -1234,7 +1279,7 @@ describe('the site', () => {
 
       for (const node of document.body) walk(node)
 
-      expect(collide, `${path} reads two elements as one sentence`).toEqual([])
+      expect(collide, `${path} reads two things beside each other as one`).toEqual([])
     }
   })
 
