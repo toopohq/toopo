@@ -150,6 +150,145 @@ has ruled on, which is the known answer: the demand axis reaches the three packa
 contracts and misses the three traps; this axis reaches the traps. I predict the two together reach
 more of the six than either alone, and I do not predict either reaches all six.
 
+### What the sweep returned
+
+**Everything below this line was added after the method above was committed**, and the diff of this
+file is what says the method did not move to fit it.
+
+**The population, at `998b6f7` on Node v24.15.0.** 135 globals, partitioned totally — the probe throws
+rather than let one through — into **84 excluded** by seven declared groups and **51 in scope**. Those
+51 yield **592 members**, of which **443 are operations**; the rest are 90 accessors, 42 numeric
+constants, 15 symbols and 2 objects.
+
+**The first version of the sweep was a population narrower than its claim, and that is published
+rather than repaired in silence.** It walked own properties of each named object and of its
+`.prototype`, which reaches nothing of `%TypedArray%.prototype`: the twelve typed arrays carry
+`constructor` and `BYTES_PER_ELEMENT` and inherit their **36** operations from a shared intrinsic that
+is an own property of nothing reachable by name. The repair walks each prototype chain and reaches the
+seven unnamed iterator intrinsics through real instances. **It is ADR-0189's lesson arriving on the
+sweep that was written knowing it** — a sweep aimed at somebody else's blind spot has one of its own —
+and it was caught by the holder breakdown reading `31 BYTES_PER_ELEMENT` where it should have read
+thirty-one operations.
+
+**The classification is total and it is checkable rather than asserted.** *I read all 443* is a claim;
+what stands in its place is a probe that assigns each operation a ground by a declared rule and
+**refuses to print if one is unassigned or claimed twice**. Measured: **443 operations, 443 assigned.**
+
+| ground | operations | |
+| --- | --- | --- |
+| R5 | 106 | the specification fixes the answer and nothing disagrees |
+| R2 | 80 | a normative specification outside this catalogue — ECMA-402, WHATWG URL and Encoding |
+| R6 | 57 | stateful, mutating, iterator-valued or not a function of its arguments |
+| R7 | 55 | the object model or a byte window, whose answer the signature cannot carry |
+| R3 | 30 | one expression, or a conversion with nothing to settle |
+| R9 | 29 | takes a function, so its case table cannot be served readably |
+| R1 | 26 | the language ships the answer, or ships the repair |
+| annex-b | 20 | legacy, normative only for web compatibility |
+| **the reading stopped here** | **40** | — |
+
+### The forty, and why not one of them is an eighth contract
+
+**Four of the forty are this catalogue's own published work**, which is the calibration rather than a
+result: `parseInt` and `parseFloat` are `number/parse@1`; `Math.round` is `number/round@1`;
+`Date.prototype.setMonth` and `setDate` are `date/add@1`; and `Object.keys` answering `[]` for a `Set`
+is `object/deep-equal@1`'s trap clause — measured here rather than recalled,
+`Object.keys(new Set([1, 2]))` answers `[]`. `Object.groupBy` and `Map.groupBy` are the operations that
+refused `array/group-by@1`. **The axis reaches the catalogue, including the contract it turned down.**
+
+**The rest are refused on grounds fixed before the field was known, and not one refusal below carries
+a figure.**
+
+* **`Number.prototype.toFixed`, `toPrecision`, `toExponential`** — the strongest candidate, and the one
+  the prediction named. Refused on **R8 and R12**, and the measurement is what decides it rather than
+  the resemblance. Over 27 cases, `toFixed` and `number/round@1` followed by padding **differ on 10**;
+  and `Number(v.toFixed(p))` differs from `round(v, p)` **on the same 10**. So the whole of the
+  disagreement is the rounding, and the rounding is a published contract's subject: `number/round@1`
+  is frozen, its `inputDomain` reads *It is not a formatter - the answer is a number and never text*,
+  and its `description` already names `(1.005).toFixed(2)` as the trap it corrects. A formatter either
+  adopts that rule — publishing one algorithm behind a second rendering, which is `string/camel-case`'s
+  refusal exactly — or contradicts it, at which point the catalogue holds two rules for one question,
+  which is R12 in as many words. **What is left once the rounding is removed is the sign on `-0.00` and
+  the exponent threshold at 1e21**, and a contract is not written for one decision.
+* **`atob` and `btoa`** — refused on **R1**, read rather than assumed: *Uint8Array to/from Base64* is
+  **stage 4 and finished**, listed in `tc39/proposals`' finished set for 2026. This runtime does not
+  have it — `Uint8Array.prototype.toBase64` is `undefined` at v24.15.0 — which makes it `date/add@1`'s
+  shape rather than an escape: a contract published now is `array/group-by@1` written again, knowingly.
+  **R2 stands behind it**, RFC 4648 specifying the alphabet, the padding and the URL-safe variant.
+* **`JSON.parse` and `JSON.stringify`** — refused on **R1**, and the repair is measured in this runtime
+  rather than read off an index: `JSON.rawJSON` and `JSON.isRawJSON` are functions here, and a reviver
+  receives `context.source`. The precision loss is real — `JSON.parse('{"id":12345678901234567890}')`
+  answers `12345678901234567000` — and the language has shipped both halves of the fix. A serialiser
+  that survives more types is a **superset grammar somebody invents**, which is R4 and
+  `string/parse-query-string`'s refusal.
+* **`structuredClone`, `Object.assign`, `Object.freeze`** — shallow against deep is `object/deep-merge`'s
+  and `object/deep-clone`'s refusal already taken: **R1** for the clone, **R4** for the merge, where
+  concatenating or replacing an array is a product choice no measurement settles.
+* **`Array.prototype.sort` and `%TypedArray%.prototype.sort`** — **R9** before anything else, since a
+  comparator is an argument with no spelling; then **R3**, the repair being `(a, b) => a - b`; then
+  **R1**, `toSorted` having shipped.
+* **`Array.prototype.indexOf` against `includes` on `NaN`** — **R1**. `includes` is the language's own
+  repair and it is in this runtime.
+* **`Array.prototype.flat`, `Math.max`, `Math.min`** — **R3**. A default depth of one is repaired by an
+  argument, and `Math.max()` answering `-Infinity` is a fact about an empty maximum rather than a defect.
+* **`String.prototype.padStart`, `padEnd`, `slice`, `split`** — the UTF-16 code-unit question, refused
+  on **R12**: `string/levenshtein@1` chose code points, declared the choice in `identity` and wrote into
+  its own `inputDomain` that the variants *answer different questions and are separate contracts*.
+  `string/truncate` was then refused on **R3** for this exact shape.
+* **`String.prototype.toLowerCase`, `toUpperCase`, `normalize`, `trim`, `replace`, `replaceAll`** —
+  **R2**. Unicode's default case conversion, UAX #15 and ECMA-262's replacement patterns are written
+  normative specifications, and **R5** stands behind each: nothing in the ecosystem answers differently.
+* **`encodeURIComponent` and `decodeURIComponent`** — **R2**, RFC 3986.
+* **`Date.parse`** — **R1**. Temporal is stage 4 and is the language's answer to parsing a date that is
+  not ISO; `date/add@1` already carries the arithmetic.
+* **`Number.prototype.toString` at a radix** — **R5** and **R11**. Fractional radix conversion is
+  surprising and nothing disagrees about it, and rule 7 has no clause for a rendering nobody's invoice
+  depends on.
+
+**So the search returns no eighth contract**, and that is a result rather than a gap — ADR-0163 having
+established it by titling itself *There is no eighth contract*.
+
+### The prediction is scored, and it was right for a reason worth reading
+
+It predicted **at most one candidate survives**, and that if one did it would be **in numeric
+formatting or precision**. Measured: **none survives, and the one that came closest is
+`Number.prototype.toFixed`** — numeric formatting, as named. **The prediction was right about the
+location and about the outcome, and its argument was half wrong**: it expected the survivors to die on
+R1 or R3, and the strongest died on R8 and R12 — a collision with something this catalogue had already
+frozen rather than with the language. ADR-0163 recorded the same asymmetry about its own prediction and
+it is recorded again here: reaching the right verdict through a different argument is a prediction that
+was not doing the work it looked like it was doing.
+
+### The calibration, run on the known answer
+
+**Refusing to calibrate would be choosing the window that flatters the result.** The question a window
+has to answer is whether it reaches the contracts this catalogue has already published — and *reaching*
+splits in two, which no earlier reading here has separated: whether the contract's incumbent operation
+is **in the population**, and whether **reading it yields the contract**.
+
+| published contract | its incumbent, in this population | in population | reading yields it |
+| --- | --- | --- | --- |
+| `number/parse@1` | `parseInt`, `parseFloat` | yes | **yes** |
+| `number/round@1` | `Math.round` | yes | **yes** |
+| `date/add@1` | `Date.prototype.setMonth` | yes | **yes** |
+| `object/deep-equal@1` | `Object.keys` on a `Set` | yes | **yes** |
+| `string/slugify@1` | `String.prototype.normalize` | yes | no |
+| `string/levenshtein@1` | none | **no** | no |
+
+**Five of six are in the population and four of six are yielded**, and the gap between those two
+columns is the honest part: `normalize` is swept, read and refused on R2, and no amount of reading it
+composes a slug. A contract that *uses* a built-in is not a contract the built-in leads you to.
+
+**Against the axis it replaces, on ADR-0191's own figures.** Those three language traps have package
+families summing to 25, 117 and 130 562 weekly downloads and rank 33rd, 32nd and 31st of 34, so
+ADR-0163's bound reaches **three of six** — `object/deep-equal@1`, `string/levenshtein@1` and
+`string/slugify@1`, the three with a package family. **Neither axis reaches this catalogue alone and
+the two together reach all six**, overlapping on exactly one contract. That is the calibration's
+finding: the bound was not trimming a margin, it was excluding half the published catalogue, and the
+half it excluded is the half this window was built for.
+
+**Those figures decide what was looked at and nothing else.** ADR-0191 permits that and forbids the
+converse, and the converse does not occur: no refusal in the forty above quotes a number.
+
 ## What would reopen this
 
 * **A candidate below the bound that is not a language trap.** This window does not reach one, which
@@ -165,7 +304,25 @@ more of the six than either alone, and I do not predict either reaches all six.
   ground that falls reopens every candidate this search refused under it.
 * **The registry gaining a readable spelling for a function argument.** R9 refuses higher-order
   candidates on the catalogue rather than on themselves, which is ADR-0163's own reopening trigger
-  arriving here as a rule.
+  arriving here as a rule. It is the largest single ground below the specification ones — **29 of the
+  443** — so it is the change that would most enlarge a future sweep's field.
+* **`number/round@1` reaching a second major.** The strongest candidate died on a collision with a
+  frozen contract rather than on its own merits, which is a refusal a later catalogue can overturn
+  where R1 and R2 refusals are not. It is the one of the forty that is refused by this catalogue
+  rather than by the language or by a standards body.
+
+### Consequences
+
+* **The open entry on the population bound narrows and does not close**, and the band it narrows to
+  was named before the search rather than after it: a candidate that is neither a language trap nor
+  above ADR-0163's bound. Nothing here reaches one, because enumerating the ecosystem needs a floor and
+  a floor is what the entry is about.
+* **`CLAUDE.md` carries the narrowed entry**, replacing the sentence this record's first commit put
+  there while the search was under way.
+* **No contract is published and none is proposed.** The unit that follows this one is not a contract.
+* **No digest moves and nothing under `contracts/` is touched.** `pnpm freeze` is green before and
+  after, `pnpm ledger` is byte-identical across the unit, and `THE_PACKAGE_VERSION` does not move.
+* **Nothing goes to npm.** This unit publishes a record.
 
 ## More Information
 
@@ -188,8 +345,45 @@ already name, price and refuse as a lint over prose. It is declared rather than 
 [ADR-0186](0186-a-decision-that-rules-no-code-declares-that-absence-with-its-reason.md)'s rule for the
 neighbouring field.
 
+### What this search could not settle
+
+**The window is one runtime at one version**, and it is a snapshot rather than a property. The
+population is Node **v24.15.0**'s, so an operation that arrives with the next stage-4 proposal is a row
+this sweep did not read — and two of the forty were refused *because* something is arriving that this
+runtime does not yet hold.
+
+**Two judgements are the assistant's and a reader may dispute either.** The partition of 135 globals
+into 84 excluded and 51 in scope is a declaration, checked for totality and not for correctness. And
+the classification of 443 operations into nine grounds is a reading; the probe proves that every
+operation received exactly one ground, and nothing proves the ground is the right one.
+
+**The reading of a trap is not a measurement of one.** Thirty-nine of the forty were refused by
+argument from a ground; **one was measured**, because R8 and R12 are the two grounds where a
+resemblance can be mistaken for an identity, and the 10-of-27 reading is what turns *this looks like
+`number/round@1`* into *the whole of the disagreement is its subject*.
+
+**The band the entry narrows to is not bounded here.** *Every candidate that is neither a language trap
+nor above 20 M weekly* is not enumerable from this repository, and no figure is offered for its size,
+because a figure would be an estimate wearing a count's clothes.
+
 ### Coordinates
 
-The method above was written against this repository at **`ea00a08`**, on **2026-09-01**, with the
-working tree clean and `pnpm meta` green at **10 files and 115 tests**. The runtime the sweep is taken
-on is **Node v24.15.0**. No probe had run when this half was committed.
+The method was written and committed against this repository at **`ea00a08`**, with the tree clean and
+`pnpm meta` green at **10 files and 115 tests**; it landed at **`998b6f7`**, where `pnpm meta` was green
+at the same reading, and **no probe had run**. Every figure below that line was measured on
+**2026-09-01**, on **Node v24.15.0**, against the tree at `998b6f7`. TC39 stages were read from
+`tc39/proposals`' own index and finished list through the GitHub API on the same day; `Uint8Array
+to/from Base64` was read off the finished list rather than the stage index, which is why it is stated
+as finished rather than as stage 3.
+
+**The demand figures quoted in the window argument and in the calibration are ADR-0191's**, taken at
+`3cec9a8` for the window ending 2026-08-29, and they are cited rather than re-measured. They decide
+what was looked at. **No refusal in this record quotes a figure.**
+
+### Where the probes live
+
+The four probes and their raw output are not in this repository — stage rule 5 keeps working material
+out — and each figure above names the population it was taken over and the runtime it was taken on, so
+that it can be rebuilt. The two that carry the load are the surface sweep, which throws rather than
+leave a global unclassed, and the classification, which exits non-zero rather than leave an operation
+unassigned.

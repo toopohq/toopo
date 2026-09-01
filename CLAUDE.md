@@ -1973,8 +1973,10 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   447, that *what was left out is the ecosystem below about 20 M weekly downloads, which is where a
   function with a real disagreement and no audience would sit*, and calls it a deliberate narrowing.
   Two searches have now run under it. **The failure has no event**: a candidate nobody looked at files
-  no dossier, reddens nothing, and appears in no table of refusals — so the eighth search reads twenty-
-  seven refusals and cannot tell which questions were never asked.
+  no dossier, reddens nothing, and appears in no table of refusals — so a later search reads twenty-
+  seven refusals and cannot tell which questions were never asked. **The eighth search confirmed that
+  half rather than removing it**: it could name what its own window excluded and could name nothing
+  about what the two before it had.
 
   **The sweep that classed every install figure in both records found it before it was classed**, as
   the one figure clause in either record attached to no refusal. That is the reading that separates it
@@ -1987,18 +1989,36 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   on and therefore inherits the narrowing whole — a signal shown to fail above the bound is not shown
   to fail below it.
 
-  **The population is every candidate the two searches did not reach**, and nothing here bounds it,
+  **The population was every candidate the two searches did not reach**, and nothing here bounded it,
   because the set of functions somebody might want is not enumerable from this repository. What would
   close it is not a guard: it is a search conducted below the bound, whose result is publishable
-  whether or not it finds anything — ADR-0163 having established that a negative is a result.
+  whether or not it finds anything — ADR-0163 having established that a negative is a result. The
+  paragraph below is what that search returned, and what it left.
 
-  **That search is being conducted, and its method was committed before its first probe.** ADR-0192
-  declares the window, the enumeration and the acceptance rule in advance, on ADR-0176's discipline,
-  so that finding nothing cannot be answered by widening anything. Its axis is not a lower floor: a
+  **That search has been conducted and the entry narrows rather than closing.** ADR-0192 committed its
+  window, its enumeration and its acceptance rule *before its first probe*, on ADR-0176's discipline,
+  so that finding nothing could not be answered by widening anything — and the record's own two-commit
+  history is what says so rather than a sentence claiming it. **Its axis is not a lower floor**: a
   threshold recreates this entry at a new number, so the axis is the language's own surface, which is
-  finite and needs no floor. What that leaves unreached is declared in advance rather than discovered
-  at the end — a candidate that is neither a language trap nor above the old bound. ADR-0163,
-  ADR-0191, ADR-0192.
+  finite and needs none. Swept at `998b6f7` on Node v24.15.0: 135 globals partitioned totally into 84
+  excluded and 51 in scope, **443 operations, 443 assigned a ground**, the reading stopping on 40 and
+  **no eighth contract surviving**. The strongest candidate was `Number.prototype.toFixed`, refused
+  because `toFixed` and `number/round@1` differ on 10 of 27 cases and `Number(v.toFixed(p))` differs
+  from `round(v, p)` **on the same 10** — so the whole disagreement is a frozen contract's subject.
+
+  **What the search buys this entry is a measurement of what the bound was costing.** The window was
+  calibrated on the known answer, which neither previous search did: five of the six published
+  contracts have their incumbent operation in this population and four are yielded by reading it,
+  where ADR-0163's demand axis reaches three. **Neither axis reaches this catalogue alone and the two
+  together reach all six.** So the bound was not trimming a margin — it was excluding half the
+  published catalogue, and the half it excluded is the half the language-surface axis was built for.
+
+  **What stays open is the band named in advance rather than discovered at the end**: a candidate that
+  is neither a language trap nor above ADR-0163's bound. Nothing reaches one, because enumerating the
+  ecosystem needs a floor and a floor is what this entry is about — so the population is no longer
+  *every candidate the two searches did not reach* but that band alone, and **nothing here bounds it
+  either**, a figure for its size being an estimate wearing a count's clothes. ADR-0163, ADR-0191,
+  ADR-0192.
 
 - **That an address a frozen file cites is one that resolves where the file is frozen.** A citation
   whose target is frozen beside it can never rot: the two move together or not at all. A citation
