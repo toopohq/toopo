@@ -1598,6 +1598,16 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   so that guard would have been born on an empty population and could not have failed. It leaves
   behind the reading's published limit, which is that a character outside a bracket expression is not
   read, and `outputAlphabet`'s own frozen stratum, which is an entry below.
+- **a word broken in half at 320** — ADR-0193, and it is the first entry this list has closed because
+  **a later unit deleted the thing it measured**. It read fifteen breaks on `/method/`, *all on that
+  page*, and named `packages/site/methodology-page.ts` in its **Where this looked**; `11e0f54` deleted
+  that module. Re-read by the entry's own criterion — a line change between two alphanumerics, over
+  `h1, h2, h3, h4, p, li` with `code` and `pre` descendants excluded, character by character with a
+  `Range` — over the eight files of HTML at 320, 390 and 1440: **0, 0 and 0**, the first full sweep
+  discarded. **The zero is perturbed rather than believed**: a 53-character identifier put back into
+  one prose paragraph of each page reddens **8 of 8**. What it leaves behind is that the class did not
+  close with the page — `overflow-wrap: anywhere` is on `body`, so every page can still break a word,
+  and what left is the matter rather than the property.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -1796,38 +1806,17 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   builders and asserts what they put in the DOM and never where it lands. That last sentence is the
   one that survives ADR-0187 unchanged, over a file that gained two guards.
 
-  **The population is every control `start.ts` adds** - the copy controls, the theme button, the search
-  field and its answers panel, the playground's form - on every page that carries one. What would close
+  **The population is every control `start.ts` adds, on every page that carries one, and the
+  enumeration this entry gave was short by two.** Measured at `ccc9fca`: `start.ts` exports **six**
+  builders — `copyControl`, `managerControl`, `themeControl`, `searchControl`, `playgroundControl`,
+  `siftControl` — where this entry named the copy controls, the theme button, the search field with
+  its answers panel and the playground's form, and left out the manager row and the shelf's domain
+  filter. The pages are **8 files of HTML** rather than seventeen: all eight name a copy control, a
+  search and a theme, and **six** carry a playground. ADR-0193. What would close
   it is one browser and a sweep at the widths ADR-0135 used, and it would be **red on its first run**,
   which is the rare shape on this list: a guard that is not born green. Priced there and not taken
   here, because a unit repairing a wordmark is not where one decides to add a tool to the repository.
   ADR-0184.
-
-- **That a word this site prints is a word a reader can read.** At 320 the method page breaks words in
-  half — `publishe|d`, `mu|tant`, `prod|ucedBy` — in the paragraphs that list the schema's field paths.
-  Measured at `c66a19a` by asking of the characters directly whether a line change falls between two
-  alphanumerics: **15 such breaks**, all in `p.meta`, all on that page, all at 320 alone.
-
-  **It is not repairable by a property, and that was measured rather than assumed.** `overflow-wrap:
-  break-word` gives an identical reading — 15 breaks, 0 elements overflowing — because the identifiers
-  are longer than the line they are given: a 272px column at 320, holding tokens like
-  `benchmarks.profiles[].description`. Something has to give, and the browser breaking the word is what
-  it chose over overflowing the window.
-
-  **It predates this unit and nothing overflows**, which is why it is an entry rather than a repair
-  held back. The page is readable, no element sits outside the viewport, and no page scrolls sideways —
-  the whole tree is clean on those two over 17 pages and 12 widths.
-
-  **Where this looked**: `p.meta` in `packages/site/methodology-page.ts`, which is prose carrying
-  schema paths; ADR-0135, which decided that code folds where the language allows and which does not
-  reach this because these paths are not marked as code; and the sweep in ADR-0185, which excludes
-  `code` and `pre` for that reason and therefore sees these.
-
-  The population is every paragraph of prose on this site that carries an identifier longer than a
-  narrow column. What would close it is a decision about what a schema path in prose **is** — marking
-  it as code would put it under ADR-0135's rule and let it fold rather than break, at the cost of
-  saying that a field path is code when it appears in a sentence. Priced as a page's own unit and not
-  taken. ADR-0185.
 
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
@@ -1855,6 +1844,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **Where this looked**: `--t1` to `--t6` in `packages/site/style.ts`, which is the whole declared
   scale; ADR-0115, which settles it and gives the reason; and `packages/site/components.ts`, where the
   eight the component layer introduced now live.
+
+  **The number this entry descends by went down by its own rule and up by the one that matters.**
+  Measured at `ccc9fca`: `var(--a-point)` occurs **10** times in `style.ts`, against the twelve
+  recorded here, and **22** times in the sheet a reader is served — `style.ts` interpolates
+  `THE_COMPONENT_RULES` at its line 1055, and the component layer's own count is 12 where ADR-0185
+  read eight. Pixel type sizes in the served sheet: **0**. Forty-four declarations sit on the six
+  declared steps. So the greppable figure is a reading of one file and the sheet is composed of two.
+  ADR-0193.
 
   The population is every type size this site draws. What would close it is a ruling on which of the
   three it is - the artboard lands on the scale, the scale grows, or the two are held apart on purpose
@@ -1891,9 +1888,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   win; and the three guards of `packages/site/components.test.ts`, none of which reads a page module's
   source for what it writes.
 
-  The population is every `class:` a page module writes. Priced as its own unit — 148 mechanical edits
-  moving no behaviour — and not taken, because landing it beside a page's reconstruction would make
-  every change in the diff unrecoverable. ADR-0183.
+  **The two units this entry named as what would move it most have both happened, and it moved.**
+  Measured at `ccc9fca` by the same rule — every `class: '…'` literal in a `packages/site` module
+  other than `components.ts`, `style.ts` and the test files, counted as distinct names: **52 names
+  over 63 call sites in 4 modules**, against 70 over 148 in 11. `contract-page.ts` holds 20 of the 52
+  where it held 31 of the 70, `front-page.ts` 17, `chrome.ts` 15 where it held 18, and `quantity.ts`
+  1. ADR-0193.
+
+  The population is every `class:` a page module writes. Priced as its own unit — **63** mechanical
+  edits moving no behaviour — and not taken, because landing it beside a page's reconstruction would
+  make every change in the diff unrecoverable. ADR-0183.
 
 - **That a field the digest freezes is one something reads.** Measured at `df5b367` by walking
   `contractSnapshot`'s own output with `pathsIn` and classing each path by `FIELD_MAP`: **58 paths
@@ -2241,14 +2245,25 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 - **That a module a browser loads is one this repository's guards can see.** ADR-0156 takes the
   argument out of every module of `THE_BROWSER_GRAPH` and keeps the removal with four guards whose
   population is that list. The list is a declaration, and its keeper —
-  `every-import-a-browser-module-keeps-is-a-module-the-site-writes` — **cannot see an `await import`**:
-  it matches `from '...'` and a dynamic import carries no `from`, which is how it lost the playground's
-  four edges in silence the day `start.ts` was written to defer them.
+  `every-import-a-browser-module-keeps-is-a-module-the-site-writes` — once matched `from '...'` alone,
+  which is how it lost the playground's edges in silence the day `start.ts` was written to defer them.
 
-  **So a tenth module arriving through a dynamic import is served with its argument still in it and
-  with none of the four guards looking at it**, and nothing reports either half. The failure is quiet
-  by construction: the page works, the module works, and what is wrong is that a file a reader
-  downloads left the population of every guard that has an opinion about it.
+  **That clause was the entry and it is false**, and the correction was three lines below it in this
+  same paragraph the whole time — a true sentence and a false one in one entry, which is the class
+  this list keeps finding. Read at `ccc9fca`: the guard matches `from '…'` **and** `import('…')`, and
+  its own comment says *both spellings, because one of them arrived with a hole in this guard.*
+  ADR-0193.
+
+  **What survives is narrower and real: a specifier the guard cannot resolve because it is computed.**
+  `start.ts` carries two dynamic imports — `import('./playground.js')`, which the guard reads, and
+  `import(new URL(playground.module, document.baseURI))`, which no pattern over source text can
+  resolve. That is ADR-0149's templated-`import()` class, on the one module every page runs. Measured
+  at `ccc9fca`: the graph is **11** modules, `LOADED_BEFORE_A_READER_ACTS` is **7**, so **4** are
+  reached only through an `await import`. So a module arriving through a computed specifier is served
+  with its argument still in it and with none of the four guards looking at it, and nothing reports
+  either half. The failure is quiet by construction: the page works, the module works, and what is
+  wrong is that a file a reader downloads left the population of every guard that has an opinion about
+  it.
 
   **Where this looked**, because an entry describing what the code does not have names it: the guard
   itself, which already carries a comment saying it reads both spellings and was written after that
@@ -2514,7 +2529,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **It is not the class `assertWholeSuiteRan` is in**, which is a total blind to a composition: there
   the check is too coarse to see what changed, here the check is exact and a duplicate answers it.
   **The population is every guard that looks for a value anywhere on a surface where that value can
-  appear more than once**, which today is the figure guards of `pages.test.ts`. What would close it
+  appear more than once**, which today is the two figure guards of `pages.test.ts`. **The condition
+  is not one page's any more, it is every page's.** Measured at `ccc9fca` on the needle
+  `the-cost-a-page-states-is-what-lands-and-not-what-is-served` really searches for — the installed
+  total with a thin space and the word `bytes` — **all six contract pages state it twice**, and the
+  harness total appears on none of them. So the mutant this entry records as having survived once is
+  survivable on six of six. ADR-0193. What would close it
   is asking those guards *where* rather than *whether* - the card, not the page - and the price is
   that a guard about a claim starts naming a block, which is the coupling to a layout that
   `no-element-runs-into-the-one-beside-it` and its neighbours were written to avoid. Priced and not
@@ -2531,26 +2551,39 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   ` — ` off and the page reads `group-byturned down` — and the cell **survived**. Nothing was red. A
   guard whose subject is exactly that defect could not see it, and the instrument is what said so.
 
-  **The population is every place this site writes text beside a phrasing element, and it is now
-  zero.** It was one — the mark after a turned-down contract's name — and it moved twice before it
-  went: this entry said *on the front page*, ADR-0140 moved it to `/catalogue/`, and ADR-0189 retired
-  that page with the turned-down contract's own. Swept at `dd0effe`: no page of this site writes text
-  beside a phrasing element.
+  **The population is every place this site writes text beside a phrasing element, and this entry
+  declared it zero.** It is **22**, and **five of them are the defect**. Measured at `ccc9fca` over
+  the seven documents `theSite` yields, by the guard's own loop with its `left.child.kind !==
+  'element'` line removed: 22 pairs where one side is a text node and neither reading separates,
+  against **0** element-against-element, which is the guard passing correctly. Seventeen are correct
+  by construction — an address split for highlighting, `number/|parse` in an `h1`, and a `code`
+  followed by its punctuation, `toFixed|, which answers a string` — where the author writes the
+  spacing into the prose and is right to. The five are the shelf's domain filter, and the served
+  Markdown twin of the front page is what settles them: `- all6`, `- number2`, `- date1`, `- string2`,
+  `- object1`, at `/index.md`.
 
-  **An entry with no instance is a different state from an entry with one, and it is worth saying
-  which this is.** The hole in the guard has not moved a character — a phrasing element followed by
-  bare text is still outside its reach by construction — so this is not closed, and the price of
-  closing it is unchanged. What is gone is the thing that would demonstrate it. The next page that
-  writes a mark beside a name reopens it with no warning, which is the ordinary shape of a guard
-  nobody has had reason to redden. ADR-0167, ADR-0189.
+  **The closure was false when it was written and not merely stale**, which is rule 3 of this section
+  arriving on a closure. `A_COUNT` entered `pill` at `fc70d3c` on 2026-08-30; the sweep's coordinate
+  `dd0effe` is 2026-09-01; and `git show dd0effe:packages/site/front-page.ts` already carries
+  `pill('all', installable, null)`. **The sweep cannot be replayed either, because the entry published
+  its verdict and not its rule** — which is ADR-0189's own discipline, written for a probe deciding a
+  deletion and never applied to one declaring an emptiness. ADR-0193.
 
-  **What would close it is one of two things and both cost more than they buy.** Widening the guard
-  to element-against-text changes its population across every page of the tree, and a guard whose
-  population moves is one whose green has to be re-earned everywhere at once. Or the mark becomes an
-  element — and `Tag` has no `span`, deliberately, so it would mean either adding one to a union
-  that is small on purpose or rendering the mark as a block, which puts it under the name instead of
-  beside it and is a layout decision taken to satisfy a guard. Priced and refused, and the refusal is
-  the entry.
+  **The neighbouring reading has the same shape.** `no-element-runs-into-the-one-beside-it`'s own
+  comment says *with text nodes admitted the predicate holds 53 pairs across the seven pages and 48 of
+  them are ordinary inline markup*; **53 reproduces under none of four rules** at `ccc9fca` — every
+  kind of pair with `pre` skipped is 22, with `pre` admitted 570, element-against-element 0,
+  one-side-text 22 — and the five sit in a remainder that reading does not name. It is left as taken,
+  being a measurement in the file that holds the guard. ADR-0167, ADR-0189, ADR-0193.
+
+  **What would close it is one of two things, and one of the two prices has already been paid.**
+  Widening the guard to element-against-text changes its population across every page of the tree, and
+  a guard whose population moves is one whose green has to be re-earned everywhere at once. Or the
+  mark becomes an element — and this entry refused that on `Tag` having no `span`, which **stopped
+  being true at `fc70d3c`**, so the union it did not want widened is widened, for another reason, and
+  what remains of that half is only the layout decision. The five are not repaired here: a
+  re-measurement that also repairs makes it impossible to say which of the two moved the figure.
+  ADR-0193.
 
 - **That a citation inside a file a published contract freezes ever resolves again.** The two shared
   files carry three identifiers of a history that no longer exists — `3ec99c5…` twice in prose, and
@@ -2610,17 +2643,23 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   ceiling and every track of this site's layout is derived — `every-ceiling-on-a-box-is-derived-and-never-typed`
   and `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` — and **neither can read
   the one place a width is still typed**, because `var()` is not allowed in a media query's condition
-  in any browser and never has been. **The population is the three conditions of `style.ts`**: `52rem`,
-  `64rem` and `97rem`. **Not one of the three now carries the arithmetic it came from.** `52rem` and
-  `64rem` never did, and this entry claimed each of them did until ADR-0132 went and read them;
-  `97rem` did, and ADR-0134 removed the term it was summed from — the content column's ceiling, the
-  933 in `240 + 933 + 268 + 96`. The column has no width to add up any more, so the one threshold here
-  that could be checked against its own tracks is now a number with nothing behind it. It is left at
-  its value, because moving it decides when a page gains a third column and that was not ADR-0134's
-  decision. **The entry got worse without moving**, which is the shape rule 3 of this section is
-  about: nothing compares a threshold with the tracks it separates, and the failure is quiet by
-  construction — a threshold that no longer matches its own tracks does not break a page, it moves the
-  width at which the page changes shape, and only a reading at exactly that width would say so.
+  in any browser and never has been. **The population this entry names is `52rem`, `64rem` and
+  `97rem`, and not one of the three is in the stylesheet.** Measured at `ccc9fca`: four conditions,
+  `26rem`, `50rem`, `11rem` and `12.5rem`, and `--two-columns` is gone with them. **The sentence that
+  was the entry — *not one of the three now carries the arithmetic it came from* — is false of every
+  one of the four**: `26rem` states the measurement that produced 416px, `50rem` states the arithmetic
+  of both shell arrangements at 49.14rem and 47.40rem and takes the wider, and the two rem conditions
+  state the sweeps that found them. So the population was replaced rather than repaired, and the
+  replacement is argued where the thing it replaced was not. ADR-0193.
+
+  **What is unchanged is the class and it is the whole entry now**: nothing evaluates a condition
+  against the tracks it separates, and CSS still cannot, so four comments carry four arguments that
+  four readers have to trust. The paragraphs below are the old population's and are kept as taken —
+  each was true of the arrangement it was measured on, and rule 3 of this section is why they are
+  marked rather than deleted. **The document order they rest on is gone**: `main, .where, .rail` is
+  now `.shell:has(.beside)` and `.shell:has(.aside)`, two-element shells placed by a grid. That is the
+  reopening **this entry wrote for itself** — *what is taken again on the day that order changes is
+  the measurement and never this argument* — and the day came at ADR-0187 with nobody taking it.
 
   **What would close it is not a lint and the price is a browser.** Every one of those lengths
   resolves against `ch`, which is a property of the face the reader's own system supplies, so the
@@ -2712,6 +2751,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   read twice: ten declarations went because a ceiling stated in characters went with them, and the
   thirty that remain are as unread as the forty were.
 
+  **The redesign doubled it back and did not touch the debt either.** Re-read at `ccc9fca` by the rule
+  above: **60** — 10 `grid-template-columns`, 19 `max-width`, 14 `min-width`, 4 `grid-area`, 2
+  `grid-column` and 11 `width`. **The rule names one literal and the site now composes the sheet out of
+  two**: `THE_COMPONENT_RULES` contributes 10 of the 60 and is interpolated at `style.ts:1055`, so the
+  count reaches it by where the sheet is assembled rather than by anything the rule says — a second
+  literal placed anywhere else would fall out of it in silence. Every one of the 60 is still
+  `one-directional`. ADR-0193.
+
   **It is the class this repository has now paid for six times**, and ADR-0135 is the sixth: four
   defects a phone reader met on every visit, found by a sweep and repaired against readings taken by
   hand, with the eight suites green on both sides of the change. ADR-0134 was the fifth: the whole
@@ -2757,6 +2804,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   construction: the page is
   not broken, it is one row of navigation taller than the offset that was written for it, and only
   somebody following a link at a phone width would find out.
+
+  **Re-read at `ccc9fca` this entry is unchanged, which is also a result**: `theMenu()` returns **0**
+  entries and `--the-menu-at-its-tallest` is declared **1**, which is the reading above to the
+  character — the first of the fifteen site entries re-measured by ADR-0193 to come back exactly as
+  written. **What is worth adding rather than correcting is that the arithmetic gained a term.**
+  `--the-sticky-bar` is now summed from `--the-field-at-its-tallest` as well as from the menu, so the
+  declaration nothing resolves has **two** unresolved terms where this entry describes one, and the
+  second arrived with the masthead's search field. ADR-0193.
 
   **The population is that one declaration**, and what would close it is not a lint: CSS cannot read a
   rendered height, so the two can only be compared by laying a page out. It is the ninth suite, priced
@@ -2958,6 +3013,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   executable**, and `start.test.ts` is 478 and 249. The rule is stated because ADR-0157 published four
   readings of *executable text* over files that had not moved and none of them rebuilt the figure it
   was correcting. ADR-0157, ADR-0165.
+
+  **Both files roughly doubled and the population did not move.** Re-read at `ccc9fca` by that same
+  rule: `start.ts` is **815 lines, 425 executable**, and `start.test.ts` is **806 and 394**, over 18
+  guards. The six claims are all still in the wiring suite's own header, named there as *a real
+  clipboard, a secure context, a layout, a hit test, a tab order, and that a browser fetches this
+  module at all* — so the entry is unchanged in what it is about. **What is wrong in it is a count**:
+  `start.ts` exports **six** builders, not four — `copyControl`, `managerControl`, `themeControl`,
+  `searchControl`, `playgroundControl`, `siftControl`. ADR-0193.
 - **That every surface renders the invocation rather than the bare command name.** This one was met by
   a visitor rather than found by a sweep: the README and the four contract pages published
   `toopo add string/slugify`, which answers `command not found` for anybody who has installed nothing —
@@ -3297,6 +3360,20 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   validation stage reading this repository's own strings — already on this list, already priced,
   already refused as a lint over prose.
 
+  **It has drifted a third time, the other way, and the population is bigger than any reading of it
+  has been.** At `ccc9fca` the emission reports **7 pages** and the tree holds **8** files of HTML,
+  the 404 being written by `thePublication` rather than by `theSite`. Swept over every tracked `.ts`
+  and `.yml` **with runs of whitespace collapsed** — which is the rule, and which the line-by-line
+  form misses, because the phrase straddles a line break inside a comment: **20 statements of a page
+  count across 14 files**, of which **11 are stamped or historical and 9 are present-tense and false**
+  — `packages/site/browser.ts`, `font.ts`, `playground.ts`, `playground.test.ts`, `start.ts` twice,
+  `start.test.ts`, and `mutation/site.battery.ts` twice, the last of those being a mutant's own
+  description text. They say *nine of the thirteen pages never fetch this module* where it is **one of
+  seven**, *inlined into all seventeen pages* where it is **eight files of HTML**, and *the four
+  builders safe on all thirteen pages* where `start.ts` exports **six**. They are measured and not
+  repaired: a re-measurement that also repairs cannot say which of the two moved the figure.
+  ADR-0193.
+
 - **That the catalogue this file names is the catalogue the registry holds.** `theCatalogue` knows how
   many contracts there are; the sentence above naming them is prose, and nothing compares the two.
   Measured: this file read **The catalogue is six contracts** for the two days between
@@ -3465,6 +3542,15 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   zone settings on the far side of it, and they are the owner's. Priced and not taken. ADR-0188,
   ADR-0189.
 
+  **Re-read at `ccc9fca`, fifty hours on, it is seventeen and it went the wrong way.** One `GET` per
+  address, redirects not followed: **10 of 10** retired addresses answer 200 where the table above
+  records nine — `/typescript/array/group-by@1/` was 404 with `no-store` at `18c0b38` and now answers
+  **200 with a 20 969 B page for the contract this catalogue turned down**, `age` 181 708 s. The four
+  `s-maxage=604800` pages carry `age` 150 267 s, so some five days remain of the seven, and *seven
+  once the edge expires* has not happened. The origin serves this commit — `contract-index` answers
+  `servedFrom ccc9fca…` and its sitemap names the same seven addresses this tree writes — so the
+  divergence is the edge's alone. ADR-0193.
+
 - **That the four hours a returning reader holds a module for are decided by anything in this
   repository.** The entry this replaces had two halves and only one of them was ever this repository's
   to close. The declaration half is closed and is recorded below with ADR-0170; **this is the half
@@ -3505,6 +3591,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **The population is every address the zone edge-caches**, which is seventeen today and which nothing
   here bounds: a module added to the browser graph joins it, and no guard can see that happen.
 
+  **It grew by one and every argument above is unchanged.** Re-read at `ccc9fca`, one `GET` per
+  address: **18** answer `public, max-age=14400, must-revalidate` — the **seventeen** modules the tree
+  emits, which is eleven of the browser graph and six references, and `robots.txt`. `llms.txt` is
+  still alone outside that layer at `max-age=0`, and this repository still declares `max-age=0` for
+  `/packages/*`, so the split is still the zone's and no cause for it is named. The population moved
+  because the browser graph did, which is the sentence above happening. ADR-0193.
+
   **Two things would close it and neither is a guard.** The zone's own setting, which is on the far
   side of the gap `wrangler.jsonc` records and is the owner's act rather than this repository's. Or
   **modules addressed by their content** - `start.<digest>.js` - which would make a year correct and
@@ -3526,6 +3619,11 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   that the two halves fail differently: a page is what a reader arrives at from a
   search and can have linked, and an answer is what a client fetches under a digest it holds. The second
   is covered for the frozen ones by permanent rule 6 and by nothing at all for the rest.
+
+  **Both halves are re-read at one coordinate, which is what the paragraph above says nobody could
+  do.** At `ccc9fca` the sitemap names **7** addresses and the emitted tree holds **110** files, so
+  the half no listing names is **103** — a subtraction taken at one commit rather than across two, and
+  the reason the older figures were left unsubtracted. ADR-0193.
 
   **A second thing nothing keeps, and it is about the mechanism rather than about the population.** The
   coverage is inductive — each run compares one deployment against the one before it — so it holds only
