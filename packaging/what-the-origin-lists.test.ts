@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { THE_ORIGIN } from '../packages/registry/address.js'
+import { THE_PUBLICATIONS } from '../packages/registry/publication.js'
 import { sitemapOf } from '../packages/site/indexing.js'
 import { SITEMAP, urlOf } from '../packages/site/paths.js'
 import type { ReadOneAddress } from './what-npm-holds.js'
@@ -171,40 +172,44 @@ describe('what the origin lists', () => {
    * Of the addresses that would stop being served, the ones no deployment may drop.
    *
    * **The two halves fail in opposite directions and only one of them is quiet.** Refusing too much
-   * stops a deployment and somebody reads the list; refusing too little lets a contract's address go,
-   * and what a reader then meets is a 404 saying nothing was ever served at an address this catalogue
-   * promised to serve for ever. So the guard states both, and the negative half is written from the
-   * pages this site really has rather than from invented strings. ADR-0188.
+   * stops a deployment and somebody reads the list; refusing too little lets a published contract's
+   * address go, and what a reader then meets is a 404 saying nothing was ever served at an address
+   * this catalogue promised to serve for ever. So the guard states both.
    *
-   * **The addresses are built with `urlOf` and never typed**, for the reason the first guard in this
-   * file reaches `packages/site/`: what is being classified is the string the sitemap really carries,
-   * and a fixture spelled by hand would establish that the classifier agrees with whatever somebody
-   * typed here — including about the trailing slash, which is exactly the character `urlOf` exists to
-   * get right.
+   * **The refused contract is the row this guard exists for now.** ADR-0188 classified by the grammar
+   * of an address, and `array/group-by@1` has that grammar and no publication behind it — so the gate
+   * refused to retire the page a *turned-down* contract had, which nothing freezes. That was found by
+   * running the real comparison against the live origin, and it is the row that would go green again
+   * if somebody keyed this back to what an address looks like.
+   *
+   * **The published half is derived from `THE_PUBLICATIONS` rather than typed**, so a seventh contract
+   * enters this guard's population with nobody editing it; and the addresses are built with `urlOf`,
+   * for the reason the first guard in this file reaches `packages/site/`: what is being classified is
+   * the string the sitemap really carries, including the trailing slash `urlOf` exists to get right.
    *
    * The last row is the unreadable one, and it is refused rather than allowed. A `<loc>` that is not a
    * URL cannot be classified, and of the two ways to treat that only one fails safely: allowing it
    * makes a malformed listing a way past this gate.
    */
-  it('a-deployment-may-retire-a-page-of-the-site-and-never-an-address-of-a-contract', () => {
-    const CONTRACTS = [
-      urlOf('typescript/number/parse@1/index.html'),
-      urlOf('typescript/array/group-by@1/index.html'),
-    ]
+  it('a-deployment-may-retire-a-page-and-never-an-address-a-contract-was-published-at', () => {
+    const PUBLISHED = Object.keys(THE_PUBLICATIONS).map((address) => urlOf(`${address}/index.html`))
 
-    const THE_SITES_OWN = [
+    const RETIRABLE = [
       urlOf('index.html'),
       urlOf('catalogue/index.html'),
       urlOf('method/index.html'),
       urlOf('what-a-contract-is/index.html'),
       urlOf('refused/index.html'),
       urlOf('typescript/number/index.html'),
+      // The page a contract the catalogue turned down had, at an address it was never published at.
+      urlOf('typescript/array/group-by@1/index.html'),
     ]
 
     const UNREADABLE = 'not a url at all'
 
-    expect(whatNoDeploymentMayStopServing([...THE_SITES_OWN, ...CONTRACTS])).toEqual(CONTRACTS)
-    expect(whatNoDeploymentMayStopServing(THE_SITES_OWN)).toEqual([])
+    expect(PUBLISHED.length).toBeGreaterThan(0)
+    expect(whatNoDeploymentMayStopServing([...RETIRABLE, ...PUBLISHED])).toEqual(PUBLISHED)
+    expect(whatNoDeploymentMayStopServing(RETIRABLE)).toEqual([])
     expect(whatNoDeploymentMayStopServing([UNREADABLE])).toEqual([UNREADABLE])
   })
 })

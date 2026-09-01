@@ -117,7 +117,7 @@ const THE_SITEMAP_IS_WHAT_IS_ASKED_FOR = '  const url = `${origin}/${SITEMAP}`'
 
 const WHAT_THE_ORIGIN_KEEPS_AND_THIS_TREE_DROPS = `): readonly string[] => [...served].filter((address) => !written.has(address))`
 
-const THE_TRAILING_SLASH_IS_TAKEN_OFF_BEFORE_THE_ADDRESS_IS_READ = `    return readContract(path.replace(/^\\/+/, '').replace(/\\/+$/, '')) !== null`
+const THE_TRAILING_SLASH_IS_TAKEN_OFF_BEFORE_THE_ADDRESS_IS_READ = `    return THE_PUBLICATIONS[path.replace(/^\\/+/, '').replace(/\\/+$/, '')] !== undefined`
 
 const NOTHING_IS_DROPPED = buildFile(
   `const dropped = every(DIST).filter((file) => !reachable.has(file))`,
@@ -451,10 +451,10 @@ const mutants: readonly Mutant[] = [
     [
       originFile(
         THE_TRAILING_SLASH_IS_TAKEN_OFF_BEFORE_THE_ADDRESS_IS_READ,
-        `    return readContract(path.replace(/^\\/+/, '')) !== null`,
+        `    return THE_PUBLICATIONS[path.replace(/^\\/+/, '')] !== undefined`,
       ),
     ],
-    killed(['a-deployment-may-retire-a-page-of-the-site-and-never-an-address-of-a-contract']),
+    killed(['a-deployment-may-retire-a-page-and-never-an-address-a-contract-was-published-at']),
   ),
 
   // -------------------------------------------------------------------------

@@ -6,12 +6,9 @@ governs:
   - packages/site/not-found-page.ts
   - packaging/what-the-origin-lists.ts
   - packaging/print-what-a-deployment-would-drop.ts
-  - packages/registry/address.ts
 confirmed-by:
-  - battery: registry-storage
-    guard: a-rendered-contract-address-reads-back-as-itself
   - battery: packaging
-    guard: a-deployment-may-retire-a-page-of-the-site-and-never-an-address-of-a-contract
+    guard: a-deployment-may-retire-a-page-and-never-an-address-a-contract-was-published-at
 ---
 
 # A promise is the one its own argument makes, and the gate narrows with it
@@ -104,6 +101,62 @@ allowing it makes a malformed listing a way past this gate, and refusing it make
 a red somebody reads. It is the direction `what-the-origin-lists.ts` already chose for a 404 — **a
 reading whose failure mode is a green is not a reading** — applied to one entry instead of the whole
 document.
+
+## The amendment of 2026-09-01, and the reading that forced it
+
+**Run against the live origin for the first time, this refused one address of the ten ADR-0189 was
+retiring**: `https://toopo.dev/typescript/array/group-by@1/`, the page a contract the catalogue
+*turned down* had. ADR-0127 put a refusal at `pageOf(refusal.address)`, so that page stands at an
+address with a contract's own grammar — and `readContract` read it as one, correctly.
+
+**Nothing was ever frozen there.** `array/group-by@1` has no digest, no binding, no row in
+`THE_PUBLICATIONS`, and no lockfile in the world holds it. Permanent rule 6 says nothing about it, so
+the gate was refusing to retire a page on the strength of a promise that did not cover it.
+
+**This is a revision and not a reversal, and the distinction is which clause moved.** The rule above —
+*never key this on what the catalogue holds today* — is untouched and is still the reason this is not
+`theCatalogue`: a contract **withdrawn** from the catalogue is the case this exists to refuse, and such
+a reading would go green on exactly that deployment. What the grammar could not tell apart is
+*published once* from *never published*, and that is the cran the first version did not have.
+
+**`THE_PUBLICATIONS` is a register and not a list, and that was measured rather than read.** It is
+transcribed and it is not trusted: `packages/registry/against-what-was-published/` checks each commit
+out, runs that commit's own ledger script and compares. So a row cannot leave quietly —
+
+- removing `'typescript/number/round@1'` **does not compile**: its publication constant has exactly one
+  use, so `tsc` reports `THE_SIXTH_CONTRACT` unused and the suite never runs;
+- removing `'typescript/string/levenshtein@1'`, whose constant three other rows share, compiles and
+  reddens `nothing-this-tree-binds-escapes-the-freeze-check`, which names **both** bindings that lose
+  their anchor — `typescript/string/levenshtein@1` and `typescript/string/levenshtein@1/reference@1.0.0`.
+
+Two mechanisms over one table, and the cheaper of them is the compiler.
+
+**What the amendment costs is a parser and the guard over it.** `readContract` was written for the
+grammar reading and has no other consumer, so it goes rather than being kept for a use it does not
+have — with `THE_LANGUAGES`, its row in `RENDERINGS`,
+`a-rendered-contract-address-reads-back-as-itself` and `registry-storage · I-81`. It was added the day
+before and removed the day after, and keeping it to justify the day before is the shape this
+repository refuses everywhere else.
+
+The guard is `a-deployment-may-retire-a-page-and-never-an-address-a-contract-was-published-at` now, its
+published half derived from `THE_PUBLICATIONS` so a seventh contract enters the population with nobody
+editing it, and **the turned-down contract's address is a row of its retirable half** — which is the
+row that would go green again if somebody keyed this back to what an address looks like. `packaging ·
+A-28` is unchanged and still reddens it: the trailing-slash strip is what turns a listed URL into a key.
+
+**And the promise took the same correction a second time.** Yesterday it covered contracts rather than
+the site's pages; today it covers *published* contracts rather than everything with a contract's
+grammar. With ADR-0101's two, that is **four shrinkings of one sentence, every one of them measured and
+none of them chosen** — the 404 now names a turned-down contract's address explicitly, because somebody
+may have bookmarked that one and the sentence above it would otherwise be false for them.
+
+Seen red before it was believed: with the classification put back on the grammar — `path.includes('@')`
+in place of the lookup — the guard names the one address that opened this,
+`expected [ …(7) ] to deeply equal [ …(6) ]` with `typescript/array/group-by@1` back among the refused.
+
+At the amendment: `npm run registry` 466 passed, one fewer than the day before because the round-trip
+guard went with the parser; `npm run packaging` 24, `npm run site` 184. The instrument declares **835
+cells and 793 caught** where it declared 836 and 794, the survivor count unmoved at 42.
 
 ## Consequences
 

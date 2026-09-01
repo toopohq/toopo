@@ -277,8 +277,6 @@ const AN_ADDRESS_RENDERS_ITS_LANGUAGE = '  `${address.language}/${address.name}@
 const A_MUTANT_IS_RENDERED_ON_ITS_CONTRACT =
   '  `${renderContract(address.contract)}:${address.battery}/${address.mutant}`'
 
-const THE_LANGUAGE_IS_THE_FIRST_SEGMENT_READ_BACK = `  const firstSlash = before.indexOf('/')`
-
 const A_COMPLEMENT_RATHER_THAN_A_SENTENCE = `    butNot:
       'that what was published is right - the contract\\'s verification says an implementation ' +
       'answers the contract, and neither that nor a signature says the contract is the right ' +
@@ -1021,28 +1019,6 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract']),
-  ),
-
-  /**
-   * The inverse of a rendering, reading the wrong side of a name that carries a slash of its own.
-   *
-   * `renderContract` writes `language/domain/name@major`, so reading the language back means the
-   * *first* segment - and a name is `domain/name`, which puts a second slash in the way. Taking the
-   * last one reads `typescript/number` as the language, finds no such language and answers `null` for
-   * every address there is.
-   *
-   * **The consumer is a deployment and the direction is the dangerous one.** `readContract` is what
-   * tells a contract's address from a page this site invented, so an inverse that answers `null` for
-   * everything says *nothing here is a contract* and clears a deployment dropping all seven. The guard
-   * is written with both halves for that reason, and this cell reddens the half that would otherwise
-   * be the quiet one. ADR-0188.
-   */
-  sameOnEveryLens(
-    'I-81',
-    'reads the language back from the last segment before the major rather than the first, so a ' +
-      'name carrying its own slash makes every rendered address unreadable',
-    [addressFile(THE_LANGUAGE_IS_THE_FIRST_SEGMENT_READ_BACK, `  const firstSlash = before.lastIndexOf('/')`)],
-    killed(['a-rendered-contract-address-reads-back-as-itself']),
   ),
 
   /**

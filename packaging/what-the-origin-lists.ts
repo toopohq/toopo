@@ -1,9 +1,10 @@
 /**
  * Which addresses the origin still publishes, asked as a listing.
  * ADR-0125 is why an address this tree has served goes on being written, and why the reading is taken
- * before a deployment rather than after one. ADR-0188 is why that is now asked of a contract's address
- * and not of every address: the promise was narrowed to what its own argument covers, and this gate was
- * narrowed with it rather than lifted.
+ * before a deployment rather than after one. ADR-0188 is why that is now asked of an address a contract
+ * was published at and not of every address: the promise was narrowed to what its own argument covers,
+ * and this gate was narrowed with it rather than lifted — twice, the second time on a reading against
+ * the live origin.
  *
  * ---------------------------------------------------------------------------
  * The listing is the sitemap, and it is the only listing there is
@@ -36,7 +37,8 @@
  * knowing is not the same as knowing there is nothing.
  */
 
-import { THE_ORIGIN, readContract } from '../packages/registry/address.js'
+import { THE_ORIGIN } from '../packages/registry/address.js'
+import { THE_PUBLICATIONS } from '../packages/registry/publication.js'
 import { SITEMAP } from '../packages/site/paths.js'
 import type { ReadOneAddress } from './what-npm-holds.js'
 // The same reduction of a throw to a sentence, imported from the module that wrote it rather than
@@ -156,31 +158,38 @@ export const whatWouldStopBeingServed = (
 ): readonly string[] => [...served].filter((address) => !written.has(address))
 
 /**
- * Of those, the ones no deployment may drop: the addresses a contract stands at.
+ * Of those, the ones no deployment may drop: the addresses a contract was *published* at.
  *
  * ---------------------------------------------------------------------------
- * The promise is the one the 404 argues for, and it argues about contracts
+ * The promise is the one the 404 argues for, and it argues about published contracts
  * ---------------------------------------------------------------------------
  *
  * `not-found-page.ts` gave its reason in the sentence before its conclusion — *a contract major is
  * frozen for the life of the catalogue* — and then concluded about every address this site has ever
  * served. The justification covers contracts; the conclusion covered the site's own pages too, which
- * nothing freezes. This is the conclusion cut back to its own argument, and the promise beside it is
- * cut back in the same commit. ADR-0188.
+ * nothing freezes. ADR-0188 cut the conclusion back to its own argument.
  *
- * So a page this site invented — `/catalogue/`, `/method/`, a domain's listing — may be retired, and
- * the address of a contract may not, ever, by anybody. That is permanent rule 6 arriving at the one
- * place a deployment could break it.
+ * **It was cut back once more the next day, and by a measurement rather than by a reading.** Run
+ * against the live origin, this refused `/typescript/array/group-by@1/` — the page a contract the
+ * catalogue *turned down* had. That address has the grammar of a contract and no publication behind
+ * it: no digest, no binding, no lockfile in the world holds it, and permanent rule 6 says nothing
+ * about it. So the classification is what the registry has bound and not what an address looks like.
  *
  * ---------------------------------------------------------------------------
- * Read from the address and never from the catalogue
+ * A register and never a list, which is the whole of why this is not the inversion refused before
  * ---------------------------------------------------------------------------
  *
- * The classification asks `readContract`, which is a question about the grammar of an address. It
- * deliberately does not ask what the catalogue holds today, and the inversion that would cause is the
- * whole point: a contract withdrawn from the catalogue is *exactly* the case this refuses, so a
- * reading keyed to `theCatalogue` would stop recognising an address at the instant it began to
- * matter — green on the one deployment it exists to refuse.
+ * ADR-0188 refused to key this on what the catalogue holds, because a contract *withdrawn* from the
+ * catalogue is exactly the case this exists to refuse — such a reading would go green on the one
+ * deployment it is for. That argument is untouched and `THE_PUBLICATIONS` is not that reading.
+ *
+ * **The catalogue is a list somebody edits; `THE_PUBLICATIONS` is a table a suite rebuilds row by row
+ * at each row's own commit.** Measured rather than asserted: removing `number/round@1` does not
+ * compile, because its publication constant has one use; removing `string/levenshtein@1`, whose
+ * constant three other rows share, compiles and reddens
+ * `nothing-this-tree-binds-escapes-the-freeze-check`, which names the contract binding *and* its
+ * implementation binding as unanchored. A row cannot leave quietly, so an address cannot stop being
+ * protected quietly.
  *
  * ---------------------------------------------------------------------------
  * An address that cannot be read is refused rather than allowed
@@ -201,5 +210,5 @@ export const whatNoDeploymentMayStopServing = (dropped: readonly string[]): read
       return true
     }
 
-    return readContract(path.replace(/^\/+/, '').replace(/\/+$/, '')) !== null
+    return THE_PUBLICATIONS[path.replace(/^\/+/, '').replace(/\/+$/, '')] !== undefined
   })

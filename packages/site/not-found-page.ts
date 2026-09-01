@@ -39,7 +39,7 @@ const NOTHING = {} as const
 const line = (tag: Tag, value: string, attributes = NOTHING): Node => el(tag, attributes, text(value))
 
 /**
- * The one sentence this page exists for, and the three stronger ones that were measured false.
+ * The one sentence this page exists for, and the four stronger ones that were measured false.
  *
  * **Nothing is served here, and no contract is ever withdrawn** - permanent rule 6, which freezes a
  * published major for life. Those two together say what a 404 means about a contract and, more
@@ -64,15 +64,28 @@ const line = (tag: Tag, value: string, attributes = NOTHING): Node => el(tag, at
  *
  * So the promise is the one its argument supports, and the gate in
  * `packaging/what-the-origin-lists.ts` was narrowed in the same commit rather than lifted - a promise
- * cut back with its guard removed is a declaration nothing keeps. **This is the third measurement to
- * shrink this sentence**, which is the established pattern here rather than an exception granted once.
- * ADR-0188.
+ * cut back with its guard removed is a declaration nothing keeps.
+ *
+ * ---------------------------------------------------------------------------
+ * And a fourth, one day later, on a reading against the live origin
+ * ---------------------------------------------------------------------------
+ *
+ * The repaired sentence said *a contract*, and the gate refused to retire
+ * `/typescript/array/group-by@1/` - the page a contract the catalogue **turned down** had. That
+ * address has a contract's grammar and no publication behind it: no digest, no binding, no lockfile in
+ * the world holds it. So the word is `published`, and the paragraph below says in as many words what a
+ * turned-down contract's address is, because somebody may have bookmarked that one.
+ *
+ * **Four shrinkings, all four measured and none of them chosen**, which is what makes this a series
+ * rather than four concessions: ADR-0101 took the two about what the registry *holds* and what the
+ * catalogue *publishes as questions*, and ADR-0188 took the two about which addresses are frozen. Each
+ * time the repair was the same - make the sentence match what a mechanism keeps. ADR-0188.
  */
 export const notFoundPage = (): Document => ({
   title: 'Nothing is served at this address',
   description:
-    'No contract is ever withdrawn, so the address a contract stands at is served for life. A page ' +
-    'this site writes about itself carries no such promise and may have been retired.',
+    'No published contract is ever withdrawn, so the address one stands at is served for life. A ' +
+    'page this site writes about itself carries no such promise and may have been retired.',
   servedBesideItsMarkdown: false,
   /** A judgement about an address is not a thing schema.org has a vocabulary for. */
   structuredData: null,
@@ -80,10 +93,23 @@ export const notFoundPage = (): Document => ({
     line('h1', 'Nothing is served at this address'),
     line(
       'p',
-      'No contract is ever withdrawn. A contract major is frozen for the life of the catalogue: the ' +
-        'address a contract stands at is served for ever, and an incompatible change becomes a new ' +
-        'address beside the old one rather than a replacement of it. So a link to a contract still ' +
-        'leads to that contract.',
+      'No published contract is ever withdrawn. A contract major is frozen for the life of the ' +
+        'catalogue: the address a published contract stands at is served for ever, and an ' +
+        'incompatible change becomes a new address beside the old one rather than a replacement of ' +
+        'it. So a link to a published contract still leads to that contract.',
+    ),
+    /**
+     * The word that was missing, and the address that found it.
+     *
+     * A contract the catalogue *considered and turned down* had a page here, at an address with a
+     * contract's own shape — and nothing about it was ever frozen. Without `published` the sentence
+     * above is false for whoever bookmarked it, and with the word it is exact. ADR-0188.
+     */
+    line(
+      'p',
+      'A contract the catalogue considered and turned down was never published, so nothing was ' +
+        'frozen at its address and this site does not keep a page for it. It is still in the ' +
+        'catalogue this project publishes, with the reason it was refused.',
     ),
     /**
      * The half the old sentence claimed and could not support.
