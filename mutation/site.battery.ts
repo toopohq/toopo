@@ -71,23 +71,15 @@ const servedStylesheetFile = (find: string, replace: string) => ({
 })
 const literalFile = (find: string, replace: string) => ({ file: 'literal.ts', find, replace })
 const contractPageFile = (find: string, replace: string) => ({ file: 'contract-page.ts', find, replace })
-const cataloguePageFile = (find: string, replace: string) => ({ file: 'catalogue-page.ts', find, replace })
 const catalogueFile = (find: string, replace: string) => ({ file: 'catalogue.ts', find, replace })
 const localFile = (find: string, replace: string) => ({ file: 'local-source.ts', find, replace })
 const sourceFile = (find: string, replace: string) => ({ file: 'source.ts', find, replace })
 const chromeFile = (find: string, replace: string) => ({ file: 'chrome.ts', find, replace })
 const pathsFile = (find: string, replace: string) => ({ file: 'paths.ts', find, replace })
 const readLiteralFile = (find: string, replace: string) => ({ file: 'read-literal.ts', find, replace })
-const domainPageFile = (find: string, replace: string) => ({ file: 'domain-page.ts', find, replace })
 const playgroundFile = (find: string, replace: string) => ({ file: 'playground.ts', find, replace })
 const browserFile = (find: string, replace: string) => ({ file: 'browser.ts', find, replace })
-const methodFile = (find: string, replace: string) => ({
-  file: 'methodology-page.ts',
-  find,
-  replace,
-})
 const indexingFile = (find: string, replace: string) => ({ file: 'indexing.ts', find, replace })
-const survivorsFile = (find: string, replace: string) => ({ file: 'survivors.ts', find, replace })
 const siteFile = (find: string, replace: string) => ({ file: 'site.ts', find, replace })
 const frontPageFile = (find: string, replace: string) => ({ file: 'front-page.ts', find, replace })
 const componentsFile = (find: string, replace: string) => ({ file: 'components.ts', find, replace })
@@ -295,8 +287,6 @@ const A_SNAPSHOT_IS_CHECKED = `  const faults = servedSnapshotFaults(answer)`
 
 const ONLY_AN_INSTALLABLE_CONTRACT_HAS_A_PAGE = `    .entries.filter((entry) => entry.installable)`
 
-const A_REFUSED_CONTRACT_IS_OFFERED_NOTHING = `                text(' — turned down'),`
-
 /**
  * The generator's own restatement of the version the registry published. `cli-install.battery.ts`
  * carries the argument for why the edit below is no longer `'1.0.0'`: that string is now the truth.
@@ -318,75 +308,12 @@ const THE_INDEX_ENDPOINT = `  contractIndex: 'contract-index',`
  */
 const NOTHING_IS_DEFERRED = `export const NOT_THIS_UNIT: Readonly<Record<string, DeferredNeed>> = {}`
 
-/**
- * The lenses sentence, and not the score sentence, because W-47 has to be alone on its guard.
- *
- * Its first target was the count of defect cells, which two other guards read - so the mutant
- * reddened three at once and the guard about derived figures was never alone on anything. The
- * sentence about lenses is read by nothing else, so a literal there probes exactly one claim.
- *
- * **The literal it writes has moved twice, and the second time says something the first did not.**
- * It was `41`. The first collision was an address: `THE_REPLAY.measuredAt` then held a stamp whose
- * digit runs included `41`, and the repair was to take every address off both sides. The second
- * was not an address at all - `measured.unprobed.length` *became* 41, when three batteries declared
- * the transport they cannot reach - so the pool held `41` as a figure something really derived, and
- * the mutant stopped writing anything the page could not have said.
- *
- * **What that exposes is a limit of the guard rather than a bad literal, and it is wider than the one
- * already declared beside it.** That guard asks whether every figure a reader can see occurs
- * *somewhere* in the data; it cannot ask whether it is the figure *that sentence* derives. So a mutant
- * writing any other figure's value passes, and the pool grows with the catalogue - fifty-odd distinct
- * small integers today. Closing it would mean rendering each figure with its provenance and checking
- * the pair, which is a redesign of how this page emits numbers and is not bought here.
- *
- * So the literal is chosen to be one nothing can derive rather than one that merely does not collide
- * today: four digits, where every count on that page is a population of batteries, cells, guards or
- * fields and the only larger figure in the data is a millisecond reading.
- */
-const A_FIGURE_IS_DERIVED = `        \`\${measured.lenses} such readings over the \${measured.batteries} batteries.\`,`
-
-const THE_BREAKDOWN_IS_SHOWN_BESIDE_THE_TOTAL = `        kinds.map((why) => \`\${byKind[why]} \${why.replaceAll('-', ' ')}\`).join(', ') +`
-
-const EVERY_SURVIVOR_IS_SHOWN = `    el('div', { class: 'cases' }, ...defects.map(renderSurvivor)),`
-
-const THE_LIMIT_IS_READ_FIRST = `    line('h2', 'What this does not prove'),
-    line(
-      'p',
-      'A high score does not say the code is correct. It says the tests notice the defects that ' +
-        'were tried.',
-      { class: 'lede' },
-    ),
-`
-
-const A_PIN_IS_NOT_AN_OBSERVATION = `    paragraph(THE_PINS_ARE_AN_ASSERTION),`
-
-/**
- * The two anchors of the defects this repository published, and the second is deliberately the
- * *opening* of the paragraph rather than the whole of it: what was wrong was the call, and the
- * sentence it carries goes on being read by `every-figure-on-the-method-page-comes-from-what-it-was-
- * built-from`, which would redden on any edit that touched the figures instead.
- */
-const A_CONTRACT_NAME_IS_A_TITLE = `    line('p', says.summary, { class: 'why' }),`
-
-const A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `paragraph(silence.reason)`
+const A_SUMMARY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE = `paragraph(contract.identity.summary, { class: 'lede' })`
 
 const A_PAGE_IS_WRITTEN_AT_THE_FILE_IT_IS =
   '    ...[...pages].map(([path, page]) => [path, toHtml(page)] as const),'
 
-const THE_SIGNATURE_SECTION = `    line('h2', 'What a signature does not prove'),`
-
-const NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED = `import {
-  CATALOGUE_PAGE,
-  METHOD_PAGE,
-  REFUSALS_PAGE,
-  WHAT_A_CONTRACT_IS_PAGE,
-  domainPageOf,
-  linkTo,
-  pageOf,
-  rootFrom,
-} from './paths.js'`
-
-const THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS = `    paragraph(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]),`
+const NOTHING_OF_THE_INSTRUMENT_IS_REACHED = `import { emitted } from '../registry/emit.js'`
 
 const EVERYTHING_IS_READABLE = `  ['User-agent: *', 'Allow: /', '', \`Sitemap: \${THE_ORIGIN}/\${SITEMAP}\`, ''].join('\\n')`
 
@@ -467,28 +394,7 @@ const THE_DIAGNOSTIC_TAKES_THE_ANSWERS_ARGUMENTS = `  if (spelledCall(diagnostic
 // The defects
 // ---------------------------------------------------------------------------
 
-const THE_CONTRACTS_OF_A_DOMAIN_ARE_LISTED = `...domain.held.map((held) => entry(held, own))`
-
 const mutants: readonly Mutant[] = [
-  /**
-   * A domain page that lists all but one of its contracts, which is the defect
-   * `a-domain-page-lists-every-contract-the-index-files-under-it` was written for and the one its first
-   * draft was **green** on.
-   *
-   * That draft required each contract to be *named* on the page, and the column beside the content
-   * names every contract of the domain - so a page with an entry missing still carried the name. What
-   * only the main list carries is the install command, and that is what the guard reads now.
-   */
-  sameOnEveryLens(
-    'W-87',
-    'lists every contract of a domain but the first, so a reader climbing to a family from a search ' +
-      'is shown a catalogue with a hole in it and the column beside it goes on naming what the list ' +
-      'dropped',
-    [domainPageFile(THE_CONTRACTS_OF_A_DOMAIN_ARE_LISTED, '...domain.held.slice(1).map((held) => entry(held, own))')],
-    killed(['a-domain-page-lists-every-contract-the-index-files-under-it']),
-  ),
-
-
   sameOnEveryLens(
     'W-01',
     'writes contract prose into the markup without escaping it, so an input holding a `<` opens a ' +
@@ -566,13 +472,11 @@ const mutants: readonly Mutant[] = [
     ],
     // The guard this named read a contract page's property and profile labels, and left with them.
     // **The defect did not**: a paragraph that separates nothing runs every label into the sentence
-    // under it on every page of the site, and two guards catch it - the one about two elements read
-    // as one sentence, and the domain page's opening, whose four figures become one line. Measured
-    // rather than reasoned: the cell was injected and the suite read.
-    killed([
-      'no-element-runs-into-the-one-beside-it',
-      'the-sentence-a-domain-page-opens-on-is-computed-from-what-it-lists',
-    ]),
+    // under it on every page of the site. It caught two guards until ADR-0189, the second being the
+    // domain page's opening, whose four figures became one line - and that page is gone, so what is
+    // left is the one that reads two elements as one sentence. Measured rather than reasoned: the
+    // cell was injected and the suite read.
+    killed(['no-element-runs-into-the-one-beside-it']),
   ),
 
   sameOnEveryLens(
@@ -682,19 +586,6 @@ const mutants: readonly Mutant[] = [
       'the step the whole distribution argument rests on and the one a consumer skips',
     [catalogueFile(A_SNAPSHOT_IS_CHECKED, `  const faults: readonly string[] = []`)],
     killed(['a-snapshot-that-does-not-hash-to-its-own-address-stops-the-build']),
-  ),
-
-  sameOnEveryLens(
-    'W-14',
-    'offers an install command for the contract the catalogue turned down, on the page somebody ' +
-      'clicks from',
-    [
-      cataloguePageFile(
-        A_REFUSED_CONTRACT_IS_OFFERED_NOTHING,
-        `                text(\` — \${THE_INVOCATION} add \${one.refusal.address.name}\`),`,
-      ),
-    ],
-    killed(['nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed']),
   ),
 
   sameOnEveryLens(
@@ -1621,68 +1512,6 @@ const mutants: readonly Mutant[] = [
   // publishes a claim about the checking itself, which nothing on the site contradicts.
 
   sameOnEveryLens(
-    'W-47',
-    'writes a figure into the sentence instead of deriving it. It is right on the day it is typed ' +
-      'and goes false in silence the first time a battery gains a mutant - which is the failure this ' +
-      'repository has caught in its own prose four times and never once in code, on the page whose ' +
-      'whole argument is that a published number carries its derivation',
-    [methodFile(A_FIGURE_IS_DERIVED, '        `7919 such readings over the ${measured.batteries} batteries.`,')],
-    killed(['every-figure-on-the-method-page-comes-from-what-it-was-built-from']),
-  ),
-
-  sameOnEveryLens(
-    'W-48',
-    'prints the number of surviving cells and drops the split, so every defect nothing caught reads ' +
-      'as a known hole when exactly one of them is a debt. The tidier sentence is the more ' +
-      'frightening claim, which is why nobody would notice it was made',
-    [methodFile(THE_BREAKDOWN_IS_SHOWN_BESIDE_THE_TOTAL, `        'various kinds' +`)],
-    killed(['a-count-of-survivors-is-never-shown-without-its-breakdown']),
-  ),
-
-  sameOnEveryLens(
-    'W-49',
-    'shows the first two defects of each kind and stops, which is indistinguishable from a ' +
-      'catalogue that has only two - the page goes on stating the true total above a list that ' +
-      'quietly does not reach it',
-    [
-      survivorsFile(
-        EVERY_SURVIVOR_IS_SHOWN,
-        `    el('div', { class: 'cases' }, ...defects.slice(0, 2).map(renderSurvivor)),`,
-      ),
-    ],
-    killed(['every-surviving-cell-is-published-with-its-own-battery-sentence']),
-  ),
-
-  sameOnEveryLens(
-    'W-50',
-    'moves the sentence about what a score does not prove to the end of the page, where a page like ' +
-      'this one puts it: after the impressive number, as a footnote. Nothing is removed and the ' +
-      'reading is changed completely, because a reader who meets the figure first has already read ' +
-      'it as a claim about correctness',
-    [
-      methodFile(THE_LIMIT_IS_READ_FIRST, `    line('h2', 'What this does not prove'),\n`),
-      methodFile(
-        THE_SIGNATURE_SECTION,
-        `    line(\n      'p',\n` +
-          `      'A high score does not say the code is correct. It says the tests notice the defects that ' +\n` +
-          `        'were tried.',\n      { class: 'lede' },\n    ),\n\n` +
-          `    line('h2', 'What a signature does not prove'),`,
-      ),
-    ],
-    killed(['what-the-score-does-not-prove-is-read-before-the-score']),
-  ),
-
-  sameOnEveryLens(
-    'W-51',
-    'tells the reader the figures were measured rather than that they are what this repository ' +
-      'pins. The two coincide, so nothing on the page becomes false - what is lost is the one ' +
-      'sentence that distinguishes a reader holding an assertion from a reader who has watched ' +
-      'something happen, on the page that exists to make that distinction',
-    [methodFile(A_PIN_IS_NOT_AN_OBSERVATION, `    line('p', 'Every figure here has been measured.'),`)],
-    killed(['the-page-separates-what-is-asserted-from-what-a-run-would-observe']),
-  ),
-
-  sameOnEveryLens(
     'W-52',
     'defers a need with no event behind it, leaving a reason that ages into a description of the ' +
       'past - which is how a scope decision becomes something nobody revisits. It adds the entry ' +
@@ -1699,46 +1528,19 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'W-53',
-    'reaches into the instrument from a second module of this folder. `published.ts` is a door ' +
-      'because exactly one module goes through it; a folder that imports whatever it finds useful ' +
-      'in another folder has no frontier at all, which is the sentence `source.ts` already carries ' +
-      'about the serialisation arriving on the second upstream',
+    'reaches into the instrument from this folder. It used to be a *second* module doing so, because ' +
+      '`published.ts` was a door exactly one module went through; ADR-0189 took both readers away ' +
+      'with the pages that had them, so the claim is now that nothing here reaches the instrument at ' +
+      'all - and a folder that imports whatever it finds useful in another folder has no frontier',
     [
-      cataloguePageFile(
-        NOTHING_ELSE_OF_THE_INSTRUMENT_IS_REACHED,
+      siteFile(
+        NOTHING_OF_THE_INSTRUMENT_IS_REACHED,
         `import type { Battery } from '../../mutation/run.js'\n` +
-          `import {
-  CATALOGUE_PAGE,
-  METHOD_PAGE,
-  REFUSALS_PAGE,
-  WHAT_A_CONTRACT_IS_PAGE,
-  domainPageOf,
-  linkTo,
-  pageOf,
-  rootFrom,
-} from './paths.js'`,
+          `import { emitted } from '../registry/emit.js'`,
       ),
     ],
-    killed(['nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation']),
+    killed(['nothing-of-the-instrument-reaches-this-folder']),
   ),
-
-  sameOnEveryLens(
-    'W-54',
-    'explains each kind of survivor in a sentence of the page\'s own rather than the one the ' +
-      'instrument holds. It reads better, it is shorter, and it is a second statement of one ' +
-      'judgement sitting in the file most likely to drift from the data it describes - which is what ' +
-      'the whole page is written against',
-    [survivorsFile(THE_KINDS_ARE_EXPLAINED_IN_THE_INSTRUMENTS_WORDS, `    paragraph('Some of these are not holes.'),`)],
-    killed(['every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words']),
-  ),
-
-  // -------------------------------------------------------------------------
-  // W-55 to W-63 - the two files nobody reads
-  // -------------------------------------------------------------------------
-  //
-  // Every defect below leaves a site that builds, renders, reads and links correctly. What it changes
-  // is whether any of it is ever found, which is a failure with no symptom at all until somebody
-  // notices, weeks later, that the catalogue is nowhere.
 
   sameOnEveryLens(
     'W-55',
@@ -1864,29 +1666,6 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
-   * The two defects below are the two this repository actually published, put back verbatim.
-   *
-   * Neither was found by a guard - the first by reading the front page in document order, the second
-   * by re-reading the other six afterwards - so what each one pins is a guard that exists because
-   * somebody read a page, and the mutant is the reading made repeatable.
-   */
-  sameOnEveryLens(
-    'W-64',
-    'takes the separator off the mark beside a turned-down contract. An anchor is phrasing content ' +
-      'and carries none of its own, so the front page reads `group-byturned down` - the name of a ' +
-      'contract and the one word about it run into each other, on the page that is this site\'s own ' +
-      'navigation. Every word is still present, so the projection guard stays green: a person reads ' +
-      'two things as one and a guard about presence cannot',
-    [
-      domainPageFile(
-        A_CONTRACT_NAME_IS_A_TITLE,
-        `    line('code', says.summary, { class: 'why' }),`,
-      ),
-    ],
-    killed(['no-element-runs-into-the-one-beside-it']),
-  ),
-
-  /**
    * The published defect was this edit on the paragraph carrying `THE_REPLAY`, and the cell is written
    * at the silences instead, on two measurements.
    *
@@ -1902,15 +1681,16 @@ const mutants: readonly Mutant[] = [
    */
   sameOnEveryLens(
     'W-65',
-    'renders a battery\'s own sentence without parsing the two marks it is written with, so the ' +
-      'asterisks and the backticks reach the reader as themselves - on the page whose whole subject ' +
-      'is rigour. `inline` goes on existing and goes on being right: what the edit removes is a ' +
-      'paragraph going through it, which is the shape every failure of this rule has taken, including ' +
-      'the one this repository published',
+    'renders a contract\'s own summary without parsing the two marks it is written with, so the ' +
+      'asterisks and the backticks reach the reader as themselves - in the first sentence of the ' +
+      'page. `inline` goes on existing and goes on being right: what the edit removes is a paragraph ' +
+      'going through it, which is the shape every failure of this rule has taken, including the one ' +
+      'this repository published. **It aimed at the method page until ADR-0189** and moved to the ' +
+      'contract page with the rule, which is where the catalogue\'s prose is parsed now',
     [
-      methodFile(
-        A_SILENCE_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
-        `line('p', silence.reason)`,
+      contractPageFile(
+        A_SUMMARY_IS_PARSED_LIKE_EVERY_OTHER_SENTENCE,
+        `line('p', contract.identity.summary, { class: 'lede' })`,
       ),
     ],
     killed(['no-mark-a-sentence-carries-reaches-the-reader-as-itself']),
@@ -2217,34 +1997,6 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['every-address-is-told-each-thing-once']),
-  ),
-
-  /**
-   * The root typed back into the contract list of a domain page, which is this file as it stood
-   * before the unit that purged the tree.
-   *
-   * **It is the rarest shape this battery carries: a defect that changes no byte of the emitted
-   * site.** `rootFrom` counts the segments of the page it is handed, a domain page has three, and
-   * `'../'.repeat(2)` is the string this replaces it with - so every page renders identically, the
-   * walk over the page graph resolves every link, and the fourteen files of HTML are the same to the
-   * byte. Nothing that reads a rendering can disagree with it, because there is nothing to disagree
-   * with until a domain page changes depth.
-   *
-   * Its sister four declarations below composes its root and always did. What made the difference
-   * visible was neither a reading nor a rendering but an unused parameter: `entry` took `own` and
-   * never read it, and `noUnusedParameters` is what asked why.
-   */
-  sameOnEveryLens(
-    'W-136',
-    'types the root of a domain page back into its contract list, so one of two sibling link builders ' +
-      'stops following the page it is rendered onto and every rendered byte stays identical',
-    [
-      domainPageFile(
-        '{ href: `${rootFrom(own)}${linkTo(pageOf(held.contract.address))}` },',
-        '{ href: `../../${linkTo(pageOf(held.contract.address))}` },',
-      ),
-    ],
-    killed(['every-address-a-page-links-to-is-composed-and-never-typed']),
   ),
 
   /**

@@ -46,16 +46,12 @@ import { footer, masthead, theCatalogueFrom } from './chrome.js'
 import { readableDate } from './quantity.js'
 import { whatACardSays } from './what-a-card-says.js'
 import { eyebrow, offer, pill } from './components.js'
-import { CATALOGUE_PAGE, FRONT_PAGE, domainPageOf, linkTo, pageOf } from './paths.js'
+import { FRONT_PAGE, linkTo, pageOf } from './paths.js'
 
 const NOTHING = {} as const
 
 const line = (tag: Tag, value: string, attributes = NOTHING): Node =>
   el(tag, attributes, text(value))
-
-/** A count and the word it counts, so that a seventh contract needs no sentence rewritten. */
-const said = (count: number, one: string, many: string): string =>
-  `${count} ${count === 1 ? one : many}`
 
 /**
  * The headline and the sentence under it, taken from the artboard verbatim.
@@ -186,7 +182,6 @@ export const frontPage = (
 ): Document => {
   const held = domains.flatMap((domain) => domain.held)
   const installable = index.entries.filter((entry) => entry.installable).length
-  const turnedDown = index.entries.length - installable
 
   const newest = [...held]
     .sort((one, other) => other.binding.publishedAt.localeCompare(one.binding.publishedAt))
@@ -230,11 +225,8 @@ export const frontPage = (
             ...domains
               .filter((domain) => domain.held.length > 0)
               .map((domain) =>
-                el(
-                  'li',
-                  NOTHING,
-                  pill(domain.name, domain.held.length, linkTo(domainPageOf(domain.address))),
-                ),
+                // A count and no longer a way in: a domain has no page of its own. ADR-0189.
+                el('li', NOTHING, pill(domain.name, domain.held.length, null)),
               ),
           ),
         ),
@@ -256,25 +248,6 @@ export const frontPage = (
           ...THE_ARGUMENTS.map((one) =>
             el('div', { class: 'argument' }, line('h3', one.heading), line('p', one.says)),
           ),
-        ),
-        /**
-         * What the shelf does not hold, and the way to the catalogue that does.
-         *
-         * **It is not on the artboard and it is here for a constraint**: no page is removed in this
-         * unit, and a page nothing links to is one `every-page-is-reachable-from-the-front-page`
-         * refuses. It is composed from the index, so a second refusal lands in it with nobody editing
-         * anything. ADR-0182 carries it as an addition rather than a deviation.
-         */
-        el(
-          'p',
-          { class: 'elsewhere' },
-          text(
-            turnedDown === 0
-              ? 'Every contract this catalogue holds is above. '
-              : `${said(turnedDown, 'contract', 'contracts')} the catalogue considered and turned ` +
-                `down ${turnedDown === 1 ? 'is' : 'are'} not listed here. `,
-          ),
-          el('a', { href: linkTo(CATALOGUE_PAGE) }, text('The whole catalogue')),
         ),
       ),
       footer(FRONT_PAGE, menu),

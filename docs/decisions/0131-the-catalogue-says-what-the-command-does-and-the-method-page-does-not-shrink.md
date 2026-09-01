@@ -4,7 +4,6 @@ date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
   - packages/cli/arguments.ts
-  - packages/site/catalogue-page.ts
 confirmed-by:
   - battery: site
     guard: every-command-the-site-tells-a-reader-to-run-carries-the-invocation

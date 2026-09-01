@@ -4,7 +4,6 @@ date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
   - packages/site/contract-page.ts
-  - packages/site/refusals-page.ts
 confirmed-by:
   - battery: site
     guard: every-contract-the-index-lists-has-a-page-at-its-own-address

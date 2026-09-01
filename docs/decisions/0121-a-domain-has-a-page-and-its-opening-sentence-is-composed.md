@@ -3,7 +3,6 @@ status: accepted
 date: 2026-08-18
 decision-makers: Mathis Perron
 governs:
-  - packages/site/domain-page.ts
   - packages/site/catalogue.ts
   - packages/site/chrome.ts
 confirmed-by:

@@ -4,15 +4,10 @@ date: 2026-08-18
 decision-makers: Mathis Perron
 governs:
   - packages/site/catalogue.ts
-  - packages/site/domain-page.ts
   - packages/site/chrome.ts
 confirmed-by:
   - battery: site
     guard: every-contract-the-index-lists-has-a-page-at-its-own-address
-  - battery: site
-    guard: the-sentence-a-domain-page-opens-on-is-computed-from-what-it-lists
-  - battery: site
-    guard: a-domain-page-lists-every-contract-the-index-files-under-it
 ---
 
 # A domain carries what it turned down, and the domain that publishes nothing has a page

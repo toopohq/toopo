@@ -5,7 +5,6 @@ decision-makers: Mathis Perron
 governs:
   - packages/site/what-a-card-says.ts
   - packages/site/contract-page.ts
-  - packages/site/domain-page.ts
 confirmed-by: []
 ---
 

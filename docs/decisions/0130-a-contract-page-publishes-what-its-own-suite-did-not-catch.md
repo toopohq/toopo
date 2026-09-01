@@ -3,13 +3,12 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/site/survivors.ts
   - mutation/published.ts
 confirmed-by:
   - battery: registry-storage
     guard: every-contract-battery-injects-into-a-folder-a-contract-of-the-catalogue-owns
   - battery: site
-    guard: nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation
+    guard: nothing-of-the-instrument-reaches-this-folder
 ---
 
 # A contract page publishes what its own suite did not catch

@@ -3,10 +3,8 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/site/what-a-contract-is-page.ts
   - packages/registry/the-seven-files.ts
   - packages/site/paths.ts
-  - packages/site/catalogue-page.ts
 confirmed-by:
   - battery: site
     guard: every-contract-the-index-lists-has-a-page-at-its-own-address

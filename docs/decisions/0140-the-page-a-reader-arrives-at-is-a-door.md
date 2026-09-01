@@ -4,7 +4,6 @@ date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
   - packages/site/front-page.ts
-  - packages/site/catalogue-page.ts
   - packages/site/paths.ts
   - packages/site/style.ts
 confirmed-by:

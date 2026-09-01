@@ -113,24 +113,29 @@ describe('where the generator gets what it publishes', () => {
   })
 
   /**
-   * The instrument reaches this folder through one named module and no other.
+   * The instrument does not reach this folder at all, and the exemption is gone.
    *
-   * The method page has an upstream the registry cannot serve - `packages/registry/verifiability.ts` says the
-   * instrument measures the catalogue and is not part of it - so `mutation/published.ts` is a second
-   * door beside the port. A door is a decision; a folder reaching into another folder wherever it
-   * finds something useful is not, and the difference between the two is exactly one guard.
+   * **It used to name one module and allow it.** The method page had an upstream the registry cannot
+   * serve - `packages/registry/verifiability.ts` says the instrument measures the catalogue and is not
+   * part of it - so `mutation/published.ts` was a second door beside the port, and the front page's
+   * own figures came through it. A door is a decision; a folder reaching into another folder wherever
+   * it finds something useful is not.
+   *
+   * **ADR-0189 removed both readers, so the exemption stopped describing anything.** A guard keeping a
+   * clause for a door nobody opens is a declaration nothing keeps - and the repair is the strong form
+   * rather than the deletion of the clause, because what it now asserts is larger than what it
+   * asserted before: *no module of this folder reaches the instrument*, full stop. The population did
+   * not shrink; the claim grew.
    *
    * The same text search as the frontier below, and the same deliberate limit: what it has to catch is
-   * a second module importing a battery, or `run.ts`, because it was convenient.
+   * a module importing a battery, or `run.ts`, or `published.ts`, because it was convenient.
    */
-  it('nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation', () => {
+  it('nothing-of-the-instrument-reaches-this-folder', () => {
     const reaching = readdirSync(HERE)
       .filter((name) => name.endsWith('.ts'))
       .flatMap((name) =>
         [...readFileSync(join(HERE, name), 'utf8').matchAll(/from '\.\.\/\.\.\/mutation\/([\w.-]+)\.js'/g)]
-          .map((match) => match[1])
-          .filter((module) => module !== 'published')
-          .map((module) => `${name} reaches ../../mutation/${module}`),
+          .map((match) => `${name} reaches ../../mutation/${match[1]}`),
       )
 
     expect(reaching).toEqual([])

@@ -3,7 +3,7 @@ status: accepted
 date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
-  - packages/site/methodology-page.ts
+  - packages/site/marks.ts
 confirmed-by:
   - battery: site
     guard: no-mark-a-sentence-carries-reaches-the-reader-as-itself

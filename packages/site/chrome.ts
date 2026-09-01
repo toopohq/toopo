@@ -1,18 +1,28 @@
 /**
- * The furniture every page carries: the wordmark, the two pages a reader can always get back to, and
- * the column that says where in the catalogue they are.
- * ADR-0116 is why it exists and what it deliberately leaves out; ADR-0121 is the column - why it is a
- * sibling of the rail rather than a part of it, and why it is placed by the grid rather than ordered.
+ * The furniture every page carries: the wordmark and the way back to the catalogue.
+ * ADR-0116 is why it exists and what it deliberately leaves out.
  *
+ *
+ * ---------------------------------------------------------------------------
+ * The column that said where in the catalogue you are, and why it is gone
+ * ---------------------------------------------------------------------------
+ *
+ * `beside` built a navigation column - the domain you are standing in named in full, its contracts
+ * listed, and the other domains one line each - and ADR-0121 argued at length why it was a sibling of
+ * the rail rather than a part of it. Its two callers were the domain page and the page a turned-down
+ * contract had, and ADR-0189 retired both. A column whose every destination is gone is not a column
+ * with fewer links in it, so it went with them rather than being reduced to naming one contract.
  *
  * ---------------------------------------------------------------------------
  * Why the menu is passed in rather than written here
  * ---------------------------------------------------------------------------
  *
- * The refusals page is emitted only when something has been refused, and `theSite` is the one place
- * that knows. A menu written here would name an address the tree does not hold on the day the
- * catalogue refuses nothing - which `the-emitted-tree-is-closed` would catch, but only after somebody
- * had written a link this module had no way to check.
+ * `theSite` is the one place that knows which pages exist, so it decides the menu. That mattered most
+ * while the refusals page was emitted only when something had been refused: a menu written here would
+ * have named an address the tree does not hold on the day the catalogue refuses nothing - which
+ * `the-emitted-tree-is-closed` would catch, but only after somebody had written a link this module had
+ * no way to check. The menu is empty today and the arrangement is kept, because what it protects is
+ * the direction of the knowledge and not the number of entries.
  *
  * ---------------------------------------------------------------------------
  * The field, and why it is a slot rather than a control
@@ -40,18 +50,10 @@
 import { endpointOf, pathTo } from '../registry/endpoints.js'
 import { THE_REPOSITORY_LICENCE } from '../registry/licence.js'
 import { THE_SOURCE_REPOSITORY } from '../registry/publication.js'
-import type { Domain } from './catalogue.js'
-import { shortNameOf } from './catalogue.js'
 import type { WhereTheCatalogueIs } from './searching.js'
-import type { Attributes, Node } from './document.js'
+import type { Node } from './document.js'
 import { el, text } from './document.js'
-import {
-  FRONT_PAGE,
-  domainPageOf,
-  linkTo,
-  pageOf,
-  rootFrom,
-} from './paths.js'
+import { FRONT_PAGE, linkTo, rootFrom } from './paths.js'
 
 const NOTHING = {} as const
 
@@ -275,114 +277,6 @@ const whereTheCatalogueIs = (own: string): WhereTheCatalogueIs => ({
  */
 export const theCatalogueFrom = (own: string): string =>
   JSON.stringify(whereTheCatalogueIs(own))
-
-/**
- * The column beside a page: where you are in the catalogue, and then whatever that page adds.
- *
- * **The rule it keeps is the current domain in full and the others one line each, never the whole
- * catalogue.** That is what MDN, the Rust book and the Python documentation all do, and the reason is
- * arithmetic rather than fashion: a navigation listing every contract is readable at five and is a
- * wall at a thousand, and the shape that survives to a thousand is the one worth building at five.
- *
- * **It is a sibling of the rail rather than a part of it**, and that is a decision about a guard as
- * much as about markup. `the-rail-of-a-page-names-every-section-of-it-and-only-those` walks
- * everything inside `.rail` and requires each link to be a section of the page; the links here go to
- * other pages. Putting them inside would have meant widening that guard to ignore them, which is a
- * guard being narrowed to fit what somebody wanted to add. Two elements in one column costs nothing
- * and leaves the rail meaning exactly what it meant.
- *
- * ---------------------------------------------------------------------------
- * No count beside a domain, and it is the mock-up this departs from
- * ---------------------------------------------------------------------------
- *
- * The mock-up draws `array 97 · date 156 · util 136`, from a catalogue of a thousand that does not
- * exist. The system is a magnitude beside a name; the data is fiction. Applied to what is really
- * here, every line would read `1`, `1`, `2` - which makes the catalogue look empty in the navigation
- * of every page, and answers no question a reader of three domains has.
- *
- * A bare digit is also the one thing here that does not survive a projection. `toText` renders a list
- * item as its words, so `string` and `2` come out as `string 2` with nothing saying what the 2
- * counts. So the figure is where there is room for the word that makes it mean something - the label
- * of the domain you are standing in - and the list is names.
- */
-export const beside = (
-  own: string,
-  here: Domain,
-  domains: readonly Domain[],
-  rail: readonly Node[],
-): Node =>
-  el(
-    'div',
-    { class: 'beside' },
-    el(
-      'nav',
-      { class: 'where', 'aria-label': 'Catalogue' },
-      line(
-        'p',
-        whatThisDomainHolds(here),
-        domainPageOf(here.address),
-        own,
-        { class: 'rail-label' },
-      ),
-      el(
-        'ul',
-        { class: 'siblings' },
-        ...here.held.map((one) =>
-          line('li', shortNameOf(one.contract.address.name), pageOf(one.contract.address), own, NOTHING),
-        ),
-      ),
-      el('p', { class: 'rail-label' }, text('Domains')),
-      el(
-        'ul',
-        { class: 'domains' },
-        ...domains.map((domain) =>
-          line(
-            'li',
-            domain.name,
-            domainPageOf(domain.address),
-            own,
-            NOTHING,
-          ),
-        ),
-      ),
-    ),
-    ...rail,
-  )
-
-/**
- * The label of the domain you are standing in, which is a magnitude and the word that says what it
- * counts.
- *
- * **A domain that publishes nothing says what it turned down instead of saying zero.** `array · 0
- * contracts` is arithmetic that reads as *this corner of the catalogue is empty*, on the one page whose
- * subject is a contract that was written in full and refused. The rule the header states is that a bare
- * digit does not survive `toText`, and this is the same rule one turn on: a digit survives, and a digit
- * counting the wrong noun says something false in every projection. ADR-0126.
- */
-const whatThisDomainHolds = (domain: Domain): string =>
-  domain.held.length === 0
-    ? `${domain.name} · ${domain.turnedDown.length} turned down`
-    : `${domain.name} · ${domain.held.length} ${domain.held.length === 1 ? 'contract' : 'contracts'}`
-
-/**
- * A line of the column: a link, or the plain words where it is the page you are on.
- *
- * The same reading `destination` makes of the masthead, and the same declaration: a link to the page
- * under the reader's cursor is a control that does nothing, and `aria-current` is what says *this one*
- * rather than a class this repository invented.
- */
-const line = (
-  tag: 'p' | 'li',
-  label: string,
-  page: string,
-  own: string,
-  attributes: Attributes,
-): Node =>
-  own === page
-    ? el(tag, { ...attributes, class: `${attributes['class'] ?? ''} here`.trim(), 'aria-current': 'page' }, text(label))
-    : el(tag, attributes, el('a', { href: `${rootFrom(own)}${linkTo(page)}` }, text(label)))
-
-/** The last segment of a contract's name, which is what tells it apart inside its own domain. */
 
 /**
  * What the artboard closes the page on: what this project is, and the two ways out.

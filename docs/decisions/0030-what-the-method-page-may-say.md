@@ -3,21 +3,10 @@ status: accepted
 date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
-  - packages/site/methodology-page.ts
   - mutation/published.ts
 confirmed-by:
   - battery: site
-    guard: every-figure-on-the-method-page-comes-from-what-it-was-built-from
-  - battery: site
-    guard: what-the-score-does-not-prove-is-read-before-the-score
-  - battery: site
-    guard: a-count-of-survivors-is-never-shown-without-its-breakdown
-  - battery: site
-    guard: the-page-separates-what-is-asserted-from-what-a-run-would-observe
-  - battery: site
-    guard: every-surviving-cell-is-published-with-its-own-battery-sentence
-  - battery: site
-    guard: nothing-of-the-instrument-reaches-this-folder-but-the-published-derivation
+    guard: nothing-of-the-instrument-reaches-this-folder
   - battery: site
     guard: every-deferred-need-names-what-would-close-it
 ---

@@ -1,15 +1,6 @@
 import { describe, it, expect } from 'vitest'
 
 import {
-  THE_COMMITS_QUOTED,
-  THE_PINS_ARE_AN_ASSERTION,
-  THE_REPLAY,
-  CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS,
-  WHAT_A_SURVIVOR_MEANS_TO_A_READER,
-  survivorsByKind,
-  theMeasurement,
-} from '../../mutation/published.js'
-import {
   THE_INVOCATION,
   THE_WAYS_TO_RUN_IT,
   contractUrl,
@@ -20,7 +11,7 @@ import { THE_COPIED_LICENCE } from '../registry/licence.js'
 import { THE_SOURCE_REPOSITORY } from '../registry/publication.js'
 import { isASentence, stringsIn } from '../registry/contract-record.js'
 import { search } from '../registry/search.js'
-import { ThePageCannotBeBuilt, domainsOf, heldByTheRegistry } from './catalogue.js'
+import { ThePageCannotBeBuilt, heldByTheRegistry } from './catalogue.js'
 import { whatACardSays } from './what-a-card-says.js'
 import { THE_EXAMPLES } from './chrome.js'
 import { whatRunsInYourBrowser } from './contract-page.js'
@@ -30,18 +21,7 @@ import { literal } from './literal.js'
 import { localSource } from './local-source.js'
 import { inline } from './marks.js'
 import { theCallOf } from './playground.js'
-import {
-  CATALOGUE_PAGE,
-  FRONT_PAGE,
-  METHOD_PAGE,
-  REFUSALS_PAGE,
-  WHAT_A_CONTRACT_IS_PAGE,
-  domainPageOf,
-  linkTo,
-  pageOf,
-  rootFrom,
-  urlOf,
-} from './paths.js'
+import { FRONT_PAGE, linkTo, pageOf, urlOf } from './paths.js'
 import { theSite } from './site.js'
 
 /**
@@ -149,14 +129,16 @@ describe('the site', () => {
    * refused contract is never offered, and it was written for the catalogue's list before this page
    * existed - so it arrived at the new page already holding the one thing it must not do.
    *
-   * **A refused contract is at `pageOf` and never at a second spelling.** A refusal is a state of a
-   * contract, so it is at the address the contract has: a reader who searches for `group-by` lands
-   * where they would have landed had it been published. Asserting the whole key set from the index is
-   * what makes an extra page and a missing one the same failure.
+   * **A refused contract now has no page at all, and this guard is where that is stated.** ADR-0127
+   * gave it one and ADR-0189 takes it away, for a reason about the surface rather than about the
+   * refusal: this site is what a reader can install, and a refusal is an answer to a question - so it
+   * stays in `toopo search`, with its mark and its reason, and leaves the shelf. Asserting the whole
+   * key set from the index is what makes an extra page and a missing one the same failure, and it is
+   * what turns that decision into a red the day somebody renders a turned-down contract again.
    *
-   * The four pages that are not about one contract are named here, so that a page appearing or
+   * **The one page that is not about a contract is named here**, so that a page appearing or
    * disappearing is this guard's business rather than nobody's - which is what it was for when
-   * ADR-0129 added the fourth, and the only guard that noticed.
+   * ADR-0129 added a fourth, and the only guard that noticed.
    */
   it('every-contract-the-index-lists-has-a-page-at-its-own-address', () => {
     const refused = index.entries.filter((entry) => !entry.installable)
@@ -164,143 +146,11 @@ describe('the site', () => {
     expect([...pages().keys()].sort()).toEqual(
       [
         FRONT_PAGE,
-        CATALOGUE_PAGE,
-        METHOD_PAGE,
-        REFUSALS_PAGE,
-        WHAT_A_CONTRACT_IS_PAGE,
-        ...new Set(index.entries.map((entry) => domainPageOf(entry.address))),
-        ...index.entries.map((entry) => pageOf(entry.address)),
+        ...index.entries.filter((entry) => entry.installable).map((entry) => pageOf(entry.address)),
       ].sort(),
     )
-    expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([true])
-    expect(refused.map((entry) => pages().has(domainPageOf(entry.address)))).toEqual([true])
+    expect(refused.map((entry) => pages().has(pageOf(entry.address)))).toEqual([false])
     expect(refused.length).toBe(1)
-  })
-
-  /**
-   * What a domain page is built from is what the index files under that domain.
-   *
-   * **This guard was cited by `catalogue.ts` for three units and did not exist.** Its comment read
-   * *what keeps them from disagreeing is that `a-domain-page-lists-every-contract-the-index-files-under-it`
-   * compares the two sides*, and nothing did: `every-guard-a-decision-names-is-one-its-suite-collects`
-   * resolves the guards a **decision record** names and has no opinion about the ones a comment names.
-   * Found by ADR-0126 naming it in a `confirmed-by`, where the meta suite does look.
-   *
-   * The two sides are two splits of one string in two folders. `packages/registry/response.ts` cuts
-   * `ServedIndexEntry.domain` out of a contract's name; `catalogue.ts` cuts it again, because a `Held`
-   * carries a frozen contract and no index entry, so the two are reached from different values and
-   * neither reads the other.
-   *
-   * **Both halves are asserted, and the second is why this is not an internal check.** The first
-   * compares the grouping against the index. The second reads the page a reader is served.
-   *
-   * **The second half was decorative when it was written and a measurement is what said so.** It
-   * required every contract filed under the domain to be *named* on the page — and the column beside
-   * the content names every contract of the domain too, so a page that dropped an entry from its main
-   * list still carried the name. Seen green with `domain.held.slice(1)` rendering the list, which is a
-   * page missing a contract entirely. What only the main list carries is the install command, so that
-   * is what is required of a contract the domain publishes, and the reason it was turned down for one
-   * it refused. ADR-0126.
-   */
-  it('a-domain-page-lists-every-contract-the-index-files-under-it', () => {
-    const domains = domainsOf(source, heldByTheRegistry(source))
-    const shortNameOf = (name: string): string => name.slice(name.indexOf('/') + 1)
-
-    expect(domains.length, 'the catalogue files contracts under some domain').toBeGreaterThan(0)
-
-    for (const domain of domains) {
-      const filed = index.entries.filter((entry) => entry.domain === domain.name)
-      const built = [
-        ...domain.held.map((one) => one.contract.address.name),
-        ...domain.turnedDown.map((one) => one.refusal.address.name),
-      ]
-
-      expect(
-        built.slice().sort(),
-        `${domain.name}: what its page is built from, against what the index files under it`,
-      ).toEqual(filed.map((entry) => entry.address.name).sort())
-
-      const said = toText(page(domainPageOf(domain.address)))
-
-      expect(
-        domain.held.map(
-          (one) => `${one.contract.address.name}: ${said.includes(`add ${one.contract.address.name}`)}`,
-        ),
-        `${domain.name}: every contract it publishes is listed with the command that takes it`,
-      ).toEqual(domain.held.map((one) => `${one.contract.address.name}: true`))
-
-      expect(
-        domain.turnedDown.map(
-          (one) =>
-            `${one.refusal.address.name}: ${said.includes(shortNameOf(one.refusal.address.name)) && said.includes(one.refusal.decidedAgainst)}`,
-        ),
-        `${domain.name}: every contract it turned down is named with what it was turned down for`,
-      ).toEqual(domain.turnedDown.map((one) => `${one.refusal.address.name}: true`))
-    }
-  })
-
-  /**
-   * The sentence a domain page opens on is computed from the contracts it lists.
-   *
-   * ADR-0121 refuses a hand-written line there. It would be a fifth statement of what is in a domain -
-   * beside the list under it, the served index, the sitemap and each contract's own summary - and the
-   * one a reader believes, because it is at the top and the list is below the fold. What replaces it
-   * carries how many contracts, how many cases they settle and what they weigh, all four read off the
-   * registry.
-   *
-   * **What this establishes and what it does not, stated rather than implied.** The event it fires on
-   * is somebody writing prose in that slot: prose does not carry these three numbers, so the guard
-   * reddens. It does **not** establish that the derivation is right - the sentence and this guard
-   * compute from the same `Held`, so a hole in that computation moves both together and stays green,
-   * which is ADR-0087's warning arriving where it cannot be avoided. The half that cannot be got this
-   * way is bought instead by there being no second source: nothing in `domain-page.ts` holds a figure
-   * that is not read from a contract.
-   *
-   * Seen red before it was believed, on the mutant it is written for: with the opening replaced by
-   * *Four contracts over text held in memory*, the fault reads that 2 is not in the sentence.
-   */
-  it('the-sentence-a-domain-page-opens-on-is-computed-from-what-it-lists', () => {
-    const domains = domainsOf(source, heldByTheRegistry(source))
-    expect(domains.length, 'the catalogue publishes in some domain').toBeGreaterThan(0)
-
-    for (const domain of domains) {
-      // The block after the title, found by the title rather than by a position: what comes before it
-      // is the masthead, and how many blocks that is is not this guard's business.
-      const blocks = toText(page(domainPageOf(domain.address))).split('\n\n')
-      const opening = blocks[blocks.indexOf(domain.name) + 1] ?? ''
-
-      const cases = domain.held.reduce(
-        (total, held) => total + held.contract.caseTables.reduce((n, table) => n + table.cases.length, 0),
-        0,
-      )
-      const bytes = domain.held.reduce(
-        (total, held) => total + held.implementation.files.reduce((n, file) => n + file.bytes, 0),
-        0,
-      )
-
-      /**
-       * A domain that publishes nothing states one figure and not four, and the arm is here rather
-       * than in a widened loop.
-       *
-       * The three above are read off what is published, so on `array` they are `0`, `0` and `0` - and
-       * a guard requiring the sentence to carry `0` is satisfied by *This domain publishes 0
-       * contracts, settling 0 named edge cases*, which is the sentence ADR-0126 refused for saying
-       * nothing correctly. What that page does state is how many contracts were turned down, so that
-       * is what is required of it. ADR-0126.
-       */
-      const owed =
-        domain.held.length === 0
-          ? ([['how many it turned down', String(domain.turnedDown.length)]] as const)
-          : ([
-              ['how many contracts', String(domain.held.length)],
-              ['how many cases they settle', String(cases)],
-              ['what they weigh', bytes.toLocaleString('en-US').replaceAll(',', ' ')],
-            ] as const)
-
-      for (const [what, value] of owed) {
-        expect(opening, `${domain.name}: the opening does not say ${what}`).toContain(value)
-      }
-    }
   })
 
   /**
@@ -425,33 +275,31 @@ describe('the site', () => {
   })
 
   /**
-   * A contract the catalogue refused must be findable and must never be offered - the rule
-   * `toopo search` already follows on the terminal, arriving on the page where somebody would click.
+   * A contract the catalogue refused is never offered here, and since ADR-0189 is never named here.
+   *
+   * **The other half of this guard is gone, and it is a decision rather than a loss of coverage.** It
+   * used to require the refusal to be *findable* on this site as well as unoffered, which is why the
+   * catalogue page linked it and the refusals page printed its address. The owner's ruling is that a
+   * refusal is noise on a shelf and an answer in a search: it keeps its mark and its reason in
+   * `toopo search`, and it leaves the site. So what is asked here is the stronger half of what was
+   * asked before - not merely *no install command*, but *no mention at all* - over every page rather
+   * than over the two that used to carry it.
+   *
+   * **Where the findable half went is a guard of another folder**, and that is what makes this a move
+   * rather than a deletion: `packages/cli/` holds what a search answers about a contract it may not
+   * install, and nothing here weakens it. This guard's own red event is a page that starts rendering
+   * a turned-down contract again, which is exactly the thing the ruling forbids.
    */
   it('nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed', () => {
     const refused = index.entries.find((entry) => !entry.installable)
     const everyPage = [...pages().values()].map(toText).join('\n')
+    const everyMarkup = [...pages().values()].map(toHtml).join('\n')
 
     expect(refused).toBeDefined()
     expect(everyPage).not.toContain(`toopo add ${refused?.address.name}`)
-    /**
-     * **The front page links it, which is what findable means and is not what this asked before.**
-     *
-     * It required the rendered address to occur in the page's HTML, and that was satisfied for as
-     * long as the catalogue printed it as the link's own text. The front page now names contracts by
-     * their short name under the domain each belongs to - so the rendered address survives only in
-     * the `href`, the assertion went on passing, and a reader could no longer see the string it was
-     * looking for. The guard was green for a reason that had stopped being its claim.
-     *
-     * A link is the stronger form either way: a string in the markup can be in a script, an
-     * attribute or a comment, and only a link is something a reader can follow.
-     */
-    expect(html(CATALOGUE_PAGE)).toContain(
-      `href="${rootFrom(CATALOGUE_PAGE)}${linkTo(pageOf(refused?.address as never))}"`,
-    )
-    expect(toText(page(REFUSALS_PAGE))).toContain(
-      renderContract(refused?.address as never),
-    )
+    // Asked of the markup and not of the reading, because a link a reader cannot see is still a link.
+    expect(everyMarkup).not.toContain(renderContract(refused?.address as never))
+    expect(everyMarkup).not.toContain(linkTo(pageOf(refused?.address as never)))
   })
 
   /**
@@ -925,19 +773,19 @@ describe('the site', () => {
     )
 
     /**
-     * The four sections the artboard draws, in its order, and the line the constraints add.
+     * The four sections the artboard draws, in its order, and nothing else.
      *
-     * The opening, the catalogue, what arrived last, and why any of it is worth taking - then a
-     * sentence pointing at the contracts this page does not list, which is not on the artboard and is
-     * here because no page of this site may be unreachable. ADR-0182.
+     * The opening, the catalogue, what arrived last, and why any of it is worth taking.
+     *
+     * **The fifth child is gone and its own comment is what removed it.** ADR-0182 added a paragraph
+     * pointing at the pages this page did not list, and said in as many words that it was not on the
+     * artboard and was there for a constraint - *a page nothing links to is one
+     * `every-page-is-reachable-from-the-front-page` refuses*. ADR-0189 retired those pages, so the
+     * constraint it satisfied no longer exists and the page is the artboard's again. A workaround
+     * outliving the thing it worked around is the drift this repository keeps finding; this one said
+     * out loud what would end it.
      */
-    expect(inside.map((node) => node.tag)).toEqual([
-      'section',
-      'section',
-      'section',
-      'section',
-      'p',
-    ])
+    expect(inside.map((node) => node.tag)).toEqual(['section', 'section', 'section', 'section'])
 
     const reading = toText(page(FRONT_PAGE))
     const index = source.contractIndex()
@@ -1442,259 +1290,3 @@ describe('the site', () => {
  * guard below is a way of overstating that this repository has either already committed somewhere else
  * or would not be able to see.
  */
-describe('the page that says how we verify', () => {
-  const reading = (): string => toText(page(METHOD_PAGE))
-
-  /**
-   * **No figure on this page is typed into a sentence.**
-   *
-   * The defect is not a wrong number, it is a *right* number that goes wrong later: somebody writes
-   * "34 survive", a battery gains a mutant, and the page keeps saying 34 while the catalogue says 35.
-   * That is the failure this repository has caught in its own prose four times and never in code.
-   *
-   * So every run of digits a reader can see must occur in what the page was built from - the two
-   * answers and the constants beside them - or be a count derived from them. A literal that happens to
-   * match today is still refused tomorrow, which is the whole point: the day the data moves, the
-   * literal stops being in the set and this goes red.
-   *
-   * **And the set it is matched against must hold figures and nothing else**, which is the half this
-   * guard got wrong and W-47 found. The data moved *towards* a stale literal instead of away from it,
-   * so the guard went quiet rather than red - the one direction that costs nothing to nobody until
-   * somebody reads the page.
-   */
-  it('every-figure-on-the-method-page-comes-from-what-it-was-built-from', () => {
-    const measured = theMeasurement()
-    const methodology = source.methodology()
-    const counts = [
-      measured.batteries,
-      measured.lenses,
-      measured.outOfReach.length,
-      measured.unprobed.length,
-      Object.keys(methodology.fields).length,
-      ...[measured.defects, measured.probes].flatMap((population) => [
-        population.cells,
-        population.killed,
-        population.surviving.length,
-        ...Object.values(survivorsByKind(population)),
-        ...[...new Set(population.surviving.map((one) => `${one.battery} ${one.mutant}`))].map(
-          (_, at) => at + 1,
-        ),
-      ]),
-      ...Object.values(methodology.strata).map(
-        (_, at) =>
-          Object.values(methodology.fields).filter(
-            (stratum) => stratum === Object.keys(methodology.strata)[at],
-          ).length,
-      ),
-    ].map(String)
-
-    /**
-     * A commit identifier is an address and not a figure, so it comes off both sides rather than
-     * being allowed on either.
-     *
-     * **The rule this is an instance of, stated because the next guard over published digits will
-     * need it and there is no mechanism to hand it over.** An address that is rendered leaks into
-     * this comparison from *both* directions at once: it joins the pool as though something had
-     * derived it, and it joins the reading as though the page had published it. Either side alone
-     * would be caught - a figure with no derivation reddens, and a derivation nothing renders is
-     * unread - and it is the pair that is silent, because the two leaks cancel. So **every address
-     * comes off both sides before the comparison, and it is the rendering that decides which strings
-     * are addresses**, not their shape: a digit run is not evidence of a figure.
-     *
-     * Measured: `THE_REPLAY.measuredAt` then held a stamp whose digit runs were `0`, `8` and **`41`**
-     * - and `41` occurred nowhere else in this data. So stamping that commit handed the pool a figure
-     * nothing had derived, and W-47, which writes the literal `41` into a derived sentence, stopped
-     * being killed the moment the stamp landed. Taking it off the reading as well is what keeps the
-     * honest page passing, since it is rendered there.
-     *
-     * **It used to name the one address this data carries, and the data had carried two for some
-     * time.** `THE_REPLAY.spread` quotes the commit of every reading it compares, and only
-     * `measuredAt` was ever taken off - the others leaked into both sides and cancelled, silently,
-     * which is the exact mechanism this paragraph describes happening to the guard that describes it.
-     * They were absorbed rather than caught because their digit runs occur elsewhere in the data,
-     * which is luck and not a design.
-     *
-     * `THE_COMMITS_QUOTED` is the repair, and it is a record the prose interpolates rather than a list
-     * beside it: a commit cannot be quoted in that spread without being in it, so there is nothing
-     * here to drift.
-     *
-     * **What the stripping is load-bearing for is not the honest page, and that was measured rather
-     * than assumed.** Taking it away entirely leaves this guard green: a rendered address is in the
-     * pool *and* in the reading, so its digit runs cancel and the honest page passes either way. What
-     * it is for is the pool - measured on a page publishing a run that occurs nowhere but inside a
-     * quoted stamp: green with no stripping, and red naming that run with it.
-     *
-     * ---------------------------------------------------------------------------
-     * What this establishes, and the half it cannot
-     * ---------------------------------------------------------------------------
-     *
-     * **It asks whether a figure a reader can see occurs somewhere in the data. It cannot ask whether
-     * it is the figure that sentence derives.** A page saying *41 such readings* passes while the
-     * lenses number 24, provided 41 is some other count in the same data - and that is not
-     * hypothetical: `measured.unprobed.length` reached exactly 41 when three batteries declared a
-     * transport they cannot reach, and W-47 went from killed to survived without one line of this page
-     * changing. The pool is every derived integer, so it grows with the catalogue and excuses more
-     * literals every time it does.
-     *
-     * Closing it means each rendered figure carrying which derivation produced it, and this comparing
-     * the pair rather than the set - a change to how the page emits every number it has. It is priced
-     * here and not bought, which is what this repository does with a mechanism it can name and cannot
-     * afford. What stands in the meantime is that W-47's literal is chosen to be underivable rather
-     * than merely absent.
-     */
-    const withoutAnAddress = (text: string): string =>
-      THE_COMMITS_QUOTED.reduce((left, commit) => left.replaceAll(commit, ''), text)
-
-    const fromTheData = new Set([
-      ...counts,
-      ...(withoutAnAddress(
-        JSON.stringify([methodology, measured, THE_REPLAY, THE_PINS_ARE_AN_ASSERTION]),
-      ).match(/\d+/g) ?? []),
-    ])
-
-    expect(
-      (withoutAnAddress(reading()).match(/\d+/g) ?? []).filter((figure) => !fromTheData.has(figure)),
-    ).toEqual([])
-  })
-
-  /**
-   * The aggregate never appears without the split.
-   *
-   * A count of surviving cells published as one number is read as that many known holes, and
-   * exactly one of them is a debt. A page that prints the total and drops the breakdown is not
-   * shorter, it is a different and worse claim - and it is the shape a page takes when somebody tidies
-   * it.
-   *
-   * **The block is found by a phrase only that sentence can carry, and it was not.** It used to be
-   * found by the cell count and the word `cells,` in the same paragraph - two fragments any prose
-   * about a replay can put together by accident, and the paragraph above this one duly did the day it
-   * gained the words *these 606 cells, which ran from*. The guard then reddened on a paragraph that
-   * has no business carrying a breakdown, which is a red pointing at the wrong thing: expensive,
-   * because somebody goes and looks. The anchor is the renderer's own `cells, <killed> caught.`, and
-   * if that wording changes this fails on `toBeDefined` rather than on a stranger's sentence.
-   */
-  it('a-count-of-survivors-is-never-shown-without-its-breakdown', () => {
-    const measured = theMeasurement()
-
-    for (const population of [measured.defects, measured.probes]) {
-      const byKind = survivorsByKind(population)
-      const sentence = reading()
-        .split('\n\n')
-        .find((block) => block.includes(`cells, ${population.killed} caught.`))
-
-      expect(sentence).toBeDefined()
-      expect(sentence).toContain(`${population.cells}`)
-      expect(sentence).toContain(`${population.surviving.length}`)
-
-      for (const [why, many] of Object.entries(byKind)) {
-        if (many === 0) continue
-        expect(sentence).toContain(`${many} ${why.replaceAll('-', ' ')}`)
-      }
-    }
-  })
-
-  /** Every survivor is on the page. A list that silently stops short reads exactly like a short list. */
-  it('every-surviving-cell-is-published-with-its-own-battery-sentence', () => {
-    const measured = theMeasurement()
-    const shown = reading()
-
-    for (const population of [measured.defects, measured.probes]) {
-      for (const survivor of population.surviving) {
-        expect(shown).toContain(`${survivor.battery} · ${survivor.mutant}`)
-        expect(shown).toContain(survivor.cell)
-        expect(shown).toContain(asRead(survivor.description))
-      }
-    }
-  })
-
-  /**
-   * Every kind the vocabulary declares and this page uses is explained on it, in the words
-   * `mutation/published.ts` holds - never in words invented here, which would be a second statement of
-   * one judgement, in the file most likely to drift from the data.
-   */
-  it('every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words', () => {
-    const measured = theMeasurement()
-    const shown = reading()
-    const used = new Set(
-      [measured.defects, measured.probes].flatMap((population) =>
-        population.surviving.map((one) => one.why),
-      ),
-    )
-
-    for (const why of used) expect(shown).toContain(asRead(WHAT_A_SURVIVOR_MEANS_TO_A_READER[why]))
-  })
-
-  /**
-   * The count on this page says what *caught* means where a defect does not exist on every machine.
-   *
-   * Every figure here is derived from the pins as written, so none of them moves with the machine the
-   * site was built on - and that is exactly what makes the coordinate necessary rather than optional:
-   * a number that is the same everywhere and is only true of one platform is the shape ADR-0018 names,
-   * on the measurement this project rests on. ADR-0147.
-   *
-   * **Asserted in both directions rather than skipped when the list is empty.** A guard that returned
-   * early on an empty list would pass vacuously the day the last such cell leaves, which is the
-   * population-shrinks-in-silence shape this repository keeps an entry for. So the sentence must be on
-   * the page exactly when there is something for it to be about.
-   */
-  it('the-method-page-says-what-caught-means-where-a-defect-is-not-everywhere', () => {
-    const measured = theMeasurement()
-    const shown = reading()
-
-    expect(shown.includes(asRead(CAUGHT_MEANS_WHERE_THE_DEFECT_EXISTS))).toBe(
-      measured.whereThePlatformDecides.length > 0,
-    )
-
-    for (const one of measured.whereThePlatformDecides) {
-      expect(shown).toContain(`${one.battery} · ${one.mutant}`)
-      expect(shown).toContain(asRead(one.because))
-    }
-  })
-
-  /**
-   * A reader is told which of an assertion and an observation they are holding, and what the second
-   * one costs.
-   *
-   * The two coincide, so nothing here is false without it - and a page that publishes pins as though
-   * somebody had watched them happen is doing the exact thing it spends the rest of its length arguing
-   * against.
-   *
-   * The spread is read alongside the duration rather than instead of it, because a stamped figure is
-   * still read as a period: a duration on its own says the replay *takes* that long, and what it says
-   * is that one run of it did.
-   *
-   * **Every value of `THE_REPLAY` is required on the page, rather than the four somebody remembered.**
-   * A field carried and not shown is the state `coverage.test.ts` already refuses on a record, and a
-   * list of the fields to check is a second statement of what the type holds - so the walk is over the
-   * object. A field added there and left out of the sentence does not pass, which is the reason this
-   * is a loop and not five lines.
-   *
-   * Each value is asked for **as a reader sees it** rather than as it is written, because these
-   * sentences carry the two marks `inline` parses and the page no longer prints them. Stripping the
-   * marks here instead would be a copy of that function going stale on the day it learns a third.
-   */
-  it('the-page-separates-what-is-asserted-from-what-a-run-would-observe', () => {
-    const shown = reading()
-
-    expect(shown).toContain(asRead(THE_PINS_ARE_AN_ASSERTION))
-    for (const value of Object.values(THE_REPLAY)) expect(shown).toContain(asRead(value))
-  })
-
-  /**
-   * The limit of the method is read before the figure it limits, and this is a guard about *order*
-   * rather than presence.
-   *
-   * A mutation score reads as a correctness claim to somebody meeting it cold, and the sentence that
-   * says it is not one is worth nothing after the number - which is exactly where a page like this
-   * puts it, as a footnote, having said the impressive part first.
-   */
-  it('what-the-score-does-not-prove-is-read-before-the-score', () => {
-    const shown = reading()
-    const limit = shown.indexOf('It says the tests notice the defects that were tried')
-    const figure = shown.indexOf(`${theMeasurement().defects.cells} defect cells`)
-
-    expect(limit).toBeGreaterThan(-1)
-    expect(figure).toBeGreaterThan(-1)
-    expect(limit).toBeLessThan(figure)
-  })
-})

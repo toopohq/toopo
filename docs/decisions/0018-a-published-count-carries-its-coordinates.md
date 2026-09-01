@@ -4,9 +4,7 @@ date: 2026-08-15
 decision-makers: Mathis Perron
 governs:
   - mutation/published.ts
-confirmed-by:
-  - battery: site
-    guard: every-figure-on-the-method-page-comes-from-what-it-was-built-from
+confirmed-by: []
 ---
 
 # A published count carries its coordinates, or it is not written

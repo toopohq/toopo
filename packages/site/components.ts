@@ -586,11 +586,23 @@ ${OWN} [aria-current='page'] { color: var(--ink) }
 `,
 }
 
-/** One step of the path: where it goes, or - as the last one - the page already under the cursor. */
-export type CrumbStep = {
-  readonly label: string
-  readonly href: string | null
-}
+/**
+ * One step of the path, in the three states a step can really be in.
+ *
+ * **It had two, and two was one short the moment a level stopped having a page.** `href: null` meant
+ * *the page you are on* and rendered `aria-current="page"`, which is right for the last step and false
+ * for any other: a domain has no page of its own since ADR-0189, and reusing the same absence for it
+ * would have announced two current pages to a screen reader on every contract page.
+ *
+ * So the three are separate and the compiler will not let one stand for another. `pageless` carries
+ * its reason rather than being a bare marker, on `holdsNoContract`'s argument one folder over: a third
+ * state that costs nothing to reach is a shorter route past the second, and a reason is what makes
+ * choosing it deliberate.
+ */
+export type CrumbStep =
+  | { readonly label: string; readonly href: string }
+  | { readonly label: string; readonly youAreHere: true }
+  | { readonly label: string; readonly pageless: string }
 
 export const crumbs = (steps: readonly CrumbStep[]): Node =>
   drawn(
@@ -600,11 +612,13 @@ export const crumbs = (steps: readonly CrumbStep[]): Node =>
     el(
       'ol',
       NOTHING,
-      ...steps.map((step) =>
-        step.href === null
+      ...steps.map((step) => {
+        if ('href' in step) return el('li', NOTHING, el('a', { href: step.href }, text(step.label)))
+
+        return 'youAreHere' in step
           ? el('li', { 'aria-current': 'page' }, text(step.label))
-          : el('li', NOTHING, el('a', { href: step.href }, text(step.label))),
-      ),
+          : el('li', NOTHING, text(step.label))
+      }),
     ),
   )
 

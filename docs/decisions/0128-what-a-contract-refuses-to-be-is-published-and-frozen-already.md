@@ -4,7 +4,6 @@ date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
   - packages/registry/snapshot.ts
-  - packages/site/domain-page.ts
 confirmed-by:
   - battery: freeze
     guard: every-published-binding-still-hashes-to-what-it-was-published-as

@@ -6,55 +6,36 @@
  * pages, at which addresses, saying what. `build.ts` writes this map to a disk and does nothing else,
  * which is what keeps the disk out of every other file in this folder.
  *
- * The refusals page is here only when something is refused. An empty one would be a heading telling a
- * reader something is missing without telling them what - the rule the contract page already follows
- * about benchmark figures, applied to the page that exists to publish a judgement.
- *
  * ---------------------------------------------------------------------------
- * Two pages have an upstream that is not the registry
+ * Every page here is a rendering of what the port answers, and that is new
  * ---------------------------------------------------------------------------
  *
- * Most pages here are a rendering of what the port answers. The method page is half that - what a
- * reader can check and what they must believe is `servedMethodology()`, straight through the port -
- * and half something the registry cannot serve at all: `packages/registry/verifiability.ts` says in as many
- * words that *the instrument measures the catalogue and is not part of it*, so no endpoint can carry
- * how this catalogue's own tests are measured.
+ * This folder used to hold one exception. The method page's upstream was half the port and half
+ * something no endpoint can carry - `packages/registry/verifiability.ts` says in as many words that
+ * *the instrument measures the catalogue and is not part of it* - so `theSite` reached
+ * `mutation/published.ts` for it, and the front page's own figures came through the same door.
  *
- * **The front page joined it, and it is the same reading rather than a second door.** Three figures of
- * its column beside the catalogue are counts of what the instrument injected and caught, which is the
- * claim a visitor is deciding whether to believe and is exactly the thing no endpoint answers. It
- * comes through the same module, taken once here and given to both pages, so a page cannot reach past
- * the port on its own.
- *
- * So it comes through `mutation/published.ts`, which is a declared door rather than a reach into
- * another folder: one module, named, deriving what may be published from the batteries themselves.
- * `source.test.ts` holds it to exactly that - no module of this folder may import anything else out of
- * `mutation/` - for the reason the serialisation frontier one paragraph along exists.
+ * **Both readers went with the pages, so the door is shut.** ADR-0189 leaves the site with a shelf
+ * and a contract page, and neither states a figure about this repository's own tests. What was a
+ * declared exception is now no exception at all, and `nothing-of-the-instrument-reaches-this-folder`
+ * says so without an exemption for the one module that used to be allowed - which is a stronger claim
+ * than the one it replaces, on a population that did not shrink.
  */
 
-import { theMeasurement } from '../../mutation/published.js'
 import { emitted } from '../registry/emit.js'
 import { localReadApi } from '../registry/local-read-api.js'
 import { theReferenceModules } from './browser.js'
 import type { Document } from './document.js'
 import { el, toHtml, toMarkdown } from './document.js'
-import { cataloguePage } from './catalogue-page.js'
 import { frontPage } from './front-page.js'
 import { theMenu } from './chrome.js'
 import { contractPage } from './contract-page.js'
-import { domainPage } from './domain-page.js'
 import { domainsOf, heldByTheRegistry } from './catalogue.js'
 import { THE_FONT_ADDRESS, THE_FONT_BYTES } from './font.js'
 import { theCrawlerFiles } from './indexing.js'
 import { localSource } from './local-source.js'
-import { methodologyPage } from './methodology-page.js'
 import {
-  CATALOGUE_PAGE,
   FRONT_PAGE,
-  METHOD_PAGE,
-  REFUSALS_PAGE,
-  WHAT_A_CONTRACT_IS_PAGE,
-  domainPageOf,
   THE_ENTRY_POINT,
   THE_HEADERS_FILE,
   THE_NOT_FOUND_FILE,
@@ -63,19 +44,15 @@ import {
   rootFrom,
 } from './paths.js'
 import { notFoundPage } from './not-found-page.js'
-import { refusalsPage } from './refusals-page.js'
-import { turnedDownPage } from './turned-down-page.js'
-import { whatAContractIsPage } from './what-a-contract-is-page.js'
 import { renderHeaders, theHeaderRules } from './served-headers.js'
 import type { RegistrySource } from './source.js'
 
 export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> => {
   const index = source.contractIndex()
-  const refusals = source.refusals()
 
   /**
    * The masthead's destinations, decided once here because this is the one place that knows which
-   * pages exist: the refusals page is emitted only when something has been refused.
+   * pages exist.
    */
   const menu = theMenu()
 
@@ -90,16 +67,6 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
 
   const pages = new Map<string, Document>([
     [FRONT_PAGE, frontPage(index, domains, menu)],
-    [CATALOGUE_PAGE, cataloguePage(index, refusals, domains, menu, theMeasurement())],
-    [METHOD_PAGE, methodologyPage(source.methodology(), theMeasurement(), menu)],
-    [WHAT_A_CONTRACT_IS_PAGE, whatAContractIsPage(menu)],
-    ...(refusals.refusals.length === 0
-      ? []
-      : ([[REFUSALS_PAGE, refusalsPage(index, refusals, menu)]] as const)),
-    ...domains.map(
-      (domain) =>
-        [domainPageOf(domain.address), domainPage(domain, domains, menu)] as const,
-    ),
     /**
      * Walked through the domains rather than over the contracts, so that the domain a contract page
      * renders its column from is the one it is in by construction. The order is unchanged: both
@@ -108,18 +75,6 @@ export const theSite = (source: RegistrySource): ReadonlyMap<string, Document> =
     ...domains.flatMap((domain) =>
       domain.held.map(
         (one) => [pageOf(one.contract.address), contractPage(one, domain, menu)] as const,
-      ),
-    ),
-    /**
-     * And a page at the same address for a contract the catalogue turned down, which is ADR-0127
-     * reversing ADR-0027's other half. It is `pageOf` in both arms rather than a second spelling: a
-     * refusal is a state of a contract and not a different kind of thing, so it is at the address the
-     * contract has.
-     */
-    ...domains.flatMap((domain) =>
-      domain.turnedDown.map(
-        (one) =>
-          [pageOf(one.refusal.address), turnedDownPage(one, domain, domains, menu)] as const,
       ),
     ),
   ])

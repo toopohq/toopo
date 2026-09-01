@@ -4,7 +4,6 @@ date: 2026-08-18
 decision-makers: Mathis Perron
 governs:
   - packages/site/style.ts
-  - packages/site/catalogue-page.ts
   - packages/site/document.ts
 confirmed-by:
   - battery: site

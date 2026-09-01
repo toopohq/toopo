@@ -3,10 +3,7 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/site/turned-down-page.ts
-  - packages/site/refusals-page.ts
   - packages/site/site.ts
-  - packages/site/catalogue-page.ts
 confirmed-by:
   - battery: site
     guard: every-contract-the-index-lists-has-a-page-at-its-own-address

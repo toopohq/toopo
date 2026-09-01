@@ -3,16 +3,8 @@ status: accepted
 date: 2026-08-19
 decision-makers: Mathis Perron
 governs:
-  - packages/site/methodology-page.ts
-  - packages/site/survivors.ts
   - packages/site/style.ts
-confirmed-by:
-  - battery: site
-    guard: every-surviving-cell-is-published-with-its-own-battery-sentence
-  - battery: site
-    guard: every-kind-of-survivor-shown-is-explained-in-the-instruments-own-words
-  - battery: site
-    guard: a-count-of-survivors-is-never-shown-without-its-breakdown
+confirmed-by: []
 ---
 
 # A structure taken from above was wrong about one page, and the page's own numbers said so

@@ -76,15 +76,7 @@ import { el, text } from './document.js'
 import { highlighted } from './highlight.js'
 import { literal } from './literal.js'
 import { paragraph } from './marks.js'
-import {
-  CATALOGUE_PAGE,
-  THE_REFERENCE_MODULE,
-  WHAT_A_CONTRACT_IS_PAGE,
-  domainPageOf,
-  linkTo,
-  pageOf,
-  rootFrom,
-} from './paths.js'
+import { THE_REFERENCE_MODULE, pageOf, rootFrom } from './paths.js'
 import type { PlaygroundField } from './playground.js'
 import { playgroundOf, theCallOf } from './playground.js'
 import { figure, grouped, readableDate } from './quantity.js'
@@ -235,10 +227,21 @@ export const contractPage = (
       el(
         'main',
         { class: 'detail' },
+        /**
+         * The path down to this contract, with its middle step carrying no link.
+         *
+         * **`catalogue` is the front page** and not a page of its own: the shelf lists every contract
+         * a reader can install, so the catalogue is what a reader arrives at rather than somewhere
+         * they go on to. **The domain is a level and not a destination** — it is a real segment of the
+         * address and there is nothing at it, which is the state `pageless` exists for. ADR-0189.
+         */
         crumbs([
-          { label: 'catalogue', href: `${rootFrom(own)}${linkTo(CATALOGUE_PAGE)}` },
-          { label: here.name, href: `${rootFrom(own)}${linkTo(domainPageOf(contract.address))}` },
-          { label: shortName, href: null },
+          { label: 'catalogue', href: rootFrom(own) },
+          {
+            label: here.name,
+            pageless: 'a domain is a segment of a contract address and this site serves no page at it',
+          },
+          { label: shortName, youAreHere: true },
         ]),
         el(
           'div',
@@ -308,12 +311,7 @@ export const contractPage = (
               text(
                 ` will never change — not in a minor release, not in a major one. Updates may ` +
                   `only fix internal defects while preserving the contract, held to its ` +
-                  `${cases} settled cases on every commit. `,
-              ),
-              el(
-                'a',
-                { href: `${rootFrom(own)}${linkTo(WHAT_A_CONTRACT_IS_PAGE)}` },
-                text('What a contract is'),
+                  `${cases} settled cases on every commit.`,
               ),
             ),
             /**
@@ -424,7 +422,8 @@ export const contractPage = (
               'section',
               NOTHING,
               eyebrow('field', 'p', 'Category'),
-              pill(here.name, null, `${rootFrom(own)}${linkTo(domainPageOf(contract.address))}`),
+              // A mark and no longer a way in, for the reason the crumb above carries no link either.
+              pill(here.name, null, null),
             ),
             el(
               'section',

@@ -37,21 +37,6 @@ export { THE_ORIGIN }
 export const pageOf = (address: ContractAddress): string => `${renderContract(address)}/index.html`
 
 /**
- * The page a domain has, which is the folder every contract of that domain already sits in.
- *
- * **Derived from `pageOf` and never composed from a language and a name**, which is the rule at the
- * head of this file arriving on a second kind of page: `renderContract` is the one spelling of
- * `language/domain/name@major`, and a second function assembling `${language}/${domain}` would be a
- * second statement of that shape - correct today and wrong the first time an address gains a segment.
- *
- * So a domain page is addressed by taking a contract of it and going up one level. It takes an
- * address rather than a string for the same reason: there is no such thing as the `string` domain
- * without a language, and a domain page of a language nothing is published in has nothing on it.
- */
-export const domainPageOf = (address: ContractAddress): string =>
-  `${pageOf(address).split('/').slice(0, -2).join('/')}/index.html`
-
-/**
  * The name a page's Markdown twin takes, beside it and never anywhere else.
  *
  * It is a constant rather than two literals because two things have to agree on it and they are in
@@ -82,59 +67,16 @@ export const markdownOf = (page: string): string =>
  */
 export const LLMS_TXT = 'llms.txt'
 
-export const REFUSALS_PAGE = 'refused/index.html'
-
 /**
- * The page a reader arrives at, which is a door and no longer the catalogue.
+ * The page a reader arrives at, and since ADR-0189 the only page this site has of its own.
  *
- * It holds the name and two ways in, and it is the one page of this site with no install command on
- * it at all: a command belongs to a contract, and this page is about none of them in particular. The
- * shape of every command at once used to stand here as `add domain/function`, which is a template and
- * reads as one.
+ * It was a door for one unit and a shelf for another; what settled it is that a catalogue of six is
+ * the thing a reader came for, so the shelf *is* the catalogue and there is nowhere further in. The
+ * pages that used to stand beside it - the catalogue, the method, what a contract is, the refusals
+ * and one per domain - are gone, and the two documents two of them rendered are served as answers at
+ * their own addresses, where an auditor was already fetching them.
  */
 export const FRONT_PAGE = 'index.html'
-
-/**
- * Where the catalogue lives now that the front page is a door.
- *
- * **A new address, so a free one**, and nothing is lost by the move: `/` goes on being served and
- * goes on being written, which is what ADR-0125 requires of it - it changes role and not existence.
- *
- * `/catalogue/` rather than `/contracts/`, and the refused candidate had a real argument.
- * [ADR-0129](../../docs/decisions/0129-what-a-contract-is-has-a-page-and-its-address-is-the-question.md)
- * turned `/contracts/` down for the page explaining what a contract is, *because a reader looking for
- * what is a contract would land on what reads as a list of them* - and this is a list of them, so that
- * refusal points here. What decides against it is one floor up: this project already has a word for
- * this thing and uses it in `catalogue.ts`, in `catalogue-page.ts`, in every record and in the link
- * every page carries back here. A second spelling of one thing is the drift the head of this file
- * exists to refuse. ADR-0140.
- */
-export const CATALOGUE_PAGE = 'catalogue/index.html'
-
-/**
- * `/method/`, and the word is chosen against two better-looking ones.
- *
- * `/methodology/` is what the endpoint and the need are called, and it is the register of a document
- * nobody reads. `/verification/` names half the page - the half about this project's own tests - and
- * would make the other half, what a reader can check about the registry, look like an appendix.
- */
-export const METHOD_PAGE = 'method/index.html'
-
-/**
- * `/what-a-contract-is/`, and it is the first address this site has chosen since choosing one became
- * permanent.
- *
- * **The choice is paid in advance.** ADR-0125 made *an address this tree has served goes on being
- * written* executable, so changing our mind about this word costs keeping it for ever beside whatever
- * replaces it. It is worth saying because the two addresses above were chosen before that was true.
- *
- * **It says the reader's question and not the category.** `/contracts/` is the shorter word and is
- * refused: the registry uses it for the thing itself, so a reader looking for *what is a contract*
- * would land on what reads as a list of them. The one-word habit of `method` and `refused` is two
- * instances rather than a rule, and this site already addresses `typescript/string/slugify@1` without
- * keeping it. ADR-0129.
- */
-export const WHAT_A_CONTRACT_IS_PAGE = 'what-a-contract-is/index.html'
 
 /**
  * The module every page loads, and the implementation each one loads beside itself.
@@ -249,28 +191,22 @@ export const THE_FILES_FOUND_BY_CONVENTION: readonly string[] = [
 /**
  * The pages this site has of its own, as against the ones an address produces.
  *
- * A domain page and a contract page are `pageOf` and `domainPageOf` of something the registry holds;
- * these five exist because the site has them. It is the same distinction `theSite` already makes by
- * listing them apart from the two it walks the catalogue for, and it is declared here because a
- * second reader appeared - the cache rules have to know which spaces the tree writes.
+ * A contract page is `pageOf` of something the registry holds; this one exists because the site has
+ * it. It is the same distinction `theSite` already makes by listing it apart from the set it walks
+ * the catalogue for, and it is declared here because a second reader appeared - the cache rules have
+ * to know which spaces the tree writes.
  *
- * **`REFUSALS_PAGE` is among them and is written only when something has been refused**, which is
- * deliberate rather than an oversight: a rule covering an address nothing is served at costs a reader
- * nothing, and a rule missing on the day the catalogue refuses something would cost one. It is the
- * argument `served-headers.ts` already makes for `attestations`.
+ * **It is a list of one and it stays a list.** ADR-0189 took the other four, and collapsing this to a
+ * bare constant would make adding a fifth page a change to a *type* rather than a row - which is the
+ * moment somebody writes the cache rule somewhere else instead. A list of one costs a pair of
+ * brackets.
  *
  * Nothing holds this list to `theSite`'s, and nothing needs to: the two are statements about
  * different things - which pages exist, and how each is built - and
  * `every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose` reddens the day they
  * disagree.
  */
-export const THE_PAGES_THE_SITE_HAS_OF_ITS_OWN: readonly string[] = [
-  FRONT_PAGE,
-  CATALOGUE_PAGE,
-  METHOD_PAGE,
-  REFUSALS_PAGE,
-  WHAT_A_CONTRACT_IS_PAGE,
-]
+export const THE_PAGES_THE_SITE_HAS_OF_ITS_OWN: readonly string[] = [FRONT_PAGE]
 
 /**
  * The folder the build writes the tree into, beside this one.

@@ -7,7 +7,6 @@ governs:
   - mutation/mutants.ts
   - mutation/published.ts
   - mutation/cli-install.battery.ts
-  - packages/site/methodology-page.ts
 confirmed-by:
   - battery: meta
     guard: a-cell-the-platform-decides-is-not-measured-off-its-family
@@ -17,8 +16,6 @@ confirmed-by:
     guard: every-cell-the-platform-decides-is-published-beside-the-count-it-enters
   - battery: meta
     guard: the-readme-says-what-caught-means-where-a-defect-is-not-everywhere
-  - battery: site
-    guard: the-method-page-says-what-caught-means-where-a-defect-is-not-everywhere
 ---
 
 # A published count carries the platform it is true on, and one cell is not measured where its defect cannot occur

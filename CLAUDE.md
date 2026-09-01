@@ -19,8 +19,8 @@ answer declares the revision that produced it. Stage 1 of the validation pipelin
 controller beside it. The client, finished at six commands — `init`, `add`, `update`, `remove`,
 `search`, `list` — with a two-phase write, a lockfile carrying two digests per file and the revision
 each feature was resolved against, and a port whose four implementations are asynchronous. The
-generator, ten static pages, four of them with a playground that runs this repository's own modules
-with their types removed. The archive: compiled JavaScript and nothing else, whose size is no longer a
+generator, seven static pages — a shelf and one per installable contract — six of them with a
+playground that runs this repository's own modules with their types removed. The archive: compiled JavaScript and nothing else, whose size is no longer a
 function of how many contracts exist. The emitted tree, which is every answer the read API can give,
 written as files at the addresses a client asks. The instrument: a battery per folder anything injects into, their pinned
 verdicts, one command that replays them, and two gates that replay them without being asked - the
@@ -1204,6 +1204,15 @@ guards. `/contracts/` was refused because this project already spells the thing 
 places. **What the page does not say is recorded as a cost**: nothing on it is about how this catalogue
 is verified, which is what the whole project rests on, and it is one link away in the masthead.
 ADR-0140.
+
+**Both halves of that paragraph are gone and the argument inside it is not.** ADR-0181 made `/` a shelf
+rather than a door, and ADR-0189 retired `/catalogue/` along with the four other pages this site had of
+its own — so the catalogue is what a reader arrives at, and there is nowhere further in. What survives
+untouched is why the door carried no command: *a command belongs to a contract*, which is still why
+every install command on this site is on a contract's own page. The cost recorded at the end is paid
+rather than moved: nothing a visitor meets is about how this catalogue is verified, and it is now no
+links away rather than one, because the methodology is served as data at `/methodology` and rendered by
+nothing. ADR-0189.
 
 **The move broke every link on the catalogue and a rewritten guard is what said so.** Its six links were
 `linkTo(page)` - correct at the root, broken one folder down.
@@ -2464,12 +2473,18 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   ` — ` off and the page reads `group-byturned down` — and the cell **survived**. Nothing was red. A
   guard whose subject is exactly that defect could not see it, and the instrument is what said so.
 
-  **The population is every place this site writes text beside a phrasing element**, which today is
-  one: the mark after a turned-down contract's name, one contract of seven. **This entry said *on the
-  front page* and ADR-0140 moved it** — measured at `0986b70`, `/catalogue/` renders
-  `<li><a …>group-by</a> — turned down</li>` and the front page carries no such mark, the door having
-  taken the catalogue's thirteen links with it. That is what makes the price wrong rather than the
-  defect small. ADR-0167.
+  **The population is every place this site writes text beside a phrasing element, and it is now
+  zero.** It was one — the mark after a turned-down contract's name — and it moved twice before it
+  went: this entry said *on the front page*, ADR-0140 moved it to `/catalogue/`, and ADR-0189 retired
+  that page with the turned-down contract's own. Swept at `dd0effe`: no page of this site writes text
+  beside a phrasing element.
+
+  **An entry with no instance is a different state from an entry with one, and it is worth saying
+  which this is.** The hole in the guard has not moved a character — a phrasing element followed by
+  bare text is still outside its reach by construction — so this is not closed, and the price of
+  closing it is unchanged. What is gone is the thing that would demonstrate it. The next page that
+  writes a mark beside a name reopens it with no warning, which is the ordinary shape of a guard
+  nobody has had reason to redden. ADR-0167, ADR-0189.
 
   **What would close it is one of two things and both cost more than they buy.** Widening the guard
   to element-against-text changes its population across every page of the tree, and a guard whose
@@ -2672,11 +2687,15 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   declares, and its content at the tallest that content gets. **One term of that arithmetic is data
   and not a length.** `--the-menu-at-its-tallest` is the most rows the menu wraps to between 280 and
   479, measured, and the menu's entry count lives in `theMenu` of `packages/site/chrome.ts` where
-  nothing resolves it against the stylesheet. **This entry read *3* and *a fourth destination*, and
-  both moved with ADR-0140** — measured at `0986b70`, the declaration is `1` and `theMenu` returns one
-  entry, `How we verify`, the door having taken the catalogue out of the masthead. So the two agree
-  today and **a second destination in the masthead makes the clearance too short with no check saying
-  so**, which is a cheaper event than the one this entry was written against. The failure is quiet by
+  nothing resolves it against the stylesheet. **This entry has now been wrong twice in the same
+  place, and each time it was the count rather than the mechanism.** It read *3* and *a fourth
+  destination* until ADR-0140 took the catalogue out of the masthead; it then read *the declaration is
+  `1` and `theMenu` returns one entry, `How we verify`*, measured at `0986b70` — and at `cc231bf`
+  `theMenu` is `(): readonly MenuEntry[] => []`, so the masthead offers **nothing** but the wordmark
+  and the repository mark. Neither reading was stale prose about a mechanism that had moved; both were
+  a number somebody transcribed, in an entry whose whole subject is that nothing resolves that number.
+  **A second destination in the masthead still makes the clearance too short with no check saying
+  so**, and the gap is now the whole declaration rather than one row. The failure is quiet by
   construction: the page is
   not broken, it is one row of navigation taller than the offset that was written for it, and only
   somebody following a link at a phone width would find out.
@@ -3169,6 +3188,39 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   and the search that produced `I-65` says where it is not - the three unit guards constrain
   `servedBytes` completely on ASCII, so any such mutant must break something other than the bytes.
   Priced as its own unit and not taken. ADR-0148.
+
+- **That a published count carries its coordinates.** ADR-0018 is the rule this file invokes more than
+  any other, in three clauses: a sentence that can be true without counting does not count; a count
+  that survives carries the commit it was measured at and the population it counted; and a dated
+  number followed by a present-tense claim publishes a truth and a lie in one sentence. **Its
+  `confirmed-by` is `[]` since ADR-0189**, its only guard having been a method-page guard that went
+  with the page.
+
+  **One clause is held mechanically and it is not the main one.**
+  `every-figure-in-the-readme-is-the-one-the-instrument-declares`, in the meta battery, resolves the
+  figures that page publishes against `theMeasurement()` — so a **derived** figure is at its
+  coordinate by construction and never needs stamping, which is the third clause with no prose in it.
+  It fired twice in one day at ADR-0188 and ADR-0189, naming all three README figures both times
+  rather than the one somebody would have remembered.
+
+  **What nothing holds is the main clause: a transcribed figure carrying its commit.** That is every
+  stamped number in every record, every count in this file, and every figure in a comment — and the
+  failure is silent by construction, because a number that has gone stale reads exactly like one that
+  has not. ADR-0018's own Context says its four instances were *found by rereading rather than by any
+  guard*, so the record never claimed otherwise; what changed is that it no longer names a guard that
+  suggests it did.
+
+  **Where this looked**: `mutation/readme.test.ts`, which is the one guard resolving a published
+  figure against what produced it, and which reads one page; the nine fault functions of
+  `mutation/decisions.ts`, none of which reads a figure in a record; and `mutation/history.ts`, whose
+  sweep over this file is for commit identifiers and refused addresses rather than for the numbers
+  beside them.
+
+  **The population is every count this repository publishes in prose**, and it grows with every
+  measurement anybody writes down. What would close it is the thing several entries here already name,
+  price and refuse — a validation stage reading this repository's own strings — and this is the first
+  of them whose subject is a *figure* rather than a name, which is the half of that stage nobody has
+  costed. ADR-0018, ADR-0189.
 
 - **That a count of this site's own pages is one somebody took.** The stylesheet's header said *seven
   pages served once each*; at `81bf9bc` the generator wrote **ten** and the tree held **eleven** files
