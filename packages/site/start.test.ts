@@ -8,9 +8,9 @@ import { theReferenceModules } from './browser.js'
 import type { Held } from './catalogue.js'
 import { heldByTheRegistry } from './catalogue.js'
 import { toHtml } from './document.js'
-import { localSource } from './local-source.js'
+import { answeredFromThisTree, localSource } from './local-source.js'
 import { FRONT_PAGE, THE_REFERENCE_MODULE, pageOf } from './paths.js'
-import type { ReadOneAnswer, WhereTheCatalogueIs } from './searching.js'
+import type { WhereTheCatalogueIs } from './searching.js'
 import { arrivingOnce } from './searching.js'
 import { theSite } from './site.js'
 import {
@@ -204,17 +204,6 @@ const theCatalogueAsThisPageDeclaresIt = (): { readonly where: WhereTheCatalogue
   return { where: JSON.parse(declared) as WhereTheCatalogueIs }
 }
 
-const servedFromThisTree =
-  (where: WhereTheCatalogueIs): ReadOneAnswer =>
-  (at) =>
-    Promise.resolve(
-      at === where.index
-        ? { status: 200, body: JSON.stringify(source.contractIndex()) }
-        : at === where.refusals
-          ? { status: 200, body: JSON.stringify(source.refusals()) }
-          : { status: 404, body: '' },
-    )
-
 /** The front page as it is served, which is the one page of this site that carries a shelf. */
 const aServedFrontPage = (): void => {
   const built = theSite(source).get(FRONT_PAGE)
@@ -231,7 +220,7 @@ const aSiftOnThePage = (): HTMLInputElement => {
   const declared = slot instanceof HTMLElement ? slot.dataset['search'] : undefined
   if (declared === undefined) throw new Error('the shelf declares no catalogue')
 
-  siftControl(arrivingOnce(servedFromThisTree(JSON.parse(declared) as WhereTheCatalogueIs)))
+  siftControl(arrivingOnce(answeredFromThisTree(source, JSON.parse(declared) as WhereTheCatalogueIs)))
 
   const field = document.querySelector('.find input')
   if (!(field instanceof HTMLInputElement)) throw new Error('the sift built no field')
@@ -242,7 +231,7 @@ const aSiftOnThePage = (): HTMLInputElement => {
 /** The search, built and answered by this tree's own catalogue. */
 const aSearchOnThePage = (): HTMLInputElement => {
   const { where } = theCatalogueAsThisPageDeclaresIt()
-  searchControl(arrivingOnce(servedFromThisTree(where)))
+  searchControl(arrivingOnce(answeredFromThisTree(source, where)))
 
   const field = document.querySelector('.masthead .search input')
   if (!(field instanceof HTMLInputElement)) throw new Error('the search built no field')
@@ -675,7 +664,7 @@ describe('the controls a visitor touches, run against a document', () => {
      */
     expect(document.querySelectorAll('input')).toHaveLength(0)
 
-    siftControl(arrivingOnce(servedFromThisTree(theCatalogueAsThisPageDeclaresIt().where)))
+    siftControl(arrivingOnce(answeredFromThisTree(source, theCatalogueAsThisPageDeclaresIt().where)))
 
     expect(document.querySelectorAll('input')).toHaveLength(0)
     expect(document.querySelector('.find input')).toBeNull()

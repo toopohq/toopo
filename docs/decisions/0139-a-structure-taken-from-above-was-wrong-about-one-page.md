@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-08-19
 governs:
-  - packages/site/style.ts
+  nothing: the stacked row it decided was deleted by ADR-0197 with the page that carried it, and no rule of the stylesheet implements it any more
 confirmed-by: []
 ---
 

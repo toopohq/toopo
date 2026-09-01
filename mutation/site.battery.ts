@@ -83,6 +83,7 @@ const indexingFile = (find: string, replace: string) => ({ file: 'indexing.ts', 
 const siteFile = (find: string, replace: string) => ({ file: 'site.ts', find, replace })
 const frontPageFile = (find: string, replace: string) => ({ file: 'front-page.ts', find, replace })
 const componentsFile = (find: string, replace: string) => ({ file: 'components.ts', find, replace })
+const paintingFile = (find: string, replace: string) => ({ file: 'painting.ts', find, replace })
 const servedHeadersFile = (find: string, replace: string) => ({
   file: 'served-headers.ts',
   find,
@@ -241,9 +242,9 @@ const A_STRING_IS_NOT_READ_FOR_COMMENTS = `    if (character === '"' || characte
 const THE_DARK_PALETTE = `  --paper: #0b0d0e; --wash: #101314; --card: #171b1d; --rule: #1f2426; --edge: #2d3336;`
 const THE_COMMENT_INK_CLEARS_THE_FLOOR = `  --tk-f: #4fdec1; --tk-t: #cdb4ee; --tk-c: #7d898d;`
 
-const THE_SHELL_HAS_NO_CEILING = `.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }`
+const THE_DETAIL_PAGE_HAS_NO_TYPED_CEILING = `main.detail { max-width: var(--the-page); margin: 0 auto; padding: 36px var(--s6) 64px; width: 100% }`
+const THE_BODY_GUTTERS_ARE_A_DECLARED_LENGTH = `  grid-template-columns: var(--s5) minmax(0, 1fr) var(--s5);`
 
-const THE_ASIDE_COLUMN_IS_A_DECLARED_LENGTH = `  .shell:has(.aside) { grid-template-columns: minmax(0, 1fr) var(--aside) }`
 
 const THE_INVISIBLE_IS_MADE_VISIBLE = `  \`'\${value.replaceAll('\\\\', '\\\\\\\\').replaceAll("'", "\\\\'").replace(INVISIBLE, escaped)}'\``
 
@@ -922,57 +923,56 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
-   * **The most plausible edit anybody makes after ADR-0134**, which is why this cell reads better now
-   * than it did when it was written. It used to retype a ceiling the shell already had; the shell has
-   * none, so it puts one back - and `78rem` is the exact number ADR-0122 took out, arriving a third
-   * time on the same element.
+   * **It used to type the shell's ceiling and the shell is gone**, deleted by ADR-0197 with the
+   * columns nothing has built since ADR-0189. So it moves one door along, onto the ceiling a contract
+   * page carries today - which is the same defect on the element that now holds the width ADR-0122
+   * was about.
    *
-   * The guard's population is every `max-width` this stylesheet declares. **This paragraph read
-   * *since ADR-0134 all of them are `100%`* and the sweep contradicts it**: measured at `018a2da`,
-   * the six are `100%` four times, `var(--aside)` and `var(--measure)` once each. It was true when
-   * ADR-0134 landed and two ceilings have arrived since, which is a sentence going stale rather than
-   * one written wrong - and nothing said so, because a cell's prose is read by nobody.
+   * The guard's population is every `max-width` the served sheet declares outside the palettes.
+   * **A cell's prose is read by nobody and this one has gone stale twice**: it said the six ceilings
+   * were all `100%` after ADR-0134, and it said the shell had one to give back. Both were true when
+   * they were written. What survives every correction is the claim underneath: each ceiling is
+   * derived, `100%` being the containing block, and any length typed anywhere reddens the guard.
    *
-   * What it was reaching for survives the correction and is the half worth keeping: **every one of
-   * the six is derived**, `100%` being the containing block and the other two names this stylesheet
-   * declares. So no box on this site carries a ceiling nobody argued for, and any length typed
-   * anywhere reddens the guard.
+   * **The number is the one this stylesheet derives**, so the page renders identically on the machine
+   * the arithmetic was taken on and stops being derived everywhere else. That is what makes it the
+   * plausible edit rather than a vandalism.
    */
   sameOnEveryLens(
     'W-85',
-    'gives the shell back the round ceiling ADR-0122 took off it, which is the edit that put the ' +
-      'content of a contract page on 38.7% of a 2 560px screen and every page with no rail on 17.5% ' +
-      'of one. Nothing on the rendered page looks wrong: the pages are there, every line is where it ' +
-      'was on this machine, and a width nobody derived reads exactly like a width somebody chose',
+    'types a contract page’s ceiling instead of deriving it, which is the edit ADR-0122 took off ' +
+      'the shell arriving on the element that carries the width now. Nothing on the rendered page ' +
+      'looks wrong - the column is exactly as wide as it was on this machine - and a width nobody ' +
+      'derived reads exactly like a width somebody chose',
     [
       styleFile(
-        THE_SHELL_HAS_NO_CEILING,
-        '.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; max-width: 78rem; margin: 0 auto }',
+        THE_DETAIL_PAGE_HAS_NO_TYPED_CEILING,
+        'main.detail { max-width: 68.75rem; margin: 0 auto; padding: 36px var(--s6) 64px; width: 100% }',
       ),
     ],
     killed(['every-ceiling-on-a-box-is-derived-and-never-typed']),
   ),
 
   /**
-   * W-85 one door along. That cell gives the shell a ceiling it no longer has; this one types the
-   * track under it, which is where the layout lives now that the three-column arrangement went with
-   * the table of contents - and the guard W-85 belongs to says in its own comment that it reads
-   * \`max-width\` and nothing else.
+   * W-85 one door along, and it moved for the same reason: it typed a track of the shell, and
+   * ADR-0197 deleted the shell. What it types now is the outermost track there is - the body's own
+   * gutters, which every page of this site stands in - and the guard W-85 belongs to says in its own
+   * comment that it reads \`max-width\` and nothing else, so no other guard is watching this door.
    *
-   * The length it writes is the one this stylesheet derives, to the pixel on the machine the
-   * arithmetic was taken on. That is what makes it the plausible edit rather than a vandalism: the
-   * pages render identically here and stop being derived everywhere else.
+   * The length it writes is the one this stylesheet derives, to the pixel. That is what makes it the
+   * plausible edit rather than a vandalism: the pages render identically here and stop being derived
+   * everywhere else.
    */
   sameOnEveryLens(
     'W-86',
-    'types the column of secondary matter instead of deriving it, on the arrangement that carries ' +
-      'one. Nothing on the rendered page looks wrong on the machine the number was read on - the ' +
-      'two columns are there and the content column beside it is exactly as wide as it was - and on ' +
-      'any face whose zero is a different width the column stops being what it was derived from',
+    'types the gutters every page of this site stands in instead of deriving them from the spacing ' +
+      'unit. Nothing on the rendered page looks wrong on the machine the number was read on - the ' +
+      'column is exactly where it was - and the one length the whole layout is measured off stops ' +
+      'being a name',
     [
       styleFile(
-        THE_ASIDE_COLUMN_IS_A_DECLARED_LENGTH,
-        '  .shell:has(.aside) { grid-template-columns: minmax(0, 1fr) 268px }',
+        THE_BODY_GUTTERS_ARE_A_DECLARED_LENGTH,
+        '  grid-template-columns: 20px minmax(0, 1fr) 20px;',
       ),
     ],
     killed(['every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length']),
@@ -2633,6 +2633,53 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
+   * **A rule left behind by the page that used to write it**, which is the defect ADR-0197 found
+   * forty-seven of and could not have found by reading: every one of them was correct CSS, in a
+   * stylesheet every guard was green on, painting markup this site had stopped emitting at ADR-0189.
+   *
+   * The rule restored here is the one ADR-0195 named and deliberately did not repair - a list of
+   * contracts, on two pages that no longer exist - so the cell is the entry that record left open,
+   * made into a red. It is red on its own guard alone, which was measured over all forty-seven
+   * before any of them was deleted.
+   */
+  sameOnEveryLens(
+    'W-164',
+    'leaves a rule in the served stylesheet for markup no page writes, which is bytes every reader ' +
+      'downloads to paint something that is not there and a claim about a page that no longer exists',
+    [
+      styleFile(
+        `.call { display: block; margin: 0 0 var(--s2); border-top: 0; padding-top: 0 }`,
+        `.call { display: block; margin: 0 0 var(--s2); border-top: 0; padding-top: 0 }
+ul.contracts {
+  display: grid; column-gap: var(--s10);
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--measure), 100%), 1fr));
+}`,
+      ),
+    ],
+    killed(['every-rule-this-sheet-paints-is-one-a-page-writes']),
+  ),
+
+  /**
+   * **A dead member hiding behind a live one, which is a real shape rather than an invented one.**
+   * `body > .masthead, body > .shell` was one rule with two claims when ADR-0197 swept it: the
+   * masthead is on every page and the shell has not been built since ADR-0189. A reader that keeps a
+   * comma group whole asks the matcher one question about two selectors, and CSS answers *yes* if
+   * either matches - so the live member covers the dead one for ever and the sweep above reports
+   * nothing.
+   *
+   * It reddens the reader's own guard and leaves the sweep green, which is what says the two are
+   * separate claims: today every member of every group is alive, so the group answers what its
+   * members answer and only the crafted row can tell them apart.
+   */
+  sameOnEveryLens(
+    'W-165',
+    'reads a comma group as one selector rather than as the several claims it is, so a rule that ' +
+      'paints nothing is covered for ever by the live selector written beside it',
+    [paintingFile(`    .flatMap((one) => one.split(','))`, `    .flatMap((one) => [one])`)],
+    killed(['what-this-reads-as-a-selector-is-what-a-browser-reads-as-one']),
+  ),
+
+  /**
    * **Taking the argument out of a module fails in the same three ways taking it out of the
    * stylesheet does**, and W-96 to W-98 are those three: it can not happen, it can be wrong about
    * what a comment is, and it can take something with it. What differs is that the third is not the
@@ -3325,6 +3372,16 @@ export const battery: Battery = {
         'a-quote-and-a-backslash-are-escaped-before-anything-else',
         'nothing-but-the-local-adapter-reaches-the-serialisation',
       ],
+    },
+    {
+      nature: 'documents a decision',
+      reason:
+        'the sheet it reads is truncated by a module graph entered through `components.ts`, and what ' +
+        'decides that entry is the order of a test file’s own import list - which a battery does not ' +
+        'edit. The one edit to this folder that would produce it adds an import to whichever module a ' +
+        'guard names first, and every edit here rewrites a line rather than adding one. ADR-0197 ' +
+        'measures the truncation and prices the repair.',
+      guards: ['the-sheet-a-page-carries-is-the-whole-sheet-this-site-composes'],
     },
     {
       nature: 'documents a decision',

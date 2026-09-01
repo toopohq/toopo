@@ -495,6 +495,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/site/links.test.ts': 1,
     'packages/site/literal.test.ts': 12,
     'packages/site/pages.test.ts': 26,
+    'packages/site/painting.test.ts': 3,
     'packages/site/playground.test.ts': 19,
     'packages/site/published-tree.test.ts': 11,
     'packages/site/read-literal.test.ts': 10,

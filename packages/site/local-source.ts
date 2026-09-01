@@ -79,6 +79,7 @@ import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { REPOSITORY_ROOT, referenceImplementationOf, serialiseContract } from '../registry/serialise.js'
 import { theCatalogue } from '../registry/the-catalogue.js'
 import { servedMethodology } from '../registry/verifiability.js'
+import type { ReadOneAnswer, WhereTheCatalogueIs } from './searching.js'
 import type { RegistrySource } from './source.js'
 
 /**
@@ -270,3 +271,30 @@ export const localSource = (servedFrom: string = THE_UNPUBLISHED_REVISION): Regi
     blob: (sha256) => held.blobs.get(sha256) ?? null,
   }
 }
+
+
+/**
+ * The same working tree, answered over the shape a browser fetches rather than over `RegistrySource`.
+ *
+ * `overHttp` reads two addresses off a page and asks a host for them; a guard that drives a control has
+ * to answer those two without one. This is that answer, and it is here rather than beside a guard for
+ * the reason this whole file exists: standing in for a publication that has not happened is this
+ * module's subject, and an HTTP-shaped stand-in over the same tree is the same stand-in one layer up.
+ *
+ * **It is read by guards and by nothing the site builds**, which is why it takes the source instead of
+ * calling `localSource` itself: two callers that each built their own would serialise the catalogue
+ * twice, and one of them would be free to hand it a different one.
+ *
+ * Anything but the two addresses the page declares answers 404, because a control asking for a third
+ * is a control this stand-in should not be quietly satisfying.
+ */
+export const answeredFromThisTree =
+  (source: RegistrySource, where: WhereTheCatalogueIs): ReadOneAnswer =>
+  (at) =>
+    Promise.resolve(
+      at === where.index
+        ? { status: 200, body: JSON.stringify(source.contractIndex()) }
+        : at === where.refusals
+          ? { status: 200, body: JSON.stringify(source.refusals()) }
+          : { status: 404, body: '' },
+    )

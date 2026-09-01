@@ -1215,6 +1215,44 @@ the card read one derivation and it moves them together. What the duplication sh
 cost figure being removed — **green on six of six before, red on six of six after**. `/index.md` goes
 3 592 → **3 612 B**, twenty bytes of arithmetic. ADR-0194.
 
+**A rule this stylesheet paints is a rule a page writes, and the population is what decided there
+would be a guard at all.** ADR-0195 found `ul.contracts` painting markup no page emits and left it,
+because deleting a rule changes what a reader is served. Swept at `42cb81d` over the eight documents
+this site writes: the served sheet declares **263 selectors, 212 distinct once states and
+pseudo-elements are stripped** — **135 painted by a page as served, 21 by what the module every page
+runs builds, 9 only when a reader acts, and 47 by nothing at all.** The nine are why the sweep drives
+controls rather than reading markup: both themes are a click, the invitation and its examples are the
+field taking focus, and an answer's name, summary and mark are a query the catalogue answers with a
+contract it turned down. **The reading rule was written before the sweep and the sweep was refused an
+exemption list**, because a list of selectors excused from having a subject grows by one every time
+somebody writes a rule nothing paints. The 47 are one class in eleven spellings and every one is a
+page that no longer exists — 25 of shell and navigation column, 6 of the retired catalogue and domain
+lists, and `h4` on a site emitting none. **Confirmed by a second path that shares nothing with the
+first**: the tree on disk holds 8 files of HTML carrying 68 distinct classes, not one of the
+seventeen names among them, no `<h4>`, and `.call` on `a` and `p` and never on a heading. The sheet
+goes **27 036 → 23 609 B** and the geometry declarations **60 → 48**. **Seen red 47 times out of 47**,
+each naming its own selector and each alone. ADR-0197.
+
+**And the unit found a defect it was not looking for: what the stylesheet contains depends on the
+order of a guard's import list.** `document.ts` imports the served sheet, which imports `style.ts`,
+which imports `components.ts`, which imports `document.ts`. Node's own loader throws on the loser of
+that cycle; the transform the test runner applies answers `undefined`, silently. Measured over two
+files differing only in their import order: entered through `document.js` the sheet is **27 036 B**,
+entered through `components.js` **21 096 B** — the 5 949 B of component rules replaced by the nine
+characters of `undefined`, with `THE_COMPONENT_RULES` measuring 5 949 either way. **One file was
+already in that state**: `components.test.ts` names `./components.js` first, so
+`a-component-is-painted-by-its-own-rules-and-by-nothing-else` was sweeping a sheet with no component
+rules in it, and **a rule one component writes about another was outside its population** — measured
+with `& .badge { color: red }` added to the offer's drawing, which is that exact fault: **green**.
+**The built tree is not affected and that was checked**: the front page on disk carries the whole
+sheet. The blast radius is guards. **The cycle is not broken here and the price is written down**: the
+only break is `components.ts` giving up `el` and `text` to a leaf module — an import line in each of
+the nine modules that take them from `document.js` — or `toHtml` giving up the stylesheet, and both
+are a decision about how the folder is arranged rather than about what the sheet paints. What stands
+in its place is a precondition guard refusing a served sheet that holds a value which failed to
+resolve, and the compiler: deleting the interpolation is `TS6133`, which ADR-0174's flags turned on.
+ADR-0197.
+
 **The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
 name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The
 shape of every command at once stood there as `add domain/function` so that no contract was privileged
@@ -2660,6 +2698,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   state the sweeps that found them. So the population was replaced rather than repaired, and the
   replacement is argued where the thing it replaced was not. ADR-0193.
 
+  **And one of the four has since lost the argument it was praised for having.** ADR-0197 deleted the
+  two shell arrangements, so `50rem` no longer separates the lengths it was derived from: what is left
+  under that condition is `main`'s padding, which is real, and a number whose derivation is gone. It
+  keeps its value because moving it would move what a reader is served for a reason no measurement
+  supports, and the comment above it says so rather than restating the dead arithmetic. **So the entry
+  is back to what it was named for on one of its four**: a typed width with nothing keeping it.
+  ADR-0197.
+
   **What is unchanged is the class and it is the whole entry now**: nothing evaluates a condition
   against the tracks it separates, and CSS still cannot, so four comments carry four arguments that
   four readers have to trust. The paragraphs below are the old population's and are kept as taken —
@@ -2766,6 +2812,15 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   count reaches it by where the sheet is assembled rather than by anything the rule says — a second
   literal placed anywhere else would fall out of it in silence. Every one of the 60 is still
   `one-directional`. ADR-0193.
+
+  **A deletion took it to 48 and the debt did not move.** Re-read at ADR-0197 by the same rule over the
+  served sheet: **48** — 5 `grid-template-columns`, 18 `max-width`, 13 `min-width`, 0 `grid-area`, 2
+  `grid-column` and 10 `width`, against 60. Twelve went with the shell and the navigation column, and
+  the forty-eight that remain are as unread as the sixty were. **What did change is the entry's own
+  opening**: *two guards read this stylesheet, and they read its text*. There are three now, and the
+  third asks a matcher over a real document — `every-rule-this-sheet-paints-is-one-a-page-writes`
+  establishes that every rule has something to paint. It still reads nothing about how anything is
+  laid out, which is the entry. ADR-0197.
 
   **It is the class this repository has now paid for six times**, and ADR-0135 is the sixth: four
   defects a phone reader met on every visit, found by a sweep and repaired against readings taken by

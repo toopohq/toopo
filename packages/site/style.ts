@@ -309,9 +309,6 @@ ${THE_FONT_FACE}
   --the-methods-drift: 1.04;
   --measure: calc(var(--the-longest-line) * 1ch / (var(--characters-per-ch) * var(--the-methods-drift)));
   --aside: calc(var(--the-shortest-line) * 1ch / (var(--characters-per-ch) * var(--the-methods-drift)));
-  /* The navigation column, named rather than repeated: a rail declared in two places is a rail
-     that drifts. */
-  --rail: 15rem;
   /* The floor a figure of a contract page's strip needs before another may stand beside it, which
      is the widest label one carries set on one line. Measured in a browser over the three of every
      published contract page: the widest is "bytes, one file" at 116px, and 9rem is 144px, so the
@@ -323,17 +320,6 @@ ${THE_FONT_FACE}
      "caught by the suite", which are wider words, and a floor measured over one population applied
      to another is exactly what this repository refuses. */
   --a-figure: 9rem;
-  /* What one contract of a list needs before another may stand beside it: a second column appears
-     only where each track is still a whole readable line, and the count follows the screen from
-     there. It read, until ADR-0134, that a list is two abreast exactly where its column is two
-     measures wide - which was arithmetic about a column that no longer has a width, so the value is
-     kept and its reason is not. Measured at 7c15c69 on the front page: one column to 1280, then two,
-     three, four and five, with no track ever under 464px.
-
-     It is still spelt as the measure, and that is a coupling rather than a derivation - the two
-     agree on a number and no longer on a meaning. Whether an index reads better in one column or
-     two is a judgement that will be taken again, and this is the whole of where it is taken. */
-  --a-contract-in-a-list: var(--measure);
 
   /* The four lengths the artboard measures the front page in, declared here so that every ceiling and
      every track on that page is a name rather than a number - which is what
@@ -488,10 +474,10 @@ body {
   overflow-wrap: anywhere;
 }
 body > * { grid-column: 2 }
-body > .masthead, body > .shell { grid-column: 1 / -1 }
+body > .masthead { grid-column: 1 / -1 }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 a { color: var(--accent) }
-h1, h2, h3, h4 { color: var(--ink) }
+h1, h2, h3 { color: var(--ink) }
 h1 { font-size: var(--t1); font-weight: 600; letter-spacing: -.02em; margin: 0 0 var(--s3) }
 /* A page whose title is a direct child of the body has no card and no main to stand it off the
    masthead, and measured in a browser the two were touching at a gap of 0. */
@@ -500,8 +486,8 @@ h2 {
   font-size: var(--t3); font-weight: 600; margin: var(--s12) 0 0;
   padding-top: var(--s4); border-top: 1px solid var(--rule);
 }
-h3, h4 { font-size: var(--t4); font-weight: 600; margin: var(--s8) 0 0 }
-h2 + p, h2 + ul, h3 + p, h4 + p { margin-top: var(--s3) }
+h3 { font-size: var(--t4); font-weight: 600; margin: var(--s8) 0 0 }
+h2 + p, h2 + ul, h3 + p { margin-top: var(--s3) }
 p { margin: 0 0 var(--s4) }
 code, pre { font-family: var(--mono); font-size: .875em }
 /* As wide as its longest line, which is what keeps a code block from being an empty box with a
@@ -523,51 +509,13 @@ pre {
 /* The same trap a fourth time: the shorthand's top outranks the gap under a heading, and the
    refusals page opened each refusal's summary touching the address above it. */
 .why { margin-bottom: 0; color: var(--dim) }
-/* The title line of a list item, at whatever tag the outline asks for: a contract's name on the front
-   page is a heading because it titles a section, and must not take the standing margin of one - nor
-   its rule, which the list item already draws. Measured: a domain page listing its contracts at h2
-   drew two lines 13px apart, one from the item and one from the heading inside it. */
-/* A contract's name is set in the face the registry addresses everything in, wherever it is
-   written. It was the only place on this site where one was not: the card's title, the column
-   beside a page and the front page's catalogue are all mono, and a domain page's list was sans -
-   so the same name read as two different kinds of thing depending on which page you were on. */
+/* The line a call is written on, wherever one stands. The three defensive declarations undo what a
+   heading would bring, and they are kept rather than trimmed because a call is a role and not a tag:
+   measured, this site writes it on an anchor and on a paragraph, and the day a page titles a section
+   with one the rule is already right. Measured when it was: a domain page listing its contracts at h2
+   drew two lines 13px apart, one from the item and one from the heading inside it.
+   No backtick in this comment, for the reason the use-case grid's comment gives. */
 .call { display: block; margin: 0 0 var(--s2); border-top: 0; padding-top: 0 }
-h2.call, h3.call { font-family: var(--mono); font-weight: 500 }
-/* Bottom only, for the reason the lede carries: the shorthand's zero beat the standing gap under a
-   heading on specificity, and a section opening on a list touched its own title. */
-ul.plain { list-style: none; padding: 0; margin-bottom: var(--s4) }
-ul.plain > li { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
-/* A list of contracts, on the two pages that publish one. auto-fit takes as many tracks as the floor
-   allows and no more, so the column decides the count and no width is written: the rule above still
-   draws each item's own line, and the rows line up because every track is the same width. */
-ul.contracts {
-  display: grid; column-gap: var(--s10);
-  grid-template-columns: repeat(auto-fit, minmax(min(var(--a-contract-in-a-list), 100%), 1fr));
-}
-
-/* The front page's catalogue: a domain says what it holds and the names are the list.
-
-   The domain is a label and the names are the matter, which is the opposite of how this read when
-   the two were both headings with a link in them - a reader met nine equal entries and could not
-   tell a domain from a contract. So the heading takes the eyebrow this site already uses for a
-   column's label, and the names take the mono face the registry addresses everything else in.
-
-   The floor is --aside, the shortest line this palette declares. A column of one-word names is the
-   one place on this site where that bound is a floor rather than a ceiling, and it is a declared
-   length rather than a width chosen for a list. */
-h3.domain {
-  margin: var(--s8) 0 var(--s3); font-size: var(--t6); font-weight: 400;
-  letter-spacing: .09em; text-transform: uppercase; color: var(--dim);
-}
-main > h3.domain:first-of-type { margin-top: var(--s5) }
-ul.names {
-  list-style: none; padding: 0; margin: 0;
-  display: grid; gap: var(--s2) var(--s10);
-  grid-template-columns: repeat(auto-fit, minmax(min(var(--aside), 100%), 1fr));
-}
-ul.names a { font-family: var(--mono); font-size: var(--t4) }
-/* The one word a reader needs before they click, in the colour that is not a verdict. */
-ul.names li { color: var(--dim); font-size: var(--t5) }
 
 /* The shelf this page is was decided by ADR-0181 and drawn by ADR-0182: that record is what the page
    holds, this block is what it looks like, and every length below is the artboard's own.
@@ -673,51 +621,6 @@ a.answer .mark { display: block; font-size: var(--t6); color: var(--dim) }
   overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 
-/* The column is placed by the grid and never by source order, because the two answer different
-   questions. A reader on a phone gets the page and then the navigation; a reader on a laptop gets the
-   navigation on the left of it. Placing it puts the content first in the DOM, which is what a screen
-   reader announces and what a text projection reads, and CSS order would have made those two disagree. */
-/* One shell and three arrangements, each asked for by what the page actually holds rather than by a
-   class the page remembers to carry. A shell with a table of contents has a column on both sides of
-   the content; one with a column of secondary matter has it on the right; one with neither has the
-   navigation and the content.
-
-   None of the three has a ceiling. Each carried one until ADR-0134 - its own tracks and gutters added
-   up, which was honest arithmetic over a term stated in characters - and the term is gone, so what
-   bounds every arrangement at every width is the viewport. Narrow is one column and never had a
-   ceiling to give. ADR-0123, ADR-0134. */
-.shell { display: grid; grid-template-columns: minmax(0, 1fr); width: 100% }
-.beside { padding: var(--s6) var(--s6) 0 }
-.aside { padding: var(--s6) var(--s6) 0 }
-/* Three blocks in one column, told apart by a line and the space around it. On the adjacent sibling
-   rather than on every block, so the first one does not open with a rule under the heading it has
-   just been given by the column it sits in. */
-.aside > section + section { margin-top: var(--s8); padding-top: var(--s6); border-top: 1px solid var(--rule) }
-/* The bottom is not symmetry: a figure ends at zero so that its own two lines hold together, and
-   without this the last label touched the sentence under it - measured at 0px in a browser. The top
-   is the standing gap off the heading these already have. */
-.aside .figures { margin: var(--s3) 0 var(--s5) }
-.aside p { font-size: var(--t5); color: var(--dim) }
-.aside .figure strong { font-size: var(--t2) }
-.rail-label {
-  margin: 0 0 var(--s2); font-family: var(--mono); font-size: var(--t6);
-  letter-spacing: .06em; text-transform: uppercase; color: var(--dim);
-}
-.rail-label a { color: inherit; text-decoration: none }
-.rail-label a:hover { color: var(--ink) }
-/* Where you are in the catalogue, above what is on the page you are reading. The two are separate
-   elements rather than one list, because the rail names sections of this page and this names other
-   pages, and one guard walks the first. */
-.where { margin: 0 0 var(--s8) }
-ul.siblings, ul.domains { list-style: none; padding: 0; margin: 0 0 var(--s6); font-family: var(--mono) }
-ul.siblings > li, ul.domains > li { padding: var(--s) var(--s3); font-size: var(--t5) }
-ul.siblings a, ul.domains a { color: var(--body); text-decoration: none }
-ul.siblings a:hover, ul.domains a:hover { color: var(--ink) }
-/* The accent means you are here, which is one of the two things it is allowed to mean. */
-ul.siblings > li.here, ul.domains > li.here {
-  color: var(--ink); background: var(--wash);
-  border-left: 2px solid var(--accent); border-radius: 0 5px 5px 0; padding-left: var(--s2);
-}
 /* No ceiling of its own, and the sentence that used to stand here was right about the wrong element.
    It read: capped at what its widest block needs and not at what is left over. That is what a card,
    a case table and a code block each now say about themselves, so the column has nothing left to
@@ -725,11 +628,6 @@ ul.siblings > li.here, ul.domains > li.here {
    wide. ADR-0122. */
 main { padding: var(--s6) var(--s6) 0; min-width: 0; display: block }
 
-/* No bottom margin: the identity is a grid and its gap is what separates these. A shorthand here
-   adds to the gap instead of replacing it, which is the trap this stylesheet already names four
-   times above - it cost 20px between the address and the title the first time the card became a
-   grid. */
-.address { margin: 0; font-size: var(--t5); color: var(--dim) }
 .get { display: grid; gap: var(--s2); min-width: 0 }
 /* The label on the left and the choice on the right, on one baseline. The row wraps rather than
    squeezing, because four manager names beside a word is the first thing to run out of room. */
@@ -748,12 +646,6 @@ ul.managers button[aria-pressed='true'] { color: var(--ink); border-bottom-color
    reader has to be able to read both the name and the reason under it. */
 ul.managers button[data-refused] { text-decoration: line-through }
 p.refusal { margin: 0; font-size: var(--t5); color: var(--dim) }
-/* The shape of a command rather than a command: the front page's, which names every address at once
-   and therefore none. It takes the install block's size and not its class, because the class is what
-   a copy control looks for and this is the one command on the site that would answer nothing if a
-   reader ran what they had copied. */
-pre.shape { font-size: var(--t4); color: var(--dim) }
-pre.shape code { color: var(--ink) }
 /* No rule above them and no margin off what precedes them: they sit beside the identity rather than
    under the command, so a separator here would draw a line across half a card. Where they wrap under
    it, on a narrow screen and in the column beside the front page, the gap is what separates them and
@@ -765,21 +657,6 @@ pre.shape code { color: var(--ink) }
 .figure { margin: 0; font-size: var(--t5); color: var(--dim) }
 .figure strong { display: block; font-family: var(--mono); font-size: var(--t2); font-weight: 500; color: var(--ink) }
 
-/* A row whose halves are an identifier and an argument, and which does NOT become two columns.
-
-   Measured at 1440 over the method page's hundred rows, three ways: committed, 283 prose lines
-   over 75 characters at 25 192px; stacked with the argument bounded, 88 at 35 640; and as a case
-   row of two columns, 88 at 41 402. **The columns buy nothing here** - the same reading for 5 762px
-   more - because the left half is one short identifier against a paragraph, so half the width
-   carries no height. On a contract page the left half is a call, often folding to several lines,
-   and there the columns pay. Same shape, opposite answer, and only the data says which.
-
-   The whole of the gain is that the argument is a cell with a width, which it already had.
-   ADR-0139. */
-.stacked { padding: var(--s3) 0; border-top: 1px solid var(--rule) }
-.what { min-width: 0 }
-.what .call { margin: 0 0 var(--s2) }
-.what code { color: var(--ink); line-height: 1.55; overflow-wrap: anywhere }
 /* The argument is a cell of a table and a cell has a width, which is what makes it a column. It
    carries this one whether the row is split or stacked, so a reader gets the same line either side
    of the threshold below - without it, the stacked row let an argument fill the content column and
@@ -803,27 +680,15 @@ pre.shape code { color: var(--ink) }
 #playground { display: grid; gap: 10px; margin: 0 }
 #playground .form { display: grid; gap: 10px }
 
-/* The wider of the two arrangements below:
-     main | aside   --measure + --s6 + --aside + 2 * --s6  = 49.14rem
-     beside | main  --rail + --s6 + --measure + 2 * --s6   = 47.40rem
+/* 50rem was the wider of the two shell arrangements this block used to place - main | aside at
+   49.14rem and beside | main at 47.40rem - and ADR-0197 took both away with the columns nothing has
+   built since ADR-0189. **So the condition has lost its derivation and keeps its value**: what is
+   left of the block is what main is given once there is room for it, and moving the number would
+   move what a reader is served for a reason no measurement here supports. It is a typed width with a
+   dead argument, which is what the open list already says of the others.
    The header says what a media query can and cannot evaluate. */
 @media (min-width: 50rem) {
-  .shell { gap: var(--s6); padding: 0 var(--s6) }
   main { padding: var(--s10) 0 0 }
-
-  /* Where you are in the catalogue, and then the page. */
-  .shell:has(.beside) { grid-template-columns: var(--rail) minmax(0, 1fr) }
-  .shell:has(.beside) .beside { grid-area: 1 / 1 }
-  .shell:has(.beside) main { grid-area: 1 / 2 }
-
-  /* The page, and then what a reader may skip. */
-  .shell:has(.aside) { grid-template-columns: minmax(0, 1fr) var(--aside) }
-  .shell:has(.aside) main { grid-area: 1 / 1 }
-  .shell:has(.aside) .aside { grid-area: 1 / 2 }
-
-  .beside, .aside { position: sticky; top: var(--s12); align-self: start }
-  .aside { padding: var(--s10) 0 0 var(--s6); border-left: 1px solid var(--rule) }
-  .beside { padding: var(--s10) 0 0 }
 }
 
 /* --- The contract page, implemented from the artboard's isDetail state. ADR-0187 is that page,
@@ -977,12 +842,11 @@ main.detail { max-width: var(--the-page); margin: 0 auto; padding: 36px var(--s6
 .masthead .search { margin-left: auto }
 .masthead ul.menu { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0 }
 .masthead ul.menu li { padding: 0; border: 0 }
-.masthead ul.menu a, .masthead ul.menu .here {
+.masthead ul.menu a {
   display: block; font-size: calc(13.5 * var(--a-point)); color: var(--body);
   padding: var(--s2) var(--s3); border-radius: 6px; text-decoration: none;
 }
 .masthead ul.menu a:hover { color: var(--ink); text-decoration: none }
-.masthead ul.menu .here { color: var(--dim) }
 /* The repository, as a square the size of the theme button beside it. It answers to the same shape
    because they are the same thing to a reader - two controls at the end of the bar - and because a
    mark needs a box where a word carries its own. ADR-0185. */
@@ -1128,12 +992,6 @@ a.row:hover .onward { color: var(--body) }
 .arguments h3 { font-size: calc(14.5 * var(--a-point)); font-weight: 600; margin: 0 0 6px; color: var(--ink) }
 .arguments p { font-size: var(--t5); color: var(--body); line-height: 1.6; margin: 0 }
 
-/* Not on the artboard, and here because no page is removed in this unit: a page nothing links to is
-   one every-page-is-reachable-from-the-front-page refuses. ADR-0182. */
-.elsewhere {
-  max-width: var(--the-page); margin: 0 auto; padding: 0 var(--s6) 40px;
-  font-size: var(--t6); color: var(--dim);
-}
 
 /* The foot the artboard closes on: what this is, and the two ways out. Same shape as the bar at the
    top and for the same reason - the rule spans the window and the column inside it does not. */
@@ -1153,5 +1011,4 @@ a.row:hover .onward { color: var(--body) }
 .foot ul.ways li { padding: 0; border: 0; font-size: var(--t6) }
 .foot ul.ways a { color: var(--dim); text-decoration: none }
 .foot ul.ways a:hover { color: var(--ink) }
-.foot ul.ways .here { color: var(--body) }
 `.trim()

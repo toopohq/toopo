@@ -2,7 +2,6 @@
 status: accepted
 date: 2026-08-18
 governs:
-  - packages/site/style.ts
   - packages/site/document.ts
 confirmed-by:
   - battery: site

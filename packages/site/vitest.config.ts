@@ -23,12 +23,14 @@ export default defineConfig({
   test: {
     include: ['*.test.ts'],
     /**
-     * One file of this suite runs against a document, and it says so itself.
+     * The files of this suite that run against a document say so themselves.
      *
-     * `start.test.ts` opens with `@vitest-environment happy-dom`; every other file here is node, which
-     * is what keeps the cost to the one guard that needs it. What cannot be declared in that file is
-     * the setting below - measured at `2ae8b50`, an `@vitest-environment-options` comment is not read
-     * by vitest 4.1.10 and the option never reaches the window.
+     * `start.test.ts`, `components.test.ts` and `painting.test.ts` open with
+     * `@vitest-environment happy-dom`; every other file here is node, which is what keeps the cost to
+     * the guards that need it. **This paragraph read *one file* while two carried the line**, which is
+     * ADR-0195's class on the comment of the setting the third one made false. What cannot be declared
+     * in a file is the setting below - measured at `2ae8b50`, an `@vitest-environment-options` comment
+     * is not read by vitest 4.1.10 and the option never reaches the window.
      *
      * A served contract page carries `<script type="module" src="…/start.js">`, which is how a browser
      * runs the very module the guards drive themselves. happy-dom will not fetch it, correctly, and

@@ -31,55 +31,13 @@ import { THE_COMPONENTS, classOf, paintedBy } from './components.js'
 import type { Component } from './components.js'
 import { toHtml } from './document.js'
 import { localSource } from './local-source.js'
-import { THE_SERVED_STYLESHEET } from './served-stylesheet.js'
+import { asAnElement, selectorsIn, theSheetAPageCarries } from './painting.js'
 import { theSite } from './site.js'
 
 /** The same root `served-modules.test.ts` counts from, and for the reason ADR-0059 states. */
 const ROOT = join(import.meta.dirname, '..', '..')
 
 const EVERY_COMPONENT = Object.keys(THE_COMPONENTS) as readonly Component[]
-
-/**
- * The selectors a block of CSS declares: what stands before each `{` at the top level.
- *
- * A scan and not a parser, which is enough because the population is this repository's own stylesheet
- * and every rule in it is flat - there is no nesting, and the two at-rules that do nest are handled by
- * tracking depth rather than by understanding them.
- */
-const selectorsIn = (css: string): readonly string[] => {
-  const found: string[] = []
-  let depth = 0
-  let since = 0
-
-  for (let at = 0; at < css.length; at += 1) {
-    if (css[at] === '{') {
-      if (depth === 0) found.push(css.slice(since, at))
-      depth += 1
-      continue
-    }
-
-    if (css[at] === '}') {
-      depth -= 1
-      if (depth === 0) since = at + 1
-    }
-  }
-
-  return found
-    .flatMap((one) => one.split(','))
-    .map((one) => one.replace(/\/\*[^]*?\*\//g, '').trim())
-    .filter((one) => one.length > 0 && !one.startsWith('@'))
-}
-
-/**
- * A selector with the states stripped, because a static document answers no question about a hover.
- *
- * `:hover` and `:focus-visible` cannot match anything here, so asking the matcher about them would
- * report every stateful rule as unreachable rather than as what it is. What is left is the shape the
- * rule paints when the state is on, which is the thing worth asking about.
- */
-const STATES = /::?(?:hover|focus|focus-visible|focus-within|active|visited|target|empty|first-of-type|last-child|placeholder|-webkit-[a-z-]+)/g
-
-const withoutStates = (selector: string): string => selector.replace(STATES, '')
 
 /**
  * Whether a selector is the document's own typography rather than a rule aimed at something.
@@ -131,32 +89,40 @@ describe('the components', () => {
    * Nothing but a component's own rules paints a component, on any page this site emits.
    *
    * This is the half no type reaches and the half the defect came through. For every element carrying
-   * a component's class, every selector of the served sheet that matches it must be either one that
+   * a component's class, every selector of the sheet that page carries must be either one that
    * component declared or the document's own typography.
    *
-   * The population is every page and every component element on it - 17 pages at the time of writing,
-   * and it grows with the site rather than with this file.
+   * The population is every page and every component element on it, and it grows with the site rather
+   * than with this file.
+   *
+   * **The sheet is the page's own and was imported until ADR-0197.** Importing it made the subject of
+   * this guard a consequence of the order of the import list above: this file names `./components.js`
+   * first, so what it read was the sheet with its component rules replaced by the word `undefined`,
+   * and every rule one component writes about another was outside the population. Measured with
+   * `& .badge { color: red }` added to the offer's drawing - a component painting a component, which is
+   * the fault this guard is named for: **green** reading the imported sheet, **red** reading the page's.
    *
    * Seen red before it was believed: with `ul.chips a` restored to the sheet and the front page's
    * container named `chips` again, the fault names that selector against the four domain pills.
    */
   it('a-component-is-painted-by-its-own-rules-and-by-nothing-else', () => {
-    const sheet = selectorsIn(THE_SERVED_STYLESHEET)
     const declared = new Map<Component, ReadonlySet<string>>(
       EVERY_COMPONENT.map((component) => [
         component,
-        new Set(selectorsIn(paintedBy(component)).map(withoutStates)),
+        new Set(selectorsIn(paintedBy(component)).map(asAnElement)),
       ]),
     )
-
-    const foreign = sheet.map(withoutStates).filter((selector) => !isTheDocumentsOwn(selector))
 
     const pages = theSite(localSource())
     const faults: string[] = []
     let painted = 0
 
     for (const [path, document] of pages) {
-      const parsed = new DOMParser().parseFromString(toHtml(document), 'text/html')
+      const html = toHtml(document)
+      const parsed = new DOMParser().parseFromString(html, 'text/html')
+      const foreign = selectorsIn(theSheetAPageCarries(html))
+        .map(asAnElement)
+        .filter((selector) => !isTheDocumentsOwn(selector))
 
       for (const component of EVERY_COMPONENT) {
         const own = declared.get(component) as ReadonlySet<string>
