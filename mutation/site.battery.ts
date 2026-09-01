@@ -3376,16 +3376,6 @@ export const battery: Battery = {
     {
       nature: 'documents a decision',
       reason:
-        'the sheet it reads is truncated by a module graph entered through `components.ts`, and what ' +
-        'decides that entry is the order of a test file’s own import list - which a battery does not ' +
-        'edit. The one edit to this folder that would produce it adds an import to whichever module a ' +
-        'guard names first, and every edit here rewrites a line rather than adding one. ADR-0197 ' +
-        'measures the truncation and prices the repair.',
-      guards: ['the-sheet-a-page-carries-is-the-whole-sheet-this-site-composes'],
-    },
-    {
-      nature: 'documents a decision',
-      reason:
         'a limit somebody else publishes, which only a catalogue growing past it can violate. The ' +
         'rule count is one per endpoint and the endpoints are eight, so no edit to a file of this ' +
         'folder produces a hundred and first rule or a two-thousandth character - what would is a ' +

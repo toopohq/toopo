@@ -1251,7 +1251,11 @@ the nine modules that take them from `document.js` — or `toHtml` giving up the
 are a decision about how the folder is arranged rather than about what the sheet paints. What stands
 in its place is a precondition guard refusing a served sheet that holds a value which failed to
 resolve, and the compiler: deleting the interpolation is `TS6133`, which ADR-0174's flags turned on.
-ADR-0197.
+**And the instrument refused the unit's first run**: that guard was declared under the battery's
+`unprobedRegions` on the grounds that no rewritten line could reach it, and W-24 - which serves the
+stylesheet as a link rather than carrying it - reddens it along with eight others. The declaration was
+a reading of the defect and not of the battery, which is this file's own recurring class arriving on
+the unit that was written to close one. ADR-0197.
 
 **The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
 name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The

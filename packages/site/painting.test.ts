@@ -223,11 +223,28 @@ describe('what this stylesheet paints', () => {
    * on the same perturbation, naming the corrupted prelude. Two guards over one fault have nothing to
    * say on the day they disagree, and these two do not: this one says what is wrong with the sheet and
    * that one says what it did to the population.
+   *
+   * **It is red on W-24, and the instrument is what said so.** That cell serves the stylesheet as a
+   * link instead of carrying it, so a page carries no sheet at all - which is this claim in its
+   * strongest form, and eight other guards' as well. It was declared under the battery's
+   * `unprobedRegions` on the grounds that no rewritten line could reach it; the replay refused the run
+   * under *declared silent and reddened anyway*, which is the half of that field costing nothing to
+   * get wrong and never noticed. The declaration was written from a reading of the defect rather than
+   * of the battery, which is this repository's own recurring class arriving on this unit.
    */
   it('the-sheet-a-page-carries-is-the-whole-sheet-this-site-composes', () => {
-    const sheets = [...everyPage()].map(([path, html]) => [path, theSheetAPageCarries(html)] as const)
+    const pages = [...everyPage()]
 
-    expect(sheets.length, 'no page to read a stylesheet from').toBeGreaterThan(0)
+    expect(pages.length, 'no page to read a stylesheet from').toBeGreaterThan(0)
+
+    // Asked before the sheet is read, so a page serving none fails on this sentence rather than on
+    // the reader throwing inside a map, which is a red that says the wrong thing.
+    expect(
+      pages.filter(([, html]) => !html.includes('<style>')).map(([path]) => path),
+      'a page carries no stylesheet at all',
+    ).toEqual([])
+
+    const sheets = pages.map(([path, html]) => [path, theSheetAPageCarries(html)] as const)
 
     expect(
       sheets.filter(([, sheet]) => THE_UNRESOLVED.test(sheet)).map(([path]) => path),

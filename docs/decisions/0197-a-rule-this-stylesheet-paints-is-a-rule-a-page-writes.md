@@ -117,7 +117,10 @@ element, and the sheet a page carries. It is where `components.test.ts`'s own re
 one reader and not two, and it is wider in both directions: at every depth rather than at the top
 level, and stripping pseudo-elements rather than throwing them at the matcher. Measured across that
 widening, `a-component-is-painted-by-its-own-rules-and-by-nothing-else` reports **0 faults either
-way**, so the factoring cost nothing and bought 18 more selector occurrences.
+way**, so the factoring cost nothing. What it bought was measured at `42cb81d`, before the deletion:
+**18 more selector occurrences, 7 of them spellings that occur nowhere else** — and six of those seven
+are what this unit then deleted, so the widening's standing value is the day the next `@media` rule is
+written rather than a figure that survives this commit.
 
 `packages/site/painting.test.ts` holds three guards. `packages/site/style.ts` loses 47 selectors and
 the two custom properties the deletion orphaned — `--rail` and `--a-contract-in-a-list` — which is
@@ -211,10 +214,18 @@ before a page is built, and the guard is aimed at the one shape the compiler can
 **The strong form of that guard is unavailable and the reason is the cycle itself.** Asking that the
 sheet contain `THE_COMPONENT_RULES` would catch both shapes and needs an import of `./components.js` —
 which, in a list written alphabetically beside `./document.js`, is the graph entry that truncates the
-sheet. Measured: with that import added, the guard reddens on all eight pages. It is declared under the
-battery's `unprobedRegions` for the same reason no cell reaches it: the defect is a module graph's
-entry order, decided by a test file's own import list, and a battery rewrites lines rather than adding
-imports.
+sheet. Measured: with that import added, the guard reddens on all eight pages.
+
+**It was declared under the battery's `unprobedRegions` and the instrument refused the run.** The
+declaration said no rewritten line of this folder could reach it, because the defect is a module
+graph's entry order and a battery rewrites lines rather than adding imports. That is a reading of the
+defect and not of the battery: **W-24 serves the stylesheet as a link instead of carrying it**, so a
+page carries no sheet at all — which is this guard's claim in its strongest form, and eight other
+guards' as well. The replay came back *declared silent and reddened anyway*, the declaration is gone,
+and the guard now asserts that a page carries a stylesheet before it reads one, so its red is its own
+sentence rather than a reader throwing inside a map. **It has never been red alone**, and that is
+recorded rather than repaired: no plausible edit to this folder corrupts a sheet without also
+corrupting what stands in it.
 
 ### What the method cost, stated rather than smoothed
 
