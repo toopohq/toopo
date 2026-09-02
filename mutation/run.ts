@@ -634,7 +634,17 @@ type ReportedFile = {
   readonly assertionResults?: readonly Assertion[]
 }
 
-type VitestReport = { readonly testResults?: readonly ReportedFile[] }
+type VitestReport = {
+  /**
+   * Vitest's own verdict on the whole run, which is not the disjunction of its files'.
+   *
+   * Read as `unknown` rather than as `boolean` because it is parsed out of JSON: a runner that stops
+   * writing it would otherwise arrive as `undefined` and be compared as though it had said something.
+   * `theReportsOwnVerdict` below is the one place that decides what a non-boolean means.
+   */
+  readonly success?: unknown
+  readonly testResults?: readonly ReportedFile[]
+}
 
 /**
  * The two answers a guard can give. Everything else a runner reports is a guard that did not answer.
@@ -716,15 +726,51 @@ export type SuiteRun = {
    * is silent is exactly the one worth asking about.
    */
   readonly reportedFiles: Readonly<Record<string, ReportedFileState>>
+  /**
+   * What the run printed, kept rather than discarded.
+   *
+   * **The report is this instrument's input and it is not always an account of the run that wrote
+   * it.** Measured at `74a125d` on this platform, a type error in a runtime test file leaves vitest
+   * reporting `success: true` with every assertion passed while the process exits non-zero - the
+   * typechecker's complaint arrives as an *Unhandled Source Error*, which never enters the report and
+   * is printed instead. So the child's own output is the only place such a cause is ever written, and
+   * throwing it away is what left a red control saying nothing at all. ADR-0200 named it; this field
+   * is where it stops being thrown away.
+   *
+   * The whole of it, rather than a line somebody chose: what is worth quoting is decided at the
+   * refusal that quotes it, and deciding it here would fix one answer for every future reader.
+   */
+  readonly printed: string
+  /**
+   * The report's own verdict on the whole run, or `null` where it gave none.
+   *
+   * It is carried beside `green` and never reconciled with it. The two disagreeing is a fact worth
+   * stating and not a puzzle to solve - and it is a fact with two quite different meanings, which is
+   * why nothing here reads one from the other. On a mutant cell it is ordinary: a defect the
+   * compiler refuses reddens the process while every guard that ran passed, which is exactly what
+   * `killed-by-typecheck` is. On an unmutated control it cannot mean that, because there is no
+   * mutant for a compiler to have caught.
+   */
+  readonly reportSaysGreen: boolean | null
 }
 
-const reportedFiles = (): readonly ReportedFile[] | null => {
+const theReport = (): VitestReport | null => {
   try {
-    return (JSON.parse(readFileSync(REPORT, 'utf8')) as VitestReport).testResults ?? []
+    return JSON.parse(readFileSync(REPORT, 'utf8')) as VitestReport
   } catch {
     return null
   }
 }
+
+/**
+ * What the report said about the run as a whole, or `null` where it did not say.
+ *
+ * The null is not a convenience. A report that gives no verdict is one this instrument cannot hold
+ * against the exit code, and the sentence built from it says so rather than reading the absence as
+ * agreement - which is `AN_ANSWER`'s rule one level up, applied to the run instead of to a guard.
+ */
+const theReportsOwnVerdict = (report: VitestReport): boolean | null =>
+  typeof report.success === 'boolean' ? report.success : null
 
 /** Reported paths are absolute and platform-shaped; the census and the attribution both want neither. */
 const REPO_PREFIX = `${THE_REPOSITORY.replaceAll('\\', '/')}/`
@@ -906,10 +952,98 @@ export const whyARunMeasuredNothing = (code: string | undefined): string | null 
   return null
 }
 
+/**
+ * How many lines of a run's own output a refusal quotes.
+ *
+ * A red the report does not carry has its cause in vitest's unhandled-errors block, which the default
+ * reporter writes last. Measured at `74a125d` on this platform over the two ways the fixture has been
+ * made to produce that state - a type error in a runtime test file, and an unhandled rejection in one
+ * - the whole output was 35 non-empty lines either time and the block began 22 and 23 lines from the
+ * end. Sixty is over twice the larger of those, which holds a block carrying several errors while
+ * keeping a refusal something a person reads rather than scrolls.
+ *
+ * **The head is what grows and the tail is what answers.** A suite prints one line per file before its
+ * summary, so a larger suite pushes its own file listing off the top of this quotation and never its
+ * errors - which is why the quotation is a tail and not a head, and why one number serves the fixture
+ * and `registry-storage` alike.
+ */
+const THE_TAIL_OF_A_RUN_QUOTED = 60
+
+/**
+ * What the report has to say about a red it named no guard for.
+ *
+ * **The three answers are not one answer with two edge cases.** A report saying the run succeeded is
+ * not an account of that run at all; a report saying it failed while naming no failed guard is an
+ * account in which something other than a guard gave way; a report giving no verdict is one this
+ * instrument cannot hold against the exit code. Collapsing them would put the reader of a refusal
+ * back where the empty list left them, which is knowing that something happened.
+ *
+ * None of the three decides which of the two is right. The exit code and the report are both reported
+ * as what they are, because *this instrument measured no such thing* - and a report that named a cause
+ * it did not measure is the sentence ADR-0042 exists to refuse.
+ */
+const whatTheReportSaidInstead = (reportSaysGreen: boolean | null): string => {
+  if (reportSaysGreen === true) {
+    return (
+      `the run exited non-zero and its report names no guard that failed and says the run ` +
+      `succeeded, so the report is not an account of this run`
+    )
+  }
+  if (reportSaysGreen === false) {
+    return (
+      `the run exited non-zero and its report agrees that it failed, but names no guard that ` +
+      `failed - so what gave way is something no guard answered for`
+    )
+  }
+
+  return (
+    `the run exited non-zero and its report names no guard that failed and gives no verdict on the ` +
+    `run at all, so there is nothing in it to hold the exit code against`
+  )
+}
+
+/**
+ * Why a run reddened, in the run's own words where the report has no answer.
+ *
+ * **A red that named nothing was this instrument's one silent verdict, and it is the whole subject of
+ * ADR-0201.** `calibrate` printed `failedGuards.join()` and that string is empty exactly when the
+ * report holds no failure - which is the state a type error in a runtime test file produces, measured
+ * at `74a125d`: `success: true`, every assertion passed, the process gone at exit 1, and the
+ * typechecker's complaint printed as an *Unhandled Source Error* that never enters the report. So a
+ * control could redden for a reason written down in only one place, and that place was discarded.
+ *
+ * **What this refuses to do is guess.** The two sources disagree, both are reported as what they said,
+ * and the run's own output is handed over rather than parsed for a cause - because a cause named from
+ * a shape nobody measured is what ADR-0042 forbids, and because the shape here is not diagnostic
+ * anyway. Measured at `74a125d`, a type-only error in a *source* file - which is `NP-5`'s mutant, and
+ * what five batteries pin as `killed-by-typecheck` - produces the identical report: `success: true`,
+ * nought failed, exit 1. **The disagreement does not separate a fault from a detection; the column
+ * does.** A control carries no mutant, so nothing there can have been caught by a compiler.
+ *
+ * That is why this renders a sentence and refuses nothing on its own. Reading the disagreement as a
+ * fault wherever it occurs would have turned those five pinned cells into cells nobody measured.
+ */
+export const whyARunReddened = (run: SuiteRun): string => {
+  if (run.failedGuards.length > 0) return run.failedGuards.join('\n  ')
+
+  const lines = run.printed.split('\n').filter((line) => line.trim() !== '')
+  const said = whatTheReportSaidInstead(run.reportSaysGreen)
+  if (lines.length === 0) return `${said}, and the run printed nothing either`
+
+  const tail = lines.slice(Math.max(0, lines.length - THE_TAIL_OF_A_RUN_QUOTED))
+  const heading =
+    tail.length === lines.length
+      ? `what the run printed is the only place its cause was written:`
+      : `what the run printed is the only place its cause was written, last ${tail.length} of ` +
+        `${lines.length} lines:`
+
+  return [`${said}.`, heading, ...tail].join('\n  ')
+}
+
 const runSuite = (battery: Battery): SuiteRun => {
   rmSync(REPORT, { force: true })
 
-  const nothingMeasured = (because: string): SuiteRun => ({
+  const nothingMeasured = (because: string, printed: string): SuiteRun => ({
     green: false,
     failedGuards: [],
     testsSeen: null,
@@ -917,9 +1051,12 @@ const runSuite = (battery: Battery): SuiteRun => {
     unansweredGuards: [],
     reportedFiles: {},
     notMeasured: because,
+    printed,
+    reportSaysGreen: null,
   })
 
   let green: boolean
+  let printed: string
   try {
     // The vitest entry point is invoked directly rather than through npx, so that no shell parses
     // this command line and the report path cannot be reinterpreted by one.
@@ -930,7 +1067,7 @@ const runSuite = (battery: Battery): SuiteRun => {
     // reports 9 tests instead of 215. Naming the default reporter as well collects all 215. A
     // truncated run reddens, so under the old command line every cell of every battery read as a
     // kill - which is why the count below is now checked rather than trusted.
-    execFileSync(
+    printed = execFileSync(
       process.execPath,
       [
         THE_VITEST_ENTRY_POINT,
@@ -965,20 +1102,32 @@ const runSuite = (battery: Battery): SuiteRun => {
      * in all six cases here**, so it is not the discriminator either. A run that is both over its
      * buffer and hanging reports `ENOBUFS` - the buffer fires first.
      */
-    const because = whyARunMeasuredNothing((thrown as { readonly code?: string }).code)
-    if (because !== null) return nothingMeasured(because)
+    const failure = thrown as {
+      readonly code?: string
+      readonly stdout?: string
+      readonly stderr?: string
+    }
+
+    // Both streams, in the order a reader met them: vitest writes its summary to stdout and its
+    // unhandled errors to stderr, and the second is the half that carries a cause the report has not
+    // got. `stdio: 'pipe'` above is what makes either of them reachable here at all.
+    printed = `${failure.stdout ?? ''}${failure.stderr ?? ''}`
+
+    const because = whyARunMeasuredNothing(failure.code)
+    if (because !== null) return nothingMeasured(because, printed)
 
     green = false
   }
 
-  const files = reportedFiles()
-  if (files === null) {
+  const report = theReport()
+  if (report === null) {
     // Measured at `505fddb`: a run stopped by its bound writes no report at all, so this is reached
     // by anything that ends the child before vitest can write - not by a mutant that fails to compile,
     // which reddens *with* a report and with fewer assertions in it.
-    return nothingMeasured('the run wrote no report this instrument could read')
+    return nothingMeasured('the run wrote no report this instrument could read', printed)
   }
 
+  const files = report.testResults ?? []
   const assertions = files.flatMap((file) => file.assertionResults ?? [])
 
   return {
@@ -989,6 +1138,8 @@ const runSuite = (battery: Battery): SuiteRun => {
     unansweredGuards: guardsIn(files.map(withoutTheGuardsThatAnswered)),
     notMeasured: null,
     reportedFiles: Object.fromEntries(files.map((file) => [relative(file.name ?? ''), stateOf(file)])),
+    printed,
+    reportSaysGreen: theReportsOwnVerdict(report),
   }
 }
 

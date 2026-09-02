@@ -497,6 +497,59 @@ describe('the mutation instrument refuses an apparatus that would lie', () => {
     META_TIMEOUT_MS,
   )
 
+  /**
+   * And a control that reddens says what reddened it, even where the report says nothing at all.
+   *
+   * **The guard above reddens the control through a guard, which is the easy half.** The report then
+   * carries a failed assertion and the refusal names it. This one reddens the control through an error
+   * the report never carries, which is the state ADR-0200 measured and could not attribute: the run
+   * exits non-zero, `success` is `true`, every assertion passed, and `failedGuards.join()` - what this
+   * refusal used to print - is the empty string.
+   *
+   * **The injected cause is an unhandled rejection and the fault it stands for is a type error**,
+   * because the two are one shape and only one of them is reachable from here. Measured at `74a125d`
+   * over the fixture: a type error in a runtime test file needs typecheck to be collecting, which needs
+   * a `.test-d.ts` this folder does not have and a lens cannot create - a lens edits files and does not
+   * write them. An unhandled rejection reaches the identical report - exit 1, `success: true`, nought
+   * failed - five times out of five, and it needs one edit to a file that already exists.
+   *
+   * The assertion that carries the unit is the last: the child's own words, in the refusal. The first
+   * two are satisfiable by a sentence written here; only the third fails when the output is discarded.
+   */
+  it(
+    'a-control-that-reddens-with-no-failed-guard-still-names-its-cause',
+    () => {
+      const lensThatReddensOutsideTheReport = {
+        id: 'as-committed',
+        description:
+          'a lens whose edit reddens the unmutated fixture through an error vitest prints and never ' +
+          'reports, which is the shape a type error in a runtime test file produces',
+        arms: ['C'],
+        edits: [
+          {
+            file: 'second-file.test.ts',
+            find: `import { doubled } from './reference.js'`,
+            replace: `import { doubled } from './reference.js'
+
+void Promise.reject(new Error('a red that never reaches the report'))`,
+          },
+        ],
+      }
+
+      let refused = ''
+      try {
+        calibrate({ ...battery, lenses: [lensThatReddensOutsideTheReport] })
+      } catch (thrown) {
+        refused = (thrown as Error).message
+      }
+
+      expect(refused).toContain('is red, so every verdict from this battery would be noise')
+      expect(refused).toContain('names no guard that failed and says the run succeeded')
+      expect(refused).toContain('a red that never reaches the report')
+    },
+    META_TIMEOUT_MS,
+  )
+
   it(
     'refuses an apparatus that cannot be shown able to see anything, which would call every mutant a survivor',
     () => {
