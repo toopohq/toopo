@@ -3783,6 +3783,35 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `servedFrom ccc9fca…` and its sitemap names the same seven addresses this tree writes — so the
   divergence is the edge's alone. ADR-0193.
 
+  **The instance arrived, and the closure named above is green on it.** Measured at `2ac6803` on
+  2026-09-02, one `GET` per address on both hosts: the ten retired addresses answer **200 on
+  `toopo.dev` and 404 on `toopo.pages.dev`**, which is the same deployment asked without the zone in
+  the way, and an address never served answers 404 with `no-store` on both. So the deployment is right,
+  and something between it and a reader holds copies of pages it stopped writing — under
+  `X-Robots-Tag: noindex`, a header this repository writes only for a host that is *not* the declared
+  origin, and which the **7 of 7** live pages do not carry. **The closure this entry proposes would
+  have seen none of it**: its population is what the origin lists, the origin lists **seven**, and those
+  seven all answer from the deployment. The ten are outside it by construction, an address ceasing to
+  be listed on the very push that stops writing it.
+
+  **So the paragraph above conflates the two nouns this entry is about.** *The population is every
+  address the origin lists, seventeen today* is false in its own terms — the origin **lists** seven and
+  **serves** at least seventeen — and the same conflation stood in the gate's own verdict, which said
+  *every address the origin serves is still one of them* and now says *lists*. **The entry states two
+  directions and names one closure, and the instance landed on the other**: the closure covers the
+  dangerous mirror, a listed address that stops answering, and what happened is the benign half.
+
+  **What is refused is refused on measurement.** A blocking reading over the seven would have stopped
+  **fifteen pushes of `main` in thirty hours**, every one a correct tree, on a state no commit reaches
+  and a dashboard switch repairs. A printing one prints seven confirmations and says nothing about the
+  ten. A register of retired addresses has the right population, no bound, and is red until somebody
+  changes a setting. And the condition ends the day the owner turns that setting off, so a guard for it
+  could be seen red once and never again. **It is the fourth instance of the `wrangler.jsonc` gap** —
+  after the custom domain, the four hours, and the third named above — and the first of the four this
+  repository met as a defect rather than recorded as a limit. **The cause is established only as far as
+  *not the deployment*: that the mechanism is the feature named Always Online is not established**, the
+  Wayback availability API that would have identified the source having answered 429 twice. ADR-0202.
+
 - **That the four hours a returning reader holds a module for are decided by anything in this
   repository.** The entry this replaces had two halves and only one of them was ever this repository's
   to close. The declaration half is closed and is recorded below with ADR-0170; **this is the half

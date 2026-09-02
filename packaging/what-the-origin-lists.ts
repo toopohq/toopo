@@ -22,6 +22,25 @@
  * is what this promise is about.
  *
  * ---------------------------------------------------------------------------
+ * A request over-reports where the clause above only expected it to under-report
+ * ---------------------------------------------------------------------------
+ *
+ * That clause says a per-address request answers *what is absent now and never what was present
+ * before*, and the half it did not anticipate is the other one: **a 200 there can be what was present
+ * before.** Measured at `2ac6803` over the ten addresses ADR-0189 retired, one `GET` each: all ten
+ * answer 200 on the declared origin and all ten answer 404 on `toopo.pages.dev`, which is the same
+ * deployment asked directly. What the zone serves is a copy of a page the deployment stopped writing,
+ * under `X-Robots-Tag: noindex` - a header this repository writes only for a host that is *not* the
+ * declared origin, and which the seven live pages do not carry.
+ *
+ * **So a reading taken one address at a time is not the stronger reading it looks like.** Its
+ * population is what the origin lists, the origin lists seven, and those seven are the ones this tree
+ * writes and the deployment answers - so such a reading is green on the whole of that divergence. The
+ * ten are outside it by construction: an address stops being listed on the push that stops writing it,
+ * which is the same push after which it starts being wrong. ADR-0202 carries the readings, and why the
+ * population that would hold them is enumerable from no document this origin publishes.
+ *
+ * ---------------------------------------------------------------------------
  * A 404 is refused here and is an answer next door, and the direction is the whole reason
  * ---------------------------------------------------------------------------
  *

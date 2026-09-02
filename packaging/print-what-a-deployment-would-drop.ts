@@ -12,6 +12,12 @@
  * a verdict nobody can check. It is the argument `print-whether-to-publish.ts` makes, on the other
  * thing this repository does that cannot be undone.
  *
+ * **The verdict says *lists* and not *serves*, and the two parted by ten.** Measured at `2ac6803`, the
+ * origin listed seven addresses and answered 200 at ten more this tree had stopped writing, so the
+ * sentence this file ended on was false of the origin while being true of the reading behind it. A
+ * verdict claims what its reading establishes and no more; `what-the-origin-lists.ts` carries what a
+ * per-address reading would and would not have caught. ADR-0202.
+ *
  * ---------------------------------------------------------------------------
  * Before the deployment, and that is the whole of why it is a script
  * ---------------------------------------------------------------------------
@@ -92,7 +98,7 @@ process.stdout.write(
     `this tree writes ${written.size}\n` +
     `${
       dropped.length === 0
-        ? 'and every address the origin serves is still one of them, so this may be deployed\n'
+        ? 'and every address the origin lists is still one of them, so this may be deployed\n'
         : `and ${dropped.length} of the origin's would stop being written.\n\n` +
           `${
             retired.length === 0
