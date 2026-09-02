@@ -144,6 +144,43 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * commit that moves this line - a measurement is kept where it can still be corrected, and a commit
  * message cannot be.
  *
+ * **It is 1.1.1 because every destination this tool writes, reads or removes is now composed by one
+ * function, and nothing a reader can act on moved.** `24b2108` is the change: six places composed a
+ * path out of the project root, the configured directory and a path that arrived from somewhere else,
+ * and they call `where-a-file-may-land.ts` instead. No command was added, no flag, no field of a
+ * lockfile or a configuration, and the rendered usage is what it was.
+ *
+ * **PATCH is founded on a structure rather than on a sample, which is what this rank turns on.** The
+ * rule admits a path spelled out of `[A-Za-z0-9._-]` in `/`-separated segments, none of them `..`. Every
+ * destination this registry can compose is `${contract.name}.ts`: `referenceImplementationOf` filters an
+ * implementation's files to the literal `reference.ts`, and `destinationOf` maps the entry file to the
+ * contract's own name. `CONTRACT_NAME` is `[a-z0-9]` segments joined by `-` with one `/`, which is a
+ * strict subset of that alphabet, and no segment of it can begin with a dot - so `..` is not spellable
+ * at all. **A `toopo.lock` written by any release before this one therefore carries paths this rule
+ * admits, for every contract that could have been published and not only for the ones that were.**
+ *
+ * Measured beside the argument rather than instead of it, because a structure somebody reasoned out is
+ * worth checking: over the published catalogue, 6 of 6 composed destinations and 6 of 6 served paths are
+ * admitted; over the imagined graph, which is the only multi-file shape this repository holds and the
+ * one that exercises a folder standing beside an entry, 6 of 6.
+ *
+ * **What that does not establish is said here rather than discovered later.** The second half of the
+ * argument is structural only while that filter stands. The day an implementation may serve a second
+ * file - the unit `plan.ts` already names, where a folder arrives beside the entry - the served spelling
+ * stops being a literal and becomes whatever a contract folder holds, because `harnessOf` reads the
+ * folder. Nothing keeps that alphabet and this one in agreement, and the day they part a legitimate
+ * contract is served and refused at install. It belongs to the unit that opens the filter.
+ *
+ * **MINOR is refused on what a reader gains, which is nothing.** `1.1.0` was MINOR because
+ * `alsoFoundBy` let this archive answer six queries the one before it can never answer by waiting.
+ * There is no such field here: the public surface is the grammar of the six commands, it has not moved,
+ * and an archive that refuses a path the older one composed is not a capability somebody upgrades *for*.
+ *
+ * **It moves no digest and mints no address, so no anchoring commit follows.**
+ * `THE_PUBLISHED_IMPLEMENTATION_VERSION` does not move, nothing under `contracts/` is touched, and the
+ * ledger's twelve bindings are identical to the byte either side - which is ADR-0106 read rather than
+ * assumed, since the commit that mints a digest is the only one that cannot name itself.
+ *
  * **It is not the version an implementation is bound at, and the separation is what makes that
  * readable.** The two were one string, tied by `the-archive-is-visibly-unpublished`, and the tie was
  * right for exactly as long as both were stand-ins saying *nothing here was published*; ADR-0106 cut
@@ -159,7 +196,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * act. `1.0.3` was the last release argued for in a commit message and dispatched from a menu
  * afterwards.
  */
-export const THE_PACKAGE_VERSION = '1.1.0'
+export const THE_PACKAGE_VERSION = '1.1.1'
 
 /**
  * The version every reference implementation of this catalogue is published at, and frozen at.
