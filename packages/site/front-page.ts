@@ -39,8 +39,9 @@
 
 import type { ServedIndex } from '../registry/response.js'
 import type { Domain, Held } from './catalogue.js'
-import type { Document, Node, Tag } from './document.js'
-import { el, text } from './document.js'
+import type { Document } from './document.js'
+import type { Node, Tag } from './tree.js'
+import { el, text } from './tree.js'
 import type { MenuEntry } from './chrome.js'
 import { footer, masthead, theCatalogueFrom } from './chrome.js'
 import { readableDate } from './quantity.js'

@@ -51,8 +51,8 @@ import { endpointOf, pathTo } from '../registry/endpoints.js'
 import { THE_REPOSITORY_LICENCE } from '../registry/licence.js'
 import { THE_SOURCE_REPOSITORY } from '../registry/publication.js'
 import type { WhereTheCatalogueIs } from './searching.js'
-import type { Node } from './document.js'
-import { el, text } from './document.js'
+import type { Node } from './tree.js'
+import { el, text } from './tree.js'
 import { FRONT_PAGE, linkTo, rootFrom } from './paths.js'
 
 const NOTHING = {} as const

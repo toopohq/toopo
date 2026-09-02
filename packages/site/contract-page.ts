@@ -71,8 +71,9 @@ import {
   pill,
   snippet,
 } from './components.js'
-import type { Document, Node, Tag } from './document.js'
-import { el, text } from './document.js'
+import type { Document } from './document.js'
+import type { Node, Tag } from './tree.js'
+import { el, text } from './tree.js'
 import { highlighted } from './highlight.js'
 import { literal } from './literal.js'
 import { paragraph } from './marks.js'

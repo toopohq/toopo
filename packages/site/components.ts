@@ -66,8 +66,8 @@
  * component is a question about whether this site grows a palette, and it is not settled by this unit.
  */
 
-import type { Attributes, Node, Tag } from './document.js'
-import { el, text } from './document.js'
+import type { Attributes, Node, Tag } from './tree.js'
+import { el, text } from './tree.js'
 import type { HighlightedRun } from './highlight.js'
 import { THE_SYNTAX_INKS } from './highlight.js'
 

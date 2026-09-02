@@ -36,8 +36,8 @@
  * nowhere for an escape to be forgotten survives untouched.
  */
 
-import type { Attributes, Node, Tag } from './document.js'
-import { el, text } from './document.js'
+import type { Attributes, Node, Tag } from './tree.js'
+import { el, text } from './tree.js'
 
 const NOTHING = {} as const
 

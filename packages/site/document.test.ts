@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest'
 
 import type { Document, StructuredData } from './document.js'
-import { el, escapedForMarkdown, text, toHtml, toMarkdown, toText, wordsOf } from './document.js'
+import { escapedForMarkdown, toHtml, toMarkdown, toText, wordsOf } from './document.js'
+import { el, text } from './tree.js'
 import { THE_FONT_ADDRESS } from './font.js'
 import { THE_MARKDOWN_FILE } from './paths.js'
 import { THE_THEME_ATTRIBUTE, THE_THEME_KEY, THE_THEME_SCRIPT } from './theme.js'

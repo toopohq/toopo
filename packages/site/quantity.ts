@@ -15,8 +15,8 @@
  * find until one of them moves.
  */
 
-import type { Node } from './document.js'
-import { el, text } from './document.js'
+import type { Node } from './tree.js'
+import { el, text } from './tree.js'
 
 const NOTHING = {} as const
 

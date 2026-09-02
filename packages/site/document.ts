@@ -23,6 +23,12 @@
  * projection that quietly drops what the HTML shows - the only defect in this folder that could blind
  * the instrument this unit is measured with.
  *
+ * **What a page is made *of* is `tree.ts` and not this file**, which is a separation somebody made
+ * rather than a shape this folder was born with. Rendering a page means carrying the stylesheet, and
+ * the stylesheet paints components, and a component draws markup - so every module that built a node
+ * had to import the module that renders one, and the four of them stood in a ring. The vocabulary
+ * imports nothing; this file imports the vocabulary. ADR-0198.
+ *
  * **The third projection is what makes the shape pay for itself a second time.** A Markdown rendering of
  * a page is the obvious place for a second generator, and a second generator is two statements of one
  * document that drift until one of them lies. Here it is a table: `THE_READING` and `THE_MARKDOWN` are
@@ -34,9 +40,10 @@
  * ---------------------------------------------------------------------------
  *
  * Everything on a contract page is contract prose: rationales carrying quotes and backslashes, a
- * declared output alphabet that is a regular expression, inputs holding `<`. There is no node kind
- * that carries raw markup, so there is nowhere for an escape to be forgotten - the stylesheet, which is
- * the one thing that must not be escaped, is not a node and never passes through here.
+ * declared output alphabet that is a regular expression, inputs holding `<`. No node kind carries raw
+ * markup - which `tree.ts` states, because that is where a new kind would be written - so there is
+ * nowhere for an escape to be forgotten, and the stylesheet, the one thing that must not be escaped,
+ * is not a node and never passes through here.
  *
  * That is the shape this repository prefers over a rule in a header: the wrong thing is unwritable
  * rather than forbidden.
@@ -45,79 +52,7 @@
 import { THE_MARKDOWN_FILE } from './paths.js'
 import { THE_SERVED_STYLESHEET } from './served-stylesheet.js'
 import { THE_THEME_SCRIPT } from './theme.js'
-
-export type Attributes = Readonly<Record<string, string>>
-
-/**
- * Every tag this repository builds a node with, closed so that a projection cannot forget one.
- *
- * It used to be `string`, and the separator table was a partial record falling back to *no separator* -
- * which is the exact shape of the defect W-64 published: an element that carried no separator was put
- * where a block belonged, and the element after it began mid-line, on the first screen of the site. A
- * partial table cannot fail to be silent about a tag nobody entered.
- *
- * With the set closed, a total map over it is the shape ADR-0054 asks for: **one more tag does not
- * compile until every projection has said what it does with it.**
- * That is worth more here than anywhere else in this folder, because there are now three projections
- * and the cost of forgetting one is a reading that is quietly wrong rather than a page that breaks.
- *
- * Every one of them has a call site, which is a property of the set rather than a count of it: all but
- * `section` are written by a page, and that one occurs in `document.test.ts`, which builds nesting no
- * page happens to write today.
- *
- * **The last two arrived for the same reason, one at each end of the content.** `main` came with the
- * rail: a page carrying a masthead and a table of contents makes whoever navigates by landmark cross
- * both before reaching a word of the contract, and the remedy for that is the landmark rather than a
- * rule about how many links may come first. `aside` came with the column beside it, and the argument
- * is that rule read backwards - matter a reader may skip has to be skippable, and `complementary` is
- * what says so to somebody who is not looking at the columns. ADR-0116, ADR-0123.
- * Eight tags the separator table used to carry - `table`, `tr`, `ol`, `dl`, `dt`, `dd`, `header`,
- * `footer` - had no call site at all and went with it, because an entry nothing exercises is an entry
- * nothing keeps honest.
- *
- * **Two of the eight came back, and what brought them back is the rule that removed them.** The
- * artboard draws a banner at the top of the page and a contentinfo at the foot; both are now written by
- * `chrome.ts`, so both have a call site and neither is an entry nobody exercises. Five tags entered
- * with them - `span`, `svg`, `rect`, `path` for the marks the design draws, and `footer` for the foot -
- * and the compiler refused each until both projections had said what it does, which is the whole of
- * what this union is for. ADR-0182.
- */
-export type Tag =
-  | 'header'
-  | 'footer'
-  | 'h1'
-  | 'h2'
-  | 'h3'
-  | 'h4'
-  | 'p'
-  | 'pre'
-  | 'ul'
-  | 'ol'
-  | 'li'
-  | 'div'
-  | 'section'
-  | 'nav'
-  | 'main'
-  | 'aside'
-  | 'a'
-  | 'code'
-  | 'strong'
-  | 'span'
-  | 'svg'
-  | 'rect'
-  | 'path'
-  | 'script'
-
-export type TextNode = { readonly kind: 'text'; readonly text: string }
-
-export type Element = {
-  readonly kind: 'element'
-  readonly tag: Tag
-  readonly attributes: Attributes
-  readonly children: readonly Node[]
-}
-
-export type Node = TextNode | Element
+import type { Element, Node, Tag } from './tree.js'
 
 /**
  * A whole page: what it is called, what it is about, and what it says.
@@ -173,15 +108,6 @@ export type Document = {
   readonly structuredData: StructuredData | null
   readonly body: readonly Node[]
 }
-
-export const text = (value: string): Node => ({ kind: 'text', text: value })
-
-export const el = (tag: Tag, attributes: Attributes, ...children: readonly Node[]): Node => ({
-  kind: 'element',
-  tag,
-  attributes,
-  children,
-})
 
 const escapeText = (value: string): string =>
   value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')

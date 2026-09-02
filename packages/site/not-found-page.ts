@@ -31,8 +31,9 @@
  */
 
 import { endpointOf, pathTo } from '../registry/endpoints.js'
-import type { Document, Node, Tag } from './document.js'
-import { el, text } from './document.js'
+import type { Document } from './document.js'
+import type { Node, Tag } from './tree.js'
+import { el, text } from './tree.js'
 
 const NOTHING = {} as const
 
