@@ -7,7 +7,7 @@ governs:
   - packages/site/style.ts
   - packages/site/start.ts
   - packages/site/what-a-control-says.ts
-  - packages/site/document.ts
+  - packages/site/tree.ts
 confirmed-by:
   - battery: site
     guard: every-command-a-page-shows-carries-its-own-copy-control

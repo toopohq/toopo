@@ -2,7 +2,7 @@
 status: accepted
 date: 2026-08-18
 governs:
-  - packages/site/document.ts
+  - packages/site/tree.ts
 confirmed-by:
   - battery: site
     guard: every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length
