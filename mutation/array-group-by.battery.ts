@@ -652,6 +652,15 @@ export const battery: Battery = {
           find: '    expectTypeOf(groupBy).toEqualTypeOf<GroupBy>()',
           replace: '    expectTypeOf(groupBy).toBeFunction()',
         },
+        {
+          // `GroupBy` is imported for the assertion above and read nowhere else, so the edit above
+          // is the whole of what a column blind to the declared type has to say about it. A lens
+          // rewrites the suite, and this is the second half of the rewrite rather than an allowance
+          // made for a compiler flag. ADR-0200.
+          file: 'signature.test-d.ts',
+          find: 'import type { GroupBy } from \'./contract.js\'\n',
+          replace: '',
+        },
       ],
     },
   ],

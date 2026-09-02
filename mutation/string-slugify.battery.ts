@@ -51,7 +51,8 @@ const UNDER: ArmUnderTest = { arm: 'S', asCommitted: 'as-committed', blinded: ['
 const { sameOnEveryLens, onlySeenUnblinded, perLens } = mutantsOn(UNDER)
 
 // ---------------------------------------------------------------------------
-// Anchors - the exact source each edit rewrites, quoted from `reference.ts`
+// Anchors - the exact source each edit rewrites. The mutants quote `reference.ts`;
+// the lens quotes `edge-cases.test.ts`, whose guards it blinds.
 // ---------------------------------------------------------------------------
 
 const KEPT = `const KEPT = /[\\p{L}\\p{M}\\p{Nd}]/u`
@@ -85,6 +86,40 @@ const RESET = `    boundary = false
     out.push(lowered)`
 
 const ANSWER = `  return out.join('')`
+
+/**
+ * The rows the ASCII-divergence guard compares its answer against, with the paragraph that explains
+ * them, quoted whole because the lens deletes both.
+ *
+ * The quotation carries the blank line that follows `] as const`, so the rewritten file has one gap
+ * where it had one and not two.
+ */
+const THE_DIVERGENCE_ROWS = `/**
+ * The rows where this contract and an ASCII-only alphabet part company, named rather than inlined
+ * so that the mutation battery can blind this guard in one edit. Without that, a lens claiming to
+ * read the suite blind to block 4.4 would leave the one guard here that compares an answer against
+ * the table's own expectations - measured, it caught fourteen mutants on a column that was supposed
+ * to be blind to all of them.
+ */
+const DIVERGING_UNDER_AN_ASCII_ALPHABET = [
+  'a-non-latin-script-is-kept',
+  'cyrillic-is-kept',
+  'arabic-is-kept',
+  'an-indic-mark-is-kept',
+  'a-non-latin-digit-is-a-digit',
+  'an-astral-letter-is-kept',
+  'a-letter-with-no-decomposition-is-kept',
+  'a-ligature-letter-is-kept',
+  'a-stroked-letter-is-kept',
+  'a-mark-reaching-its-base-across-another',
+  'a-mark-with-no-base-to-absorb-it-is-kept',
+  'a-greek-tonos-is-removed',
+  'a-final-sigma-is-not-unified',
+  'a-written-final-sigma-is-kept',
+  'the-turkish-dotless-i-is-kept',
+] as const
+
+`
 
 // ---------------------------------------------------------------------------
 // Guards the battery pins by name. `mutants.ts` states when a cell names all of
@@ -662,6 +697,16 @@ export const battery: Battery = {
           file: 'edge-cases.test.ts',
           find: '    expect(differing).toEqual([...DIVERGING_UNDER_AN_ASCII_ALPHABET])',
           replace: '    expect(differing).toEqual(differing)',
+        },
+        {
+          // The rows the edit above was the only reader of. Blinding the comparison and keeping the
+          // list would leave the blinded suite carrying the table's expectations with nothing
+          // reading them, which is the half of the rewrite a person would not stop before. The
+          // filter that computes `differing` still runs the implementation over the whole table, so
+          // this column is blind to what the answers are and not to whether there are any. ADR-0200.
+          file: 'edge-cases.test.ts',
+          find: THE_DIVERGENCE_ROWS,
+          replace: '',
         },
       ],
     },
