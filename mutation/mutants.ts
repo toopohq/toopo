@@ -27,6 +27,25 @@
  *
  * Neither needs a probe to recognise, which is what makes them worth more than the eleven cells.
  * ADR-0203.
+ *
+ * **A third rule came out of twenty-two more in another folder, and the first two were put to the test
+ * there rather than restated.** Aiming at a choice held everywhere it was tried; the total-guard rule
+ * predicted three refusals and was wrong on three guards it was named on, every one of which isolated
+ * on its first candidate. The rule below is the one those three were mistaken for.
+ *
+ * **Two guards whose subject is one declaration - a rule, or a constant - are separable only by an arm
+ * one of them has outside it.** A population is not such an arm, however differently it was chosen:
+ * `a-query-the-catalogue-cannot-answer-answers-nothing` is twenty-eight hand-written requests and
+ * `a-word-the-catalogue-declares-beside-one-it-has-never-heard-answers-nothing` is a sweep over every
+ * word the catalogue declares, neither contains the other, and every plausible defect of the allowance
+ * they both read opens both. What isolated the first is its **second assertion** - that the one query
+ * answered while naming what it could not place still answers - which makes it red on a tightening as
+ * well as on a loosening, where its neighbour's three assertions are all the rule. So look for the arm
+ * before spending a candidate, and where a guard has none, expect the refusal.
+ *
+ * **And a guard that resists is dearer to establish than a cell is to write.** Measured over those
+ * twenty-two: 1.21 candidate runs per cell against 2.0 per refusal, which is the half ADR-0203's own
+ * table did not price. ADR-0204.
  */
 
 import type { Edit, Expectation, Mutant, PlatformFamily, SurvivalNature } from './run.ts'

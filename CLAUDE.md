@@ -2363,6 +2363,43 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   would buy - 9.4 % already isolated against this folder's 45 % - is exactly that missing calibration.**
   ADR-0203.
 
+  **The second slice is paid, in the folder that clause named, and the two rates agree.**
+  `packages/registry`'s **twenty-two** one-companion-away guards taken whole - total over the
+  population, so no selection and no easy half - **fourteen isolated, I-82 to I-90 and S-31 to S-35,
+  one cell apiece and each audited red *alone* off `failedGuards`, 14 of 14**; eight resisted, and they
+  are exactly the eight the census still reads as one companion away. **The finding is that the
+  residue's difficulty does not track how probed the folder is**: 14 of 22 here against the site's 11
+  of 16, on a folder probed at **0.22 cells per collected guard against 0.89** and **9.4 % already
+  isolated against 45 %**. So the two biases named above are worth less than five points between the
+  two folders, and **113 to 122 of the 177 are cells somebody can write** - two folders and never a
+  sample. **What the table above under-costed is the refusals**: its 1.27 counts only runs that
+  produced a cell, and 33 candidate runs over 22 guards is **1.5 per guard**, which takes its registry
+  row 416 → 492 s and the total to about 1 719 s, still under two hours with the replay. **What stays
+  refused is the authoring cost, for a new reason**: the biases are measured and small, and what is
+  missing is that nothing in either record measures authoring at all - so a third slice would land
+  inside 64 to 69 % and buy nothing.
+
+  **The prediction was committed before the first cell and scored 15 of 22 on the outcomes**, and its
+  sharpest claim was the wrong one: *none by the subset-population mechanism* is falsified by
+  `the-revision-of-a-clean-tree-is-the-commit-git-names`, whose companion re-asserts its whole clause
+  in the middle of its own case. **Three mechanisms carry all eight refusals** - a total guard, a
+  subset population, and an exact expectation shadowing a property of the value it pins - and **a
+  fourth came out of the search and is named as unpredicted**: two guards whose subject is one
+  declaration are separable only by an arm one of them has outside it, which is why the negative corpus
+  isolates and the sweep over every declared word beside it does not. All three are in
+  `mutation/mutants.ts` where somebody writing the next cell arrives.
+
+  **And one guard of this folder reddens under load, which costs the census rather than a run.**
+  `the-served-bytes-are-the-committed-bytes` hashes seven contracts' files against their git blobs
+  under vitest's default 5 000 ms and finishes in 1.66 s alone; it reddened on `I-38`, which edits
+  `emit.ts` and has no causal path to it. **A pin is checked as a subset, so nothing reported it** -
+  the cell read `killed`, agreed, and the battery exited 0. What it did was take
+  `an-edge-is-followed-to-the-artefact-it-names` **out of the isolated bucket**, `I-38` being its only
+  sole-red cell, and manufacture a reciprocal pair out of two guards with no relationship to each
+  other. So a rebuild of this census on a loaded machine has more one-companion-away guards than one on
+  an idle machine - 154 against 152, 317 alone against 318 - and no published figure says which kind of
+  machine it was taken on. ADR-0204.
+
 - **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
   reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`
   published *An implementation that memoises the pairs a failed candidate tried answers `true`* about

@@ -3,6 +3,8 @@ status: accepted
 date: 2026-09-02
 governs:
   - mutation/registry-storage.battery.ts
+  - mutation/mutants.ts
+  - CLAUDE.md
 confirmed-by: []
 ---
 
@@ -135,25 +137,271 @@ prediction does.
 
 ## Decision Outcome
 
-To be measured against the table above, in the commits that follow it.
+**Fourteen of the twenty-two are isolated, I-82 to I-90 and S-31 to S-35, one cell apiece, each red
+alone in a real battery run.** Eight are not, and each carries the reason it resisted.
+
+### What the prediction scored
+
+**Fifteen of twenty-two outcomes right, which is 68 %.** The seven wrong are R06, R09, R12, R13, R15,
+R16 and R22 — three predicted to resist and isolated, four predicted isolable and resisting.
+
+**The mechanisms score better than the outcomes, and that is the finding.** Of the four guards
+predicted to resist *by a named mechanism* and which did resist, three carry the mechanism named —
+R18 and R21 by the total-guard shadowing, R19 by the exact-value shadowing. The fourth, R05, resists
+for a reason that is not the one predicted: the label was M3 and the reason written beside it was the
+shared constant, which is a different shape and is named below.
+
+**So M1 predicts where it fires and not where it does not.** It was named on five guards and fired on
+two of them, and it also fired on R12 where nothing was predicted. Every guard it was named on that
+isolated — R06, R09, R15 — isolated on the **first** candidate, so those three were not close calls.
+
+**And the sharpest prediction was wrong.** *None by M2* was written down as the most falsifiable claim
+here, and R22 resists by M2 exactly: `the-revision-of-a-clean-tree-is-the-commit-git-names` asserts
+`theRevision(repository) === git('rev-parse', 'HEAD')`, and its companion asserts that same equality
+in the middle of its own case, between a dirty tree and an untracked file. Its population is a subset
+of the companion's for the reason ADR-0203 gives — the companion's subject is the refusal, which is a
+different design decision — and it has no arm outside it, because the shape assertion beside it tests
+the very value the equality already pins. **M2 generalises, and what says so is a prediction that it
+would not.**
+
+### What was isolated
+
+| guard | the defect the cell injects |
+| --- | --- |
+| `a-binding-that-names-no-commit-is-not-asked-about` | asks the past about every binding, anchored or not |
+| `a-commit-that-cannot-say-what-it-bound-is-refused-1` | accepts any runner so long as it takes one path |
+| `a-commit-that-cannot-say-what-it-bound-is-refused-2` | accepts anything after the one path |
+| `a-content-addressed-answer-is-public-for-a-year-and-immutable` | holds a frozen answer for a month |
+| `a-learned-term-is-one-the-contract-was-not-already-found-by` | learns a second phrase beside the one that buys something |
+| `a-miss-names-the-words-no-contract-carries` | names the first unplaceable word rather than all of them |
+| `a-named-answer-is-public-and-revalidated-before-every-use` | exempts a private cache from revalidating |
+| `a-query-the-catalogue-cannot-answer-answers-nothing` | takes the allowance's two clauses from different fields |
+| `a-query-with-no-words-answers-nothing` | excuses a wordless query from the deliberate-field check |
+| `a-rendered-binding-is-what-a-past-commit-prints` | ends the ledger on a blank line the reader forgives |
+| `a-shared-dependency-is-resolved-once` | resolves a shared dependency once per dependent |
+| `a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare` | teaches a true phrase to the contract that could still declare it |
+| `every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not` | derives revalidation from the lifetime |
+| `the-emitted-tree-is-closed` | serves a contract's own files and not the ones its guards call |
+
+**Two of the fourteen are worth more than their own guard.**
+
+`every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not` is isolated by a defect
+under which **both served headers come out byte for byte what they were**. A named answer declares a
+zero lifetime and asks to be revalidated, so deriving the second from the first renders
+`public, max-age=0, must-revalidate` exactly as before, and a content-addressed answer asks for
+neither. Nothing a host receives changes; what changes is that the field has stopped being read.
+
+`a-rendered-binding-is-what-a-past-commit-prints` is isolated by a drift **the reader forgives**, and
+it is the only kind available: the renderer and the reader are a matched pair with a round trip over
+them, so every defect that changes what a line means reddens both. A trailing blank line parses back
+to the same bindings and is not the format this repository writes once.
+
+### What resisted, with what was looked for
+
+**By the total-guard mechanism — three.**
+
+- **`every-file-a-published-contract-freezes-is-served`.** `the-emitted-tree-is-closed` reads every
+  64-hex digest back out of the served bytes, so any blob a snapshot names and the tree does not serve
+  reddens it. Measured in both directions: narrowing `filesNamedBy` to the harness reddens the closure
+  alone, and narrowing it to the shared harness reddens **both**. The way out would be a snapshot that
+  stops naming the file as well, which is inside the digest and reddens the freeze.
+- **`the-licence-file-shows-the-banner-a-reader-would-receive`.** Its two injectable inputs are
+  `THE_CURRENT_BANNER`, which R05 reads too, and `licenceHeaderOf`, which
+  `every-file-the-installer-copies-is-marked-mit-0` compares byte for byte against seven contracts'
+  own files. Measured: collapsing the banner branch reddens **that guard alone** and leaves this one
+  green, LICENSE's quoted example still being one of the forms composed.
+- **`a-rendered-set-of-bindings-reads-back-as-itself`.** The reader is on the freeze check's critical
+  path, so every defect in it reaches the end-to-end guards: swapping the pair reddens six, and
+  testing the address for being a digest reddens seven. Its own region — a round trip that fails while
+  a past commit's output still parses — needs a defect keyed to something that output has and the
+  local rendering does not, and the two texts are the same shape.
+
+**By the subset-population mechanism — one, where none was predicted.** R22, above.
+
+**By one declaration read by two guards — three, and this is the shape nobody had named.**
+
+- **`a-contract-not-yet-published-carries-the-current-banner`.** Both its injectable inputs are shared
+  with R21: the constant, and the refused contract's own declared banner. Measured in both directions —
+  flipping the constant reddens two, and giving the one contract bound by nothing the superseded header
+  reddens four.
+- **`a-rewording-that-introduces-no-unknown-word-answers-what-the-first-wording-answers`** and
+  **`a-word-the-catalogue-declares-beside-one-it-has-never-heard-answers-nothing`.** Both are
+  populations over the matching rule, and so are their neighbours. Five candidates and three: two were
+  **inert** — requiring a field's word to be spelled in full, and charging a point for a word the
+  contract cannot answer, change no answer this catalogue gives — and the rest reddened the corpus, the
+  negative half or the declared aliases beside the guard aimed at.
+
+**The eight that resisted are exactly the eight the census still reads as one companion away**, which
+is the coherence check that says the reading and the search are about the same thing.
+
+### A fourth mechanism, and it was not predicted
+
+**Two guards whose subject is one declaration — a rule or a constant — are separable only by an arm
+one of them has outside it.** A population, however differently chosen, is not such an arm.
+
+It is not M1: neither guard is total over the other's population. The twenty-eight requests of
+`a-query-the-catalogue-cannot-answer-answers-nothing` are a hand-written list and the ninety-one words
+of its neighbour are a declaration; neither contains the other, and yet every plausible defect of the
+allowance opens both, because the twenty-eight hold queries of the ninety-one's own shape.
+
+**What separates the two is which of them has an arm outside the rule.** The list of requests carries
+a second assertion — that the one query answered while naming what it could not place still answers —
+so it reddens on a *tightening* as well as on a loosening, and that is the arm its cell aims at. Its
+neighbour's three assertions are all the rule. So the one with the extra arm is isolated and the one
+without it is not, which is something a reader can apply before spending a candidate.
+
+**Naming it afterwards is worth less than naming M1 and M2 in advance, and this record says so
+rather than presenting four mechanisms as one finding.**
+
+## What this prices, and the verdict on the 177
+
+### Two rates, side by side
+
+| | `packages/site`, ADR-0203 | `packages/registry`, here |
+| --- | --- | --- |
+| the slice | 8 reciprocal pairs, 16 guards | **all 22**, total over the folder |
+| isolated | 11 of 16 = **69 %** | 14 of 22 = **64 %** |
+| candidate runs per cell | 1.27 | **1.21** |
+| candidate runs per refusal established | not spent — argued from structure | **2.0** |
+| already isolated before the slice | 45 % | **9.4 %** |
+| cells per collected guard | 0.89 | **0.22** |
+
+**The two isolable fractions agree within five points on the two folders this repository can make most
+different.** `packages/registry` had been probed at a quarter of the site's density and had a fifth of
+its already-isolated proportion; ADR-0203 named that as the axis along which the residue would be
+easier or harder. **It is neither.** So whatever the two biases that record named are worth, they are
+worth less than five points between these folders, or they cancel.
+
+### What ADR-0203's table under-costed, and by how much
+
+That table prices the search at 1.27 candidates per **isolated** guard, which counts the runs that
+produced a cell and none of the runs that established a refusal. Measured here: **33 candidate runs
+over 22 guards**, 17 aimed at guards that isolated and 16 at the eight that did not. So the multiplier
+is **1.5 runs per guard of the 177** and not 1.27 per cell.
+
+Rebuilt at 1.5, keeping each folder's own suite time as that record did — and its registry row goes
+416 s to **492 s**:
+
+| folder | of the 177 | suite run | search |
+| --- | --- | --- | --- |
+| `packages/cli` | 40 | 10.8 s | 648 s |
+| `packages/site` | 29 | 5.4 s | 235 s |
+| `packages/registry` | 22 | 14.9 s | 492 s |
+| the seven contracts | 77 | 1.4 s | 162 s |
+| `packages/validation` | 5 | 2.5 s | 19 s |
+| `packaging` | 2 | 14.9 s | 45 s |
+| `mutation/fixture` | 2 | 39.4 s | 118 s |
+| | **177** | | **≈ 1 719 s** |
+
+**The conclusion does not move**: the machine half of the whole debt is still under two hours, search
+plus one full replay. What moves is which half was priced, and the correction is 18 % — inside the
+sixth ADR-0200's floor puts on any one reading of a battery anyway.
+
+### The verdict
+
+**The isolable fraction is publishable and the authoring cost is not.**
+
+Publishable, with its rule: two folders, chosen for maximal difference on the axis that was supposed
+to decide it, isolate **64 % and 69 %** of their one-companion-away residue. Over the 177 that is
+**113 to 122 cells**, and the sentence carrying it has to say *two folders* and never *a sample* —
+with n = 2 there is no interval, and what makes the pair worth reading is the agreement rather than
+the arithmetic.
+
+**What is still refused is a figure for what authoring 177 cells costs, and the reason has changed.**
+ADR-0203 refused it because two biases of unknown size pointed in opposite directions; this unit
+measured that those biases are small, so that reason is gone. What replaces it is that **nothing in
+either record measures authoring at all** — every figure in both is a count of runs, which is the
+machine's half. The judgement half was never the biases; it is that nobody has timed a person writing
+one of these cells.
+
+**So a third slice would not close it, and that is the answer this unit owes.** A third folder would
+produce a third isolable fraction near two thirds and a third candidate rate near 1.3, and neither is
+the number that is missing. What would close it is a different measurement — the wall-clock cost of
+authoring, recorded by whoever does it — and that is not a measurement this method produces at any n.
 
 ## Consequences
 
-To be measured.
+- **Fourteen cells, I-82 to I-90 and S-31 to S-35, in `mutation/registry-storage.battery.ts`.** The
+  battery goes from 104 to **118 cells** — 113 killed, 5 survivors, nothing disagreeing. **The runner
+  prints no duration of its own**, so what is stated is a bound: 24 min 20 s separate the commit it
+  measured from the artefact it wrote, and it was launched inside that.
+- **The README's three figures move and are derived rather than transcribed**: 854 defect cells to
+  868, 812 caught to 826, survivors unmoved at 42.
+- **The census is untouched.** No guard was added, so `mutation/census.ts` is byte-identical, and the
+  folder still collects 466 guards over 24 files.
+- **ADR-0200's and ADR-0203's censuses are not rewritten.** Both are stamped and stay there; CLAUDE.md's
+  entry carries the new figures with their own coordinate and says which folder moved.
+- **The registry battery's share of its gate grows** by about three minutes, which is the entry about a
+  bound nobody compares with what a battery costs, arriving for the second unit in a row.
+
+### What the census says afterwards, and why it is published twice
+
+Re-read at `32e31ec` — **`packages/registry` from this unit's own replay and the other twelve folders
+carried from ADR-0200's at `257425c`**, which is a mixed perimeter and is named as one:
+
+| | ADR-0203 | here, as the run left it | here, corrected |
+| --- | --- | --- | --- |
+| collected | 1 608 | 1 608 | 1 608 |
+| alone | 304 | 317 | **318** |
+| never alone | 943 | 930 | **929** |
+| never red | 361 | 361 | 361 |
+| inseparable | 546 in 135 classes | 543 in 134 | **544 in 134** |
+| own red pattern | 397 | 387 | **385** |
+| one companion away | 166 | 154 | **152** |
+
+`packages/registry`'s own row goes 44/149/273 to **58/135/273** corrected, and its share of the
+one-companion-away population 22 to **8**. The collected total does not move, because a cell is not a
+guard.
+
+**There are two columns because one guard of this folder reddens under load**, and the correction is
+not a rounding. `the-served-bytes-are-the-committed-bytes` hashes every harness file of seven
+contracts against its own git blob — a child process per file — and this folder's configuration
+declares no `testTimeout`, so it runs under vitest's default 5 000 ms. It reddened on `I-38`, which
+edits `emit.ts` and has **no causal path** to a comparison between `serialiseContract`'s output and
+what git holds; ADR-0200's replay has it green there, and run alone its file finishes its twenty
+guards in 1.66 s.
+
+**What that one spurious red did is worth more than the figures it moved.** A pin is checked as a
+subset, so the cell still reads `killed`, still agrees, and the battery still exits 0 — nothing this
+instrument holds reports it. What it did to the census is:
+
+- it took `an-edge-is-followed-to-the-artefact-it-names` **out of the isolated bucket**, `I-38` being
+  its only sole-red cell, so a load flake un-isolated a load-bearing guard;
+- and it manufactured a **reciprocal pair** out of that guard and the noisy one — two guards with no
+  relationship to each other, reading as the sharpest form of one-companion-away.
+
+So a rebuild of ADR-0200's census on a loaded machine has more one-companion-away guards than one on
+an idle machine, and no published figure anywhere says which kind of machine it was taken on. It is
+recorded rather than repaired: raising a timeout is a decision about what a guard may cost, and this
+unit's subject is what a guard can be seen alone on.
 
 ## What would reopen this
 
-**A replay at a later commit reopens every figure here**, and none is written in the present tense
-for that reason.
-
-**A third slice reopens the two rates**, and this record says in advance what that would have to
-answer: whether a third point bounds the error of an extrapolation to 177, or whether the method
-cannot produce that figure at all.
+**Two of the four triggers this section was committed with fired inside the unit that wrote them**,
+and they are kept as they were rather than tidied, because a trigger that fires is the only kind that
+has been shown to work.
 
 **A guard resisting by M2 reopens the prediction above**, which names no such guard in this folder.
+**Fired**: R22, and it is the finding of the prediction half.
 
 **A mechanism found while searching, and not named above, reopens both records.** Predicting it
-afterwards does not count, and this paragraph is what makes that checkable.
+afterwards does not count, and this paragraph is what makes that checkable. **Fired**: the fourth
+mechanism, one declaration read by two guards, which is named as unpredicted for exactly that reason.
+
+**A replay at a later commit reopens every figure here**, and none is written in the present tense for
+that reason.
+
+**A third slice reopens the two rates** — and this record has already answered what it would buy, so
+what would reopen *that* answer is a slice whose isolable fraction falls outside 64 to 69 %. A third
+reading inside that band settles nothing and the verdict above says so.
+
+**A reading of this folder's census on an idle machine reopens the corrected column**, which is one
+run with one spurious red removed by an argument about causality rather than by a second measurement.
+The cheap form is `I-38` re-run alone; it is not taken here, because what the correction establishes
+is a hazard of the method and not a figure this unit depends on.
+
+**And a `testTimeout` for `packages/registry` retires the column entirely**, which is a decision about
+what a guard may cost that nobody has taken.
 
 ## More Information
 
@@ -167,3 +415,30 @@ A *reciprocal pair* is ADR-0203's shape: each guard's only two-guard companion i
 the 22 have a single companion that is **already load-bearing**, which reads like a reciprocal pair to
 a sweep that does not check the companion's own bucket and is not one — the pair is already separated
 in one direction.
+
+Candidates were searched for by mutating `packages/registry` and running that folder's suite exactly
+as `run.ts` runs it — the same entry point, `--typecheck`, both reporters, `TZ=UTC` and the folder's
+own configuration — and reading the failed guards out of the JSON report. That is a search tool and
+never the measurement: **every pin here comes from a real battery run**, and because a pin is checked
+as a subset, *alone* was audited by reading `failedGuards` back off the battery's own artefact — 14 of
+14, one red apiece, every cell `killed` and agreeing.
+
+**The search tool was given a type-error check part way through, and it is why all fourteen were
+re-run.** A mutant that fails to typecheck still runs: vitest reports the type errors separately and
+executes the JavaScript anyway, so a candidate can read *red alone* while being a cell the compiler
+refuses — which is `killed-by-typecheck` under a pin that says `killed`, the state ADR-0200 found
+`number/parse@1`'s `N-4` in. All fourteen report `Type Errors  no errors` beside their single red.
+
+```sh
+npx tsc -p tsconfig.json --noEmit     # exit 0
+pnpm run anchors                      # 805 anchors across 104 files, 0 loose
+pnpm run registry                     # 466 passed
+npm run battery -- registry-storage   # 118 cells, 0 disagreeing, exit 0
+pnpm run meta                         # 10 files, 120 passed
+pnpm run freeze                       # 3 passed - no published binding moved
+```
+
+**No digest could have moved and it is measured rather than argued**: `git diff --name-only
+dea8ab3..HEAD -- contracts packages/catalogue` names nothing, so neither a contract's own files nor
+either of the two shared ones was touched, and the freeze is green beside that reading rather than in
+place of it.
