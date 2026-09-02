@@ -209,9 +209,11 @@ both directions, so the class is gone rather than reduced.
 
 The search costs one suite run per candidate. Those run times are published per configuration rather
 than extrapolated from one — ADR-0162 measured them all at `505fddb`: contracts 1.4 s, validation
-2.5 s, site 5.4 s, cli 10.8 s, registry 14.9 s, packaging 14.9 s, meta 39.4 s. **This unit's own site
-readings are 4.1 to 4.4 s over fourteen candidate runs**, which is the same figure a unit later and is
-the only one of the seven this unit re-took.
+2.5 s, site 5.4 s, cli 10.8 s, registry 14.9 s, packaging 14.9 s, meta 39.4 s. **The site is the one of
+the seven this unit re-took, and it came back lower**: 4.0 to 4.4 s over the twelve candidate runs that
+printed a duration, against 5.4 s. The table below keeps 5.4 s rather than the reading taken here,
+because six of its seven rows are that record's and mixing a fresh figure into one row of six stale
+ones would publish a total taken at no commit at all.
 
 At this slice's rate of **1.27 candidates per isolated guard**, and taking each folder's own suite
 time, the search over the whole 177 is:
@@ -298,10 +300,20 @@ comes from a real battery run**, and because a pin is checked as a *subset* — 
 guards than its pin names does not disagree with it — *alone* was audited by reading `failedGuards`
 back off the battery's own artefact rather than by trusting a green run.
 
+**The battery is spelled the way the runner takes an argument.** `pnpm run battery -- site` resolves
+`mutation/--.battery.ts` and measures nothing; the usage block in `measure.ts` documents the npm
+spelling, and that is what was run.
+
 ```sh
 npx tsc -p tsconfig.json --noEmit   # exit 0
 pnpm run anchors                    # 791 anchors across 104 files, 0 loose
-pnpm run battery -- site            # 167 cells, 0 disagreeing
-pnpm run freeze                     # green either side, no digest moved
-pnpm run meta                       # green
+pnpm run site                       # 187 passed
+npm run battery -- site             # 167 cells, 0 disagreeing, exit 0, 764 s
+pnpm run meta                       # 10 files, 120 passed
+pnpm run freeze                     # 3 passed - no published binding moved
 ```
+
+**No digest could have moved and it is measured rather than argued**: `git diff --name-only
+43062b6..HEAD -- contracts packages/catalogue` names nothing, so neither a contract's seven files nor
+either of the two shared ones was touched, and the freeze is green beside that reading rather than in
+place of it.
