@@ -92,6 +92,46 @@ const moveIt = (project: TemporaryProject, lockfile: Lockfile): string | null =>
 
 describe('the configured folder moving', () => {
   /**
+   * A relocation reads a file at every path the lockfile claims and writes it at the new folder, so a
+   * claimed path that leaves the folder is a file of the user's being read and moved.
+   *
+   * The whole move is refused rather than that one entry being skipped, which is the rule this function
+   * already keeps for a destination holding something else: a project half in one folder and half in
+   * another is a state no command afterwards could describe.
+   */
+  it('a-relocation-of-a-path-that-leaves-the-folder-is-refused', () => {
+    const project = aProject(FROM)
+    try {
+      const outcome = planRelocation(project.root, FROM, TO, {
+        version: EMPTY_LOCKFILE.version,
+        features: [
+          {
+            contract: { language: 'typescript', name: 'imagined-number/round', major: 1 },
+            implementation: { id: 'reference', version: '1.0.0' },
+            files: [
+              {
+                path: '../../../elsewhere.ts',
+                sha256: 'd'.repeat(64),
+                bytes: 1,
+                served: { path: 'reference.ts', sha256: 'd'.repeat(64), bytes: 1 },
+              },
+            ],
+            installedAt: A_PINNED_INSTANT,
+            locallyModified: false,
+            askedFor: true,
+            servedFrom: 'e'.repeat(40),
+          },
+        ],
+      })
+
+      expect('faults' in outcome && outcome.faults.length).toBe(1)
+      expect('faults' in outcome && outcome.faults[0]).toContain('"../../../elsewhere.ts"')
+    } finally {
+      project.remove()
+    }
+  })
+
+  /**
    * Every file lands under the new folder, none is left under the old, and no byte changes.
    *
    * The bytes matter more than the paths: nothing that decides a byte in this folder can see the

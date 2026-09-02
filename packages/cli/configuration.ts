@@ -24,6 +24,7 @@ import { join } from 'node:path'
 
 import { THE_INVOCATION } from '../registry/address.js'
 import { LOCKFILE } from './lockfile.js'
+import { staysInside } from './where-a-file-may-land.js'
 
 export const CONFIGURATION_FILE = 'toopo.json'
 
@@ -32,15 +33,6 @@ export type Configuration = {
   /** Where installed features go, relative to the project root, with forward slashes. */
   readonly directory: string
 }
-
-/**
- * A path that stays inside the project and means the same thing on every platform.
- *
- * Backslashes are refused rather than normalised. A configuration written on Windows and committed
- * would otherwise name a directory no other machine can resolve, and silently repairing it here would
- * leave the committed file saying something this tool does not mean.
- */
-const DIRECTORY = /^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*$/
 
 export const configurationFaults = (value: unknown): readonly string[] => {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -57,7 +49,7 @@ export const configurationFaults = (value: unknown): readonly string[] => {
           `${CONFIGURATION_FILE} carries version ${JSON.stringify(held['version'])}, and this ` +
             `\`toopo\` writes version 1`,
         ]),
-    ...(typeof directory === 'string' && DIRECTORY.test(directory) && !directory.split('/').includes('..')
+    ...(typeof directory === 'string' && staysInside(directory)
       ? []
       : [
           `${CONFIGURATION_FILE} carries ${JSON.stringify(directory)} as its directory, which is not ` +

@@ -179,6 +179,43 @@ describe('writing into somebody else project', () => {
     })
   })
 
+  /**
+   * A path that leaves the directory is refused where every other bad destination is, which is in the
+   * phase whose whole property is that abandoning it costs nothing.
+   */
+  it('a-write-that-leaves-the-directory-is-refused-with-nothing-staged', () =>
+    inProject((project) => {
+      const outcome = commit(project.root, 'src/lib/toopo', {
+        writes: [{ path: '../../../elsewhere.ts', bytes: Buffer.from('not ours to write\n', 'utf8') }],
+        removals: [],
+        leaving: null,
+        lockfile: EMPTY_LOCKFILE,
+        configuration: null,
+      })
+
+      expect('faults' in outcome && outcome.faults.length).toBe(1)
+      expect('faults' in outcome && outcome.faults[0]).toContain('"../../../elsewhere.ts"')
+      expect(everythingUnder(project.root)).toEqual([])
+    }))
+
+  /**
+   * And a removal is refused in that same phase rather than in its own, which is the half that needed
+   * moving: removals happen after the renames, where there is no refusal left to make.
+   */
+  it('a-removal-that-leaves-the-directory-is-refused-before-anything-is-written', () =>
+    inProject((project) => {
+      const outcome = commit(project.root, 'src/lib/toopo', {
+        writes: [A_FILE('export const pad = 1\n')],
+        removals: ['../../../elsewhere.ts'],
+        leaving: null,
+        lockfile: EMPTY_LOCKFILE,
+        configuration: null,
+      })
+
+      expect('faults' in outcome && outcome.faults[0]).toContain('"../../../elsewhere.ts"')
+      expect(everythingUnder(project.root)).toEqual([])
+    }))
+
   it('a-removal-tidies-the-folder-it-emptied', () => {
     inProject((project) => {
       commit(project.root, project.configuration.directory, {

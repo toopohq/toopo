@@ -43,6 +43,22 @@ const planned = () => {
 
 describe('where every file lands', () => {
   /**
+   * The registry decides both halves of a destination - the contract's name and the file's path - so
+   * the plan is where a served answer stops being able to name a place of its own choosing.
+   */
+  it('a-served-path-that-leaves-the-directory-is-refused-by-the-plan', () => {
+    const hostile = frozen({
+      ...pad,
+      files: [{ path: '../../../../elsewhere.ts', sha256: 'c'.repeat(64), bytes: 1 }],
+    })
+
+    const result = planInstall([hostile])
+
+    expect('faults' in result && result.faults.length).toBe(1)
+    expect('faults' in result && result.faults[0]).toContain('elsewhere.ts')
+  })
+
+  /**
    * The entry file is named after the feature and not after what it was in our catalogue. `reference`
    * says what the file was to us; in the user's editor every installed feature would otherwise open a
    * tab called `reference.ts`.

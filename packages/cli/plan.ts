@@ -98,6 +98,7 @@ import type { ImplementationAddress } from '../registry/address.js'
 import { renderContract, renderImplementation } from '../registry/address.js'
 import type { HarnessFile } from '../registry/implementation-record.js'
 import type { FrozenImplementation } from '../registry/snapshot.js'
+import { staysInside, theRefusal } from './where-a-file-may-land.js'
 
 /** The name the catalogue gives an implementation's entry file, required of every contract folder. */
 export const THE_ENTRY_FILE = 'reference.ts'
@@ -175,6 +176,14 @@ export const planInstall = (order: readonly FrozenImplementation[]): PlanResult 
       const isEntry = served.path === THE_ENTRY_FILE
       const shared = isEntry ? undefined : placedByDigest.get(served.sha256)
       const path = shared ?? destinationOf(held.contract.name, served.path)
+
+      // Both halves of that composition are the registry's, so the confinement is asked of the
+      // result rather than of either - a contract whose name left the directory would satisfy a
+      // check written about the file name beside it.
+      if (!staysInside(path)) {
+        faults.push(theRefusal(`the registry, serving ${rendered},`, path))
+        continue
+      }
 
       if (shared === undefined) {
         const collides = placedByPath.get(path)

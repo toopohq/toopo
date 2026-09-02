@@ -56,6 +56,7 @@ import { dirname, join, posix } from 'node:path'
 import { importSpecifiersIn } from '../validation/forbidden-constructs.js'
 import { readSources } from '../validation/source.js'
 import { removeDirectory } from './remove-directory.js'
+import { theRefusal, under } from './where-a-file-may-land.js'
 
 /** One file to be rewritten, addressed by the path the catalogue serves it at. */
 export type SourceToRewrite = {
@@ -133,17 +134,21 @@ export const rewrittenSources = (
   const root = mkdtempSync(join(tmpdir(), 'toopo-rewrite-'))
 
   try {
+    const staged: string[] = []
     for (const source of sources) {
-      const path = join(root, source.servedAt)
+      const path = under(root, '', source.servedAt)
+      if (path === null) return { faults: [theRefusal('the registry', source.servedAt)] }
+
       mkdirSync(dirname(path), { recursive: true })
       writeFileSync(path, source.text, 'utf8')
+      staged.push(path)
     }
 
     const project = join(root, 'tsconfig.json')
     writeFileSync(project, THE_PARSING_PROJECT, 'utf8')
 
     return readSources(
-      { project, files: sources.map((source) => join(root, source.servedAt)) },
+      { project, files: staged },
       (parsed): RewriteResult => {
         const faults: string[] = []
         const rewritten = new Map<string, string>()

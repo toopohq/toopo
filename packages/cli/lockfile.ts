@@ -40,6 +40,7 @@ import { THE_INVOCATION, renderContract } from '../registry/address.js'
 import { digestOfBytes, servedBytes } from '../registry/canonical.js'
 import type { InstalledFile, LockedFeature, Lockfile } from '../registry/implementation-record.js'
 import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import { staysInside, under } from './where-a-file-may-land.js'
 
 export const LOCKFILE = 'toopo.lock'
 
@@ -66,13 +67,17 @@ type Check = {
  * three parts a comparison with the registry needs.
  */
 const FILE_FIELDS_OF: Readonly<Record<keyof InstalledFile, Check>> = {
-  path: { holds: (value) => typeof value === 'string', missing: 'has no path' },
+  path: {
+    holds: (value) => typeof value === 'string' && staysInside(value),
+    missing: 'does not name a file inside the configured directory',
+  },
   sha256: { holds: (value) => typeof value === 'string', missing: 'has no sha256' },
   bytes: { holds: (value) => typeof value === 'number', missing: 'has no byte count' },
   served: {
     holds: (value) =>
       isRecord(value) &&
       typeof value['path'] === 'string' &&
+      staysInside(value['path']) &&
       typeof value['sha256'] === 'string' &&
       typeof value['bytes'] === 'number',
     missing: 'does not say what the registry served',
@@ -314,8 +319,8 @@ export const withFeature = (lockfile: Lockfile, feature: LockedFeature): Lockfil
 
 /** What a file on disk hashes to under the served form, or `null` when it is not there. */
 export const digestOnDisk = (root: string, directory: string, path: string): string | null => {
-  const full = join(root, directory, path)
-  if (!existsSync(full)) return null
+  const full = under(root, directory, path)
+  if (full === null || !existsSync(full)) return null
 
   return digestOfBytes(servedBytes(readFileSync(full)))
 }

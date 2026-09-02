@@ -80,11 +80,11 @@
  */
 
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 
 import type { Lockfile } from '../registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
-import { digestOnDisk } from './lockfile.js'
+import { digestOnDisk, LOCKFILE } from './lockfile.js'
+import { theRefusal, under } from './where-a-file-may-land.js'
 import type { FileToWrite } from './write.js'
 
 /** What became of one file the lockfile claims. */
@@ -156,6 +156,12 @@ export const planRelocation = (
 
   for (const feature of lockfile.features) {
     for (const file of feature.files) {
+      const at = under(root, from, file.path)
+      if (at === null) {
+        faults.push(theRefusal(LOCKFILE, file.path))
+        continue
+      }
+
       const verdict = verdictOf(root, from, to, file.path)
 
       if (typeof verdict !== 'string') {
@@ -163,11 +169,7 @@ export const planRelocation = (
         continue
       }
 
-      moves.push({
-        path: file.path,
-        verdict,
-        bytes: verdict === 'moved' ? readFileSync(join(root, from, file.path)) : null,
-      })
+      moves.push({ path: file.path, verdict, bytes: verdict === 'moved' ? readFileSync(at) : null })
     }
   }
 

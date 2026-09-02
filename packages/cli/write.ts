@@ -75,6 +75,7 @@ import type { Lockfile } from '../registry/implementation-record.js'
 import type { Configuration } from './configuration.js'
 import { CONFIGURATION_FILE, writeConfiguration } from './configuration.js'
 import { LOCKFILE, writeLockfile } from './lockfile.js'
+import { theRefusal, under } from './where-a-file-may-land.js'
 
 /**
  * The suffix a staged file carries. Deliberately not a `.ts` file: a compiler that met one of these
@@ -219,9 +220,29 @@ export type CommitOutcome =
 export const commit = (root: string, directory: string, what: Commit): CommitOutcome => {
   const staged: { readonly temporary: string; readonly destination: string; readonly path: string }[] = []
   const faults: string[] = []
+  const removeUnder = join(root, what.leaving ?? directory)
+
+  /**
+   * Both lists are confined here, before anything is staged, and the removals are why it is here
+   * rather than beside each operation.
+   *
+   * A write that leaves the directory can be refused where it is composed, because staging is a phase
+   * whose whole property is that abandoning it costs nothing. A removal cannot: it happens after the
+   * renames, where there is no longer a refusal to make - so the only place a bad one can still be
+   * answered with a sentence is before the first file is written.
+   */
+  const removals = what.removals.map((path) => ({ path, at: under(root, what.leaving ?? directory, path) }))
+  for (const removal of removals) {
+    if (removal.at === null) faults.push(theRefusal('a file this command would remove', removal.path))
+  }
 
   for (const write of what.writes) {
-    const destination = join(root, directory, write.path)
+    const destination = under(root, directory, write.path)
+    if (destination === null) {
+      faults.push(theRefusal('a file this command would write', write.path))
+      continue
+    }
+
     const where = `${directory}/${write.path}`
     const kind = destinationFaults(destination, where)
     if (kind.length > 0) {
@@ -260,10 +281,8 @@ export const commit = (root: string, directory: string, what: Commit): CommitOut
 
   for (const entry of staged) renameSync(entry.temporary, entry.destination)
 
-  const removeUnder = join(root, what.leaving ?? directory)
-
-  for (const path of what.removals) {
-    const full = join(removeUnder, path)
+  for (const removal of removals) {
+    const full = removal.at as string
     rmSync(full, { force: true })
 
     for (const folder of emptiedFolders(removeUnder, full)) {

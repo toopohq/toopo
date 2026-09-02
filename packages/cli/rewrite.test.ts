@@ -33,6 +33,23 @@ const rewritten = (servedAt: string, text: string): string => {
 
 describe('pointing an import at where the file went', () => {
   /**
+   * The parsing project is a directory of ours, and a served path composes a place inside it exactly
+   * the way it composes one inside somebody's project - so it is confined by the same rule.
+   *
+   * It matters more here than the arithmetic suggests: this is the first thing an install writes, so a
+   * path refused only later would already have put a file somewhere by the time it was refused.
+   */
+  it('a-served-path-that-leaves-the-parsing-project-is-refused-before-it-is-written', () => {
+    const result = rewrittenSources(
+      [{ servedAt: '../../elsewhere.ts', text: 'export const x = 1\n' }],
+      THE_CATALOGUE_TREE,
+    )
+
+    expect('faults' in result && result.faults.length).toBe(1)
+    expect('faults' in result && result.faults[0]).toContain('"../../elsewhere.ts"')
+  })
+
+  /**
    * The cost of naming the entry file after its feature, paid here. A published `imagined-number/clamp` names
    * its dependency as `../../imagined-string/pad/reference.js`, which is wrong the moment that file lands as
    * `imagined-string/pad.ts` - a level shallower as well as under another name.

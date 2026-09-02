@@ -78,7 +78,6 @@
  */
 
 import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 
 import type { ContractAddress } from '../registry/address.js'
 import { renderContract } from '../registry/address.js'
@@ -89,6 +88,7 @@ import type { FrozenImplementation } from '../registry/snapshot.js'
 import type { Configuration } from './configuration.js'
 import type { FileDiff } from './diff.js'
 import { diffOf } from './diff.js'
+import { under } from './where-a-file-may-land.js'
 import { digestOnDisk, withFeature } from './lockfile.js'
 import type { InstallPlan, PlannedFeature } from './plan.js'
 import { planInstall } from './plan.js'
@@ -253,10 +253,10 @@ const keyOf = (contract: ContractAddress): string => renderContract(contract)
  * whose git rewrites checkouts to CRLF would otherwise see every line of every file in the diff, on a
  * project where nothing has changed at all.
  */
-const installedText = (request: ReconcileRequest, path: string): string => {
-  const full = join(request.root, request.configuration.directory, path)
+const installedText = (request: ReconcileRequest, path: string): string | null => {
+  const full = under(request.root, request.configuration.directory, path)
 
-  return servedBytes(readFileSync(full)).toString('utf8')
+  return full === null ? null : servedBytes(readFileSync(full)).toString('utf8')
 }
 
 // ---------------------------------------------------------------------------
@@ -406,6 +406,20 @@ const verdictOf = (
  * a `conflict` the two differ - which is the point: what the user decides is what accepting would do
  * to the file they are actually holding.
  */
+/**
+ * The diff a reader is shown, or `null` where there is no file of theirs to show one against.
+ *
+ * The `null` is unreachable from here: a verdict of `updated` or `conflict` requires `digestOnDisk` to
+ * have found something, and it composes the same path through the same confinement. It is written as an
+ * answer rather than as an assertion because a diff is the one thing this command prints out of a file
+ * it did not write, and the arm that decides to print one may not be the arm that decided it was ours.
+ */
+const changeAt = (request: ReconcileRequest, path: string, bytes: Buffer): FileDiff | null => {
+  const installed = installedText(request, path)
+
+  return installed === null ? null : diffOf(installed, bytes.toString('utf8'))
+}
+
 const outcomeOf = (
   request: ReconcileRequest,
   claimed: Claimed,
@@ -420,10 +434,7 @@ const outcomeOf = (
     path,
     verdict,
     bytes: WRITES.has(verdict) ? bytes : null,
-    change:
-      verdict === 'updated' || verdict === 'conflict'
-        ? diffOf(installedText(request, path), bytes.toString('utf8'))
-        : null,
+    change: verdict === 'updated' || verdict === 'conflict' ? changeAt(request, path, bytes) : null,
   }
 }
 
