@@ -41,10 +41,15 @@
  * This file cannot tell the two apart, so the battery declares which is which, and this file refuses
  * a silence nobody accounts for - and refuses a declaration a mutant contradicts, which is how a
  * region leaves the list once it is probed.
+ *
+ * Those three are about silence, and the reading at the foot of this file is about its mirror: a guard
+ * that reddened on a cell whose pin does not name it. It is a report rather than a refusal and it says
+ * at length why, because a pin checked as a subset is what let one load flake rewrite a census with
+ * every gate green.
  */
 
 import type { Battery, Calibration, GuardIdentity, RunResult, SilentGuards } from './run.ts'
-import { thePlatformFamily } from './run.ts'
+import { THE_MOST_REDS_A_PIN_NAMES_IN_FULL, thePlatformFamily } from './run.ts'
 
 export type GuardAttribution = {
   readonly guard: string
@@ -272,3 +277,94 @@ export const disagreementsIn = (columns: readonly ColumnAttribution[]): readonly
         `declaration is stale and must be removed.`,
     ),
   ])
+
+/**
+ * A guard that reddened on a cell whose own pin does not name it, where the pin owed the name.
+ *
+ * ---------------------------------------------------------------------------
+ * Why the reading exists
+ * ---------------------------------------------------------------------------
+ *
+ * `unaccountedFor` above is the silence: a guard nothing reddens and no declaration explains. This is
+ * its mirror, and until it was written the instrument had no reading of it at all. **A pin is checked
+ * as a subset** - `agreesWith` asks that every named guard reddened - so a cell that reddens more than
+ * its pin names still reads `killed`, still agrees, and the battery still exits 0. Nothing anywhere
+ * said a word.
+ *
+ * That silence has a cost measured rather than imagined. ADR-0204 published a census in two columns
+ * because one guard of `packages/registry` reddened on `I-38`, a cell that edits `emit.ts` and has no
+ * causal path to it: the extra red took a load-bearing guard out of the isolated bucket and
+ * manufactured a reciprocal pair out of two guards with no relationship to each other. The run was
+ * green throughout. And `array-group-by.battery.ts` carries the same class found by hand - *this pin
+ * named one where it owed four* - discovered while giving something else an address.
+ *
+ * ---------------------------------------------------------------------------
+ * Why it stops at the line, which is the whole of what makes it readable
+ * ---------------------------------------------------------------------------
+ *
+ * Above `THE_MOST_REDS_A_PIN_NAMES_IN_FULL` a pin names the guards the mutant was written to exercise
+ * and deliberately not the rest, so an unnamed red there is the convention working and reporting it
+ * would be reporting a decision. Measured over the twenty-three artefacts of one replay: the reading
+ * taken over *every* cell answers 634 guards, of which 46 of `packages/registry`'s 47 reddened only on
+ * cells above the line. Bounded by the line it answers **155 cells** across the repository, and it
+ * contains `I-38`.
+ *
+ * **The reading over guards rather than over cells was tried first and is measurably blind to the
+ * case.** A guard named by *some* pin of the run is accounted for under it, and
+ * `the-served-bytes-are-the-committed-bytes` is named by `I-65`'s pin - so the guard-level form reports
+ * nothing on the very run that motivated this. A pin is a per-cell object and the convention is a
+ * per-cell rule, so the reading is per cell.
+ *
+ * ---------------------------------------------------------------------------
+ * Why it reports and does not refuse
+ * ---------------------------------------------------------------------------
+ *
+ * It is deliberately absent from `disagreementsIn`, and the reason is a measurement rather than a
+ * caution. An unclaimed red is either a load flake or a real detection nobody pinned, **nothing in one
+ * run separates the two**, and the repository holds 155 of them today - so refusing would redden
+ * twenty-one of twenty-three batteries and both gates behind them, on a debt rather than on a fault.
+ *
+ * There is no threshold either, and its absence is the decision. The count is at zero when every pin
+ * at or below the line names its reds; a number chosen to be tolerated would publish a level of noise
+ * nobody established.
+ *
+ * It is not written into the results file: every term of it is already in `results`, and a second copy
+ * is one more thing free to drift.
+ */
+export type UnclaimedRed = {
+  readonly cell: string
+  readonly named: readonly string[]
+  readonly unclaimed: readonly string[]
+}
+
+export const unclaimedRedsIn = (results: readonly RunResult[]): readonly UnclaimedRed[] =>
+  results
+    .filter(
+      (cell) =>
+        cell.failedGuards.length > 0 &&
+        cell.failedGuards.length <= THE_MOST_REDS_A_PIN_NAMES_IN_FULL,
+    )
+    .map((cell) => ({
+      cell: `${cell.mutant} ${cell.arm}/${cell.lens}`,
+      named: cell.expected.by ?? [],
+      unclaimed: cell.failedGuards.filter((id) => !(cell.expected.by ?? []).includes(id)),
+    }))
+    .filter((entry) => entry.unclaimed.length > 0)
+
+export const renderUnclaimedReds = (reds: readonly UnclaimedRed[]): string =>
+  [
+    `red, UNCLAIMED BY THE PIN OF ITS OWN CELL - at or below the line ADR-0076 draws, where a pin ` +
+      `owes every guard it reddened (${reds.length})`,
+    ...reds.flatMap((entry) => [
+      `  ${entry.cell}  ${entry.named.length} named, ${entry.unclaimed.length} unclaimed`,
+      ...entry.unclaimed.map((id) => `    ${id}`),
+    ]),
+    ...(reds.length === 0
+      ? []
+      : [
+          '',
+          'Each is a load flake or a detection nobody pinned, and one run does not tell them apart. ' +
+            'Establish which, then name it in the pin - never to quieten a red whose cause is unread.',
+        ]),
+    '',
+  ].join('\n')

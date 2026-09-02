@@ -25,7 +25,13 @@
 
 import type { Battery, RunResult } from './run.ts'
 import { calibrate, runBattery, writeResults } from './run.ts'
-import { attributionOf, disagreementsIn, renderAttribution } from './attribution.ts'
+import {
+  attributionOf,
+  disagreementsIn,
+  renderAttribution,
+  renderUnclaimedReds,
+  unclaimedRedsIn,
+} from './attribution.ts'
 
 const [name, ...flags] = process.argv.slice(2)
 
@@ -206,6 +212,13 @@ if (!complete) {
   const disagreements = disagreementsIn(attribution)
 
   process.stdout.write(`\n${renderAttribution(attribution)}`)
+
+  /**
+   * Printed beside the attribution and read into no verdict. `attribution.ts` carries the argument;
+   * what belongs here is that the count in its header *is* the aggregate for this run, so nothing
+   * restates it further down - a second copy of one number is one more thing free to drift.
+   */
+  process.stdout.write(`${renderUnclaimedReds(unclaimedRedsIn(results))}`)
 
   if (disagreements.length === 0) {
     process.stdout.write('every guard of this contract is either witnessed or accounted for\n')

@@ -180,6 +180,25 @@ export type Expectation = {
   readonly onlyOn?: OnlyOnePlatform
 }
 
+/**
+ * How many red guards a pin still owes in full, which is the line ADR-0076 draws.
+ *
+ * At or below it a pin names every guard the cell reddened; above it a pin names the guards the
+ * mutant was written to exercise and nothing else, because pinning the rest transcribes a run instead
+ * of claiming anything about the contract.
+ *
+ * **It is declared here rather than left in prose because `attribution.ts` reads it.** A pin is
+ * checked as a *subset* - `agreesWith` asks that every named guard reddened and never that every
+ * reddened guard was named - so above the line that asymmetry is the convention working, and at or
+ * below it a red nobody named is a pin that owes one. Nothing could tell those two apart while the
+ * number lived only in a record.
+ *
+ * Five is a convention and ADR-0076 says so in as many words: what was measured is a distribution of
+ * red-set sizes, and where to cut it is a choice. It moves when that distribution is re-measured, and
+ * the reading built on it moves with it.
+ */
+export const THE_MOST_REDS_A_PIN_NAMES_IN_FULL = 5
+
 /** Which family this machine belongs to. Node spells exactly one of them `win32`. */
 export const thePlatformFamily = (platform: string = process.platform): PlatformFamily =>
   platform === 'win32' ? 'windows' : 'posix'
