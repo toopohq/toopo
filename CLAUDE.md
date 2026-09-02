@@ -2241,12 +2241,43 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   whose `unprobedRegions` is empty and whose `unreachableGuards` name neither; and `mutation/run.ts`,
   where a pin declares what a cell must produce and never what a guard has been alone on.
 
-  **The population is every guard the batteries leave in the *never alone* bucket**, and one battery
-  of it has now been read. Measured at `9e41d44` off `npm run battery site`'s own attribution: **191
-  guards carry one, 88 have been seen red alone, and 103 have not** - so a little over half of what
-  that battery accounts for is red only in company. It is one battery of twenty-three and it is the
-  first figure this entry has ever carried; the other twenty-two are unread, and `npm run tally`
-  refuses the artefacts under `mutation/results/` as measured before the commit they would describe.
+  **The population is every guard the batteries leave in the *never alone* bucket**, and it has been
+  read over ten folders rather than over one. The first figure it carried was `site`'s alone, measured
+  at `9e41d44`: **191 guards carry an attribution, 88 have been seen red alone, and 103 have not.**
+
+  **Measured at `05a193c` off a full replay** - `pnpm run mutation`, 23 batteries, 60 min 14 s - **over
+  the ten folders read whole: 1 379 guards collected, 1 060 carrying an attribution, 259 seen red
+  alone, 801 never alone, 319 never red, and nought unaccounted for.** So **801 of the 1 060 guards
+  that redden at all have never carried a defect by themselves.**
+
+  **The perimeter is declared rather than sampled.** 20 of the 23 artefacts describe that commit and
+  **699 of the 873 cells** were measured, because `array-group-by`, `string-levenshtein` and
+  `string-slugify` threw during calibration - three controls red since `9158603`, which is the other
+  half of ADR-0199 and the reason this reading was available at all. Those three folders keep only
+  their `-spec` battery, so they publish `alone` as a **floor** - ≥ 8 on `array/group-by`, ≥ 8 on
+  `string/slugify`, ≥ 9 on `string/levenshtein` - and `never red` as a **ceiling** - ≤ 84, ≤ 64 and
+  ≤ 41. Across all thirteen folders, perimeter mixed: 1 608, 284, 816 and 508.
+
+  **A guard is addressed by the pair `(folder, identifier)`, and the size of the alternative is why
+  that is worth a sentence**: 1 608 pairs against **1 539 bare identifiers**, so **69 collide across
+  folders**. `determinism` exists on several contracts and is not one guard there, and a union over
+  identifiers alone publishes a total wrong by that much with a method that looks clean.
+
+  **What the total does not say, and what two measurements do.** Of the 801 never alone, **501 sit in
+  an inseparable class** - 113 classes of guards reddening on exactly the same cells everywhere they
+  are collected, so **no existing cell tells them apart**. That is where *alone is unreachable* lives
+  and it names the pairs, and that every guard in a class is never alone is a tautology rather than a
+  finding. The other **300** have a red pattern of their own, and **152 are one companion away** -
+  there is a cell on which they redden beside exactly one other guard - 40 in `packages/cli`, 29 in
+  `packages/site`, 22 in `packages/registry`. Those 152 are the cheapest of what is left to do, and
+  neither a total nor a distance alone would have named them.
+
+  **The never-red half carries a proportion nobody had ever taken.** Of `packages/registry`'s 466
+  guards, **262 are declared `unprobedClaims`** - *claims detection, so decorative until a mutant
+  reaches it*. Every one of those declarations was written deliberately and none is silent; what had
+  never been done is to read them together, and more than half of that suite is a region its battery
+  does not probe. **The meta suite is outside all of it**: no battery injects into `mutation/`, so its
+  **115 guards over 10 files** are out of this population by construction. ADR-0199.
 
   **One instance is now named with the reason it is not closeable, which the entry had never had
   either.** `every-component-class-the-browser-writes-is-one-this-registry-paints` compares a
@@ -2254,10 +2285,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   consequences**: W-153 renames the literal and reddens eight guards, seven of which query `.copy` and
   find nothing, while renaming the union member does not compile. So *alone* is not reachable for it by
   any plausible mutant - which is a different state from *nobody has written the cell*, and the two look
-  identical in the bucket. ADR-0183. What would close it is a cell per guard, aimed at
-  that guard's own failure condition and at nothing else, which is what `attribution.ts` asks for in as
-  many words: *reading it produces mutants instead of deletions*. Priced at a replay to find the
-  population and a cell apiece to close it. ADR-0174.
+  identical in the bucket. ADR-0183. **It is one of the 501 measured above**, which is what the
+  shadowing reading buys: the state it names is no longer read one guard at a time.
+
+  What would close it is a cell per guard, aimed at that guard's own failure condition and at nothing
+  else, which is what `attribution.ts` asks for in as many words: *reading it produces mutants instead
+  of deletions*. **The replay half of the price has been paid and the population is 801**; what remains
+  is a cell apiece, and the 152 one companion away are where it is cheapest. ADR-0174, ADR-0199.
 
 - **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
   reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`
@@ -3234,6 +3268,19 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   bounded by the second gate, which is to say by the cadence of publication rather than by *never*.
   And `packages/catalogue/every-contract.ts` is reached by every injection folder and injected into by
   none, so it is at once where the rule answers *no battery* and where an edit reaches furthest.
+
+  **That sentence has fired, and what the cadence was worth is five days.** `9158603` turned on
+  `noUnusedLocals`, which reddens the **unmutated** control of two blinding lenses: a lens removes a
+  declaration and the flag then makes what it orphaned a `TS6133`. Measured at `05a193c`, the first
+  full replay since - `array-group-by`, `string-levenshtein` and `string-slugify` throw during
+  calibration and `number-parse` disagrees on one cell, so **four batteries of twenty-three could not
+  be measured at all**. Every gate was green throughout: the push gate selected **ten** batteries on
+  `9158603` and all ten passed, because the selection follows folders and `tsconfig.json` is in
+  nobody's; `every-battery` was `skipped` there and on every run since, there having been no
+  publication since `1.1.0`; and `git merge-base --is-ancestor 9158603 1cf8ecd` answers 1, so the last
+  all-green matrix predates the flags. **It is not a guard that cannot fail - it is the instrument
+  unable to run**, which is the same blind spot one level up, and nothing but a full replay could
+  report it. ADR-0199.
 
   **The third closed, and what it was is worth more than that it closed.** It read *the shared modules
   of `mutation/` - `run.ts`, `published.ts`, `mutants.ts`, `attribution.ts`*. One name too many and
@@ -4347,6 +4394,11 @@ of the thesis.
   to see what noticed. That is evidence for the two gestures above rather than a sixth rule.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
+- **Read the exit code of the thing being asked about, never the last one of the wrapper around it.**
+  A replay launched as a background command whose last statement was a timestamp reported success while
+  the replay itself had exited 1 with four batteries disagreeing - and the wrapper's nought is what a
+  reader is shown. The existing rule covers a code masked by a pipe and does not reach this: the code
+  has to be captured from the command that produced it, at the point it produced it. ADR-0199.
 - Report what you left out. Never narrow the scope silently.
 
 **How a figure is published.** The same discipline, on prose rather than on guards. Each is argued in
@@ -4398,6 +4450,14 @@ the record beside it.
 - **A repair is chosen for its margin, never for its precision**: take the one whose margin swallows
   the known uncertainty of the method. A repair improving a rate by the factor that method may be wrong
   by has bought nothing that survives its own error bar. ADR-0077.
+- **A bound extrapolated from one member of a population states the cost of that member.** A replay was
+  priced at 1 h 45 to 2 h 30 and took 60 min 14 s, the estimate having been calibrated on
+  `validation-stage-1` - the cheapest battery there is, at 0.92 of the runner's time - and that ratio
+  applied to all twenty-three. Measured at `05a193c`, the ratio runs **0.48 on `cli-install` and on
+  `site`, 0.92 on `validation-stage-1`, 1.00 on `registry-storage`**, because what throttles a cell is
+  not the same thing in each. **A light battery does not calibrate a heavy one**, and the remedy is the
+  one ADR-0169 already took for the Windows bound: derive it from readings across the population rather
+  than from the convenient one. ADR-0199.
 
 ## Asking questions
 
