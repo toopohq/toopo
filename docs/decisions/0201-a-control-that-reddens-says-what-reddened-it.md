@@ -247,8 +247,15 @@ pnpm run meta                    # green
 pnpm run freeze                  # green either side, 3 guards
 pnpm run ledger                  # byte-identical either side, sha256 a1eea462...
 pnpm run anchors                 # every quotation resolves
-pnpm run battery -- fixture      # the folder the reproductions were taken in, unmoved
+pnpm run battery fixture         # green, every cell agreeing, nought unaccounted for
+pnpm run battery validation-stage-1   # green, the same
 ```
+
+**`pnpm` takes no `--` before a script's own arguments**, where `npm` requires one. The line above
+first read `pnpm run battery -- fixture` and resolved `mutation/--.battery.ts`, which does not exist;
+`measure.ts`'s own usage block still shows the `npm` spelling, correctly, because that is the command
+it documents. A command in a record that does not run is the class this repository refuses, and it was
+caught by running it rather than by reading it.
 
 The type-error rows of the table needed a `mutation/fixture/shape.test-d.ts` written for the probe and
 removed with it, because vitest runs its typechecker only where a type test is collected. That file is
