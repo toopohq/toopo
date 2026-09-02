@@ -231,6 +231,21 @@ it: applied on its own, the run reports one failure and it is this guard.
 rewritten under them. All three still redden it — W-19 with 67 guards red, W-20 with 74, W-24 with 9 —
 which is exactly what the recorded results say, so the population gained a witness and lost none.
 
+**The replay agreed with the hand audit, which is what makes the pin believable rather than plausible.**
+`npm run battery site` reports `W-167 killed as expected`, `155/156` with the one pre-existing survivor,
+`every cell agrees with the verdict this battery pins for it`, and **0 unaccounted for**. Its own
+attribution reads:
+
+```
+the-sheet-a-page-carries-is-the-whole-sheet-this-site-composes
+  red on   W-19, W-20, W-24, W-167
+  alone on W-167
+```
+
+So the guard leaves the *never alone* bucket, which holds 99 of this battery's guards against 84
+load-bearing. That bucket is an open entry of `CLAUDE.md`, and this is one row of it closed by a cell
+aimed at one guard's own failure condition — which is what `attribution.ts` asks for in as many words.
+
 `README.md` moves with it: **842 cells to 843, 800 caught to 801**. The 42 survivors and their
 classification do not move, and `every-figure-in-the-readme-is-the-one-the-instrument-declares` is what
 would have said so had they been forgotten.
@@ -272,17 +287,25 @@ unrecoverable from each other in the diff.
 
 ### The commands
 
+The two sweeps are probes rather than guards, so they are described here and not kept: rule 5 refuses a
+working note in this repository, and neither could be a suite - one spawns a process per module, and
+the other reads a graph nothing else asks about. Both are rebuildable from what is written above, which
+is the whole reason the population rule is stated with each.
+
+The **graph sweep** reads every `.ts` of `packages/site`, takes each line-opening `import … from './x.js'`
+as an edge, marks it erased when the clause is `import type` or when every specifier carries `type`, and
+walks for cycles. Its control counts `from './` with no notion of a clause and refuses any file where
+the two disagree.
+
+The **entry sweep** runs one child process per module: import the root's `typescript-imports.ts`, import
+the entry, then import `served-stylesheet.ts` and `components.ts` and print the served sheet's length.
+
+What is a command, and is the whole of what CI will take again:
+
 ```sh
-# the graph, its cycles, and what each cut leaves
-node <probe> packages/site
-
-# the served sheet, one child process per entry module
-node <probe>
-
-# the sheet under the runner, entered through components.js first
-node run-vitest.ts run --config packages/site/vitest.config.ts
-
-# nothing a reader receives moved
-pnpm run freeze
-npm run anchors
+node run-vitest.ts run --config packages/site/vitest.config.ts   # 187 guards
+npm run battery site                                             # 155/156, 0 unaccounted for
+pnpm run freeze                                                  # no digest moved
+npm run anchors                                                  # 775, none loose
+npm run meta
 ```

@@ -1289,6 +1289,10 @@ comparison nothing here was making: the sheet a page carries against the sheet t
 **Red on eight pages and red alone**, 1 of 187, on the stylesheet sent through the escaper — the one
 string `document.ts`'s header says must never pass through it. That is a first: the guard's three
 witnesses each take 67, 74 and 9 guards with them, and all three were re-measured and still redden it.
+**The replay agreed with the hand audit**, which is what makes the pin believable rather than
+plausible — `155/156`, every cell agreeing with its pin, **0 unaccounted for**, and the attribution
+reading `red on W-19, W-20, W-24, W-167 / alone on W-167`. The guard leaves the *never alone* bucket,
+which is one row of an entry below closed by a cell aimed at one guard's own failure condition.
 **Two probes were wrong before one was right, and the second is the finding**: it checked itself with
 the pattern it was testing, so its control could not fail — the class this repository had spent the
 week closing, committed inside the instrument hunting it, and caught only by giving the check a needle
