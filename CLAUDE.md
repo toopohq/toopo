@@ -3802,8 +3802,8 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   dangerous mirror, a listed address that stops answering, and what happened is the benign half.
 
   **What is refused is refused on measurement.** A blocking reading over the seven would have stopped
-  **fifteen pushes of `main` in thirty hours**, every one a correct tree, on a state no commit reaches
-  and a dashboard switch repairs. A printing one prints seven confirmations and says nothing about the
+  **fifteen pushes of `main` in thirty hours** — fourteen green and the fifteenth in flight at the
+  reading — on a state no commit reaches and a dashboard switch repairs. A printing one prints seven confirmations and says nothing about the
   ten. A register of retired addresses has the right population, no bound, and is red until somebody
   changes a setting. And the condition ends the day the owner turns that setting off, so a guard for it
   could be seen red once and never again. **It is the fourth instance of the `wrangler.jsonc` gap** —

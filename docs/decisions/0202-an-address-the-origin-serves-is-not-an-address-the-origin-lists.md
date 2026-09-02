@@ -250,8 +250,10 @@ open because the mirror of that is what the mechanism exists to prevent.
 ## More Information
 
 The readings were taken with `curl` against the live origin and against `toopo.pages.dev` in the same
-minutes on 2026-09-02, at `2ac6803` with a clean tree. `git rev-list --count 11e0f54..HEAD` answers 43
-and `gh run list --branch main` names the fifteen pushes.
+minutes on 2026-09-02, at `2ac6803` with a clean tree. `git rev-list --count 11e0f54..2ac6803` answers
+43, and the fifteen pushes are the runs `gh run list --branch main` names between the one whose head
+is `18c0b38` and the one whose head is `2ac6803`, inclusive — a range rather than a count, because a
+count of that listing grows with every push after this one.
 
 ADR-0125 is the gate and the argument that a listing answers about existence where a request answers
 about content. ADR-0188 narrowed what the gate refuses to the addresses a contract was published at.
