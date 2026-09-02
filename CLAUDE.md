@@ -2331,6 +2331,38 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   is a cell apiece, and the 177 one companion away are where it is cheapest. ADR-0174, ADR-0199,
   ADR-0200.
 
+  **A slice of the 177 is paid, and what it priced is not the half anybody would have guessed.**
+  `packages/site`'s eight **reciprocal pairs** - sixteen guards whose only two-guard companion is each
+  other, so nothing existing separates them in either direction - taken whole by a rule written down
+  before their difficulty was read. **Eleven are isolated, W-168 to W-178, one cell apiece and each
+  audited red *alone* off `failedGuards` rather than off its own pin**; one is isolable and dear; four
+  have no plausible mutant. Re-read at `9929f0d`, `packages/site` from this unit's replay and the other
+  twelve folders carried from ADR-0200's at `257425c` - a mixed perimeter, named as one: **alone 293 →
+  304, never alone 954 → 943, inseparable 548 → 546 in 135 classes, and the 177 → 166**, with the
+  site's own row 84/99/4 → 95/88/4. The collected total does not move, because **a cell is not a
+  guard**. **One class of two dissolved and it is named**: the two cache guards reddened on exactly the
+  same cells, so they sat in the inseparable bucket *and* one companion away from each other - the two
+  are not exclusive - and W-168 and W-169 separate them in both directions.
+
+  **The two things that resisted are mechanisms rather than accidents, and both are recognisable before
+  a candidate is spent.** A guard whose subject is a property of a population some *total* guard already
+  sweeps - `every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose` is total over
+  `paths()`, so any defect moving an address reddens it too, which is what shadows three of the four.
+  And a guard whose input population is a subset of a neighbour's *for a reason that is a different
+  design decision* - the refusal guard's one distinctive input is a spelling its twin can never pass,
+  because a refused way is shown the invocation instead. **The rule the three retried cells produced is
+  in `mutation/mutants.ts`**: aim at a choice and never at a shared mechanism.
+
+  **The machine half of the whole debt is priced and the judgement half is refused.** About **1 455 s**
+  of searching, computed per folder from each configuration's own suite time rather than from the
+  convenient member - ADR-0199's own lesson applied to this reading - plus a full replay of about **76
+  minutes**, 63 to 88 under ADR-0200's floor. So **under two hours of machine time for all 177**, which
+  says the debt is not expensive to *run*. No figure is published for authoring them: this folder is the
+  second most probed of the thirteen, which biases its 11-of-16 down, and its guards are the most
+  unit-like, which biases it up, and neither bias is measured. **What a slice in `packages/registry`
+  would buy - 9.4 % already isolated against this folder's 45 % - is exactly that missing calibration.**
+  ADR-0203.
+
 - **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
   reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`
   published *An implementation that memoises the pairs a failed candidate tried answers `true`* about

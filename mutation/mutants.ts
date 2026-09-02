@@ -4,6 +4,29 @@
  * ADR-0075 is what these helpers share and what stays in the battery that needs it. ADR-0053 is what a
  * pin on a re-drawn property may claim, and the three checks that come before a rate; ADR-0077 is what
  * the rate is then worth, and how a repair is chosen from it.
+ *
+ * ---------------------------------------------------------------------------
+ * Writing a cell that isolates one guard
+ * ---------------------------------------------------------------------------
+ *
+ * `attribution.ts` asks for cells aimed at a single guard's own failure condition, because a guard
+ * that only ever reddens beside another has never been shown carrying a defect by itself. Two rules
+ * came out of writing eleven of them, and both are worth reading before a candidate is spent.
+ *
+ * **Aim at a choice, not at a shared mechanism.** A defect in *how* something is composed has every
+ * consumer's guards behind it; a defect in *which* thing is composed has only the guard that is about
+ * the choice. Measured: two candidates that dropped the separator from a rewritten command each
+ * reddened three guards or four, and the one that handed the reader a different spelling reddened one.
+ *
+ * **A total guard over a population shadows every guard whose subject is a property of that
+ * population.** `every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose` sweeps
+ * every address the emission writes, so any defect that moves an address reddens it beside whatever
+ * else it breaks. Where the population is declared in one place and written in another, a cell editing
+ * *both* lifts the shadowing and is the shape somebody's real mistake takes anyway - W-178 of the site
+ * battery is the instance.
+ *
+ * Neither needs a probe to recognise, which is what makes them worth more than the eleven cells.
+ * ADR-0203.
  */
 
 import type { Edit, Expectation, Mutant, PlatformFamily, SurvivalNature } from './run.ts'
