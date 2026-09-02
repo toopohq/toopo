@@ -1616,7 +1616,7 @@ export const calibrate = (battery: Battery): Calibration => {
       if (!control.green) {
         throw new Error(
           `the unmutated ${cellKey(arm, lens)} is red, so every verdict from this battery would be ` +
-            `noise:\n  ${control.failedGuards.join('\n  ')}`,
+            `noise:\n  ${whyARunReddened(control)}`,
         )
       }
       // A green control that ran nothing is the third way this apparatus can be stuck, beside stuck
