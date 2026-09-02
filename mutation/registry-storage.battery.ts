@@ -490,6 +490,33 @@ const CAMEL_CASE_IS_SPLIT = `    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')`
 const THE_REFUSAL_IS_ATTACHED_TO_ITS_OWN_CONTRACT = `  refusal: refusals.find((refusal) => sameContract(refusal.address, entry.address)) ?? null,`
 const AN_UNKNOWN_WORD_IS_ONE_NO_ENTRY_ANSWERS = `    entries.every((entry) => bestHit(word, fieldsOf(entry)) === null),`
 
+/**
+ * The eight anchors ADR-0204's cells aim at, and every one of them is a **choice**.
+ *
+ * That is ADR-0203's rule rather than a coincidence of this folder: a shared mechanism has every
+ * consumer's guards behind it, so a cell that edits one reddens all of them and isolates nothing.
+ * The three cache cells one screen down are the demonstration - `cacheControlOf` is the mechanism and
+ * carries three cells that redden two guards apiece, while the class's own declared lifetime is a
+ * choice and carries one that reddens one.
+ */
+const WHETHER_A_BINDING_CAN_BE_ASKED_ABOUT_IS_DECIDED_FIRST = `    .filter(isAnchored)`
+const A_FROZEN_ANSWER_IS_HELD_FOR_A_YEAR = `        maxAgeSeconds: A_YEAR,`
+const ONE_FORMAT_WRITTEN_ONCE =
+  "  [...bindings].map(([what, digest]) => `${what}\\t${digest}\\n`).join('')"
+const A_DEPENDENCY_ALREADY_RESOLVED_IS_NOT_RESOLVED_AGAIN = `      if (seen.has(what)) continue`
+const A_SNAPSHOT_NAMES_WHAT_ITS_GUARDS_CALL_AS_WELL =
+  `    ? [...snapshot.frozen.harness, ...snapshot.frozen.sharedHarness]`
+const EVERY_WORD_NOBODY_COULD_PLACE_IS_NAMED =
+  `  return { query, results, unknownWords: [...new Set(unknown)] }`
+const A_QUERY_NAMES_A_DELIBERATE_FIELD_OR_ANSWERS_NOTHING =
+  `  if (!hits.some((hit) => hit !== null && DELIBERATE.has(hit.field.kind))) return null`
+const THE_TWO_CLAUSES_ARE_ASKED_OF_ONE_FIELD = `  fields.some(
+    (field) =>
+      DELIBERATE.has(field.kind) &&
+      namedByWhatTellsThemApart(field, asked, spread) &&
+      carriedFrom(field, asked) >= A_SET_ASIDE_WORD_IS_PAID_FOR_WITH,
+  )`
+
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
     'I-01',
@@ -2394,6 +2421,309 @@ const mutants: readonly Mutant[] = [
     killed(['every-class-a-declared-pattern-names-is-one-the-answers-witness']),
   ),
 
+  // -------------------------------------------------------------------------
+  // One cell per guard, aimed at that guard's own failure condition - ADR-0204
+  // -------------------------------------------------------------------------
+
+  /**
+   * Fourteen cells for fourteen guards of this folder that reddened and had never done so alone.
+   *
+   * They are not here to catch new defects: every one of them is a defect this suite already caught,
+   * beside a neighbour. What they buy is that the guard named in each pin has now been seen carrying
+   * a defect **by itself**, which the open list of `CLAUDE.md` records 954 guards of this repository
+   * as never having done.
+   *
+   * **Each was audited off `failedGuards` rather than off a green run**, because a pin is checked as a
+   * subset: a cell reddening more guards than its pin names does not disagree with it, so *alone* is
+   * a reading of the report and never of the exit code.
+   *
+   * The eight of the twenty-two that resisted are in ADR-0204 with the candidates that were tried and
+   * the reason each search stopped. Three shapes account for all eight, and two of the three were
+   * predicted before the first of these cells was written.
+   */
+  sameOnEveryLens(
+    'I-82',
+    'asks the registry at a past commit about every binding of the ledger, so one that names no ' +
+      'commit is looked up under forty zeros instead of being left alone',
+    [
+      rebindingFile(
+        WHETHER_A_BINDING_CAN_BE_ASKED_ABOUT_IS_DECIDED_FIRST,
+        '    // asked about whether or not the coordinate names a commit',
+      ),
+    ],
+    killed(['a-binding-that-names-no-commit-is-not-asked-about']),
+  ),
+
+  /**
+   * The two halves of one line, and the reason they are two cells.
+   *
+   * `a-commit-that-cannot-say-what-it-bound-is-refused` is one `it.each` answering to four addresses,
+   * of which two redden and never alone. Its own sentence is that *every branch of cannot is a
+   * separate sentence*, and the line it reads asks two questions in one condition - which runner, and
+   * how many arguments. Dropping one clause leaves the other row refusing, so each row is isolated by
+   * the half of the condition it is about.
+   */
+  sameOnEveryLens(
+    'I-83',
+    "accepts whatever a past commit's `ledger` script names as its runner so long as it takes one " +
+      'path, so the freeze check runs a program it never read',
+    [rebuildFile(WHAT_IS_RE_RUN_IS_NODE_AND_ONE_PATH, '  if (path === undefined || rest.length > 0) {')],
+    killed(['a-commit-that-cannot-say-what-it-bound-is-refused-1']),
+  ),
+
+  sameOnEveryLens(
+    'I-84',
+    "accepts a past commit's `ledger` script whatever follows the one path, so an argument this " +
+      'reader never understood decides what gets printed',
+    [rebuildFile(WHAT_IS_RE_RUN_IS_NODE_AND_ONE_PATH, "  if (runner !== 'node' || path === undefined) {")],
+    killed(['a-commit-that-cannot-say-what-it-bound-is-refused-2']),
+  ),
+
+  /**
+   * The lifetime as a choice rather than as the header that renders it.
+   *
+   * I-58, I-59 and I-60 all edit `cacheControlOf`, which both literal guards and the perturbation
+   * read, so each of them reddens two. What this edits is the value the content-addressed class
+   * declares, and the perturbation one screen away takes the **named** policy as its base - so it
+   * never sees this at all.
+   */
+  sameOnEveryLens(
+    'I-85',
+    'holds a content-addressed answer for a month rather than for a year, so the entry that can ' +
+      'never be wrong is revalidated twelve times a year',
+    [responseFile(A_FROZEN_ANSWER_IS_HELD_FOR_A_YEAR, '        maxAgeSeconds: A_YEAR / 12,')],
+    killed(['a-content-addressed-answer-is-public-for-a-year-and-immutable']),
+  ),
+
+  /**
+   * The named answer's directive weakened rather than dropped, which is what makes it this guard's.
+   *
+   * `proxy-revalidate` asks a *shared* cache to revalidate and exempts a private one, so the reader's
+   * own browser may hand back a binding that has moved while the CDN in front of it behaves. The
+   * policy record is untouched, so the guard that pins all three of its fields stays green; the
+   * content-addressed header is untouched, because that class does not ask for revalidation at all.
+   */
+  sameOnEveryLens(
+    'I-86',
+    'exempts a private cache from revalidating a named answer, so a browser may hand back a binding ' +
+      'that has moved while the cache in front of it revalidates correctly',
+    [
+      responseFile(
+        A_NAMED_ANSWER_SAYS_IT_MUST_BE_REVALIDATED,
+        "    ...(policy.mustRevalidate ? ['proxy-revalidate'] : []),",
+      ),
+    ],
+    killed(['a-named-answer-is-public-and-revalidated-before-every-use']),
+  ),
+
+  /**
+   * A drift the reader forgives, which is the only kind this guard can be alone on.
+   *
+   * The renderer and the reader are a matched pair and `a-rendered-set-of-bindings-reads-back-as-
+   * itself` round-trips them, so every defect that changes what a line *means* reddens both. What is
+   * left to the guard whose subject is the text is a change the reader tolerates: a trailing blank
+   * line parses back to the same bindings and is not the format this repository writes once.
+   */
+  sameOnEveryLens(
+    'I-87',
+    'ends the rendered ledger on a blank line, which the reader forgives - so the format the freeze ' +
+      "check compares drifts and the reader's own leniency is what hides it",
+    [
+      rebindingFile(
+        ONE_FORMAT_WRITTEN_ONCE,
+        "  [...bindings].map(([what, digest]) => `${what}\\t${digest}\\n`).join('') + '\\n'",
+      ),
+    ],
+    killed(['a-rendered-binding-is-what-a-past-commit-prints']),
+  ),
+
+  /**
+   * The dedup dropped, which the order property survives.
+   *
+   * `nothing-is-written-before-what-it-imports` reads the resolved order and a duplicate leaves every
+   * dependent still after everything it imports, so it stays green. The converse does not hold and is
+   * why that guard is one of the eight ADR-0204 could not isolate: this guard pins the resolved list
+   * **exactly**, order included, so every defect the order property could catch reddens it too.
+   */
+  sameOnEveryLens(
+    'I-88',
+    'resolves a shared dependency once per dependent rather than once, so an installer writes the ' +
+      'same implementation twice',
+    [
+      implementationFile(
+        A_DEPENDENCY_ALREADY_RESOLVED_IS_NOT_RESOLVED_AGAIN,
+        '      // a dependency named twice is resolved twice',
+      ),
+    ],
+    killed(['a-shared-dependency-is-resolved-once']),
+  ),
+
+  /**
+   * The cell worth reading, because **both served headers come out byte for byte what they were**.
+   *
+   * A named answer declares a zero lifetime and asks for revalidation, so deriving the second from
+   * the first renders `public, max-age=0, must-revalidate` exactly as before; a content-addressed
+   * answer asks for neither, so its header does not move either. Nothing a host receives changes.
+   * What changes is that the field has stopped being read, and the only thing that says so is the
+   * guard that perturbs each field of the policy and watches the string - which is what that guard
+   * was written for and had never been alone on.
+   */
+  sameOnEveryLens(
+    'I-89',
+    'derives revalidation from the lifetime rather than reading it off the policy, so both served ' +
+      'headers are byte for byte what they were and the field has stopped being read',
+    [
+      responseFile(
+        A_NAMED_ANSWER_SAYS_IT_MUST_BE_REVALIDATED,
+        "    ...(policy.maxAgeSeconds === 0 ? ['must-revalidate'] : []),",
+      ),
+    ],
+    killed(['every-directive-of-the-policy-reaches-the-header-and-the-prose-does-not']),
+  ),
+
+  /**
+   * ADR-0105's defect at the emission rather than at the snapshot, which is what separates the two.
+   *
+   * `filesNamedBy` is outside every digest, so narrowing it leaves each snapshot naming the shared
+   * files and the tree serving none of them - an address a client can ask for and a 404 at the moment
+   * somebody installs something. `every-file-a-published-contract-freezes-is-served` re-serialises the
+   * records itself and reads `harness` alone, so it does not see this; the closure, which reads the
+   * addresses back out of the served bytes, is the only guard that can.
+   */
+  sameOnEveryLens(
+    'I-90',
+    "serves the seven files a contract owns and not the ones its guards call, so every snapshot " +
+      'names blob addresses the tree answers nowhere',
+    [snapshotFile(A_SNAPSHOT_NAMES_WHAT_ITS_GUARDS_CALL_AS_WELL, '    ? snapshot.frozen.harness')],
+    killed(['the-emitted-tree-is-closed']),
+  ),
+
+  /**
+   * S-29's defect beside the term that earns its place rather than in place of it.
+   *
+   * That cell replaces the learned term, so the corpus loses the phrase it depends on and reddens with
+   * this guard. Added as a *second* term, the catalogue still answers `string to integer` and the only
+   * thing wrong is that the index - the one document every query fetches - grew for a word the
+   * registry already had.
+   */
+  sameOnEveryLens(
+    'S-31',
+    'learns a second phrase the contract was already found by, keeping the one that buys something - ' +
+      'so the index grows for a word the registry had and the term that earns its place hides it',
+    [
+      catalogueFile(
+        THE_LEARNED_TERM,
+        `        term: 'string to number',
+        howItIsAsked: 'People ask for a string turned into a number.',
+        whyThisContract: 'This contract turns a string into a number.',
+      },
+      {
+        term: 'string to integer',`,
+      ),
+    ],
+    killed(['a-learned-term-is-one-the-contract-was-not-already-found-by']),
+  ),
+
+  /**
+   * The plural, which is the half of this guard nothing else reads.
+   *
+   * Sorting the words was tried first and is **inert on this catalogue** - `clone` and `zzq` are
+   * already in alphabetical order, so the mutant is wrong about the code and changes no answer.
+   * Naming only the first is the same claim from the other side and it moves what a reader is shown.
+   */
+  sameOnEveryLens(
+    'S-32',
+    'names the first word of a query nobody could place rather than all of them, so a reader is told ' +
+      'about one of their unheard words and left to guess the rest',
+    [
+      searchFile(
+        EVERY_WORD_NOBODY_COULD_PLACE_IS_NAMED,
+        '  return { query, results, unknownWords: [...new Set(unknown)].slice(0, 1) }',
+      ),
+    ],
+    killed(['a-miss-names-the-words-no-contract-carries']),
+  ),
+
+  /**
+   * The defect `search.ts` names in its own comment, injected: *a rule that took the two clauses from
+   * different fields admits `add to cart`*.
+   *
+   * `add` and `to` sit together in one alias of `date/add@1`, and the field the query names is
+   * another - so the conjunction has to be asked of one field or the allowance is granted by two
+   * halves that never met. It is the arm of this guard that the twenty-eight requests exist for, and
+   * the reason its neighbour over the ninety-one declared words is one of the eight not isolated:
+   * every defect of the rule opens both, and this guard has an arm outside the rule where that one
+   * has none.
+   */
+  sameOnEveryLens(
+    'S-33',
+    'takes the two clauses of the set-aside allowance from different fields, so a query naming one ' +
+      'field and carrying two words of another is admitted',
+    [
+      searchFile(
+        THE_TWO_CLAUSES_ARE_ASKED_OF_ONE_FIELD,
+        `  fields.some(
+    (field) => DELIBERATE.has(field.kind) && namedByWhatTellsThemApart(field, asked, spread),
+  ) &&
+  fields.some(
+    (field) =>
+      DELIBERATE.has(field.kind) &&
+      carriedFrom(field, asked) >= A_SET_ASIDE_WORD_IS_PAID_FOR_WITH,
+  )`,
+      ),
+    ],
+    killed(['a-query-the-catalogue-cannot-answer-answers-nothing']),
+  ),
+
+  /**
+   * The one input that reaches the check, guarded away.
+   *
+   * A query with no words in it is the only thing that reaches the deliberate-field test - every
+   * other query that fails it has already failed the rule above - so a condition excusing the empty
+   * case hands a reader who typed spaces the whole catalogue, and reaches nothing else at all.
+   */
+  sameOnEveryLens(
+    'S-34',
+    'skips the deliberate-field check for a query with no words in it, so a reader who types spaces ' +
+      'is handed every contract the catalogue holds',
+    [
+      searchFile(
+        A_QUERY_NAMES_A_DELIBERATE_FIELD_OR_ANSWERS_NOTHING,
+        `  if (words.length > 0 && !hits.some((hit) => hit !== null && DELIBERATE.has(hit.field.kind)))
+    return null`,
+      ),
+    ],
+    killed(['a-query-with-no-words-answers-nothing']),
+  ),
+
+  /**
+   * S-30's door with the second red taken out of it.
+   *
+   * That cell teaches the refused contract a phrase it was already found by, so it reddens the guard
+   * about the door **and** the guard about what a term buys - which its own description records as
+   * measured rather than predicted. A phrase built out of words this catalogue has never heard buys
+   * something, so what is left is the door: a term arriving on the one contract that could still have
+   * declared it as an alias, where ADR-0023's review was on offer and was walked past.
+   */
+  sameOnEveryLens(
+    'S-35',
+    'teaches the registry a true phrase about the one contract that could still have declared it as ' +
+      'an alias, so a term enters the catalogue without the review ADR-0023 does at publication',
+    [
+      catalogueFile(
+        THE_REFUSED_CONTRACT,
+        `    alsoFoundBy: [
+      {
+        term: 'bucket rows',
+        howItIsAsked: 'People ask for rows put into buckets.',
+        whyThisContract: 'This contract puts rows into buckets.',
+      },
+    ],
+    folder: 'contracts/typescript/array/group-by',`,
+      ),
+    ],
+    killed(['a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare']),
+  ),
 ]
 
 export const battery: Battery = {
