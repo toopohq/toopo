@@ -3349,6 +3349,273 @@ import {
     [controlFile(A_FAILURE_SPEAKS_IN_ITS_OWN_WORDS, `      said: THE_CATALOGUE_COULD_NOT_BE_READ,`)],
     killed(['a-catalogue-that-could-not-be-read-says-so-in-the-failures-own-words']),
   ),
+
+  // ---------------------------------------------------------------------------
+  // Eleven cells aimed at one guard each, and at nothing else
+  // ---------------------------------------------------------------------------
+  //
+  // `attribution.ts` asks for these in as many words: a guard that reddens only beside another would
+  // catch its defect if the neighbour went away, and nothing here shows it doing so. Every cell below
+  // exists to show one guard doing it. They were chosen by a rule rather than by taste - the eight
+  // *reciprocal pairs* of this folder, where each guard's only two-guard companion is the other, so
+  // nothing existing separates them in either direction - and each was searched for by mutating the
+  // folder and reading which guards reddened, until one reddened alone. ADR-0203.
+  //
+  // **One cell cannot isolate two guards**, because a cell has at most one sole red, so a pair costs
+  // two mutants and never one. That is why sixteen guards need sixteen cells and why five of them are
+  // missing below: they were searched for and not found, and the record carries what was tried.
+
+  /**
+   * The year promised to a module, which is the defect the four-hour entry in `CLAUDE.md` describes.
+   *
+   * A module is addressed by its name, so its address does not move when its content does - and
+   * `cachePolicyFor` reads the addressing class for exactly that reason. Marking the browser graph
+   * content-addressed is the mistake somebody makes reasoning that a module cannot change under one
+   * commit, and it promises a year to the one family of answers whose address is stable and whose
+   * bytes are not.
+   *
+   * It reddens the year guard alone: the two policies both still occur, so the partition beside it
+   * has nothing to say.
+   */
+  sameOnEveryLens(
+    'W-168',
+    'promises a year to every module a browser fetches, so a reader who has the old script keeps it ' +
+      'for twelve months after the address it lives at has been rewritten',
+    [
+      servedHeadersFile(
+        '    ...THE_BROWSER_GRAPH.map(named),',
+        "    ...THE_BROWSER_GRAPH.map(\n" +
+          "      (module) => [theRuleCovering(linkTo(module)), 'content-addressed'] as const,\n" +
+          '    ),',
+      ),
+    ],
+    killed(['only-what-is-addressed-by-its-content-is-cached-for-a-year']),
+  ),
+
+  /**
+   * The revalidating policy written by hand, which is what this file's own header warns against.
+   *
+   * `must-revalidate` is what stops a stale answer being served without asking, and it is the half of
+   * the string somebody transcribing a header drops. Which spaces are immutable does not move, so the
+   * guard above stays green and only the partition reddens.
+   */
+  sameOnEveryLens(
+    'W-169',
+    'writes the revalidating policy by hand and loses `must-revalidate` from it, so every answer that ' +
+      'is not addressed by its content may be served stale without being asked about',
+    [
+      servedHeadersFile(
+        "    headers: [['Cache-Control', cacheControlOf(cachePolicyFor(addressing))]] as const,",
+        '    headers: [\n' +
+          '      [\n' +
+          "        'Cache-Control',\n" +
+          "        addressing === 'content-addressed'\n" +
+          '          ? cacheControlOf(cachePolicyFor(addressing))\n' +
+          "          : 'public, max-age=0',\n" +
+          '      ],\n' +
+          '    ] as const,',
+      ),
+    ],
+    killed(['every-other-answer-is-revalidated-before-it-is-used']),
+  ),
+
+  /**
+   * The modifier alone, which is the false arm the predicate's own guard names and W-148 does not
+   * reach.
+   *
+   * W-148 drops the modifier and keeps the letter, so the wiring sees it: a bare `k` pulls the cursor
+   * into the masthead. This drops the letter and keeps the modifier, and the wiring cannot see it at
+   * all - every chord the wiring guard presses carries the letter, so the page goes on behaving
+   * exactly as promised while the predicate answers `true` for every chord a reader makes.
+   */
+  sameOnEveryLens(
+    'W-170',
+    'lets any modifier reach the search whatever letter is under it, so a reader pressing Ctrl C ' +
+      'anywhere on the page has the cursor taken into the masthead',
+    [
+      controlFile(
+        '  key.toLowerCase() === THE_SEARCH_KEY && (withMeta || withControl)',
+        '  withMeta || withControl',
+      ),
+    ],
+    killed(['the-press-that-reaches-the-search-is-the-letter-and-a-modifier']),
+  ),
+
+  /**
+   * The listener on the field rather than on the document, which is the wiring half alone.
+   *
+   * The predicate is untouched and answers correctly, so the guard over it stays green; what is lost
+   * is the *from anywhere on the page* the badge beside the field claims. A reader who is already in
+   * the field can still press the chord, which is the one case nobody needs it for.
+   */
+  sameOnEveryLens(
+    'W-171',
+    'listens for the chord on the search field rather than on the document, so the shortcut the badge ' +
+      'names reaches the search only when the reader is already standing in it',
+    [
+      startFile(
+        "  document.addEventListener('keydown', (event) => {\n" +
+          '    if (!isTheSearchShortcut(event.key, event.metaKey, event.ctrlKey)) return',
+        "  field.addEventListener('keydown', (event) => {\n" +
+          '    if (!isTheSearchShortcut(event.key, event.metaKey, event.ctrlKey)) return',
+      ),
+    ],
+    killed(['the-chord-the-badge-names-is-the-one-that-reaches-the-search']),
+  ),
+
+  /**
+   * A third-level heading projected as prose, which the synthetic page cannot see.
+   *
+   * The guard over the projection compares one hand-written document that carries an `h2` and nothing
+   * deeper, so it is blind to every level below it; the guard over the real pages counts a heading per
+   * level and is not. What a retriever loses is the outline under the second level - every word still
+   * present, and the structure the Markdown twin exists to carry gone from the third level down.
+   */
+  sameOnEveryLens(
+    'W-172',
+    'projects a third- and fourth-level heading as an ordinary paragraph, so the outline a retriever ' +
+      'reads stops at the second level on every page that has one',
+    [
+      documentFile(
+        "    h3: wraps('### ', '\\n\\n'),\n    h4: wraps('#### ', '\\n\\n'),",
+        "    h3: ends('\\n\\n'),\n    h4: ends('\\n\\n'),",
+      ),
+    ],
+    killed(['every-heading-of-a-page-is-a-heading-in-its-markdown']),
+  ),
+
+  /**
+   * The list marker dropped, which the per-page heading count cannot see.
+   *
+   * A list item projected without its `- ` is a paragraph, and the guard one file over counts headings
+   * rather than items - so the structure this projection exists to keep is lost with nothing counting
+   * it. The exact-string guard is what says so, because it is the only thing here that reads a whole
+   * projection rather than a property of one.
+   */
+  sameOnEveryLens(
+    'W-173',
+    'projects a list item without its marker, so every list a page carries reaches a retriever as a ' +
+      'run of paragraphs',
+    [
+      documentFile(
+        '    li: (_, children) => `- ${indented(children.trimEnd())}\\n`,',
+        '    li: (_, children) => `${indented(children.trimEnd())}\\n`,',
+      ),
+    ],
+    killed(['the-markdown-projection-keeps-the-structure-and-changes-the-markup']),
+  ),
+
+  /**
+   * The file served is not the file composed, which is the second half of the convention guard.
+   *
+   * The three addresses are untouched, so the guard that asks whether the tree carries its crawler
+   * files has nothing to say; what moves is the *content* at one of them. It is the shape a defect
+   * takes when a file is post-processed on its way out - trimmed, normalised, re-encoded - and the
+   * only thing that notices is a guard comparing what is served with what was written.
+   */
+  sameOnEveryLens(
+    'W-174',
+    'serves a `robots.txt` that is not the one this repository composes, so what a crawler reads and ' +
+      'what this repository can be asked about are two files',
+    [indexingFile('    [ROBOTS, robotsOf()],', '    [ROBOTS, robotsOf().trimEnd()],')],
+    killed(['every-file-found-by-convention-is-at-the-address-that-convention-fixes']),
+  ),
+
+  /**
+   * A date field read as a calendar day, which the unit guard beside it is blind to by construction.
+   *
+   * `a-date-is-the-one-argument-this-site-constructs` builds from `2024-01-31T00:00:00.000Z`, whose
+   * time of day is midnight - so truncating to the day answers the same instant and that guard stays
+   * green. Every case of `date/add@1` that settles something about a time of day is replayed against
+   * the shipped module, and those are what redden.
+   */
+  sameOnEveryLens(
+    'W-175',
+    'reads a date field as a calendar day and drops the time under it, so every case the playground ' +
+      'replays at anything but midnight is run on an instant the reader did not type',
+    [
+      playgroundFile(
+        '    build: (value) => new Date(value as string),',
+        '    build: (value) => new Date((value as string).slice(0, 10)),',
+      ),
+    ],
+    killed(['every-case-replays-through-the-stripped-artefact-a-browser-runs']),
+  ),
+
+  /**
+   * Each argument encoded on its own, which is the whole reason `encodeTogether` is not `encode`.
+   *
+   * Two arguments that are the same object are one object, and encoding them apart prints them as two
+   * - so a case whose point is that the two sides share a member is published as a case about two
+   * unrelated values. The unit guard over the printed line carries no such row and cannot see it; the
+   * comparison against every case table can.
+   */
+  sameOnEveryLens(
+    'W-176',
+    'encodes each argument of a call on its own, so two arguments that are the same object are ' +
+      'written as two and every case whose subject is that sharing is published as a different case',
+    [
+      playgroundFile(
+        "  `${name}(${encodeTogether(given, 'the arguments').map(literal).join(', ')})`",
+        "  `${name}(${given.map((one) => encode(one, 'the arguments')).map(literal).join(', ')})`",
+      ),
+    ],
+    killed(['the-playground-writes-a-call-the-way-the-case-table-writes-one']),
+  ),
+
+  /**
+   * The spelling the reader chose rather than the one that works, which is the choice and not the
+   * composition.
+   *
+   * **It is what two earlier attempts at this guard could not reach.** A defect in *how* the two
+   * halves are joined - a lost separator, an untrimmed slice - is read by the copy control as well, so
+   * it reddens three guards or four. A defect in *which* spelling is composed is read here alone: the
+   * control goes on rewriting the block correctly, and what a reader on Yarn is handed is a command
+   * this repository has measured refusing to run.
+   */
+  sameOnEveryLens(
+    'W-177',
+    'hands a reader the spelling they chose rather than the one that runs, so somebody on a manager ' +
+      'this package is refused by is given the command that fails instead of the one that works',
+    [
+      controlFile(
+        'export const theCommandWrittenFor = (way: AWayToRunIt, arguments_: string): string =>\n' +
+          '  `${theSpellingShownFor(way)} ${arguments_}`',
+        'export const theCommandWrittenFor = (way: AWayToRunIt, arguments_: string): string =>\n' +
+          '  `${way.spelling} ${arguments_}`',
+      ),
+    ],
+    killed(['the-command-a-reader-is-handed-is-the-spelling-shown-then-what-they-asked-for']),
+  ),
+
+  /**
+   * The twin's address and its declaration moved together, which is the only way this guard is
+   * reachable alone.
+   *
+   * **It is the one cell here that edits two files, and the second file is what makes it a cell rather
+   * than a broader red.** `every-address-the-tree-writes-carries-a-cache-policy-this-repository-chose`
+   * is total over what the emission writes, so any address that moves without its rule reddens that
+   * guard as well - measured, this same defect in `site.ts` alone reddens both. Somebody making this
+   * mistake edits both places, because both of them name the address: the extension is appended rather
+   * than swapped, the rule is written for the appended name, `_headers` is consistent, and what is
+   * broken is that the `rel="alternate"` in every page's head points at a file nothing writes.
+   */
+  sameOnEveryLens(
+    'W-178',
+    "appends the Markdown twin's extension rather than swapping it, and declares the rule for the " +
+      'appended name, so every page links to a twin at an address the tree does not write',
+    [
+      siteFile(
+        '    ...[...pages].map(([path, page]) => [markdownOf(path), toMarkdown(page)] as const),',
+        '    ...[...pages].map(([path, page]) => [`${path}.md`, toMarkdown(page)] as const),',
+      ),
+      servedHeadersFile(
+        '    ...THE_PAGES_THE_SITE_HAS_OF_ITS_OWN.flatMap((page) => [named(page), named(markdownOf(page))]),',
+        '    ...THE_PAGES_THE_SITE_HAS_OF_ITS_OWN.flatMap((page) => [named(page), named(`${page}.md`)]),',
+      ),
+    ],
+    killed(['every-page-has-its-markdown-beside-it-at-the-same-address']),
+  ),
 ]
 
 export const battery: Battery = {
