@@ -1257,6 +1257,43 @@ stylesheet as a link rather than carrying it - reddens it along with eight other
 a reading of the defect and not of the battery, which is this file's own recurring class arriving on
 the unit that was written to close one. ADR-0197.
 
+**The cycle is cut, and what decided between the two ways out is a property the file declares rather
+than a count.** ADR-0197 named both: the node vocabulary leaving `document.ts`, or `toHtml` giving up
+the stylesheet. Measured, **both leave 0 cycles** — 9 modules and import lines against 6 modules and
+**23 call sites** — so the graph chose neither. `document.ts`'s own header does: *a page is a value,
+and `toHtml`, `toText` and `toMarkdown` are projections of it*, and the second cut gives `toHtml` two
+arguments where its siblings take one, so the three projections stop being three statements about one
+tree. **A cut that costs a property the file declares is not a cheaper cut.** `tree.ts` imports
+nothing and takes its name from the section heading `document.ts` has carried since it was written;
+what moved is **ten files and twelve import lines and no call site**, the tenth being `pages.test.ts`,
+whose import is type-only and was never on the cycle — so ADR-0197's *nine* and this *ten* are two
+populations and both are right. **No entry order truncates any more, over every entry there is**: one
+child process per module of the folder, **32 of 33 answering 23 609 B** where 29 of 32 did before, and
+the two that changed are the two that were on the cycle. `start.ts` throws on both sides because it
+reads the global `document`, which is what says the sweep reads a cycle rather than an environment.
+Under the loader that matters, a file naming `./components.js` first now gets **23 609 B and no
+`undefined`** where it got 17 669 B and one — the same 5 940 B arithmetic ADR-0197 measured against a
+sheet 3 427 B larger, so that record is extended rather than corrected and carries no head note.
+ADR-0198.
+
+**The precondition guard ADR-0197 was waiting for is refused, and not on its price.** Asking that the
+sheet contain `THE_COMPONENT_RULES` compares a value with itself: both sides come out of one graph.
+Measured with `paintedBy` leaving `&` unresolved — **fifty selectors no element matches, served** —
+**the strong form passes**. It is `GUARD_PERTURBATION_RULE`, and its only red in this repository's
+history came from the load order the cut removed. The two mutants were searched for and both are the
+compiler's: `TS2305` for the one-line way back to the cycle, `TS6133` for deleting the interpolation.
+**What replaces it is the sweep, published in the record rather than summarised.** `THE_UNRESOLVED`
+died with the cycle — the sheet's three interpolations are all `const` of leaves now — and removing it
+would have left the guard's name over-claiming, so what stands there is the guard's own name and a
+comparison nothing here was making: the sheet a page carries against the sheet this site composes.
+**Red on eight pages and red alone**, 1 of 187, on the stylesheet sent through the escaper — the one
+string `document.ts`'s header says must never pass through it. That is a first: the guard's three
+witnesses each take 67, 74 and 9 guards with them, and all three were re-measured and still redden it.
+**Two probes were wrong before one was right, and the second is the finding**: it checked itself with
+the pattern it was testing, so its control could not fail — the class this repository had spent the
+week closing, committed inside the instrument hunting it, and caught only by giving the check a needle
+that shares nothing with the parse. ADR-0198.
+
 **The page a reader arrives at is a door, and the catalogue took an address of its own.** `/` holds the
 name, one line and two ways in - the catalogue, and what a contract is - and **no command at all**. The
 shape of every command at once stood there as `add domain/function` so that no contract was privileged
