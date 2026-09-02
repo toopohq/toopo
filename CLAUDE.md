@@ -2258,6 +2258,20 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `string/slugify`, ≥ 9 on `string/levenshtein` - and `never red` as a **ceiling** - ≤ 84, ≤ 64 and
   ≤ 41. Across all thirteen folders, perimeter mixed: 1 608, 284, 816 and 508.
 
+  **Re-measured at `257425c` off a full replay** - `pnpm run mutation`, 23 batteries, 63 min 4 s,
+  exit 0, nothing disagreeing - **over thirteen folders read whole: 1 608 guards collected, 1 247
+  carrying an attribution, 293 seen red alone, 954 never alone, 361 never red, and nought unaccounted
+  for.** So **954 of the 1 247 guards that redden at all have never carried a defect by themselves**,
+  and the perimeter is 23 of 23 artefacts and **873 of 873 cells** where it was 20 and 699. Against
+  the mixed thirteen above, the collected population does not move at all - whether a battery runs
+  does not change how many guards it collects - while `alone` goes **+9**, `never alone` **+138** and
+  `never red` **−147**, which is exactly the three ceilings falling: `array/group-by` 84 → 36,
+  `string/slugify` 64 → 4, `string/levenshtein` 41 → 2. Every floor held, 11 and 11 and 12 against
+  ≥ 8, ≥ 8 and ≥ 9. **The ten folders read whole in both come back identical row for row**, which is
+  what says a reader written from scratch at another commit reproduces the earlier reading rather
+  than agreeing with it - `number/parse` included, unmoved at 122/12/110/0 across `N-4`'s repair.
+  ADR-0200.
+
   **A guard is addressed by the pair `(folder, identifier)`, and the size of the alternative is why
   that is worth a sentence**: 1 608 pairs against **1 539 bare identifiers**, so **69 collide across
   folders**. `determinism` exists on several contracts and is not one guard there, and a union over
@@ -2271,6 +2285,15 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   there is a cell on which they redden beside exactly one other guard - 40 in `packages/cli`, 29 in
   `packages/site`, 22 in `packages/registry`. Those 152 are the cheapest of what is left to do, and
   neither a total nor a distance alone would have named them.
+
+  **Re-measured at `257425c` over thirteen folders: 548 inseparable in 136 classes, 406 with a red
+  pattern of their own, and 177 one companion away.** The whole of the growth is the three folders
+  that had not run - 47 members in 23 classes. **One of ADR-0199's figures does not reproduce and is
+  named rather than corrected**: its *152* comes out **150** under the rule its own sentence gives,
+  swept over the same ten folders, while 501 in 113 classes, the 300, and the three per-folder counts
+  it names all reproduce exactly. Those three match only when the rule is read over *every* never-alone
+  guard; read over the 300 alone they are 28, 27 and 20. The two guards between 150 and 152 are not
+  recoverable, the reader that produced the first figure no longer existing. ADR-0200.
 
   **The never-red half carries a proportion nobody had ever taken.** Of `packages/registry`'s 466
   guards, **262 are declared `unprobedClaims`** - *claims detection, so decorative until a mutant
@@ -2290,8 +2313,9 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   What would close it is a cell per guard, aimed at that guard's own failure condition and at nothing
   else, which is what `attribution.ts` asks for in as many words: *reading it produces mutants instead
-  of deletions*. **The replay half of the price has been paid and the population is 801**; what remains
-  is a cell apiece, and the 152 one companion away are where it is cheapest. ADR-0174, ADR-0199.
+  of deletions*. **The replay half of the price has been paid and the population is 954**; what remains
+  is a cell apiece, and the 177 one companion away are where it is cheapest. ADR-0174, ADR-0199,
+  ADR-0200.
 
 - **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
   reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`
@@ -3255,6 +3279,45 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   this entry** and two are the tool doing its job. A count that folded all four together would make
   this read as twice the rate it has, on an entry whose whole subject is a failure nothing reports.
 
+  **The third instance arrived from the other direction and it is the sharpest, because nothing moved
+  at all.** `number/parse@1`'s `N-4` drops the second look that tells a separator mistake from text
+  that is not a number, and `withoutSeparators` is read on that line and nowhere else; the mutant was
+  correct until `9158603` turned `noUnusedLocals` on, and became a tree that does not compile without
+  a character of it changing. **It read `killed-by-typecheck` where it is pinned `survived`**, which
+  is a detection nobody made: measured at `00b8cbd`, the blinded column is **122 passed, 0 failed** and
+  one `TypeCheckError` either way. So the failure is not only silent, it can be *loud in the wrong
+  direction* - a cell that looks caught. The battery's own header had recorded the same hazard for its
+  three cache mutants, in as many words, and nothing generalised it. ADR-0200.
+
+- **That a control which reddens says what reddened it.** `calibrate` refuses a battery whose
+  unmutated column is red and prints `failedGuards.join()`, and for a type error in a runtime test
+  file that string is empty. Measured at `6d50188` by putting `string-slugify`'s lens back in its
+  unrepaired shape and running the command `runSuite` runs: the json report carries **81
+  `"status":"passed"` and not one `"failed"`**, `"success": true`, and four empty `"message"` fields,
+  while the process exits 1. Vitest raises a type error in a runtime test as an *Unhandled Source
+  Error* that never enters the report; in a `.test-d.ts` it fails the suite and the file carries it,
+  which is why the two other calibrations of that day named their file and their message and this one
+  named nothing.
+
+  **It is not the entry above.** That one is about a mutant that is the wrong thing; this is about the
+  instrument being unable to say so. ADR-0199 met it, refused to attribute it - correctly, on ADR-0042
+  - and the reason it could not was that `runSuite` throws the child's output away: the `catch` reads
+  `code` and nothing else, so the one place the answer was written is discarded before anything can
+  read it. **The population is every cell whose run reddens with no guard named**, which is
+  `killed-by-typecheck` and every red control, and the failure is silent by construction because a
+  verdict with no diagnostic looks exactly like a verdict.
+
+  **Where this looked**: the `catch` in `runSuite`, which keeps `code` and drops `stdout` and
+  `stderr`; `verdictOf`, which reads redness with no failed guard as `killed-by-typecheck`; and
+  `assertEveryRedFileNamesItsGuard`, which is the one place a red file is made to name something and
+  which a report with no red file passes through.
+
+  What would close it is carrying the child's own output into a `RunResult` and printing it where a
+  diagnostic is empty. It is cheap and it is not taken here, because it changes what a report may say
+  inside a unit whose subject is four calibrations, and because `mutation/` is injected into by no
+  battery - so the branch would arrive unwitnessed, which is a trade this repository refuses without
+  an argument. Priced and not taken. ADR-0200.
+
 - **That a change is answered by every battery that could say something about it.** The gates of
   ADR-0146 answer it for the folder a change touches and for the battery file it edits, and that is
   the only cheap rule there is. Measured at `66cdb3f` over every tracked `.ts`, folder by folder,
@@ -3281,6 +3344,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   all-green matrix predates the flags. **It is not a guard that cannot fail - it is the instrument
   unable to run**, which is the same blind spot one level up, and nothing but a full replay could
   report it. ADR-0199.
+
+  **The four are repaired and this entry is not closed by that**, which is the distinction to keep:
+  ADR-0200 removed the breakage, and the selection, the matrix and their cadence are untouched, so a
+  change to a root file still selects no battery and the full matrix still fires only before a
+  publication. What five days bought is a repair; what would close the entry is a decision about what
+  a battery matrix runs on, and that decision is nobody's to take as a side effect. ADR-0200.
 
   **The third closed, and what it was is worth more than that it closed.** It read *the shared modules
   of `mutation/` - `run.ts`, `published.ts`, `mutants.ts`, `attribution.ts`*. One name too many and
@@ -4458,6 +4527,13 @@ the record beside it.
   not the same thing in each. **A light battery does not calibrate a heavy one**, and the remedy is the
   one ADR-0169 already took for the Windows bound: derive it from readings across the population rather
   than from the convenient one. ADR-0199.
+- **And one reading of a battery does not calibrate that battery better than to about a sixth.** The
+  four timed twice on this machine, at `05a193c` and at `257425c`, on work that did not change:
+  `validation-stage-1` 55.4 s then 55.6 s, `registry-storage` 1 141.5 s then 1 109.7 s, `site` 635.4 s
+  then 686.4 s, `cli-install` 729.4 s then **622.6 s, which is −14.6 %**. So two runs of one battery
+  on one machine differ by up to 15 %, and the spread is on the heavy ones where the light one is
+  stable to a half of one per cent. It is the floor under every bound derived from a reading, it comes
+  before any question of extrapolating to a second battery, and it was written nowhere. ADR-0200.
 
 ## Asking questions
 
