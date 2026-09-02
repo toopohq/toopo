@@ -329,7 +329,7 @@ export const disagreementsIn = (columns: readonly ColumnAttribution[]): readonly
  * nobody established.
  *
  * It is not written into the results file: every term of it is already in `results`, and a second copy
- * is one more thing free to drift.
+ * is one more thing free to drift. ADR-0205.
  */
 export type UnclaimedRed = {
   readonly cell: string

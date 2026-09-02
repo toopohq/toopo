@@ -195,7 +195,7 @@ export type Expectation = {
  *
  * Five is a convention and ADR-0076 says so in as many words: what was measured is a distribution of
  * red-set sizes, and where to cut it is a choice. It moves when that distribution is re-measured, and
- * the reading built on it moves with it.
+ * the reading built on it moves with it. ADR-0205.
  */
 export const THE_MOST_REDS_A_PIN_NAMES_IN_FULL = 5
 

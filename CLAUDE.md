@@ -31,6 +31,44 @@ holds rather than against what somebody checked: a commit identifier in the pros
 this graph, no object of it carries an address the project refuses to publish, and the only checkout
 registered here is its root.
 
+**The instrument reports a red no pin claimed, which is the mirror of the silence it already refused,
+and the shape was chosen on a measurement rather than on the sentence that proposed it.** A pin is
+verified as a *subset* - every guard it names must have reddened, and never the reverse - so a cell
+reddening beyond its pin agrees with its battery and exits 0. That is how one guard crossing a timeout
+under load rewrote ADR-0204's census with every gate green, and a person with an argument from
+causality is what caught it. **The reading the brief proposed was over guards and is measurably blind
+to that case**: `the-served-bytes-are-the-committed-bytes` is named by `I-65`'s pin, so it is
+accounted for and `I-38` reports nothing - and 46 of the 47 guards it does report reddened only on
+cells above the line, where ADR-0076 says a pin names the exercised guards and deliberately not the
+rest. **A pin is a per-cell object and the convention is a per-cell rule**, so the reading is per cell
+and stops at that line: 634 becomes **155 cells**, and `I-38` is among the 13 in its folder.
+**It reports and refuses nothing**, because an unclaimed red is a load flake or a detection nobody
+pinned and one run separates neither - so refusing would redden twenty-one of twenty-three batteries
+on a debt. There is no threshold and its absence is the decision: the count is zero when every pin at
+or below the line names its reds. **The other half of the arbitration is held by the shape** -
+`disagreementsIn` takes columns where the reading takes cells, so refusing would need a second
+argument and does not compile. Demonstrated deterministically rather than waited for: a throwaway
+battery drops one name from `S-03`'s pin, the report prints *every cell agrees*, the attribution
+prints *every guard is witnessed or accounted for*, the process exits **0**, and the new line goes
+**3 to 4**. ADR-0205.
+
+**And the bound that let one in is measured, in the condition a cell really runs.**
+`packages/registry` declared no `testTimeout`, so it ran at vitest's 5 000 ms default. The file alone
+takes 1 124 ms; the same guard inside the whole folder under `--typecheck` takes **2 820 ms**, which
+is **56 % of the default on an idle machine** - so the file-alone reading understated it by a factor
+of two and a half. Across four load levels at `d9f62b8`: idle 2 672/2 818/2 820 green, four
+concurrent processes 3 403/3 450/3 636 green, eight **4 971/4 993/5 606 with one red of three**,
+sixteen on sixteen logical cores **12 514/12 664/13 670/15 015, red every time** - and at saturation
+**six guards of four files** redden, not one. The bound is **60 060 ms**, four times the worst
+reading, **and the base is measured where the multiple is a convention** said out loud so the number
+does not read as derived; it carries its own base in its digits. **`packages/cli`'s 60 s was not
+copied** - that folder's contention factor is 1.31 against this one's 5.32, so its two multiples give
+62 s and 256 s here and cannot both be right, which is ADR-0199 arriving on a timeout. Verified with a
+control on both sides: the same saturation gives **466 of 466**. **`hookTimeout` is left alone and
+that is a refusal**: the 8 226 ms that looked like the heaviest hook is the whole file with its import
+and collection, the same file was then seen at 27 519 ms under saturation without the hook expiring,
+and a bound on a quantity nobody has measured is what this repair exists not to be. ADR-0205.
+
 **The client stopped killing the process it was refusing in, and the ending was a half nothing here
 watched.** `toopo add` of a name the registry does not hold refused correctly, printed the right
 sentence, wrote nothing — and then aborted: `process.exit` after a `fetch` races libuv's teardown, and
@@ -2400,6 +2438,45 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   an idle machine - 154 against 152, 317 alone against 318 - and no published figure says which kind of
   machine it was taken on. ADR-0204.
 
+  **Both halves of that last sentence were acted on and neither is closed by the other.** The folder
+  declares a bound now, derived from ten readings rather than chosen - 60 060 ms, four times the worst
+  of them - and the same saturation that reddened six guards of four files gives 466 of 466. That makes
+  the crossing unlikely and cannot make it impossible. What removes the *silence* is a reading, because
+  the census figures were never the thing at fault: `unclaimedRedsIn` reports every red no pin of its
+  own cell claimed, and on the run this entry describes it names `I-38` among thirteen. And the missing
+  coordinate is a rule now, in the section on how a figure is published. ADR-0205.
+
+- **That a pin at or below ADR-0076's line names every red.** That record says it in as many words -
+  *five or fewer red guards: name all of them* - and `array-group-by.battery.ts` carries one instance
+  found by hand, in its own words, *this pin named one where it owed four*. Nothing kept it, because a
+  pin is verified as a subset: `agreesWith` asks that every named guard reddened and never the reverse,
+  so a pin naming one of four agrees with its run and the battery exits 0.
+
+  **It is measured now rather than merely stated.** Over the twenty-three artefacts on disk at
+  `b0372b3` - a mixed perimeter, `registry-storage` from ADR-0204's own replay and most of the rest
+  from ADR-0200's at `257425c`, named as one because what is counted is the shape of pins rather than a
+  state of the tree - **898 cells, 653 of them at or below the line, and 155 of those name some of
+  their reds and not all.** `packages/site` holds 40, `cli-install` 19, `packages/registry` 13.
+  **Nought of the 653 carry an empty pin**, so the weaker convention - a killed cell names at least one
+  guard - is kept everywhere.
+
+  **What is done rather than declared is that the debt stopped being invisible.** `unclaimedRedsIn`
+  prints those cells and the guards under them on every complete battery, with the count in its header,
+  and it is at zero on the day the entry closes. It reports and refuses nothing: an unclaimed red is a
+  load flake or a detection nobody pinned, one run does not separate them, and a refusal would redden
+  twenty-one of twenty-three batteries and both gates on a debt rather than on a fault.
+
+  **Where this looked**: `agreesWith` in `mutation/run.ts`, which is the subset rule and is deliberately
+  unchanged; `THE_MOST_REDS_A_PIN_NAMES_IN_FULL` beside it, which is ADR-0076's line moved out of prose
+  so that something reads it at all; and `killed` in `mutation/mutants.ts`, which is where a pin is
+  written and which cites that record without holding it.
+
+  **The population is every killed cell at or below the line**, and it grows with each mutant written.
+  What would close it is 155 causes established one at a time and then named - never the reverse, since
+  widening a pin to absorb a red whose cause is unread turns a flake into a published fact. Priced as a
+  sweep across twenty-three batteries, each cause needing a replay to establish, and not taken.
+  ADR-0076, ADR-0205.
+
 - **That a contract's prose is true of the contract's own behaviour.** A case is data and a guard
   reads it; a rationale is prose beside that data and nothing reads it at all. `object/deep-equal@1`
   published *An implementation that memoises the pairs a failed candidate tried answers `true`* about
@@ -4617,6 +4694,19 @@ the record beside it.
   on one machine differ by up to 15 %, and the spread is on the heavy ones where the light one is
   stable to a half of one per cent. It is the floor under every bound derived from a reading, it comes
   before any question of extrapolating to a second battery, and it was written nowhere. ADR-0200.
+- **A figure a busy machine can move carries the machine as well as the commit.** ADR-0018 asks a
+  count for its coordinates and a coordinate is a commit, which is right for almost everything counted
+  here - guards, cells, bytes, addresses, selectors are functions of the tree. **The trap is between a
+  count and a duration.** That a duration is not fixed by its commit has been measured twice and
+  written down neither time: two runs of identical work at one commit came back 1 541 s and 1 319 s,
+  and one reading of a battery calibrates it no better than to about a sixth. What ADR-0204 met is
+  sharper and is why the clause exists: **a count derived from a run looks like a function of the tree
+  and is not.** `alone`, `never alone` and `one companion away` are counts rebuilt by a stated rule,
+  and one of them moved because a machine was busy - a reader meeting `317 alone` has no reason to ask
+  what else was running. So the rule reaches durations *and* counts of what a run observed, which is
+  every figure the attribution and the census produce. **It does not make such a figure stable**: a
+  bound makes a crossing unlikely and never impossible, a reading makes it visible, and the coordinate
+  is what lets a reader tell two honest figures apart afterwards. ADR-0169, ADR-0200, ADR-0205.
 
 ## Asking questions
 
