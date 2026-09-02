@@ -48,6 +48,12 @@
  * The suite this battery runs is typechecked - vitest reports "Type Errors no errors" under the
  * instrument's own command line - so `killed-by-typecheck` is reachable here as it is anywhere else.
  * None produces it: every one is a defect of behaviour that typechecks.
+ *
+ * **Which of this folder's never-alone guards would resist isolation was predicted before any cell
+ * aimed at one of them existed.** ADR-0204 carries that prediction, guard by guard, together with the
+ * two mechanisms it was made with and a third this repository had not named; it was committed before
+ * the first of those cells, so what says the prediction came first is the graph rather than an account
+ * of it.
  */
 
 import type { Battery, Mutant } from './run.ts'
