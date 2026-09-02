@@ -58,6 +58,33 @@ const REJECT = `  if (!DECIMAL_GRAMMAR.test(trimmed)) {
 const SEPARATOR_FAMILY = `input.replace(/[,_'\\u00A0\\u202F]/g, '')`
 const FINAL = `  return Number.isFinite(value) ? { ok: true, value } : { ok: false, reason: 'overflow' }`
 
+/**
+ * The second look itself, with the paragraph that explains it, quoted whole because N-4 deletes both.
+ *
+ * The call above is the helper's only reader, so a mutant that drops it and stops there leaves a
+ * declaration nothing reads. The family is composed rather than written twice, and the quotation
+ * carries the blank line that follows the declaration so the rewritten file has one gap where it had
+ * one. ADR-0200.
+ */
+const SEPARATOR_LOOK = `/**
+ * The second look that tells a separator mistake from text that is not a number at all.
+ *
+ * It is the grammar above consulted twice rather than a second grammar: whatever survives the
+ * removal is judged by exactly the same rule, so there is no additional thing that can be wrong and
+ * nothing for the coupling property to fail to cover.
+ *
+ * The family is the comma, the underscore, the apostrophe, the no-break space and the narrow no-break
+ * space - the grouping characters \`Intl.NumberFormat\` emits, measured over 108 locales. The ordinary
+ * space is not one of them: no locale emits it between digits, so it is a typo rather than formatting.
+ *
+ * The characters are escaped rather than pasted because three of them are invisible, and the literal
+ * is written inside the call so that this module holds no global-flagged regular expression whose
+ * lastIndex could survive a call.
+ */
+const withoutSeparators = (input: string): string => ${SEPARATOR_FAMILY}
+
+`
+
 const ANALYSE = `const analyse = (input: string): ParseAnalysis => {`
 
 const PARSE_NUMBER = `export const parseNumber = (input: string): number | null => {
@@ -380,7 +407,13 @@ const reasons: readonly Mutant[] = [
       'separator mistake falls back into the residual reason. No value changes, because both ' +
       'branches refuse - this is what the contract looked like before the literal existed, and it ' +
       'is the shape a later optimisation of the refusing path would reach by accident',
-    [reference(REJECT, `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }`)],
+    [
+      reference(REJECT, `  if (!DECIMAL_GRAMMAR.test(trimmed)) return { ok: false, reason: 'not-decimal' }`),
+      // Dropping the second look is what this mutant is; dropping the helper it was the only reader
+      // of is what makes it a defect somebody could commit rather than a tree that does not compile.
+      // The paragraph above the header is this hazard met once already, on the three cache mutants.
+      reference(SEPARATOR_LOOK, ''),
+    ],
     [COMMA_DECIMAL_REASON, COMMA_GROUPING_REASON, UNDERSCORE_REASON],
   ),
 
