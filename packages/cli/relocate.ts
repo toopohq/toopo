@@ -169,7 +169,11 @@ export const planRelocation = (
         continue
       }
 
-      moves.push({ path: file.path, verdict, bytes: verdict === 'moved' ? readFileSync(at) : null })
+      moves.push({
+        path: file.path,
+        verdict,
+        bytes: verdict === 'moved' ? readFileSync(at) : null,
+      })
     }
   }
 

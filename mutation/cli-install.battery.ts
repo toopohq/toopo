@@ -304,7 +304,10 @@ const INIT_TAKES_NO_DIRECTORY_BY_DEFAULT = `    return { command: { name: 'init'
 
 const THE_VERSION_IS_ONE = `    ...(held['version'] === 1`
 
-const A_DIRECTORY_TRAVELS = `const DIRECTORY = /^[A-Za-z0-9._-]+(?:\\/[A-Za-z0-9._-]+)*$/`
+// The rule this quotes lives in `where-a-file-may-land.ts` now, so the cell asks the reader of it
+// rather than the rule: widening the alphabet itself would redden every frontier that reads it, where
+// what this mutant is about is a configuration that accepts any string as a directory.
+const A_DIRECTORY_TRAVELS = `    ...(typeof directory === 'string' && staysInside(directory)`
 
 const NO_FILE_MEANS_NO_CONFIGURATION = `  if (!existsSync(path)) return null`
 
@@ -734,7 +737,13 @@ void theCatalogue`,
     'C-30',
     'accepts any string as a directory, so a configuration committed from Windows names a folder no ' +
       'other machine can resolve and an absolute path names the machine that ran `init`',
-    [{ file: 'configuration.ts', find: A_DIRECTORY_TRAVELS, replace: `const DIRECTORY = /^.+$/` }],
+    [
+      {
+        file: 'configuration.ts',
+        find: A_DIRECTORY_TRAVELS,
+        replace: `    ...(typeof directory === 'string'`,
+      },
+    ],
     killed(['a-directory-that-does-not-travel-is-refused']),
   ),
 
