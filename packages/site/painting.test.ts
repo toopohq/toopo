@@ -56,6 +56,7 @@ import { answeredFromThisTree, localSource } from './local-source.js'
 import { notFoundPage } from './not-found-page.js'
 import { asAnElement, selectorsIn, theSheetAPageCarries } from './painting.js'
 import { FRONT_PAGE, THE_NOT_FOUND_FILE, THE_REFERENCE_MODULE } from './paths.js'
+import { THE_SERVED_STYLESHEET } from './served-stylesheet.js'
 import type { WhereTheCatalogueIs } from './searching.js'
 import { arrivingOnce } from './searching.js'
 import { theSite } from './site.js'
@@ -79,14 +80,6 @@ const A_QUERY_ANSWERED_BY_A_REFUSAL = 'group by'
 
 /** A query the catalogue holds nothing for, which is what paints the panel's own sentence. */
 const A_QUERY_NOTHING_ANSWERS = 'zzq nothing answers this'
-
-/**
- * A value a template literal was handed and could not resolve, which renders as the word itself.
- *
- * The token and not the substring, so a class or a property whose name happens to carry those nine
- * letters is not a fault.
- */
-const THE_UNRESOLVED = /(^|[\s;{}])undefined([\s;{}]|$)/
 
 const source = localSource()
 
@@ -197,36 +190,41 @@ describe('what this stylesheet paints', () => {
   /**
    * The sheet a page carries is the whole sheet this site composes.
    *
-   * **Born green and justified by an event that has already happened once.** `document.ts` imports the
-   * served sheet, which imports `style.ts`, which imports `components.ts`, which imports `document.ts`;
-   * in a module graph entered through `components.js` the interpolation that puts the component rules
-   * into the sheet resolves to nothing, and a template literal renders that as the word `undefined`.
-   * Measured at ADR-0197 over two files differing only in the order of their imports: **27 036 B
-   * against 21 096 B, the 5 949 B of component rules replaced by nine characters**, with nothing thrown
-   * and nothing reported.
+   * **Two things, compared, and that is the whole of why this arm reads the way it does.** What a page
+   * carries is the run of characters between its `style` tags; what this site composes is
+   * `THE_SERVED_STYLESHEET`. They are equal by construction - `toHtml` interpolates one into the
+   * other - so what the equality is about is the *rendering* and never the sheet's content: a defect
+   * inside `served-stylesheet.ts` moves both sides together and belongs to that file's own three
+   * guards, and a defect on the way into the page moves them apart and belongs here. Serving `STYLE`
+   * where the stripped sheet belongs, or letting the sheet through `escapeText`, are the two shapes
+   * that separate them, and the second is the escaping boundary `document.ts` rests its header on.
    *
-   * That is why this stands beside the sweep below rather than inside it. The sweep's population is
-   * this sheet; a sheet missing a sixth of itself would make it pass over rules it has no opinion
-   * about, and the pass would look exactly like a healthy one.
+   * ---------------------------------------------------------------------------
+   * What this arm replaced, and why the obvious stronger form is refused
+   * ---------------------------------------------------------------------------
    *
-   * **The neighbouring defect is the compiler's and not this guard's, which was measured rather than
-   * assumed.** A sheet losing the component rules because somebody deleted the interpolation is
-   * `TS6133: 'THE_COMPONENT_RULES' is declared but its value is never read`, which ADR-0174's flags
-   * turned on - so the removal is refused before a page is built and this guard is aimed at the one
-   * shape the compiler cannot see, which is the interpolation resolving to nothing at all.
+   * It used to refuse a sheet holding the word `undefined`, which was the shape ADR-0197's cycle
+   * produced: `document.ts` imported the served sheet, which imported `style.ts`, which imported
+   * `components.ts`, which imported `document.ts`, and a graph entered through the wrong module
+   * rendered an unresolved binding as those nine characters. **ADR-0198 cut that cycle, and the arm
+   * died with it** - measured over the three interpolations that reach this sheet, `THE_FONT_FACE`,
+   * `THE_SANS_STACK` and `THE_COMPONENT_RULES`, every one a `const` of a module that now imports
+   * nothing or imports only leaves. A cycle was their only producer, and there is no cycle.
    *
-   * **What it does not reach is the stronger form, and the reason is the cycle itself.** Asking that
-   * the sheet contain `THE_COMPONENT_RULES` would catch both shapes, and it needs an import of
-   * `./components.js` - which, in a list written alphabetically beside `./document.js`, is the graph
-   * entry that truncates the sheet. Measured: with that import added, this guard reddens on all eight
-   * pages. So the strong form is unavailable until the cycle is broken, and ADR-0197 prices that.
+   * **The stronger form ADR-0197 wanted is refused, and by a measurement rather than by its price.**
+   * That form asks the sheet to contain `THE_COMPONENT_RULES`, which the cut makes importable here at
+   * last. It compares a value with itself: both sides are read out of one graph, so a defect in the
+   * rules moves them together. Measured at ADR-0198 with `paintedBy` leaving `&` unresolved - a
+   * component layer painting fifty selectors no element matches, a real defect a reader would meet -
+   * **the strong form passes**. It is `GUARD_PERTURBATION_RULE` exactly: it perturbs the object derived
+   * from the claim and not the claim. Its only red in this repository's history came from the load
+   * order the cut removed.
    *
-   * Seen red before it was believed: with `./components.js` imported above the others in this file,
-   * the fault names all eight pages. **It is not seen red alone and cannot be**, because a sheet
-   * carrying an unresolved value is also a sheet whose selectors run into it - the sweep below reddens
-   * on the same perturbation, naming the corrupted prelude. Two guards over one fault have nothing to
-   * say on the day they disagree, and these two do not: this one says what is wrong with the sheet and
-   * that one says what it did to the population.
+   * **The two neighbouring defects are the compiler's, measured rather than assumed.** Deleting the
+   * interpolation is `TS6133: 'THE_COMPONENT_RULES' is declared but its value is never read`, and
+   * rewriting `components.ts` to take `el` and `text` from `./document.js` again - the one-line way
+   * back to the cycle - is `TS2305`, because those two names live in `tree.ts` now. Both flags are
+   * ADR-0174's.
    *
    * **It is red on W-24, and the instrument is what said so.** That cell serves the stylesheet as a
    * link instead of carrying it, so a page carries no sheet at all - which is this claim in its
@@ -234,7 +232,7 @@ describe('what this stylesheet paints', () => {
    * `unprobedRegions` on the grounds that no rewritten line could reach it; the replay refused the run
    * under *declared silent and reddened anyway*, which is the half of that field costing nothing to
    * get wrong and never noticed. The declaration was written from a reading of the defect rather than
-   * of the battery, which is this repository's own recurring class arriving on this unit.
+   * of the battery, which is this repository's own recurring class arriving on that unit.
    */
   it('the-sheet-a-page-carries-is-the-whole-sheet-this-site-composes', () => {
     const pages = [...everyPage()]
@@ -251,8 +249,8 @@ describe('what this stylesheet paints', () => {
     const sheets = pages.map(([path, html]) => [path, theSheetAPageCarries(html)] as const)
 
     expect(
-      sheets.filter(([, sheet]) => THE_UNRESOLVED.test(sheet)).map(([path]) => path),
-      'a page carries a stylesheet holding a value that failed to resolve',
+      sheets.filter(([, sheet]) => sheet !== THE_SERVED_STYLESHEET).map(([path]) => path),
+      'a page carries a stylesheet that is not the one this site composes',
     ).toEqual([])
   })
 

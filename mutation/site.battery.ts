@@ -751,6 +751,34 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
+   * The same line as W-24 and the opposite defect: the sheet is carried, and it is carried wrong.
+   *
+   * `document.ts` rests its whole escaping argument on the stylesheet not being a node - *the one
+   * thing that must not be escaped is not a node and never passes through here*. Somebody applying
+   * the escaper to the one string it must never touch is the plausible way that sentence stops being
+   * true, and what a reader gets is every `&` and `<` of the sheet as an entity: a page that loads
+   * nothing, runs nothing, and arrives unstyled.
+   *
+   * **It is here because the guard it kills had never been red alone.** W-19, W-20 and W-24 all
+   * redden it and take sixty-seven, seventy-four and nine guards with them, so a run could say only
+   * that it *would* catch its defect if the guards beside it went away. This one lands on it and on
+   * nothing else - measured by hand-injection before it was written, because a pin is checked as a
+   * subset and a replay can never arbitrate one's completeness. ADR-0198.
+   */
+  sameOnEveryLens(
+    'W-167',
+    'sends the stylesheet through the escaper on its way into the page, so a reader is served every ' +
+      'ampersand and angle bracket of the sheet as an entity and the site arrives unstyled',
+    [
+      documentFile(
+        THE_STYLE_IS_THE_ONLY_THING_LOADED,
+        '    `<style>${escapeText(THE_SERVED_STYLESHEET)}</style>`,',
+      ),
+    ],
+    killed(['the-sheet-a-page-carries-is-the-whole-sheet-this-site-composes']),
+  ),
+
+  /**
    * The other half of the claim W-24 is about, and the reason the guard it kills is a second guard.
    *
    * A page's behaviour is in the page. Fetching the theme instead of carrying it puts the way round
