@@ -1726,6 +1726,20 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   one prose paragraph of each page reddens **8 of 8**. What it leaves behind is that the class did not
   close with the page — `overflow-wrap: anywhere` is on `body`, so every page can still break a word,
   and what left is the matter rather than the property.
+- **a control that reddens with no failed guard naming what reddened it** — ADR-0201, and it is the
+  first entry this list has closed by **taking the repair ADR-0200 priced and refused**. That refusal
+  was about the witness: `mutation/` is injected into by no battery, so the branch arrives unwatched.
+  It is taken anyway, on the ground that the fault is *an instrument that cannot say what happened* and
+  that preferring a certain silence to a possible one is the wrong way round. **What it leaves behind
+  is the silence itself, declared rather than closed**: five guards with no cell, `confirmed-by: []`
+  because a `(battery, guard)` pair cannot be formed here at all, and two reds a person produced by
+  hand - one at `938ded8`, where the witness is red and prints the colon with nothing after it, one
+  under a perturbation nobody keeps. **And the closure it named was the wrong shape**: ADR-0200 asked
+  for the output on a `RunResult`, and a control produces none - it belongs on `SuiteRun`, which is
+  where a run is described. The wider repair the entry implied was refused on a measurement rather
+  than on its price: a type-only error in a source file leaves the report green and the process red,
+  which is what five batteries pin as `killed-by-typecheck`, so refusing on that disagreement would
+  have turned five pinned cells into cells nobody measured.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -3288,35 +3302,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   one `TypeCheckError` either way. So the failure is not only silent, it can be *loud in the wrong
   direction* - a cell that looks caught. The battery's own header had recorded the same hazard for its
   three cache mutants, in as many words, and nothing generalised it. ADR-0200.
-
-- **That a control which reddens says what reddened it.** `calibrate` refuses a battery whose
-  unmutated column is red and prints `failedGuards.join()`, and for a type error in a runtime test
-  file that string is empty. Measured at `6d50188` by putting `string-slugify`'s lens back in its
-  unrepaired shape and running the command `runSuite` runs: the json report carries **81
-  `"status":"passed"` and not one `"failed"`**, `"success": true`, and four empty `"message"` fields,
-  while the process exits 1. Vitest raises a type error in a runtime test as an *Unhandled Source
-  Error* that never enters the report; in a `.test-d.ts` it fails the suite and the file carries it,
-  which is why the two other calibrations of that day named their file and their message and this one
-  named nothing.
-
-  **It is not the entry above.** That one is about a mutant that is the wrong thing; this is about the
-  instrument being unable to say so. ADR-0199 met it, refused to attribute it - correctly, on ADR-0042
-  - and the reason it could not was that `runSuite` throws the child's output away: the `catch` reads
-  `code` and nothing else, so the one place the answer was written is discarded before anything can
-  read it. **The population is every cell whose run reddens with no guard named**, which is
-  `killed-by-typecheck` and every red control, and the failure is silent by construction because a
-  verdict with no diagnostic looks exactly like a verdict.
-
-  **Where this looked**: the `catch` in `runSuite`, which keeps `code` and drops `stdout` and
-  `stderr`; `verdictOf`, which reads redness with no failed guard as `killed-by-typecheck`; and
-  `assertEveryRedFileNamesItsGuard`, which is the one place a red file is made to name something and
-  which a report with no red file passes through.
-
-  What would close it is carrying the child's own output into a `RunResult` and printing it where a
-  diagnostic is empty. It is cheap and it is not taken here, because it changes what a report may say
-  inside a unit whose subject is four calibrations, and because `mutation/` is injected into by no
-  battery - so the branch would arrive unwitnessed, which is a trade this repository refuses without
-  an argument. Priced and not taken. ADR-0200.
 
 - **That a change is answered by every battery that could say something about it.** The gates of
   ADR-0146 answer it for the folder a change touches and for the battery file it edits, and that is
