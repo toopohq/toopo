@@ -38,5 +38,49 @@ export default defineConfig({
   root: import.meta.dirname,
   test: {
     include: ['*.test.ts'],
+
+    /**
+     * Declared rather than inherited, because vitest's default is a clock and the slowest guard here
+     * spends its whole time in child processes.
+     *
+     * `the-served-bytes-are-the-committed-bytes` runs one `git show` per harness file of seven
+     * contracts and hashes each against what `serialiseContract` produced. Nothing in any contract says
+     * that has to finish in five seconds, so the default was a threshold nobody decided - and this
+     * folder is where that threshold was measured turning machine load into a red guard, which the
+     * mutation instrument reads as a verdict.
+     *
+     * **The condition it is measured in is the one a battery cell runs, and that is the whole of why
+     * the number moved.** The file alone takes 1 124 ms; the same guard inside the whole folder under
+     * `--typecheck`, which is what `run.ts` spawns, takes **2 672, 2 818 and 2 820 ms** - already 56 %
+     * of the default on an idle machine. Measured at `d9f62b8` on Windows 11, node v24.15.0, vitest
+     * 4.1.10, sixteen logical cores, with N background processes spinning beside the suite's own
+     * workers:
+     *
+     *     idle    2 672   2 818   2 820                     green
+     *     N = 4   3 403   3 450   3 636                     green
+     *     N = 8   4 971   4 993   5 606                     one red of three
+     *     N = 16  12 514  12 664  13 670  15 015            four red of four
+     *
+     * At saturation two other guards cross the default with it and three of 466 report a duration
+     * above it, so the bound is not about one guard.
+     *
+     * **The base is measured and the multiple is a convention, said out loud because the number would
+     * otherwise read as derived.** The base is 15 015 ms, the worst of ten readings, at a contention of
+     * 5.32 over idle. The multiple is four: the bound has to clear the worst machine measured with room
+     * for one worse still, and four is a choice about how much room. So 60 060 ms carries its own base
+     * in its digits, and re-measuring the worst reading moves it.
+     *
+     * It is 10 % of `THE_LONGEST_A_RUN_MAY_TAKE`, so a guard that is genuinely hung still reddens
+     * inside the bound on the run that contains it rather than arriving as `not-measured`, which is the
+     * verdict ADR-0162 says no cell can be pinned at.
+     *
+     * **`hookTimeout` is deliberately left at its default, and that is a refusal rather than an
+     * oversight.** The heaviest hook here clones this repository and makes four commits, and no reading
+     * taken for this unit separates it from the file's own import and collection: the figure that looked
+     * like the hook - 8 226 ms against a 10 000 ms default - is the whole file, and the same file was
+     * seen taking 27 519 ms at saturation without the hook expiring. A bound set on a quantity nobody
+     * has measured is the thing this comment exists not to be. ADR-0205.
+     */
+    testTimeout: 60_060,
   },
 })
