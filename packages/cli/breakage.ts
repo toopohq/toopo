@@ -136,8 +136,24 @@ export const WHAT_BREAKS: readonly Breakage[] = [
     verdict: 'refused-cleanly',
     guard: 'a-path-with-a-space-installs-normally',
     detail:
-      'no shell ever sees a path: every file operation goes through `node:path` and `node:fs`, and ' +
-      'the one subprocess this repository spawns for parsing is given a directory it made itself',
+      'no shell ever sees a path: every file operation goes through `node:path` and `node:fs`. Two ' +
+      'subprocesses are spawned and neither parses one - the parser is given a directory this tool ' +
+      "made itself, and `git check-ignore -q --` is given the user's own folder with `shell: false`, " +
+      'measured to answer normally for a space and for a leading dash. **This row was true of the ' +
+      'install and false of the tool for one release**: `configurationFaults` refused the very folder ' +
+      'it installs into, so a project this tool installed into was one it would not read its own ' +
+      'configuration for. ADR-0208 is the measurement that made the row true of both.',
+  },
+  {
+    situation: '`toopo init --dir` is given a folder this toopo would not read back',
+    verdict: 'refused-cleanly',
+    guard: 'the-folder-init-is-given-is-one-this-toopo-can-read',
+    detail:
+      'the one command that names the folder used to accept any string at all and write it. Measured: ' +
+      '`init --dir "C:\\toopo"`, `--dir "../outside"` and `--dir "src/my code/toopo"` each exited 0 ' +
+      'and left a committed file every later command refused - one of them naming a place outside the ' +
+      'project, written by the tool whose whole rule is that it writes inside it. The value is read by ' +
+      'the rule that reads it back now, before anything is written.',
   },
   {
     situation: "the project's tsconfig.json does not carry the options the catalogue is written under",

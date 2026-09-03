@@ -465,9 +465,9 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
 
   'packages/cli/vitest.config.ts': {
     'packages/cli/arguments.test.ts': 12,
-    'packages/cli/breakage.test.ts': 14,
+    'packages/cli/breakage.test.ts': 15,
     'packages/cli/command.test.ts': 1,
-    'packages/cli/configuration.test.ts': 9,
+    'packages/cli/configuration.test.ts': 11,
     'packages/cli/diff.test.ts': 10,
     'packages/cli/emitted-registry.test.ts': 6,
     'packages/cli/how-a-command-ends.test.ts': 3,

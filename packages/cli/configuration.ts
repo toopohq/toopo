@@ -24,7 +24,7 @@ import { join } from 'node:path'
 
 import { THE_INVOCATION } from '../registry/address.js'
 import { LOCKFILE } from './lockfile.js'
-import { staysInside } from './where-a-file-may-land.js'
+import { theDirectoryRefusal, travels } from './where-a-file-may-land.js'
 
 export const CONFIGURATION_FILE = 'toopo.json'
 
@@ -33,6 +33,27 @@ export type Configuration = {
   /** Where installed features go, relative to the project root, with forward slashes. */
   readonly directory: string
 }
+
+/**
+ * What is wrong with the directory a `toopo.json` carries, said in the words of what is wrong with it.
+ *
+ * The rule and its sentence both live in `where-a-file-may-land.ts`, beside the alphabet a served path
+ * is spelled out of: one module states where this tool may put a file, and the configured directory is
+ * half of every such place. ADR-0206 is what moved the alphabet there, and ADR-0208 is what gave the
+ * directory one of its own - wider by a space, because a folder called `my code` travels.
+ *
+ * What stays here is the one fault that is about this *file* rather than about a folder: a field that
+ * is not text at all, which a rule about the spelling of folders has nothing to say about.
+ */
+const theDirectoryFaults = (directory: unknown): readonly string[] =>
+  typeof directory !== 'string'
+    ? [
+        `${CONFIGURATION_FILE} carries ${JSON.stringify(directory)} as its directory, and a ` +
+          `directory is the name of a folder, written as text`,
+      ]
+    : travels(directory)
+      ? []
+      : [theDirectoryRefusal(CONFIGURATION_FILE, directory)]
 
 export const configurationFaults = (value: unknown): readonly string[] => {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -49,14 +70,7 @@ export const configurationFaults = (value: unknown): readonly string[] => {
           `${CONFIGURATION_FILE} carries version ${JSON.stringify(held['version'])}, and this ` +
             `\`toopo\` writes version 1`,
         ]),
-    // The alphabet this used to declare for itself lives in `where-a-file-may-land.ts` now, so the
-    // directory and the files under it are one rule rather than two that agree. ADR-0206.
-    ...(typeof directory === 'string' && staysInside(directory)
-      ? []
-      : [
-          `${CONFIGURATION_FILE} carries ${JSON.stringify(directory)} as its directory, which is not ` +
-            `a relative path inside the project written with forward slashes`,
-        ]),
+    ...theDirectoryFaults(directory),
     ...Object.keys(held)
       .filter((key) => key !== 'version' && key !== 'directory')
       .map(

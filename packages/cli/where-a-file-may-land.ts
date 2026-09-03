@@ -29,11 +29,16 @@
  * A list of what is allowed, and not a list of what is not
  * ---------------------------------------------------------------------------
  *
- * `A_PATH_INSIDE` says what a segment may be made of, which is ADR-0046's shape one folder along: the
- * catalogue admits a pure function by naming what it may reach rather than by enumerating what it may
- * not, because the second list is never finished. Spelled that way, a whole class of question is not
- * asked - a leading slash, a drive letter, a UNC prefix, a backslash, a colon, a control character and
- * an empty segment are all outside the alphabet rather than each being a clause somebody remembered.
+ * `A_PATH_INSIDE` and `A_DIRECTORY` say what a segment may be made of, which is ADR-0046's shape one
+ * folder along: the catalogue admits a pure function by naming what it may reach rather than by
+ * enumerating what it may not, because the second list is never finished. Spelled that way, a whole
+ * class of question is not asked - a leading slash, a drive letter, a UNC prefix, a backslash, a colon,
+ * a control character and an empty segment are all outside both alphabets rather than each being a
+ * clause somebody remembered.
+ *
+ * They are two because a served path and the folder a project chose are two fields with two jobs, and
+ * ADR-0208 is the measurement that separated them again. Neither grows by anticipation: a character
+ * enters an alphabet when somebody has shown it does no harm, which is how the space entered this one.
  *
  * `..` is the one sequence the alphabet cannot exclude, because `.` and `-` are legitimate in a
  * filename and `..` is spelled out of them. So it is refused as a *segment*, which is the form that
@@ -43,10 +48,11 @@
  * Two facts, because a string cannot answer for the disk
  * ---------------------------------------------------------------------------
  *
- * `staysInside` answers about a string and is what a boundary asks - the lockfile reader, the
- * configuration reader, the plan. `under` answers about a place, and it is what a caller about to call
- * the filesystem asks. They are not two rules: `under` applies `staysInside` and then asks the one
- * question no string can answer, which is what the directory *is* on this disk.
+ * `staysInside` answers about a string and is what a boundary asks - the lockfile reader, the plan.
+ * `travels` is the same question asked of the one field that is the project's own, and the
+ * configuration reader is its only caller. `under` answers about a place, and it is what a caller about
+ * to call the filesystem asks. They are not three rules: `under` applies `staysInside` and then asks
+ * the one question no string can answer, which is what the directory *is* on this disk.
  *
  * A directory that is a link is the case. The project a user cloned decides its own shape, so
  * `lib/toopo` can be a link to somewhere else entirely - and every part of the arithmetic above is
@@ -54,20 +60,109 @@
  * exists, and comparing that, is the only thing that answers it.
  */
 
-import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
+import { basename, dirname, isAbsolute, join, posix, relative, resolve, sep, win32 } from 'node:path'
 import { realpathSync } from 'node:fs'
 
 /**
- * What a segment of a path this tool writes may be made of.
+ * What a segment of a served path may be made of.
  *
- * The same alphabet `configuration.ts` has always required of the configured directory, stated here so
- * that the directory and the files under it are one rule rather than two that agree today.
+ * It is the alphabet of a string that arrived from somewhere else - a served answer, or a `toopo.lock`
+ * a repository carries - so it is spelled out of what this catalogue spells. `A_DIRECTORY` below is
+ * the other one, and the whole of what they disagree about is one character.
  */
 export const A_PATH_INSIDE = /^[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*$/
+
+/**
+ * What a segment of the configured directory may be made of, which is that alphabet and a space.
+ *
+ * **Two alphabets rather than one, because the two fields answer two questions.** A served path
+ * describes what the catalogue holds. A directory is the project's own decision about a folder on its
+ * own disk, and the only thing it owes anybody is to mean the same folder on every machine that checks
+ * the project out, because the file naming it is committed.
+ *
+ * They were one rule for one release, and the space is what separated them again. Measured at
+ * `a2495c3`, on NTFS under node v24.15.0 and on ext4 under node v24.20.0, over nine spellings each:
+ * a space in a folder name - leading, trailing or in the middle - is rendered back under the name it
+ * was asked for on both platforms, the file under it is read at the path that asked for it, `under`
+ * composes the place that was asked for, and `git check-ignore -q --`, the one subprocess an install
+ * hands a user's own directory to, answers normally. **An alphabet that refuses a character it cannot
+ * show a harm for is narrower than its own reason.** The same reading found `src/code./toopo` admitted
+ * by `A_PATH_INSIDE` today, so a trailing character was never what either rule was about.
+ *
+ * **What stays outside is outside by not being in it, and never by a clause.** A drive letter, a
+ * backslash, `<>:"|?*`, a control character and an empty segment are each spelled out of the alphabet
+ * rather than each being a rule somebody remembered, which is what the note above says one folder
+ * along and the reason both are written this way.
+ *
+ * Nothing outside ASCII is admitted, and that is an absence rather than a decision. macOS normalises a
+ * name to NFD where Linux keeps the bytes it was handed, so a directory committed as `é` in NFC would
+ * come back spelled otherwise - which is exactly the failure this rule exists to prevent - and no
+ * macOS reading was taken. It reopens on one.
+ */
+export const A_DIRECTORY = /^[A-Za-z0-9._ -]+(?:\/[A-Za-z0-9._ -]+)*$/
 
 /** Whether a path names a place inside whatever it is joined to, whoever wrote it. */
 export const staysInside = (path: string): boolean =>
   A_PATH_INSIDE.test(path) && !path.split('/').includes('..')
+
+/**
+ * Whether the configured directory is one a committed file can carry to another machine.
+ *
+ * The `..` clause is written out again rather than shared with `staysInside`, and a mutant decides
+ * that rather than a preference: a cell aims at a choice and never at a mechanism two claims share, so
+ * one function serving both alphabets would be one edit reddening the served path and the configured
+ * directory at once. ADR-0203.
+ */
+export const travels = (directory: string): boolean =>
+  A_DIRECTORY.test(directory) && !directory.split('/').includes('..')
+
+/**
+ * What a reader is told when the configured directory was refused, naming the thing in it that was.
+ *
+ * **The arms are ordered so that each sentence is true of the string it is shown for**, rather than
+ * merely true: `C:\toopo` is refused for naming a volume and not for the colon in it, and a backslash
+ * for meaning two places and not for being outside the alphabet. A refusal derived from the alphabet
+ * alone would give the second of each pair, which is a reason nobody can act on.
+ *
+ * The last arm asks the alphabet about one character at a time rather than restating it, so there is
+ * one statement of what a directory is spelled out of and not two that agree today.
+ */
+export const theDirectoryRefusal = (where: string, directory: string): string => {
+  const carries = `${where} carries ${JSON.stringify(directory)} as its directory, and `
+
+  if (directory === '') return `${carries}a directory has to name a folder.`
+
+  if (posix.isAbsolute(directory) || win32.isAbsolute(directory)) {
+    return (
+      `${carries}it is an absolute path. ${where} is committed with your project, so the folder is ` +
+      `named relative to its root - an absolute one names the machine that wrote it and is wrong for ` +
+      `everybody else who checks the project out.`
+    )
+  }
+
+  if (directory.includes('\\')) {
+    return (
+      `${carries}it is written with backslashes. A backslash separates folders on Windows and is an ` +
+      `ordinary character in a name everywhere else, so a committed one is a single string naming two ` +
+      `different places. Write the folder with forward slashes on every platform.`
+    )
+  }
+
+  if (directory.split('/').includes('..')) {
+    return (
+      `${carries}it leads out of your project. Toopo only ever writes under your project, and a ` +
+      `folder above it is one this tool will not install into.`
+    )
+  }
+
+  const outside = [...directory].find(
+    (character) => character !== '/' && !A_DIRECTORY.test(character),
+  )
+
+  return outside === undefined
+    ? `${carries}one of its folders is named by nothing at all.`
+    : `${carries}it holds ${JSON.stringify(outside)}, which toopo does not put in a folder name.`
+}
 
 /**
  * What a reader is told when a path was refused. Always a sentence.
@@ -128,10 +223,10 @@ const trulyAt = (path: string): string => {
  *
  * **The alphabet is asked of `path` and never of `within`, and that distinction is the repair's own
  * measurement.** They are two fields with two rules: `within` is the project's own decision, read once
- * by `configurationFaults` and legitimately holding whatever a folder on somebody's disk is called -
- * `a-path-with-a-space-installs-normally` is the guard that says so, and it is what caught this
- * function asking one rule of both. What `within` still cannot do is lead out of the project, and that
- * is the comparison below rather than the alphabet above.
+ * by `configurationFaults` against `A_DIRECTORY` - which is wider than the one above by a space and
+ * not by *whatever a folder on somebody's disk is called*, because this string is also printed on a
+ * screen and written into a committed file, and a newline is a folder name. What `within` still cannot
+ * do is lead out of the project, and that is the comparison below rather than the alphabet above.
  */
 export const under = (root: string, within: string, path: string): string | null => {
   if (!staysInside(path)) return null

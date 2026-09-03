@@ -73,6 +73,7 @@ import type { Configuration } from './configuration.js'
 import {
   CONFIGURATION_FILE,
   UnusableConfiguration,
+  configurationFaults,
   configurationToInstallUnder,
   proposeDirectory,
   readConfiguration,
@@ -230,6 +231,19 @@ const theCommand = async (theRegistry: () => RegistrySource): Promise<HowItEnded
         version: 1,
         directory: parsed.command.directory ?? held?.directory ?? proposeDirectory(root),
       }
+      /**
+       * The folder somebody typed is read by the rule that will read it back out of the file.
+       *
+       * `--dir` reached `writeConfiguration` unexamined, so this command wrote configurations it then
+       * refused: measured before this line existed, `init --dir "C:\toopo"`, `--dir "../outside"` and
+       * `--dir "src/my code/toopo"` each exited 0, left a committed file on disk, and were refused by
+       * every command after them - one of them naming a folder outside the project. It is the one
+       * question `readConfiguration` asks, asked where the value is chosen rather than where it is
+       * read back, and the refusal comes before anything is written. ADR-0208.
+       */
+      const unusable = configurationFaults(configuration)
+      if (unusable.length > 0) refuse(unusable)
+
       const change = whatMoves(root, held, configuration, readLockfile(root))
 
       if ('faults' in change) refuse(change.faults)

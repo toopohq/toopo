@@ -313,7 +313,27 @@ const THE_VERSION_IS_ONE = `    ...(held['version'] === 1`
 // The rule this quotes lives in `where-a-file-may-land.ts` now, so the cell asks the reader of it
 // rather than the rule: widening the alphabet itself would redden every frontier that reads it, where
 // what this mutant is about is a configuration that accepts any string as a directory.
-const A_DIRECTORY_TRAVELS = `    ...(typeof directory === 'string' && staysInside(directory)`
+//
+// The anchor followed the rule when the directory gained an alphabet of its own at ADR-0208 - the call
+// moved from `staysInside` to `travels` and into a function of its own. It is the *condition* alone,
+// so the replacement leaves the sentence beside it referenced: a mutant that orphans an import is one
+// the compiler refuses, which measures nothing.
+const A_DIRECTORY_TRAVELS = `    : travels(directory)`
+
+// The four anchors ADR-0208 added, one per choice the directory's own rule makes: what its alphabet
+// holds, that a field which is not text is a fault of the file rather than of the folder, which cause
+// a refusal names first, and whether `init` reads the folder it was handed before writing it.
+const THE_DIRECTORY_ALPHABET = `export const A_DIRECTORY = /^[A-Za-z0-9._ -]+(?:\\/[A-Za-z0-9._ -]+)*$/`
+
+const A_DIRECTORY_IS_TEXT = `  typeof directory !== 'string'
+    ? [
+        \`\${CONFIGURATION_FILE} carries \${JSON.stringify(directory)} as its directory, and a \` +
+          \`directory is the name of a folder, written as text\`,
+      ]`
+
+const AN_ABSOLUTE_PATH_IS_ABSOLUTE_ANYWHERE = `  if (posix.isAbsolute(directory) || win32.isAbsolute(directory)) {`
+
+const INIT_READS_THE_FOLDER_IT_WRITES = `      if (unusable.length > 0) refuse(unusable)`
 
 const NO_FILE_MEANS_NO_CONFIGURATION = `  if (!existsSync(path)) return null`
 
@@ -741,16 +761,21 @@ void theCatalogue`,
 
   sameOnEveryLens(
     'C-30',
-    'accepts any string as a directory, so a configuration committed from Windows names a folder no ' +
-      'other machine can resolve and an absolute path names the machine that ran `init`',
+    'asks its own rule about a folder it made up instead of the one in the file, so any string at all ' +
+      'is accepted as a directory: a configuration committed from Windows names a folder no other ' +
+      'machine can resolve, and an absolute path names the machine that ran `init`',
     [
       {
         file: 'configuration.ts',
         find: A_DIRECTORY_TRAVELS,
-        replace: `    ...(typeof directory === 'string'`,
+        replace: `    : travels('lib/toopo')`,
       },
     ],
-    killed(['a-directory-that-does-not-travel-is-refused']),
+    killed([
+      'a-directory-that-does-not-travel-is-refused',
+      'a-refused-directory-is-told-what-in-it-was-refused',
+      'the-folder-init-is-given-is-one-this-toopo-can-read',
+    ]),
   ),
 
   sameOnEveryLens(
@@ -1560,6 +1585,72 @@ import type {
       ),
     ],
     killed(['a-served-path-that-leaves-the-parsing-project-is-refused-before-it-is-written']),
+  ),
+
+  /**
+   * The configured directory's own rule, in the four places it can be wrong, each aimed at a choice.
+   *
+   * C-30 above reddens all four guards at once, because it stops the rule being asked at all. These
+   * separate them, and each was measured red *alone* on the whole suite before it was written down -
+   * which is the difference between a guard that has been seen fail and a guard that has a cell.
+   *
+   * The alphabet's cell drops the dot rather than the space, and that is what keeps it alone: the
+   * space is the row `the-folder-init-is-given-is-one-this-toopo-can-read` installs into, so taking it
+   * out reddens that guard too and the cell stops aiming at one thing. A dot is in the alphabet
+   * because a folder called `.config` is a folder, and no other guard here spells one. ADR-0208.
+   */
+  sameOnEveryLens(
+    'C-80',
+    'drops the dot from the alphabet a configured folder is spelled out of, so a project whose ' +
+      'directory holds one is told its own `toopo.json` is unusable',
+    [confinementFile(THE_DIRECTORY_ALPHABET, `export const A_DIRECTORY = /^[A-Za-z0-9_ -]+(?:\\/[A-Za-z0-9_ -]+)*$/`)],
+    killed(['a-directory-that-travels-is-accepted']),
+  ),
+
+  sameOnEveryLens(
+    'C-81',
+    'reads a directory that is not text at all as one there is nothing wrong with, so a `toopo.json` ' +
+      'carrying a number where the folder goes is accepted and every path composed from it is `42/…`',
+    [{ file: 'configuration.ts', find: A_DIRECTORY_IS_TEXT, replace: `  typeof directory !== 'string'\n    ? []` }],
+    killed(['a-directory-that-does-not-travel-is-refused']),
+  ),
+
+  /**
+   * The order of the refusal's arms, which is the whole of what makes each sentence actionable.
+   *
+   * Asking both platforms at once rather than either leaves `C:\toopo` falling through to the arm
+   * below it, so a reader is told their path holds a backslash - true, and not the reason. The cell is
+   * a single operator because that is the shape this defect really has: an arithmetic about *paths*
+   * answered by whichever platform the author was standing on.
+   */
+  sameOnEveryLens(
+    'C-82',
+    'calls a path absolute only where both platforms agree it is, so a Windows path is refused for ' +
+      'the backslash in it and a reader is given a cause that is true and is not theirs',
+    [
+      confinementFile(
+        AN_ABSOLUTE_PATH_IS_ABSOLUTE_ANYWHERE,
+        `  if (posix.isAbsolute(directory) && win32.isAbsolute(directory)) {`,
+      ),
+    ],
+    killed(['a-refused-directory-is-told-what-in-it-was-refused']),
+  ),
+
+  /**
+   * The defect ADR-0208 repaired, put back.
+   *
+   * `init` copied `--dir` into `toopo.json` unexamined, so this tool wrote configurations it then
+   * refused - `--dir "../outside"` exited 0 and left a committed file naming a folder above the
+   * project. The bound is `99` rather than the check being deleted, so `unusable` stays read and the
+   * compiler has nothing to say: a cell that stops compiling comes back `killed-by-typecheck` and
+   * witnesses nothing, which is C-79's note one cell along.
+   */
+  sameOnEveryLens(
+    'C-83',
+    'writes the folder `init` was handed without reading it, so `toopo init --dir` leaves a committed ' +
+      'configuration every later command refuses - one of them naming a place outside the project',
+    [commandFile(INIT_READS_THE_FOLDER_IT_WRITES, `      if (unusable.length > 99) refuse(unusable)`)],
+    killed(['the-folder-init-is-given-is-one-this-toopo-can-read']),
   ),
 ]
 

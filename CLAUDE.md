@@ -66,6 +66,32 @@ second because it had hidden it. Four replays of `cli-install` were needed for o
 refusing something different and not one found by reading a diff. The local calibration reproduces a
 runner's refusal line for line in **twenty seconds** against an hour of CI. ADR-0206.
 
+**And a project this tool installs into is now a project it reads its own configuration for, which took
+three repairs where the list had recorded one.** `breakage.ts` declared that a folder with a space
+installs normally and `configurationFaults` refused that same folder, so the two halves contradicted
+each other inside one package. **The reason for leaving it open was refuted by measuring it**: the claim
+was that a space at either edge of a segment is lost or refused depending on the platform, and over nine
+spellings at `a2495c3` — NTFS under node v24.15.0, ext4 under v24.20.0 — **nine of nine come back under
+the name they were asked for on both**, `under` composes the place that was asked for, and
+`git check-ignore -q --` answers normally. **The reading that cuts the other way is that
+`staysInside('src/code./toopo')` is true today**, so a rule about where a character sits would have been
+narrower than the published alphabet for a hazard neither platform shows. So the directory has an
+alphabet of its own, `A_PATH_INSIDE` and a space, and **the confinement did not move**: `staysInside`
+has five callers and only the configuration's changed, which is the one not on the path from a served
+string to the filesystem. **Reading the entry found two defects sharper than the one it named.**
+`toopo init --dir` copied what was typed into a committed file unexamined — `C:\toopo`, `../outside`
+and `src/my code/toopo` each exit **0**, leave a `toopo.json` on disk and are refused by every command
+after them, one of them naming a folder *above* the project, written by the tool whose whole rule is
+that it writes inside it. And the refusal was **false of the string it was shown for**: `src/my
+code/toopo` is a relative path, inside the project, written with forward slashes, which is the whole of
+what the sentence named. It names its cause now, in five arms ordered so each is true of what it
+accompanies. **Four cells were written from four readings rather than the readings being thrown away** —
+each new guard was seen red *alone* on the whole suite before it was written down — and `C-30`'s pin
+went from one guard to three, re-measured rather than re-reasoned. **What it does not buy is stated
+rather than smoothed**: nothing outside ASCII is admitted, and that is an absence with a date on it
+rather than a decision, because macOS normalises a name to NFD where Linux keeps its bytes and no macOS
+reading was taken. ADR-0208.
+
 **The instrument reports a red no pin claimed, which is the mirror of the silence it already refused,
 and the shape was chosen on a measurement rather than on the sentence that proposed it.** A pin is
 verified as a *subset* - every guard it names must have reddened, and never the reverse - so a cell
@@ -1799,6 +1825,24 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   one prose paragraph of each page reddens **8 of 8**. What it leaves behind is that the class did not
   close with the page — `overflow-wrap: anywhere` is on `body`, so every page can still break a word,
   and what left is the matter rather than the property.
+- **the directories this tool supports against the directories it accepts** — ADR-0208, and it is the
+  first entry this list has closed by **taking the measurement that refuted the reason for leaving it
+  open**. The entry offered two ways out and the argument for the wider one rested on a claim about
+  the space: that in front of or behind a segment it is *lost or refused depending on the platform*.
+  Measured at `a2495c3` over nine spellings, on NTFS under node v24.15.0 and on ext4 under v24.20.0,
+  **nine of nine are rendered back under the name they were asked for on both** — libuv does not go
+  through the Win32 normalisation that drops one — and on Windows `code ` and `code` are two
+  directories rather than one. **What cut the other way is that `staysInside('src/code./toopo')` is
+  true today**, so refusing a space for its position would refuse a character for a reason the
+  published alphabet does not apply to itself. So the directory gained an alphabet of its own, wider
+  by that one character, and `A_PATH_INSIDE`, `staysInside` and `under` were not touched: of
+  `staysInside`'s five callers the configuration's is the only one that moved, and it is not on the
+  path from a served string to the filesystem. **Reading the entry found two defects worse than the
+  one it named** — `init --dir` wrote a committed `toopo.json` this tool then refused to read, exit 0,
+  once naming a folder *above* the project; and the refusal was false of the string it was shown for,
+  naming three properties `src/my code/toopo` satisfies. **What it leaves behind is the ASCII bound,
+  declared rather than decided**: macOS normalises to NFD where Linux keeps its bytes, no macOS
+  reading was taken, and the record names that as the absence that reopens it.
 - **a control that reddens with no failed guard naming what reddened it** — ADR-0201, and it is the
   first entry this list has closed by **taking the repair ADR-0200 priced and refused**. That refusal
   was about the witness: `mutation/` is injected into by no battery, so the branch arrives unwatched.
@@ -2114,30 +2158,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   part nobody can derive: the largest answer this catalogue serves is a contract snapshot, and a
   ceiling set from today's catalogue is one the eighth contract may cross. Priced as its own unit and
   not taken. ADR-0206.
-
-- **That the directories this tool supports are the directories it accepts.** They are not, and the two
-  halves are in the same package. `breakage.ts` declares `a-path-with-a-space-installs-normally` and
-  the guard installs into `src/my code/toopo`; `configurationFaults` refuses that same string when it
-  reads it back out of `toopo.json`, because the alphabet has no space in it. So a project this tool
-  installs into is a project it will not read its own configuration for.
-
-  **It is older than ADR-0206 and it was found by it**, which is worth separating: the alphabet moved
-  out of `configuration.ts` into a shared rule and did not change, so the contradiction is exactly as
-  old as `DIRECTORY`. What the repair did was put a guard on the far side of it - the first shape asked
-  the alphabet of the directory as well as of the path, and that guard refused it.
-
-  **Where this looked**: `configurationFaults` in `packages/cli/configuration.ts`; `staysInside` in
-  `packages/cli/where-a-file-may-land.ts`, which is the rule it now reads; and
-  `a-path-with-a-space-installs-normally` in `packages/cli/breakage.test.ts`, which is the declaration
-  going the other way.
-
-  **The population is every directory a person may name**, and no reading here bounds how many of them
-  hold a character outside `[A-Za-z0-9._-]`. What would close it is a decision rather than a repair:
-  either the alphabet widens for the directory - at which point the confinement's comparison, and not
-  the alphabet, is the whole of what keeps a directory inside the project - or `breakage.ts` stops
-  declaring it, which withdraws support this tool has advertised since that guard was written. **The
-  first is the larger change and is probably right**, and it is the owner's. Priced and not taken.
-  ADR-0206.
 
 - **That a layout a script produces is one somebody has looked at.** Every sweep this repository has
   ever taken over its own pages reads the *emitted* tree - the HTML `build.ts` writes. A control

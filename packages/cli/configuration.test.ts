@@ -21,6 +21,33 @@ import { aProject } from './temporary-project.js'
  * this file arrives without the previous one having pretended to understand it.
  */
 
+/**
+ * The directories a committed `toopo.json` cannot carry, sorted by what each row is *about*.
+ *
+ * A declaration rather than a handful somebody thought of, and grouped the way
+ * `where-a-file-may-land.test.ts` groups the served path's rows: by the thing a reader checking the
+ * table has to be able to decide, never by platform. A volume of its own is not a Windows row - it is
+ * refused on Linux for the same reason.
+ *
+ * Everything but the last two groups is refused by `A_DIRECTORY`, and a row added to one of them is a
+ * row the same expression already decides. `not text at all` is the one fault that belongs to this
+ * file rather than to the rule, because a rule about folders has nothing to say about a number.
+ */
+const WHAT_A_COMMITTED_DIRECTORY_CANNOT_BE: Readonly<Record<string, readonly unknown[]>> = {
+  'a path from the root': ['/etc/toopo', '//server/share/toopo'],
+  'a volume of its own': ['C:\\toopo', 'C:/toopo'],
+  'a separator that names two different places': ['src\\lib\\toopo'],
+  'a step upwards': ['../outside', 'a/../../x', '..'],
+  'a character a folder here is not spelled with': [
+    'lib/toopo:stream',
+    'lib/a\u0000b/toopo',
+    'lib/a\nb/toopo',
+    'src/bibliothèque/toopo',
+  ],
+  'a folder with no name': ['', 'a//b', 'a/'],
+  'not text at all': [42, undefined, null],
+}
+
 describe('the configuration of a project', () => {
   it('a-configuration-round-trips-through-the-file', () => {
     const project = aProject()
@@ -56,17 +83,74 @@ describe('the configuration of a project', () => {
   })
 
   /**
-   * A directory is committed with the project, so it has to mean the same thing on every machine that
-   * checks it out. An absolute path names the machine that ran `init`; a backslash names Windows; a
-   * `..` names something outside the project. None of the three is repaired here, because repairing it
-   * would leave the committed file saying something this tool does not mean.
+   * Every row is refused, and each is refused exactly once.
+   *
+   * A directory is committed with the project, so it has to mean the same folder on every machine that
+   * checks it out. None of these is repaired on the way in, because repairing one would leave the
+   * committed file saying something this tool does not mean.
+   *
+   * The count is asserted rather than the mere presence of a fault: two faults for one directory is a
+   * rule answering twice, and it is the shape a fifth arm added without reading the four would take.
    */
   it('a-directory-that-does-not-travel-is-refused', () => {
-    const refused = ['/etc/toopo', 'C:\\toopo', 'src\\lib\\toopo', '../outside', '', 42, undefined]
+    const notRefusedExactlyOnce = Object.entries(WHAT_A_COMMITTED_DIRECTORY_CANNOT_BE).flatMap(
+      ([about, spellings]) =>
+        spellings
+          .filter((directory) => configurationFaults({ version: 1, directory }).length !== 1)
+          .map((directory) => `${about}: ${JSON.stringify(directory)}`),
+    )
 
-    expect(
-      refused.map((directory) => configurationFaults({ version: 1, directory }).length),
-    ).toEqual([1, 1, 1, 1, 1, 1, 1])
+    expect(notRefusedExactlyOnce).toEqual([])
+  })
+
+  /**
+   * The other direction, so that the guard above cannot be satisfied by a rule that refuses everything.
+   *
+   * `src/my code/toopo` is the row this pair exists for. It is a relative path inside the project
+   * written with forward slashes, it was refused for one release while `breakage.ts` declared that it
+   * installs normally, and ADR-0208 is the measurement that admitted it. The three positions are all
+   * here because the space was refused on a claim about *where* it sits, and that claim was measured
+   * false on both platforms.
+   *
+   * `src/code./toopo` and `a..b/toopo` are the rows the `..` clause is most likely to take with it: a
+   * folder whose name ends in a dot, and one that merely holds two, are not a step upwards.
+   */
+  it('a-directory-that-travels-is-accepted', () => {
+    const refused = [
+      'lib/toopo',
+      'src/lib/toopo',
+      'src/my code/toopo',
+      'src/ code/toopo',
+      'src/code /toopo',
+      'src/code./toopo',
+      'a..b/toopo',
+      'a_b-c.d/toopo',
+    ].filter((directory) => configurationFaults({ version: 1, directory }).length > 0)
+
+    expect(refused).toEqual([])
+  })
+
+  /**
+   * A refusal that explains is a door and one that reports is a wall, so what is read here is the
+   * *cause* and never the whole sentence.
+   *
+   * The arms are ordered so that each names the thing a person can act on, and the ordering is the
+   * whole of what this guard is about: a rule read backwards from its alphabet would answer `":"` for
+   * a drive letter and `"\\"` for a Windows path, both true and neither useful.
+   */
+  it('a-refused-directory-is-told-what-in-it-was-refused', () => {
+    const said = (directory: string): string =>
+      configurationFaults({ version: 1, directory })[0] ?? '(nothing was said)'
+
+    const CAUSES: readonly (readonly [string, string])[] = [
+      ['C:\\toopo', 'an absolute path'],
+      ['src\\lib\\toopo', 'written with backslashes'],
+      ['../outside', 'leads out of your project'],
+      ['lib/toopo:stream', 'it holds ":"'],
+      ['a//b', 'named by nothing at all'],
+    ]
+
+    expect(CAUSES.filter(([directory, cause]) => !said(directory).includes(cause))).toEqual([])
   })
 
   it('a-file-that-is-not-json-is-refused-by-name', () => {

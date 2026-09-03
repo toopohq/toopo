@@ -171,6 +171,7 @@ describe('what breaks for somebody', () => {
       'a-field-this-toopo-does-not-honour-is-refused': 'configuration.test.ts',
       'a-project-with-no-package-json-installs-normally': 'breakage.test.ts',
       'a-path-with-a-space-installs-normally': 'breakage.test.ts',
+      'the-folder-init-is-given-is-one-this-toopo-can-read': 'breakage.test.ts',
       'the-users-tsconfig-is-never-read': 'breakage.test.ts',
       'a-file-where-a-folder-must-go-is-refused-with-nothing-staged': 'write.test.ts',
       'a-directory-where-a-file-goes-is-refused-by-name': 'write.test.ts',
@@ -396,6 +397,64 @@ describe('what breaks for somebody', () => {
     } finally {
       project.remove()
     }
+  })
+
+  /**
+   * What `init` agrees to write is what `readConfiguration` agrees to read, in both directions.
+   *
+   * End to end, because what it keeps is an order inside the entry point rather than a value: the
+   * refusal has to come before `toopo.json` is written. Measured before the order existed, `--dir` was
+   * copied into the file unexamined, so this command wrote configurations every later command refused
+   * - including one naming a folder outside the project, written by the tool whose whole rule is that
+   * it writes inside it.
+   *
+   * **Two rows and not four, and the reason is the instrument.** Each row is a real process and this
+   * suite is replayed once per mutant cell, so what is spawned here is the minimum that holds both
+   * directions - one folder that is written and read back, one that is refused with nothing on disk.
+   * Which *cause* each refusal names is asked of `configurationFaults` in `configuration.test.ts`,
+   * where a row costs nothing. `src/my code/toopo` is the accepted row because it is the one this pair
+   * exists for: the row above declares that it installs normally, and for one release the
+   * configuration refused it. ADR-0208.
+   */
+  it('the-folder-init-is-given-is-one-this-toopo-can-read', () => {
+    const asked = ['src/my code/toopo', '../outside']
+
+    const outcome = asked.map((directory) => {
+      const project = aProject()
+      try {
+        let init = 'wrote'
+        try {
+          execFileSync(process.execPath, [THE_ENTRY_POINT, 'init', '--dir', directory], {
+            cwd: project.root,
+            encoding: 'utf8',
+            stdio: 'pipe',
+          })
+        } catch {
+          init = 'refused'
+        }
+
+        let readsBack = false
+        try {
+          readsBack = readConfiguration(project.root)?.directory === directory
+        } catch {
+          readsBack = false
+        }
+
+        return {
+          directory,
+          init,
+          theFileExists: existsSync(join(project.root, CONFIGURATION_FILE)),
+          readsBack,
+        }
+      } finally {
+        project.remove()
+      }
+    })
+
+    expect(outcome).toEqual([
+      { directory: 'src/my code/toopo', init: 'wrote', theFileExists: true, readsBack: true },
+      { directory: '../outside', init: 'refused', theFileExists: false, readsBack: false },
+    ])
   })
 
   /**

@@ -806,11 +806,14 @@ export const battery: Battery = {
         'the argument grammar and the configuration file. Nothing in this battery reads what the ' +
         'user typed or what `toopo.json` holds - it starts from a request already parsed - and ' +
         '`cli-install` carries twelve defects over exactly these. The two guards this unit *added* to ' +
-        'the grammar are not here: `--apply` is this command\'s own acceptance, so U-34 probes it.',
+        'the grammar are not here: `--apply` is this command\'s own acceptance, so U-34 probes it. ' +
+        'ADR-0208 put three more guards in this region and the twelve did not move, because the cell ' +
+        'that reaches them is C-30, which was already one of them.',
       guards: [
         'a-command-with-no-flag-is-read',
         'a-configuration-round-trips-through-the-file',
         'a-directory-that-does-not-travel-is-refused',
+        'a-directory-that-travels-is-accepted',
         'a-field-this-toopo-does-not-honour-is-refused',
         'a-file-that-is-not-json-is-refused-by-name',
         'a-flag-and-its-value-are-read',
@@ -818,11 +821,13 @@ export const battery: Battery = {
         'a-project-that-was-never-initialised-answers-nothing',
         'a-lockfile-with-no-configuration-is-refused-with-the-folder-to-name',
         'a-project-with-nothing-in-it-is-configured-rather-than-refused',
+        'a-refused-directory-is-told-what-in-it-was-refused',
         'a-repeated-flag-and-a-stray-word-are-refused',
         'a-version-this-toopo-does-not-write-is-refused',
         'add-without-a-contract-is-refused',
         'an-unknown-command-and-an-unknown-flag-are-refused',
         'nothing-at-all-is-refused',
+        'the-folder-init-is-given-is-one-this-toopo-can-read',
         'the-proposed-directory-follows-the-shape-of-the-project',
       ],
     },
