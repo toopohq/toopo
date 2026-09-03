@@ -1489,8 +1489,17 @@ import type {
       'a-write-that-leaves-the-directory-is-refused-with-nothing-staged',
       'a-removal-that-leaves-the-directory-is-refused-before-anything-is-written',
       'a-served-path-that-leaves-the-directory-is-refused-by-the-plan',
-      'a-served-path-that-leaves-the-parsing-project-is-refused-before-it-is-written',
       'a-relocation-of-a-path-that-leaves-the-folder-is-refused',
+      // Five guards this battery declared unreached until this cell, each of them about `commit`
+      // refusing or tidying: an alphabet that admits a step upwards changes what a commit does, and
+      // the region below said an install reaches `write.ts` only through a call every guard makes
+      // succeed. That was true of an edit to the plan, the rewrite, the port or the install path.
+      'a-commit-writes-the-files-and-the-lockfile-together',
+      'a-directory-where-a-file-goes-is-refused-by-name',
+      'a-file-where-a-folder-must-go-is-refused-with-nothing-staged',
+      'a-removal-leaves-a-folder-that-still-holds-something',
+      'a-removal-tidies-the-folder-it-emptied',
+      'remove-decides-the-same-thing-against-the-emitted-tree',
     ]),
   ),
 
@@ -1536,6 +1545,31 @@ import type {
       'every-shape-a-served-answer-really-carries-is-admitted',
       'an-ordinary-directory-is-a-place-a-file-may-land',
     ]),
+  ),
+
+  /**
+   * The staging write, which no edit to the rule itself reaches - and that is what this cell is for.
+   *
+   * C-76 was pinned on the guard over this frontier and the run refused the pin: widening the alphabet
+   * leaves a served path refused here anyway, because what refuses it is the comparison against the
+   * temporary project's own root, and C-77's edit resolves to the same root when `within` is empty. So
+   * the only mutant that reaches this guard is one at the call, and it is the call that this is.
+   *
+   * It keeps both names in use deliberately. Composing with `join` and dropping the refusal leaves
+   * `under` and `theRefusal` unread, which the compiler answers with `TS6133` - a detection, and not
+   * one this guard makes: the cell would come back `killed-by-typecheck` and witness nothing.
+   */
+  sameOnEveryLens(
+    'C-79',
+    'stages a served file at a path it never confines, so a path that leaves the parsing project is ' +
+      'written before anything has decided whether it may be',
+    [
+      rewriteFile(
+        `      const path = under(root, '', source.servedAt)\n      if (path === null) return { faults: [theRefusal('the registry', source.servedAt)] }`,
+        `      const path = under(root, '', source.servedAt) ?? join(root, source.servedAt)\n      if (path.length === 0) return { faults: [theRefusal('the registry', source.servedAt)] }`,
+      ),
+    ],
+    killed(['a-served-path-that-leaves-the-parsing-project-is-refused-before-it-is-written']),
   ),
 ]
 
@@ -1594,8 +1628,10 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
-        'three guards of the emitted tree, each unreached for its own reason. A removal is out of ' +
-        'reach here for the reason the region below gives for the rest of `toopo remove`. The byte ' +
+        'two guards of the emitted tree, each unreached for its own reason. The removal that was ' +
+        'here left on the run that added C-76: an alphabet admitting a step upwards changes what a ' +
+        'removal does, so the reason the region below gives for the rest of `toopo remove` stopped ' +
+        'covering it. The byte ' +
         'comparison is unprobed by the data: `response.text()` in place of `response.arrayBuffer()` ' +
         'leaves this suite green, because every file this registry serves is valid UTF-8 and the ' +
         'round trip is the identity on this catalogue. And the refused contract is read off the ' +
@@ -1603,7 +1639,6 @@ export const battery: Battery = {
       guards: [
         'a-refused-contract-answers-no-binding-and-an-empty-list-of-implementations',
         'every-byte-the-registry-serves-arrives-unchanged',
-        'remove-decides-the-same-thing-against-the-emitted-tree',
       ],
     },
 
@@ -1646,26 +1681,24 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
-        'the diff and the two-phase write, which arrived with `toopo update`. An install renders no ' +
-        'diff at all, and it reaches `write.ts` only through the one call every guard here already ' +
-        'makes succeed - so a defect in either is out of reach of an edit to the plan, the rewrite, ' +
-        'the port or the install path. `cli-update` carries seventeen defects over exactly these, ' +
+        'the diff, and what is left of the two-phase write once the confinement reaches it. An ' +
+        'install renders no diff at all, and it used to reach `write.ts` only through the one call ' +
+        'every guard here already makes succeed - which was true of an edit to the plan, the ' +
+        'rewrite, the port or the install path, and stopped being true when C-76 and C-78 began ' +
+        'editing the rule a commit composes its destinations with. Five guards left this list on ' +
+        'that run rather than on a reading. `cli-update` carries seventeen defects over exactly ' +
+        'these, ' +
         'including the one that matters most: node\'s own documentation reads its diff op codes ' +
         'backwards, and every guard about shape passes on an inverted diff.',
       guards: [
         'a-commit-leaves-no-staged-file-behind',
-        'a-commit-writes-the-files-and-the-lockfile-together',
         'a-count-is-read-off-the-lines-it-summarises',
-        'a-directory-where-a-file-goes-is-refused-by-name',
-        'a-file-where-a-folder-must-go-is-refused-with-nothing-staged',
         'a-hunk-header-counts-the-lines-it-covers',
         'a-line-only-the-first-text-has-is-a-minus',
         'a-line-only-the-second-text-has-is-a-plus',
         'a-missing-final-newline-is-said-rather-than-lost',
         'a-refusal-leaves-no-staged-file-behind',
         'a-refused-commit-does-not-touch-the-file-it-would-replace',
-        'a-removal-leaves-a-folder-that-still-holds-something',
-        'a-removal-tidies-the-folder-it-emptied',
         'each-side-says-for-itself-that-it-has-no-final-newline',
         'only-the-lines-around-a-change-are-shown',
         'the-diff-op-codes-are-what-node-answers',
