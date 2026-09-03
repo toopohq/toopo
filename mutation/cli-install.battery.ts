@@ -1490,16 +1490,6 @@ import type {
       'a-removal-that-leaves-the-directory-is-refused-before-anything-is-written',
       'a-served-path-that-leaves-the-directory-is-refused-by-the-plan',
       'a-relocation-of-a-path-that-leaves-the-folder-is-refused',
-      // Five guards this battery declared unreached until this cell, each of them about `commit`
-      // refusing or tidying: an alphabet that admits a step upwards changes what a commit does, and
-      // the region below said an install reaches `write.ts` only through a call every guard makes
-      // succeed. That was true of an edit to the plan, the rewrite, the port or the install path.
-      'a-commit-writes-the-files-and-the-lockfile-together',
-      'a-directory-where-a-file-goes-is-refused-by-name',
-      'a-file-where-a-folder-must-go-is-refused-with-nothing-staged',
-      'a-removal-leaves-a-folder-that-still-holds-something',
-      'a-removal-tidies-the-folder-it-emptied',
-      'remove-decides-the-same-thing-against-the-emitted-tree',
     ]),
   ),
 
@@ -1629,9 +1619,9 @@ export const battery: Battery = {
       nature: 'claims detection',
       reason:
         'two guards of the emitted tree, each unreached for its own reason. The removal that was ' +
-        'here left on the run that added C-76: an alphabet admitting a step upwards changes what a ' +
-        'removal does, so the reason the region below gives for the rest of `toopo remove` stopped ' +
-        'covering it. The byte ' +
+        'here left on the run that added C-78: an alphabet admitting no dot refuses every file this ' +
+        'catalogue serves, so a removal refuses too, and the reason the region below gives for the ' +
+        'rest of `toopo remove` stopped covering it. The byte ' +
         'comparison is unprobed by the data: `response.text()` in place of `response.arrayBuffer()` ' +
         'leaves this suite green, because every file this registry serves is valid UTF-8 and the ' +
         'round trip is the identity on this catalogue. And the refused contract is read off the ' +
@@ -1684,10 +1674,11 @@ export const battery: Battery = {
         'the diff, and what is left of the two-phase write once the confinement reaches it. An ' +
         'install renders no diff at all, and it used to reach `write.ts` only through the one call ' +
         'every guard here already makes succeed - which was true of an edit to the plan, the ' +
-        'rewrite, the port or the install path, and stopped being true when C-76 and C-78 began ' +
-        'editing the rule a commit composes its destinations with. Five guards left this list on ' +
-        'that run rather than on a reading. `cli-update` carries seventeen defects over exactly ' +
-        'these, ' +
+        'rewrite, the port or the install path, and stopped being true when C-78 began editing the ' +
+        'rule a commit composes its destinations with: an alphabet that admits no dot refuses every ' +
+        'file this catalogue serves, so a commit that used to succeed refuses instead. Five guards ' +
+        'left this list on that run rather than on a reading. `cli-update` carries seventeen ' +
+        'defects over exactly these, ' +
         'including the one that matters most: node\'s own documentation reads its diff op codes ' +
         'backwards, and every guard about shape passes on an inverted diff.',
       guards: [
