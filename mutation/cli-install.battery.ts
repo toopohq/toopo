@@ -734,7 +734,10 @@ void theCatalogue`,
     'C-27',
     'stores the name of a flag as its own value, so `--dir app/toopo` configures a folder called `dir`',
     [{ file: 'arguments.ts', find: A_FLAG_KEEPS_ITS_VALUE, replace: `      values[name] = name` }],
-    killed(['a-flag-and-its-value-are-read']),
+    // The second is ADR-0208's, and the path is direct: `init --dir <folder>` records `dir`, so the
+    // file this command wrote names a folder nobody asked for and does not read back as the one that
+    // was typed.
+    killed(['a-flag-and-its-value-are-read', 'the-folder-init-is-given-is-one-this-toopo-can-read']),
   ),
 
   sameOnEveryLens(
@@ -829,7 +832,12 @@ void theCatalogue`,
           "  writeFileSync(to, `${JSON.stringify({ version: configuration.version }, null, 2)}\\n`, 'utf8')",
       },
     ],
-    killed(['a-configuration-round-trips-through-the-file']),
+    // The second is ADR-0208's: the file `init` leaves behind carries no directory at all, so the
+    // command that wrote it is one no later command can read it back through.
+    killed([
+      'a-configuration-round-trips-through-the-file',
+      'the-folder-init-is-given-is-one-this-toopo-can-read',
+    ]),
   ),
 
   sameOnEveryLens(
