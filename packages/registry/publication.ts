@@ -181,6 +181,48 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * ledger's twelve bindings are identical to the byte either side - which is ADR-0106 read rather than
  * assumed, since the commit that mints a digest is the only one that cannot name itself.
  *
+ * **It is 1.2.0 because a reader gains a folder name 1.1.1 refused, and `src/my code/toopo` is the
+ * demonstration.** The configured directory has an alphabet of its own now, one character wider than
+ * the served path's, and ADR-0208 is the measurement that separated them. Read against the artefact npm
+ * serves, installed with its runtime dependency rather than unpacked, in temporary projects: under
+ * `1.1.1`, `init --dir "src/my code/toopo"` exits 0, writes `toopo.json`, and **every command after it
+ * exits 1**; under this tree it exits 0 and the next command exits 0. `lib/toopo` is the control and is
+ * identical on both.
+ *
+ * **MAJOR is refused on a structure, and the structure was measured rather than reasoned out.**
+ * `A_DIRECTORY` is `A_PATH_INSIDE` with one character added to the class and the same shape around it,
+ * and `travels` adds the same `..` clause `staysInside` adds - so the older rule's language is a strict
+ * subset of the newer one's, and **every configuration `1.1.1` accepted this one accepts**. Swept over
+ * every string of one to four characters spelled out of the ten a rule here can turn on, 11 110 in all:
+ * 1 970 admitted by both, 1 505 admitted only by the directory's rule, and **0 admitted by the path's
+ * rule and refused by the directory's**.
+ *
+ * **One thing a reader can object to, said rather than left for them to find.** `toopo init --dir
+ * "C:\toopo"` exited 0 and exits 1. What stops working did not work: measured on the same two clients,
+ * `1.1.1` wrote that `toopo.json` and then refused to read it, so every later command in that project
+ * exited 1 - and one of the folders it accepted this way, `../outside`, named a place above the project.
+ * A command that now refuses in one sentence, before writing anything, is not a capability withdrawn.
+ *
+ * **PATCH is refused on the test this file already applies.** `1.0.4` argued PATCH on an unmoved
+ * grammar and a second clause about what no command reaches; `1.1.0` refused it because a reader gained
+ * six answers. The grammar has not moved here either - no command, no flag, no field - and a reader
+ * still gains something `1.1.1` cannot acquire by waiting, which is the whole of what MINOR promises.
+ * The walk agrees rather than being consulted for form: `reachable.ts` keeps `configuration.js`,
+ * `command.js` and `where-a-file-may-land.js`, and `command.js` calls all three on every `toopo init`.
+ *
+ * **The artefact reading inverts `1.0.4`'s nuance, which is why it is worth stating.** `npm pack
+ * toopo@1.1.1` unpacked and compared against what this tree builds: **36 modules either side, 481 198
+ * bytes against 488 724, 9 differing**. Three carry behaviour - the confinement, the configuration and
+ * the command. **Six carry a citation and nothing else**: `lockfile.ts`, `plan.ts`, `reconcile.ts`,
+ * `relocate.ts`, `rewrite.ts` and `write.ts` gained `ADR-0206` in a comment when that record landed,
+ * which was after the release it describes. `1.0.4` counted two sources that moved and shipped nothing,
+ * because their edits were inside text the compiler erases; here six sources moved, ship bytes, and
+ * changed no behaviour, because a comment reaches the archive.
+ *
+ * **It moves no digest and mints no address, so no anchoring commit follows here either.** Nothing
+ * under `contracts/` is touched, `THE_PUBLISHED_IMPLEMENTATION_VERSION` does not move, and the ledger
+ * is byte-identical either side of this line.
+ *
  * **It is not the version an implementation is bound at, and the separation is what makes that
  * readable.** The two were one string, tied by `the-archive-is-visibly-unpublished`, and the tie was
  * right for exactly as long as both were stand-ins saying *nothing here was published*; ADR-0106 cut
@@ -196,7 +238,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * act. `1.0.3` was the last release argued for in a commit message and dispatched from a menu
  * afterwards.
  */
-export const THE_PACKAGE_VERSION = '1.1.1'
+export const THE_PACKAGE_VERSION = '1.2.0'
 
 /**
  * The version every reference implementation of this catalogue is published at, and frozen at.
