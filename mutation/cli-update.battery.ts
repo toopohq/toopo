@@ -547,6 +547,54 @@ const mutants: readonly Mutant[] = [
     [reportFile(A_WAY_OUT_IS_OFFERED_WHERE_THERE_IS_ONE, `    ...(feature.heldBack === null`)],
     killed(['the-ways-out-are-offered-only-where-the-reader-put-something']),
   ),
+
+  /**
+   * The confinement, at the two of its frontiers this battery's surface reaches.
+   *
+   * `write.ts` and `lockfile.ts` are both in it, and three of the ten guards over that rule are
+   * exercised through them - the two write frontiers and the lockfile boundary. The other seven are
+   * declared below rather than reached from here, and the declaration names this search rather than
+   * resting on a judgement about what is plausible.
+   */
+  sameOnEveryLens(
+    'U-36',
+    'composes a destination without asking whether it stays inside the project, so a path that walks ' +
+      'out of the configured directory is one this tool writes to',
+    [writeFile(`    const destination = under(root, directory, write.path)`, `    const destination: string | null = join(root, directory, write.path)`)],
+    killed(['a-write-that-leaves-the-directory-is-refused-with-nothing-staged']),
+  ),
+
+  sameOnEveryLens(
+    'U-37',
+    'takes any string as the path of an installed file, so a `toopo.lock` naming a place outside the ' +
+      'configured directory is read as usable',
+    [
+      {
+        file: 'lockfile.ts',
+        find: `    holds: (value) => typeof value === 'string' && staysInside(value),`,
+        replace: `    holds: (value) => typeof value === 'string',`,
+      },
+    ],
+    killed(['a-lockfile-naming-a-file-outside-the-configured-directory-is-unusable']),
+  ),
+
+  /**
+   * The removal frontier is a third cell rather than a second arm of `U-36`, because it is a third
+   * choice: a removal is confined in the staging phase where a write is confined at its composition,
+   * and one edit cannot be wrong about both.
+   */
+  sameOnEveryLens(
+    'U-38',
+    'composes the path of a file it is about to remove without asking whether it stays inside the ' +
+      'project, so a path that walks out of the configured directory is one this tool deletes',
+    [
+      writeFile(
+        `  const removals = what.removals.map((path) => ({ path, at: under(root, what.leaving ?? directory, path) }))`,
+        `  const removals = what.removals.map((path) => ({\n    path,\n    at: join(root, what.leaving ?? directory, path) as string | null,\n  }))`,
+      ),
+    ],
+    killed(['a-removal-that-leaves-the-directory-is-refused-before-anything-is-written']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -587,6 +635,38 @@ export const battery: Battery = {
    * them silent, each named a defect that could be written, and U-32 to U-34 write it.
    */
   unprobedRegions: [
+    /**
+     * The confinement, minus the three frontiers this battery does reach.
+     *
+     * **The declaration rests on a search rather than on a judgement about what is plausible.** The ten
+     * guards over that rule are exercised by five test files, and what each imports is what decides
+     * whether a mutant of this surface can reach it: `write.test.ts` and `where-a-file-may-land.test.ts`
+     * import `write.js` and `lockfile.js`, which are here, and U-36, U-37 and U-38 are the three
+     * witnesses that come of it. The seven below are exercised through `where-a-file-may-land.ts`,
+     * `plan.ts`, `rewrite.ts` and `relocate.ts`, and this battery injects into none of the four.
+     *
+     * Widening the surface to manufacture a cell was refused: a battery that gains a file to satisfy a
+     * count has moved its subject rather than found a witness. `cli-install` carries all ten.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the rule that decides where a file may land, outside the three frontiers of it this ' +
+        'surface reaches. Measured by what the guards import rather than by what looks plausible: ' +
+        'the seven below are exercised through `where-a-file-may-land.ts`, `plan.ts`, `rewrite.ts` ' +
+        'and `relocate.ts`, and no cell of this battery injects into any of those four. The three ' +
+        'that are reachable are witnessed here by U-36, U-37 and U-38, and `cli-install` carries all ' +
+        'ten with C-76, C-77 and C-78',
+      guards: [
+        'a-directory-that-leads-out-of-the-project-is-not-a-place-a-file-may-land',
+        'a-relocation-of-a-path-that-leaves-the-folder-is-refused',
+        'a-served-path-that-leaves-the-directory-is-refused-by-the-plan',
+        'a-served-path-that-leaves-the-parsing-project-is-refused-before-it-is-written',
+        'an-ordinary-directory-is-a-place-a-file-may-land',
+        'every-shape-a-served-answer-really-carries-is-admitted',
+        'every-shape-that-is-not-a-place-inside-is-refused',
+      ],
+    },
     /**
      * How a command ends, which `command.ts` decides and this battery injects nowhere near.
      *

@@ -106,6 +106,12 @@ const removalFile = (find: string, replace: string) => ({
   replace,
 })
 
+const confinementFile = (find: string, replace: string) => ({
+  file: 'where-a-file-may-land.ts',
+  find,
+  replace,
+})
+
 /**
  * What an install asks a registry for, and how each answer is checked.
  *
@@ -1453,6 +1459,83 @@ import type {
       'same race under it that a refusal used to lose',
     [commandFile(`    return await theCommand(theRegistry)`, `    process.exit(await theCommand(theRegistry))`)],
     killed(['a-command-that-did-what-was-asked-exits-zero-and-ends-the-same-way']),
+  ),
+
+  /**
+   * The confinement, in the three places it can be wrong, and each cell aims at a choice rather than
+   * at the mechanism they share.
+   *
+   * Six of the seven callers are in this battery's surface, which is why they are here and not spread
+   * over the folder's other three: a cell is written where the thing it breaks operationally lives.
+   *
+   * They are three rather than two because the rule answers two questions and one of them is not about
+   * the alphabet at all. Widening the alphabet leaves a linked directory refused, since what refuses it
+   * is a comparison against the project root; narrowing it leaves a linked directory refused for the
+   * same reason. Only the comparison itself reaches that guard, and only these two reach the rest.
+   */
+  sameOnEveryLens(
+    'C-76',
+    'lets a step upwards through the alphabet, so a path that walks out of the configured directory is ' +
+      'one this tool composes and hands to the filesystem',
+    [
+      confinementFile(
+        `  A_PATH_INSIDE.test(path) && !path.split('/').includes('..')`,
+        `  A_PATH_INSIDE.test(path)`,
+      ),
+    ],
+    killed([
+      'every-shape-that-is-not-a-place-inside-is-refused',
+      'a-lockfile-naming-a-file-outside-the-configured-directory-is-unusable',
+      'a-write-that-leaves-the-directory-is-refused-with-nothing-staged',
+      'a-removal-that-leaves-the-directory-is-refused-before-anything-is-written',
+      'a-served-path-that-leaves-the-directory-is-refused-by-the-plan',
+      'a-served-path-that-leaves-the-parsing-project-is-refused-before-it-is-written',
+      'a-relocation-of-a-path-that-leaves-the-folder-is-refused',
+    ]),
+  ),
+
+  /**
+   * The shape this function was first written in, put back.
+   *
+   * Asking whether a file stays under the *directory* accepts a configured directory that is itself a
+   * link out of the project: the file is faithfully inside a directory standing somewhere else, and
+   * every part of the arithmetic agrees. The root is the one part of the composition this process
+   * chose, which is why it is what the answer is measured against.
+   */
+  sameOnEveryLens(
+    'C-77',
+    'measures a destination against the directory it was given rather than against the project, so a ' +
+      'configured folder that leads somewhere else is one this tool writes through',
+    [
+      confinementFile(
+        `  const inside = relative(trulyAt(root), trulyAt(join(root, within, path)))`,
+        `  const inside = relative(trulyAt(join(root, within)), trulyAt(join(root, within, path)))`,
+      ),
+    ],
+    killed(['a-directory-that-leads-out-of-the-project-is-not-a-place-a-file-may-land']),
+  ),
+
+  /**
+   * The other direction, which is the one a refusing rule cannot witness for itself.
+   *
+   * A rule that refuses everything satisfies every guard about what is refused. What it breaks is the
+   * pair that assert what is *admitted*, and this is the cheapest edit that separates them: a dot is
+   * in the alphabet because every file this catalogue serves carries one.
+   */
+  sameOnEveryLens(
+    'C-78',
+    'drops the dot from the alphabet a path is spelled out of, so every file the catalogue serves is ' +
+      'refused as a place a file may land',
+    [
+      confinementFile(
+        `export const A_PATH_INSIDE = /^[A-Za-z0-9._-]+(?:\\/[A-Za-z0-9._-]+)*$/`,
+        `export const A_PATH_INSIDE = /^[A-Za-z0-9_-]+(?:\\/[A-Za-z0-9_-]+)*$/`,
+      ),
+    ],
+    killed([
+      'every-shape-a-served-answer-really-carries-is-admitted',
+      'an-ordinary-directory-is-a-place-a-file-may-land',
+    ]),
   ),
 ]
 

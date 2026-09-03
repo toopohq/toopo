@@ -439,6 +439,40 @@ export const battery: Battery = {
    */
   unprobedRegions: [
     /**
+     * The rule that decides where a file may land, none of whose ten guards this surface reaches.
+     *
+     * **The search was made before the declaration was written, and it is what the declaration rests
+     * on.** This battery injects into `arguments.ts`, `list.ts`, `reconcile.ts`, `remove.ts` and
+     * `report.ts`. One of the five calls the confinement - `reconcile.ts`, at `installedText`, the read
+     * whose answer becomes a printed diff - and no guard of the ten exercises that read: the ten are
+     * exercised by five test files, and not one of them imports any of these five modules.
+     *
+     * So there is no mutant of this surface to write, and the alternative was to add a module to it,
+     * which would satisfy the count by moving the subject rather than by finding a witness.
+     * `cli-install` carries all ten with C-76, C-77 and C-78; `cli-update` carries three of them.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the rule that decides where a file may land. This battery injects into `arguments.ts`, ' +
+        '`list.ts`, `reconcile.ts`, `remove.ts` and `report.ts`; one of the five calls the ' +
+        'confinement at all, and the read it calls it from is exercised by none of the ten guards - ' +
+        'measured by what each of their five test files imports, which is none of these five ' +
+        'modules. `cli-install` carries all ten with C-76, C-77 and C-78',
+      guards: [
+        'a-directory-that-leads-out-of-the-project-is-not-a-place-a-file-may-land',
+        'a-lockfile-naming-a-file-outside-the-configured-directory-is-unusable',
+        'a-relocation-of-a-path-that-leaves-the-folder-is-refused',
+        'a-removal-that-leaves-the-directory-is-refused-before-anything-is-written',
+        'a-served-path-that-leaves-the-directory-is-refused-by-the-plan',
+        'a-served-path-that-leaves-the-parsing-project-is-refused-before-it-is-written',
+        'a-write-that-leaves-the-directory-is-refused-with-nothing-staged',
+        'an-ordinary-directory-is-a-place-a-file-may-land',
+        'every-shape-a-served-answer-really-carries-is-admitted',
+        'every-shape-that-is-not-a-place-inside-is-refused',
+      ],
+    },
+    /**
      * How a command ends, which `command.ts` decides and this battery injects nowhere near.
      *
      * **This entry read two rather than three for one commit, and the third was witnessed here by
