@@ -54,6 +54,12 @@
  * two mechanisms it was made with and a third this repository had not named; it was committed before
  * the first of those cells, so what says the prediction came first is the graph rather than an account
  * of it.
+ *
+ * **What a *first* witness is, as against a sole one, was written down before the first cell that
+ * takes one.** ADR-0209 carries the definition - the defect a cell injects is the failure condition
+ * the guard's own sentence names, and the search stops there rather than carrying on until nothing
+ * else reddens - together with the slice it is measured on and the two directions that slice is
+ * unrepresentative in. It too was committed before its cells, for the same reason.
  */
 
 import type { Battery, Mutant } from './run.ts'
