@@ -229,7 +229,7 @@ export const commit = (root: string, directory: string, what: Commit): CommitOut
    * A write that leaves the directory can be refused where it is composed, because staging is a phase
    * whose whole property is that abandoning it costs nothing. A removal cannot: it happens after the
    * renames, where there is no longer a refusal to make - so the only place a bad one can still be
-   * answered with a sentence is before the first file is written.
+   * answered with a sentence is before the first file is written. ADR-0206.
    */
   const removals = what.removals.map((path) => ({ path, at: under(root, what.leaving ?? directory, path) }))
   for (const removal of removals) {

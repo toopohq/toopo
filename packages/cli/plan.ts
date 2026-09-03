@@ -179,7 +179,7 @@ export const planInstall = (order: readonly FrozenImplementation[]): PlanResult 
 
       // Both halves of that composition are the registry's, so the confinement is asked of the
       // result rather than of either - a contract whose name left the directory would satisfy a
-      // check written about the file name beside it.
+      // check written about the file name beside it. ADR-0206.
       if (!staysInside(path)) {
         faults.push(theRefusal(`the registry, serving ${rendered},`, path))
         continue

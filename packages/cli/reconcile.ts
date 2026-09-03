@@ -412,7 +412,8 @@ const verdictOf = (
  * The `null` is unreachable from here: a verdict of `updated` or `conflict` requires `digestOnDisk` to
  * have found something, and it composes the same path through the same confinement. It is written as an
  * answer rather than as an assertion because a diff is the one thing this command prints out of a file
- * it did not write, and the arm that decides to print one may not be the arm that decided it was ours.
+ * it did not write, and the arm that decides to print one may not be the arm that decided it was
+ * ours. ADR-0206.
  */
 const changeAt = (request: ReconcileRequest, path: string, bytes: Buffer): FileDiff | null => {
   const installed = installedText(request, path)

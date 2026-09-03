@@ -148,7 +148,7 @@ export const THE_AUTHOR_FIELD = `${THE_AUTHOR.name} <${THE_AUTHOR.email}>`
  * function, and nothing a reader can act on moved.** `24b2108` is the change: six places composed a
  * path out of the project root, the configured directory and a path that arrived from somewhere else,
  * and they call `where-a-file-may-land.ts` instead. No command was added, no flag, no field of a
- * lockfile or a configuration, and the rendered usage is what it was.
+ * lockfile or a configuration, and the rendered usage is what it was. ADR-0206.
  *
  * **PATCH is founded on a structure rather than on a sample, which is what this rank turns on.** The
  * rule admits a path spelled out of `[A-Za-z0-9._-]` in `/`-separated segments, none of them `..`. Every

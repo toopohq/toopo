@@ -49,6 +49,8 @@ export const configurationFaults = (value: unknown): readonly string[] => {
           `${CONFIGURATION_FILE} carries version ${JSON.stringify(held['version'])}, and this ` +
             `\`toopo\` writes version 1`,
         ]),
+    // The alphabet this used to declare for itself lives in `where-a-file-may-land.ts` now, so the
+    // directory and the files under it are one rule rather than two that agree. ADR-0206.
     ...(typeof directory === 'string' && staysInside(directory)
       ? []
       : [

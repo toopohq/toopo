@@ -156,6 +156,7 @@ export const planRelocation = (
 
   for (const feature of lockfile.features) {
     for (const file of feature.files) {
+      // The path is the lockfile's, so it is confined before it reaches the disk. ADR-0206.
       const at = under(root, from, file.path)
       if (at === null) {
         faults.push(theRefusal(LOCKFILE, file.path))

@@ -65,6 +65,9 @@ type Check = {
  * `served` is checked here as a shape rather than delegated further: it is `HarnessFile`, which the
  * registry owns and this file does not get to redefine, so the check is one statement about the
  * three parts a comparison with the registry needs.
+ *
+ * `path` is a boundary and not only a shape: a `toopo.lock` arrives in a repository somebody
+ * cloned, and its paths become arguments to the filesystem. ADR-0206.
  */
 const FILE_FIELDS_OF: Readonly<Record<keyof InstalledFile, Check>> = {
   path: {

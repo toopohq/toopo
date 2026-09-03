@@ -31,6 +31,41 @@ holds rather than against what somebody checked: a commit identifier in the pros
 this graph, no object of it carries an address the project refuses to publish, and the only checkout
 registered here is its root.
 
+**The outgoing path was reviewed against a threat model committed before the first reading, and what
+it found is repaired and published.** `toopo@1.1.1`. Every destination this client writes, reads or
+removes is composed by one function: six places joined the project root, the configured directory and a
+path that arrived from somewhere else - a served answer, or a `toopo.lock` a repository carries - and
+none of them asked anything of the third part. **The digest chain could not reach it and never could**:
+a path is a field *inside* the content a digest attests, so an answer naming any path passes every check
+there is. `diskStanding` closed replacing a file that exists; creating one that does not was open.
+
+**The model was committed at `9942756` before a line of `packages/cli/` was read**, declaring the
+hostile set, the trusted set, the out-of-scope set, what counts as a finding and - the half that makes a
+negative believable - that a class is answered negatively only by naming the code that refuses it.
+**Nothing about the population was believed**: a walk from the published entry point reaches 40 modules
+where the brief named seven, correcting it in both directions.
+
+**The end-to-end probe inverted the prediction and the second one decided the severity.** A hostile
+registry drove the real client over a real socket: the install *refused*, exit 1, and left a 3 332-byte
+file outside the project anyway, because `rewrite.ts` stages before any install decision and its
+`finally` removes the directory it made rather than what escaped it. Then a `toopo.lock` of the shape a
+cloned repository carries, with no network at all: **exit 0, the success screen, `1 file moved`** - a
+file of the user's read, written elsewhere, and the original removed.
+
+**Three things the measurement caught that reading did not, and one of them is the lesson.** Comparing
+against a resolved base accepts a linked directory, which a junction proved. A guard refused the first
+shape for asking the alphabet of the configured directory as well as of the path. And **the first
+refusal could answer nothing** - written as the faults *about* a path it re-derived the verdict, so a
+path refused for its directory came back silent: a silent confinement, committed inside the repair that
+exists to prevent one.
+
+**What the release cost is a finding of its own.** Ten new guards move `mutation/census.ts` and owe
+every battery that collects them an answer, and **no suite reads either**: `pnpm run cli` was green on
+191 tests while nine CI jobs stopped at calibration, and repairing the first mechanism revealed the
+second because it had hidden it. Four replays of `cli-install` were needed for one correct pin, each
+refusing something different and not one found by reading a diff. The local calibration reproduces a
+runner's refusal line for line in **twenty seconds** against an hour of CI. ADR-0206.
+
 **The instrument reports a red no pin claimed, which is the mirror of the silence it already refused,
 and the shape was chosen on a measurement rather than on the sentence that proposed it.** A pin is
 verified as a *subset* - every guard it names must have reddened, and never the reverse - so a cell
@@ -1930,6 +1965,179 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   outside the frozen folder. ADR-0150.
 
 **Still open, and what each one now costs.**
+
+- **That every path this catalogue serves is a path the confinement admits.** ADR-0206 states one
+  alphabet for a path this tool writes, reads or removes, and the catalogue states another for what a
+  contract folder may be called - and the second is `readdirSync`. They agree today by a literal:
+  `referenceImplementationOf` filters an implementation's files to `'reference.ts'`, so the only
+  spelling that reaches an install is that one, and `CONTRACT_NAME` is a strict subset of the alphabet
+  whose segments cannot begin with a dot. **Nothing keeps the agreement.**
+
+  **The failure has no event and it is the expensive direction.** A contract whose folder holds
+  `edge cases.ts`, `réference.ts` or `x+1.ts` is served correctly, hashes correctly, and is refused at
+  the moment somebody installs it - with a sentence about a path being outside a directory, which is
+  true and is not the cause. It arrives the day the filter opens, which `plan.ts` already names as a
+  unit of its own: *a folder arrives beside the entry rather than around it*.
+
+  **Where this looked**: `referenceImplementationOf` in `packages/registry/serialise.ts`, which is the
+  literal; `harnessOf` beside it, which derives a path from a directory listing and constrains nothing
+  about its spelling; and `A_PATH_INSIDE` in `packages/cli/where-a-file-may-land.ts`, whose comment
+  says it is the alphabet `configuration.ts` always required and says nothing about the catalogue.
+
+  **The population is every file name a contract folder may hold**, which is unbounded, and the part of
+  it that reaches an install is one spelling today. What would close it is a guard total over the
+  catalogue - *every path this catalogue serves is one the confinement admits* - which is one
+  expression over `theCatalogue` and would be **born green on today's six**, on the rule this
+  repository states for a guard that finds nothing on the day it is written: the event it would catch
+  is the eighth contract, or the unit that opens the filter, and what that event costs is an install
+  that refuses a contract nobody can see is wrong. Priced as its own unit and not taken, because a
+  security release is not where one decides what the catalogue's own alphabet is. ADR-0206.
+
+- **That a link standing where the file itself goes is answered.** ADR-0206 measured the directory half
+  of that class and left the other half unmeasured, and it says so rather than deducing it: a
+  **junction** at the configured directory made a write land outside the project, and `symlink` for a
+  file answers `EPERM` on Windows without the privilege, so the probe could not be built. The reading
+  says `renameSync` replaces a link rather than writing through it - the staged file is written at
+  `<destination>.toopo-part` and renamed onto the destination - and **a reading is not a measurement**,
+  which is this repository's own rule arriving on its own review.
+
+  **It is not the same shape as the half that was measured.** That one is about the *directory* leading
+  out of the project and is closed by comparing what the directory really is. This one is about a link
+  at the *leaf*, where the question is whether the rename replaces the link or follows it, and no part
+  of the confinement decides that - it is what the operating system does with `rename`.
+
+  **Where this looked**: `commit` in `packages/cli/write.ts`, whose staging suffix and rename are the
+  whole of what decides it; `a-directory-that-leads-out-of-the-project-is-not-a-place-a-file-may-land`
+  in `packages/cli/where-a-file-may-land.test.ts`, which builds a real junction and fails rather than
+  passing where the platform will not make one; and ADR-0206's own classes, where it is declared
+  unmeasured.
+
+  **The population is one question on two operating systems.** What would close it is a probe on any
+  POSIX machine, or on a Windows runner with the privilege - and `suites-on-windows` is a job this
+  repository already owns, which is where it would go. Priced at one guard and not taken here, because
+  a release is not where a platform matrix gains a case. ADR-0206.
+
+- **That somebody adding a guard reads the one thing that says what else has to move.** Two mechanisms
+  answer for a new guard and **no suite reaches either**: `mutation/census.ts` declares how many guards
+  each file collects, and a battery declares a cell or a region for every guard. Both are read at a
+  battery's *calibration*, and a suite never reaches one.
+
+  **It is measured rather than argued, and the figure is what makes the step defensible.** At
+  `f64fe7f`, `pnpm run cli` was green on 191 tests and said nothing; `pnpm battery cli-install`
+  reproduced the runner's refusal **line for line in twenty seconds**. The run that had to be paid
+  instead took **thirty-seven minutes and reddened nine jobs**, and repairing what it named revealed
+  the second mechanism, which cost four more replays. **Twenty seconds against an hour, twice.**
+
+  **It is not new and that is the point.** `census.ts` carries the price in its own words - *the
+  maintenance cost, stated plainly rather than discovered. Adding a test breaks this pin* - and
+  measures three earlier instances, one of which it says *fired on the first unit to reach it, which is
+  what it was written for*. **The mechanism has never failed.** What is missing is that nothing routes
+  anybody to the cheap reading before they pay for the expensive one.
+
+  **Where this looked**: `assertTheCensusHolds` in `mutation/run.ts`, which is where both refusals
+  live; `CENSUS` in `mutation/census.ts`, whose own comment states the price; and the `scripts` block
+  of `package.json`, where `battery` sits beside `cli` with nothing saying that one answers a question
+  the other cannot.
+
+  **The population is every unit that adds or removes a guard.** What would close it is a convention
+  with something under it - the eight suites cannot read a census without becoming the instrument, so
+  what is available is a line where somebody adding a guard arrives, and that is prose. Priced and not
+  taken. ADR-0206.
+
+- **That a new guard is answered for as many times as it is collected.** A battery accounts for guards
+  per *battery* and never globally, so a guard added to a suite four batteries collect is owed four
+  answers - a cell in each, or a declared region in each. Nothing says so anywhere, and the arithmetic
+  is invisible until a replay prints it.
+
+  **Measured on the unit that found it**: ten guards added to `packages/cli` were owed **thirty-eight**
+  answers, not ten - `cli-install` and `cli-update` account for theirs with seven cells between them,
+  and `cli-remove` and `cli-search` with a declared region each. The declarations are honest and were
+  not free: each rests on a search over its own surface, by what the guards' test files import.
+
+  **The trap it opens is worse than the arithmetic.** The cheapest way to satisfy a battery that cannot
+  reach a guard is to widen its surface until it can, and the count then goes green on a battery that
+  has changed subject rather than found a witness. `cli-search` injects into one file by design; adding
+  the confinement to it would have bought a green and no evidence.
+
+  **Where this looked**: `unprobedRegions` and `unreachableGuards` on `Battery` in `mutation/run.ts`,
+  which are per battery by construction; `mutation/attribution.ts`, whose census is over `(folder,
+  identifier)` pairs and which already records that 69 identifiers collide across folders; and
+  `CLAUDE.md`'s own note that adding a guard moves the census, which names one mechanism and not this
+  one.
+
+  **The population is every guard of a suite more than one battery collects**, which is `packages/cli`
+  at four and every contract folder at two. What would close it is not a guard: the shape is right and
+  what is missing is that nobody knows the multiplier before they pay it. Written down rather than
+  priced, because the remedy is the same prose the entry above it needs. ADR-0206.
+
+- **That a request this client makes stays on the origin it was given.** `fetch(url)` in
+  `packages/cli/http-source.ts` takes no options, so node follows a redirect to any host at all, and
+  the two answers a client cannot check - the index and the implementation bindings - are exactly the
+  two that would then come from somewhere nobody named. Everything downstream of a digest is
+  content-addressed and survives it.
+
+  **Half of the class is closed by construction and that is why this is narrow.** The authority of a
+  request cannot be steered by an address: `pathTo` always leads with `/`, and `chooseContract` matches
+  what a user typed against the index before any address reaches a URL. What is left needs the origin
+  itself to issue the redirect, and the origin is the declared root of trust for those two answers - so
+  this is defence in depth rather than a hole, and it is written down as such.
+
+  **Where this looked**: `answering` in `packages/cli/http-source.ts`, which catches a throw and reads
+  a status and has no opinion about where the response came from; `endpointOf` in
+  `packages/registry/endpoints.ts`, which decides an address and never a host; and
+  `packages/cli/http-source.test.ts`, whose guards run against a server this repository starts, so the
+  origin and the answer are the same host by construction and no guard there could see one part.
+
+  **The population is the five methods of the port.** What would close it is `redirect: 'error'`, or
+  following one and refusing an answer whose final URL left the origin - a decision about which, plus a
+  sentence for the refusal, plus a guard that needs a second server. Priced as a small unit and not
+  taken: it is not a path frontier, and ADR-0206 was one repair. ADR-0206.
+
+- **That an answer this client reads is one it could hold.** `insisted` and the snapshot reader call
+  `response.json()` with no bound on what arrives and no question about the content type, so what a
+  registry answers is what this process allocates. A body that is not JSON throws where every other
+  refusal of this tool is a sentence.
+
+  **It is out of scope by a model committed before the reading, and it is on this list rather than in
+  that record for the reason the model itself gives.** Denial of service was declared out of scope at
+  `9942756`, before a line was read - and a client that hangs or dies wrote nothing, which is why. What
+  a model excludes is not thereby uninteresting; it is unbudgeted, and this is where the unbudgeted
+  goes.
+
+  **Where this looked**: `answering` and `insisted` in `packages/cli/http-source.ts`;
+  `TheRegistryDidNotAnswer` beside them, which is the screen a failed fetch gets and which no JSON
+  parse failure reaches; and `packages/cli/source.test.ts`, whose port guards answer about what a
+  source returns and never about how much of it there is.
+
+  **The population is the five methods of the port.** What would close it is a bound and a sentence -
+  read the body as bytes with a ceiling, refuse above it, and name the ceiling - and the number is the
+  part nobody can derive: the largest answer this catalogue serves is a contract snapshot, and a
+  ceiling set from today's catalogue is one the eighth contract may cross. Priced as its own unit and
+  not taken. ADR-0206.
+
+- **That the directories this tool supports are the directories it accepts.** They are not, and the two
+  halves are in the same package. `breakage.ts` declares `a-path-with-a-space-installs-normally` and
+  the guard installs into `src/my code/toopo`; `configurationFaults` refuses that same string when it
+  reads it back out of `toopo.json`, because the alphabet has no space in it. So a project this tool
+  installs into is a project it will not read its own configuration for.
+
+  **It is older than ADR-0206 and it was found by it**, which is worth separating: the alphabet moved
+  out of `configuration.ts` into a shared rule and did not change, so the contradiction is exactly as
+  old as `DIRECTORY`. What the repair did was put a guard on the far side of it - the first shape asked
+  the alphabet of the directory as well as of the path, and that guard refused it.
+
+  **Where this looked**: `configurationFaults` in `packages/cli/configuration.ts`; `staysInside` in
+  `packages/cli/where-a-file-may-land.ts`, which is the rule it now reads; and
+  `a-path-with-a-space-installs-normally` in `packages/cli/breakage.test.ts`, which is the declaration
+  going the other way.
+
+  **The population is every directory a person may name**, and no reading here bounds how many of them
+  hold a character outside `[A-Za-z0-9._-]`. What would close it is a decision rather than a repair:
+  either the alphabet widens for the directory - at which point the confinement's comparison, and not
+  the alphabet, is the whole of what keeps a directory inside the project - or `breakage.ts` stops
+  declaring it, which withdraws support this tool has advertised since that guard was written. **The
+  first is the larger change and is probably right**, and it is the owner's. Priced and not taken.
+  ADR-0206.
 
 - **That a layout a script produces is one somebody has looked at.** Every sweep this repository has
   ever taken over its own pages reads the *emitted* tree - the HTML `build.ts` writes. A control

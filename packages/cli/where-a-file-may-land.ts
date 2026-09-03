@@ -5,7 +5,7 @@
  * directory, and a path that arrived from somewhere else - a served answer, or a `toopo.lock` written
  * by an earlier run and committed into a repository since. The root is the process's own. The other
  * two are somebody else's strings, and this module is what they have to satisfy before they become an
- * argument to the filesystem.
+ * argument to the filesystem. ADR-0206.
  *
  * ---------------------------------------------------------------------------
  * It refuses rather than repairs, and that was decided here before it was decided again

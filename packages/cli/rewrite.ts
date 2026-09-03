@@ -136,6 +136,7 @@ export const rewrittenSources = (
   try {
     const staged: string[] = []
     for (const source of sources) {
+      // The first write an install makes, and the served address is the registry's. ADR-0206.
       const path = under(root, '', source.servedAt)
       if (path === null) return { faults: [theRefusal('the registry', source.servedAt)] }
 
