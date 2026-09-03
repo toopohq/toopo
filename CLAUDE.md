@@ -2402,6 +2402,36 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   either**, a figure for its size being an estimate wearing a count's clothes. ADR-0163, ADR-0191,
   ADR-0192.
 
+- **That the criterion deciding what enters this catalogue is one anything applies.** ADR-0207 writes
+  it — four clauses, each the complement of a group of the twelve refusal grounds — and **no mechanism
+  can hold it, which is a stronger statement than that none does.**
+
+  **The reason is the shape of the population and not a price.** A guard needs something to range over,
+  and the population here is *candidates somebody considered*. A candidate nobody writes leaves no
+  artefact: no folder, no digest, no row, no red. It is ADR-0191's *the failure has no event* arriving
+  one floor up — that record says a candidate below the bound is never measured and so its exclusion is
+  as final and as silent as a refusal, and this entry says the same of a candidate the criterion would
+  have admitted. **The catalogue records what was published and what was refused, and both are things
+  somebody wrote down.**
+
+  **It has already failed once, silently, and that is what opened it.** ADR-0192's line 130 is the only
+  positive sentence this repository has ever carried, it requires the language's own answer to be wrong,
+  and two of the six installable contracts have no language answer at all — measured off that record's
+  own calibration table, where `string/levenshtein@1`'s incumbent is `none` and `string/slugify@1`'s
+  yields nothing. Nothing was red for the whole of its life, because nothing reads it.
+
+  **Where this looked**: the nine fault functions of `mutation/decisions.ts`, which resolve what a record
+  *names* — a path, a guard, a record, a link — and not one of which reads what a record *says*;
+  `theCatalogue` in `packages/registry/the-catalogue.ts`, which holds what was published and nothing
+  about what was considered; and `packages/registry/field-map.ts`, whose four strata class the fields of
+  a contract that exists.
+
+  **The population is every candidate anybody weighs against this catalogue**, and it is unbounded and
+  unobservable in the same breath. What stands in place of a mechanism is the known-answer test: the
+  criterion is checked against the thirty-six addresses this catalogue has ruled on, that reading is
+  rebuildable, and it moves the day a contract is published or refused. That is a reading somebody takes
+  and never a red, which is the entry. ADR-0191, ADR-0192, ADR-0207.
+
 - **That an address a frozen file cites is one that resolves where the file is frozen.** A citation
   whose target is frozen beside it can never rot: the two move together or not at all. A citation
   whose target is an ordinary source of this repository rots the day that source is renamed, and
@@ -4679,6 +4709,30 @@ beside it. Where the two ever disagree, the record holds the measurement and thi
   the language is wrong, and where the language is wrong there is no busy ecosystem, because the
   incumbent is the language itself. `number/parse@1`, `date/add@1` and `number/round@1` rank 33rd, 32nd
   and 31st of 34. ADR-0191.
+- **A candidate is a contract when four clauses hold, each the complement of a group of the twelve
+  refusal grounds.** **P1, the vacancy** — the language does not answer it and no live proposal is
+  about to, no normative specification outside this catalogue fixes the answer, and the correct answer
+  is not one expression over built-ins. **P2, the stake** — a wrong answer is in circulation, the
+  disagreement has a right side rather than being a product choice, and being on the wrong side costs
+  the reader something. **P3, the unit** — one function rather than one algorithm behind several
+  renderings, and more than one decision left to settle. **P4, the form** — pure in its arguments, a
+  signature that can carry the answer, a case table that serves, no collision with a frozen contract,
+  and an answer that does not follow the runtime. **The trap and the vacancy are two sources of P2 and
+  never two criteria**: the wrong answer in circulation is the language's own or the ecosystem's, and
+  those are exactly the two axes the two searches ran on — reaching 4 and 3 of the six installable
+  contracts, overlapping on `object/deep-equal@1` alone and covering all six between them. Writing two
+  criteria would write the search method into the acceptance rule, and a candidate is not better for
+  the axis that found it. Tested against the known answer at `1907df5`: **28 of 28 refused addresses
+  fail at least one clause, 23 of the 27 fail exactly one, and the six installable fail none.**
+  ADR-0207.
+- **A contract answers the same thing on every runtime.** This is the thirteenth refusal ground and it
+  is under P4: a function whose answer follows the runtime's Unicode tables settles its question
+  differently on two machines, which is not a contract. **It is not R6 read widely, and a measurement
+  is what says so** — the two guards this catalogue operationalises R6 by, `determinism` and
+  `no-ambient-input-from-history`, are **green** over a grapheme-length function built on
+  `Intl.Segmenter` and **red** on a stateful control, so R6 as it is executed here cannot see the
+  difference. It refuses no address of the thirty-six on its own, and it eliminated graphemes as a unit
+  for `string/truncate` without refusing that candidate. ADR-0158, ADR-0207.
 
 **What the next contract has to carry before it is frozen, and what it does not.** Every line below
 is on this list for one reason and states it: after the digest is minted, permanent rule 6 forbids the
