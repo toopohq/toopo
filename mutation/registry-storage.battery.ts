@@ -178,6 +178,16 @@ const implementationFile = (find: string, replace: string) => ({
   find,
   replace,
 })
+const valueFile = (find: string, replace: string) => ({ file: 'value.ts', find, replace })
+
+/**
+ * One row of the table of values the encoding was written for, spelled once.
+ *
+ * The addresses are long and there are twenty-five of them, so composing the prefix keeps a pin
+ * readable; the slug is what a reader of `round-trip.test.ts` sees in the table beside the value.
+ */
+const aValueJsonCannotHold = (row: string): string =>
+  `a-value-json-cannot-hold-survives-the-wire-${row}`
 
 // ---------------------------------------------------------------------------
 // Anchors - the exact source each edit rewrites
@@ -522,6 +532,64 @@ const THE_TWO_CLAUSES_ARE_ASKED_OF_ONE_FIELD = `  fields.some(
       namedByWhatTellsThemApart(field, asked, spread) &&
       carriedFrom(field, asked) >= A_SET_ASIDE_WORD_IS_PAID_FOR_WITH,
   )`
+
+/**
+ * The anchors the `E` cells aim at, which are the encoding that carries what JSON cannot.
+ *
+ * **Every one is a decode-side anchor wherever a decode-side anchor exists**, and that is measured
+ * rather than stylistic. `serialiseContract` calls `encode` and nothing calls `decode` but the round
+ * trip, so an edit to the encoder moves the bytes a digest is taken over and reddens the freeze, the
+ * served bytes and every answer addressed by content - 40 guards on one candidate here, 66 on
+ * another. The same defect expressed on the way back reddens the round trip alone. ADR-0209.
+ */
+const A_NEGATIVE_ZERO_COMES_BACK_SIGNED = `  'negative-zero': -0,`
+const A_NAN_COMES_BACK_A_NAN = `  nan: Number.NaN,`
+const AN_INFINITY_COMES_BACK_INFINITE = `  infinity: Number.POSITIVE_INFINITY,`
+const A_NEGATIVE_INFINITY_COMES_BACK_INFINITE = `  'negative-infinity': Number.NEGATIVE_INFINITY,`
+const AN_UNDEFINED_COMES_BACK_UNDEFINED = `    case 'undefined':
+      return undefined`
+const A_FIELD_IS_ASSIGNED_WHATEVER_IT_HOLDS =
+  '      for (const field of encoded.fields) record[field.name] = decode(field.value, shared)'
+const A_PATTERN_KEEPS_ITS_FLAGS = `    case 'pattern':
+      return new RegExp(encoded.source, encoded.flags)`
+const A_SET_COMES_BACK_IN_ITS_OWN_ORDER =
+  '      for (const entry of encoded.entries) entries.add(decode(entry, shared))'
+const A_HOLE_IS_LEFT_UNASSIGNED =
+  "        if (entry.kind !== 'hole') entries[at] = decode(entry, shared)"
+const AN_ELEMENT_THAT_IS_THERE_IS_ENCODED =
+  "      at in value ? encodeAt(value[at], `${path}[${at}]`, walk) : { kind: 'hole' as const },"
+const A_BIG_INTEGER_COMES_BACK_A_BIG_INTEGER = `    case 'big-integer':
+      return BigInt(encoded.digits)`
+const AN_INSTANT_IS_THE_MILLISECOND_IT_WAS =
+  '      const instant = new Date(decode(encoded.epoch, shared) as number)'
+const THE_EPOCH_IS_THE_TIME_THE_DATE_HOLDS =
+  '    const epoch = encodeAt(value.getTime(), `${path}<epoch>`, walk)'
+const A_MAP_KEEPS_KEY_AND_VALUE_APART =
+  '        entries.set(decode(entry.key, shared), decode(entry.value, shared))'
+const A_MAP_KEY_IS_ENCODED_LIKE_ANY_VALUE =
+  '      key: encodeAt(key, `${path}<key ${at}>`, walk),'
+const THE_MESSAGE_AND_THE_CAUSE_TRAVEL_TOGETHER = `        encoded.message,
+        encoded.cause === undefined ? undefined : { cause: decode(encoded.cause, shared) },`
+const THE_ERROR_IS_REBUILT_BY_ITS_OWN_KIND =
+  '      const failure = new ERROR_CONSTRUCTORS[encoded.errorKind]('
+const THE_CAUSE_IS_CARRIED_WHERE_THERE_IS_ONE =
+  '        encoded.cause === undefined ? undefined : { cause: decode(encoded.cause, shared) },'
+const A_BOX_COMES_BACK_A_BOX =
+  '      const box = Object(decode(encoded.value, shared)) as Record<string, unknown>'
+const WHAT_A_BOX_CARRIES_OF_ITS_OWN_IS_ITS_OWN =
+  '      ...carrying(value, new Set(Object.keys(Object(held) as object))),'
+const A_TYPED_ARRAY_IS_REBUILT_BY_ITS_OWN_KIND =
+  '      const make = TYPED_ARRAY_CONSTRUCTORS[encoded.of] as {'
+const A_TYPED_ARRAY_ELEMENT_IS_ENCODED_LIKE_ANY_VALUE =
+  '    const elements = [...(value as unknown as Iterable<unknown>)].map((entry, at) =>\n' +
+  '      encodeAt(entry, `${path}[${at}]`, walk),\n' +
+  '    )'
+const A_RECORD_WITH_NO_FIELDS_IS_STILL_A_RECORD =
+  "      const record = Object.create(encoded.prototype === 'none' ? null : Object.prototype) as Record<string, unknown>"
+const A_FIELD_IS_A_FIELD_WHATEVER_ITS_NAME_LOOKS_LIKE =
+  "          typeof entry[0] === 'string' && !beside.has(entry[0]),"
+const A_LABEL_ONCE_GIVEN_IS_THE_LABEL_REUSED =
+  '  const existing = walk.labels.get(value)\n' + '  if (existing !== undefined) return existing\n\n'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -2730,6 +2798,432 @@ const mutants: readonly Mutant[] = [
     ],
     killed(['a-term-the-registry-learned-is-one-its-contract-can-no-longer-declare']),
   ),
+
+  // ---------------------------------------------------------------------------
+  // E - the wire, which every record and every value crosses on the way to a reader
+  // ---------------------------------------------------------------------------
+  //
+  // A third series rather than more of `I`, because these share a subject neither of the other two
+  // touches: `value.ts`, the encoding that carries what JSON would lose.
+  //
+  // Every cell here is a **first** witness in ADR-0209's sense - the defect it injects is the failure
+  // condition its guard's own sentence names, and the search stopped as soon as that held rather than
+  // carrying on until nothing else reddened. Seventeen of the twenty-six redden alone anyway, which is
+  // that record's finding rather than its intention: aiming narrowly at a claim tends to isolate
+  // without being asked to.
+
+  sameOnEveryLens(
+    'E-01',
+    'reads a negative zero back as an ordinary zero, so the sign `number/parse@1` compares its own ' +
+      'answers with `Object.is` for is lost between the endpoint and the reader',
+    [valueFile(A_NEGATIVE_ZERO_COMES_BACK_SIGNED, "  'negative-zero': 0,")],
+    killed([aValueJsonCannotHold('negative-zero')]),
+  ),
+
+  /**
+   * The two neighbours are reddened and not witnessed, which is the distinction ADR-0209 turns on.
+   *
+   * A NaN that comes back as a zero is a defect describable without naming a Date or a typed array,
+   * so `an-invalid-instant` and `a-typed-array-holding-nan` are bystanders here - each carries a NaN
+   * and each has a cell of its own aimed at what its sentence is about.
+   */
+  sameOnEveryLens(
+    'E-02',
+    'reads a NaN back as a zero, so an answer that was not a number comes back as one',
+    [valueFile(A_NAN_COMES_BACK_A_NAN, '  nan: 0,')],
+    killed([
+      aValueJsonCannotHold('nan'),
+      aValueJsonCannotHold('an-invalid-instant'),
+      aValueJsonCannotHold('a-typed-array-holding-nan'),
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'E-03',
+    'reads an infinity back as the largest finite number, which is the answer a plain JSON round ' +
+      'trip would have given and the one this encoding exists to refuse',
+    [valueFile(AN_INFINITY_COMES_BACK_INFINITE, '  infinity: Number.MAX_VALUE,')],
+    killed([aValueJsonCannotHold('infinity')]),
+  ),
+
+  sameOnEveryLens(
+    'E-04',
+    'reads a negative infinity back as the smallest finite number, so a bound comes back as a value',
+    [valueFile(A_NEGATIVE_INFINITY_COMES_BACK_INFINITE, "  'negative-infinity': -Number.MAX_VALUE,")],
+    killed([aValueJsonCannotHold('negative-infinity')]),
+  ),
+
+  /**
+   * `a-nested-undefined` and `a-hole-beside-an-undefined` are bystanders: both carry an undefined and
+   * neither is what a decoded `undefined` becoming `null` is about. Each has its own cell below.
+   */
+  sameOnEveryLens(
+    'E-05',
+    'reads an undefined back as a null, so a field that was not answered comes back answered with ' +
+      'nothing - which is a different value and one `array/group-by@1` settles a case on',
+    [
+      valueFile(
+        AN_UNDEFINED_COMES_BACK_UNDEFINED,
+        `    case 'undefined':
+      return null`,
+      ),
+    ],
+    killed([
+      aValueJsonCannotHold('undefined'),
+      aValueJsonCannotHold('a-nested-undefined'),
+      aValueJsonCannotHold('a-hole-beside-an-undefined'),
+    ]),
+  ),
+
+  /**
+   * The same value one level in, and the two are separated by which side of the field the loss is on.
+   *
+   * E-05 loses the value; this loses the *field*, so a record that answered a question with nothing
+   * comes back not having been asked. A bare undefined still survives, which is what makes this cell
+   * about the nesting rather than about the value.
+   */
+  sameOnEveryLens(
+    'E-06',
+    'drops a field whose value came back undefined, so a record that carried an unanswered field ' +
+      'comes back without the field at all',
+    [
+      valueFile(
+        A_FIELD_IS_ASSIGNED_WHATEVER_IT_HOLDS,
+        `      for (const field of encoded.fields) {
+        const held = decode(field.value, shared)
+        if (held !== undefined) record[field.name] = held
+      }`,
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-nested-undefined')]),
+  ),
+
+  sameOnEveryLens(
+    'E-07',
+    'rebuilds a pattern without its flags, so the expression `string/slugify@1` declares its output ' +
+      'alphabet with comes back matching something else',
+    [
+      valueFile(
+        A_PATTERN_KEEPS_ITS_FLAGS,
+        `    case 'pattern':
+      return new RegExp(encoded.source)`,
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-pattern')]),
+  ),
+
+  sameOnEveryLens(
+    'E-08',
+    'rebuilds a Set in the reverse of the order it was iterated in, so the groups `array/group-by@1` ' +
+      'pins in iteration order come back as a different answer',
+    [
+      valueFile(
+        A_SET_COMES_BACK_IN_ITS_OWN_ORDER,
+        '      for (const entry of [...encoded.entries].reverse()) entries.add(decode(entry, shared))',
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-set')]),
+  ),
+
+  /**
+   * `a-hole-beside-an-undefined` reddens because it carries a hole; what it is about is the *pair*
+   * staying apart, which E-10 is the cell for.
+   */
+  sameOnEveryLens(
+    'E-09',
+    'assigns a hole rather than leaving it, so a sparse array comes back dense with undefined ' +
+      'elements where it had none',
+    [
+      valueFile(
+        A_HOLE_IS_LEFT_UNASSIGNED,
+        "        entries[at] = entry.kind === 'hole' ? undefined : decode(entry, shared)",
+      ),
+    ],
+    killed([
+      aValueJsonCannotHold('a-hole'),
+      aValueJsonCannotHold('a-hole-beside-an-undefined'),
+    ]),
+  ),
+
+  /**
+   * The mirror of E-09 and the reason the table carries both rows: this one keeps every hole a hole
+   * and turns every undefined *element* into one, so an array of four values comes back as an array
+   * of two values and two holes. `a-hole` survives it, which is what says the two rows are two claims.
+   */
+  sameOnEveryLens(
+    'E-10',
+    'encodes an undefined element as a hole, so a value somebody wrote comes back as a gap',
+    [
+      valueFile(
+        AN_ELEMENT_THAT_IS_THERE_IS_ENCODED,
+        "      value[at] === undefined ? { kind: 'hole' as const } : encodeAt(value[at], `${path}[${at}]`, walk),",
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-hole-beside-an-undefined')]),
+  ),
+
+  sameOnEveryLens(
+    'E-11',
+    'reads a big integer back as a number, so a value JSON refuses outright comes back as the ' +
+      'nearest double and the type is gone',
+    [
+      valueFile(
+        A_BIG_INTEGER_COMES_BACK_A_BIG_INTEGER,
+        `    case 'big-integer':
+      return Number(encoded.digits)`,
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-big-integer')]),
+  ),
+
+  sameOnEveryLens(
+    'E-12',
+    'rebuilds an instant at the whole second, so the milliseconds `date/add@1` settles cases on are ' +
+      'lost on the way back',
+    [
+      valueFile(
+        AN_INSTANT_IS_THE_MILLISECOND_IT_WAS,
+        '      const instant = new Date(Math.floor((decode(encoded.epoch, shared) as number) / 1000) * 1000)',
+      ),
+    ],
+    killed([aValueJsonCannotHold('an-instant')]),
+  ),
+
+  /**
+   * The one arm of the Date encoding a valid instant cannot show, and the reason it is on the encode
+   * side where every other cell of this series is on the decode side: a date whose time is NaN is a
+   * *reading* of the value rather than a rendering of it, so the mistake is made where the time is
+   * read. No record of this catalogue holds one, which is why it reddens alone.
+   */
+  sameOnEveryLens(
+    'E-13',
+    'writes an invalid date as the epoch, so a Date nobody could read comes back as a Date somebody ' +
+      'can - and the difference between "no time" and "the start of time" is gone',
+    [
+      valueFile(
+        THE_EPOCH_IS_THE_TIME_THE_DATE_HOLDS,
+        '    const epoch = encodeAt(Number.isNaN(value.getTime()) ? 0 : value.getTime(), `${path}<epoch>`, walk)',
+      ),
+    ],
+    killed([aValueJsonCannotHold('an-invalid-instant')]),
+  ),
+
+  /**
+   * `a-map-keyed-by-an-object` is a bystander: a swap is a defect about the pair and not about what a
+   * key is made of, and E-15 is the cell aimed at the key.
+   */
+  sameOnEveryLens(
+    'E-14',
+    'rebuilds a Map with each entry the other way round, so what a key answered comes back answering ' +
+      'the key - and no key walk would have seen either',
+    [
+      valueFile(
+        A_MAP_KEEPS_KEY_AND_VALUE_APART,
+        '        entries.set(decode(entry.value, shared), decode(entry.key, shared))',
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-map'), aValueJsonCannotHold('a-map-keyed-by-an-object')]),
+  ),
+
+  /**
+   * A Map keyed by a string survives this untouched, which is what separates the two rows: rendering
+   * a key rather than encoding it is invisible until the key is something a rendering flattens.
+   */
+  sameOnEveryLens(
+    'E-15',
+    "renders a Map's key as text rather than encoding it, so every object key comes back as the same " +
+      'string and two entries that were apart are one',
+    [
+      valueFile(
+        A_MAP_KEY_IS_ENCODED_LIKE_ANY_VALUE,
+        "      key: { kind: 'primitive' as const, value: String(key) },",
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-map-keyed-by-an-object')]),
+  ),
+
+  /**
+   * The row this is aimed at is *an Error, whose message is on its prototype* - so the message is what
+   * its sentence names, and the kind and the cause redden as bystanders with their own cells below.
+   */
+  sameOnEveryLens(
+    'E-16',
+    'rebuilds an error with no message, so what went wrong comes back empty and only the kind ' +
+      'survives',
+    [
+      valueFile(
+        THE_MESSAGE_AND_THE_CAUSE_TRAVEL_TOGETHER,
+        `        undefined,
+        encoded.cause === undefined ? undefined : { cause: decode(encoded.cause, shared) },`,
+      ),
+    ],
+    killed([
+      aValueJsonCannotHold('an-error'),
+      aValueJsonCannotHold('an-error-of-a-kind'),
+      aValueJsonCannotHold('an-error-with-a-cause'),
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'E-17',
+    'rebuilds every error as an `Error`, so the kind a contract settles a case on comes back as the ' +
+      'kind every error shares',
+    [valueFile(THE_ERROR_IS_REBUILT_BY_ITS_OWN_KIND, '      const failure = new ERROR_CONSTRUCTORS.Error(')],
+    killed([aValueJsonCannotHold('an-error-of-a-kind')]),
+  ),
+
+  sameOnEveryLens(
+    'E-18',
+    'rebuilds an error without its cause, so the error that explains the error is gone and the one ' +
+      'a reader is left with says less than the one that was sent',
+    [valueFile(THE_CAUSE_IS_CARRIED_WHERE_THERE_IS_ONE, '        undefined,')],
+    killed([aValueJsonCannotHold('an-error-with-a-cause')]),
+  ),
+
+  /**
+   * `a-boxed-primitive-with-a-field` reddens for a second reason: with no box to hang it on, writing
+   * the field throws. It is a bystander all the same - the defect is describable as *a box comes back
+   * unboxed*, which names no field - and E-20 is the cell about what a box carries.
+   */
+  sameOnEveryLens(
+    'E-19',
+    'unwraps a box on the way back, so a value that was an object comes back a primitive and ' +
+      'anything hung on it has nowhere to go',
+    [valueFile(A_BOX_COMES_BACK_A_BOX, '      const box = decode(encoded.value, shared) as Record<string, unknown>')],
+    killed([
+      aValueJsonCannotHold('a-boxed-number'),
+      aValueJsonCannotHold('a-boxed-primitive-with-a-field'),
+    ]),
+  ),
+
+  /**
+   * The keys a box carries *because of* its slot are read off a fresh box of the same primitive, and
+   * this reads them off the value instead - so anything the author hung on the box is taken for
+   * intrinsic and dropped. A box with nothing of its own survives it, which is what separates the two
+   * rows. It is the defect `value.ts`'s own comment argues the fresh box against, made concrete.
+   */
+  sameOnEveryLens(
+    'E-20',
+    'takes the fields a box carries of its own for the ones its slot carries, so a property somebody ' +
+      'wrote is dropped as though the language had put it there',
+    [valueFile(WHAT_A_BOX_CARRIES_OF_ITS_OWN_IS_ITS_OWN, '      ...carrying(value, new Set(Object.keys(value))),')],
+    killed([aValueJsonCannotHold('a-boxed-primitive-with-a-field')]),
+  ),
+
+  sameOnEveryLens(
+    'E-21',
+    'rebuilds every typed array as a `Float64Array`, so the kind that is part of the value comes back ' +
+      'as one kind for all of them',
+    [valueFile(A_TYPED_ARRAY_IS_REBUILT_BY_ITS_OWN_KIND, '      const make = TYPED_ARRAY_CONSTRUCTORS.Float64Array as {')],
+    killed([aValueJsonCannotHold('a-typed-array')]),
+  ),
+
+  /**
+   * The first candidate for this row wrote every element as a plain JSON number and reddened **40
+   * guards**: typed arrays are in the catalogue, so the encoded bytes moved and the freeze, the served
+   * bytes and every content-addressed answer went with them. Narrowed to the one element no plain JSON
+   * number can hold, it reddens alone - which is the whole of ADR-0209's decode-side rule arriving on
+   * a cell that has to stay on the encode side. A NaN in a typed array is in no record here.
+   */
+  sameOnEveryLens(
+    'E-22',
+    'writes a NaN element of a typed array as a zero, so a float array that held no number comes ' +
+      'back holding one',
+    [
+      valueFile(
+        A_TYPED_ARRAY_ELEMENT_IS_ENCODED_LIKE_ANY_VALUE,
+        '    const elements = [...(value as unknown as Iterable<unknown>)].map((entry, at) =>\n' +
+          '      encodeAt(Number.isNaN(entry as number) ? 0 : entry, `${path}[${at}]`, walk),\n' +
+          '    )',
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-typed-array-holding-nan')]),
+  ),
+
+  /**
+   * **`two-distinct-objects-stay-two` is reddened here and is witnessed by nothing.** Two empty
+   * records both come back as `null`, so the guard is false on this cell - and the defect is *a record
+   * with no fields comes back as nothing*, which names no pair. It is the one guard of this file that
+   * leaves `unprobedClaims` without a cell aimed at it, and ADR-0209 says so rather than counting it.
+   */
+  sameOnEveryLens(
+    'E-23',
+    'reads a record with no fields back as nothing at all, so an object somebody sent comes back ' +
+      'absent - which is the confusion between an empty answer and no answer',
+    [
+      valueFile(
+        A_RECORD_WITH_NO_FIELDS_IS_STILL_A_RECORD,
+        "      const record = (encoded.fields.length === 0 ? null : Object.create(encoded.prototype === 'none' ? null : Object.prototype)) as Record<string, unknown>",
+      ),
+    ],
+    killed([aValueJsonCannotHold('an-empty-record'), 'two-distinct-objects-stay-two']),
+  ),
+
+  /**
+   * Reordering was tried first and is **inert on this row**: integer-like keys are reported in
+   * ascending numeric order by the engine whatever order they are assigned in, so a decoded record
+   * comes back with the same key order however it was built. What is left is not to encode the field
+   * at all, which is the mistake of reading a numeric key as an array index.
+   */
+  sameOnEveryLens(
+    'E-24',
+    'takes a field whose name looks like a number for an index rather than a name, so a record keyed ' +
+      "the way JSON keys one comes back without those fields",
+    [
+      valueFile(
+        A_FIELD_IS_A_FIELD_WHATEVER_ITS_NAME_LOOKS_LIKE,
+        "          typeof entry[0] === 'string' && Number.isNaN(Number(entry[0])) && !beside.has(entry[0]),",
+      ),
+    ],
+    killed([aValueJsonCannotHold('a-numeric-looking-key')]),
+  ),
+
+  /**
+   * One cell for seven guards, and it is the family exception ADR-0209 writes into its definition
+   * rather than a licence taken afterwards: `a-record-survives-the-wire-%s` is one written guard over
+   * seven contracts, the defect is the failure condition each of the seven names, and no contract is
+   * privileged by it.
+   *
+   * **Why the field order and not something a record contains.** Every value kind the table beside it
+   * carries is either absent from the catalogue or aimed at by a cell of its own; what every record
+   * has and no row of the table has is more than one field. So this is the one defect that reddens the
+   * seven and leaves the twenty-five alone - measured, the twenty-five stay green.
+   *
+   * `survives-the-wire` of `the-sixth-contract.test.ts` reddens with them, being the same claim about
+   * a record the catalogue does not yet hold, and `a-shared-reference-is-still-shared` reddens because
+   * a reordered record is a record whose sharing the comparison meets in a different order. Nine reds
+   * puts this cell above ADR-0076's line, so the pin names the seven it was written to exercise.
+   */
+  sameOnEveryLens(
+    'E-25',
+    'rebuilds a record with its fields in the reverse order, so every serialised contract comes back ' +
+      'a different value - the fields a reader is handed are the ones that were sent and not in the ' +
+      'order they were sent in',
+    [
+      valueFile(
+        A_FIELD_IS_ASSIGNED_WHATEVER_IT_HOLDS,
+        '      for (const field of [...encoded.fields].reverse()) record[field.name] = decode(field.value, shared)',
+      ),
+    ],
+    killed(onEach('a-record-survives-the-wire')),
+  ),
+
+  /**
+   * Two records redden with it because two of the seven carry a shared reference; they are bystanders,
+   * the defect being about the label and not about a contract.
+   */
+  sameOnEveryLens(
+    'E-26',
+    'mints a new label every time a shared value is met rather than reusing the one it was given, so ' +
+      'the second occurrence points at a label the reader has never been told about and the whole ' +
+      'answer fails to arrive',
+    [valueFile(A_LABEL_ONCE_GIVEN_IS_THE_LABEL_REUSED, '')],
+    killed([
+      'a-record-survives-the-wire-date-add',
+      'a-record-survives-the-wire-string-slugify',
+      'a-shared-reference-is-still-shared',
+    ]),
+  ),
 ]
 
 export const battery: Battery = {
@@ -2985,9 +3479,9 @@ export const battery: Battery = {
         // absent: it is a storage suite, every one of its guards is reddened by I-02, and declaring
         // it here is what the instrument refused when the two guards still sat in the file above.
         // `the implementations under the contracts of the catalogue` left this list for the same reason, below.
-        'the registry encoding',
+        // `the registry encoding` and `a sixth contract enters without a migration` left it for that
+        // reason too, at the E series, and both are named guard by guard below.
         'the public/private frontier',
-        'a sixth contract enters without a migration',
       ],
       /**
        * `the five, read against their own source` is named guard by guard rather than as a suite,
@@ -3035,6 +3529,22 @@ export const battery: Battery = {
         'every-reference-has-no-dependencies',
         'nothing-is-measured-yet',
         'a-lockfile-is-json',
+        // `the registry encoding`, named guard by guard since the E series reached thirty-three of its
+        // thirty-four. **One is left and it is the only one of the thirty-four with no cell aimed at
+        // it**: every defect in what distinguishes an object with no prototype is either invisible to
+        // the round trip - the comparison reads keys, kinds and classes and never a prototype,
+        // measured green from both sides - or takes the whole serialisation of `object/deep-equal@1`
+        // with it, that contract carrying such an object, which reddened sixty-six guards. ADR-0209.
+        aValueJsonCannotHold('a-bare-object'),
+        // `a sixth contract enters without a migration`, named guard by guard since E-25 reached
+        // `survives-the-wire` - the same claim as the seven records, about a contract the catalogue
+        // does not yet hold. These six are what is left silent there.
+        'needs-no-field-the-schema-does-not-have',
+        'every-anatomy-requirement-is-triaged',
+        'fills-the-fields-no-published-contract-fills',
+        'brings-a-sixth-benchmark-vocabulary-and-a-new-reason-set',
+        'is-addressable',
+        'the-absorbed-state-is-constructible',
       ],
     },
     {
