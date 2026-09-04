@@ -199,6 +199,48 @@ being a source of it, so declaring one served field private reddens eight guards
 `unprobedClaims` goes **228 to 201** against nineteen witnessed, and the gap is seven family members and
 one bystander. ADR-0210.
 
+**The third slice took the clause both the others held, and the fraction they published turns out to be
+a corner.** ADR-0210 named the two directions that population could go in and refused to guess between
+them; **the first was refused by construction before a candidate was written.** `unprobedClaims` is
+*derived* — the guards a claims-detection region names that no cell reddened — so a guard an existing
+cell already reddens is not in the population at all, and *a witness arriving free* cannot enter the
+numerator. **Zero of the seventy.** So the prediction committed at `73e1f20` had one force in it, and
+it was that the rate falls below 95 %. It came back **60 of 70, 86 %**, the sharpest of three outcomes
+named in advance and eight points below the 94 %. **The mechanism proposed for the fall is refuted by
+the slice itself**: read as a dose it is flat — the most probed file, `response.test.ts` at 42 of 67,
+witnesses **6 of 6**, and the least probed, `against-the-catalogue.test.ts` at 9 of 69, witnesses **2 of
+3**. **What the eight points are is compositional, and the ten resisters say so.** Three mechanisms are
+new, and the sharpest is that **three guards resist because their subject is outside the battery's own
+surface**: `applyEdits` joins the root, the battery's `contractPath` and the file, so every edit is
+inside `packages/registry`, and one of the three reads `packages/catalogue`, one reads nothing but a
+record its own test file declares, and one's second stratum-holder is in `contracts/`. **They are
+declared as claims no mutant reaches and they are claims no mutant of this battery *can* reach** —
+`unreachableGuards` is the bucket for that and held none of them, because until a slice went looking
+nobody had asked. Two more resist because their claim is that a derived identity is injective, and the
+only single edit making two collide damages the derivation, which has guards of its own; one because
+its claim is an absence the type system already forbids the falsifier of. **A file this battery already
+reaches is one whose easy claims already have cells**, so what stays silent in it is disproportionately
+of those kinds — which is why the fall is invisible inside the slice and visible between slices. **What
+is publishable over a whole population is 79 of 90, 88 %**: every standalone unprobed-claims guard this
+folder has ever declared, ADR-0210's twenty and this seventy exhausting it between them. **The price
+prediction was refuted** — 1.29 runs per cell against a predicted 1.21, the fifth reading of a figure
+that has now been 1.27, 1.21, 1.27, 1.21 and 1.29 — so *the injection site is known* was a claim about
+an author's convenience and not about the search. **Five candidates reddened the guard they were aimed
+at and were thrown away on A2**, more than both earlier slices together, and a slice that kept them
+reports 65 of 70. **Twelve declarations went stale on three cells and a reading caught them before a
+replay was paid for**, one of them an `unreachableGuards` entry and one a guard this unit had recorded
+as resisting — which leaves its bucket with nothing aimed at it, ADR-0209's *the criterion for leaving
+is reddening and not aiming* arriving on a second bucket. Measured at `14bd274` off a replay of **215
+cells in 38 min 50 s**, 210 killed, the same five survivors, nothing disagreeing, nought unaccounted for
+and nought wrongly declared silent, exit 0: `unprobedClaims` goes **201 to 129**, 72 leaving against 60
+witnessed, and the gap of **12** is the one sub-prediction that held. ADR-0211.
+
+**And a figure of ADR-0210 does not reproduce.** It publishes *174 of the 228* for the population both
+slices excluded and its own rule commit publishes **173**; rebuilt from the artefact on disk the 228
+state is 55 in wholly unprobed files and **173** in partly probed ones, naming the four files that
+slice emptied, and the same figure is 173 at the 262 state and 173 today. The record is stamped, so the
+note is here rather than in it. ADR-0211.
+
 **The client stopped killing the process it was refusing in, and the ending was a half nothing here
 watched.** `toopo add` of a name the registry does not hold refused correctly, printed the right
 sentence, wrote nothing — and then aborted: `process.exit` after a `fetch` races libuv's teardown, and
@@ -2710,6 +2752,25 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   described more plainly by its neighbour. Measured at `709798c` off a replay of 163 cells in 28 min
   46 s, exit 0, nothing disagreeing: this folder's row goes 75/152/239 to **86/168/212**, and its
   `unprobedClaims` **228 to 201**. ADR-0210.
+
+  **And the third slice took the clause the other two held, which is the population rather than a
+  sample of it.** ADR-0211 takes the **70** standalone unprobed-claims guards in files some cell
+  already reddens — 100 % of what the standalone population still holds, ADR-0210 having emptied the
+  wholly unprobed half — and witnesses **60 with 52 cells over 67 candidate runs**. **86 % against
+  94 % and 95 %**, and the gap is larger than one guard of either side where ADR-0210's one point was
+  not, so **the two readings separate and the 94 % is a corner**. Per cell the price is **1.29**, which
+  refutes this unit's own prediction of 1.21 and makes the fifth reading of a figure that has been
+  1.27, 1.21, 1.27, 1.21 and 1.29 — a first witness is still not a cheaper search. **The mechanism
+  proposed for the fall was refuted by the slice's own internal reading**, flat against how probed a
+  file is, and what replaces it is compositional: three new resistance mechanisms, of which the
+  sharpest is **a guard whose subject is outside the battery's injection surface**, three instances,
+  every one declared under `unprobedClaims` where the honest bucket is `unreachableGuards`. **Twelve
+  declarations went stale on three cells and a reading caught them before a replay was paid for**,
+  eleven being one contract's row of a family that stops serialising and one being a guard this unit
+  had recorded as resisting — ADR-0209's *the criterion for leaving is reddening and not aiming*,
+  arriving on a second bucket. Measured at `14bd274` off a replay of 215 cells in 38 min 50 s, 210
+  killed, five survivors, nothing disagreeing, nought unaccounted for, exit 0: this folder's row goes
+  86/168/212 to **123/204/139**, and its `unprobedClaims` **201 to 129**. ADR-0211.
 
   **One instance is now named with the reason it is not closeable, which the entry had never had
   either.** `every-component-class-the-browser-writes-is-one-this-registry-paints` compares a
