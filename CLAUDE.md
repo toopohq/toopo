@@ -130,6 +130,45 @@ that is a refusal**: the 8 226 ms that looked like the heaviest hook is the whol
 and collection, the same file was then seen at 27 519 ms under saturation without the hook expiring,
 and a bound on a quantity nobody has measured is what this repair exists not to be. ADR-0205.
 
+**And the other half of that debt is priced, where nothing had ever been tried.** ADR-0203 and
+ADR-0204 measured the sole witness on the *residue* — guards that already redden and that every cell
+written so far had failed to separate. The 262 of `packages/registry` declared `unprobedClaims` are
+the other bucket, and *decorative* is the instrument's own word for them. **The slice rule was fixed
+before a guard of it was read** — every unprobed guard of the wholly unprobed test file carrying the
+most of them, which is `round-trip.test.ts` at 34 — and **32 are witnessed by 26 cells over 33
+candidate runs**, 24 of the 26 landing on their first candidate. **Seventeen of the twenty-six redden
+alone with nothing asking them to**: the protocol was to write the defect that most directly falsifies
+the guard's own sentence, run once, and stop. So **the expensive part of isolation is not isolating —
+it is isolating a guard that has already resisted every cell in the battery**, which is a property of
+the population rather than of the work. Per guard taken out of its bucket the two prices are **2.36
+runs against 1.03**, and **1.9 times cheaper with the one seven-for-one family removed**; per *cell*
+they are identical — **1.27 here against 1.27 and 1.21** — so a first witness is not a cheaper search
+and is a cheaper landing. **Where to aim is a rule this folder answers for itself**: `serialiseContract`
+calls `encode` and nothing but the round trip calls `decode`, so an edit to the encoder moves the bytes
+every digest is taken over — measured, **40 reds** on one such candidate and **66** on another, against
+**1** for the same defect expressed on the way back. **Two guards resist and keep their declaration**,
+and one is a pincer: the comparison reads keys, kinds and classes and **never a prototype**, so
+`a-bare-object` is green from both sides of the only thing that distinguishes it, while the one visible
+defect takes `object/deep-equal@1`'s whole serialisation with it. **A third leaves the bucket with
+nothing aimed at it**, because the instrument's criterion for leaving is reddening and not aiming —
+which is the trap the definition was written to refuse, arriving as a measurement rather than as a
+warning. **The verdict is that the count can be priced and the fraction cannot**: 145 of the 262 are
+parameterised over a contract in 21 families and 117 stand alone, so the bucket is **at most 138 aiming
+decisions**, about 27 minutes of searching and some 25 more on every replay — while the 94 % witnessed
+here was measured on a file **32 of whose 34 guards are rows of an `it.each`**, and *the file with the
+most guards* is a rule that selects for exactly that. ADR-0209.
+
+**And the replay that measured it retired a column ADR-0204 had to publish in double, for free.** That
+record found `the-served-bytes-are-the-committed-bytes` crossing vitest's 5 000 ms default under load
+and reddening on `I-38`, which has no causal path to it — *a load flake un-isolated a load-bearing
+guard* — so it published the census twice, as the run left it and corrected. Measured at `6888853`,
+the first replay of this folder under the 60 060 ms bound ADR-0205 declared: **`I-38` reddens one
+guard**, `an-edge-is-followed-to-the-artefact-it-names`, and `the-served-bytes-are-the-committed-bytes`
+is reddened by `I-65` and by nothing else. **The corrected column is the measured one now**, and the
+arithmetic says so twice — 58 + 17 = 75 and 135 + 17 = 152 from the corrected reading, where the raw
+one needs 57 + 18 and 136 + 16 with the extra unit unexplained. It is ADR-0204's own reopening clause
+firing on the mechanism it named. ADR-0209.
+
 **The client stopped killing the process it was refusing in, and the ending was a half nothing here
 watched.** `toopo add` of a name the registry does not hold refused correctly, printed the right
 sentence, wrote nothing — and then aborted: `process.exit` after a `fetch` races libuv's teardown, and
@@ -2611,6 +2650,20 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   never been done is to read them together, and more than half of that suite is a region its battery
   does not probe. **The meta suite is outside all of it**: no battery injects into `mutation/`, so its
   **115 guards over 10 files** are out of this population by construction. ADR-0199.
+
+  **And that half has now been priced, on the same folder the other half was.** ADR-0209 takes the 34
+  guards of `round-trip.test.ts` - the wholly unprobed file carrying the most of them, by a rule fixed
+  before one of them was read - and witnesses **32 with 26 cells over 33 candidate runs**. Per guard
+  taken out of the bucket that is **1.03 runs against ADR-0204's 2.36**, and 1.9 times cheaper with the
+  one seven-for-one family removed; per cell written it is **1.27 against 1.27 and 1.21**, so a first
+  witness is not a cheaper search and is a cheaper landing. **Seventeen of the twenty-six redden alone
+  with nothing asking them to.** Measured at `6888853`, this folder's row goes 58/135/273 corrected to
+  **75/152/239**, and its `unprobedClaims` **262 to 228**. What is published is the count and not the
+  fraction: **145 of the 262 are parameterised over a contract in 21 families and 117 stand alone, so
+  the whole bucket is at most 138 aiming decisions** - where the 94 % witnessed here was measured on a
+  file 32 of whose 34 guards are rows of an `it.each`, and the slice rule selects for that. **One guard
+  left the bucket with nothing aimed at it**, the instrument's criterion for leaving being reddening
+  rather than aiming, which is the distinction that whole reading depends on. ADR-0209.
 
   **One instance is now named with the reason it is not closeable, which the entry had never had
   either.** `every-component-class-the-browser-writes-is-one-this-registry-paints` compares a
