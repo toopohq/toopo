@@ -2570,6 +2570,24 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   decided rather than where a page is emitted, which is a unit of its own. Priced and not taken.
   ADR-0218.
 
+  **The cheap way round it was measured and there is not one, which is what makes this entry a
+  price rather than an oversight.** The route that would avoid touching the encoder is a carrier
+  expressed as a value this catalogue already spells — measured at `58ab1a8`, nineteen subjects and
+  fifteen kinds, **thirteen spelled and two not**, the unspelled two being `instance` and `not-data`.
+  **`date/add@1` is the precedent and it points the other way**: a `Date` keeps its state in an
+  internal slot exactly as a Temporal carrier does, and it is spelled `new Date(1768435200000)`
+  *because `value.ts` models it as a kind of its own*. So the precedent establishes that a carrier is
+  spelled by being given a kind, which is the repair rather than a way around it.
+
+  **Both string transpositions fail, and they fail differently.** Inferring the carrier from the ISO
+  string dissolves the disagreement: `2026-01-15` is accepted by **three** carriers, two of which are
+  the two ADR-0216's split is between, so two honest parsers of one contract answer *ignored* and
+  *refused* on the same row with nothing in the language separating them — and `Temporal.from` does
+  not exist, so the question such a contract would have to settle is one no API asks. Naming the
+  carrier as data preserves the disagreement exactly, round-trips losslessly on seven carriers of
+  seven, and is not the same function: it is not generic, its caller holds a string rather than a
+  carrier, and it grows ADR-0216's residue by a decision the language does not pose. ADR-0219.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
