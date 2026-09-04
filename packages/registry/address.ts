@@ -303,19 +303,29 @@ export type AWayToRunIt = {
  * the same defect with a different spelling, and it would have shipped - `yarn dlx` is the one of the
  * four that does not work.
  *
- * **Measured on 2026-08-19 against `toopo@1.0.4` as npm serves it**, each in its own empty project
+ * **Measured on 2026-09-04 against `toopo@1.2.0` as npm serves it**, each in its own empty project
  * holding nothing but a `package.json`. `npx`, `pnpm dlx` and `bunx` each exit 0, and the file each
- * writes hashes to `1a8ae9d1…`, which is the blob this catalogue announces - so the three do not
- * merely run, they land the same bytes. `yarn dlx` exits 1 with nothing written.
+ * writes hashes to `1a8ae9d1…` at 3 332 bytes, which is the blob this catalogue announces - so the
+ * three do not merely run, they land the same bytes. `yarn dlx` exits 1 with nothing written, on the
+ * cause below. The announced digest is read from the origin's own snapshot rather than from the
+ * client that wrote the file, which is what separates *it runs* from *it lands the right thing*.
  *
  * **`deno` is not here because it was not measured**, not because it fails. It is not on the machine
  * the readings were taken on, and a fifth entry asserted from the shape of the other four is exactly
  * what this table exists against.
  *
- * ADR-0138 carries the argument, the refusals and what was not measured.
- *
  * The versions the readings were taken at, because a manager's behaviour is its own to change:
- * npm 11.12.1, pnpm 10.24.0, bun 1.3.8, yarn 4.6.0 through corepack 0.34.6.
+ * node v24.15.0, npm 11.12.1, pnpm 10.24.0, bun 1.3.8, yarn 4.6.0 through corepack 0.34.6. The five
+ * manager versions are the ones the first reading was taken at, to the digit, so no row here can be
+ * attributed to a manager having changed its mind.
+ *
+ * **A reading here goes stale at a publication and at nothing else**, because between publications
+ * no change in this tree moves what npm serves. So it is re-taken in the unit that moves
+ * `THE_PACKAGE_VERSION`, and nothing keeps that: the first reading survived `1.1.0`, `1.1.1` and
+ * `1.2.0` unread, and the entry that was to notice had never been written. ADR-0213 carries the
+ * re-reading, the journey behind the invocation, and the offline guard that would close it - a
+ * version stamp on this table, compared with the package's, which needs no network and no package
+ * manager. ADR-0138 carries the argument, the refusals and what was not measured.
  */
 export const THE_WAYS_TO_RUN_IT: readonly AWayToRunIt[] = [
   { manager: 'npm', spelling: THE_INVOCATION },

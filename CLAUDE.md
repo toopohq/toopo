@@ -914,15 +914,18 @@ are worth more than two somebody rediscovers — and because a reader meeting AD
 find them false by omission. ADR-0171.
 
 **What is broken is one thing, in the published package and not on the site: `yarn dlx toopo` does
-not run.** Re-measured on 2026-08-27 against `toopo@1.1.0` as npm serves it, in an empty project with
-a `packageManager` of `yarn@4.6.0` obtained through corepack: `yarn dlx toopo@1.1.0 add
+not run.** Re-measured on 2026-09-04 against `toopo@1.2.0` as npm serves it, in an empty project with
+a `packageManager` of `yarn@4.6.0` obtained through corepack: `yarn dlx toopo@1.2.0 add
 string/slugify` exits 1 with nothing written but its own `package.json`, and Yarn names its own cause
 — it applies its builtin compatibility patch to `typescript`,
 `typescript@patch:…#optional!builtin<compat/typescript>`, and the patch fails with `ENOENT … lstat
 '/node_modules/typescript/lib/_tsc.js'` because TypeScript 7 does not hold that file.
 **`typescript@7.0.2` is this package's one runtime dependency**, which is what puts it in the way.
-The reading it replaces was taken on 2026-08-19 against `1.0.4`, and it is retaken rather than
-carried because a release is exactly the event that would have made it false.
+The readings it replaces were taken on 2026-08-19 against `1.0.4` and on 2026-08-27 against `1.1.0`,
+and each is retaken rather than carried because a release is exactly the event that would have made
+it false. **The five manager versions are the first reading's to the digit** — npm 11.12.1, pnpm
+10.24.0, bun 1.3.8, yarn 4.6.0 through corepack 0.34.6, on node v24.15.0 — so no row of this table
+can be attributed to a manager having changed its mind, which is what a coordinate is for.
 
 **The control is what makes the cause believable rather than plausible.** `yarn dlx cowsay` in the
 same shell, the same minute, exits 0 and prints its cow — so Yarn works on this machine and fails on
@@ -930,8 +933,9 @@ this package. Without that reading the failure could have been Yarn's, and a cau
 would be the thing ADR-0042 refuses.
 
 **Re-reading the population found a fifth form nobody had separated from a fourth, and it is red.**
-`npx`, `pnpm dlx` and `bunx` each exit 0 against `1.1.0` and write `lib/toopo/string/slugify.ts`
-hashing to `1a8ae9d1…`, which is the blob the catalogue announces. **`bunx --bun` does not**: it exits
+`npx`, `pnpm dlx` and `bunx` each exit 0 against `1.2.0` and write `lib/toopo/string/slugify.ts`
+hashing to `1a8ae9d1…` at 3 332 bytes, which is the blob the catalogue announces — read from the
+origin's own snapshot rather than from the client that wrote the file. **`bunx --bun` does not**: it exits
 1 on `SyntaxError: Export named 'diff' not found in module 'node:util'`, because that flag runs the
 client under Bun's runtime instead of node, and Bun's `node:util` has no `diff`. **It is not a defect
 of this package and it is worth writing down anyway.** `packages/cli/diff.ts` imports `diff` from
@@ -940,6 +944,23 @@ so the package says which runtime it needs and Bun's is not it. What a reader me
 `SyntaxError` where every other refusal here is a sentence. **The population of forms is five and two
 of them are red**, and the fourth was only ever measured in one of its two spellings. `deno` is still
 not measured, because it is not on this machine, and so it is not published anywhere either.
+
+**And the six commands behind the invocation have now been run from npm, which nothing here had ever
+done.** `against-the-origin` installs a tarball this repository builds, and a tarball merely unpacked
+dies on `ERR_MODULE_NOT_FOUND: typescript` — only a real installation carries the client and the one
+runtime dependency that puts it on disk. Measured at `1.2.0`: `init`, `add`, `list`, `search`,
+`update` and both phases of `remove` each exit 0, a non-default folder and a folder holding a space
+both land `1a8ae9d1…`, and a directory above the project is refused at `init` with nothing written.
+**What moved since 19 August is that last one and only that one** — `toopo@1.0.4 init --dir
+../outside` exits **0**, writes a `toopo.json` naming a folder above the project and tells the reader
+to commit it, and every command after it exits 1; that is ADR-0208's repair confirmed from npm rather
+than from the tree. **And one apparent change was not one**: `add` in a bare project writes
+`toopo.json` and says so, which ADR-0138 never recorded, and `1.0.4` does exactly the same — a
+behaviour a record did not record reads exactly like a behaviour that moved, and only running the old
+version tells them apart. Three findings are published unrepaired, the sharpest being that the
+refusal on the `init --dir` path opens *`toopo.json` carries "…"* where no such file exists and the
+string came from the command line — the same sentence being exactly true on the reading path.
+ADR-0213.
 
 It is not repaired here and it is not this list's class - nothing is unkept, something is broken -
 so it is written where a session reads first rather than filed as a declaration nobody keeps. What
@@ -2157,6 +2178,53 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   outside the frozen folder. ADR-0150.
 
 **Still open, and what each one now costs.**
+
+- **That the four forms a contract page offers still run, and still land the bytes the catalogue
+  announces.** `THE_WAYS_TO_RUN_IT` publishes four invocations with the measurement that admitted or
+  refused each, and its own opening sentence is *a form displayed and not measured is the defect a
+  visitor already met, on the first thing they tried.* **The measurement is the one thing about that
+  table nothing keeps.**
+
+  **It is measured rather than feared, and the number is three.** The first reading was taken on
+  2026-08-19 against `toopo@1.0.4`; npm has served `1.1.0`, `1.1.1` and `1.2.0` since, two of them on
+  one day, and eight modules of the install path moved across them. Nothing re-read the table across
+  any of it. Re-taken at `1.2.0` the four rows all hold, so the cost of those three releases was
+  nought — **which is luck and not a mechanism**, and is exactly why the entry is worth more than the
+  reading.
+
+  **The entry that was to keep it had never been written, and a record said it had.** ADR-0138 closes
+  its own account with *a guard implying otherwise would be one this repository could not keep, and
+  `CLAUDE.md` carries the entry rather than this record pretending to cover it.* Read at `21279f6`,
+  that record's own commit: this file carried one passage on the subject, about `yarn dlx` being
+  **broken**, and its closing sentence declines the job in as many words — *it is not this list's
+  class … rather than filed as a declaration nobody keeps.* So the description was sound, the filing
+  claim beside it was false, and it is the filing claim a reader believes. It is the shape the
+  `stage's requirements` entry closed on, arriving on a record rather than on an entry.
+
+  **Where this looked**: `THE_WAYS_TO_RUN_IT` in `packages/registry/address.ts`, which carries the
+  readings in its own comment and is where a rewrite of them lands; the three guards ADR-0138 names
+  in `packages/site/pages.test.ts`, every one of which reads what the page *hands over* and not what
+  a spelling *does*; and `packaging/against-the-origin/the-whole-chain.test.ts`, the one suite here
+  that reaches a live host, which installs a tarball this repository builds and never one npm serves.
+
+  **The population is the four rows, the fifth form `bunx --bun` that is published and not tabled,
+  and the six commands behind the invocation**, and it grows by a row the day a manager is added or
+  `deno` becomes measurable. **A guard is refused rather than unbuilt.** One that installs from npm
+  reddens on three things and this repository owns one of them — npm, a manager, or this package —
+  so two of its three reds are a notification nobody here can repair; and the only placement where
+  the claim and the artefact coincide is *after* `publish`, which is a verdict arriving behind the
+  irreversible act ADR-0109's ordering exists to keep every reading in front of.
+
+  **What replaces it is a cadence, and it is attached to the only event that can falsify the reading
+  from this side**: between publications nothing in this tree moves what npm serves, so the table is
+  re-read in the unit that moves `THE_PACKAGE_VERSION`. **What would close the entry is cheaper than
+  the guard that was refused and is a different guard**: the table carrying the version its readings
+  were taken against, compared with the package's — offline, no network, no package manager. It
+  establishes that somebody looked since the last release and never that `npx` runs, and **it would
+  have been red at `1.1.0`, at `1.1.1` and at `1.2.0`**, which is every occasion this entry is about.
+  Priced as its own unit and not taken, because adding a field to `AWayToRunIt` decides what that
+  table carries and a unit whose subject is a measurement is not where that is settled. ADR-0138,
+  ADR-0213.
 
 - **That every path this catalogue serves is a path the confinement admits.** ADR-0206 states one
   alphabet for a path this tool writes, reads or removes, and the catalogue states another for what a
