@@ -8,6 +8,17 @@ confirmed-by: []
 
 # The residue is three decisions and the language answers one of them two ways
 
+> **The one ground this record could not rule out is paid, and one of its own objections is withdrawn.**
+> [ADR-0217](0217-r5-is-read-on-what-the-packages-do-and-never-on-how-often-they-are-downloaded.md)
+> reads ten packages by execution: **`luxon` refuses an unknown unit where Temporal ignores it**, so
+> **R5 does not fire** and the twenty-four retained operations stand. Two things below are narrowed by
+> it. The objection to the polymorphic form — *its case table crosses carrier types* — **is withdrawn**
+> on `object/deep-equal@1`'s published table of 58 cases crossing the whole language, and that form
+> passes P4 clause by clause. And **the disagreement is about the unknown key and not the inapplicable
+> unit**: `@internationalized/date`, the only library read carrying partial types as Temporal does,
+> answers the second question exactly as Temporal answers it. What stands unchanged is everything
+> measured here.
+
 > **This record withdraws a ground [ADR-0215](0215-the-fourth-search-is-conducted-on-the-surface-that-arrived-after-the-third.md)
 > published, and it is a new record rather than a rewrite because that one is stamped.** ADR-0215
 > refused twenty-four operations on **R10** — *the residue is one decision* — and invited the reader to

@@ -2816,7 +2816,36 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   object-shaped duration and applies it to a date-like value, which is a job older than Temporal. **A
   polyfill is excluded by construction**, implementing the specification being agreement with it by
   definition. **R5 fires only if every such package answers as Temporal does**, which is a deliberately
-  low bar because `string/strip-ansi`'s was. ADR-0217.
+  low bar because `string/strip-ansi`'s was.
+
+  **It was paid and it does not fire: the candidate is alive.** Ten packages installed and executed,
+  no figure entering the verdict. **`luxon@3.7.2` answers `InvalidUnitError: Invalid unit dayz`** where
+  `date-fns@4.4.0`, `moment@2.30.1` and `@internationalized/date@3.12.4` drop it in silence as Temporal
+  does. **Four packages do the job and one of the four disagrees**, so the question is contested.
+  `dayjs` and `date-arithmetic` are excluded by a control rather than by reading — they throw on a
+  **well-formed** bag too, their API being `add(n, unit)` — which is the method's own outcome 3
+  arriving as predicted. **The narrow reading is empty for a reason the bias was not declared against**:
+  `temporal-zod` validates durations as **ISO 8601 strings** and refuses an object bag outright,
+  `temporal-fun` exports no addition and `temporal-utils` only differences, boundaries and rounding —
+  **the packages built on Temporal so far take durations as text**.
+
+  **And the two decisions separate, which no earlier reading could see.** The disagreement is about the
+  **unknown key** alone: on the **inapplicable unit**, `@internationalized/date` — the only library
+  read that carries partial types as Temporal does — answers exactly as Temporal answers, `Time.add({days:
+  1})` and `CalendarDate.add({hours: 5})` both returning the input unchanged, while `@js-joda/core`
+  makes the question unrepresentable, `LocalTime.prototype.plusDays` being `undefined`. The language
+  still contests that second decision with itself; the ecosystem does not contest it.
+
+  **P4 was re-taken against the precedent and ADR-0216's objection to the polymorphic form is
+  withdrawn.** That objection was that its case table crosses carrier types — and
+  `object/deep-equal@1` publishes **58 cases in 10 groups** crossing the whole language, frozen. The
+  polymorphic `add` over the zone-free carriers holds ¬R6, ¬R7, ¬R9, ¬R12 and ¬R13; the one difference
+  from the precedent is named rather than smoothed, `deepEqual` being `(a: unknown, b: unknown)` where
+  this needs a generic, which touches neither clause. **So one of the three shapes survives** — the
+  per-carrier form is what would make R8 true, and the validator dies on ADR-0158's criterion, which
+  the narrow reading sharpens since a bag validator has no ecosystem either. **That is a narrowing and
+  not a choice: no contract is written**, and whether this catalogue publishes one is the owner's.
+  ADR-0217.
 
   **Three debts leave the unit for other records.** ADR-0192's `Date.parse` refusal rests on a claim
   the stage-4 engine refutes — Temporal parses **only** ISO 8601, throwing on `01/15/2026`, on

@@ -139,17 +139,142 @@ once already in this sequence.
 
 ## What the reading returned
 
-*Written after the probe.*
+**R5 does not fire. `luxon` refuses what Temporal swallows, so the question is contested and the
+candidate is alive.**
+
+Ten packages were installed and executed at the versions below. **Not one figure below decides
+anything**; the search that found them is a demand signal and it decided only what was measured.
+
+### Q1 — an unknown key beside a valid one
+
+| package | version | answer to `{ days: 1, dayz: 9 }` | |
+| --- | --- | --- | --- |
+| **`luxon`** | 3.7.2 | **`InvalidUnitError: Invalid unit dayz`** | **disagrees** |
+| `date-fns` | 4.4.0 | `2026-01-16` — dropped in silence | agrees with Temporal |
+| `moment` | 2.30.1 | `2026-01-16` — dropped in silence | agrees |
+| `@internationalized/date` | 3.12.4 | `2026-01-16` — dropped in silence | agrees |
+| `dayjs` | 1.11.23 | throws on a **well-formed** bag too | **no bag API — excluded** |
+| `date-arithmetic` | 4.1.0 | throws on a **well-formed** bag too | **no bag API — excluded** |
+| `@js-joda/core` | 6.1.0 | takes a typed `Period`, not a bag | **no bag API — excluded** |
+| `temporal-zod` | 0.7.0 | validates ISO **strings**; refuses `{ days: 1 }` | **does not do the job — excluded** |
+| `temporal-fun` | 0.2.0 | no add-like export at all | **does not do the job — excluded** |
+| `temporal-utils` | 1.0.2 | `diff*`, `startOf*`, `roundTo*` only | **does not do the job — excluded** |
+
+**Three exclusions are outcome 3 arriving as predicted**, and they are controlled rather than assumed:
+`dayjs` and `date-arithmetic` were first read as refusals, and the control — the same call with a
+**well-formed** bag — throws for them too, so what they refuse is the shape of the argument and not its
+contents. Their API is `add(n, unit)`.
+
+### Q2 — a known unit the target cannot apply
+
+**The ecosystem agrees with Temporal here, and the closest structural analogue is what says so.**
+`@internationalized/date` is the only library read that carries **partial types** the way Temporal
+does — `CalendarDate`, `Time`, `CalendarDateTime`, `ZonedDateTime` — and it answers exactly as Temporal
+answers: `new Time(12, 0).add({ days: 1 })` is `12:00:00` and `new CalendarDate(2026, 1, 15).add({
+hours: 5 })` is `2026-01-15`, both the input unchanged.
+
+**`@js-joda/core` gives a third answer by making the question unrepresentable**:
+`LocalTime.prototype.plusDays` and `LocalDate.prototype.plusHours` are `undefined`, so there is no bag
+and no inapplicable unit to ignore.
+
+**So the disagreement is about the unknown key and not about the inapplicable unit**, which is narrower
+than ADR-0216 could know and narrows what a contract would settle. On the second decision the language
+still contests itself — `PlainYearMonth` and `Instant` refuse where `PlainDate` and `PlainTime` ignore
+— but the ecosystem does not contest it.
+
+### The narrow reading, reported because the method promised it
+
+**It is empty, and not for the reason the bias was declared against.** None of the three
+Temporal-wrapping packages was excluded for wrapping a young proposal: each was excluded because it
+does not do this job. `temporal-zod` validates durations as **ISO 8601 strings** and refuses an object
+bag outright, `temporal-fun` exports no addition, and `temporal-utils` exports differences, boundaries
+and rounding. **That is a finding rather than an absence**: the packages built on Temporal so far take
+durations as text.
+
+### The condition, applied
+
+R5 was declared to fire **only if every package that does this job answers as Temporal does**. Four do
+the job. **One of the four disagrees.** R5 does not fire.
+
+**The bar was declared low in advance and a reader may dispute the condition rather than the
+measurement** — that is the honest place to push, and it is a different argument from *luxon is only
+one package*, which the condition already answers.
+
+### The prediction is scored
+
+**Right on the direction and right on the package.** The method predicted R5 would not fire, named
+`luxon` as the most likely dissenter for its explicit notion of an invalid duration, and predicted
+`date-fns` would ignore unknown keys as Temporal does. All three hold. Outcome 3 was named as possible
+for `dayjs` and is what `dayjs` and `date-arithmetic` both turned out to be.
+
+**What the prediction did not reach** is that the two questions would separate: it treated Q1 and Q2 as
+one ground and they are not.
+
+## P4, re-taken on `object/deep-equal@1`'s precedent
+
+**ADR-0216 set aside the polymorphic form because its case table would cross carrier types. That
+objection is withdrawn, and the precedent that withdraws it is published and frozen.**
+
+`object/deep-equal@1` carries **58 cases in 10 groups** whose subjects cross the whole language:
+`a-bigint-is-not-its-number`, `a-boxed-primitive-is-not-its-primitive`, `data-under-a-symbol-key-is-data`,
+`a-class-instance-is-not-its-fields`, `a-null-prototype-object-is-not-a-plain-one`,
+`a-getter-is-read-as-the-value-it-returns`, `a-graph-that-returns-to-itself`, `an-error-is-data`,
+`a-map-key-is-compared-by-its-data`, `two-instants-are-one-date`. **A case table that crosses kinds
+serves readably, and this catalogue has published one and frozen it.**
+
+Taken clause by clause against the polymorphic form — one `add` over the zone-free carriers:
+
+| clause | | |
+| --- | --- | --- |
+| **¬R6** | pure and deterministic in its arguments | holds, once the union excludes `ZonedDateTime` |
+| **¬R7** | a signature that can carry the answer | holds — `T | null` beside a reason export, `date/add@1`'s own shape |
+| **¬R9** | a case table that serves readably | **holds on the precedent** |
+| **¬R12** | no collision with a frozen contract | holds weakly — ADR-0216's reading, `date/add@1` being `Date`-typed and anticipating neighbours |
+| **¬R13** | an answer that does not follow the runtime | holds for the zone-free carriers |
+
+**So the polymorphic form passes P4.** The one difference from the precedent is named rather than
+smoothed: `deepEqual` is `(a: unknown, b: unknown)`, so **one** signature carries every case, where the
+polymorphic form needs a generic whose return type follows its argument. That difference touches
+neither R7 nor R9 — a generic signature carries the answer and the table still reads one row per case —
+so it is not a P4 objection, and it is written down because it is the nearest thing to one.
+
+**Of ADR-0216's three shapes, one survives.** The per-carrier form is what would make R8 true; the
+validator dies on ADR-0158's criterion, and the narrow reading above sharpens that — the packages built
+on Temporal validate durations as **strings**, so a bag validator has no ecosystem either. **The
+polymorphic form is the only one standing**, and saying so is a narrowing rather than a choice: **no
+contract is written**, and whether this catalogue publishes one is the owner's.
 
 ## What would reopen this
 
-*Written after the probe.*
+* **The condition, rather than the measurement.** R5 was declared to fire only if *every* package
+  agrees. A reader who holds that one dissenter among four is too thin is disputing a threshold this
+  record fixed in advance, and that dispute reopens the ground without touching a figure.
+* **`luxon` changing its mind.** The whole of R5's answer rests on one package refusing an unknown
+  unit. A major of `luxon` that adopted Temporal's silence would make the ecosystem unanimous and fire
+  R5 retroactively.
+* **A package this enumeration missed.** The search did not return `luxon`, which does the job as
+  plainly as any library there is, and it was added by judgement. A reader may add another and re-run
+  the reading; the probe takes a package name.
+* **Q2 gaining a dissenter.** No library read disagrees with Temporal about the inapplicable unit. One
+  that rejects it would widen what a contract settles from one decision to two.
+* **The owner settling the unit.** P3 is what remains, and P4 no longer narrows it.
 
 ## More Information
 
 ### Where the probes live
 
-*Written after the probe.*
+Outside this repository on stage rule 5, with the ten packages installed under the scratchpad and never
+in this tree — **`package.json` is untouched and no dependency was added**. Two readings carry the load
+and both are controlled: every Q1 row is run beside the same call without the offending key, so a
+package that refuses everything is not read as a package that refuses this; and the three exclusions
+were each confirmed by a well-formed bag throwing too.
+
+### Coordinates
+
+Measured on **2026-09-04** against the tree at `ec8e8bb`, on **node v24.15.0** for the packages and
+**Chrome 152.0.7977.77 headless** for Temporal's own answers, which are ADR-0216's. Package versions
+are in the table above. `pnpm freeze` is green either side and **no digest moved**: nothing under
+`contracts/` was touched and `THE_PACKAGE_VERSION` stays at `1.2.0`.
 
 ### Why `confirmed-by` is empty
 
