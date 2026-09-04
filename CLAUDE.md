@@ -2740,18 +2740,59 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   either**, a figure for its size being an estimate wearing a count's clothes. ADR-0163, ADR-0191,
   ADR-0192.
 
-  **A fourth search is being conducted, and its method was committed before its first probe.** It is
-  not aimed at the band above, and saying which exclusion it repairs is the whole of why it is a
-  separate paragraph: ADR-0192's axis was the language's own surface and its population was **one
-  runtime at one version**, so what it missed here is not a candidate below a demand floor but a
-  surface that **did not exist when the sweep ran**. Temporal reached stage 4 in March 2026, ADR-0192's
-  Node v24.15.0 does not carry it — re-measured, `typeof globalThis.Temporal` is `undefined` — and that
-  record refuses `Date.parse` on **R1** *because* Temporal is the language's answer. **A surface that
-  decides a row and is never itself read is a motive doing a subject's work.** ADR-0215 declares the
-  runtime, the two-part population, R13 and R2, and three named outcomes in advance, on ADR-0176's
-  discipline. It is ADR-0192's own first reopening trigger firing rather than a new idea, and it
-  narrows that trigger without closing it: one proposal's growth is read, and the rest of the standard
-  library is not re-read. ADR-0192, ADR-0215.
+  **A fourth search was conducted on the exclusion nobody had named, and it returned no eighth
+  contract.** It is not aimed at the band above, and which exclusion it repairs is the whole of why it
+  is a separate paragraph: ADR-0192's axis was the language's own surface and its population was **one
+  runtime at one version**, so what it missed is not a candidate below a demand floor but a surface
+  that **did not exist when the sweep ran**. That record refuses `Date.parse` on **R1** *because*
+  Temporal is the language's answer, and **a surface that decides a row and is never itself read is a
+  motive doing a subject's work**. Its method was committed at `1786e99` before a probe ran — verified
+  rather than claimed, the section being **12 618 bytes identical** across the two commits. **142
+  operations, 142 grounds, nought retained**: R1 65, R13 32, R10 24, R2 15, R6 6. ADR-0215.
+
+  **The general argument this search existed to test is refuted by measurement rather than upheld.**
+  The fear was that R2 closes `date` because the language delivered the API, and that the same
+  sentence then closes every family whose API the language delivers — every stage-4 proposal still to
+  come. **R2 is 15 of 142.** `Temporal.Instant.prototype.add` **refuses every date unit** — days,
+  weeks, months and years all throw — so adding a month to an absolute instant requires choosing a
+  zone, and inside a zone a day is a civil day: `add({days: 1})` across the 2026 US transition answers
+  `16:00:00Z` where `add({hours: 24})` answers `17:00:00Z`. **The language shipped an API for date
+  arithmetic and did not ship `date/add@1`'s function**, whose declared domain excludes exactly that
+  and gives R13's reasoning as its reason a year before R13 was named. So what is closed is **this
+  surface and not the family**, and a `date` candidate Temporal has no operation for — business days,
+  a date a human wrote — is invisible to this axis by construction.
+
+  **R13 gained its first sole instances, thirty-two of them, and the witness is measured.** ADR-0207
+  published it as a ground refusing nothing and named its first instance as a reopening trigger. The
+  obvious probe returned nothing — Chrome 152 against node v24.15.0, **3 762 comparisons, 0
+  disagreements** — because two engines shipping one table say nothing about whether the answer moves
+  when the table moves. Four tzdata versions on this machine do: against **2026a**, **2024a disagrees
+  on 12 offsets and 2025a on one**, the sharpest being **`America/Tijuana` at `1970-06-15T12:00:00Z`,
+  `GMT−07:00` against `GMT−08:00`**. **A first reading reported 221 and was wrong** — 209 were `GMT`
+  against `GMT+00:00`, CLDR rendering drift, and publishing them as tzdata would have named a cause no
+  measurement establishes.
+
+  **The near miss is the row to dispute first, and the sweep's own first classification was wrong
+  about it.** Temporal silently ignores an unknown field in a bag whenever one field it knows is
+  present: `PlainDate.prototype.add({days: 1, dayz: 9})` answers `2026-01-16`, and so do **24 of 24
+  probed, with no exception**, across seven zone-free types — so R13 does not reach them and the
+  sweep's initial R1, *its answer is not wrong*, is falsified. That is permanent rule 7's trap clause
+  met positively, and `date/add@1`'s own frozen rationale names the shape: *a plausible value that
+  silently drops what the caller asked for*. It is refused on **R10**, the residue being one decision,
+  with **R8** beside it — and that refusal is a judgement, published so a reader can overturn it into
+  an eighth candidate with no new measurement.
+
+  **Three debts leave the unit for other records.** ADR-0192's `Date.parse` refusal rests on a claim
+  the stage-4 engine refutes — Temporal parses **only** ISO 8601, throwing on `01/15/2026`, on
+  `15 January 2026` and on RFC 2822 — which is that record's *a refusal ground being wrong* arriving on
+  a refusal. Its first reopening trigger has **fired five times and four are unread**: the engine diff
+  names twelve operations of four other proposals, derived rather than listed. And **ADR-0150's
+  suspicion is resolved in the direction it predicted**: replayed over all 43 cases on the engine it
+  could not get, the `NaN` cause **agrees** and its five typed partings become four, exactly as it said
+  they could only do. **A defect in this unit's own probe nearly published the opposite** — JSON has no
+  spelling for `NaN`, so the first replay handed Temporal `{days: null}`, which it read as an absent
+  field and answered, reporting eight partings of which two were the probe's. ADR-0150, ADR-0192,
+  ADR-0207, ADR-0215.
 
 - **That the criterion deciding what enters this catalogue is one anything applies.** ADR-0207 writes
   it — four clauses, each the complement of a group of the twelve refusal grounds — and **no mechanism

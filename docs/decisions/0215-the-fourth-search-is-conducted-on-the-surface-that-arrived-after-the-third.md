@@ -277,15 +277,218 @@ real, unrepaired and unproposed — Temporal is young enough that its first wide
 yet have been argued about anywhere — in which case this search publishes an eighth candidate and a
 later unit decides whether to write it.
 
+### What the sweep returned
+
+**The population is 142 operations and every one received exactly one ground. Nothing survived.**
+
+The namespace reaches **265 members — 141 operations, 99 accessors and 25 values**. The engine diff
+adds one operation outside it, and the classification refused to print twice before it was total: once
+because `Date.prototype.toTemporalInstant` had no ground, and once, earlier, because the intrinsics
+declaration did not reach `SharedArrayBuffer`.
+
+| ground | operations | why |
+| --- | --- | --- |
+| **R1** | **65** | the language gives this function and its answer is not wrong for its domain |
+| **R13** | **32** | the answer follows tzdata or CLDR, which the runtime ships |
+| **R10** | **24** | rule 7 met positively, and the residue is one decision — the near miss below |
+| **R2** | **15** | ISO 8601 and RFC 3339 are the written contract for this text |
+| **R6** | **6** | it reads the ambient clock or zone, so it is not a function of its arguments |
+| **retained** | **0** | |
+
+### The second half of the window, derived rather than listed
+
+Comparing Chrome 152's intrinsics against bare Node 24.15.0's, over the 44 ECMAScript intrinsics both
+reach, gives **13 additions and one removal**. **One is Temporal's** — `Date.prototype.toTemporalInstant`,
+which a population defined by reachability from `Temporal` would have dropped in silence. The other
+twelve are four other proposals that landed in the same interval: `Map.prototype.getOrInsert` and
+`getOrInsertComputed` with the same pair on `WeakMap`, `Math.sumPrecise`, and the six `Uint8Array`
+base64 and hex operations. `Intl.v8BreakIterator` is a V8 extension rather than a proposal, and
+`Error.prepareStackTrace` is node's.
+
+**So ADR-0192's first reopening trigger has fired five times and this unit reads one of them.** The
+other twelve operations are a named backlog for the next re-run, which is worth more than the abstract
+exclusion the method could state in advance.
+
+### R13 gains its first sole instances, and the witness is measured rather than argued
+
+[ADR-0207](0207-the-complement-of-the-twelve-refusals-is-four-clauses.md) published R13 as a ground
+with no instance — *it refuses nothing in the population today* — and named its first as a reopening
+trigger. **It refuses 32 operations here**, and the reading behind that is not the structural argument
+this record predicted it would be.
+
+**The first probe returned nothing.** Chrome 152 against Node 24.15.0, 418 zones, 9 instants, **3 762
+comparisons and 0 disagreements**. Two engines shipping the same table establish nothing about whether
+the answer moves when the table moves, so the question was put to four tzdata versions this machine
+already carried:
+
+| | ICU | tzdata | zones |
+| --- | --- | --- | --- |
+| node v20.12.1 | 74.2 | **2024a** | 418 |
+| node v23.11.0 | 76.1 | **2025a** | 417 |
+| node v25.6.0 | 78.2 | **2025c** | 418 |
+| node v24.15.0 | 78.2 | **2026a** | 418 |
+
+Against 2026a: **2024a disagrees on 12 offsets**, 2025a on **1**, 2025c on **0**, with one zone added
+and one removed across the range. The sharpest single row is **`America/Tijuana` at
+`1970-06-15T12:00:00Z`, which answers `GMT−07:00` under tz 2026a and `GMT−08:00` under 2025a and
+2024a** — one hour, on a real instant, between two runtimes a reader may have. `America/Asuncion`
+parts by an hour on two *future* instants.
+
+**A first reading of that probe reported 221 disagreements and was wrong.** 209 of them were `GMT`
+against `GMT+00:00`, which is CLDR rendering drift and not a zone rule moving; publishing them as
+tzdata would have named a cause no measurement establishes. The comparison normalises to minutes now
+and reports the two separately.
+
+### The near miss, which is the finding a reader should dispute first
+
+**Twenty-four of the population meet permanent rule 7 positively**, and the first classification of
+this sweep called them R1 — *its answer is not wrong* — which the measurement falsifies.
+
+Temporal silently ignores a duration or fields bag's unknown members whenever one member it knows is
+present. `Temporal.PlainDate.prototype.add({ days: 1, dayz: 9 })` answers **`2026-01-16`**. So does
+every other row: **24 of 24 probed, with no exception**, across `PlainDate`, `PlainTime`,
+`PlainDateTime`, `PlainYearMonth`, `PlainMonthDay`, `Duration` and `Instant`, on `add`, `subtract`,
+`with` and `from`. The slip alone is caught — `date.add({ day: 1 })` throws — so what is dropped is
+exactly the field a caller spelled wrongly *beside* one they spelled correctly, which is the singular
+for plural slip everyone makes.
+
+**These are zone-free, so R13 does not reach them**, and `date/add@1`'s own rationale names this exact
+shape in frozen prose: *a plausible value that silently drops what the caller asked for*.
+
+**It is refused on R10 and the refusal is a judgement rather than a measurement.** Strip away
+everything Temporal already does correctly and what is left for a contract to settle is one decision —
+reject the unknown field or ignore it — which is the ground `semver/compare`, `string/compare-natural`
+and `object/flatten` were refused under. **R8 stands beside it**: one rule across seven types and
+twenty-four operations is one algorithm behind several renderings rather than one contract. And
+`date/add@1` already settles the question for its own domain, with four cases of its untyped table
+devoted to it.
+
+**A reader may dispute this row and it is published so that they can.** It is the only place in the
+sweep where rule 7 was met positively, and the difference between refusing it and retaining it is the
+difference between this record's negative and an eighth candidate.
+
+### What the sweep found about ADR-0192, which it was not looking for
+
+**ADR-0192 refuses `Date.parse` on R1 in these words**: *Temporal is stage 4 and is the language's
+answer to parsing a date that is not ISO.* Measured on the stage-4 engine, Temporal parses **only**
+ISO 8601: `Temporal.PlainDate.from` throws on `2026/01/15`, on `01/15/2026`, on `15 January 2026` and
+on `2026-1-5`, and `Temporal.Instant.from` throws on an RFC 2822 date. There is no locale parsing
+anywhere in the namespace.
+
+**So the premise of that refusal is false as a capability claim.** A reading on which it survives is
+available — *Temporal's answer to parsing a non-ISO date is: do not* — and it is not the sentence that
+was written. `Date.parse` is outside this window, so this record does not reclassify it; what it does
+is hand the next re-run a row whose stated ground does not hold, which is ADR-0192's own second
+reopening trigger — *a refusal ground being wrong* — arriving on a refusal rather than on a ground.
+
+### The second product: ADR-0150's replay, re-taken on the engine it could not get
+
+[ADR-0150](0150-a-frozen-contract-cannot-say-where-it-stands-so-the-registry-says-it.md) replayed
+`date/add@1`'s block 4.4 against V8 13.6's draft, found **38 agreeing and 5 parting for three causes**,
+and published the third — a field carrying `NaN`, which the draft answered as zero — as *a suspicion
+and not an established divergence*, naming the direction the count could move in: **down, to four**.
+It could not test that: *Node 26 was not available to measure*.
+
+Re-taken here over both tables, **43 cases, bridged as ADR-0150 bridged them** —
+`Date.prototype.toTemporalInstant`, then `ZonedDateTime.add` under `constrain`, in **UTC**, which is
+declared because it is the only faithful zone for a contract whose domain is UTC throughout:
+
+| | rows | standing |
+| --- | --- | --- |
+| the empty duration | **3** | parts, exactly as ADR-0150 counted |
+| fields of opposite sign | **1** | parts |
+| a field carrying `NaN` or `Infinity` | **0** | **agrees — the suspicion resolves as predicted** |
+| an unknown field beside a declared one | 1 | parts, and ADR-0150 reports no such row |
+| a declared field carrying a string | 1 | parts, and ADR-0150 reports no such row |
+
+**37 agree and 6 part.** The prediction is confirmed on the typed table to the row: its five become
+four, and the cause that leaves is the one it named. The two rows it does not report are both from the
+untyped table, where Temporal answers and the contract refuses — and **whether that is the engine or
+the bridge cannot be settled**, because neither protocol is recorded. That is ADR-0150's own finding
+about its oracle — *the oracle's protocol is written nowhere, so nothing can say whether the bridge
+above is the bridge that was used* — arriving on ADR-0150's own replay, one record later.
+
+**`date/add@1` comes out of this stronger rather than weaker.** Its remaining partings are the two
+sides it knowingly took, plus a strictness about untyped input that Temporal does not have and that
+this sweep independently found to be a trap.
+
+**A defect in this unit's own probe was caught by reading the transported data against the source.**
+JSON has no spelling for `NaN`, `Infinity` or `undefined`: the first two serialise as `null` and the
+third disappears with its key, so the first replay handed Temporal `{ days: null }` where the contract
+wrote `{ days: NaN }`, Temporal read it as an absent field and answered, and the probe reported **8
+partings** — two of which were its own. The transport encodes those four values now. Had it not been
+read, this record would have published a divergence count of eight and a refutation of ADR-0150's
+prediction, both wrong.
+
+### The prediction is scored
+
+**Four of five right, and the one that is wrong is the one the record leaned on.**
+
+* **No candidate survives** — right, and it is outcome 1 of the three named.
+* **R2 does the killing** — **wrong**, and not narrowly: R2 is **15 of 142** where R1 is 65 and R13 is
+  32. The general R2 argument was the thing this unit was told to be most careful about, and the sweep
+  says it is a minority ground on this surface.
+* **The family closes for a Temporal-specific reason rather than the general one** — right, and
+  measured rather than argued, in the section below.
+* **R13 gains its first sole instance on a zone-dependent operation** — right, thirty-two times.
+* **A survivor, if any, would be duration-shaped rather than zone-shaped** — right about the near miss,
+  which is duration-shaped.
+* **The population is between 120 and 160 operations** — right, at 142.
+
+### The verdict on the `date` family
+
+**It is not closed for the general reason, and that is a measurement rather than a judgement.** The
+general argument — the language delivered the API, so the family closes, and so does every family whose
+API the language delivers — requires that Temporal serve the domain. It does not serve `date/add@1`'s.
+
+`Temporal.Instant.prototype.add` **refuses every date unit**: days, weeks, months and years all throw
+*Largest unit cannot be a date unit*, and only hours and below are accepted. To add a month to an
+absolute instant a caller must choose a zone and write the bridge by hand, and inside a zone a day is a
+civil day — measured, `add({ days: 1 })` across the 2026 US transition answers `2026-03-08T16:00:00Z`
+where `add({ hours: 24 })` answers `17:00:00Z`. `date/add@1`'s declared domain excludes exactly that,
+and gives R13's reasoning as its reason a year before R13 was named: *a function that silently borrows
+the process time zone is impure and answers differently on two machines running the same code.*
+
+**So the answer to R2's narrow question is: for the domain Temporal serves, its specification says what
+the right answer is; and there is a neighbouring domain it deliberately does not serve, in which a
+published contract of this catalogue already sits.**
+
+**What is closed is this surface and not the family.** No operation the Temporal proposal added is an
+eighth contract. A `date` candidate Temporal has no operation for — business-day arithmetic, parsing a
+date a human wrote — corresponds to no row of this population and is invisible to this axis, exactly as
+a candidate below the demand floor was invisible to ADR-0163's. That is the window's limit, declared
+before it was looked through and unchanged by what it returned.
+
 ## What would reopen this
 
-*Written after the sweep.*
+* **The near miss being disputed.** Twenty-four operations met permanent rule 7 positively and were
+  refused on R10 with R8 beside it. That is the judgement in this record most worth arguing with, and a
+  reader who holds that rejecting an unknown duration field is more than one decision reopens an eighth
+  candidate without needing any new measurement.
+* **The twelve operations this window named and did not read.** `Map.prototype.getOrInsert`,
+  `WeakMap.prototype.getOrInsert`, the two `Computed` variants, `Math.sumPrecise` and the six
+  `Uint8Array` base64 and hex operations landed in the same interval as Temporal and are outside this
+  record's window by declaration. They are the cheapest re-run this list has.
+* **`Date.parse`'s ground being false.** ADR-0192 refused it on a claim about Temporal that the
+  stage-4 engine refutes. Re-reading that row needs no new engine.
+* **The standard library growing again.** This sweep is Chrome 152's, and the next stage-4 proposal is
+  a row it did not read — the same trigger this unit fired, named again so it is recognisable.
+* **A second engine disagreeing.** Every figure here is one engine's. Node 26 was deliberately not
+  installed, and a reading on it that parts from Chrome 152 would reopen any row it touches.
+* **A `date` candidate outside Temporal's surface.** The window reaches operations the proposal added
+  and nothing else, so it cannot refuse what it cannot see.
 
 ## More Information
 
 ### Where the probes live
 
-*Written after the sweep.*
+The probes and their raw output are not in this repository — stage rule 5 keeps working material out —
+and every figure above names the population it was taken over and the engine it was taken on so that it
+can be rebuilt. Three carry the load, and each **refuses to print rather than narrowing in silence**:
+the enumeration, which throws unless `TimeZone` and `Calendar` are absent and the namespace is exactly
+the nine; the intrinsics diff, which exits non-zero unless both engines reach every declared intrinsic,
+and which did; and the classification, which exits non-zero unless every operation receives exactly one
+ground, and which did twice.
 
 ### Coordinates
 
@@ -295,6 +498,26 @@ acceptance rule**. The runtime readings in *The runtime, and the guard against t
 population readings in *The window* and *The prediction* were taken on **2026-09-04** at that same
 commit, before the method was committed, because the method could not be written without knowing
 whether a stage-4 engine existed at all; each names the engine it was taken on.
+
+**The method landed at `1786e99`**, where `pnpm meta` was green at the same reading and no operation
+had been classified. **Every figure below that line was measured on 2026-09-04 against the tree at
+`1786e99`**, on **Chrome 152.0.7977.77 headless with no flag**, `--lang=en-US`, host zone
+`Europe/Paris`. The four tzdata readings are node v20.12.1, v23.11.0, v24.15.0 and v25.6.0 as this
+machine holds them, each naming its own ICU and tzdata version. `pnpm freeze` is green either side of
+this record and **no digest moved**: nothing under `contracts/` was touched, and
+`THE_PACKAGE_VERSION` stays at `1.2.0`.
+
+### Consequences
+
+`CLAUDE.md`'s entry on what a search reaches carries the result. **No contract is written**, which the
+unit was constrained to and which the near miss makes worth restating: twenty-four operations met rule
+7 positively, and the decision not to write one rests on a ground a reader may dispute rather than on
+their being uninteresting.
+
+**Three rows leave this unit owed to other records.** ADR-0192's `Date.parse` refusal stands on a
+premise this engine refutes; its first reopening trigger has fired five times and four are unread; and
+ADR-0150's suspicion is resolved in the direction it predicted, with two rows of its count that neither
+record can now attribute to an engine or to a bridge.
 
 ### Why `confirmed-by` is empty
 
