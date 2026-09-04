@@ -196,6 +196,11 @@ const valueFile = (find: string, replace: string) => ({ file: 'value.ts', find, 
 const attestationFile = (find: string, replace: string) => ({ file: 'attestation.ts', find, replace })
 const needsFile = (find: string, replace: string) => ({ file: 'needs.ts', find, replace })
 const fieldMapFile = (find: string, replace: string) => ({ file: 'field-map.ts', find, replace })
+const imaginedGraphFile = (find: string, replace: string) => ({
+  file: 'imagined-graph.ts',
+  find,
+  replace,
+})
 
 /**
  * One row of the table of values the encoding was written for, spelled once.
@@ -655,6 +660,174 @@ const THAT_FIELD_IS_ONE_OF_THE_TWO_ARGUED_FOR = `    verification: 'documentary'
 ${A_FIELD_NOBODY_FILLS_SAYS_WHY}`
 const A_MAJOR_IS_STRUCTURAL_RATHER_THAN_DEFERRED =
   "  'address.major': { visibility: 'public', verification: 'structural' },"
+
+// ADR-0211's anchors. The two record ones are the same expression read twice, so they are written
+// once each rather than spelled out at the cell.
+const AN_ARRAY_IS_RENDERED_IN_ORDER = "    return `[${entries.join(',')}]`"
+const A_RECORD_IS_WRITTEN_KEY_BY_KEY = '  return `{${sortedKeys(record)\n    .map('
+const THE_UNDEFINED_FIELDS_ARE_SKIPPED =
+  '  return `{${sortedKeys(record)\n' +
+  '    .filter((key) => record[key] !== undefined)\n' +
+  '    .map('
+const THE_ARROW_DOES_NOT_CLOSE_A_TYPE_PARAMETER = "      if (text[at - 1] === '=') continue\n"
+const A_COMMA_AT_DEPTH_ZERO_SEPARATES =
+  "    else if (character === ',' && brackets === 0 && angles === 0) {"
+const THE_SEPARATOR_IS_A_SEMICOLON =
+  "    else if (character === ';' && brackets === 0 && angles === 0) {"
+const A_COMMA_ANYWHERE_SEPARATES = "    else if (character === ',' && angles === 0) {"
+const AN_EMPTY_PART_IS_NOT_A_PARAMETER = ".filter((part) => part !== '')"
+const AN_EXPORT_CARRIES_ITS_OWN_PARAMETERS =
+  '  const carried = exports.map((entry) => ({ ...entry, parameters: parametersOf(entry.text) }))'
+const THE_LAST_PARAMETER_IS_DROPPED =
+  '  const carried = exports.map((entry) => ({\n' +
+  '    ...entry,\n' +
+  '    parameters: parametersOf(entry.text).slice(0, -1),\n' +
+  '  }))'
+const THE_REFUSAL_NAMES_THE_EDGE =
+  '      renderImplementation(address),\n' +
+  "      'the registry holds no such published implementation',"
+const THE_REFUSAL_NAMES_NOTHING =
+  "      'a dependency',\n      'the registry holds no such published implementation',"
+const AN_UNPUBLISHED_HOLDING_IS_REFUSED =
+  '  if (held.version === null) {\n' +
+  '    return [\n' +
+  '      `it is unpublished, where ${asked} names a published version. A snapshot with no version was ` +\n' +
+  '        `never served under any address.`,\n' +
+  '    ]\n' +
+  '  }'
+const AN_UNPUBLISHED_HOLDING_IS_ACCEPTED = '  if (held.version === null) {\n    return []\n  }'
+const A_CYCLE_IS_REFUSED =
+  '      if (open.includes(what)) {\n' +
+  "        throw new UnresolvedDependency(what, `it imports itself through ${[...open, what].join(' -> ')}`)\n" +
+  '      }'
+const A_CYCLE_IS_SKIPPED = '      if (open.includes(what)) continue'
+const A_REPORTED_CASE_IS_CLASSIFIED = "  'caseTables[].cases[].provenance.report': {"
+const A_REPORTED_CASE_IS_MISSPELLED = "  'caseTables[].cases[].provenance.reported': {"
+const A_LIFECYCLE_IS_SERVED_WHOLE = '  lifecycle: record.lifecycle,'
+const A_LIFECYCLE_IS_SERVED_AS_ITS_STATE = '  lifecycle: { state: record.lifecycle.state },'
+const A_SNAPSHOT_BODY_IS_COMPARED_WITH_ITS_ADDRESS =
+  '    ...(recomputed === response.addressedBy\n' +
+  '      ? []\n' +
+  '      : [`this body canonicalises to ${recomputed} and not to ${response.addressedBy}`]),'
+const A_BLOB_IS_COMPARED_WITH_ITS_ADDRESS =
+  '    ...(recomputed === response.addressedBy\n' +
+  '      ? []\n' +
+  '      : [`these bytes hash to ${recomputed} and not to ${response.addressedBy}`]),'
+const NOTHING_IS_COMPARED = '    ...[],'
+const A_FORMAT_VERSION_IS_CHECKED = '    ...(response.formatVersion === SNAPSHOT_FORMAT\n      ? []'
+const A_FORMAT_VERSION_IS_NOT_CHECKED = '    ...(true\n      ? []'
+const A_REFUSAL_CARRIES_ITS_OWN_MEASUREMENT =
+  '    measurement: entry.measurement,\n    keptAs: entry.keptAs,'
+const A_REFUSAL_CARRIES_ITS_DECISION_TWICE =
+  '    measurement: entry.decidedAgainst,\n    keptAs: entry.keptAs,'
+const AN_UPDATE_COMPARES_THE_ADDRESS_AND_THE_DIGEST =
+  '  renderImplementation(response.address) === renderImplementation(recorded.address) &&\n' +
+  '  response.digest !== recorded.digest'
+const AN_UPDATE_COMPARES_THE_DIGEST_ALONE = '  response.digest !== recorded.digest'
+const A_CASE_BEGINS_WITH_THE_CALL =
+  "  if (fields.slice(0, call.length).join(',') !== call.join(',')) {\n" +
+  '    throw new CaseIsNotACall(where, call, fields)\n' +
+  '  }\n\n'
+const A_MUTATION_CITATION_IS_ITS_OWN_KIND =
+  "  if (kind === 'found-in-the-wild') return { kind: 'found-in-the-wild', report: rest }"
+const A_MUTATION_CITATION_IS_A_REPORT =
+  "  if (kind === 'found-in-the-wild' || kind === 'found-by-mutation') {\n" +
+  "    return { kind: 'found-in-the-wild', report: rest }\n" +
+  '  }'
+const NOTHING_IS_MEASURED = '    minifiedBytes: null,\n    benchmarks: [],'
+const A_SIZE_NOBODY_MEASURED = '    minifiedBytes: 0,\n    benchmarks: [],'
+const A_CORRECTION_IS_CARRIED = '    ...(source.correctionsToFrozenProse === undefined\n      ? {}'
+const A_CORRECTION_IS_DROPPED = '    ...(true\n      ? {}'
+const A_REFERENCE_DECLARES_NO_EDGE = '    dependsOn: [],\n    minifiedBytes: null,'
+const A_CLAIM_IS_ADDRESSED = "    id: 'a-blob-is-the-bytes-its-address-names',"
+const A_CLAIM_IS_NAMED_IN_CAMEL_CASE = "    id: 'aBlobIsTheBytesItsAddressNames',"
+const A_CLAIM_IS_ABOUT_A_BLOB = "    about: ['blob'],"
+const A_CLAIM_IS_ABOUT_NOTHING_THAT_EXISTS = "    about: ['blobs'],"
+const A_CHECK_NEEDS_NOTHING_FROM_THE_REGISTRY = '    about: [],'
+const THAT_CHECK_NEEDS_A_SNAPSHOT = "    about: ['snapshot'],"
+const A_CLAIM_SAYS_WHAT_IT_DOES_NOT_ESTABLISH =
+  "    butNot: 'anything about what the file does',"
+const A_CLAIM_SAYS_NOTHING_OF_THE_KIND = "    butNot: '',"
+const THE_NATURES_ARE_THREE =
+  '  /** No arithmetic reaches it, whatever anyone publishes. */\n' +
+  "  | 'outside what any arithmetic can reach'"
+const THE_NATURES_ARE_FOUR =
+  '  /** No arithmetic reaches it, whatever anyone publishes. */\n' +
+  "  | 'outside what any arithmetic can reach'\n" +
+  "  | 'the registry declines to say'"
+const A_SIZE_IS_A_MEASUREMENT =
+  "    id: 'a-minified-size',\n" +
+  "    claim: 'this implementation ships this many bytes',\n" +
+  "    nature: 'a measurement on a machine nobody else has',"
+const A_SIZE_IS_WITHHELD =
+  "    id: 'a-minified-size',\n" +
+  "    claim: 'this implementation ships this many bytes',\n" +
+  "    nature: 'the registry declines to say',"
+const A_SPECIFICATION_IS_BEYOND_ARITHMETIC =
+  "    id: 'this-contract-is-the-right-specification',\n" +
+  "    claim: 'what this contract requires is what a caller of this function should want',\n" +
+  "    nature: 'outside what any arithmetic can reach',"
+const A_SPECIFICATION_IS_AN_OPINION =
+  "    id: 'this-contract-is-the-right-specification',\n" +
+  "    claim: 'what this contract requires is what a caller of this function should want',\n" +
+  "    nature: 'an opinion of the registry',"
+const AN_INDEX_HAS_NO_MITIGATION =
+  "    id: 'the-index-is-complete',\n" +
+  "    claim: 'these are all the contracts the registry has',\n" +
+  "    nature: 'an opinion of the registry',\n" +
+  '    mitigation: null,'
+const AN_INDEX_IS_GIVEN_ONE =
+  "    id: 'the-index-is-complete',\n" +
+  "    claim: 'these are all the contracts the registry has',\n" +
+  "    nature: 'an opinion of the registry',\n" +
+  "    mitigation: 'independent mirrors would make a short index visible',"
+const A_STRATUM_IS_TRANSLATED =
+  '  documentary:\n' +
+  "    'published prose. Nothing can contradict it, because it makes no claim a run could falsify.',"
+const A_STRATUM_IS_SILENT = "  documentary: '',"
+const EVERY_FIELD_REACHES_THE_METHODOLOGY =
+  '    Object.entries(FIELD_MAP).map(([path, entry]) => [path, entry.verification]),'
+const ONE_FIELD_DOES_NOT =
+  '    Object.entries(FIELD_MAP)\n' +
+  '      .slice(1)\n' +
+  '      .map(([path, entry]) => [path, entry.verification]),'
+const THE_METHODOLOGY_IS_NAMED = "  addressing: 'named',\n  servedFrom,"
+const THE_METHODOLOGY_IS_CONTENT_ADDRESSED = "  addressing: 'content',\n  servedFrom,"
+const A_STANDING_FIELD_SAYS_WHY =
+  "    field: 'minifiedBytes',\n" +
+  "    reason: 'null until a minifier exists, and measured against code that was published without it.',"
+const A_STANDING_FIELD_SAYS_NOTHING = "    field: 'minifiedBytes',\n    reason: '',"
+const A_STANDING_IS_SET_ONLY_ON_SOMETHING_PUBLISHED =
+  '  const held = ledger.contracts.find((entry) => renderContract(entry.address) === what)\n' +
+  '  if (held === undefined) throw new NotPublished(what)\n'
+const A_BINDING_IS_KEYED_ON_ITS_WHOLE_ADDRESS =
+  '    ledger.contracts.filter((held) => renderContract(held.address) === what),'
+const A_BINDING_IS_KEYED_ON_ITS_NAME =
+  '    ledger.contracts.filter((held) => held.address.name === entry.address.name),'
+const A_STANDING_IS_APPLIED =
+  '      renderContract(entry.address) === what ? { ...entry, standing } : entry,'
+const A_STANDING_IS_DISCARDED =
+  '      renderContract(entry.address) === what ? { ...entry } : entry,'
+const A_PUBLISHED_CONTRACT_CANNOT_BE_REFUSED =
+  '  if (ledger.contracts.some((held) => renderContract(held.address) === what)) {\n' +
+  "    throw new AlreadyDecided(what, 'published')\n" +
+  '  }\n'
+const A_FILE_IS_ADDRESSED_BY_ITS_CONTENT =
+  "  return { path: path.slice(path.lastIndexOf('/') + 1), sha256: digestOfBytes(bytes), bytes: bytes.byteLength }"
+const A_FILE_IS_ADDRESSED_BY_ITS_NAME =
+  "  const name = path.slice(path.lastIndexOf('/') + 1)\n" +
+  '\n' +
+  "  return { path: name, sha256: digestOfBytes(Buffer.from(name, 'utf8')), bytes: bytes.byteLength }"
+const A_DOMAIN_MAY_CARRY_A_HYPHEN =
+  'const CONTRACT_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*\\/[a-z0-9]+(?:-[a-z0-9]+)*$/'
+const A_DOMAIN_MAY_NOT =
+  'const CONTRACT_NAME = /^[a-z0-9]+\\/[a-z0-9]+(?:-[a-z0-9]+)*$/'
+const A_REFERENCE_DEPENDS_ON_ITS_OWN_FILES =
+  '    dependsOn: files.map((file) => ({\n' +
+  "      implementation: { contract: source.address, id: 'reference', version: '1.0.0' },\n" +
+  '      digest: file.sha256,\n' +
+  '    })),\n' +
+  '    minifiedBytes: null,'
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -3550,6 +3723,599 @@ const mutants: readonly Mutant[] = [
     [fieldMapFile(A_MAJOR_IS_STRUCTURAL_RATHER_THAN_DEFERRED, "  'address.major': { visibility: 'public', verification: 'stated-per-declaration' },")],
     killed(['the-fields-that-defer-their-stratum']),
   ),
+
+  // ---------------------------------------------------------------------------
+  // I-110 to I-161 - the guards no table wrote, in files this battery already reaches
+  // ---------------------------------------------------------------------------
+  //
+  // ADR-0211's slice, and every cell is a **first** witness in ADR-0209's sense, under the definition
+  // committed at `68e466a` and unchanged. What the rule inverts is the clause the two slices before
+  // it both held: these guards sit in files some cell of this battery already reddens, which is the
+  // population those records excluded by construction and could say nothing about.
+  //
+  // **The trap peculiar to this slice is that the injection site is already there.** Every file it
+  // touches has cells aimed into it, from two into `verifiability.test.ts` to forty-two into
+  // `response.test.ts`, so the cheapest way to redden a silent guard is to widen a neighbouring cell
+  // until it catches one more. A widened cell has stopped aiming. Every cell below is its own cell,
+  // aimed at one guard, and the co-reds are published per cell rather than summarised.
+
+  // `canonical.ts` - what a digest is taken over, and what JSON would lose on the way in.
+
+  sameOnEveryLens(
+    'I-110',
+    'sorts the entries of an array on the way into the canonical form, so a value whose order is ' +
+      'part of what it says arrives as a set - and two records that differ only in an order share a ' +
+      'digest',
+    [canonicalFile(AN_ARRAY_IS_RENDERED_IN_ORDER, "    return `[${[...entries].sort().join(',')}]`")],
+    killed(['an-array-keeps-its-order', 'an-encoded-field-list-is-not-reordered']),
+  ),
+
+  /**
+   * Ten values JSON answers something else for, one cell each, because each is a different loss and a
+   * digest taken over any of them is a digest of a value the registry does not hold. Every replacement
+   * below is JSON's own answer rather than a removal: deleting a refusal reaches the next one and the
+   * guard stays green on a throw it was not written for, which is A1 failing while looking like a kill.
+   */
+  sameOnEveryLens(
+    'I-111',
+    'accepts a negative zero and writes it as a zero, which is what JSON does - so a case settled on ' +
+      'the difference between the two is hashed as though it had been settled on neither',
+    [
+      canonicalFile(
+        "  if (Object.is(value, -0)) throw new UncanonicalValue(path, 'a negative zero')",
+        "  if (Object.is(value, -0)) return '0'",
+      ),
+    ],
+    killed(['a-value-json-would-lose-is-refused-negative-zero']),
+  ),
+
+  sameOnEveryLens(
+    'I-112',
+    'writes a NaN as a null, so a record carrying one hashes to the record that carried nothing there',
+    [
+      canonicalFile(
+        "  if (Number.isNaN(value)) throw new UncanonicalValue(path, 'a NaN')",
+        "  if (Number.isNaN(value)) return 'null'",
+      ),
+    ],
+    killed(['a-value-json-would-lose-is-refused-nan']),
+  ),
+
+  sameOnEveryLens(
+    'I-113',
+    'writes either infinity as a null, so the two ends of the number line and the absence of a number ' +
+      'all reach a digest as one value',
+    [
+      canonicalFile(
+        "  if (!Number.isFinite(value)) throw new UncanonicalValue(path, 'an infinity')",
+        "  if (!Number.isFinite(value)) return 'null'",
+      ),
+    ],
+    killed([
+      'a-value-json-would-lose-is-refused-infinity',
+      'a-value-json-would-lose-is-refused-negative-infinity',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-114',
+    'writes an undefined as a null, so a value nobody set and a value somebody set to nothing become ' +
+      'the same bytes',
+    [
+      canonicalFile(
+        "  if (typeof value === 'undefined') throw new UncanonicalValue(path, 'an undefined')",
+        "  if (typeof value === 'undefined') return 'null'",
+      ),
+    ],
+    killed([
+      'a-value-json-would-lose-is-refused-undefined',
+      'a-value-json-would-lose-is-refused-an-undefined-field',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-115',
+    'accepts a function and writes it as a null, so a record carrying code hashes as a record carrying ' +
+      'nothing - and what the digest attests is no longer what the record holds',
+    [
+      canonicalFile(
+        "  if (typeof value === 'function') throw new UncanonicalValue(path, 'a function')",
+        "  if (typeof value === 'function') return 'null'",
+      ),
+    ],
+    killed(['a-value-json-would-lose-is-refused-a-function']),
+  ),
+
+  sameOnEveryLens(
+    'I-116',
+    'accepts a symbol and writes it as a null, so the one value in the language that is equal to ' +
+      'nothing but itself reaches a digest as the absence of a value',
+    [
+      canonicalFile(
+        "  if (typeof value === 'symbol') throw new UncanonicalValue(path, 'a symbol')",
+        "  if (typeof value === 'symbol') return 'null'",
+      ),
+    ],
+    killed(['a-value-json-would-lose-is-refused-a-symbol']),
+  ),
+
+  sameOnEveryLens(
+    'I-117',
+    'accepts a bigint and writes it as a null, so an integer too large for a number is hashed as no ' +
+      'integer at all rather than refused',
+    [
+      canonicalFile(
+        "  if (typeof value === 'bigint') throw new UncanonicalValue(path, 'a bigint')",
+        "  if (typeof value === 'bigint') return 'null'",
+      ),
+    ],
+    killed(['a-value-json-would-lose-is-refused-a-bigint']),
+  ),
+
+  sameOnEveryLens(
+    'I-118',
+    'fills a hole in an array with a null, which is what JSON does - so an array with a gap in it and ' +
+      'an array holding nothing at that index reach a digest as one value',
+    [
+      canonicalFile(
+        "      if (!(at in value)) throw new UncanonicalValue(`${path}[${at}]`, 'a hole in an array')",
+        "      if (!(at in value)) return 'null'",
+      ),
+    ],
+    killed(['a-value-json-would-lose-is-refused-a-hole']),
+  ),
+
+  sameOnEveryLens(
+    'I-119',
+    'drops a field whose value is undefined, which is what JSON does - so a record that declares a ' +
+      'field and a record that never had it hash to the same bytes',
+    [canonicalFile(A_RECORD_IS_WRITTEN_KEY_BY_KEY, THE_UNDEFINED_FIELDS_ARE_SKIPPED)],
+    killed(['a-value-json-would-lose-is-refused-an-undefined-field']),
+  ),
+
+  sameOnEveryLens(
+    'I-120',
+    'serves a source with its carriage returns still in it, so what the registry publishes is what ' +
+      "one machine's git configuration produced rather than what the commit holds",
+    [
+      canonicalFile(
+        "  return Buffer.from(withoutMark.replace(/\\r\\n/g, '\\n'), 'utf8')",
+        "  return Buffer.from(withoutMark, 'utf8')",
+      ),
+    ],
+    killed([
+      'a-crlf-source-is-served-as-its-lf-form',
+      'normalising-changes-the-digest',
+      'a-blob-answer-that-arrived-with-crlf-still-verifies',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-121',
+    'keeps a byte-order mark in the served bytes, so an editor that wrote one changes what a contract ' +
+      'is - and the first character of a file becomes part of what a lockfile attests',
+    [
+      canonicalFile(
+        '  const withoutMark = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text',
+        '  const withoutMark = text',
+      ),
+    ],
+    killed(['a-byte-order-mark-is-not-content']),
+  ),
+
+  /**
+   * The rule beside the one above rather than the rule itself. I-120 stops the normalisation and
+   * reddens this guard as a bystander; this one leaves the normalisation alone and takes the digest
+   * over the normalised form, so normalising stops changing the digest while every served byte stays
+   * what it was. That is this guard's own sentence - *so the rule is load-bearing rather than
+   * cosmetic* - and the difference between the two cells is what says so.
+   */
+  sameOnEveryLens(
+    'I-122',
+    'hashes the normalised form of whatever bytes it is handed, so the normalisation stops being ' +
+      'observable and a rule nothing can see the effect of is one nobody would notice losing',
+    [
+      canonicalFile(
+        "  createHash('sha256').update(bytes).digest('hex')",
+        "  createHash('sha256').update(servedBytes(bytes)).digest('hex')",
+      ),
+    ],
+    killed(['normalising-changes-the-digest']),
+  ),
+
+  /**
+   * `signature.ts` - reading a declared type without a compiler.
+   *
+   * **The region these six replace declared that no mutant here could name one guard**, because every
+   * one stops a real contract serialising and reddens most of the folder. Two of the six refute that
+   * flatly - `I-123` and `I-124` redden one and ten - and the other three confirm it exactly, at
+   * sixty-six and sixty-seven. What changed is not the measurement but what is asked of a cell: a
+   * first witness aims and does not isolate, so a cell whose distinctive red is the guard it names
+   * witnesses it however many consequences follow. The co-red counts are published per cell so a
+   * reader can weigh that for themselves.
+   */
+  sameOnEveryLens(
+    'I-123',
+    'lets an arrow close a type parameter list, so `<T extends () => void>` ends at the wrong ' +
+      'character and a signature the catalogue could one day carry is refused as unreadable',
+    [signatureFile(THE_ARROW_DOES_NOT_CLOSE_A_TYPE_PARAMETER, '')],
+    killed(['an-arrow-inside-a-type-parameter-does-not-close-it']),
+  ),
+
+  sameOnEveryLens(
+    'I-124',
+    'separates parameters on a semicolon rather than on a comma, so the plainest signature there is ' +
+      'names one parameter where it declares two - and a contract page renders a call with an ' +
+      "argument list that is half a type",
+    [signatureFile(A_COMMA_AT_DEPTH_ZERO_SEPARATES, THE_SEPARATOR_IS_A_SEMICOLON)],
+    killed(['a-plain-signature-names-its-parameters']),
+  ),
+
+  sameOnEveryLens(
+    'I-125',
+    'keeps the empty part a comma leaves behind, so a signature that takes nothing declares one ' +
+      'nameless parameter and a trailing comma declares a second - which is the same clause read ' +
+      'from its two ends',
+    [signatureFile(AN_EMPTY_PART_IS_NOT_A_PARAMETER, '')],
+    killed([
+      'a-signature-that-takes-nothing-has-no-parameters',
+      'a-trailing-comma-leaves-no-parameter-behind-it',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-126',
+    'stops skipping a type parameter list, so reading begins at the angle bracket and a generic ' +
+      "signature's own `<T, K>` is looked at as though it were the call",
+    [signatureFile('      if (depth === 0) return at + 1', '      if (depth === 0) return 0')],
+    killed(['the-type-parameters-are-not-the-parameters']),
+  ),
+
+  sameOnEveryLens(
+    'I-127',
+    'splits on a comma inside a bracket, so the inner parameters of a function-typed parameter are ' +
+      "read as the outer call's - which is the one shape `array/group-by@1` really writes",
+    [signatureFile(A_COMMA_AT_DEPTH_ZERO_SEPARATES, A_COMMA_ANYWHERE_SEPARATES)],
+    killed(['the-parameters-of-a-parameter-are-not-parameters']),
+  ),
+
+  /**
+   * The family of seven, and it is one the rule that chose this slice could not see. ADR-0209's test
+   * for a parameterised guard asks whether an address *ends* in a contract slug, and these seven put
+   * the slug in the middle - so a table of seven read as seven standalone guards. It is the bias
+   * ADR-0211 named in advance, measured: seven of the seventy, one family, all in one file.
+   */
+  sameOnEveryLens(
+    'I-128',
+    "drops the last parameter of every export's declared type, so the call a contract page renders " +
+      'is one argument short of the call the signature declares - and the answer of a two-argument ' +
+      'function is rendered as though it took one',
+    [serialiseFile(AN_EXPORT_CARRIES_ITS_OWN_PARAMETERS, THE_LAST_PARAMETER_IS_DROPPED)],
+    killed(perContract((slug) => `the-call-of-${slug}-is-read-from-its-own-signature`)),
+  ),
+
+  // `implementation-record.ts` - the dependency walk `toopo add` resolves an install with.
+
+  sameOnEveryLens(
+    'I-129',
+    'stops counting the root\'s own edge in a depth, so a graph two deep reads as one - and a client ' +
+      'sizing an install from the depth is told a number that is short by exactly the root',
+    [
+      implementationFile(
+        '  return root.dependsOn.length === 0 ? 0 : 1 + Math.max(...root.dependsOn.map(depthBelow))',
+        '  return root.dependsOn.length === 0 ? 0 : Math.max(...root.dependsOn.map(depthBelow))',
+      ),
+    ],
+    killed(['the-depth-is-derived-from-the-edges']),
+  ),
+
+  sameOnEveryLens(
+    'I-130',
+    'refuses an unresolvable dependency without naming it, so a reader is told an install cannot be ' +
+      'resolved and has to find out for themselves which of the edges was missing',
+    [implementationFile(THE_REFUSAL_NAMES_THE_EDGE, THE_REFUSAL_NAMES_NOTHING)],
+    killed(['an-edge-the-registry-does-not-hold-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'I-131',
+    'accepts an unpublished artefact as the target of an edge, so a walk resolves to a snapshot that ' +
+      'was never served under any address and an install writes bytes no lockfile can name',
+    [implementationFile(AN_UNPUBLISHED_HOLDING_IS_REFUSED, AN_UNPUBLISHED_HOLDING_IS_ACCEPTED)],
+    killed(['an-unpublished-implementation-cannot-be-depended-on']),
+  ),
+
+  sameOnEveryLens(
+    'I-132',
+    'skips an edge that closes a cycle rather than refusing it, so a corrupt ledger resolves to a ' +
+      'plausible set and an installer writes a project whose imports do not terminate',
+    [implementationFile(A_CYCLE_IS_REFUSED, A_CYCLE_IS_SKIPPED)],
+    killed(['a-cycle-is-refused-rather-than-deduplicated-away']),
+  ),
+
+  // `field-map.ts` - what the schema classifies, and what the projection serves.
+
+  sameOnEveryLens(
+    'I-133',
+    'misspells the path a case\'s report is classified at, so a contract reaching that field arrives ' +
+      'carrying a path the schema has never heard of - and a sixth contract is refused for a reason ' +
+      'that is a typo',
+    [fieldMapFile(A_REPORTED_CASE_IS_CLASSIFIED, A_REPORTED_CASE_IS_MISSPELLED)],
+    killed([
+      'needs-no-field-the-schema-does-not-have',
+      'the-absorbed-state-is-constructible',
+      'the-unfilled-fields-are-the-ones-that-were-argued-for',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-134',
+    'serves a lifecycle as its state and nothing else, so a contract the language has absorbed can ' +
+      'say that it was absorbed and not what absorbed it - which is the whole of what that state is ' +
+      'for',
+    [fieldMapFile(A_LIFECYCLE_IS_SERVED_WHOLE, A_LIFECYCLE_IS_SERVED_AS_ITS_STATE)],
+    killed(['the-absorbed-state-is-constructible', 'every-unfilled-field-is-justified']),
+  ),
+
+  // `response.ts` - what a reader can check about an answer without taking our word for it.
+
+  sameOnEveryLens(
+    'I-135',
+    'stops comparing a snapshot body with the digest it is addressed by, so an answer altered in ' +
+      'transit passes the one check that exists to catch exactly that',
+    [responseFile(A_SNAPSHOT_BODY_IS_COMPARED_WITH_ITS_ADDRESS, NOTHING_IS_COMPARED)],
+    killed(['a-snapshot-answer-that-was-altered-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'I-136',
+    'accepts a snapshot written under another format version, so a digest computed by this reader is ' +
+      'compared against one computed under rules it does not have - and agreement would mean nothing',
+    [responseFile(A_FORMAT_VERSION_IS_CHECKED, A_FORMAT_VERSION_IS_NOT_CHECKED)],
+    killed(['a-snapshot-answer-under-another-format-version-means-nothing-here']),
+  ),
+
+  sameOnEveryLens(
+    'I-137',
+    'stops comparing served bytes with the digest they are addressed by, so a file changed by one ' +
+      'byte on the way to a reader arrives as the file they asked for',
+    [responseFile(A_BLOB_IS_COMPARED_WITH_ITS_ADDRESS, NOTHING_IS_COMPARED)],
+    killed(['a-blob-answer-with-one-byte-changed-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'I-138',
+    'publishes the decision in the slot the measurement belongs in, so the refusals page says what ' +
+      'was decided where it promised what was measured - and the one page whose whole subject is a ' +
+      'contract\'s own admission stops carrying it',
+    [responseFile(A_REFUSAL_CARRIES_ITS_OWN_MEASUREMENT, A_REFUSAL_CARRIES_ITS_DECISION_TWICE)],
+    killed([
+      'the-refusals-page-has-a-source',
+      'a-refused-contract-is-found-with-the-reason-it-was-refused',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-139',
+    'compares two digests without asking whether they are digests of the same address, so installing ' +
+      'a different implementation of a feature reads as that feature having moved',
+    [
+      responseFile(
+        AN_UPDATE_COMPARES_THE_ADDRESS_AND_THE_DIGEST,
+        AN_UPDATE_COMPARES_THE_DIGEST_ALONE,
+      ),
+    ],
+    killed(['update-compares-two-digests-and-nothing-else']),
+  ),
+
+  // `serialise.ts` - what a contract becomes on its way into the registry.
+
+  sameOnEveryLens(
+    'I-140',
+    'accepts a case whose fields do not begin with the call its contract declares, so a row a page ' +
+      'renders as a call is a table of one - and the arguments a reader is shown are in whatever ' +
+      'order somebody typed them',
+    [serialiseFile(A_CASE_BEGINS_WITH_THE_CALL, '')],
+    killed(['a-case-that-is-not-a-call-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'I-141',
+    'reads a case that cites a battery cell as one found in the wild, so a citation that resolves to ' +
+      'exactly one mutant is stored as a report of a defect somebody sent in - and the evidence a ' +
+      'case carries stops being an address',
+    [serialiseFile(A_MUTATION_CITATION_IS_ITS_OWN_KIND, A_MUTATION_CITATION_IS_A_REPORT)],
+    killed(['every-mutation-provenance-resolves', 'every-unfilled-field-is-justified']),
+  ),
+
+  sameOnEveryLens(
+    'I-142',
+    'fills a minified size nobody measured with a zero, so a figure this repository has no minifier ' +
+      'to produce is published as though it had been produced',
+    [serialiseFile(NOTHING_IS_MEASURED, A_SIZE_NOBODY_MEASURED)],
+    killed(['nothing-is-measured-yet']),
+  ),
+
+  sameOnEveryLens(
+    'I-143',
+    'drops a contract\'s corrections from its record, so a field the registry declares standing is ' +
+      'carried by no contract at all - and a standing field nothing fills is a mechanism with no ' +
+      'instance',
+    [serialiseFile(A_CORRECTION_IS_CARRIED, A_CORRECTION_IS_DROPPED)],
+    killed([
+      'every-standing-field-a-contract-declares-is-carried-by-one',
+      'every-unfilled-field-is-justified',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-144',
+    'declares an edge from a reference to each of its own files, so permanent rule 2 is broken by the ' +
+      'artefact that exists to demonstrate it - and an install resolves a graph where there is none',
+    [serialiseFile(A_REFERENCE_DECLARES_NO_EDGE, A_REFERENCE_DEPENDS_ON_ITS_OWN_FILES)],
+    killed(['every-reference-has-no-dependencies']),
+  ),
+
+  /**
+   * `verifiability.ts` - the two columns a reader is handed when they ask what they can check.
+   *
+   * Ten cells and ten sole reds, which is the sharpest thing in this slice and is a property of the
+   * subject rather than of the work: this module is a table of declarations, so each guard sits
+   * opposite one row and a defect in that row falsifies that guard and nothing else. It is the shape
+   * ADR-0210 argued a *parameterised* table has, arriving on a file nobody parameterised.
+   */
+  sameOnEveryLens(
+    'I-145',
+    'names a verifiable claim in camel case, so a claim stops being an address - and a page or a ' +
+      'record citing it has nothing frozen to cite',
+    [verifiabilityFile(A_CLAIM_IS_ADDRESSED, A_CLAIM_IS_NAMED_IN_CAMEL_CASE)],
+    killed(['every-claim-is-an-address']),
+  ),
+
+  sameOnEveryLens(
+    'I-146',
+    'points a claim at an endpoint that does not exist, so the methodology page promises something ' +
+      'about an answer nobody can ask for - which is what a table of this kind rots into',
+    [verifiabilityFile(A_CLAIM_IS_ABOUT_A_BLOB, A_CLAIM_IS_ABOUT_NOTHING_THAT_EXISTS)],
+    killed(['every-claim-is-about-an-endpoint-that-exists']),
+  ),
+
+  sameOnEveryLens(
+    'I-147',
+    'gives the one check that needs nothing from the registry an endpoint to depend on, so the ' +
+      'strongest row in the table - hash what landed against the lockfile - starts needing us',
+    [verifiabilityFile(A_CHECK_NEEDS_NOTHING_FROM_THE_REGISTRY, THAT_CHECK_NEEDS_A_SNAPSHOT)],
+    killed(['the-checks-that-need-nothing-from-the-registry']),
+  ),
+
+  sameOnEveryLens(
+    'I-148',
+    'leaves a verifiable claim without the sentence saying what it does not establish, so a reader ' +
+      'is told what a check proves and never where it stops',
+    [verifiabilityFile(A_CLAIM_SAYS_WHAT_IT_DOES_NOT_ESTABLISH, A_CLAIM_SAYS_NOTHING_OF_THE_KIND)],
+    killed(['every-verifiable-claim-says-what-it-does-not-establish']),
+  ),
+
+  /**
+   * The one cell of this slice with two edits, and it is one defect: a fourth nature is added to the
+   * vocabulary and a claim is moved onto it. The guard's own comment says that is what it keeps -
+   * *a fourth member added later would have to pass through this line* - so a single-edit cell could
+   * not reach it, the type refusing a nature the union does not declare.
+   */
+  sameOnEveryLens(
+    'I-149',
+    'admits a fourth believed nature and moves a claim onto it, so the registry can say it declines ' +
+      'to answer - which is the one thing permanent rule 5 forbids a believed claim from saying',
+    [
+      verifiabilityFile(THE_NATURES_ARE_THREE, THE_NATURES_ARE_FOUR),
+      verifiabilityFile(A_SIZE_IS_A_MEASUREMENT, A_SIZE_IS_WITHHELD),
+    ],
+    killed(['the-believed-natures-are-the-declared-ones-and-none-is-withholding']),
+  ),
+
+  sameOnEveryLens(
+    'I-150',
+    'calls a claim no arithmetic can reach an opinion of the registry, so the two rows that are ' +
+      'genuinely beyond reach stop being nameable - and the column reads as though all of it were ' +
+      'ours to change',
+    [verifiabilityFile(A_SPECIFICATION_IS_BEYOND_ARITHMETIC, A_SPECIFICATION_IS_AN_OPINION)],
+    killed(['the-believed-column-is-longer-and-is-mostly-opinion']),
+  ),
+
+  sameOnEveryLens(
+    'I-151',
+    'invents a mitigation for a claim that has none, so a reader is offered a comfort where the ' +
+      'honest answer was that nothing narrows it',
+    [verifiabilityFile(AN_INDEX_HAS_NO_MITIGATION, AN_INDEX_IS_GIVEN_ONE)],
+    killed(['the-believed-claims-with-no-mitigation-are-named']),
+  ),
+
+  sameOnEveryLens(
+    'I-152',
+    'leaves a stratum translated by an empty sentence, so a reader meeting a field verified that way ' +
+      'is told the name of the stratum and nothing about what they can do with it',
+    [verifiabilityFile(A_STRATUM_IS_TRANSLATED, A_STRATUM_IS_SILENT)],
+    killed(['a-translation-is-addressed-to-a-reader']),
+  ),
+
+  sameOnEveryLens(
+    'I-153',
+    'drops one field from the methodology answer, so the endpoint that promises a stratum for every ' +
+      'field of a record quietly stops carrying one of them',
+    [verifiabilityFile(EVERY_FIELD_REACHES_THE_METHODOLOGY, ONE_FIELD_DOES_NOT)],
+    killed(['the-methodology-answer-carries-every-field-of-a-record']),
+  ),
+
+  sameOnEveryLens(
+    'I-154',
+    'serves the methodology answer as content-addressed, so an answer that has to be revalidated as ' +
+      'the catalogue moves is cached as though it never would',
+    [verifiabilityFile(THE_METHODOLOGY_IS_NAMED, THE_METHODOLOGY_IS_CONTENT_ADDRESSED)],
+    killed(['the-methodology-answer-is-named-and-therefore-revalidated']),
+  ),
+
+  // `snapshot.ts` - the standing, and the ledger where a name is bound to a digest.
+
+  sameOnEveryLens(
+    'I-155',
+    'leaves a standing field with no reason why it cannot be frozen, so a field the registry may ' +
+      'still change carries no argument for being outside the digest',
+    [snapshotFile(A_STANDING_FIELD_SAYS_WHY, A_STANDING_FIELD_SAYS_NOTHING)],
+    killed(['every-standing-field-says-why-it-cannot-be-frozen']),
+  ),
+
+  sameOnEveryLens(
+    'I-156',
+    'sets a standing on a contract the ledger does not hold, so a lifecycle can be recorded for an ' +
+      'address nothing was ever published at - and the ledger acquires an opinion about nothing',
+    [snapshotFile(A_STANDING_IS_SET_ONLY_ON_SOMETHING_PUBLISHED, '')],
+    killed(['a-standing-cannot-be-set-on-something-unpublished']),
+  ),
+
+  sameOnEveryLens(
+    'I-157',
+    'keys a published binding on a contract name rather than on its whole address, so `name@2` reads ' +
+      'as a rebinding of `name@1` and the one operation this storage exists to refuse refuses a ' +
+      'second major instead',
+    [snapshotFile(A_BINDING_IS_KEYED_ON_ITS_WHOLE_ADDRESS, A_BINDING_IS_KEYED_ON_ITS_NAME)],
+    killed(['two-majors-of-one-name-coexist']),
+  ),
+
+  sameOnEveryLens(
+    'I-158',
+    'discards the standing it was handed, so the half of a contract the registry may still change ' +
+      'cannot be changed - and a contract the language absorbs goes on saying it is published',
+    [snapshotFile(A_STANDING_IS_APPLIED, A_STANDING_IS_DISCARDED)],
+    killed(['a-standing-changes-and-the-digest-does-not']),
+  ),
+
+  sameOnEveryLens(
+    'I-159',
+    'refuses a contract that is already published, so one address can be both published and turned ' +
+      'down - and the ledger carries two decisions about one contract with nothing saying which won',
+    [snapshotFile(A_PUBLISHED_CONTRACT_CANNOT_BE_REFUSED, '')],
+    killed(['a-contract-is-refused-or-published-and-never-both']),
+  ),
+
+  // `imagined-graph.ts` and `address.ts` - the fixture a dependency walk is measured on, and what an
+  // address is allowed to be.
+
+  sameOnEveryLens(
+    'I-160',
+    'addresses a file by its name rather than by its content, so four different `reference.ts` share ' +
+      'one digest - and a client deduplicating a shared file by digest installs one of them for all ' +
+      'four',
+    [imaginedGraphFile(A_FILE_IS_ADDRESSED_BY_ITS_CONTENT, A_FILE_IS_ADDRESSED_BY_ITS_NAME)],
+    killed(['a-shared-file-is-recognised-by-its-digest-and-never-by-its-path']),
+  ),
+
+  sameOnEveryLens(
+    'I-161',
+    'forbids a hyphen in a contract domain, so an address the catalogue can hold today stops being ' +
+      'one - and a sixth contract is refused for carrying a spelling five published ones are allowed',
+    [addressFile(A_DOMAIN_MAY_CARRY_A_HYPHEN, A_DOMAIN_MAY_NOT)],
+    killed(['is-addressable', 'every-address-a-fixture-stands-at-is-one-the-catalogue-refuses']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -3721,28 +4487,6 @@ export const battery: Battery = {
         'and these four carry none. ADR-0148',
     },
     /**
-     * **Unaccounted for since the day it was written, and found by a replay rather than by a
-     * reader.** It arrived at `70cfb22` with the standing, and its name has never appeared in this
-     * file - so from that commit until this one the battery measured a suite one guard larger than
-     * it accounted for, and said so to nobody, because nothing replays a battery but a person
-     * typing the command. `CLAUDE.md` carries that as an open entry and this is its second
-     * recorded instance, on a second battery.
-     *
-     * It is reachable and no mutant reaches it. `CONTRACT_STANDING_FIELDS` is in this folder, so a
-     * field declared there and carried by no contract reddens it - and that cell is not written
-     * here because it is the same edit as the one that would test the partition, which several
-     * mutants already make: the kill would attribute to whichever of them ran, and naming this one
-     * needs an edit that adds a standing field without moving the partition. Declared as the debt
-     * it is rather than left as silence. ADR-0130.
-     */
-    {
-      guards: ['every-standing-field-a-contract-declares-is-carried-by-one'],
-      nature: 'claims detection',
-      reason:
-        'a field declared standing and carried by no contract would redden it, and no cell here ' +
-        'writes that edit without also moving the partition several mutants already measure',
-    },
-    /**
      * The sentence the README publishes about the size of this catalogue, against what `theCatalogue`
      * declares. It is reachable from here and no mutant reaches it.
      *
@@ -3758,38 +4502,12 @@ export const battery: Battery = {
       reason:
         'an edit to `the-catalogue.ts` that changed how many contracts are refused would redden it, and ' +
         'every such edit also reddens the refusals page and the index - so no mutant here names this ' +
-        'guard rather than a dozen',
+        'guard rather than a dozen. ADR-0211 measured the edit this region asks for: marking the ' +
+        'refused contract published reddens nine guards, and the two nearest descriptions of it are ' +
+        '`what-is-served-and-cannot-be-asked-for-is-the-refused-contract` and ' +
+        '`a-contract-not-yet-published-carries-the-current-banner`, so the prediction written here ' +
+        'holds as a measurement rather than as a reading',
       guards: ['the-readme-counts-the-catalogue-the-registry-declares'],
-    },
-    /**
-     * The reading of a declared signature, on the shapes the five actually write.
-     *
-     * Every one of these was seen red while `signature.ts` was being written - dropping the
-     * trailing-comma filter reddens three of them and thirty-two guards across nine files of this
-     * folder - and none of the mutants is promoted here, because each one stops a real contract
-     * serialising and therefore reddens most of `packages/registry/` at once. A cell that reddens eighty guards
-     * establishes that serialisation is load-bearing, which nobody doubted, and says nothing about the
-     * reader.
-     *
-     * What would close it is a sixth contract whose signature carries one of these shapes, or a
-     * fixture record for the reader alone. Both are real and neither is this unit's.
-     */
-    {
-      nature: 'claims detection',
-      reason:
-        'the reading of a declared signature on a shape one of the five writes. Every mutant here ' +
-        'stops a real contract serialising, so it reddens most of this folder and attributes the ' +
-        'kill to the failure rather than to the guard; the three that are narrow enough to name one ' +
-        'guard are I-20, I-22 and I-23 above.',
-      guards: [
-        'a-plain-signature-names-its-parameters',
-        'a-signature-that-takes-nothing-has-no-parameters',
-        'the-type-parameters-are-not-the-parameters',
-        'the-parameters-of-a-parameter-are-not-parameters',
-        'a-trailing-comma-leaves-no-parameter-behind-it',
-        'an-arrow-inside-a-type-parameter-does-not-close-it',
-        ...perContract((slug) => `the-call-of-${slug}-is-read-from-its-own-signature`),
-      ],
     },
     {
       nature: 'claims detection',
@@ -3839,22 +4557,28 @@ export const battery: Battery = {
         ...onEach('every-declared-type-occurs-in-the-contract'),
         ...onEach('the-answer-is-the-export-the-identity-names'),
         ...onEach('the-profile-vocabulary-and-the-profiles-agree'),
-        'every-mutation-provenance-resolves',
         ...onEach('every-case-is-addressable-across-the-whole-contract'),
         ...onEach('the-address-is-well-formed'),
+        // A guard whose claim is that a derived identity is injective, and the only single edit that
+        // makes two of them collide is one that damages the derivation - at which point the guards
+        // pinning the derivation are the nearer description. Measured: dropping the name from a
+        // rendered address reddens this and forty-five others, led by
+        // `every-rendered-form-of-an-address-carries-every-coordinate-of-its-contract`. ADR-0211.
         'no-two-contracts-share-an-address',
         // `every-produced-expression-is-the-one-its-own-profile-declares` left this list when it
         // replaced the seven occurrence guards: I-72 reddens it, and a guard a mutant reaches is not
         // an unprobed region. Its neighbour below is still silent and stays named. ADR-0171.
         ...onEach('every-produced-profile-exists'),
-        'a-case-that-is-not-a-call-is-refused',
         ...onEach('every-harness-file-is-hashed'),
         // `the implementations under the contracts of the catalogue`, named guard by guard since I-26 and I-27
         // reached ten of its eighteen. These eight are what is left silent: the perimeter mutants move
         // which files an implementation carries, and none of these reads that.
         ...onEach('the-implementation-belongs-to-its-contract'),
-        'every-reference-has-no-dependencies',
-        'nothing-is-measured-yet',
+        // The two of that eight ADR-0211 could not aim at. `every-reference-has-no-dependencies` is
+        // witnessed by I-144 and gone; these two are not. A lockfile's claim is that nothing in it
+        // is a tagged encoding, and the type system already refuses everything that would falsify
+        // it - the one value that gets past, a NaN byte count, reddens a hundred and three guards
+        // and is described by the digest family rather than by this one. ADR-0211.
         'a-lockfile-is-json',
         // `the registry encoding`, named guard by guard since the E series reached thirty-three of its
         // thirty-four. **One is left and it is the only one of the thirty-four with no cell aimed at
@@ -3866,12 +4590,22 @@ export const battery: Battery = {
         // `a sixth contract enters without a migration`, named guard by guard since E-25 reached
         // `survives-the-wire` - the same claim as the seven records, about a contract the catalogue
         // does not yet hold. These six are what is left silent there.
-        'needs-no-field-the-schema-does-not-have',
+        // Three of those six are witnessed by ADR-0211 - I-133, I-161 and I-134 - and the three left
+        // are the sharpest refusals of that slice, because two of them are not about difficulty at
+        // all. `every-anatomy-requirement-is-triaged` reads `contractAnatomy`, which lives in
+        // `packages/catalogue/`, and `brings-a-sixth-benchmark-vocabulary-and-a-new-reason-set` reads
+        // nothing but a record this test file declares - so no edit inside `packages/registry` can
+        // reach either, and the battery's own surface is what refuses them rather than a missing
+        // idea. **They are declared here as claims no mutant reaches, and they are claims no mutant
+        // of this battery *can* reach**, which is a different state this list has no vocabulary for.
         'every-anatomy-requirement-is-triaged',
-        'fills-the-fields-no-published-contract-fills',
         'brings-a-sixth-benchmark-vocabulary-and-a-new-reason-set',
-        'is-addressable',
-        'the-absorbed-state-is-constructible',
+        // The third is about difficulty. Its claim is that two paths are present in the projection,
+        // and the projection is written by hand at a coarser grain than either path - so every single
+        // edit that removes one of them also leaves some path unclassified, which is
+        // `needs-no-field-the-schema-does-not-have`'s own sentence. Measured twice, at eighteen reds
+        // and at three. ADR-0211.
+        'fills-the-fields-no-published-contract-fills',
         // `the public/private frontier`, named guard by guard since I-106 to I-109 reached four of its
         // twelve. **The eight left silent are seven of one family and one guard that resisted**, and
         // the family is the reason the region's own sentence above needed correcting: it said the
@@ -3891,33 +4625,19 @@ export const battery: Battery = {
     {
       nature: 'claims detection',
       reason:
-        'storage guards no mutant of this battery reaches yet. Each one names a defect that could be ' +
-        'written and has not been: a byte-order mark left in the served bytes, a value JSON would ' +
-        'lose reaching a digest, an array reordered, a standing field pulled into the digest, an ' +
-        'attestation accepted for the wrong snapshot, two contracts colliding on one digest.',
+        'storage guards no mutant of this battery reaches yet. What is left of this region is a ' +
+        'standing field pulled into the digest, a snapshot inventing one, and two contracts ' +
+        'colliding on one digest. The rest of it - every value JSON would lose, an array reordered, ' +
+        'a byte-order mark, a normalisation, and the four standing guards - left at I-110 to I-122 ' +
+        'and I-155 to I-158.',
       guards: [
-        'a-byte-order-mark-is-not-content',
-        'a-crlf-source-is-served-as-its-lf-form',
         ...onEach('a-snapshot-invents-no-field'),
-        'a-standing-cannot-be-set-on-something-unpublished',
-        'a-standing-changes-and-the-digest-does-not',
         ...onEach('a-standing-field-does-not-move-the-digest'),
-        'a-value-json-would-lose-is-refused-a-bigint',
-        'a-value-json-would-lose-is-refused-a-function',
-        'a-value-json-would-lose-is-refused-a-hole',
-        'a-value-json-would-lose-is-refused-a-symbol',
-        'a-value-json-would-lose-is-refused-an-undefined-field',
-        'a-value-json-would-lose-is-refused-infinity',
-        'a-value-json-would-lose-is-refused-nan',
-        'a-value-json-would-lose-is-refused-negative-infinity',
-        'a-value-json-would-lose-is-refused-negative-zero',
-        'a-value-json-would-lose-is-refused-undefined',
-        'an-array-keeps-its-order',
-        'every-standing-field-says-why-it-cannot-be-frozen',
+        // The same shape as `no-two-contracts-share-an-address` one floor down, and it was measured
+        // the same way: a digest taken over a snapshot's format version alone makes all seven collide
+        // and reddens thirty-five guards, led by the family that pins the hashing itself. ADR-0211.
         'no-two-contracts-share-a-digest',
-        'normalising-changes-the-digest',
         ...onEach('the-frozen-half-and-the-standing-half-partition-an-implementation'),
-        'two-majors-of-one-name-coexist',
       ],
     },
 
@@ -3927,24 +4647,17 @@ export const battery: Battery = {
         'read-API guards shown reachable and not promoted into this battery. A perturbation was ' +
         'written for each one while the unit was built - applied one at a time against a control ' +
         'calibrated at 268 assertions - and every one went red on the guard written for it. Five of ' +
-        'that pass became I-11 to I-15; these twenty-eight did not, and the reason is cost rather ' +
-        'than doubt. A debt with a name, which is what this list is for.',
+        'that pass became I-11 to I-15 and thirteen more became ADR-0211\'s cells; what is left is ' +
+        'the family below and one guard that resists.',
       guards: [
-        'a-contract-is-refused-or-published-and-never-both',
-        'a-cycle-is-refused-rather-than-deduplicated-away',
-        'a-snapshot-answer-that-was-altered-is-refused',
-        'a-snapshot-answer-under-another-format-version-means-nothing-here',
-        'an-edge-the-registry-does-not-hold-is-refused',
-        'an-unpublished-implementation-cannot-be-depended-on',
-        'every-claim-is-about-an-endpoint-that-exists',
         ...onEach('every-field-a-snapshot-serves-is-classified'),
+        // The one of these fifteen ADR-0211 could not aim at, and it resists for the reason
+        // `the-strata-are-populated` does one region along - the two are neighbours on one fact.
+        // Every stratum but one is held by more than one declaration, and the second holder of
+        // `one-directional` is `string/slugify@1`'s own declaration, which is in `contracts/` and
+        // outside anything this battery may edit. Measured: retiring the field map's only
+        // `one-directional` entry leaves this guard green. ADR-0211.
         'every-stratum-is-translated-and-no-translation-is-orphaned',
-        'the-believed-claims-with-no-mitigation-are-named',
-        'the-believed-column-is-longer-and-is-mostly-opinion',
-        'the-depth-is-derived-from-the-edges',
-        'the-methodology-answer-carries-every-field-of-a-record',
-        'the-refusals-page-has-a-source',
-        'update-compares-two-digests-and-nothing-else',
       ],
     },
 
@@ -3952,23 +4665,12 @@ export const battery: Battery = {
       nature: 'claims detection',
       reason:
         'read-API guards no perturbation was written for, so whether an edit to this folder can ' +
-        'redden them is unmeasured rather than known. Two families sit here for a reason worth ' +
-        'naming. The implementation binding is guarded on the same claim as the contract binding, ' +
-        'which I-12 reddens, so that pair is half probed. And the private-field guards were declared ' +
-        'here on the grounds that they cannot redden until a private field exists - which was true of ' +
-        'the catalogue and false of this folder, the map being a source of it, and I-106 is what says ' +
-        'so. They left at that cell; what is left of the family here is nothing.',
-      guards: [
-        'a-blob-answer-with-one-byte-changed-is-refused',
-        'a-shared-file-is-recognised-by-its-digest-and-never-by-its-path',
-        'a-translation-is-addressed-to-a-reader',
-        ...onEach('an-implementation-binding-carries-no-frozen-field'),
-        'every-claim-is-an-address',
-        'every-verifiable-claim-says-what-it-does-not-establish',
-        'the-believed-natures-are-the-declared-ones-and-none-is-withholding',
-        'the-checks-that-need-nothing-from-the-registry',
-        'the-methodology-answer-is-named-and-therefore-revalidated',
-      ],
+        'redden them is unmeasured rather than known. One family is left and it is here for a reason ' +
+        'worth naming: the implementation binding is guarded on the same claim as the contract ' +
+        'binding, which I-12 reddens, so that pair is half probed. The private-field guards left at ' +
+        'I-106, and the eight standalone guards beside them left at ADR-0211\'s cells - so this ' +
+        'region has stopped being a list of things nobody tried and is one family that was not.',
+      guards: [...onEach('an-implementation-binding-carries-no-frozen-field')],
     },
   ],
 
