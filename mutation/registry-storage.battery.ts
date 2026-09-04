@@ -126,7 +126,20 @@ const THE_CONTRACTS: readonly string[] = [
  */
 const perContract = (spell: (slug: string) => string): readonly string[] => THE_CONTRACTS.map(spell)
 
-/** The common shape, where the slug is the address's last segment. */
+/**
+ * The common shape, where the slug is the address's last segment.
+ *
+ * **This is what a family is, and the shape decides what one costs.** A family is not a resemblance
+ * between separately written guards: it is one title parameterised over the whole catalogue, expanded
+ * by the runner into a row per contract, which the artefact addresses individually because
+ * `failedGuards` holds expanded names. Measured at `1238833` over the nineteen families this battery
+ * still leaves under `unprobedClaims`, **19 of 19 carry exactly the seven distinct contract slugs**.
+ *
+ * So the members of a family name one sentence and never seven, and an edit to the shared path is by
+ * construction the failure condition each row names. What can still keep a family from collapsing to
+ * one cell is that a row is **vacuous** for its own contract - the clause quantifies over something
+ * that contract has none of - and never that the rows disagree. ADR-0212.
+ */
 const onEach = (guard: string): readonly string[] => perContract((slug) => `${guard}-${slug}`)
 
 /**
