@@ -111,6 +111,11 @@ const confinementFile = (find: string, replace: string) => ({
   find,
   replace,
 })
+const configurationFile = (find: string, replace: string) => ({
+  file: 'configuration.ts',
+  find,
+  replace,
+})
 
 /**
  * What an install asks a registry for, and how each answer is checked.
@@ -340,6 +345,8 @@ const A_FOLDER_IS_SHOWN_AS_IT_WAS_TYPED = `export const asTyped = (value: string
 const A_REFUSAL_NAMES_WHERE_THE_FOLDER_CAME_FROM = `      : [theDirectoryRefusal(where, directory)]`
 
 const INIT_NAMES_WHERE_ITS_FOLDER_CAME_FROM = `      const unusable = theDirectoryFaults(chosen.from, chosen.directory)`
+
+const THE_COMMITTED_BRANCH_REPORTS_ITSELF = `      ? { directory: held.directory, from: WHERE_A_DIRECTORY_COMES_FROM.committed }`
 
 const NO_FILE_MEANS_NO_CONFIGURATION = `  if (!existsSync(path)) return null`
 
@@ -1625,7 +1632,7 @@ import type {
     'C-81',
     'reads a directory that is not text at all as one there is nothing wrong with, so a `toopo.json` ' +
       'carrying a number where the folder goes is accepted and every path composed from it is `42/…`',
-    [{ file: 'configuration.ts', find: A_DIRECTORY_IS_TEXT, replace: `  typeof directory !== 'string'\n    ? []` }],
+    [configurationFile(A_DIRECTORY_IS_TEXT, `  typeof directory !== 'string'\n    ? []`)],
     killed(['a-directory-that-does-not-travel-is-refused']),
   ),
 
@@ -1693,11 +1700,10 @@ import type {
     'refuses every folder in the words of a committed `toopo.json`, so `toopo init --dir ../outside` ' +
       'names a file that does not exist about a string that came from the command line',
     [
-      {
-        file: 'configuration.ts',
-        find: A_REFUSAL_NAMES_WHERE_THE_FOLDER_CAME_FROM,
-        replace: `      : [theDirectoryRefusal(CONFIGURATION_FILE, directory)]`,
-      },
+      configurationFile(
+        A_REFUSAL_NAMES_WHERE_THE_FOLDER_CAME_FROM,
+        `      : [theDirectoryRefusal(CONFIGURATION_FILE, directory)]`,
+      ),
     ],
     killed([
       'a-refused-directory-is-named-by-where-it-came-from',
@@ -1711,6 +1717,31 @@ import type {
       'sentence is right about a population and wrong about the reader it is shown to',
     [commandFile(INIT_NAMES_WHERE_ITS_FOLDER_CAME_FROM, `      const unusable = theDirectoryFaults(CONFIGURATION_FILE, chosen.directory)`)],
     killed(['the-folder-init-is-given-is-one-this-toopo-can-read']),
+  ),
+
+  /**
+   * The one guard of the three that the replay left in the *never alone* bucket, taken out of it.
+   *
+   * C-85 reddens `a-refused-directory-is-named-by-where-it-came-from` and the init guard together,
+   * because the sentence they both read is one function. What separates them is a branch `init` does
+   * not take: `--dir` is the typed one, so a defect in what the *committed* branch reports is invisible
+   * to a real `toopo init --dir` and is exactly what the declaration guard is for. Measured before it
+   * was written down - red alone, 195 guards green beside it.
+   *
+   * It aims at a choice and not at a mechanism the two claims share, which is ADR-0203's rule and the
+   * reason C-85 is not simply re-pinned.
+   */
+  sameOnEveryLens(
+    'C-87',
+    'reports the folder this tool proposed for one a committed `toopo.json` carries, so a reader ' +
+      'whose own file names a folder toopo will not use is told toopo chose it',
+    [
+      configurationFile(
+        THE_COMMITTED_BRANCH_REPORTS_ITSELF,
+        `      ? { directory: held.directory, from: WHERE_A_DIRECTORY_COMES_FROM.proposed }`,
+      ),
+    ],
+    killed(['a-refused-directory-is-named-by-where-it-came-from']),
   ),
 ]
 

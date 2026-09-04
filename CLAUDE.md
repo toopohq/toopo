@@ -981,7 +981,11 @@ paths**, `--dir names "../outside" …` against `toopo.json names "../outside" �
 `C:\toopo` is shown `C:\toopo`. **The three doors are three cells and a measurement says so**: the
 sentence's own source and the call site's are separable, and the entry point's choice reddens
 `the-folder-init-is-given-is-one-this-toopo-can-read` **alone**, with both cheap guards green through
-it — so the arm that keeps it can only live where a real process runs. ADR-0214.
+it — so the arm that keeps it can only live where a real process runs. **And the replay named the one
+new guard those cells leave un-isolated, which is how it left the bucket the same day**: the sentence
+`a-refused-directory-is-named-by-where-it-came-from` and the init guard both read is one function, so
+what separates them is a branch `init` does not take — the committed one — and `C-87` reddens the
+declaration alone, 195 green beside it. ADR-0214.
 
 It is not repaired here and it is not this list's class - nothing is unkept, something is broken -
 so it is written where a session reads first rather than filed as a declaration nobody keeps. What

@@ -163,6 +163,23 @@ a real process runs — which is `breakage.test.ts`, where the process was alrea
 refusal already captured. A repair whose own defect can come back unseen is not finished, and reading
 only the two cheap guards would have left that door open.
 
+### And the replay found the one guard those three cells leave un-isolated
+
+Three of the four new guards come out of the replay **alone** on a cell of their own — `C-84`, `C-86`
+and `I-176`. `a-refused-directory-is-named-by-where-it-came-from` does not: it is red on `C-30` and
+`C-85`, and `C-85` reddens the init guard with it, because the sentence the two read is one function.
+
+**What separates them is a branch `init` does not take.** `--dir` is the typed branch, so a defect in
+what the *committed* branch reports is invisible to a real `toopo init --dir` and is exactly what the
+declaration guard exists for. Measured before it was written down: making that branch report the
+proposal's source reddens the naming guard **alone**, 195 guards green beside it. `C-87` is that cell.
+
+It aims at a choice rather than at the mechanism the two claims share, which is
+[ADR-0203](0203-a-guard-is-isolated-by-aiming-at-a-choice-and-what-resists-reads-the-same-population.md)'s
+rule and the reason `C-85` is not simply re-pinned. **A guard added to the *never alone* bucket in the
+unit that created it would be this repository paying into a debt it is otherwise paying down**, and the
+mutant was in hand: the replay named it by naming what `C-85` also reddened.
+
 ## Considered Options
 
 ### Refused: a fourth guard spawning its own process
@@ -186,17 +203,25 @@ Above. Refused on the claim, and the served bytes agree.
 
 ## Decision Outcome
 
-Three guards, four cells, and one constant that a release unit has to move.
+Three guards, five cells, and one constant that a release unit has to move.
 
 **What it cost in accounting is `CLAUDE.md`'s own recorded price, confirmed rather than rediscovered**:
 one battery collects `packages/registry`, so the registry guard cost the census and one battery — two
 files. Four batteries collect `packages/cli`, so the two client guards cost the census and four
 batteries — five files, of which three are declared regions and one is cells. `npm run anchors` reported
 **one** loose anchor, `C-81`'s, whose `find` quoted the sentence this unit rewrote; it is repaired and
-the count goes **927 → 931**.
+the count goes **927 → 932**.
 
 The census moves `packages/registry/address.test.ts` 3 → 4 and `packages/cli/configuration.test.ts`
-11 → 13. The README moves **990 → 994 defects and 948 → 952 caught**, all four new cells being killed.
+11 → 13. The README moves **990 → 995 defects and 948 → 953 caught**, all five new cells being killed.
+
+**The five batteries this change touches were replayed locally before it was pushed**, all five exiting
+0 with every cell agreeing with its pin and nought unaccounted for: `cli-install`, `registry-storage`,
+`cli-remove`, `cli-search` and `cli-update`, **3 834 s in all**. The durations are published as
+intervals rather than as points, because [ADR-0200](0200-a-rewrite-removes-what-it-orphans-and-the-census-closes-at-thirteen-folders.md)
+measured that one reading calibrates a battery no better than to about a sixth: `cli-install` **730–890
+s**, `registry-storage` **2 100–2 700 s**, `cli-update` **340–420 s**, `cli-remove` **190–240 s**,
+`cli-search` **40–55 s**. `C-87` was added after that replay and `cli-install` was replayed again for it.
 
 Nothing under `contracts/` is touched, no digest moves, and `THE_PACKAGE_VERSION` stays at `1.2.0`.
 
