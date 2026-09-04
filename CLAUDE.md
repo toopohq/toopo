@@ -2534,6 +2534,42 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   here, because a unit repairing a wordmark is not where one decides to add a tool to the repository.
   ADR-0184.
 
+- **That a contract this catalogue could publish is one its own playground can build a form for.**
+  `playgroundOf` refuses a parameter whose declared type is not a key of `AS_AN_ARGUMENT`, and
+  `contract-page.ts` calls it with no `try` — deliberately, because *rendering the page without it
+  would publish a contract page that silently lacks the one thing on it a reader can try*. So the
+  set of contracts this catalogue can publish is bounded by a table in the site, and nothing says so
+  where a contract is written.
+
+  **The bound was attributed to the wrong thing until it was measured, and the control is what says
+  so.** Substituting signatures onto `string/slugify@1`'s record at `7c1cf96`: `<T>(text: string) => T`
+  and `<T extends string>(text: string) => T` **build**, exactly as the concrete signature does — a
+  type parameter list is invisible to the playground — while `<T>(text: T) => T` is refused, and
+  **`(carrier: PlainDate, duration: Bag) => PlainDate`, which carries no type parameter at all, is
+  refused identically**, naming the same parameter in the same sentence. The obstacle is an unmodelled
+  parameter type and never a generic.
+
+  **The failure has an event and it is the wrong one.** It arrives at the build, after the contract is
+  written, its seven files are in place and its cases are settled — which is the most expensive moment
+  there is to learn that the shape cannot be served. Behind the field lies a second floor: `value.ts`
+  encodes a class instance by its **own fields**, so a carrier keeping its state in internal slots
+  encodes to `{"kind":"instance","className":"…","fields":[]}`, `hasASpelling` answers false, and the
+  case table renders `<an instance of …>` — ADR-0163's defect, met on a contract the catalogue would
+  publish rather than on one it turned down.
+
+  **Where this looked**: `AS_AN_ARGUMENT` in `packages/site/playground.ts`, which is the table and
+  which names its own extension in its refusal; `whatKeepsARowFromTheForm` beside it, which is the
+  second branch and is about a case rather than a type; and `packages/registry/field-map.ts`, whose
+  four strata class `surface.exports[].parameters[].type` `structural` and say nothing about whether
+  anything can build one.
+
+  **The population is every parameter type a future contract may declare**, which is unbounded, and
+  the part of it that is buildable today is the handful of keys that table holds. What would close it
+  is not a guard over the table — a guard total over `theCatalogue` would be born green on seven
+  contracts that already build. What would close it is the reading moving to where a contract is
+  decided rather than where a page is emitted, which is a unit of its own. Priced and not taken.
+  ADR-0218.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
