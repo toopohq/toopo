@@ -185,6 +185,9 @@ const implementationFile = (find: string, replace: string) => ({
   replace,
 })
 const valueFile = (find: string, replace: string) => ({ file: 'value.ts', find, replace })
+const attestationFile = (find: string, replace: string) => ({ file: 'attestation.ts', find, replace })
+const needsFile = (find: string, replace: string) => ({ file: 'needs.ts', find, replace })
+const fieldMapFile = (find: string, replace: string) => ({ file: 'field-map.ts', find, replace })
 
 /**
  * One row of the table of values the encoding was written for, spelled once.
@@ -596,6 +599,54 @@ const A_FIELD_IS_A_FIELD_WHATEVER_ITS_NAME_LOOKS_LIKE =
   "          typeof entry[0] === 'string' && !beside.has(entry[0]),"
 const A_LABEL_ONCE_GIVEN_IS_THE_LABEL_REUSED =
   '  const existing = walk.labels.get(value)\n' + '  if (existing !== undefined) return existing\n\n'
+
+/**
+ * The anchors of ADR-0210's slice, in the order the cells below take them.
+ *
+ * They are the declared surface rather than the machinery underneath it: which answers exist, which
+ * needs each one is for, what may be served, and what a signature proves. Nineteen of them, because
+ * `the-strata-are-populated` has no cell - the record says what was measured against it.
+ */
+const AN_ATTESTATION_IS_ABOUT_ONE_SNAPSHOT = '    ...(attestation.subject === digest'
+const A_BUNDLE_IS_ADDRESSED_LIKE_A_BLOB = '    ...(DIGEST.test(attestation.bundle.sha256)'
+const THE_THIRD_CLAIM_IS_PUBLISHED_BESIDE_THE_OTHER_TWO = `  'verification says an implementation answers the contract; neither says the contract is the right ' +
+  'specification'`
+const THE_METHODOLOGY_ENDPOINT_ANSWERS_ITS_OWN_NEED = "    answers: ['render-the-methodology-page'],"
+const THE_REFUSALS_ENDPOINT_ANSWERS_BOTH_ITS_NEEDS = `    answers: [
+      'render-what-the-catalogue-refuses-and-why',
+      'say-why-a-found-contract-cannot-be-installed',
+    ],`
+const A_NEED_IS_IDENTIFIED_BY_AN_ADDRESS = "    id: 'show-the-install-command',"
+const A_DIGEST_IS_RECOMPUTED_FROM_WHAT_THE_API_SERVES = `    id: 'recompute-a-digest-offline',
+    consumer: 'an-auditor',`
+const THE_LIST_ENTRY_BECAME_AN_ENDPOINT_THAT_EXISTS = "    became: ['implementation-bindings'],"
+const THE_ENDPOINTS_NO_ENTRY_ANTICIPATED_ARE_THREE = `  'attestations',
+  'methodology',
+  'refusals',
+]`
+const WHAT_THE_FIRST_ENTRY_BECAME_IS_ADDRESSED_BY_NAME = "    became: ['contract-index'],"
+const ONE_ENTRY_OF_THE_LIST_IS_REFUSED = `    entry: 'GET /contracts/{...}/implementations - la liste, avec benchs et metadonnees.',
+    verdict: 'held',`
+const THAT_ENTRY_SAYS_WHY = `    reason:
+      'the list, the benchmarks and the metadata are all standing - which is what makes this one ' +
+      'body legitimate where the definition was not. What it must not do is carry the files: those ' +
+      'are frozen, and they travel by digest.',`
+const A_CONTENT_ADDRESSED_ANSWER_IS_NEVER_REVALIDATED = '        mustRevalidate: false,'
+const A_NAMED_ANSWER_IS_FRESH_FOR_NOTHING = '        maxAgeSeconds: 0,'
+const THE_SNAPSHOT_ENDPOINT_IS_ADDRESSED_BY_ITS_CONTENT = `    id: 'snapshot',
+    about: 'the content that addresses it',
+    addressing: 'content-addressed',`
+const THE_SAMPLE_VALUES_ARE_PUBLIC =
+  "  'benchmarks.profiles[].samples.values[]': { visibility: 'public', verification: 'executable' },"
+const A_FIELD_NOBODY_FILLS_SAYS_WHY = `    unfilledBecause:
+      '\`found-in-the-wild\` is one of the three members of the \`Provenance\` type the catalogue ' +
+      'publishes in \`every-contract.ts\`, and no defect reported from real use has reached this ' +
+      'catalogue yet - which the tables say in as many words rather than repainting their history. ' +
+      'A schema that dropped the member would refuse the first such case.',`
+const THAT_FIELD_IS_ONE_OF_THE_TWO_ARGUED_FOR = `    verification: 'documentary',
+${A_FIELD_NOBODY_FILLS_SAYS_WHY}`
+const A_MAJOR_IS_STRUCTURAL_RATHER_THAN_DEFERRED =
+  "  'address.major': { visibility: 'public', verification: 'structural' },"
 
 const mutants: readonly Mutant[] = [
   sameOnEveryLens(
@@ -3230,6 +3281,267 @@ const mutants: readonly Mutant[] = [
       'a-shared-reference-is-still-shared',
     ]),
   ),
+
+  // ---------------------------------------------------------------------------
+  // I-91 to I-109 - the declared surface, which is what a reader is promised
+  // ---------------------------------------------------------------------------
+  //
+  // ADR-0210's slice, and every cell is a **first** witness in ADR-0209's sense: the defect it injects
+  // is the failure condition its guard's own sentence names, and the search stopped as soon as that
+  // held. What the rule inverts is which guards are taken - not a row of any table, in a file no cell
+  // of this battery reaches - so that the fraction ADR-0209 refused to extrapolate gets a second
+  // reading with the opposite bias.
+  //
+  // **They stay in `I` rather than opening a fourth series, and that is a decision.** ADR-0209 opened
+  // `E` because its cells shared a subject neither of the other two touched, `value.ts`. That test
+  // fails here: `I` already injects into `endpoints.ts` and into `response.ts`. A series born on a
+  // weaker test than the one that created the last one is a convention drifting, so these are
+  // I-91 onwards.
+
+  sameOnEveryLens(
+    'I-91',
+    'accepts an attestation for any subject the length of a digest, so a bundle about one snapshot ' +
+      'is stapled to another - which is the cheapest way there is to make an unsigned thing look ' +
+      'signed, and the one thing this registry can check about a signature without verifying it',
+    [attestationFile(AN_ATTESTATION_IS_ABOUT_ONE_SNAPSHOT, '    ...(attestation.subject.length === digest.length')],
+    killed(['an-attestation-about-another-snapshot-is-refused']),
+  ),
+
+  sameOnEveryLens(
+    'I-92',
+    "asks whether the bundle carries anything in its digest field rather than whether what it " +
+      'carries is a digest, so an attestation whose bundle is addressed like nothing at all is ' +
+      'accepted and the blob behind it can never be fetched',
+    [attestationFile(A_BUNDLE_IS_ADDRESSED_LIKE_A_BLOB, '    ...(attestation.bundle.sha256.length > 0')],
+    killed(['a-bundle-that-is-not-addressed-like-a-blob-is-refused']),
+  ),
+
+  /**
+   * The methodology answer reddens with it and is a bystander: the defect is about the limit no longer
+   * naming its third claim, and that guard is about which columns the answer carries.
+   */
+  sameOnEveryLens(
+    'I-93',
+    'publishes the limit of a signature with the third of its three claims removed, so a reader is ' +
+      'told a signature does not say who published or that an implementation answers the contract, ' +
+      'and is left believing it says the contract is the right specification',
+    [attestationFile(THE_THIRD_CLAIM_IS_PUBLISHED_BESIDE_THE_OTHER_TWO, "  'verification says an implementation answers the contract'")],
+    killed([
+      'the-limit-of-a-signature-is-published',
+      'the-methodology-answer-carries-both-columns-and-the-seeding-policy',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-94',
+    'has an endpoint claim to answer a need nobody declared, which is what an endpoint copied from a ' +
+      'list rather than derived from a need looks like from the outside',
+    [endpointsFile(THE_METHODOLOGY_ENDPOINT_ANSWERS_ITS_OWN_NEED, "    answers: ['render-the-methodology-page', 'render-the-changelog-page'],")],
+    killed(['every-endpoint-answers-a-need-somebody-has']),
+  ),
+
+  sameOnEveryLens(
+    'I-95',
+    'stops answering one of the two needs only the refusals endpoint answers, so a consumer has ' +
+      'something to do and nothing tells it how - which is the half that would have shipped an API ' +
+      'unable to install anything',
+    [endpointsFile(THE_REFUSALS_ENDPOINT_ANSWERS_BOTH_ITS_NEEDS, "    answers: ['render-what-the-catalogue-refuses-and-why'],")],
+    killed(['every-need-is-answered-exactly-once']),
+  ),
+
+  /**
+   * `the-needs-answered-without-the-api` reddens with it and is a bystander: it pins which needs are
+   * answered elsewhere, by identifier, and the defect moves an identifier rather than moving a need
+   * off the API. I-97 is the cell aimed at that guard.
+   */
+  sameOnEveryLens(
+    'I-96',
+    'identifies a need by a camel-cased name, so the one rule that makes a need and an endpoint ' +
+      'citable - frozen, kebab-case, unique - stops holding on the side nobody looks at',
+    [needsFile(A_NEED_IS_IDENTIFIED_BY_AN_ADDRESS, "    id: 'showTheInstallCommand',")],
+    killed(['every-identifier-is-an-address', 'the-needs-answered-without-the-api']),
+  ),
+
+  /**
+   * A family of two rather than a bystander, and the guards say so themselves: a need answered both
+   * ways is what `every-need-is-answered-exactly-once` names in its own failure message, and a fifth
+   * need appearing in the list is what `the-needs-answered-without-the-api` was written to catch.
+   */
+  sameOnEveryLens(
+    'I-97',
+    'declares that something other than the API answers a need an endpoint already answers, so a ' +
+      'capability moves off the API with nobody having said so - which is the silent change the ' +
+      'pinned list of four exists to make loud',
+    [
+      needsFile(
+        A_DIGEST_IS_RECOMPUTED_FROM_WHAT_THE_API_SERVES,
+        `    id: 'recompute-a-digest-offline',
+    consumer: 'an-auditor',
+    answeredWithoutTheApi: 'the reader hashes the bytes themselves.',`,
+      ),
+    ],
+    killed(['every-need-is-answered-exactly-once', 'the-needs-answered-without-the-api']),
+  ),
+
+  sameOnEveryLens(
+    'I-98',
+    'has an entry of the indicative list become an endpoint this registry does not serve, so the ' +
+      'confrontation of section 6.2 with what was built resolves against nothing',
+    [endpointsFile(THE_LIST_ENTRY_BECAME_AN_ENDPOINT_THAT_EXISTS, "    became: ['implementations'],")],
+    killed(['every-entry-became-an-endpoint-that-exists']),
+  ),
+
+  sameOnEveryLens(
+    'I-99',
+    'drops one endpoint from the declared list of those no entry anticipated, so the derived half ' +
+      'and the declared half stop being two statements - and a list that grew in silence would read ' +
+      'as a list somebody checked',
+    [
+      endpointsFile(
+        THE_ENDPOINTS_NO_ENTRY_ANTICIPATED_ARE_THREE,
+        `  'methodology',
+  'refusals',
+]`,
+      ),
+    ],
+    killed(['the-endpoints-no-entry-anticipated']),
+  ),
+
+  sameOnEveryLens(
+    'I-100',
+    'has an entry the list held also become a content-addressed endpoint, so a reader who fetched ' +
+      'everything section 6.2 promised and checked everything checkable would have checked something',
+    [endpointsFile(WHAT_THE_FIRST_ENTRY_BECAME_IS_ADDRESSED_BY_NAME, "    became: ['contract-index', 'snapshot'],")],
+    killed(['nothing-that-held-is-content-addressed']),
+  ),
+
+  sameOnEveryLens(
+    'I-101',
+    'refuses a second entry of the indicative list, so the one refusal that was argued for becomes ' +
+      'two and the second arrives with nobody having had to say it out loud',
+    [
+      endpointsFile(
+        ONE_ENTRY_OF_THE_LIST_IS_REFUSED,
+        `    entry: 'GET /contracts/{...}/implementations - la liste, avec benchs et metadonnees.',
+    verdict: 'refused',`,
+      ),
+    ],
+    killed(['a-refused-entry-is-answered-by-endpoints-that-exist-for-other-reasons']),
+  ),
+
+  sameOnEveryLens(
+    'I-102',
+    'leaves an entry of the indicative list carrying a verdict and no reason, which is a preference ' +
+      'wearing the shape of a decision',
+    [endpointsFile(THAT_ENTRY_SAYS_WHY, "    reason: '',")],
+    killed(['every-entry-says-why']),
+  ),
+
+  /**
+   * A family of two: the policy and the header it is rendered into are one claim about revalidation,
+   * and `a-content-addressed-answer-is-public-for-a-year-and-immutable` names it on the wire where
+   * its neighbour names it in the policy.
+   */
+  sameOnEveryLens(
+    'I-103',
+    'revalidates a content-addressed answer, so the one class of answer that can never be wrong - ' +
+      'the address being the digest of the bytes - pays a round trip on every use',
+    [responseFile(A_CONTENT_ADDRESSED_ANSWER_IS_NEVER_REVALIDATED, '        mustRevalidate: true,')],
+    killed([
+      'a-content-addressed-answer-is-cached-for-ever',
+      'a-content-addressed-answer-is-public-for-a-year-and-immutable',
+    ]),
+  ),
+
+  /** The same family on the other arm of the policy, and the same reason for its second red. */
+  sameOnEveryLens(
+    'I-104',
+    'keeps a named answer fresh for a minute, so a CDN is free to serve a binding that has moved - ' +
+      'which is the failure the separation between the frozen half and the current opinion exists to ' +
+      'make impossible',
+    [responseFile(A_NAMED_ANSWER_IS_FRESH_FOR_NOTHING, '        maxAgeSeconds: 60,')],
+    killed([
+      'a-named-answer-is-always-revalidated',
+      'a-named-answer-is-public-and-revalidated-before-every-use',
+    ]),
+  ),
+
+  /**
+   * The revision guard reddens with it and is a bystander: it requires a named answer to say which
+   * commit served it, and a snapshot answer carries no such field because it was never named.
+   */
+  sameOnEveryLens(
+    'I-105',
+    'addresses the snapshot endpoint by name, so the heavier of the two answers that carry the bulk ' +
+      'is revalidated on every request - the traffic bill this guard exists to state in advance ' +
+      'rather than discover',
+    [
+      endpointsFile(
+        THE_SNAPSHOT_ENDPOINT_IS_ADDRESSED_BY_ITS_CONTENT,
+        `    id: 'snapshot',
+    about: 'the content that addresses it',
+    addressing: 'named',`,
+      ),
+    ],
+    killed([
+      'the-endpoints-that-carry-the-bulk-are-the-cacheable-ones',
+      'every-named-answer-names-the-revision-it-was-served-from',
+    ]),
+  ),
+
+  /**
+   * A family of eight, and the first instance this repository has of the private half of the frontier
+   * being exercised at all. The seven per-contract guards and the one over the five together are one
+   * written claim - a field the map marks private is on no public answer - and the defect is the
+   * failure condition each of the eight names.
+   *
+   * It is also what the region's own declaration said could not happen: *the private-field guards
+   * cannot redden until a private field exists*. That is true of the catalogue and not of the folder,
+   * because the map is a source of it.
+   */
+  sameOnEveryLens(
+    'I-106',
+    'declares the sample values of a benchmark private while the public projection goes on serving ' +
+      'them, so the frontier section 8 draws around a run is crossed by every contract answer at ' +
+      'once',
+    [
+      fieldMapFile(
+        THE_SAMPLE_VALUES_ARE_PUBLIC,
+        "  'benchmarks.profiles[].samples.values[]': { visibility: 'private', verification: 'executable' },",
+      ),
+    ],
+    killed([...onEach('no-private-field-reaches-a-snapshot-answer'), 'no-private-field-is-served']),
+  ),
+
+  sameOnEveryLens(
+    'I-107',
+    'leaves a field none of the seven fills carrying a blank justification, so a speculative field ' +
+      'survives the rule this schema was built under - and it survives it while still looking ' +
+      'accounted for',
+    [fieldMapFile(A_FIELD_NOBODY_FILLS_SAYS_WHY, "    unfilledBecause: '',")],
+    killed(['every-unfilled-field-is-justified']),
+  ),
+
+  /**
+   * A family of two, and each guard names its own clause: one that every unfilled field is justified,
+   * the other that the justified ones are exactly the two that were argued for. I-107 separates them
+   * from the other side, by blanking the sentence rather than removing it.
+   */
+  sameOnEveryLens(
+    'I-108',
+    'takes the justification off one of the two fields that were argued for, so the set of ' +
+      'exceptions this schema carries changes with nobody having argued for the change',
+    [fieldMapFile(THAT_FIELD_IS_ONE_OF_THE_TWO_ARGUED_FOR, "    verification: 'documentary',")],
+    killed(['every-unfilled-field-is-justified', 'the-unfilled-fields-are-the-ones-that-were-argued-for']),
+  ),
+
+  sameOnEveryLens(
+    'I-109',
+    "defers a contract's major to the declaration that carries it, so a second field claims a " +
+      'stratum that exists for one - and the deferral starts being a fifth stratum in disguise',
+    [fieldMapFile(A_MAJOR_IS_STRUCTURAL_RATHER_THAN_DEFERRED, "  'address.major': { visibility: 'public', verification: 'stated-per-declaration' },")],
+    killed(['the-fields-that-defer-their-stratum']),
+  ),
 ]
 
 export const battery: Battery = {
@@ -3487,7 +3799,8 @@ export const battery: Battery = {
         // `the implementations under the contracts of the catalogue` left this list for the same reason, below.
         // `the registry encoding` and `a sixth contract enters without a migration` left it for that
         // reason too, at the E series, and both are named guard by guard below.
-        'the public/private frontier',
+        // `the public/private frontier` left it at I-106 to I-109, the fifth and sixth and seventh and
+        // eighth time this has happened, and is named guard by guard below with the rest.
       ],
       /**
        * `the five, read against their own source` is named guard by guard rather than as a suite,
@@ -3551,6 +3864,20 @@ export const battery: Battery = {
         'brings-a-sixth-benchmark-vocabulary-and-a-new-reason-set',
         'is-addressable',
         'the-absorbed-state-is-constructible',
+        // `the public/private frontier`, named guard by guard since I-106 to I-109 reached four of its
+        // twelve. **The eight left silent are seven of one family and one guard that resisted**, and
+        // the family is the reason the region's own sentence above needed correcting: it said the
+        // private-field guards cannot redden until a private field exists, which is true of the
+        // catalogue and false of this folder, the map being a source of it. These seven are the other
+        // half of the frontier - that every field a snapshot serves is classified - and no mutant here
+        // unclassifies one. ADR-0210.
+        ...onEach('every-served-field-is-classified'),
+        // The one guard of ADR-0210's slice with no cell aimed at it. Every stratum but one is held by
+        // more than one declaration, so a single edit can empty only `stated-per-declaration` - and the
+        // plainest description of that edit names the deferral rather than the population of strata,
+        // which is A2 failing. Measured both ways: `one-directional` is held by the field map and by
+        // `string/slugify@1`'s own declaration, and emptying either alone leaves this guard green.
+        'the-strata-are-populated',
       ],
     },
     {
@@ -3561,7 +3888,6 @@ export const battery: Battery = {
         'lose reaching a digest, an array reordered, a standing field pulled into the digest, an ' +
         'attestation accepted for the wrong snapshot, two contracts colliding on one digest.',
       guards: [
-        'a-bundle-that-is-not-addressed-like-a-blob-is-refused',
         'a-byte-order-mark-is-not-content',
         'a-crlf-source-is-served-as-its-lf-form',
         ...onEach('a-snapshot-invents-no-field'),
@@ -3579,12 +3905,10 @@ export const battery: Battery = {
         'a-value-json-would-lose-is-refused-negative-zero',
         'a-value-json-would-lose-is-refused-undefined',
         'an-array-keeps-its-order',
-        'an-attestation-about-another-snapshot-is-refused',
         'every-standing-field-says-why-it-cannot-be-frozen',
         'no-two-contracts-share-a-digest',
         'normalising-changes-the-digest',
         ...onEach('the-frozen-half-and-the-standing-half-partition-an-implementation'),
-        'the-limit-of-a-signature-is-published',
         'two-majors-of-one-name-coexist',
       ],
     },
@@ -3598,29 +3922,19 @@ export const battery: Battery = {
         'that pass became I-11 to I-15; these twenty-eight did not, and the reason is cost rather ' +
         'than doubt. A debt with a name, which is what this list is for.',
       guards: [
-        'a-content-addressed-answer-is-cached-for-ever',
         'a-contract-is-refused-or-published-and-never-both',
         'a-cycle-is-refused-rather-than-deduplicated-away',
-        'a-named-answer-is-always-revalidated',
-        'a-refused-entry-is-answered-by-endpoints-that-exist-for-other-reasons',
         'a-snapshot-answer-that-was-altered-is-refused',
         'a-snapshot-answer-under-another-format-version-means-nothing-here',
         'an-edge-the-registry-does-not-hold-is-refused',
         'an-unpublished-implementation-cannot-be-depended-on',
         'every-claim-is-about-an-endpoint-that-exists',
-        'every-endpoint-answers-a-need-somebody-has',
         ...onEach('every-field-a-snapshot-serves-is-classified'),
-        'every-identifier-is-an-address',
-        'every-need-is-answered-exactly-once',
         'every-stratum-is-translated-and-no-translation-is-orphaned',
-        'nothing-that-held-is-content-addressed',
         'the-believed-claims-with-no-mitigation-are-named',
         'the-believed-column-is-longer-and-is-mostly-opinion',
         'the-depth-is-derived-from-the-edges',
-        'the-endpoints-no-entry-anticipated',
-        'the-endpoints-that-carry-the-bulk-are-the-cacheable-ones',
         'the-methodology-answer-carries-every-field-of-a-record',
-        'the-needs-answered-without-the-api',
         'the-refusals-page-has-a-source',
         'update-compares-two-digests-and-nothing-else',
       ],
@@ -3632,22 +3946,19 @@ export const battery: Battery = {
         'read-API guards no perturbation was written for, so whether an edit to this folder can ' +
         'redden them is unmeasured rather than known. Two families sit here for a reason worth ' +
         'naming. The implementation binding is guarded on the same claim as the contract binding, ' +
-        'which I-12 reddens, so that pair is half probed. And the private-field guards cannot redden ' +
-        'until a private field exists: not one field of a contract record is private today, which is ' +
-        'a finding `field-map.ts` already records rather than a gap a mutant here could close.',
+        'which I-12 reddens, so that pair is half probed. And the private-field guards were declared ' +
+        'here on the grounds that they cannot redden until a private field exists - which was true of ' +
+        'the catalogue and false of this folder, the map being a source of it, and I-106 is what says ' +
+        'so. They left at that cell; what is left of the family here is nothing.',
       guards: [
         'a-blob-answer-with-one-byte-changed-is-refused',
         'a-shared-file-is-recognised-by-its-digest-and-never-by-its-path',
         'a-translation-is-addressed-to-a-reader',
         ...onEach('an-implementation-binding-carries-no-frozen-field'),
         'every-claim-is-an-address',
-        'every-entry-became-an-endpoint-that-exists',
-        'every-entry-says-why',
         'every-verifiable-claim-says-what-it-does-not-establish',
-        ...onEach('no-private-field-reaches-a-snapshot-answer'),
         'the-believed-natures-are-the-declared-ones-and-none-is-withholding',
         'the-checks-that-need-nothing-from-the-registry',
-        'the-methodology-answer-carries-both-columns-and-the-seeding-policy',
         'the-methodology-answer-is-named-and-therefore-revalidated',
       ],
     },
