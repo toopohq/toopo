@@ -2051,6 +2051,25 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   than on its price: a type-only error in a source file leaves the report green and the process red,
   which is what five batteries pin as `killed-by-typecheck`, so refusing on that disagreement would
   have turned five pinned cells into cells nobody measured.
+- **a reading that decides whether to pay for a replay checking every way a replay can refuse** —
+  ADR-0221, and it is the first entry this list has closed by **a tool that refuses where it cannot
+  answer rather than by one that checks more**. The entry named its own closure — the reading living
+  in `mutation/` as a command, with the three buckets one import away instead of retyped — and
+  building it found that the third bucket needs something no measurement written before it carried:
+  the guards each column collected. `attributionOf` answers *no silence* for a column it has no guard
+  list for, so the obvious build reports **nought faults on all twenty-three batteries**, which is
+  byte for byte what ADR-0212's predictor reported on the day it was wrong. So a measurement carries
+  `guards` and `platform` now, three absences are refused separately rather than defaulted, and the
+  exit code is three-valued — a reading that agreed, a fault, and a question that could not be asked.
+  **The control is two commits and one measurement**: `409ab48` and `90e6f1b` touch exactly one file
+  each and it is the same file, so the code under measurement is identical at both and only a
+  declaration moves — **exit 1 naming
+  `every-export-is-carried-or-declared-uncarried-number-parse` on the first and exit 0 on the second**,
+  in **185 ms** against the 42 minutes that refusal took to arrive by replay. **What it leaves behind
+  is a debt with a price and a remedy**: twenty-two measurements predate the guard identities and
+  cannot answer the two silences until each battery is measured once, and the command names that per
+  battery rather than counting it as agreement. The twelve guards are collected by `npm run meta` and
+  witnessed by no battery, which is `mutation/`'s standing trade rather than a new debt.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
@@ -2359,30 +2378,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   with something under it - the eight suites cannot read a census without becoming the instrument, so
   what is available is a line where somebody adding a guard arrives, and that is prose. Priced and not
   taken. ADR-0206.
-
-- **That a reading which decides whether to pay for a replay checks every way a replay can refuse.**
-  ADR-0206's entry above says nothing routes anybody to the twenty-second reading; this is the next
-  floor down, and it is about the reading itself. A battery refuses a run on three counts - a pin
-  naming a guard that did not redden, a guard reddening that a region declares silent, and a guard
-  left silent that no region declares - and a pre-flight is worth its name only if it asks all three.
-
-  **It is measured on the unit that opened it and the measurement is the whole point.** ADR-0212's
-  predictor named the three in its own header and implemented the first two. It answered **nought
-  faults**; the replay refused on the third, at the end of **42 minutes**, and the count it corrected
-  was the record's headline figure. **A predictor that names three failure modes and checks two reads
-  exactly like one that checks three** - same output, same shape, same confidence - which is this
-  repository's own recurring class arriving inside the tool built to avoid paying for a replay.
-
-  **Where this looked**: `attributeColumn` in `mutation/attribution.ts`, which computes all three
-  buckets and is the only place the three are stated together; `assertTheCensusHolds` in
-  `mutation/run.ts`, which refuses on them; and the scratchpad, which is where every such predictor
-  has been written and is why none of them is kept, reviewed or reused.
-
-  **The population is every reading taken to avoid a replay**, and it is unbounded because each one is
-  written fresh. What would close it is not a guard: it is the reading living in `mutation/` as a
-  command, next to the battery it predicts, where the three buckets are one import away instead of
-  being retyped from memory. That is a small unit and it was not taken here, because a unit correcting
-  four figures is not where one decides what the instrument's pre-flight is. ADR-0212.
 
 - **That a figure corrected inside a unit reaches every surface that unit writes.** A record is dated
   and an entry of this list is the present tense, so when a measurement moves *during* a unit the

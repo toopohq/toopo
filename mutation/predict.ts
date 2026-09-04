@@ -19,6 +19,9 @@
  * The exit code is three-valued on purpose. Nought is a reading that was taken and agreed; one is a
  * fault a replay would refuse on; two is a question this reading could not ask. Folding the third
  * into the first would publish a false green, which is the whole class this module exists inside.
+ *
+ * ADR-0221. Measured there: 185 ms for one battery against the 42 minutes the same refusal took to
+ * arrive by replay.
  */
 
 import { existsSync, readFileSync } from 'node:fs'

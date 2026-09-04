@@ -77,6 +77,7 @@ export type GuardAttribution = {
  *
  * `guards` and `platform` are optional because twenty-three measurements were written before either
  * existed. Their absence is a reading `prediction.ts` declines to take, never a default it fills in.
+ * ADR-0221.
  */
 export type StoredMeasurement = {
   readonly results: readonly RunResult[]

@@ -48,6 +48,9 @@
  * A pin carrying `onlyOn` resolves against the platform family of the machine *reading*, because a
  * measurement written before `platform` was stored does not say where it was taken. Where the stored
  * family is known it is compared and a disagreement is reported as unread rather than judged.
+ *
+ * ADR-0221 carries the control - red on `409ab48`, green on `90e6f1b`, over one measurement - and why
+ * both directions had to be read.
  */
 
 import type { StoredMeasurement } from './attribution.ts'
