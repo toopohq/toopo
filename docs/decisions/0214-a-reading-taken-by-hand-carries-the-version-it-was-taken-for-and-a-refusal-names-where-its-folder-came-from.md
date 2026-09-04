@@ -221,7 +221,15 @@ The census moves `packages/registry/address.test.ts` 3 → 4 and `packages/cli/c
 intervals rather than as points, because [ADR-0200](0200-a-rewrite-removes-what-it-orphans-and-the-census-closes-at-thirteen-folders.md)
 measured that one reading calibrates a battery no better than to about a sixth: `cli-install` **730–890
 s**, `registry-storage` **2 100–2 700 s**, `cli-update` **340–420 s**, `cli-remove` **190–240 s**,
-`cli-search` **40–55 s**. `C-87` was added after that replay and `cli-install` was replayed again for it.
+`cli-search` **40–55 s**.
+
+**`C-87` was added after that replay, so `cli-install` has two readings and they agree far more closely
+than the interval allows for** — 808 s and 826 s on 86 and 87 cells, **2.2 % apart**, against the 14.6 %
+ADR-0200 measured on this same battery across two commits. It is a second reading and not a
+recalibration: two readings taken half an hour apart on one machine say less about the spread than that
+record's pair, which is why the interval is left where it is rather than tightened onto them. The second
+replay is what pins `C-87` — every cell agreeing, nought unaccounted for, and
+`a-refused-directory-is-named-by-where-it-came-from` reading **alone on C-87**.
 
 Nothing under `contracts/` is touched, no digest moves, and `THE_PACKAGE_VERSION` stays at `1.2.0`.
 
