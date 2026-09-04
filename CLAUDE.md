@@ -2740,15 +2740,19 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   either**, a figure for its size being an estimate wearing a count's clothes. ADR-0163, ADR-0191,
   ADR-0192.
 
-  **A fourth search was conducted on the exclusion nobody had named, and it returned no eighth
-  contract.** It is not aimed at the band above, and which exclusion it repairs is the whole of why it
-  is a separate paragraph: ADR-0192's axis was the language's own surface and its population was **one
+  **A fourth search was conducted on the exclusion nobody had named, and what it returned is a
+  candidate whose unit is unsettled rather than a negative.** It read as a negative for one commit;
+  the ground that made it one was refuted by measurement the same day, which is why the two halves of
+  this paragraph are dated differently and why the sentence a reader believes is this one. It is not
+  aimed at the band above, and which exclusion it repairs is the whole of why it is a separate
+  paragraph: ADR-0192's axis was the language's own surface and its population was **one
   runtime at one version**, so what it missed is not a candidate below a demand floor but a surface
   that **did not exist when the sweep ran**. That record refuses `Date.parse` on **R1** *because*
   Temporal is the language's answer, and **a surface that decides a row and is never itself read is a
   motive doing a subject's work**. Its method was committed at `1786e99` before a probe ran — verified
   rather than claimed, the section being **12 618 bytes identical** across the two commits. **142
-  operations, 142 grounds, nought retained**: R1 65, R13 32, R10 24, R2 15, R6 6. ADR-0215.
+  operations, every one given a verdict**: R1 65, R13 32, R2 15, R6 6, and **24 retained** once
+  ADR-0216 withdrew the ground the sweep had refused them on. ADR-0215, ADR-0216.
 
   **The general argument this search existed to test is refuted by measurement rather than upheld.**
   The fear was that R2 closes `date` because the language delivered the API, and that the same
@@ -2772,15 +2776,33 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   against `GMT+00:00`, CLDR rendering drift, and publishing them as tzdata would have named a cause no
   measurement establishes.
 
-  **The near miss is the row to dispute first, and the sweep's own first classification was wrong
-  about it.** Temporal silently ignores an unknown field in a bag whenever one field it knows is
-  present: `PlainDate.prototype.add({days: 1, dayz: 9})` answers `2026-01-16`, and so do **24 of 24
-  probed, with no exception**, across seven zone-free types — so R13 does not reach them and the
-  sweep's initial R1, *its answer is not wrong*, is falsified. That is permanent rule 7's trap clause
-  met positively, and `date/add@1`'s own frozen rationale names the shape: *a plausible value that
-  silently drops what the caller asked for*. It is refused on **R10**, the residue being one decision,
-  with **R8** beside it — and that refusal is a judgement, published so a reader can overturn it into
-  an eighth candidate with no new measurement.
+  **The near miss was published as the row to dispute first, it was disputed, and the ground fell.**
+  Temporal silently ignores an unknown field in a bag whenever one field it knows is present:
+  `PlainDate.prototype.add({days: 1, dayz: 9})` answers `2026-01-16`, and so do **24 of 24 probed**,
+  across seven zone-free types — permanent rule 7's trap clause met positively, and `date/add@1`'s own
+  frozen rationale names the shape: *a plausible value that silently drops what the caller asked for*.
+  ADR-0215 refused them on **R10**, the residue being one decision. **The owner refuted that with a
+  measurement and it reproduces**: a *known* unit a carrier cannot apply is a second decision, and the
+  language answers it two ways. `PlainDate` ignores **all six** time units and `PlainTime` **all four**
+  date units, silently, while `PlainYearMonth` refuses **eight**, `Instant` **four** and `Duration`
+  **three** — `PlainDate.add({hours: 5})` answers the input unchanged where
+  `PlainYearMonth.add({hours: 5})` throws. **One API, one question, opposite answers.** A third
+  decision sits beside them: the bag is read through the prototype chain and through getters, and
+  `{DAYS: 1}` throws alone and is dropped beside a valid field.
+
+  **So R10 is withdrawn and the twenty-four are retained** — R1 65, R13 32, R2 15, R6 6, **24
+  retained**, over the same population and window. **Read one at a time, no ground of R1 to R13 fires
+  cleanly**: R4 is the strongest near miss and dies because `number/parse@1` publishes this
+  catalogue's position that silently dropping what the caller asked for is wrong rather than
+  different, with `PlainYearMonth` and `Instant` on that side; **R8 is refused rather than leaned on**,
+  its precedent being several output renderings of one input type where this is one rule over several
+  carrier types; and **R5 is the one ground that cannot be ruled out**, because whether any package
+  wraps Temporal and disagrees was not measured. **What is unsettled is the unit and not a ground** —
+  ADR-0207's **P3** — and the three shapes each carry a real problem: one thin contract per carrier,
+  one polymorphic `add` whose case table crosses carrier types, or a validator that dies on ADR-0158's
+  criterion because nobody types *validate a duration bag*. **A type-level repair is measured
+  unavailable**: `Temporal.DurationLike` declares every unit optional by design. **No contract is
+  written**, and choosing between the three is the owner's. ADR-0216.
 
   **Three debts leave the unit for other records.** ADR-0192's `Date.parse` refusal rests on a claim
   the stage-4 engine refutes — Temporal parses **only** ISO 8601, throwing on `01/15/2026`, on

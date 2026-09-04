@@ -8,6 +8,16 @@ confirmed-by: []
 
 # The fourth search is conducted on the surface that arrived after the third
 
+> **One ground below is withdrawn, and this note is the whole of what may change here.** The
+> twenty-four operations refused under **R10** — the near miss this record named as the row to dispute
+> first — are **retained**:
+> [ADR-0216](0216-the-residue-is-three-decisions-and-the-language-answers-one-of-them-two-ways.md)
+> measures that a *known* unit a carrier cannot apply is a second decision and that the language
+> answers it two ways, so *the residue is one decision* is false. The population, the window, the
+> guard against the draft engine and the other 118 grounds stand. **The byte-identity claim in the note
+> below is about `1786e99` against `d33f1d3`**, which are the two commits it was written for; this note
+> is later than both and is outside the section it names.
+
 > **This record is committed in two halves and the order is the evidence.** *The method, declared
 > before the first probe* and the prediction closing it were written and committed before any
 > operation of the population had been read against the acceptance rule; everything else was added
