@@ -161,16 +161,6 @@ const WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP = 'array-group-by'
 const onEachBut = (guard: string, slug: string): readonly string[] =>
   onEach(guard).filter((address) => !address.endsWith(`-${slug}`))
 
-/**
- * The contracts whose harness carries a code point in U+0080-U+00FF, which is the region a Latin-1
- * re-encoding stops being idempotent on. Measured at `8b6aa89` over all 47 files of the harness and
- * the shared surface: `date/add@1` carries one such point and `string/slugify@1` carries nine.
- *
- * **It names the reason rather than the answer, so a seventh contract lands outside it by default** -
- * which is the correct default, a guard being unwitnessed until something measures it. ADR-0148.
- */
-const REACHED_BY_A_LATIN_1_RE_ENCODING = ['date-add', 'string-slugify']
-
 const canonicalFile = (find: string, replace: string) => ({ file: 'canonical.ts', find, replace })
 const signatureFile = (find: string, replace: string) => ({ file: 'signature.ts', find, replace })
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
@@ -4348,6 +4338,203 @@ const mutants: readonly Mutant[] = [
     [addressFile(A_DOMAIN_MAY_CARRY_A_HYPHEN, A_DOMAIN_MAY_NOT)],
     killed(['is-addressable', 'every-address-a-fixture-stands-at-is-one-the-catalogue-refuses']),
   ),
+
+  // -------------------------------------------------------------------------
+  // ADR-0212's slice: one aiming decision per family, over all nineteen
+  // -------------------------------------------------------------------------
+  //
+  // A family is one title asked of seven contracts, so a cell aimed at the sentence reaches every row
+  // whose contract instantiates the clause. Each pin below names the rows the cell was written to
+  // exercise; what else reddened is in the record, cell by cell.
+
+  sameOnEveryLens(
+    'I-162',
+    "reads the identity's export name from its input domain, so a contract announces a paragraph of " +
+      'prose where it should announce the export a caller imports',
+    [
+      serialiseFile(
+        "    exportName: identity['exportName'] as string,",
+        "    exportName: identity['inputDomain'] as string,",
+      ),
+    ],
+    killed(onEach('the-answer-is-the-export-the-identity-names')),
+  ),
+
+  sameOnEveryLens(
+    'I-163',
+    'drops the first entry of a benchmark vocabulary, so a class the profiles use is one the record ' +
+      'no longer declares - and a reader of the served vocabulary meets a class with no meaning',
+    [serialiseFile('  vocabulary: source.vocabulary,', '  vocabulary: source.vocabulary.slice(1),')],
+    killed(onEach('the-profile-vocabulary-and-the-profiles-agree')),
+  ),
+
+  sameOnEveryLens(
+    'I-164',
+    'renders a case identifier in upper case, so it stops being a frozen identifier - and the anchor ' +
+      'a page publishes for that case is not an address the registry can be asked for',
+    [
+      serialiseFile(
+        "    id,\n    group: entry['group'] as string,",
+        "    id: id.toUpperCase(),\n    group: entry['group'] as string,",
+      ),
+    ],
+    killed(onEach('every-case-is-addressable-across-the-whole-contract')),
+  ),
+
+  /**
+   * The one family of the nineteen that is vacuous for most of the catalogue. ADR-0212.
+   *
+   * `producedBy` is declared by `number/parse@1` and `array/group-by@1` and by nobody else, so the
+   * guard quantifies over an empty set on five contracts and is green there whatever this serialiser
+   * does. Two rows of seven can ever redden, which is why the pin names two and not seven.
+   */
+  sameOnEveryLens(
+    'I-165',
+    "names a profile by its description, so every producing expression a contract declares names a " +
+      'profile the record does not hold - and the arithmetic behind a published figure cites nothing',
+    [
+      serialiseFile(
+        "  const name = entry['name'] as string\n" +
+          '  const named = [...PROFILE_FIELDS_THE_SCHEMA_NAMES, classField]',
+        "  const name = entry['description'] as string\n" +
+          '  const named = [...PROFILE_FIELDS_THE_SCHEMA_NAMES, classField]',
+      ),
+    ],
+    killed([
+      'every-produced-profile-exists-number-parse',
+      'every-produced-profile-exists-array-group-by',
+      'every-unfilled-field-is-justified',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-166',
+    'records every harness file as zero bytes long, so a client sizing an install from the snapshot ' +
+      'is told that fetching the whole harness costs nothing',
+    [
+      serialiseFile(
+        '  return { path, sha256: digestOfBytes(bytes), bytes: bytes.byteLength }',
+        '  return { path, sha256: digestOfBytes(bytes), bytes: 0 }',
+      ),
+    ],
+    killed(onEach('every-harness-file-is-hashed')),
+  ),
+
+  /**
+   * Vacuous on `number/parse@1` alone, and for the reason its own entry in the catalogue states: it is
+   * the one contract that publishes nothing beyond the shared seven, so its `ownDeclarations` is empty
+   * and dropping the first of none drops nothing. ADR-0212.
+   */
+  sameOnEveryLens(
+    'I-167',
+    "drops a contract's first own declaration, so an export the contract really publishes is carried " +
+      'by no field of the record and excused by nothing either',
+    [serialiseFile('  sources.map((source) => {', '  sources.slice(1).map((source) => {')],
+    killed(onEachBut('every-export-is-carried-or-declared-uncarried', 'number-parse')),
+  ),
+
+  sameOnEveryLens(
+    'I-168',
+    'takes the first character off every served file rather than off the ones carrying a byte-order ' +
+      'mark, so the served form stops being idempotent and the bytes hash to something other than ' +
+      'the address they are served under',
+    [
+      canonicalFile(
+        '  const withoutMark = text.charCodeAt(0) === 0xfeff ? text.slice(1) : text',
+        '  const withoutMark = text.slice(1)',
+      ),
+    ],
+    killed(onEach('a-blob-answer-hashes-to-its-address')),
+  ),
+
+  sameOnEveryLens(
+    'I-169',
+    "renames the environments field inside the frozen half, so a snapshot serves a field no visibility " +
+      'map classifies and which the record it was built from does not carry',
+    [snapshotFile('    environments: record.environments,', '    targetEnvironments: record.environments,')],
+    killed([
+      ...onEach('every-field-a-snapshot-serves-is-classified'),
+      ...onEach('a-snapshot-invents-no-field'),
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'I-170',
+    'puts the lifecycle inside the frozen half, so the one field the registry may still change its ' +
+      'mind about moves the digest every lockfile in the world holds',
+    [
+      snapshotFile(
+        '    identity: record.identity,',
+        '    lifecycle: record.lifecycle,\n    identity: record.identity,',
+      ),
+    ],
+    killed(onEach('a-standing-field-does-not-move-the-digest')),
+  ),
+
+  sameOnEveryLens(
+    'I-171',
+    'classifies a field the catalogue does not have in place of one it serves, so every contract is ' +
+      'published with a summary no rule says is public - which is how a private field escapes',
+    [
+      fieldMapFile(
+        "  'identity.summary': { visibility: 'public', verification: 'documentary' },",
+        "  'identity.summaries': { visibility: 'public', verification: 'documentary' },",
+      ),
+    ],
+    killed(onEach('every-served-field-is-classified')),
+  ),
+
+  sameOnEveryLens(
+    'I-172',
+    'inverts the test for a well-formed contract name, so every address this catalogue holds is ' +
+      'reported as malformed and the only names the registry accepts are the ones it must refuse',
+    [addressFile('  ...(CONTRACT_NAME.test(address.name)', '  ...(!CONTRACT_NAME.test(address.name)')],
+    killed(onEach('the-address-is-well-formed')),
+  ),
+
+  sameOnEveryLens(
+    'I-173',
+    'empties the reason every contract gives for the one export it does not carry, so a record ' +
+      'excuses an export and says nothing about why',
+    [
+      serialiseFile(
+        "  'the executable half of the contract: served as a hashed file by the harness endpoint, and ' +\n" +
+          "  'never modelled, because a record carrying the source of a function would publish code the ' +\n" +
+          "  'registry does not run and therefore does not verify'",
+        "  ''",
+      ),
+    ],
+    killed(onEach('every-uncarried-export-carries-a-reason')),
+  ),
+
+  sameOnEveryLens(
+    'I-174',
+    "binds a reference implementation to the next major of its own contract, so what a lockfile " +
+      'records as the implementation of `name@1` belongs to a `name@2` nobody has published',
+    [
+      serialiseFile(
+        '    contract: source.address,',
+        '    contract: { ...source.address, major: source.address.major + 1 },',
+      ),
+    ],
+    killed(onEach('the-implementation-belongs-to-its-contract')),
+  ),
+
+  sameOnEveryLens(
+    'I-175',
+    "puts a digest inside an implementation's frozen half, so the half a binding may carry and the " +
+      'half frozen for the life of the major overlap on the one field a binding always has',
+    [
+      snapshotFile(
+        '    id: record.id,\n    contract: record.contract,',
+        '    id: record.id,\n    digest: record.id,\n    contract: record.contract,',
+      ),
+    ],
+    killed([
+      ...onEach('an-implementation-binding-carries-no-frozen-field'),
+      ...onEach('the-frozen-half-and-the-standing-half-partition-an-implementation'),
+    ]),
+  ),
 ]
 
 export const battery: Battery = {
@@ -4483,46 +4670,6 @@ export const battery: Battery = {
    */
   unprobedRegions: [
     /**
-     * **Nine guards that had a witness for two years and never had one anybody could reproduce.**
-     * ADR-0145.
-     *
-     * They were reddened by `I-01` and `I-08`, and both of those cells only differ from the reference
-     * where the working tree differs from what the registry serves. `.gitattributes` declares
-     * `eol=lf` and it does not renormalise a working directory that is already there, so the machine
-     * those pins were written on kept nine files carrying CRLF and the cells were seen red - one
-     * hundred and four seconds after the commit that abolished the condition for every clone made
-     * afterwards. Measured on that machine in both directions with the control green at 407 tests
-     * either way, and on two hosted runners of different platforms: on any checkout git produces,
-     * both cells survive.
-     *
-     * So the pins are honest now and this region is what that cost. **What lost its witness is the
-     * assembly and not the promise**: `a-crlf-source-is-served-as-its-lf-form`,
-     * `a-byte-order-mark-is-not-content` and `normalising-changes-the-digest` call `servedBytes` on
-     * constructed buffers, so they have teeth on every platform and cannot go quiet. What had none
-     * was the end-to-end claim - and `the-served-bytes-are-the-committed-bytes` says where its own
-     * teeth are, in its own comment, under a heading that reads *Where this guard has teeth, said out
-     * loud*. What nobody had declared is that its pins inherited that limit.
-     *
-     * **That paragraph asked for a mutant and named the wrong place to look for one. ADR-0148.** It
-     * read *an edit inside `canonical.ts` rather than one that chooses which bytes to read*, and that
-     * sentence is true of the first guard and false of the other three: the bindings round trip never
-     * touches a served byte, and no edit to `canonical.ts` of any kind can redden it. Five of the nine
-     * are witnessed now - `I-65`, `I-66` and `I-67` - and what is left is the four below.
-     */
-    {
-      guards: onEachBut(
-        'a-blob-answer-hashes-to-its-address',
-        WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP,
-      ).filter((address) => !REACHED_BY_A_LATIN_1_RE_ENCODING.some((slug) => address.endsWith(slug))),
-      nature: 'claims detection',
-      reason:
-        'the four contracts `I-65` does not move. The guard compares two evaluations of one ' +
-        'expression on one file, so no edit to `servedBytes` can separate them; what has teeth is ' +
-        '`servedBlobFaults` beside it, which applies that expression twice and therefore reads ' +
-        'idempotence. A Latin-1 re-encoding loses idempotence only on a code point in U+0080-U+00FF, ' +
-        'and these four carry none. ADR-0148',
-    },
-    /**
      * The sentence the README publishes about the size of this catalogue, against what `theCatalogue`
      * declares. It is reachable from here and no mutant reaches it.
      *
@@ -4594,10 +4741,6 @@ export const battery: Battery = {
        */
       guards: [
         ...onEach('every-declared-type-occurs-in-the-contract'),
-        ...onEachBut('the-answer-is-the-export-the-identity-names', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
-        ...onEachBut('the-profile-vocabulary-and-the-profiles-agree', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
-        ...onEachBut('every-case-is-addressable-across-the-whole-contract', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
-        ...onEach('the-address-is-well-formed'),
         // A guard whose claim is that a derived identity is injective, and the only single edit that
         // makes two of them collide is one that damages the derivation - at which point the guards
         // pinning the derivation are the nearer description. Measured: dropping the name from a
@@ -4607,22 +4750,21 @@ export const battery: Battery = {
         // `every-produced-expression-is-the-one-its-own-profile-declares` left this list when it
         // replaced the seven occurrence guards: I-72 reddens it, and a guard a mutant reaches is not
         // an unprobed region. Its neighbour below is still silent and stays named. ADR-0171.
-        ...onEachBut('every-produced-profile-exists', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
-        ...onEachBut('every-harness-file-is-hashed', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
+        // Five of its seven rows are vacuous and one is witnessed: `producedBy` is declared by
+        // `number/parse@1` and `array/group-by@1` alone, so the guard quantifies over an empty set
+        // everywhere else and I-165 reddens the two that are not. ADR-0212.
+        ...onEach('every-produced-profile-exists').filter(
+          (address) => !address.endsWith('array-group-by') && !address.endsWith('number-parse'),
+        ),
         // `a record accounts for everything its contract declares`, named guard by guard since I-125,
         // I-126 and I-127 stopped `array/group-by@1` serialising and reached one of its twenty-eight.
         // The one that left is that contract's row of the first family; the other twenty-seven are
         // still silent. ADR-0211.
-        ...onEach('every-export-is-carried-or-declared-uncarried').filter(
-          (address) => !address.endsWith('array-group-by'),
-        ),
-        ...onEach('every-uncarried-export-carries-a-reason'),
         ...onEach('every-uncarried-export-exists'),
         ...onEach('every-own-declaration-is-an-export'),
         // `the implementations under the contracts of the catalogue`, named guard by guard since I-26 and I-27
         // reached ten of its eighteen. These eight are what is left silent: the perimeter mutants move
         // which files an implementation carries, and none of these reads that.
-        ...onEach('the-implementation-belongs-to-its-contract'),
         // The two of that eight ADR-0211 could not aim at. `every-reference-has-no-dependencies` is
         // witnessed by I-144 and gone; these two are not. A lockfile's claim is that nothing in it
         // is a tagged encoding, and the type system already refuses everything that would falsify
@@ -4662,7 +4804,6 @@ export const battery: Battery = {
         // catalogue and false of this folder, the map being a source of it. These seven are the other
         // half of the frontier - that every field a snapshot serves is classified - and no mutant here
         // unclassifies one. ADR-0210.
-        ...onEachBut('every-served-field-is-classified', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
         // The one guard of ADR-0210's slice with no cell aimed at it. Every stratum but one is held by
         // more than one declaration, so a single edit can empty only `stated-per-declaration` - and the
         // plainest description of that edit names the deferral rather than the population of strata,
@@ -4680,15 +4821,12 @@ export const battery: Battery = {
         'a byte-order mark, a normalisation, and the four standing guards - left at I-110 to I-122 ' +
         'and I-155 to I-158.',
       guards: [
-        ...onEachBut('a-snapshot-invents-no-field', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
-        ...onEachBut('a-standing-field-does-not-move-the-digest', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
         // `no-two-contracts-share-a-digest` left this list without a cell being aimed at it, which is
         // ADR-0209's own sentence firing again: the criterion for leaving is reddening and not aiming.
         // ADR-0211 searched for a cell for it and refused what it found - a digest taken over a
         // snapshot's format version alone makes all seven collide and reddens thirty-five guards, led
         // by the family that pins the hashing itself - and then I-125 to I-127 reddened it anyway, by
         // stopping one contract serialising. So it is out of this bucket and nothing witnessed it.
-        ...onEach('the-frozen-half-and-the-standing-half-partition-an-implementation'),
       ],
     },
 
@@ -4701,7 +4839,6 @@ export const battery: Battery = {
         'that pass became I-11 to I-15 and thirteen more became ADR-0211\'s cells; what is left is ' +
         'the family below and one guard that resists.',
       guards: [
-        ...onEachBut('every-field-a-snapshot-serves-is-classified', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
         // The one of these fifteen ADR-0211 could not aim at, and it resists for the reason
         // `the-strata-are-populated` does one region along - the two are neighbours on one fact.
         // Every stratum but one is held by more than one declaration, and the second holder of
@@ -4710,18 +4847,6 @@ export const battery: Battery = {
         // `one-directional` entry leaves this guard green. ADR-0211.
         'every-stratum-is-translated-and-no-translation-is-orphaned',
       ],
-    },
-
-    {
-      nature: 'claims detection',
-      reason:
-        'read-API guards no perturbation was written for, so whether an edit to this folder can ' +
-        'redden them is unmeasured rather than known. One family is left and it is here for a reason ' +
-        'worth naming: the implementation binding is guarded on the same claim as the contract ' +
-        'binding, which I-12 reddens, so that pair is half probed. The private-field guards left at ' +
-        'I-106, and the eight standalone guards beside them left at ADR-0211\'s cells - so this ' +
-        'region has stopped being a list of things nobody tried and is one family that was not.',
-      guards: [...onEach('an-implementation-binding-carries-no-frozen-field')],
     },
   ],
 
