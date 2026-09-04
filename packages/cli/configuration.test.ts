@@ -1,12 +1,16 @@
 import { describe, it, expect } from 'vitest'
 
+import type { ADirectoryToConfigure } from './configuration.js'
 import {
   CONFIGURATION_FILE,
   UnusableConfiguration,
+  WHERE_A_DIRECTORY_COMES_FROM,
   configurationFaults,
   configurationToInstallUnder,
   proposeDirectory,
   readConfiguration,
+  theDirectoryFaults,
+  theDirectoryToConfigure,
   writeConfiguration,
 } from './configuration.js'
 import { aProject } from './temporary-project.js'
@@ -47,6 +51,33 @@ const WHAT_A_COMMITTED_DIRECTORY_CANNOT_BE: Readonly<Record<string, readonly unk
   'a folder with no name': ['', 'a//b', 'a/'],
   'not text at all': [42, undefined, null],
 }
+
+/**
+ * One refused folder arriving from each of the three sources `init` composes it out of.
+ *
+ * Total by the compiler over `WHERE_A_DIRECTORY_COMES_FROM`, so a fourth source cannot arrive without
+ * a row here - and the guard below checks the mapping in both directions, so it cannot arrive with a
+ * row that names the wrong one either.
+ *
+ * The same string in all three, because what is being told apart is the *source* and a second variable
+ * would let a row pass for the wrong reason.
+ */
+const A_REFUSED_FOLDER_FROM_EACH_SOURCE: Readonly<
+  Record<keyof typeof WHERE_A_DIRECTORY_COMES_FROM, ADirectoryToConfigure>
+> = {
+  typed: theDirectoryToConfigure('../outside', { version: 1, directory: 'app/toopo' }, 'lib/toopo'),
+  committed: theDirectoryToConfigure(null, { version: 1, directory: '../outside' }, 'lib/toopo'),
+  proposed: theDirectoryToConfigure(null, null, '../outside'),
+}
+
+/**
+ * What `asTyped` escapes on purpose, and so the one thing a reader is not shown as they typed it.
+ *
+ * A refusal is joined into a message with newlines, so a directory holding one would break its own
+ * sentence in half. The rows carrying one are excluded here rather than the claim being weakened,
+ * because the claim is exactly true everywhere else.
+ */
+const A_CONTROL_CHARACTER = /\p{Cc}/u
 
 describe('the configuration of a project', () => {
   it('a-configuration-round-trips-through-the-file', () => {
@@ -151,6 +182,71 @@ describe('the configuration of a project', () => {
     ]
 
     expect(CAUSES.filter(([directory, cause]) => !said(directory).includes(cause))).toEqual([])
+  })
+
+  /**
+   * And the other half of a refusal a reader can act on: which of the three branches gave the folder.
+   *
+   * **It was one sentence written for one population and shown to another.** `configurationFaults`
+   * speaks in the words of a committed `toopo.json`, and `toopo init --dir` reused it - so
+   * `init --dir ../outside` was refused with *`toopo.json` carries "../outside"* on a path where no
+   * such file exists, nothing is written, and the string arrived on the command line. Measured from
+   * npm against `1.2.0`; the confinement was right in both cases and only the sentence was wrong,
+   * which is why nothing anywhere was red. ADR-0213 found it, ADR-0214 is the repair.
+   *
+   * **Both doors are shut here, and that is why the two calls are composed rather than asked apart.**
+   * A refusal names the wrong source either because the sentence reaches for the wrong constant or
+   * because the chooser reports a branch other than the one that supplied the value, and reading only
+   * the second half would leave the first free. The third door is the entry point calling this pair
+   * with a source of its own, and `the-folder-init-is-given-is-one-this-toopo-can-read` is what shuts
+   * that one, over a real process - which is the only place it can be shut.
+   *
+   * The negative arm is what stops it passing on a sentence that names every source at once.
+   */
+  it('a-refused-directory-is-named-by-where-it-came-from', () => {
+    const reported = Object.fromEntries(
+      Object.entries(A_REFUSED_FOLDER_FROM_EACH_SOURCE).map(([branch, one]) => [branch, one.from]),
+    )
+
+    expect(reported).toEqual(WHERE_A_DIRECTORY_COMES_FROM)
+
+    const misnamed = Object.values(A_REFUSED_FOLDER_FROM_EACH_SOURCE).flatMap((one) => {
+      const said = theDirectoryFaults(one.from, one.directory)[0] ?? '(nothing was said)'
+
+      return [
+        ...(said.startsWith(one.from) ? [] : [`${one.from}: the refusal does not open with it`]),
+        ...Object.values(WHERE_A_DIRECTORY_COMES_FROM)
+          .filter((other) => other !== one.from && said.includes(other))
+          .map((other) => `${one.from}: the refusal also names ${other}`),
+      ]
+    })
+
+    expect(misnamed).toEqual([])
+  })
+
+  /**
+   * A folder is shown back in the characters somebody typed, so they can recognise what was refused.
+   *
+   * **`JSON.stringify` doubles a backslash**, so a reader who typed `C:\toopo` was shown `"C:\\toopo"`
+   * - by the arm that refuses a volume, which is the arm somebody on Windows meets. The renderer is a
+   * machine's and the sentence is a person's, and the character the two disagree about is the one half
+   * these refusals are about. ADR-0214.
+   *
+   * The population is the declaration above rather than a second list, so a spelling added there is a
+   * spelling this asks about too - which is what stops the two drifting into agreeing about different
+   * things.
+   */
+  it('a-directory-a-reader-typed-is-shown-as-they-typed-it', () => {
+    const said = (directory: string): string =>
+      configurationFaults({ version: 1, directory })[0] ?? '(nothing was said)'
+
+    const shownOtherwise = Object.values(WHAT_A_COMMITTED_DIRECTORY_CANNOT_BE)
+      .flat()
+      .filter((directory): directory is string => typeof directory === 'string')
+      .filter((directory) => !A_CONTROL_CHARACTER.test(directory))
+      .filter((directory) => !said(directory).includes(directory))
+
+    expect(shownOtherwise).toEqual([])
   })
 
   it('a-file-that-is-not-json-is-refused-by-name', () => {

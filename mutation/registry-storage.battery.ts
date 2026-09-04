@@ -4535,6 +4535,31 @@ const mutants: readonly Mutant[] = [
       ...onEach('the-frozen-half-and-the-standing-half-partition-an-implementation'),
     ]),
   ),
+
+  /**
+   * The state this repository really lived in for sixteen days, put back.
+   *
+   * `THE_WAYS_TO_RUN_IT` is a measurement taken by hand against what npm serves, and it goes stale at
+   * a publication and at nothing else. The first reading was taken against `1.0.4` and the package
+   * reached `1.1.0`, `1.1.1` and `1.2.0` with nothing re-reading it - every suite green, every battery
+   * green, because until ADR-0214 nothing compared the two.
+   *
+   * The stamp is edited rather than the version beside it, and the two are not the same cell: moving
+   * `THE_PACKAGE_VERSION` reddens the manifest guards as well, so it would witness this one among
+   * several. This edit reaches nothing else at all.
+   */
+  sameOnEveryLens(
+    'I-176',
+    'leaves the version the ways to run this were read for where a past release left it, so a hand ' +
+      'measurement goes on being published about a package it was never taken against',
+    [
+      addressFile(
+        `export const THE_WAYS_WERE_READ_FOR = '1.2.0'`,
+        `export const THE_WAYS_WERE_READ_FOR = '1.0.4'`,
+      ),
+    ],
+    killed(['the-ways-to-run-it-were-read-for-the-version-this-package-declares']),
+  ),
 ]
 
 export const battery: Battery = {

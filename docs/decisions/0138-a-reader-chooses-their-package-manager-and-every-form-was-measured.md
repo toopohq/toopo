@@ -16,6 +16,21 @@ confirmed-by:
 
 # A reader chooses their package manager, and every form offered was measured against the published package
 
+> **The filing claim below was false when it was written and is true now, and the two halves of that
+> sentence are not the same kind of statement.** *`CLAUDE.md` carries the entry rather than this record
+> pretending to cover it* — read at `21279f6`, this record's own commit, that file carried one passage
+> on the subject, about `yarn dlx` being broken, and its closing sentence declines the filing in as many
+> words.
+> [ADR-0213](0213-the-four-forms-hold-and-the-entry-that-was-to-keep-them-was-never-written.md) is what
+> found it, three releases later, and wrote the entry that was believed to exist.
+>
+> **Nothing below is retracted.** The description was right — no guard here reaches whether a spelling in
+> that table really runs, and none can — and it is the clause *about the entry* that a reader believes.
+> Since [ADR-0214](0214-a-reading-taken-by-hand-carries-the-version-it-was-taken-for-and-a-refusal-names-where-its-folder-came-from.md)
+> the table carries the version it was last read for and a guard compares that with the package's, so
+> what nothing keeps is narrower than it was: not *whether somebody looked*, only *whether the four
+> spellings still run*.
+
 ## Context and Problem Statement
 
 A contract page prints one install command. The owner asked for what the registries of this

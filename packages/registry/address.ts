@@ -321,11 +321,10 @@ export type AWayToRunIt = {
  *
  * **A reading here goes stale at a publication and at nothing else**, because between publications
  * no change in this tree moves what npm serves. So it is re-taken in the unit that moves
- * `THE_PACKAGE_VERSION`, and nothing keeps that: the first reading survived `1.1.0`, `1.1.1` and
- * `1.2.0` unread, and the entry that was to notice had never been written. ADR-0213 carries the
- * re-reading, the journey behind the invocation, and the offline guard that would close it - a
- * version stamp on this table, compared with the package's, which needs no network and no package
- * manager. ADR-0138 carries the argument, the refusals and what was not measured.
+ * `THE_PACKAGE_VERSION`, and `THE_WAYS_WERE_READ_FOR` below is what keeps that: the first reading
+ * survived `1.1.0`, `1.1.1` and `1.2.0` unread, and a stamp would have been red at all three.
+ * ADR-0213 carries the re-reading and the journey behind the invocation, ADR-0214 the stamp, and
+ * ADR-0138 the argument, the refusals and what was not measured.
  */
 export const THE_WAYS_TO_RUN_IT: readonly AWayToRunIt[] = [
   { manager: 'npm', spelling: THE_INVOCATION },
@@ -340,6 +339,42 @@ export const THE_WAYS_TO_RUN_IT: readonly AWayToRunIt[] = [
       `is written. Use the npm form above: npx ships with Node, so it runs inside a Yarn project.`,
   },
 ]
+
+/**
+ * The version of this package the table above was last read for.
+ *
+ * **It is the whole of what an offline guard can keep about a measurement taken by hand.**
+ * `the-ways-to-run-it-were-read-for-the-version-this-package-declares` compares this with
+ * `THE_PACKAGE_VERSION`, with no network and no package manager, so it does not establish that `npx`
+ * runs - nothing here can - and it does establish that somebody read the table in the unit that
+ * declared this version. The first reading survived `1.1.0`, `1.1.1` and `1.2.0` with nothing looking
+ * at it, and this would have been red at all three.
+ *
+ * **A constant beside the table rather than a field on `AWayToRunIt`, and what decides that is the
+ * claim rather than the price.** What the guard keeps is *this table is current*, and over per-form
+ * stamps the only sound reduction to one verdict is the oldest - a table with one fresh row and three
+ * stale ones is stale - so four values would be carried to compute one, and a row going stale beside a
+ * fresh one would be silent, each stamp being true of its own row. The coordinate is a fact about the
+ * reading, and the reading is one sitting. The price agrees rather than deciding: measured at
+ * `94458f4`, `contract-page.ts` serialises this table into `data-ways` on all six contract pages, so a
+ * field costs a reader **912 B raw and 161 B in brotli** - 152 and 26.8 per page - for a value nothing
+ * on the page reads.
+ *
+ * **It is a literal rather than a comparison, because this module is in the archive and
+ * `publication.ts` is not.** Measured at `94458f4`: the build writes 36 modules, `address.js` is one
+ * of them and `publication.js` is not, so importing `THE_PACKAGE_VERSION` here would put the whole
+ * publication module into every install - which is the trap `THE_PACKAGE_NAME` above records having
+ * been moved out of that file to avoid. The comparison lives in `address.test.ts`, which nothing packs.
+ *
+ * **What it cannot see is the release it is stamped in**, and that is the guard's limit rather than an
+ * oversight. A reading is taken against what npm serves, and npm does not hold the version this tree
+ * declares until the push declaring it has published - so the unit that moves `THE_PACKAGE_VERSION`
+ * reads the outgoing release and stamps the incoming one. ADR-0213 proposed this as *the version its
+ * readings were taken against*, which is the one spelling that can never be green: it would be red for
+ * the whole of every release unit, on the push whose job ordering exists to put every verdict in front
+ * of the irreversible act. ADR-0214.
+ */
+export const THE_WAYS_WERE_READ_FOR = '1.2.0'
 
 /**
  * The page a contract is published at, absolute, and the one spelling of it anything may write.

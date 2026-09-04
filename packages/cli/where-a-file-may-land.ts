@@ -117,6 +117,21 @@ export const travels = (directory: string): boolean =>
   A_DIRECTORY.test(directory) && !directory.split('/').includes('..')
 
 /**
+ * A string somebody typed, shown back to them as they typed it.
+ *
+ * **`JSON.stringify` renders for a machine and this is a sentence for a person**, and the case that
+ * separates them is the one half these refusals are about: it doubles a backslash, so a reader who
+ * typed `C:\toopo` is shown `"C:\\toopo"` and goes looking for a string they did not write. A
+ * backslash is what somebody on Windows types, so the character the rendering was worst for is the
+ * character the message exists for. ADR-0214.
+ *
+ * Everything else `JSON.stringify` does is kept rather than reimplemented, and the newline is why: a
+ * directory holding one is refused too, and a refusal that broke its own line into two would be a
+ * worse sentence than one spelling it `\n`.
+ */
+export const asTyped = (value: string): string => JSON.stringify(value).replaceAll('\\\\', '\\')
+
+/**
  * What a reader is told when the configured directory was refused, naming the thing in it that was.
  *
  * **The arms are ordered so that each sentence is true of the string it is shown for**, rather than
@@ -124,19 +139,28 @@ export const travels = (directory: string): boolean =>
  * for meaning two places and not for being outside the alphabet. A refusal derived from the alphabet
  * alone would give the second of each pair, which is a reason nobody can act on.
  *
+ * **`where` is what supplied the folder and never what read it**, which is the same distinction
+ * `theRefusal` below makes and the one this sentence was wrong about for a release: written for a
+ * committed file and reused by `toopo init --dir`, it opened *`toopo.json` carries …* on a path where
+ * no such file exists, nothing is written, and the string arrived on the command line. The sentence
+ * was exactly true of the population it was written for and false of the one it was shown to. So the
+ * subject is the caller's, the reason is this module's, and the one clause that is about the committed
+ * file names it by what it does rather than by its name - which is true whether the file is being read
+ * or is about to be written. ADR-0208, ADR-0213, ADR-0214.
+ *
  * The last arm asks the alphabet about one character at a time rather than restating it, so there is
  * one statement of what a directory is spelled out of and not two that agree today.
  */
 export const theDirectoryRefusal = (where: string, directory: string): string => {
-  const carries = `${where} carries ${JSON.stringify(directory)} as its directory, and `
+  const carries = `${where} names ${asTyped(directory)} as the folder to install in, and `
 
-  if (directory === '') return `${carries}a directory has to name a folder.`
+  if (directory === '') return `${carries}a folder has to have a name.`
 
   if (posix.isAbsolute(directory) || win32.isAbsolute(directory)) {
     return (
-      `${carries}it is an absolute path. ${where} is committed with your project, so the folder is ` +
-      `named relative to its root - an absolute one names the machine that wrote it and is wrong for ` +
-      `everybody else who checks the project out.`
+      `${carries}it is an absolute path. The folder is recorded in a file that is committed with ` +
+      `your project, so it is named relative to your project's root - an absolute one names the ` +
+      `machine that wrote it and is wrong for everybody else who checks the project out.`
     )
   }
 
@@ -161,7 +185,7 @@ export const theDirectoryRefusal = (where: string, directory: string): string =>
 
   return outside === undefined
     ? `${carries}one of its folders is named by nothing at all.`
-    : `${carries}it holds ${JSON.stringify(outside)}, which toopo does not put in a folder name.`
+    : `${carries}it holds ${asTyped(outside)}, which toopo does not put in a folder name.`
 }
 
 /**

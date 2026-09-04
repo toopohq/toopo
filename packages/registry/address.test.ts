@@ -2,7 +2,8 @@ import { describe, it, expect } from 'vitest'
 
 import * as ADDRESS from './address.js'
 import type { ContractAddress } from './address.js'
-import { contractUrl, renderContract } from './address.js'
+import { THE_WAYS_WERE_READ_FOR, contractUrl, renderContract } from './address.js'
+import { THE_PACKAGE_VERSION } from './publication.js'
 
 /**
  * The module that owns every address this project has, guarded directly for the first time.
@@ -110,6 +111,11 @@ const RENDERINGS: Readonly<Record<keyof typeof ADDRESS, Rendering>> = {
       'each entry is a package manager and the words it runs this by, which is the same shape as ' +
       'THE_INVOCATION four times over - the contract is still the argument a reader adds after it',
   },
+  THE_WAYS_WERE_READ_FOR: {
+    holdsNoContract:
+      'it is a version of this package and not of a contract - the coordinate of a reading taken ' +
+      'against npm, which knows a package and never a contract',
+  },
 }
 
 describe('how the registry addresses what it serves', () => {
@@ -169,5 +175,27 @@ describe('how the registry addresses what it serves', () => {
       .map(([name]) => name)
 
     expect(unexplained).toEqual([])
+  })
+
+  /**
+   * And the one claim about `THE_WAYS_TO_RUN_IT` that is not about a string: that somebody read it.
+   *
+   * The table is a measurement taken by hand against the published package, and what it says goes
+   * stale at a publication and at nothing else - between publications no change in this tree moves
+   * what npm serves. So the reading is re-taken in the unit that moves `THE_PACKAGE_VERSION`, and
+   * this is what makes that a mechanism instead of a habit: the first reading survived `1.1.0`,
+   * `1.1.1` and `1.2.0` with every suite green, and this guard would have been red at all three.
+   *
+   * **It establishes that somebody looked and never that a spelling runs**, which is the honest whole
+   * of what an offline guard reaches here. A guard that installed from npm would redden on three
+   * things this repository owns one of, and its only sound placement is behind the publication - a
+   * verdict arriving after the irreversible act. ADR-0213 refused it and ADR-0214 is this.
+   *
+   * The comparison is here rather than in `address.ts` because that module is in the archive and
+   * `publication.ts` is not: importing the version there would put the publication module into every
+   * install. A test file packs nothing, so this is where the two halves may meet.
+   */
+  it('the-ways-to-run-it-were-read-for-the-version-this-package-declares', () => {
+    expect(THE_WAYS_WERE_READ_FOR).toBe(THE_PACKAGE_VERSION)
   })
 })

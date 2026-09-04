@@ -6,7 +6,11 @@ import { describe, it, expect } from 'vitest'
 
 import { guardIdOf } from '../catalogue/identifier.js'
 import { WHAT_BREAKS } from './breakage.js'
-import { CONFIGURATION_FILE, readConfiguration } from './configuration.js'
+import {
+  CONFIGURATION_FILE,
+  WHERE_A_DIRECTORY_COMES_FROM,
+  readConfiguration,
+} from './configuration.js'
 import { THE_UNPUBLISHED_REVISION } from '../registry/revision.js'
 import { UnusableLockfile, lockfileFaults, readLockfile } from './lockfile.js'
 import { deciding } from './fixpoint.js'
@@ -415,6 +419,14 @@ describe('what breaks for somebody', () => {
    * where a row costs nothing. `src/my code/toopo` is the accepted row because it is the one this pair
    * exists for: the row above declares that it installs normally, and for one release the
    * configuration refused it. ADR-0208.
+   *
+   * **What the refusal *names* is read here and nowhere else, because nowhere else runs the command.**
+   * `configuration.test.ts` holds both halves of the sentence - that the source travels with the value,
+   * and that the wording opens with it - and neither reaches the one line that chooses which source
+   * this command hands over. Written for a committed file and reused by this path, it opened
+   * *`toopo.json` carries "../outside"* where no such file exists and the string came from the command
+   * line, with every guard in this repository green. So the process is already spawned and its refusal
+   * is already captured; what is added is which of the declared sources it names. ADR-0213, ADR-0214.
    */
   it('the-folder-init-is-given-is-one-this-toopo-can-read', () => {
     const asked = ['src/my code/toopo', '../outside']
@@ -423,14 +435,19 @@ describe('what breaks for somebody', () => {
       const project = aProject()
       try {
         let init = 'wrote'
+        let refusalNames: readonly string[] = []
         try {
           execFileSync(process.execPath, [THE_ENTRY_POINT, 'init', '--dir', directory], {
             cwd: project.root,
             encoding: 'utf8',
             stdio: 'pipe',
           })
-        } catch {
+        } catch (thrown) {
           init = 'refused'
+          const said = String((thrown as { readonly stdout?: unknown }).stdout ?? '')
+          refusalNames = Object.values(WHERE_A_DIRECTORY_COMES_FROM).filter((source) =>
+            said.includes(source),
+          )
         }
 
         let readsBack = false
@@ -445,6 +462,7 @@ describe('what breaks for somebody', () => {
           init,
           theFileExists: existsSync(join(project.root, CONFIGURATION_FILE)),
           readsBack,
+          refusalNames,
         }
       } finally {
         project.remove()
@@ -452,8 +470,20 @@ describe('what breaks for somebody', () => {
     })
 
     expect(outcome).toEqual([
-      { directory: 'src/my code/toopo', init: 'wrote', theFileExists: true, readsBack: true },
-      { directory: '../outside', init: 'refused', theFileExists: false, readsBack: false },
+      {
+        directory: 'src/my code/toopo',
+        init: 'wrote',
+        theFileExists: true,
+        readsBack: true,
+        refusalNames: [],
+      },
+      {
+        directory: '../outside',
+        init: 'refused',
+        theFileExists: false,
+        readsBack: false,
+        refusalNames: [WHERE_A_DIRECTORY_COMES_FROM.typed],
+      },
     ])
   })
 

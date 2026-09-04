@@ -327,13 +327,19 @@ const THE_DIRECTORY_ALPHABET = `export const A_DIRECTORY = /^[A-Za-z0-9._ -]+(?:
 
 const A_DIRECTORY_IS_TEXT = `  typeof directory !== 'string'
     ? [
-        \`\${CONFIGURATION_FILE} carries \${JSON.stringify(directory)} as its directory, and a \` +
-          \`directory is the name of a folder, written as text\`,
+        \`\${where} names \${JSON.stringify(directory)} as the folder to install in, and a folder is \` +
+          \`named by text\`,
       ]`
 
 const AN_ABSOLUTE_PATH_IS_ABSOLUTE_ANYWHERE = `  if (posix.isAbsolute(directory) || win32.isAbsolute(directory)) {`
 
 const INIT_READS_THE_FOLDER_IT_WRITES = `      if (unusable.length > 0) refuse(unusable)`
+
+const A_FOLDER_IS_SHOWN_AS_IT_WAS_TYPED = `export const asTyped = (value: string): string => JSON.stringify(value).replaceAll('\\\\\\\\', '\\\\')`
+
+const A_REFUSAL_NAMES_WHERE_THE_FOLDER_CAME_FROM = `      : [theDirectoryRefusal(where, directory)]`
+
+const INIT_NAMES_WHERE_ITS_FOLDER_CAME_FROM = `      const unusable = theDirectoryFaults(chosen.from, chosen.directory)`
 
 const NO_FILE_MEANS_NO_CONFIGURATION = `  if (!existsSync(path)) return null`
 
@@ -1658,6 +1664,52 @@ import type {
     'writes the folder `init` was handed without reading it, so `toopo init --dir` leaves a committed ' +
       'configuration every later command refuses - one of them naming a place outside the project',
     [commandFile(INIT_READS_THE_FOLDER_IT_WRITES, `      if (unusable.length > 99) refuse(unusable)`)],
+    killed(['the-folder-init-is-given-is-one-this-toopo-can-read']),
+  ),
+
+  /**
+   * The three defects ADR-0213 measured from npm, put back one at a time.
+   *
+   * They are one sentence and three doors, which is why they are three cells rather than one: the
+   * rendering, the source the sentence reaches for, and the source the entry point hands it. Measured
+   * before they were written down - C-85 reddens two guards and C-86 reddens the third *alone*, so the
+   * pair in `configuration.test.ts` is demonstrably blind to the call site and the real process is the
+   * only place that arm can be kept.
+   *
+   * None of them was ever red. The confinement is correct through all three - exit 1, nothing written -
+   * and what is wrong is what a reader is told, which no guard of this repository had an opinion about
+   * until ADR-0214.
+   */
+  sameOnEveryLens(
+    'C-84',
+    'shows a refused folder in the escapes a machine writes, so somebody who typed `C:\\toopo` is ' +
+      'told about `"C:\\\\toopo"` and goes looking for a string they did not write',
+    [confinementFile(A_FOLDER_IS_SHOWN_AS_IT_WAS_TYPED, `export const asTyped = (value: string): string => JSON.stringify(value)`)],
+    killed(['a-directory-a-reader-typed-is-shown-as-they-typed-it']),
+  ),
+
+  sameOnEveryLens(
+    'C-85',
+    'refuses every folder in the words of a committed `toopo.json`, so `toopo init --dir ../outside` ' +
+      'names a file that does not exist about a string that came from the command line',
+    [
+      {
+        file: 'configuration.ts',
+        find: A_REFUSAL_NAMES_WHERE_THE_FOLDER_CAME_FROM,
+        replace: `      : [theDirectoryRefusal(CONFIGURATION_FILE, directory)]`,
+      },
+    ],
+    killed([
+      'a-refused-directory-is-named-by-where-it-came-from',
+      'the-folder-init-is-given-is-one-this-toopo-can-read',
+    ]),
+  ),
+
+  sameOnEveryLens(
+    'C-86',
+    'hands the refusal a source of its own rather than the branch that supplied the folder, so the ' +
+      'sentence is right about a population and wrong about the reader it is shown to',
+    [commandFile(INIT_NAMES_WHERE_ITS_FOLDER_CAME_FROM, `      const unusable = theDirectoryFaults(CONFIGURATION_FILE, chosen.directory)`)],
     killed(['the-folder-init-is-given-is-one-this-toopo-can-read']),
   ),
 ]

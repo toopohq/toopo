@@ -73,10 +73,11 @@ import type { Configuration } from './configuration.js'
 import {
   CONFIGURATION_FILE,
   UnusableConfiguration,
-  configurationFaults,
   configurationToInstallUnder,
   proposeDirectory,
   readConfiguration,
+  theDirectoryFaults,
+  theDirectoryToConfigure,
   writeConfiguration,
 } from './configuration.js'
 import { deciding } from './fixpoint.js'
@@ -227,12 +228,11 @@ const theCommand = async (theRegistry: () => RegistrySource): Promise<HowItEnded
   try {
     if (parsed.command.name === 'init') {
       const held = readConfiguration(root)
-      const configuration: Configuration = {
-        version: 1,
-        directory: parsed.command.directory ?? held?.directory ?? proposeDirectory(root),
-      }
+      const chosen = theDirectoryToConfigure(parsed.command.directory, held, proposeDirectory(root))
+      const configuration: Configuration = { version: 1, directory: chosen.directory }
       /**
-       * The folder somebody typed is read by the rule that will read it back out of the file.
+       * The folder somebody typed is read by the rule that will read it back out of the file, and the
+       * refusal names which of the three branches above supplied it.
        *
        * `--dir` reached `writeConfiguration` unexamined, so this command wrote configurations it then
        * refused: measured before this line existed, `init --dir "C:\toopo"`, `--dir "../outside"` and
@@ -240,8 +240,14 @@ const theCommand = async (theRegistry: () => RegistrySource): Promise<HowItEnded
        * every command after them - one of them naming a folder outside the project. It is the one
        * question `readConfiguration` asks, asked where the value is chosen rather than where it is
        * read back, and the refusal comes before anything is written. ADR-0208.
+       *
+       * **It is the directory's own rule and no longer the whole file's**, which ADR-0213 is what
+       * found: `configurationFaults` speaks in the words of a committed `toopo.json`, and every other
+       * arm of it is about a file this path has not read - the object, the version, an unhonoured key.
+       * The composed configuration satisfies all three by construction, so asking them here bought
+       * nothing and answered in a sentence that was false of the string it was shown for. ADR-0214.
        */
-      const unusable = configurationFaults(configuration)
+      const unusable = theDirectoryFaults(chosen.from, chosen.directory)
       if (unusable.length > 0) refuse(unusable)
 
       const change = whatMoves(root, held, configuration, readLockfile(root))

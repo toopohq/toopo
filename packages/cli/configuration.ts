@@ -22,7 +22,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { THE_INVOCATION } from '../registry/address.js'
+import { THE_INVOCATION, THE_PACKAGE_NAME } from '../registry/address.js'
 import { LOCKFILE } from './lockfile.js'
 import { theDirectoryRefusal, travels } from './where-a-file-may-land.js'
 
@@ -35,25 +35,54 @@ export type Configuration = {
 }
 
 /**
- * What is wrong with the directory a `toopo.json` carries, said in the words of what is wrong with it.
+ * Where the folder a project installs into can have come from, which is the half of a refusal a reader
+ * can act on.
+ *
+ * Three, because `init` composes the folder out of three branches and a refusal that named the wrong
+ * one sent a reader to a file that does not exist. They are spelled once here so that the sentence and
+ * the branch cannot drift: `theDirectoryToConfigure` chooses the value and the source in one
+ * expression, and `from` is typed as one of these three. ADR-0214.
+ */
+export const WHERE_A_DIRECTORY_COMES_FROM = {
+  typed: '--dir',
+  committed: CONFIGURATION_FILE,
+  proposed: `${THE_PACKAGE_NAME}'s own proposal`,
+} as const
+
+export type WhereADirectoryCameFrom =
+  (typeof WHERE_A_DIRECTORY_COMES_FROM)[keyof typeof WHERE_A_DIRECTORY_COMES_FROM]
+
+/**
+ * What is wrong with the folder a project would install into, said in the words of what is wrong with
+ * it, and named by where the folder came from.
  *
  * The rule and its sentence both live in `where-a-file-may-land.ts`, beside the alphabet a served path
  * is spelled out of: one module states where this tool may put a file, and the configured directory is
  * half of every such place. ADR-0206 is what moved the alphabet there, and ADR-0208 is what gave the
  * directory one of its own - wider by a space, because a folder called `my code` travels.
  *
- * What stays here is the one fault that is about this *file* rather than about a folder: a field that
- * is not text at all, which a rule about the spelling of folders has nothing to say about.
+ * **`where` is a parameter because two populations reach this and only one of them is a file.** It was
+ * `CONFIGURATION_FILE` in the code, so `toopo init --dir ../outside` was refused with a sentence about
+ * a `toopo.json` that does not exist on that path, about a string that came from the command line.
+ * ADR-0213 measured it; ADR-0214 is the repair.
+ *
+ * What stays here is the one fault that is about a *file* rather than about a folder: a field that is
+ * not text at all, which a rule about the spelling of folders has nothing to say about. It is reachable
+ * from the committed source alone - the other two hand this a `string` - so it is an arm no caller has
+ * to think about rather than a branch that reads falsely for two of the three.
  */
-const theDirectoryFaults = (directory: unknown): readonly string[] =>
+export const theDirectoryFaults = (
+  where: WhereADirectoryCameFrom,
+  directory: unknown,
+): readonly string[] =>
   typeof directory !== 'string'
     ? [
-        `${CONFIGURATION_FILE} carries ${JSON.stringify(directory)} as its directory, and a ` +
-          `directory is the name of a folder, written as text`,
+        `${where} names ${JSON.stringify(directory)} as the folder to install in, and a folder is ` +
+          `named by text`,
       ]
     : travels(directory)
       ? []
-      : [theDirectoryRefusal(CONFIGURATION_FILE, directory)]
+      : [theDirectoryRefusal(where, directory)]
 
 export const configurationFaults = (value: unknown): readonly string[] => {
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
@@ -70,7 +99,7 @@ export const configurationFaults = (value: unknown): readonly string[] => {
           `${CONFIGURATION_FILE} carries version ${JSON.stringify(held['version'])}, and this ` +
             `\`toopo\` writes version 1`,
         ]),
-    ...theDirectoryFaults(directory),
+    ...theDirectoryFaults(WHERE_A_DIRECTORY_COMES_FROM.committed, directory),
     ...Object.keys(held)
       .filter((key) => key !== 'version' && key !== 'directory')
       .map(
@@ -132,6 +161,35 @@ export const writeConfiguration = (
  */
 export const proposeDirectory = (root: string): string =>
   existsSync(join(root, 'src')) ? 'src/lib/toopo' : 'lib/toopo'
+
+/** The folder `init` would configure, and which of the three sources supplied it. */
+export type ADirectoryToConfigure = {
+  readonly directory: string
+  readonly from: WhereADirectoryCameFrom
+}
+
+/**
+ * Which folder `toopo init` configures, decided from values alone, with where it came from beside it.
+ *
+ * **The source travels with the value because they are chosen by one expression**, and a refusal that
+ * names the wrong source is the defect this exists after: the three branches lived in the entry point
+ * and the sentence naming them was a constant one module away, so `init --dir ../outside` was refused
+ * in the words of a file nobody had read. Chosen here, `from` cannot be true of a branch other than the
+ * one that supplied `directory`.
+ *
+ * The order is the order of who decided: what somebody typed, then what the project already committed,
+ * then what this tool deduces from the shape of the project. ADR-0214.
+ */
+export const theDirectoryToConfigure = (
+  typed: string | null,
+  held: Configuration | null,
+  proposed: string,
+): ADirectoryToConfigure =>
+  typed !== null
+    ? { directory: typed, from: WHERE_A_DIRECTORY_COMES_FROM.typed }
+    : held !== null
+      ? { directory: held.directory, from: WHERE_A_DIRECTORY_COMES_FROM.committed }
+      : { directory: proposed, from: WHERE_A_DIRECTORY_COMES_FROM.proposed }
 
 /** The configuration an install runs under, and whether it is one this command has to write. */
 export type ConfigurationToUse =

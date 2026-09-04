@@ -962,6 +962,27 @@ refusal on the `init --dir` path opens *`toopo.json` carries "…"* where no suc
 string came from the command line — the same sentence being exactly true on the reading path.
 ADR-0213.
 
+**The three are repaired, and the guard that record priced and refused is built — the first entry of
+the open list ever closed by half rather than whole.** A reading taken by hand goes stale at a
+publication and at nothing else, so `THE_WAYS_TO_RUN_IT` carries `THE_WAYS_WERE_READ_FOR` and a guard
+compares it with `THE_PACKAGE_VERSION`, offline. **It is seen red on the state this repository really
+lived in for sixteen days**: the stamp put back to `1.0.4` gives 1 failed of 467, the new guard alone.
+**The form was decided by an argument and confirmed by a price, in that order.** A per-form field can
+only be reduced to one verdict by taking the oldest, so four values would compute one and a stale row
+beside a fresh one would be *silent* — and it costs **912 B raw, 161 B in brotli** across the six
+contract pages that serialise the table into `data-ways`, for a value nothing on the page reads. **The
+comparison could not sit beside the table and a measurement says so rather than a comment**: the build
+writes 36 modules, `address.js` is one and `publication.js` is not, so the import would put the
+publication module in every install. **ADR-0213's own spelling of the stamp was refuted by building
+it** — *the version its readings were taken against* is red for the whole of every release unit,
+because npm does not hold what this tree declares until the push declaring it has published, which is
+the one push every verdict must precede. **The refusal names where its folder came from now, on both
+paths**, `--dir names "../outside" …` against `toopo.json names "../outside" …`, and a reader who typed
+`C:\toopo` is shown `C:\toopo`. **The three doors are three cells and a measurement says so**: the
+sentence's own source and the call site's are separable, and the entry point's choice reddens
+`the-folder-init-is-given-is-one-this-toopo-can-read` **alone**, with both cheap guards green through
+it — so the arm that keeps it can only live where a real process runs. ADR-0214.
+
 It is not repaired here and it is not this list's class - nothing is unkept, something is broken -
 so it is written where a session reads first rather than filed as a declaration nobody keeps. What
 would close the first is a decision about that runtime dependency, which is a unit of its own and
@@ -2199,7 +2220,20 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **broken**, and its closing sentence declines the job in as many words — *it is not this list's
   class … rather than filed as a declaration nobody keeps.* So the description was sound, the filing
   claim beside it was false, and it is the filing claim a reader believes. It is the shape the
-  `stage's requirements` entry closed on, arriving on a record rather than on an entry.
+  `stage's requirements` entry closed on, arriving on a record rather than on an entry. **Both halves
+  are answered now**: this entry is the filing, and ADR-0138 carries a head note saying which of its
+  two clauses was false and which was not.
+
+  **Half of it closed, and the half that closed is *whether anybody looked*.** ADR-0214 gives the
+  table `THE_WAYS_WERE_READ_FOR`, and
+  `the-ways-to-run-it-were-read-for-the-version-this-package-declares` compares it with
+  `THE_PACKAGE_VERSION` — offline, no network, no package manager. Seen red on the state this
+  repository really lived in for sixteen days: the stamp put back to `1.0.4` gives **1 failed, 466
+  passed**, the new guard alone. It would have been red at `1.1.0`, at `1.1.1` and at `1.2.0`.
+
+  **What it does not buy is the half the entry is named for**, and no offline guard reaches it: that
+  the four spellings *run*. So the population below is unchanged, the cadence below is unchanged, and
+  what moved is that a release which forgets the cadence is now a red rather than a silence.
 
   **Where this looked**: `THE_WAYS_TO_RUN_IT` in `packages/registry/address.ts`, which carries the
   readings in its own comment and is where a rewrite of them lands; the three guards ADR-0138 names
@@ -2217,14 +2251,17 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   **What replaces it is a cadence, and it is attached to the only event that can falsify the reading
   from this side**: between publications nothing in this tree moves what npm serves, so the table is
-  re-read in the unit that moves `THE_PACKAGE_VERSION`. **What would close the entry is cheaper than
-  the guard that was refused and is a different guard**: the table carrying the version its readings
-  were taken against, compared with the package's — offline, no network, no package manager. It
-  establishes that somebody looked since the last release and never that `npx` runs, and **it would
-  have been red at `1.1.0`, at `1.1.1` and at `1.2.0`**, which is every occasion this entry is about.
-  Priced as its own unit and not taken, because adding a field to `AWayToRunIt` decides what that
-  table carries and a unit whose subject is a measurement is not where that is settled. ADR-0138,
-  ADR-0213.
+  re-read in the unit that moves `THE_PACKAGE_VERSION`. **The cadence has a mechanism under it now**,
+  and the shape of the stamp was decided on two measurements rather than on taste: a per-form field
+  costs a reader 912 B raw and 161 B in brotli across the six contract pages that serialise the table
+  into `data-ways`, and — the argument that actually decides it — a guard over per-form stamps can only
+  reduce them by taking the oldest, so four values would be carried to compute one and a row going
+  stale beside a fresh one would be silent. **ADR-0213's own spelling of the stamp was corrected by
+  building it**: *the version its readings were taken against* can never be green, because npm does not
+  hold the version this tree declares until the push declaring it has published, so that spelling is
+  red for the whole of every release unit — on the one push ADR-0109's ordering exists to put every
+  verdict in front of. What is stamped is the version this package declares when the table was last
+  read. ADR-0138, ADR-0213, ADR-0214.
 
 - **That every path this catalogue serves is a path the confinement admits.** ADR-0206 states one
   alphabet for a path this tool writes, reads or removes, and the catalogue states another for what a

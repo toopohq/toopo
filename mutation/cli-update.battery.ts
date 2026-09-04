@@ -808,10 +808,12 @@ export const battery: Battery = {
         '`cli-install` carries twelve defects over exactly these. The two guards this unit *added* to ' +
         'the grammar are not here: `--apply` is this command\'s own acceptance, so U-34 probes it. ' +
         'ADR-0208 put three more guards in this region and the twelve did not move, because the cell ' +
-        'that reaches them is C-30, which was already one of them.',
+        'that reaches them is C-30, which was already one of them. ADR-0214 put two more here for the ' +
+        'same reason and moved the count to fifteen, C-84 and C-85 being the cells that reach them.',
       guards: [
         'a-command-with-no-flag-is-read',
         'a-configuration-round-trips-through-the-file',
+        'a-directory-a-reader-typed-is-shown-as-they-typed-it',
         'a-directory-that-does-not-travel-is-refused',
         'a-directory-that-travels-is-accepted',
         'a-field-this-toopo-does-not-honour-is-refused',
@@ -821,6 +823,7 @@ export const battery: Battery = {
         'a-project-that-was-never-initialised-answers-nothing',
         'a-lockfile-with-no-configuration-is-refused-with-the-folder-to-name',
         'a-project-with-nothing-in-it-is-configured-rather-than-refused',
+        'a-refused-directory-is-named-by-where-it-came-from',
         'a-refused-directory-is-told-what-in-it-was-refused',
         'a-repeated-flag-and-a-stray-word-are-refused',
         'a-version-this-toopo-does-not-write-is-refused',
