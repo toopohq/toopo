@@ -235,6 +235,41 @@ cells in 38 min 50 s**, 210 killed, the same five survivors, nothing disagreeing
 and nought wrongly declared silent, exit 0: `unprobedClaims` goes **201 to 129**, 72 leaving against 60
 witnessed, and the gap of **12** is the one sub-prediction that held. ADR-0211.
 
+**And the joint ADR-0209 named in its own arithmetic gave way four times in nineteen.** That record
+priced the parameterised half at *at most 138 aiming decisions* on the strength of one family
+collapsing to one cell, and wrote beside it that whether a family really collapses is **measured once
+and assumed twenty times**. The rule for the reading was committed at `a853805` before a guard of it
+was read, over **every** family the bucket still holds, with the mechanism named in advance and three
+outcomes fixed so that none could be read afterwards as a rescue. **The structure was read
+mechanically first and it is what makes the question sharp**: 19 of 19 families carry exactly the
+seven distinct contract slugs, so **a family is one title asked of seven contracts** rather than a
+resemblance between separately written guards — and an edit to a shared path is by construction the
+failure condition every row names. **Fifteen of nineteen collapse**, the middle outcome, against a
+predicted seventeen with the bias declared upwards. **The mechanism was named incompletely rather than
+wrongly, and the correction is the finding**: the prediction said a family fails on *vacuity*, and
+that is the rule read one row at a time — `every-produced-profile-exists` is exactly it, `producedBy`
+being declared by `number/parse@1` and `array/group-by@1` and by nobody else, so five rows of seven
+quantify over an empty set. **The three others resist at the scale the prediction did not reach**:
+they read a contract's own declarations against each other and **no derivation of this folder stands
+between the input and the assertion**, so one edit reddens one row — measured at 1, 2 and 66 reds for
+one row apiece, the last stopping a contract serialising to witness a single guard. So the rule is
+that **a family collapses when a shared derivation lies between all seven rows and the sentence, and a
+row resists when its own contract exercises none of it** — one mechanism at two scales. **The sibling
+that collapses is what makes it a mechanism rather than a description**: `every-uncarried-export-carries-a-reason`
+sits in the same file and reads the same field, and it collapses because the *reason* every contract
+gives is one constant in `serialise.ts`. **A declaration was refuted rather than made stale**: the
+region holding four blob rows out of reach gave a true reason for a false conclusion, having
+characterised the guard by the one defect anybody had tried, and `I-168` reddens all seven —
+`REACHED_BY_A_LATIN_1_RE_ENCODING` dying with it, caught by `noUnusedLocals`. **A1 and A2 turn out to
+sit at different scales here**, A2 per family and A1 per row, which is what makes `68e466a`'s family
+exception sound on this population and is a shape neither earlier slice had. **The verdict on the 138
+is corrected with its form held**: the nineteen families cost **35 aiming decisions and not 19**, a
+coefficient of **1.84**, so today's ceiling is **44 for 129 guards** rather than 28 — a ceiling far
+below one cell per guard, and the figure 138 is re-derivable at no coordinate because its population
+is gone. The price prediction was refuted again — **1.43 candidate runs per cell** against a predicted
+1.3, the sixth reading of a figure that has been 1.27, 1.21, 1.27, 1.21, 1.29 and 1.43 — and the
+figure this slice alone can produce is **1.05 runs per family decided**. ADR-0212.
+
 **And a figure of ADR-0210 does not reproduce.** It publishes *174 of the 228* for the population both
 slices excluded and its own rule commit publishes **173**; rebuilt from the artefact on disk the 228
 state is 55 in wholly unprobed files and **173** in partly probed ones, naming the four files that
@@ -2771,6 +2806,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   arriving on a second bucket. Measured at `14bd274` off a replay of 215 cells in 38 min 50 s, 210
   killed, five survivors, nothing disagreeing, nought unaccounted for, exit 0: this folder's row goes
   86/168/212 to **123/204/139**, and its `unprobedClaims` **201 to 129**. ADR-0211.
+
+  **And the family half of that bucket is priced, which is the half ADR-0209 could only assume.**
+  ADR-0212 takes every family `unprobedClaims` still holds — 19 of them, 120 rows, total over the
+  population — and witnesses **94 rows with 14 cells across 16 families**, two cells serving two
+  families apiece by falsifying two clauses of one defect. **Fifteen of nineteen collapse to one cell
+  and four do not**, so ADR-0209's *at most 138* is corrected rather than kept: one cell per family
+  understates by **1.84**, and the four that resist do so because no derivation of this folder lies
+  between a contract's own declarations and the assertion, which is a fact about how a guard is written
+  and answerable by reading it rather than by spending a cell. `unprobedClaims` goes **129 to 35**.
+  ADR-0212.
 
   **One instance is now named with the reason it is not closeable, which the entry had never had
   either.** `every-component-class-the-browser-writes-is-one-this-registry-paints` compares a

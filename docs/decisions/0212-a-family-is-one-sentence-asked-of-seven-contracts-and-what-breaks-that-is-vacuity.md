@@ -3,6 +3,7 @@ status: accepted
 date: 2026-09-04
 governs:
   - mutation/registry-storage.battery.ts
+  - CLAUDE.md
 confirmed-by: []
 ---
 
@@ -130,7 +131,187 @@ making the arithmetic wrong about what a family costs.
 
 ## Decision Outcome
 
-Nothing is measured here.
+**Fourteen of nineteen families collapse to one cell.** That is the middle of the three outcomes named
+in advance — ten to sixteen — and not the one predicted. The prediction was seventeen, the bias was
+declared upwards, and it was upwards by three.
+
+**The count was fifteen until the instrument refused it, and the correction is the mechanism arriving
+a second time.** `409ab48`'s message says fifteen. The replay reported one guard unaccounted for —
+`every-export-is-carried-or-declared-uncarried-number-parse` — because `I-167` drops a contract's
+first own declaration and `number/parse@1` has none: its entry in the catalogue says in as many words
+that it is the one contract publishing nothing beyond the shared seven. So that family takes five of
+its six silent rows and leaves one, which is not a collapse. **The commit message is left as it stands
+and this is the correction**, on the rule this repository already applies to a stamped figure.
+
+### The mechanism, named incompletely rather than wrongly
+
+The prediction said a family collapses iff its clause is non-vacuous for all seven contracts, and that
+where a family fails, the missing rows are the contracts whose data does not instantiate the clause.
+**That is the per-row form of the real mechanism and it misses the whole-family form**, which is what
+three of the five resisters are.
+
+> **A family collapses when a shared derivation of this folder lies between all seven rows and the
+> sentence. A row resists when, for its own contract, nothing of that derivation is exercised.**
+
+Vacuity is that rule read one row at a time; the absence of a shared derivation is the same rule read
+over the whole family. One mechanism at two scales, and the prediction named only the smaller.
+
+**The five resisters, each measured rather than argued.**
+
+| family | silent rows | the cell witnesses | why the rest resist |
+| --- | --- | --- | --- |
+| `every-produced-profile-exists` | 6 | 1 | `producedBy` is declared by two contracts of seven |
+| `every-export-is-carried-or-declared-uncarried` | 6 | 5 | `number/parse@1` declares no own declarations |
+| `every-declared-type-occurs-in-the-contract` | 7 | 0 | no derivation between the two sides |
+| `every-uncarried-export-exists` | 7 | 0 | no derivation between the two sides |
+| `every-own-declaration-is-an-export` | 7 | 0 | no derivation between the two sides |
+
+**The first two are vacuity and they are quantified.** `producedBy` is declared by `number/parse@1`
+and `array/group-by@1` and by nobody else, so on five contracts that guard quantifies over an empty
+set and is green whatever the serialiser does; `I-165` names a profile by its description, falsifying
+every producing expression at once, and reddens exactly the two rows that can redden — one already
+witnessed. **The first candidate was thrown away for measuring the same thing badly**: dropping the
+first profile reddened `array/group-by@1` alone, the row already witnessed, so it took none of the
+six.
+
+**The other three read a contract's own declarations against each other**, and no module of
+`packages/registry` stands between the input and the assertion. Measured, one edit to one contract's
+entry in `the-catalogue.ts` reddens **one row**: 1 red for the first, 2 for the second of which one is
+its own family's, and for the third the only edit found stops that contract serialising and reddens
+**66 guards to witness one**. Each costs seven cells rather than one.
+
+**The sibling that does collapse is what makes the reading a mechanism rather than a description.**
+`every-uncarried-export-carries-a-reason` sits in the same file as two of the three and reads the same
+`source.notCarried` — and it collapses, because the *reason* every contract gives is
+`SERVED_AS_A_FILE`, one constant in `serialise.ts`. Emptying it reddens all seven rows and nothing
+else. Three sibling guards over one declaration, one with a shared derivation behind it and two
+without, and the rule separates them correctly.
+
+### What A1 and A2 turn out to be, on this population
+
+A family is one sentence asked of seven contracts, so **A2 is decided once per family and A1 once per
+row**. Whether the defect's plainest description names the sentence does not vary by contract; whether
+the claim is falsified there does. That is a property this population has and neither earlier slice
+did, and it is why the family exception at `68e466a` is sound here rather than a licence.
+
+**Two cells serve two families apiece, and both are that exception used as written.** `I-169` renames
+the environments field inside the frozen half: the snapshot then serves a field nothing classifies —
+`every-field-a-snapshot-serves-is-classified` — *and* carries a field the record does not,
+`a-snapshot-invents-no-field`. Two clauses of one defect, one sentence each. `I-175` does the same for
+`an-implementation-binding-carries-no-frozen-field` and
+`the-frozen-half-and-the-standing-half-partition-an-implementation`. So **twelve cells witness the
+fourteen collapsing families**.
+
+**And the sub-prediction that no family is witnessed by a cell reddening rows it does not witness is
+refuted.** `I-172` inverts the test for a well-formed contract name and reddens all seven rows of
+`every-case-is-addressable-across-the-whole-contract` beside its own seven, because a case address
+carries a contract address inside it. Those seven are bystanders and are witnessed by `I-164`, which
+is aimed at the case identifier itself. The count cannot see the difference and the record can, which
+is the notch a first witness is weaker by, stated again on an instance.
+
+### The finding nobody predicted: a family witness can never be a sole witness
+
+Across the replay, `alone` does not move — **123 before and 123 after** — and `never alone` goes
+**204 to 297, which is exactly the 93 rows this slice witnessed**. It is true by construction: a cell
+that reddens six or seven rows of one family leaves six or seven names in `failedGuards`, so not one
+of them can be the only red on any mutant.
+
+**So the two debts trade against each other, one for one.** ADR-0199's bucket of guards never seen red
+alone grows by exactly what a family slice takes out of the decorative bucket. Paying the cheaper debt
+at family scale is not neutral for the dearer one, and no record before this one had to say so because
+no slice before this one witnessed a family at a time.
+
+### A declaration refuted by measurement rather than made stale by one
+
+The region covering `a-blob-answer-hashes-to-its-address` declared four contracts out of reach, and
+its reason was specific: the guard compares two evaluations of one expression, so no edit to
+`servedBytes` can separate them; what has teeth is `servedBlobFaults`, which reads idempotence; and a
+Latin-1 re-encoding loses idempotence only on a code point in U+0080–U+00FF, which those four carry
+none of. **Every clause of that is true and the conclusion is false.** `I-168` takes the first
+character off every served file rather than off the ones carrying a byte-order mark, which loses
+idempotence on every file there is, and it reddens all seven rows. The reason had characterised the
+guard by the one defect anybody had tried. `REACHED_BY_A_LATIN_1_RE_ENCODING` died with it, and
+`noUnusedLocals` is what said so.
+
+### The verdict on ADR-0209's 138
+
+**Corrected, and its form held.** That record's arithmetic is *117 standalone plus 21 families, if a
+family collapses to one cell*. The conditional is the whole of it, and it is false five times in
+nineteen.
+
+Costed over the population as it stands, the nineteen families take **41 aiming decisions** to witness
+in full — twelve cells for the fourteen that collapse, six for `every-produced-profile-exists`, two
+for `every-export-is-carried-or-declared-uncarried`, and seven apiece for the three that resist —
+against the **19** one cell per family would give. **The coefficient is 2.16 and not 1.**
+
+So today's ceiling is **50 aiming decisions for 129 guards**, not the 28 the family form gives, and
+the figure 138 is re-derivable at no coordinate because the population it was taken over no longer
+exists. What survives is the shape of the claim: a ceiling well below one cell per guard, and far
+enough below to be worth an afternoon rather than a fortnight.
+
+**What is publishable is a rate over a population and never a projection.** Fourteen of nineteen
+families, 74 %, for a family of `packages/registry`'s `unprobedClaims` as the population stands at
+`1238833`. Nothing here says the rate holds for a folder whose guards read that folder's own
+derivations in different proportions, and the mechanism says why it would not: what decides a collapse
+is the presence of a shared derivation, which is a fact about how a suite is written rather than about
+families.
+
+### The price, and the half of the prediction that was not implemented
+
+**Twenty candidate runs for fourteen cells and nineteen families decided.** That is **1.43 runs per
+cell** against a predicted 1.3 — refuted, in the same direction ADR-0211's price prediction was
+refuted, and the sixth reading of a figure that has now been 1.27, 1.21, 1.27, 1.21, 1.29 and 1.43.
+**The figure this slice alone can produce is 1.05 runs per family decided**, because no earlier slice
+had a unit larger than a guard.
+
+**And a replay was predicted before it was paid for, incompletely.** The prediction named three ways
+this unit could fail a run — a pin naming a guard that did not redden, a guard wrongly declared
+silent, and a guard left silent that no region declares — and implemented the first two. It answered
+nought faults; the run refused on the third. **A predictor that names three failure modes and checks
+two reads exactly like one that checks three**, which is this repository's own recurring class
+arriving on the tool built to avoid paying for a replay. The reader that would have caught it is four
+lines long and is now the one used against the fresh artefact, where it answers nought unaccounted and
+nought wrongly declared.
+
+**The bound announced before paying it held once of twice, and the miss is worth more than the hit.**
+229 cells at the 10.84 s ADR-0211 measured is 41 min 24 s, with 2.4 per cent either side giving 40 min
+25 s to 42 min 24 s. Measured, the first replay ran **42 min 10 s**, inside and against the upper
+edge; the second, on the same 229 cells at the next commit, ran **42 min 49 s** — 25 seconds outside
+it, 11.22 s per cell against the predicted 10.84. The two readings of near-identical work are 2 530 s
+and 2 569 s, a spread of 1.5 per cent, so the interval was too tight rather than the machine
+surprising: **a per-cell figure carried from another commit's replay does not bound this one to 2.4
+per cent**, which is ADR-0200's *one reading calibrates a battery no better than to about a sixth*
+arriving on an interval narrow enough to be falsified.
+
+### The state of the nineteen families, row by row
+
+| family | rows | silent before | witnessed | still silent | cell |
+| --- | --- | --- | --- | --- | --- |
+| `the-answer-is-the-export-the-identity-names` | 7 | 6 | 6 | 0 | I-162 |
+| `the-profile-vocabulary-and-the-profiles-agree` | 7 | 6 | 6 | 0 | I-163 |
+| `every-case-is-addressable-across-the-whole-contract` | 7 | 6 | 6 | 0 | I-164 |
+| `every-produced-profile-exists` | 7 | 6 | 1 | 5 | I-165 |
+| `every-harness-file-is-hashed` | 7 | 6 | 6 | 0 | I-166 |
+| `every-export-is-carried-or-declared-uncarried` | 7 | 6 | 5 | 1 | I-167 |
+| `a-blob-answer-hashes-to-its-address` | 7 | 4 | 4 | 0 | I-168 |
+| `every-field-a-snapshot-serves-is-classified` | 7 | 6 | 6 | 0 | I-169 |
+| `a-snapshot-invents-no-field` | 7 | 6 | 6 | 0 | I-169 |
+| `a-standing-field-does-not-move-the-digest` | 7 | 6 | 6 | 0 | I-170 |
+| `every-served-field-is-classified` | 7 | 6 | 6 | 0 | I-171 |
+| `every-declared-type-occurs-in-the-contract` | 7 | 7 | 0 | 7 | none |
+| `the-address-is-well-formed` | 7 | 7 | 7 | 0 | I-172 |
+| `every-uncarried-export-carries-a-reason` | 7 | 7 | 7 | 0 | I-173 |
+| `every-uncarried-export-exists` | 7 | 7 | 0 | 7 | none |
+| `every-own-declaration-is-an-export` | 7 | 7 | 0 | 7 | none |
+| `the-implementation-belongs-to-its-contract` | 7 | 7 | 7 | 0 | I-174 |
+| `an-implementation-binding-carries-no-frozen-field` | 7 | 7 | 7 | 0 | I-175 |
+| `the-frozen-half-and-the-standing-half-partition-an-implementation` | 7 | 7 | 7 | 0 | I-175 |
+| **total** | **133** | **120** | **93** | **27** | **14 cells** |
+
+**Measured at `90e6f1b` off a replay of 229 cells in 42 min 49 s**: 224 killed, the same five
+survivors, every cell agreeing with its pin, nought unaccounted for, nought wrongly declared silent,
+exit 0. `unprobedClaims` goes **129 to 36**, and the attribution reads 123 alone, 297 never alone, 10
+out of reach.
 
 ## Consequences
 
@@ -140,9 +321,20 @@ Nothing is measured here.
 - A family that does not collapse leaves rows without a witness and this unit does not buy them, so
   `unprobedClaims` falls by less than 120 whatever happens. The record publishes what is left rather
   than emptying the bucket.
-- The mechanism, if it holds, retires ADR-0209's framing of the joint: what has to be asked of a
-  family before pricing it is whether every contract instantiates its clause, which is answerable by
-  reading the catalogue and needs no cell at all.
+- **The mechanism replaces ADR-0209's framing of the joint and is cheaper than it.** What has to be
+  asked of a family before pricing it is whether a derivation of the folder lies between its rows and
+  its sentence — answerable by reading the guard, and it separated fourteen from three here with no
+  cell spent. Whether each contract instantiates the clause is the second question and is answerable
+  by reading the catalogue.
+- **A family witness enlarges the never-alone bucket by exactly what it takes out of the decorative
+  one.** Measured across this replay, `alone` does not move and `never alone` goes 204 → 297. Anybody
+  pricing the rest of `unprobedClaims` at family scale is buying first witnesses and spending sole
+  ones, and the exchange rate is one for one.
+- **Five rows of `every-produced-profile-exists` and one of
+  `every-export-is-carried-or-declared-uncarried` stay declared `unprobedClaims` and are arguably
+  `unreachableGuards`.** They are not: a defect in that contract's own entry in `the-catalogue.ts`
+  reddens each of them, at one cell per row. So they are dear rather than out of reach, which is the
+  distinction ADR-0211 had to make in the other direction.
 
 ## What would reopen this
 
@@ -158,6 +350,13 @@ Nothing is measured here.
 - **A reading of the same population on another folder.** `packages/cli` and the contract batteries
   have parameterised guards of their own, and nothing here says the vacuity rate is a property of
   anything but this catalogue's own data.
+- **A cell aimed at any of the twenty-seven rows still silent.** Three families cost seven cells
+  apiece and two carry vacuous rows a per-contract defect would reach; none of that is bought here,
+  and the 2.16 coefficient is a costing rather than a measurement of work performed.
+- **A per-cell duration carried from another commit bounding a replay to a few per cent.** The
+  interval announced here was 40 min 25 s to 42 min 24 s and the second reading came in at 42 min
+  49 s. A wider interval, or one derived from more than one replay, would not have been falsified —
+  and the figure that would replace it is a spread rather than a point.
 
 ## More Information
 
