@@ -235,7 +235,7 @@ cells in 38 min 50 s**, 210 killed, the same five survivors, nothing disagreeing
 and nought wrongly declared silent, exit 0: `unprobedClaims` goes **201 to 129**, 72 leaving against 60
 witnessed, and the gap of **12** is the one sub-prediction that held. ADR-0211.
 
-**And the joint ADR-0209 named in its own arithmetic gave way four times in nineteen.** That record
+**And the joint ADR-0209 named in its own arithmetic gave way five times in nineteen.** That record
 priced the parameterised half at *at most 138 aiming decisions* on the strength of one family
 collapsing to one cell, and wrote beside it that whether a family really collapses is **measured once
 and assumed twenty times**. The rule for the reading was committed at `a853805` before a guard of it
@@ -244,12 +244,14 @@ outcomes fixed so that none could be read afterwards as a rescue. **The structur
 mechanically first and it is what makes the question sharp**: 19 of 19 families carry exactly the
 seven distinct contract slugs, so **a family is one title asked of seven contracts** rather than a
 resemblance between separately written guards — and an edit to a shared path is by construction the
-failure condition every row names. **Fifteen of nineteen collapse**, the middle outcome, against a
+failure condition every row names. **Fourteen of nineteen collapse**, the middle outcome, against a
 predicted seventeen with the bias declared upwards. **The mechanism was named incompletely rather than
 wrongly, and the correction is the finding**: the prediction said a family fails on *vacuity*, and
 that is the rule read one row at a time — `every-produced-profile-exists` is exactly it, `producedBy`
 being declared by `number/parse@1` and `array/group-by@1` and by nobody else, so five rows of seven
-quantify over an empty set. **The three others resist at the scale the prediction did not reach**:
+quantify over an empty set, and `every-export-is-carried-or-declared-uncarried` is the second of two,
+`number/parse@1` declaring no own declarations at all. **The three others resist at a scale the
+prediction did not reach**:
 they read a contract's own declarations against each other and **no derivation of this folder stands
 between the input and the assertion**, so one edit reddens one row — measured at 1, 2 and 66 reds for
 one row apiece, the last stopping a contract serialising to witness a single guard. So the rule is
@@ -263,8 +265,8 @@ characterised the guard by the one defect anybody had tried, and `I-168` reddens
 `REACHED_BY_A_LATIN_1_RE_ENCODING` dying with it, caught by `noUnusedLocals`. **A1 and A2 turn out to
 sit at different scales here**, A2 per family and A1 per row, which is what makes `68e466a`'s family
 exception sound on this population and is a shape neither earlier slice had. **The verdict on the 138
-is corrected with its form held**: the nineteen families cost **35 aiming decisions and not 19**, a
-coefficient of **1.84**, so today's ceiling is **44 for 129 guards** rather than 28 — a ceiling far
+is corrected with its form held**: the nineteen families cost **41 aiming decisions and not 19**, a
+coefficient of **2.16**, so today's ceiling is **50 for 129 guards** rather than 28 — a ceiling far
 below one cell per guard, and the figure 138 is re-derivable at no coordinate because its population
 is gone. The price prediction was refuted again — **1.43 candidate runs per cell** against a predicted
 1.3, the sixth reading of a figure that has been 1.27, 1.21, 1.27, 1.21, 1.29 and 1.43 — and the
@@ -2234,6 +2236,67 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   what is available is a line where somebody adding a guard arrives, and that is prose. Priced and not
   taken. ADR-0206.
 
+- **That a reading which decides whether to pay for a replay checks every way a replay can refuse.**
+  ADR-0206's entry above says nothing routes anybody to the twenty-second reading; this is the next
+  floor down, and it is about the reading itself. A battery refuses a run on three counts - a pin
+  naming a guard that did not redden, a guard reddening that a region declares silent, and a guard
+  left silent that no region declares - and a pre-flight is worth its name only if it asks all three.
+
+  **It is measured on the unit that opened it and the measurement is the whole point.** ADR-0212's
+  predictor named the three in its own header and implemented the first two. It answered **nought
+  faults**; the replay refused on the third, at the end of **42 minutes**, and the count it corrected
+  was the record's headline figure. **A predictor that names three failure modes and checks two reads
+  exactly like one that checks three** - same output, same shape, same confidence - which is this
+  repository's own recurring class arriving inside the tool built to avoid paying for a replay.
+
+  **Where this looked**: `attributeColumn` in `mutation/attribution.ts`, which computes all three
+  buckets and is the only place the three are stated together; `assertTheCensusHolds` in
+  `mutation/run.ts`, which refuses on them; and the scratchpad, which is where every such predictor
+  has been written and is why none of them is kept, reviewed or reused.
+
+  **The population is every reading taken to avoid a replay**, and it is unbounded because each one is
+  written fresh. What would close it is not a guard: it is the reading living in `mutation/` as a
+  command, next to the battery it predicts, where the three buckets are one import away instead of
+  being retyped from memory. That is a small unit and it was not taken here, because a unit correcting
+  four figures is not where one decides what the instrument's pre-flight is. ADR-0212.
+
+- **That a figure corrected inside a unit reaches every surface that unit writes.** A record is dated
+  and an entry of this list is the present tense, so when a measurement moves *during* a unit the
+  record is rewritten and the entry is whatever was drafted before the correction. Nothing rereads it.
+
+  **It is measured rather than feared, and the cost is this list's own.** ADR-0212's count moved from
+  fifteen to fourteen when the replay refused, and the record took the correction. The two passages of
+  this file had been drafted before it and were spliced in unread: **eleven figures across them were
+  the pre-correction state**, internally consistent with each other and with a world that had stopped
+  existing - a collapse count, a row count, a coefficient, a ceiling, a bucket total, and the
+  classification of the resisters, in both passages. **Not one carried a coordinate that would have
+  warned a reader**, which is what separates this from a stamped reading. Two more sat outside this
+  file, in a battery comment and in the record's own Consequences.
+
+  **All thirteen were found by the owner reading, and by nothing else.** Every suite was green, the
+  meta suite included, and the figures resolve against no mechanism at all.
+
+  **It is the shape ADR-0211 published one unit earlier**, where ADR-0210's *174* is contradicted by
+  its own rule commit's *173* - and this is that shape arriving on the same author, in the same week,
+  on thirteen figures rather than one. Rules 1 to 3 of this section are written against an entry going
+  stale over *units*; this one goes stale inside a single one, between a draft and a commit an hour
+  apart.
+
+  **Where this looked**: the nine fault functions of `mutation/decisions.ts`, which resolve what a
+  record *names* and read no figure in it; `mutation/readme.test.ts`, which is the one guard resolving
+  a published figure against what produced it and which reads one page; and `mutation/history.ts`,
+  whose sweep over this file is for commit identifiers and refused addresses rather than for the
+  numbers beside them.
+
+  **The population is every figure a unit publishes on more than one surface.** What would close it is
+  the thing several entries here already name, price and refuse - a validation stage reading this
+  repository's own strings - and this is the first of them whose subject is *one unit's own two
+  surfaces disagreeing*, which is narrower and might be reachable where the general lint is not: a
+  figure in an entry and a figure in the record that entry cites are two strings a machine could be
+  asked to compare. Priced as its own unit and not taken. **What is cheap and is done instead is a
+  convention**: the entry is written from the record after the record is final, and never beside it.
+  ADR-0212.
+
 - **That a new guard is answered for as many times as it is collected.** A battery accounts for guards
   per *battery* and never globally, so a guard added to a suite four batteries collect is owed four
   answers - a cell in each, or a declared region in each. Nothing says so anywhere, and the arithmetic
@@ -2809,12 +2872,21 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   **And the family half of that bucket is priced, which is the half ADR-0209 could only assume.**
   ADR-0212 takes every family `unprobedClaims` still holds — 19 of them, 120 rows, total over the
-  population — and witnesses **94 rows with 14 cells across 16 families**, two cells serving two
-  families apiece by falsifying two clauses of one defect. **Fifteen of nineteen collapse to one cell
-  and four do not**, so ADR-0209's *at most 138* is corrected rather than kept: one cell per family
-  understates by **1.84**, and the four that resist do so because no derivation of this folder lies
-  between a contract's own declarations and the assertion, which is a fact about how a guard is written
-  and answerable by reading it rather than by spending a cell. `unprobedClaims` goes **129 to 35**.
+  population — and witnesses **93 rows with 14 cells across 16 families**, two cells serving two
+  families apiece by falsifying two clauses of one defect. **Fourteen of nineteen collapse to one cell
+  and five do not**, so ADR-0209's *at most 138* is corrected rather than kept: one cell per family
+  understates by **2.16**. **Of the five that resist, three do so because no derivation of this folder
+  lies between a contract's own declarations and the assertion** — a fact about how a guard is written,
+  answerable by reading it rather than by spending a cell — and two carry rows their own contract
+  leaves vacuous. **And a family witness can never be a sole one**, which is the finding a reader of
+  this entry needs before choosing which of its two buckets to pay: `alone` does not move across that
+  replay, **123 either side**, while `never alone` goes **204 to 297**, exactly the 93 rows witnessed.
+  A cell reddening six or seven rows of one family leaves six or seven names in `failedGuards`, so not
+  one of them can be the only red on any mutant — **the two debts trade one for one**, and pricing the
+  rest at family scale buys first witnesses by spending sole ones. `unprobedClaims` goes **129 to 36**.
+  **And ADR-0212's own Consequences reads *it separated fourteen from three*** where the question it
+  names — whether a shared derivation lies between the rows and the sentence — separates **sixteen from
+  three**, the two vacuous families having one. That record is stamped, so this is the note.
   ADR-0212.
 
   **One instance is now named with the reason it is not closeable, which the entry had never had

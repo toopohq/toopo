@@ -4759,7 +4759,7 @@ export const battery: Battery = {
         // `a record accounts for everything its contract declares`, named guard by guard since I-125,
         // I-126 and I-127 stopped `array/group-by@1` serialising and reached one of its twenty-eight.
         // The one that left is that contract's row of the first family; ADR-0212's I-167 and I-173
-        // took thirteen more, and what is left of that file is the two families below and the one row
+        // took twelve more, and what is left of that file is the two families below and the one row
         // beside them.
         //
         // The row is vacuous rather than unprobed, and `number/parse@1`'s own entry in the catalogue
