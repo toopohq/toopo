@@ -130,6 +130,25 @@ const perContract = (spell: (slug: string) => string): readonly string[] => THE_
 const onEach = (guard: string): readonly string[] => perContract((slug) => `${guard}-${slug}`)
 
 /**
+ * The one contract whose serialisation ADR-0211's three widest cells stop.
+ *
+ * `I-125`, `I-126` and `I-127` break the reading of a signature shape only `array/group-by@1` writes -
+ * a trailing comma, a type parameter list, a function-typed parameter - so that contract stops
+ * serialising and every guard about it reddens whatever its own subject is. **Eleven declarations
+ * became stale on that one fact**, one of them an `unreachableGuards` entry whose argument is still
+ * true of the seam it names and was never about a contract ceasing to exist.
+ *
+ * It is ADR-0209's own sentence arriving on a second bucket: *the instrument's criterion for leaving
+ * is reddening and not aiming*. A guard a cell reddens incidentally leaves its declaration, and the
+ * declaration has to say so rather than go on claiming a silence that is no longer there.
+ */
+const WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP = 'array-group-by'
+
+/** Every contract's row of a family but one, for the reason above. */
+const onEachBut = (guard: string, slug: string): readonly string[] =>
+  onEach(guard).filter((address) => !address.endsWith(`-${slug}`))
+
+/**
  * The contracts whose harness carries a code point in U+0080-U+00FF, which is the region a Latin-1
  * re-encoding stops being idempotent on. Measured at `8b6aa89` over all 47 files of the harness and
  * the shared surface: `date/add@1` carries one such point and `string/slugify@1` carries nine.
@@ -4406,7 +4425,10 @@ export const battery: Battery = {
         'this battery edits the working tree - which is the one thing neither process reads',
     },
     {
-      guards: onEach('a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands'),
+      guards: onEachBut(
+        'a-sentence-the-catalogue-shares-is-a-whole-sentence-where-it-lands',
+        WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP,
+      ),
       reason:
         'the seam it reads is composed in a contract folder, and this battery edits `packages/registry/` only ' +
         '- measured, emptying the reason in `serialise.ts` removes the occurrence rather than ' +
@@ -4475,9 +4497,10 @@ export const battery: Battery = {
      * are witnessed now - `I-65`, `I-66` and `I-67` - and what is left is the four below.
      */
     {
-      guards: onEach('a-blob-answer-hashes-to-its-address').filter(
-        (address) => !REACHED_BY_A_LATIN_1_RE_ENCODING.some((slug) => address.endsWith(slug)),
-      ),
+      guards: onEachBut(
+        'a-blob-answer-hashes-to-its-address',
+        WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP,
+      ).filter((address) => !REACHED_BY_A_LATIN_1_RE_ENCODING.some((slug) => address.endsWith(slug))),
       nature: 'claims detection',
       reason:
         'the four contracts `I-65` does not move. The guard compares two evaluations of one ' +
@@ -4518,15 +4541,18 @@ export const battery: Battery = {
         'none of them reaches a ' +
         'statement about what a record contains.',
       suites: [
-        'a record accounts for everything its contract declares',
-        // The schema suites still wholly silent. `the files a contract is made of` is deliberately
-        // absent: it is a storage suite, every one of its guards is reddened by I-02, and declaring
-        // it here is what the instrument refused when the two guards still sat in the file above.
-        // `the implementations under the contracts of the catalogue` left this list for the same reason, below.
-        // `the registry encoding` and `a sixth contract enters without a migration` left it for that
-        // reason too, at the E series, and both are named guard by guard below.
-        // `the public/private frontier` left it at I-106 to I-109, the fifth and sixth and seventh and
-        // eighth time this has happened, and is named guard by guard below with the rest.
+        // **This list is empty and it is the ninth time.** `the files a contract is made of` is
+        // deliberately absent: it is a storage suite, every one of its guards is reddened by I-02, and
+        // declaring it here is what the instrument refused when the two guards still sat in the file
+        // above. `the implementations under the contracts of the catalogue` left this list for the
+        // same reason, below. `the registry encoding` and `a sixth contract enters without a
+        // migration` left it for that reason too, at the E series, and both are named guard by guard
+        // below. `the public/private frontier` left it at I-106 to I-109, the fifth and sixth and
+        // seventh and eighth time this has happened. **And `a record accounts for everything its
+        // contract declares` left it at I-125 to I-127**, which stop `array/group-by@1` serialising
+        // and reach one of its twenty-eight - so the last suite named as a suite is named guard by
+        // guard below, and this key exists to say that nothing is declared this way any more.
+        // ADR-0211.
       ],
       /**
        * `the five, read against their own source` is named guard by guard rather than as a suite,
@@ -4555,9 +4581,9 @@ export const battery: Battery = {
        */
       guards: [
         ...onEach('every-declared-type-occurs-in-the-contract'),
-        ...onEach('the-answer-is-the-export-the-identity-names'),
-        ...onEach('the-profile-vocabulary-and-the-profiles-agree'),
-        ...onEach('every-case-is-addressable-across-the-whole-contract'),
+        ...onEachBut('the-answer-is-the-export-the-identity-names', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
+        ...onEachBut('the-profile-vocabulary-and-the-profiles-agree', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
+        ...onEachBut('every-case-is-addressable-across-the-whole-contract', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
         ...onEach('the-address-is-well-formed'),
         // A guard whose claim is that a derived identity is injective, and the only single edit that
         // makes two of them collide is one that damages the derivation - at which point the guards
@@ -4568,8 +4594,18 @@ export const battery: Battery = {
         // `every-produced-expression-is-the-one-its-own-profile-declares` left this list when it
         // replaced the seven occurrence guards: I-72 reddens it, and a guard a mutant reaches is not
         // an unprobed region. Its neighbour below is still silent and stays named. ADR-0171.
-        ...onEach('every-produced-profile-exists'),
-        ...onEach('every-harness-file-is-hashed'),
+        ...onEachBut('every-produced-profile-exists', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
+        ...onEachBut('every-harness-file-is-hashed', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
+        // `a record accounts for everything its contract declares`, named guard by guard since I-125,
+        // I-126 and I-127 stopped `array/group-by@1` serialising and reached one of its twenty-eight.
+        // The one that left is that contract's row of the first family; the other twenty-seven are
+        // still silent. ADR-0211.
+        ...onEach('every-export-is-carried-or-declared-uncarried').filter(
+          (address) => !address.endsWith('array-group-by'),
+        ),
+        ...onEach('every-uncarried-export-carries-a-reason'),
+        ...onEach('every-uncarried-export-exists'),
+        ...onEach('every-own-declaration-is-an-export'),
         // `the implementations under the contracts of the catalogue`, named guard by guard since I-26 and I-27
         // reached ten of its eighteen. These eight are what is left silent: the perimeter mutants move
         // which files an implementation carries, and none of these reads that.
@@ -4613,7 +4649,7 @@ export const battery: Battery = {
         // catalogue and false of this folder, the map being a source of it. These seven are the other
         // half of the frontier - that every field a snapshot serves is classified - and no mutant here
         // unclassifies one. ADR-0210.
-        ...onEach('every-served-field-is-classified'),
+        ...onEachBut('every-served-field-is-classified', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
         // The one guard of ADR-0210's slice with no cell aimed at it. Every stratum but one is held by
         // more than one declaration, so a single edit can empty only `stated-per-declaration` - and the
         // plainest description of that edit names the deferral rather than the population of strata,
@@ -4631,12 +4667,14 @@ export const battery: Battery = {
         'a byte-order mark, a normalisation, and the four standing guards - left at I-110 to I-122 ' +
         'and I-155 to I-158.',
       guards: [
-        ...onEach('a-snapshot-invents-no-field'),
-        ...onEach('a-standing-field-does-not-move-the-digest'),
-        // The same shape as `no-two-contracts-share-an-address` one floor down, and it was measured
-        // the same way: a digest taken over a snapshot's format version alone makes all seven collide
-        // and reddens thirty-five guards, led by the family that pins the hashing itself. ADR-0211.
-        'no-two-contracts-share-a-digest',
+        ...onEachBut('a-snapshot-invents-no-field', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
+        ...onEachBut('a-standing-field-does-not-move-the-digest', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
+        // `no-two-contracts-share-a-digest` left this list without a cell being aimed at it, which is
+        // ADR-0209's own sentence firing again: the criterion for leaving is reddening and not aiming.
+        // ADR-0211 searched for a cell for it and refused what it found - a digest taken over a
+        // snapshot's format version alone makes all seven collide and reddens thirty-five guards, led
+        // by the family that pins the hashing itself - and then I-125 to I-127 reddened it anyway, by
+        // stopping one contract serialising. So it is out of this bucket and nothing witnessed it.
         ...onEach('the-frozen-half-and-the-standing-half-partition-an-implementation'),
       ],
     },
@@ -4650,7 +4688,7 @@ export const battery: Battery = {
         'that pass became I-11 to I-15 and thirteen more became ADR-0211\'s cells; what is left is ' +
         'the family below and one guard that resists.',
       guards: [
-        ...onEach('every-field-a-snapshot-serves-is-classified'),
+        ...onEachBut('every-field-a-snapshot-serves-is-classified', WHOSE_SERIALISATION_THE_SIGNATURE_CELLS_STOP),
         // The one of these fifteen ADR-0211 could not aim at, and it resists for the reason
         // `the-strata-are-populated` does one region along - the two are neighbours on one fact.
         // Every stratum but one is held by more than one declaration, and the second holder of
