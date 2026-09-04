@@ -4758,8 +4758,16 @@ export const battery: Battery = {
         ),
         // `a record accounts for everything its contract declares`, named guard by guard since I-125,
         // I-126 and I-127 stopped `array/group-by@1` serialising and reached one of its twenty-eight.
-        // The one that left is that contract's row of the first family; the other twenty-seven are
-        // still silent. ADR-0211.
+        // The one that left is that contract's row of the first family; ADR-0212's I-167 and I-173
+        // took thirteen more, and what is left of that file is the two families below and the one row
+        // beside them.
+        //
+        // The row is vacuous rather than unprobed, and `number/parse@1`'s own entry in the catalogue
+        // says why in as many words: it is the one contract that publishes nothing beyond the shared
+        // seven, so its `ownDeclarations` is empty and a defect in how the serialiser reads them has
+        // nothing to read. What would redden it is a defect in that contract's own declarations,
+        // which is one cell for one row - the price the three families below carry. ADR-0212.
+        'every-export-is-carried-or-declared-uncarried-number-parse',
         ...onEach('every-uncarried-export-exists'),
         ...onEach('every-own-declaration-is-an-export'),
         // `the implementations under the contracts of the catalogue`, named guard by guard since I-26 and I-27
