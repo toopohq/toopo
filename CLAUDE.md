@@ -2804,6 +2804,20 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   unavailable**: `Temporal.DurationLike` declares every unit optional by design. **No contract is
   written**, and choosing between the three is the owner's. ADR-0216.
 
+  **R5 is being paid before any shape is chosen, and its method was committed before the first
+  package was installed.** ADR-0216 named it as the one ground it could not rule out, and it is
+  binary: choosing between three shapes before knowing whether the candidate survives would settle the
+  form of something that may not exist. **ADR-0191 decides how it may be paid** — a demand signal
+  decides what is measured and never what is refused, so an install count may *find* a package and may
+  not enter the verdict, and what is read is what each package **does** when executed rather than what
+  its README claims. The population is declared against its own bias: *packages that wrap Temporal*
+  would be near-empty because the proposal is months old, so R5 would fire on Temporal's age rather
+  than on the question's contestedness — the reading that decides is every library that takes an
+  object-shaped duration and applies it to a date-like value, which is a job older than Temporal. **A
+  polyfill is excluded by construction**, implementing the specification being agreement with it by
+  definition. **R5 fires only if every such package answers as Temporal does**, which is a deliberately
+  low bar because `string/strip-ansi`'s was. ADR-0217.
+
   **Three debts leave the unit for other records.** ADR-0192's `Date.parse` refusal rests on a claim
   the stage-4 engine refutes — Temporal parses **only** ISO 8601, throwing on `01/15/2026`, on
   `15 January 2026` and on RFC 2822 — which is that record's *a refusal ground being wrong* arriving on
