@@ -1178,17 +1178,53 @@ export const verdictOf = (run: SuiteRun): Verdict => {
   return run.failedGuards.length === 0 ? 'killed-by-typecheck' : 'killed'
 }
 
-const agreesWith = (
+/**
+ * The guards a pin names that did not redden.
+ *
+ * **Exported because three things ask this one question and used to answer it three times.**
+ * `agreesWith` below decides whether a cell agrees; `measure.ts` renders *no longer caught by* under a
+ * disagreement; and `predict.ts` asks it of a measurement already on disk. The three had drifted apart
+ * in a way that reads as nothing: the first two take the expectation the *run* resolved, the third
+ * takes the one the battery declares *today*, and that difference is the whole subject of a pre-flight.
+ * One definition means the difference is in the argument rather than in the arithmetic.
+ */
+export const unmetBy = (
+  expectation: Expectation,
+  failedGuards: readonly string[],
+): readonly string[] => (expectation.by ?? []).filter((id) => !failedGuards.includes(id))
+
+/**
+ * Whether a measured cell agrees with what is expected of it.
+ *
+ * **A pin is checked as a subset** - every guard it names must have reddened, and never the reverse.
+ * `attribution.ts` carries why, and `THE_MOST_REDS_A_PIN_NAMES_IN_FULL` is where the convention that
+ * makes the asymmetry legitimate is written down.
+ */
+export const agreesWith = (
   expectation: Expectation,
   verdict: Verdict,
   failedGuards: readonly string[],
-): boolean => {
-  if (expectation.verdict !== verdict) return false
-
-  return (expectation.by ?? []).every((id) => failedGuards.includes(id))
-}
+): boolean =>
+  expectation.verdict === verdict && unmetBy(expectation, failedGuards).length === 0
 
 const cellKey = (arm: Arm, lens: Lens): string => `${arm.id}/${lens.id}`
+
+/**
+ * What this battery pins for one cell **today**, addressed the way a stored measurement addresses it.
+ *
+ * A run holds the `Mutant`, `Arm` and `Lens` objects and needs no lookup; a reading taken off
+ * `mutation/results/` holds three strings and nothing else. Answering `undefined` rather than throwing
+ * is the difference between the two callers: a run meeting an unpinned cell is the state this
+ * instrument exists to leave, and a *reading* meeting a cell today's battery no longer declares has
+ * found a measurement that has gone stale, which is a fact to report rather than a fault to refuse on.
+ */
+export const thePinFor = (
+  battery: Battery,
+  mutant: string,
+  arm: string,
+  lens: string,
+): Expectation | undefined =>
+  battery.mutants.find((one) => one.id === mutant)?.expected[`${arm}/${lens}`]
 
 const expectationFor = (mutant: Mutant, arm: Arm, lens: Lens): Expectation => {
   const pinned = mutant.expected[cellKey(arm, lens)]
@@ -1588,7 +1624,14 @@ const assertTheCensusHolds = (label: string, run: SuiteRun, census: SuiteCensus)
   )
 }
 
-const cellsOf = (battery: Battery): readonly { arm: Arm; lens: Lens }[] =>
+/**
+ * The cells this battery runs: every lens against every arm it applies to.
+ *
+ * Exported because `prediction.ts` has to know which cells a battery *would* measure in order to say
+ * which of them a stored measurement does not hold, and a second statement of what a battery's cells
+ * are is the one thing that would make a pre-flight quietly narrower than the replay it predicts.
+ */
+export const cellsOf = (battery: Battery): readonly { arm: Arm; lens: Lens }[] =>
   battery.arms.flatMap((arm) =>
     battery.lenses.filter((lens) => lens.arms.includes(arm.id)).map((lens) => ({ arm, lens })),
   )

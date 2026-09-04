@@ -48,13 +48,44 @@
  * every gate green.
  */
 
-import type { Battery, Calibration, GuardIdentity, RunResult, SilentGuards } from './run.ts'
+import type {
+  Battery,
+  Calibration,
+  GuardIdentity,
+  PlatformFamily,
+  RunResult,
+  SilentGuards,
+} from './run.ts'
 import { THE_MOST_REDS_A_PIN_NAMES_IN_FULL, thePlatformFamily } from './run.ts'
 
 export type GuardAttribution = {
   readonly guard: string
   readonly reddenedBy: readonly string[]
   readonly soleRedOn: readonly string[]
+}
+
+/**
+ * One complete run of a battery, as `measure.ts` writes it into `mutation/results/`.
+ *
+ * **It is declared here rather than beside `writeResults` or beside its reader, and both alternatives
+ * were tried.** `run.ts` cannot hold it without importing `ColumnAttribution` from this file, which is
+ * the cycle ADR-0198 cut; and holding it in `prediction.ts` put that module on the import closure of
+ * `measure.ts`, which `every-file-a-run-of-a-battery-reads-is-declared` reported at once - the walk
+ * counts a type-only import, so a pre-flight that cannot change any verdict would have joined the set
+ * of files whose every change replays all twenty-three batteries. Here, the writer and the reader
+ * share one statement and neither drags the other into a run.
+ *
+ * `guards` and `platform` are optional because twenty-three measurements were written before either
+ * existed. Their absence is a reading `prediction.ts` declines to take, never a default it fills in.
+ */
+export type StoredMeasurement = {
+  readonly results: readonly RunResult[]
+  /** Absent on a filtered run, which computes no attribution and says so. */
+  readonly attribution?: readonly ColumnAttribution[]
+  /** The guards each `arm/lens` column collected, which is what the two silences are judged against. */
+  readonly guards?: Readonly<Record<string, readonly GuardIdentity[]>>
+  /** The platform family the measurement was taken on, so a pin naming one can be judged. */
+  readonly platform?: PlatformFamily
 }
 
 export type AccountedGuard = {

@@ -24,7 +24,8 @@
  */
 
 import type { Battery, RunResult } from './run.ts'
-import { calibrate, runBattery, writeResults } from './run.ts'
+import { calibrate, runBattery, thePlatformFamily, unmetBy, writeResults } from './run.ts'
+import type { StoredMeasurement } from './attribution.ts'
 import {
   attributionOf,
   disagreementsIn,
@@ -171,7 +172,7 @@ const report = (battery: Battery, results: readonly RunResult[]): number => {
 
   process.stdout.write(`\n${disagreements.length} cell(s) disagree with the battery:\n`)
   for (const cell of disagreements) {
-    const missing = (cell.expected.by ?? []).filter((id) => !cell.failedGuards.includes(id))
+    const missing = unmetBy(cell.expected, cell.failedGuards)
 
     process.stdout.write(
       `  ${cell.mutant} on ${cell.arm}/${cell.lens}: expected ${cell.expected.verdict}, ` +
@@ -227,6 +228,19 @@ if (!complete) {
     for (const disagreement of disagreements) process.stdout.write(`  ${disagreement}\n`)
   }
 
-  writeResults(name, { results, attribution }, true)
+  /**
+   * The guards and the platform are stored because `prediction.ts` cannot judge either silence
+   * without them, and because `attributionOf` answers *no silence* for a column it has no guard list
+   * for - which is a false green rather than a missing reading. Storing them is what lets a pre-flight
+   * refuse instead of guessing. ADR-0221.
+   */
+  const measurement: StoredMeasurement = {
+    results,
+    attribution,
+    guards: calibration.guardsPerCell,
+    platform: thePlatformFamily(),
+  }
+
+  writeResults(name, measurement, true)
   process.exitCode = cellsDisagree || disagreements.length > 0 ? 1 : 0
 }

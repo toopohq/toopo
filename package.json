@@ -34,6 +34,7 @@
     "test": "node run-vitest.ts run --typecheck",
     "mutation": "node mutation/replay.ts",
     "battery": "node mutation/measure.ts",
+    "predict": "node mutation/predict.ts",
     "anchors": "node mutation/check-anchors.ts",
     "hands": "node mutation/check-hands.ts",
     "tally": "node mutation/tally.ts",
