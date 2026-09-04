@@ -66,6 +66,14 @@
  * files no cell reaches, so the only thing that moves between the two readings is whether a guard is
  * a row of a family. Which way that biases is written down there before the result was known, and so
  * are the three outcomes it could have - a bracket, a meeting, or a refusal to bracket at all.
+ *
+ * **The third slice takes the clause both the others held.** ADR-0211 carries it, committed before
+ * its own cells: the guards no table wrote that sit in files this battery already reddens, which is
+ * the reading ADR-0210 named in its own reopening section and the population that decides whether
+ * the 94 % those two published speaks for a seventh of what is left or for most of it. Its trap is
+ * peculiar to it and is written down there - the injection site is already present, so the cheapest
+ * way to redden a silent guard is to widen a neighbouring cell, and a widened cell has stopped
+ * aiming.
  */
 
 import type { Battery, Mutant } from './run.ts'
