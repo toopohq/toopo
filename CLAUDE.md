@@ -169,6 +169,36 @@ arithmetic says so twice — 58 + 17 = 75 and 135 + 17 = 152 from the corrected 
 one needs 57 + 18 and 136 + 16 with the extra unit unexplained. It is ADR-0204's own reopening clause
 firing on the mechanism it named. ADR-0209.
 
+**The second slice was taken to bracket that fraction and it refuted the reason for expecting a
+bracket.** ADR-0209 refused to extrapolate its 94 % because the rule that chose its file selected for a
+parameterised table, and it named the correcting reading: a slice over the standalone guards, under a
+rule with the opposite bias. **That rule was committed at `e91dd13` before a guard of it was read**,
+inverting exactly one clause — not parameterised over a contract — and holding the other — collected in
+a wholly unprobed file — so the only thing moving between the two readings is whether a guard is a row
+of a family. **Its bias was written down as *downwards*, with three outcomes named in advance so that
+none could be read afterwards as a rescue.** It came back **19 of 20**, 95 % against 94 %: **parameterisation
+is refuted as the factor**, the two do not bracket, and the difference is smaller than one guard of
+either slice — one more resister here reads 90 %, one fewer there reads 97 %. **What is publishable is a
+count over a population and never a mean of two fractions**: **51 of 54, 94 %**, for a guard in a wholly
+unprobed file whether or not it is a row of a family. **What no rule of this shape can reach is the 174
+in probed files**, because excluding them is the clause both slices held and the clause that made them
+comparable — and both directions are arguable there, a witness arriving free from an existing cell
+against ADR-0209's own finding that a guard still silent in a probed file has already survived every
+cell aimed at its neighbours. **Two reds were thrown away for failing A2**, which is the whole of what
+the definition is for: a candidate that reddens the guard it names and whose plainest description names
+a neighbour has witnessed the neighbour, and nothing but reading can see that. The one guard that
+resists is a third mechanism beside ADR-0209's two — a claim about a *set* another guard pins member by
+member, so the nearer description always names the other guard — and **what the three resisters have in
+common is not what either slice rule separates them by**: it is the absence of a single edit whose
+plainest description is the guard's own claim. **The price holds the prediction it was made against**:
+1.21 runs per guard witnessed against the sole witness's 2.36, which is 1.95 times less, where ADR-0209
+predicted 1.9 for the factor with its family removed — and this slice has no family in it to remove.
+**And a declaration the battery carried was falsified by one edit**: *the private-field guards cannot
+redden until a private field exists* is true of the catalogue and false of the folder, `field-map.ts`
+being a source of it, so declaring one served field private reddens eight guards at once.
+`unprobedClaims` goes **228 to 201** against nineteen witnessed, and the gap is seven family members and
+one bystander. ADR-0210.
+
 **The client stopped killing the process it was refusing in, and the ending was a half nothing here
 watched.** `toopo add` of a name the registry does not hold refused correctly, printed the right
 sentence, wrote nothing — and then aborted: `process.exit` after a `fetch` races libuv's teardown, and
@@ -2664,6 +2694,22 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   file 32 of whose 34 guards are rows of an `it.each`, and the slice rule selects for that. **One guard
   left the bucket with nothing aimed at it**, the instrument's criterion for leaving being reddening
   rather than aiming, which is the distinction that whole reading depends on. ADR-0209.
+
+  **And the second slice priced the same thing under the opposite rule, which is what says the first
+  price was not a property of a table.** ADR-0210 takes the 20 unprobed-claims guards that are not
+  parameterised over a contract and sit in a wholly unprobed file — 12 of `endpoints.test.ts`, 5 of
+  `visibility.test.ts`, 3 of `attestation.test.ts` — by a rule committed before one of them was read,
+  with its bias declared *downwards* and three outcomes named in advance. **Nineteen are witnessed by
+  nineteen cells over 23 candidate runs**, 1.21 runs per cell and 1.21 per guard, and **eleven redden
+  alone**. So the two readings are 94 % and 95 % and they **meet rather than bracket**: what is
+  publishable over the two together is **51 of 54**, a count over the union and never a mean, holding
+  for a guard in a wholly unprobed file *whether or not it is a row of a family*. **The 174 in probed
+  files are what neither slice can reach**, that exclusion being the clause both rules held. **One guard
+  resists** — `the-strata-are-populated`, whose claim is about a set that
+  `the-fields-that-defer-their-stratum` pins member by member, so the only single edit reaching it is
+  described more plainly by its neighbour. Measured at `709798c` off a replay of 163 cells in 28 min
+  46 s, exit 0, nothing disagreeing: this folder's row goes 75/152/239 to **86/168/212**, and its
+  `unprobedClaims` **228 to 201**. ADR-0210.
 
   **One instance is now named with the reason it is not closeable, which the entry had never had
   either.** `every-component-class-the-browser-writes-is-one-this-registry-paints` compares a
