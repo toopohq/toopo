@@ -2202,6 +2202,21 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   reddens both legs today. It reopens the day the matrix reaches Node 26, and it will have to live
   outside the frozen folder. ADR-0150.
 
+  **That day has arrived and the wait has become a decision, which is a different state from the one
+  the clause above describes.** ADR-0150 published *Node 26 ships it unflagged* at its line 24 and
+  *Node 26 was not available to measure* at its line 101, and the second is what made the first a
+  reading of the news. Measured at `a0bbf86` on **Node 26.8.1**, V8 14.6.202.34, released 2026-08-26:
+  it serves **the language** and not V8 13.6's draft, passing ADR-0215's own guard exactly — the
+  specification's nine own property names, `TimeZone` and `Calendar` absent, nothing beyond them —
+  where node v24.15.0 under `--harmony-temporal` still carries both. **And the whole repository
+  already runs there**: all eight suites of a `suites` leg are green on it, 115 files and 1 748 tests
+  with `--typecheck`, `meta` and `freeze` included, neither of which had ever run on a runtime outside
+  the matrix. So a third leg costs one matrix entry, no repair and no critical path. **What it does
+  not buy is the replay**, because the contract's own `reference.ts` names a global that is
+  `undefined` on both existing legs — so the eighth contract is a decision about this repository's
+  contributor floor rather than about a leg, and `22.18.0` is the leg that exists to redden the day
+  that floor rises. ADR-0220.
+
 **Still open, and what each one now costs.**
 
 - **That the four forms a contract page offers still run, and still land the bytes the catalogue
@@ -2689,6 +2704,24 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   are `identity.summary`, `identity.description`, `benchmarks.vocabulary[].meaning`, `caseTables[].name`,
   `caseTables[].groups[].title`, `environments[]`, `surface.couplingRule`, `surface.exports[].role`
   and `ownDeclarations[].name`.
+
+  **One of the ten has now been asked to do something, and it cannot — which is the first consequence
+  anybody has attached to this entry.** `environments[]` was put forward as the thing that would
+  refuse ADR-0216's candidate: a Temporal contract declaring three runtimes of which two are false,
+  for life. Measured at `a0bbf86`, it refuses nothing, and the reason is worse than the objection.
+  `contract-record.ts:475` is `readonly string[]` with **no union and no vocabulary type**; nothing
+  reads it — nought occurrences in `packages/validation/`, in `packages/site/` and in
+  `packages/cli/`; **all seven contracts declare the same three**, so the field is a constant; and no
+  comment anywhere in the tree says what it means, ADR-0006 being the only place — *a vocabulary of
+  JavaScript runtimes*, *the runtimes the contract is written for*. **A constant cannot be
+  contradicted**, and a version is not in the vocabulary, so nothing a Temporal contract could write
+  there would be false. The type admits `'node>=26'` and ADR-0006 refuses it and nothing executes
+  either. So the cost is not a falsehood but a silence: an auditor fetching an eighth snapshot would
+  receive the same three runtimes as the first seven, with nothing in the structured half saying it
+  needs a runtime the others do not. **A fourteenth refusal ground was proposed on that and is
+  refused** — the requirement is declarable as prose in `identity.inputDomain`, where every other
+  statement of what a contract refuses already lives, and a ground biting on
+  undeclarable-by-mechanism would refuse all seven published contracts. ADR-0220.
 
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
