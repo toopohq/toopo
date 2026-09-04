@@ -60,6 +60,12 @@
  * the guard's own sentence names, and the search stops there rather than carrying on until nothing
  * else reddens - together with the slice it is measured on and the two directions that slice is
  * unrepresentative in. It too was committed before its cells, for the same reason.
+ *
+ * **And the second slice inverts exactly one clause of the rule that chose the first.** ADR-0210
+ * carries it, committed before its own cells: the guards it takes are the ones no table wrote, in
+ * files no cell reaches, so the only thing that moves between the two readings is whether a guard is
+ * a row of a family. Which way that biases is written down there before the result was known, and so
+ * are the three outcomes it could have - a bracket, a meeting, or a refusal to bracket at all.
  */
 
 import type { Battery, Mutant } from './run.ts'
