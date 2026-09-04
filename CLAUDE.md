@@ -2740,6 +2740,19 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   either**, a figure for its size being an estimate wearing a count's clothes. ADR-0163, ADR-0191,
   ADR-0192.
 
+  **A fourth search is being conducted, and its method was committed before its first probe.** It is
+  not aimed at the band above, and saying which exclusion it repairs is the whole of why it is a
+  separate paragraph: ADR-0192's axis was the language's own surface and its population was **one
+  runtime at one version**, so what it missed here is not a candidate below a demand floor but a
+  surface that **did not exist when the sweep ran**. Temporal reached stage 4 in March 2026, ADR-0192's
+  Node v24.15.0 does not carry it — re-measured, `typeof globalThis.Temporal` is `undefined` — and that
+  record refuses `Date.parse` on **R1** *because* Temporal is the language's answer. **A surface that
+  decides a row and is never itself read is a motive doing a subject's work.** ADR-0215 declares the
+  runtime, the two-part population, R13 and R2, and three named outcomes in advance, on ADR-0176's
+  discipline. It is ADR-0192's own first reopening trigger firing rather than a new idea, and it
+  narrows that trigger without closing it: one proposal's growth is read, and the rest of the standard
+  library is not re-read. ADR-0192, ADR-0215.
+
 - **That the criterion deciding what enters this catalogue is one anything applies.** ADR-0207 writes
   it — four clauses, each the complement of a group of the twelve refusal grounds — and **no mechanism
   can hold it, which is a stronger statement than that none does.**
