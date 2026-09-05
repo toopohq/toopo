@@ -222,9 +222,18 @@ describe('the site', () => {
     const faults: string[] = []
     let named = 0
 
-    for (const one of heldByTheRegistry(localSource())) {
+    /**
+     * Built once, and that is a repair rather than a style. The first version of this guard called
+     * `theSite(localSource())` inside the loop, so it rebuilt the whole site and re-read the registry
+     * once per contract — `localSource()` is 268 ms against `theSite`'s 9, which ADR-0165 measured and
+     * repaired one file over. It passed here and **timed out at 5 854 ms on a CI runner**, which is a
+     * guard that answers by how fast the machine is.
+     */
+    const built = pages()
+
+    for (const one of heldByTheRegistry(source)) {
       const what = renderContract(one.contract.address)
-      const reading = toText(theSite(localSource()).get(pageOf(one.contract.address)) as never)
+      const reading = toText(built.get(pageOf(one.contract.address)) as never)
 
       for (const field of playgroundOf(one.contract, what).fields) {
         if (field.reads.kind !== 'a-literal') continue

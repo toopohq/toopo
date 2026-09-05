@@ -109,6 +109,20 @@ reading what a reader would receive, in all three directions:
 **The sentence is composed from the entry's own `because`** and is now asserted by a guard total over
 the pages, so a literal field that arrives unexplained is a red rather than a silence.
 
+**That guard was written badly and CI is what said so.** Its first version called
+`theSite(localSource())` **inside the loop**, rebuilding the whole site and re-reading the registry once
+per contract. It passed here and **timed out at 5 854 ms against a 5 000 ms bound on the runner**,
+taking `suites-on-windows` and — through a red control at calibration, `control RED (192 tests)` —
+`batteries (site)` with it. One cause, two red jobs, and neither of them the code this unit changed.
+
+**It is the defect ADR-0165 measured and repaired one file over**, recommitted here: that record
+established `localSource()` at 268 ms against `theSite`'s 9 and took a suite from 3.3 s to 0.16 s by
+calling them once. Built once, the site suite goes **5.95 s → 3.13 s**, so this one guard was costing
+nearly three seconds of it. **What it cost is a red push and the reading is worth more than the
+repair**: a guard whose verdict depends on how fast the machine is has no verdict, and nothing local
+could have said so — the same class ADR-0204 met on a load flake, arriving on a guard written by hand
+rather than on a bound.
+
 ### 4. The cells, one guard apiece where one guard is separable
 
 * **`W-181`** neuters `A_TYPE_PARAMETER` so no declared type is seen as a variable, leaving the entry
