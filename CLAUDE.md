@@ -4462,7 +4462,8 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   **And the bound is derived, which took a throwaway branch because every reading of it was censored.**
   A killed job says *at least forty minutes* and nothing more, so taking an uncensored one needs the
-  bound raised and raising it is what the reading is for. Measured at `6203758` under a provisional 75:
+  bound raised and raising it is what the reading is for. Measured at `6203758`, a commit `main` does
+  not reach and the annotated tag `evidence/the-bound-and-the-silence` retains, under a provisional 75:
   **`registry-storage` is 3 887 s**, 64 min 47 s against a bound of forty — and what crossed it is
   measured, `6d03933` having completed at 2 389 s with the **163** cells ADR-0210's replay left where
   the battery now holds **230**. **`max/median` over its own readings answers 1.809 and is a trap**,

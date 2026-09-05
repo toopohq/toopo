@@ -122,7 +122,13 @@ data is not a median. Taking an uncensored reading requires raising the bound, a
 is what the reading is for — which is circular, and is why a throwaway branch carries a provisional
 75 minutes that is chosen to be far above any plausible reading rather than derived from anything.
 
-Measured at `6203758`, every battery under the provisional bound and every one green:
+Measured at `6203758`, which `main` does not reach: the branch was deleted and its commits are retained
+by the annotated tag `evidence/the-bound-and-the-silence`, which is what
+`every-commit-this-repository-cites-is-one-it-has` resolves against. **It reddened before the tag
+existed**, on a clone that had the branch's objects locally and a runner that did not — the citation
+guard doing exactly what ADR-0095 built it to do, on this record's own coordinate.
+
+Every battery under the provisional bound, and every one green:
 
 | battery | seconds |
 | --- | --- |
