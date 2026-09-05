@@ -2768,6 +2768,28 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   the three ways out — throw, double by runtime, or wait — are a rule about the product rather than an
   edit, and they are the owner's. ADR-0233.
 
+  **The owner ruled that it refuses loudly by name, and one of his three reasons was refuted by
+  measuring it.** The two that stand are the catalogue's own — *a runtime without the function fails
+  loudly instead of skipping* — and that a stand-in would make every guard exercise the substitute on
+  the very axis ADR-0233 had just recorded. **The third was that
+  `every-arm-of-an-encoded-value-is-read-back-or-refused-by-name` carries both issues in its name. It
+  does not**: its two ways out are *read back* and *refused by the word `WITHOUT_A_SPELLING` holds*, so
+  a refusal naming the carrier satisfies neither, and the guard reddens on exactly the message the
+  ruling asks for. **The ruling stands on its other two and the guard gained a category.**
+  `READ_ONLY_WHERE_THE_RUNTIME_CARRIES_IT` asks a refusal for **two** fragments on one message — which
+  carrier, and why this runtime cannot build it — so it **costs its arm more than the two beside it**
+  and a message saying merely *unreadable* passes the old shape and fails this one. Two guards keep it
+  honest: the declarations are held disjoint, and
+  `a-carrier-is-recognised-by-the-reader-and-refused-by-the-runtime` separates the two refusals, which
+  the fragment test cannot — without the reader's arm the refusal still throws and still carries the
+  type name, that name being in the text somebody typed. **`W-179` neuters the pattern rather than
+  removing the dispatch**, so `noUnusedLocals` does not turn it into a `killed-by-typecheck`, and
+  injecting it reddens **2 of 12**, exactly its pin. The table prints
+  `Temporal.PlainTime.from('12:30:00')` and `hasASpelling` answers **true**, which is the whole of what
+  item 2 buys. Ledger `18cc4e82…` unmoved, freeze 3 passed either side, site 187 → 189, 935 anchors,
+  census 10 → 12. **The refusal is exercised and the construction is not** — written in `readCarrier`,
+  in the declaration and in `literal.ts`'s arm, and lifted by a runtime carrying `Temporal`. ADR-0234.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,

@@ -164,7 +164,7 @@ const record = (
  * `<an instance of a class>` and threw that content away; ADR-0164 is why it no longer does, and the
  * sentence above it said *two* arms while this record held three.
  */
-export const WITHOUT_A_SPELLING: Readonly<Record<'not-data' | 'opaque' | 'instance' | 'temporal', string>> = {
+export const WITHOUT_A_SPELLING: Readonly<Record<'not-data' | 'opaque' | 'instance', string>> = {
   'not-data': '<a function, served as a file>',
   /**
    * A promise, a WeakMap, a WeakSet or a WeakRef. There is no expression that builds one carrying
@@ -179,20 +179,6 @@ export const WITHOUT_A_SPELLING: Readonly<Record<'not-data' | 'opaque' | 'instan
    * what lets the phrase carry the content without becoming a spelling.
    */
   instance: '<an instance of ',
-  /**
-   * A Temporal carrier, whose type name and ISO rendering follow.
-   *
-   * **It is here rather than spelled, and the line between the two is ADR-0218's own.** Its item 1 is
-   * *`value.ts` gains a kind … with `decode` and `literal`* and its item 2 is *`literal.ts` gains its
-   * spelling*, which is a second unit. So this arm is what item 1 owes: the kind is encodable,
-   * decodable and walked, and a reader is told what the value is instead of being handed
-   * `Temporal.PlainTime.from('12:30:00')` — an expression `read-literal.ts` cannot read back and which
-   * would therefore be a spelling that lies, the shape the brackets exist to refuse.
-   *
-   * **What lifts it is item 2**, at which point the reader learns the form and this entry goes.
-   * ADR-0232.
-   */
-  temporal: '<a carrier ',
 }
 
 /**
@@ -285,8 +271,18 @@ export const literal = (value: EncodedValue): string => {
       return shared(value.shared, `new Set([${value.entries.map(literal).join(', ')}])`)
     case 'instant':
       return shared(value.shared, `new Date(${literal(value.epoch)})`)
+    /**
+     * `Temporal.PlainTime.from('12:30:00')`, which is what a reader would type.
+     *
+     * The type name is the carrier's own tag - the kind ADR-0232 gave `value.ts` carries it - so the
+     * spelling is composed rather than listed per carrier. And it is a spelling and not a word because
+     * `read-literal.ts` reads this form back wherever the runtime carries the namespace. Where it does
+     * not, that reader refuses by naming the carrier and the runtime rather than pretending; a spelling
+     * whose reader is honest about what it cannot build is not the lie the brackets exist to refuse.
+     * ADR-0232, ADR-0234.
+     */
     case 'temporal':
-      return shared(value.shared, `${WITHOUT_A_SPELLING.temporal}${value.typeName}, ${value.rendered}>`)
+      return shared(value.shared, `${value.typeName}.from(${primitive(value.rendered)})`)
     case 'map':
       return shared(
         value.shared,

@@ -3616,6 +3616,37 @@ import {
     ],
     killed(['every-page-has-its-markdown-beside-it-at-the-same-address']),
   ),
+
+  /**
+   * The reader stops recognising a carrier's spelling, so its refusal becomes the reader's and not the
+   * runtime's.
+   *
+   * The pattern is neutered rather than the dispatch removed, so `readCarrier` and the arm stay
+   * referenced and `noUnusedLocals` does not turn this into a `killed-by-typecheck` that measures the
+   * compiler instead of the claim. What is left is the state before ADR-0234: the spelling is printed
+   * and `Temporal.Pla` *begins no value this reader knows*.
+   *
+   * **It is the cell the third category needed.** Without the reader's arm the refusal still throws and
+   * still carries the type name - the type name being in the text somebody typed - so
+   * `every-arm-of-an-encoded-value-is-read-back-or-refused-by-name` would have gone on passing on a
+   * message that names the wrong culprit. `a-carrier-is-recognised-by-the-reader-and-refused-by-the-runtime`
+   * is what separates them, and this is what reddens it.
+   */
+  sameOnEveryLens(
+    'W-179',
+    'stops the reader recognising `Temporal.<name>.from(…)`, so a carrier is refused for beginning no ' +
+      'value this reader knows rather than for a runtime that cannot build it',
+    [
+      readLiteralFile(
+        'const A_CARRIER_OPENS = /^Temporal\\.([A-Za-z]+)\\s*\\.\\s*from\\s*\\(/',
+        'const A_CARRIER_OPENS = /^(?!)([A-Za-z]+)/',
+      ),
+    ],
+    killed([
+      'a-carrier-is-recognised-by-the-reader-and-refused-by-the-runtime',
+      'every-arm-of-an-encoded-value-is-read-back-or-refused-by-name',
+    ]),
+  ),
 ]
 
 export const battery: Battery = {

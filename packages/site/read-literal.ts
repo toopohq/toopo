@@ -334,6 +334,8 @@ const AN_ERROR_OPENS =
   /^new\s+(Error|TypeError|RangeError|SyntaxError|ReferenceError|EvalError|URIError)\s*\(/
 const A_BOX_OPENS = /^new\s+(String|Number|Boolean)\s*\(/
 const AN_OBJECT_CALL_OPENS = /^Object\s*\(/
+/** The carrier's own type name is captured, because the refusal below has to be able to say which. */
+const A_CARRIER_OPENS = /^Temporal\.([A-Za-z]+)\s*\.\s*from\s*\(/
 const A_TYPED_ARRAY_OPENS =
   /^new\s+(Int8Array|Uint8ClampedArray|Uint8Array|Int16Array|Uint16Array|Int32Array|Uint32Array|Float32Array|Float64Array|BigInt64Array|BigUint64Array)\s*\(\s*\[/
 const AN_ASSIGN_OPENS = /^Object\s*\.\s*assign\s*\(/
@@ -384,6 +386,67 @@ const readDate = (scan: Cursor, label: number | undefined): Date => {
   if (label !== undefined) scan.shared.set(label, instant)
 
   return instant
+}
+
+/**
+ * A Temporal carrier, built where the runtime carries the namespace and refused by name where it does
+ * not.
+ *
+ * ---------------------------------------------------------------------------
+ * Why it refuses rather than skipping or standing something in
+ * ---------------------------------------------------------------------------
+ *
+ * `readDate` one function up ends in `new Date(epoch)`, because `Date` is in the language. This one has
+ * to end in `Temporal[name].from(rendered)`, and `Temporal` is `undefined` on both runtimes this
+ * repository's suites run on. **Three ways out were open and two are refused by rules this catalogue
+ * already holds.** Returning a stand-in would put a value in a contract's hands that the contract
+ * cannot use, and would make every guard here exercise the substitute rather than the thing - which is
+ * ADR-0233's finding, committed in the unit that recorded it. Answering `undefined` and carrying on is
+ * the silent skip `array/group-by@1` settles against: *a runtime without the function fails loudly
+ * instead of skipping*.
+ *
+ * So it refuses, and the refusal names the carrier, the value and the runtime, on
+ * `theDirectoryRefusal`'s pattern in `packages/cli/where-a-file-may-land.ts`: a reader is told what
+ * could not be built and why, rather than being handed a reason nobody can act on.
+ *
+ * **What is exercised here is the refusal and never the construction.** Every guard over this arm runs
+ * where `Temporal` is absent, so the branch that builds a carrier is written and unread. **A runtime
+ * carrying `Temporal` on the matrix is what lifts that**, and on that day the guards over this arm gain
+ * the other half. ADR-0233, ADR-0234.
+ */
+const readCarrier = (scan: Cursor, typeName: string, label: number | undefined): unknown => {
+  const at = scan.at
+  const rendered = readOneArgument(scan, `Temporal.${typeName}.from(`)
+  const namespace = (globalThis as { Temporal?: Record<string, { from?: (text: unknown) => unknown }> })
+    .Temporal
+
+  if (namespace === undefined) {
+    scan.at = at
+
+    return fail(
+      scan,
+      `\`Temporal.${typeName}.from(…)\` names a carrier this runtime cannot build: \`Temporal\` is ` +
+        `not defined here, so there is nothing to hand the value ${JSON.stringify(rendered)} to`,
+    )
+  }
+
+  const carrier = namespace[typeName]?.from
+  if (carrier === undefined) {
+    scan.at = at
+
+    return fail(
+      scan,
+      `\`Temporal.${typeName}\` is not a carrier this runtime knows: the namespace is here and ` +
+        `\`${typeName}\` is not in it`,
+    )
+  }
+
+  const built = carrier.call(namespace[typeName], rendered)
+  if (label !== undefined && typeof built === 'object' && built !== null) {
+    scan.shared.set(label, built)
+  }
+
+  return built
 }
 
 const readMap = (scan: Cursor, label: number | undefined): ReadonlyMap<unknown, unknown> => {
@@ -530,6 +593,15 @@ const readTerm = (scan: Cursor, label: number | undefined): unknown => {
   if (takePattern(scan, A_SET_OPENS) !== null) return readSet(scan, label)
   if (takePattern(scan, A_MAP_OPENS) !== null) return readMap(scan, label)
   if (takePattern(scan, A_DATE_OPENS) !== null) return readDate(scan, label)
+
+  // Above `Object(`, which does not match it, and beside `new Date(` for the reason they share: both
+  // are a named constructor taking one argument, and this one carries its type in the name.
+  const aCarrier = A_CARRIER_OPENS.exec(scan.text.slice(scan.at))
+  if (aCarrier !== null) {
+    scan.at += aCarrier[0].length
+
+    return readCarrier(scan, aCarrier[1] as string, label)
+  }
 
   // Before `Object(`, which its first six characters would otherwise match.
   if (takePattern(scan, A_BARE_OBJECT) !== null) return Object.create(null) as object

@@ -380,16 +380,57 @@ const kindsIn = (encoded: EncodedValue, into: Set<string> = new Set()): Readonly
   return into
 }
 
+/**
+ * The arms whose spelling is real and whose reading depends on the runtime, with what the refusal owes
+ * a reader where that runtime is absent.
+ *
+ * ---------------------------------------------------------------------------
+ * Why a third category, and why it is narrower than the two it sits beside
+ * ---------------------------------------------------------------------------
+ *
+ * The guard below used to carry two: a spelling that reads back, or a word from `WITHOUT_A_SPELLING`
+ * that is refused. **A carrier is neither.** `Temporal.PlainTime.from('12:30:00')` is a spelling a
+ * reader can paste - into a browser that carries the namespace, which is where `read-literal.ts` runs -
+ * and it is unreadable on the runtime these guards run on, where `Temporal` is `undefined`.
+ *
+ * **This is not the two-way test widened.** Where `WITHOUT_A_SPELLING` asks only that the refusal
+ * carry a word, this asks that it carry **the carrier's own type name and the reason the runtime cannot
+ * build it** - both fragments, on the same refusal. A message saying merely *unreadable* satisfies the
+ * old shape and fails this one, so the category costs its arm more than the two beside it and not less.
+ *
+ * **What it does not reach is the other half**: that the same spelling *is* read where the namespace
+ * exists. Nothing on this matrix can ask it. A runtime carrying `Temporal` is what would, and on that
+ * day this declaration loses its row and the arm moves into the reading half above. ADR-0234.
+ */
+const READ_ONLY_WHERE_THE_RUNTIME_CARRIES_IT: Readonly<Record<string, readonly [string, string]>> = {
+  temporal: ['Temporal.PlainTime', '`Temporal` is not defined here'],
+}
+
 describe('the text somebody typed, as the value it spells', () => {
   /**
    * The load-bearing guard, and the one a count could not have given. The record is total over the
    * union, so an arm added to `EncodedValue` does not compile until somebody writes a sample - and
-   * deciding whether it can be read or must be refused is exactly the decision that arm's author owes.
+   * deciding whether it can be read, must be refused, or is read only where a runtime carries it is
+   * exactly the decision that arm's author owes.
    */
   it('every-arm-of-an-encoded-value-is-read-back-or-refused-by-name', () => {
     const answers = Object.entries(EVERY_ARM).map(([kind, value]) => {
       const encoded = encode(value, 'a sample')
       const text = literal(encoded)
+
+      const runtimeBound = READ_ONLY_WHERE_THE_RUNTIME_CARRIES_IT[kind]
+      if (runtimeBound !== undefined) {
+        const [carrier, why] = runtimeBound
+
+        expect(() => read(text), `${kind} is read where this runtime cannot build it`).toThrow(
+          UnreadableLiteral,
+        )
+        // Both fragments on one refusal: which carrier, and why this runtime cannot build it.
+        expect(() => read(text), `${kind} is refused without naming the carrier`).toThrow(carrier)
+        expect(() => read(text), `${kind} is refused without naming the runtime`).toThrow(why)
+
+        return [kind, []] as const
+      }
 
       if (!withoutASpelling.has(kind)) return [kind, faultsOf(encoded)] as const
 
@@ -402,6 +443,32 @@ describe('the text somebody typed, as the value it spells', () => {
     })
 
     expect(answers.filter(([, faults]) => faults.length > 0)).toEqual([])
+  })
+
+  /**
+   * The two declarations are disjoint, which is what stops an arm being filed under both and quietly
+   * taking the weaker test.
+   */
+  it('no-arm-is-both-without-a-spelling-and-read-only-where-a-runtime-carries-it', () => {
+    const both = Object.keys(READ_ONLY_WHERE_THE_RUNTIME_CARRIES_IT).filter((kind) =>
+      withoutASpelling.has(kind),
+    )
+
+    expect(both).toEqual([])
+  })
+
+  /**
+   * The spelling a page prints is the form the reader dispatches on, so a carrier's refusal is the
+   * runtime's and never the reader failing to recognise it. Without this, dropping the reader's arm
+   * would leave the guard above green - the refusal would still throw and would still carry the type
+   * name, because the type name is in the text somebody typed.
+   */
+  it('a-carrier-is-recognised-by-the-reader-and-refused-by-the-runtime', () => {
+    const spelled = literal(encode(EVERY_ARM.temporal, 'a sample'))
+
+    expect(spelled).toBe("Temporal.PlainTime.from('12:30:00')")
+    expect(() => read(spelled)).toThrow('names a carrier this runtime cannot build')
+    expect(() => read(spelled)).not.toThrow('begins no value this reader knows')
   })
 
   it('the-sample-really-produces-the-arm-it-is-filed-under', () => {
