@@ -17,6 +17,14 @@
  * before vitest could report, and the bound that was never there, were one fault. Raising a bound
  * without this is a reprieve, because the next crossing is silent again.
  *
+ * **What this can and cannot do is measured rather than assumed.** On run `33952003572` a one-minute
+ * bound killed a battery, this gate failed, and the *run* still concluded `cancelled` - one job failed
+ * and one was cancelled, and a cancellation outranks a failure at the level `gh run list` prints. So
+ * it makes a red **job** and cannot make a red **run**: a reading over job conclusions sees the
+ * crossing and a reading over the run's own conclusion does not. That is the host's rule, and the
+ * change it leaves is that a run which was green-or-cancelled throughout now carries one explicit red
+ * naming the job that went silent.
+ *
  * ---------------------------------------------------------------------------
  * Why `skipped` is not a failure, and why an empty answer is
  * ---------------------------------------------------------------------------

@@ -4453,7 +4453,29 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   killed by its own bound reports `cancelled`, the run concludes `cancelled`, and a reader looking for a
   red finds none. That half is closed: `every-job-answered` waits for every job of the workflow, runs
   `if: always()` rather than `failure()` because a cancelled job produces no failure, and refuses any
-  result that is neither `success` nor `skipped`. **What stays open is what this entry has always been
+  result that is neither `success` nor `skipped`. Seen green on a runner where twenty-three batteries
+  answered and **red on one where a one-minute bound killed a battery**, printing `batteries:
+  cancelled` — the matrix parent, because that is what `needs` aggregates. **The limit is the host's
+  and is stated rather than smoothed**: that run concluded `cancelled` and not `failure`, one job
+  having failed and one having been cancelled, so **the gate makes a red job and cannot make a red
+  run** — a reading over job conclusions sees it and a reading over the run's own conclusion does not.
+
+  **And the bound is derived, which took a throwaway branch because every reading of it was censored.**
+  A killed job says *at least forty minutes* and nothing more, so taking an uncensored one needs the
+  bound raised and raising it is what the reading is for. Measured at `6203758` under a provisional 75:
+  **`registry-storage` is 3 887 s**, 64 min 47 s against a bound of forty — and what crossed it is
+  measured, `6d03933` having completed at 2 389 s with the **163** cells ADR-0210's replay left where
+  the battery now holds **230**. **`max/median` over its own readings answers 1.809 and is a trap**,
+  its median being a reading of a battery two thirds today's size, so the ratio measures the growth
+  rather than the runner; the short batteries are that trap inverted, `string-levenshtein-spec`
+  answering 1.529 over a job of 34 s. So the spread is taken where the work did not move, and **that is
+  one battery**: `mutation/site.battery.ts` and `packages/site` both have **zero commits** over the
+  twenty-two runs read, so its five readings are five readings of identical work and answer **1.042**.
+  The bound is **3 887 × 1.042 + 41 cells × 16.9 s = 4 743 s, which is 79 minutes** — one term measured
+  and one a convention said out loud, 1.22× the measured job with fifty cells of margin, and 79 rather
+  than 80 so that it carries its own arithmetic in its digits.
+
+  **What stays open is what this entry has always been
   about** — the bound is still a number a person derives on the day they think to, and the job that
   would read the matrix's own durations and refuse a share of them is still priced above and still not
   taken. ADR-0222.

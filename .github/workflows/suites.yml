@@ -623,12 +623,31 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # A hung cell must not hold a runner for six hours. The longest battery on `ubuntu-latest` is
-    # `registry-storage` at 1 649 s, measured at `1008c96`, and this allows rather more than that
-    # before it is called a hang. The line this replaces named `cli-install` at 1 497 s; that battery
-    # is not the longest and 1 497 reproduces on no run read here. What a contract adds to the longest
-    # one is the second gate's comment below.
-    timeout-minutes: 40
+    # A hung cell must not hold a runner for six hours, and the number is derived rather than chosen.
+    # ADR-0222 carries the whole reading; what belongs here is the arithmetic.
+    #
+    #     base       3 887 s   registry-storage, 230 cells, on a runner, measured at `6203758`
+    #     spread     x 1.042   -> 4 050 s
+    #     growth     +  693 s  -> 4 743 s  =  79 minutes
+    #
+    # **The spread is measured where the work did not move.** Over the twenty-two runs read,
+    # `mutation/site.battery.ts` and `packages/site` both have zero commits, so that battery's five
+    # readings are five readings of identical work - which is the population ADR-0169's `max/median`
+    # requires. It answers 1.042. Every other long battery grew: `cli-install` eight commits,
+    # `registry-storage` fourteen.
+    #
+    # **`max/median` over registry-storage's own readings answers 1.809 and is a trap.** Its median is a
+    # reading of a battery that had 163 cells where it now has 230, so the ratio measures the growth
+    # rather than the runner. The short batteries are the same trap inverted -
+    # `string-levenshtein-spec` answers 1.529 over a job of 34 s.
+    #
+    # **The growth term is a convention said out loud**: 41 cells at the 16.9 s a cell costs here, which
+    # is the margin ADR-0169 derived for the Windows leg. So the bound is 1.22x the measured job and
+    # holds 50 cells, ten from the spread and forty-one from the convention.
+    #
+    # 79 rather than 80 because it carries its own arithmetic in its digits, which is ADR-0205's reason
+    # for 60 060.
+    timeout-minutes: 79
 
     strategy:
       # Every selected battery reports. A first disagreement stopping the matrix would answer a
@@ -790,7 +809,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    timeout-minutes: 40
+    # The first gate's number, for the first gate's reason: this job runs the same batteries on the same
+    # runner, so a second derivation here would be a second statement free to disagree with it. ADR-0222.
+    timeout-minutes: 79
 
     strategy:
       fail-fast: false

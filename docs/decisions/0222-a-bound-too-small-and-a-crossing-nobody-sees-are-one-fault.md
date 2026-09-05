@@ -88,6 +88,32 @@ measured: two of them both asserted that a cancelled job is named, and two guard
 are one guard with two names. The four paths of the script — a healthy run, a cancelled job, an answer
 naming no job, and no answer at all — are read by hand as well.
 
+### Both directions on a real runner, and the half of it GitHub does not give
+
+**The guards establish what the script decides and nothing about what a runner reports**, so both were
+measured. Green on run `33935566567`, where twenty-three batteries answered and the gate read nine
+jobs and passed. Red on run `33952003572`, where a bound of one minute killed `validation-stage-1`
+fifty seconds into its battery step:
+
+    1 of 9 job(s) of this run did not answer:
+      batteries: cancelled
+
+**It names `batteries` and not `batteries (validation-stage-1)`**, because `needs` aggregates a matrix
+into the parent — so the gate says which job did not answer and a reader opens it for which leg.
+
+**And the run still concludes `cancelled` rather than `failure`.** Measured on that run: one job
+failed, one was cancelled, and the run's own conclusion is `cancelled` — so a cancelled job outranks a
+failed one at the level `gh run list` prints. **The gate makes a red job and cannot make a red run**,
+which is a limit of the host rather than of the script and is worth stating plainly: what changed is
+that a run which was green-or-cancelled throughout now carries an explicit red naming the job that
+went silent, where before nothing anywhere was red. A reading taken from job conclusions sees it; a
+reading taken from the run's conclusion alone still sees the word this record is about.
+
+**Two attempts were needed and the first is worth a line**, because its failure was an estimate rather
+than a defect: a bound of two minutes did not bite. Measured on run `33951809405`, the whole job is
+**84 s** — nine seconds of setup and seventy-two of battery — against the forty and ninety-seven
+assumed. The estimate was high on both terms and the demonstration passed instead of failing.
+
 ### The bound
 
 **Every recent reading of this battery on a runner is censored.** A killed job says *at least forty
@@ -96,10 +122,55 @@ data is not a median. Taking an uncensored reading requires raising the bound, a
 is what the reading is for — which is circular, and is why a throwaway branch carries a provisional
 75 minutes that is chosen to be far above any plausible reading rather than derived from anything.
 
-The uncensored reading this section is derived from is being taken on the branch this commit sits on,
-and the derived bound replaces the provisional one on `main`. Until it does, this section states what
-is known and no number: every reading of this battery since `1238833` is a lower bound of forty
-minutes, and the one reading below that is `6d03933`'s 39 min 49 s.
+Measured at `6203758`, every battery under the provisional bound and every one green:
+
+| battery | seconds |
+| --- | --- |
+| `registry-storage` | **3 887** |
+| `cli-install` | 1 946 |
+| `site` | 1 611 |
+| `cli-update` | 892 |
+| `cli-remove` | 529 |
+| the eighteen others | ≤ 273 |
+
+**So the bound was not a little too small: the battery costs 64 min 47 s against forty.** And what
+crossed it is measured rather than inferred — `6d03933` completed at 2 389 s with the **163** cells
+ADR-0210's replay left, ADR-0211 added fifty-two and ADR-0212 the rest, and it holds **230**. That is
+41 % more cells for 63 % more seconds, the cost of a cell on a runner having risen with them from
+14.7 s to **16.9 s**.
+
+**`max/median` over this battery's own readings answers 1.809 and is a trap rather than a spread.**
+Its median, 2 149 s, is a reading of a battery two thirds today's size, so the ratio measures the
+growth and not the runner. The short batteries are the same trap inverted:
+`string-levenshtein-spec` answers **1.529** over a job of 34 s, where one hiccup of eighteen seconds
+is the whole figure.
+
+**So the spread is taken where the work did not move, and that is one battery.** Over the twenty-two
+runs read, `mutation/site.battery.ts` has **zero commits** and `packages/site` has **zero commits**, so
+its five readings are five readings of identical work — which is the population ADR-0169's form
+requires and which no other long battery offers: `cli-install` moved on eight commits and
+`registry-storage` on fourteen. `max/median` = **1.042**.
+
+| | | |
+| --- | --- | --- |
+| base | 3 887 s | the uncensored reading, 230 cells, on a runner |
+| spread | × 1.042 | measured on the only long battery whose work is fixed → 4 050 s |
+| growth | + 693 s | 41 cells at 16.9 s, ADR-0169's own margin → **4 743 s = 79 minutes** |
+
+**One term is measured and the other is a convention said out loud**, which is ADR-0205's shape. The
+bound is **1.22×** the measured job and holds **50 cells**, ten of them from the spread and forty-one
+from the convention. It is 79 rather than 80 because it carries its own arithmetic in its digits,
+which is that record's reason for 60 060.
+
+**The residue is named rather than smoothed.** `max/median` can still rise when a faster reading
+arrives, because a reading below the median moves the median: a 1 500 s reading of `site` would take
+1.042 to 1.046. ADR-0169 chose the form knowing that and measured the alternative to be worse —
+`max/min` took its own bound from 64 to 69 minutes on the fastest run ever recorded. Four tenths of a
+per cent against five minutes is the trade, and it is the same trade that record made.
+
+**The Windows leg is left where it is**, and that is a reading rather than an omission: its matrix is
+`which-batteries.outputs.windows`, which is `cli-install` alone, and that battery's Windows reading has
+not moved.
 
 ## Consequences
 
