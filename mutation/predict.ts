@@ -20,8 +20,8 @@
  * fault a replay would refuse on; two is a question this reading could not ask. Folding the third
  * into the first would publish a false green, which is the whole class this module exists inside.
  *
- * ADR-0221. Measured there: 185 ms for one battery against the 42 minutes the same refusal took to
- * arrive by replay.
+ * ADR-0221. Measured there: 158 to 185 ms over six readings on one battery, against the 42 minutes the
+ * same refusal took to arrive by replay.
  */
 
 import { existsSync, readFileSync } from 'node:fs'

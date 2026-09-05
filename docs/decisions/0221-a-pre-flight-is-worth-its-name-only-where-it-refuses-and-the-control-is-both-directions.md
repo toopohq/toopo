@@ -129,8 +129,13 @@ or accounted for*:
 the whole of the difference between a red reading and a green one, and the fault names the guard that
 line declares.
 
-**The reading costs 185 ms** for that battery and 172 ms for all twenty-three, against the 42 minutes
-the same refusal took to arrive.
+**The reading costs 158 to 185 ms** on that battery, over six readings at `881a85b`. It is a range
+rather than a number because ADR-0169 measured that one reading characterises nothing, and the single
+figure this record first carried was the slowest of the six presented as the cost. Against the **42
+minutes** the same refusal took to arrive, which is four orders of magnitude and does not depend on
+which end of the range is taken. All twenty-three read in 172 ms — *below* one battery, because
+twenty-two of them stop at the missing guard identities while `registry-storage` attributes 230
+cells, and both figures are dominated by node's own start.
 
 Both historical readings also name `I-176 on R/as-committed` as a cell the measurement holds that the
 battery no longer declares — that mutant arrived with ADR-0214, after both commits. It is reported and

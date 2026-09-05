@@ -2065,7 +2065,8 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   each and it is the same file, so the code under measurement is identical at both and only a
   declaration moves — **exit 1 naming
   `every-export-is-carried-or-declared-uncarried-number-parse` on the first and exit 0 on the second**,
-  in **185 ms** against the 42 minutes that refusal took to arrive by replay. **What it leaves behind
+  in **158 to 185 ms over six readings** against the 42 minutes that refusal took to arrive by replay.
+  **What it leaves behind
   is a debt with a price and a remedy**: twenty-two measurements predate the guard identities and
   cannot answer the two silences until each battery is measured once, and the command names that per
   battery rather than counting it as agreement. The twelve guards are collected by `npm run meta` and
