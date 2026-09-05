@@ -2599,15 +2599,32 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   seven, and is not the same function: it is not generic, its caller holds a string rather than a
   carrier, and it grows ADR-0216's residue by a decision the language does not pose. ADR-0219.
 
-  **The arity that would size the first price is being read under a rule committed before the count,
-  and the reading found two different fives already in this tree.** ADR-0220 left item 1 unsized in as
-  many words — *whether that is one kind, four or five is undetermined* — and the two records that
-  name a five name different sets: ADR-0220's is `Duration`, `PlainDate`, **`PlainDateTime`**,
-  `PlainTime`, `PlainYearMonth`, and ADR-0219's control table is `PlainDate`, `PlainTime`,
-  `PlainYearMonth`, **`Instant`**, `Duration`. **They share four, and those four are exactly the four
-  ADR-0216's R13 clause names**, so that clause is an intersection — *zone-free* ∧ *the question can be
-  asked of it* — which nothing anywhere states. The rule, its bias, four outcomes and the protocol are
-  committed at ADR-0223 before a figure of them was read. ADR-0223.
+  **The arity is four, the first price is one kind at five sites, and the rule that produced both was
+  committed before the count.** ADR-0220 left item 1 unsized in as many words — *whether that is one
+  kind, four or five is undetermined* — and the two records naming a five name **different sets**:
+  ADR-0220's is `Duration`, `PlainDate`, **`PlainDateTime`**, `PlainTime`, `PlainYearMonth`, and
+  ADR-0219's control table is `PlainDate`, `PlainTime`, `PlainYearMonth`, **`Instant`**, `Duration`.
+  They share four, and those four are exactly the four ADR-0216's R13 clause names — **which is a
+  coincidence and not a confirmation**: that clause asserts zone-freeness, six of the seven carriers
+  are zone-free, and it is a rebuttal rather than an enumeration. **The rule admits a carrier of which
+  the question can be asked** — at least one of the ten duration units is inapplicable to it — and the
+  narrow rule *the language answers otherwise* was refused before it was applied, because it keeps only
+  the carriers that swallow and renders **two**, against ADR-0150's forty-three rows of which
+  thirty-eight agree. Measured at `d7f4e56` on Chrome 152.0.7977.77, the matrix reproducing ADR-0216
+  row for row: `PlainDate`, `PlainTime`, `PlainYearMonth` and `Duration` are in; `PlainDateTime` and
+  `ZonedDateTime` apply all ten units, so **the question cannot be asked of them at all**; and
+  `Instant` is out on **R12 read per carrier** — `date/add@1` declares eight duration units and applies
+  every one to an absolute instant, `Temporal.Instant` refuses four, and all four are among the eight.
+  **R13 removes nobody**, the one carrier that follows the zone being already out on posability, so
+  posability implies zone-freeness on this population and `Instant` is zone-free — measured against a
+  positive control, `{days: 1}` moving a `ZonedDateTime` by 23 hours where `{hours: 24}` moves it by
+  24. **The arity does not multiply either price**: one encoding shape is lossless on seven carriers of
+  seven and its spelling re-evaluates on seven of seven, so item 1 is **one** kind, and `parametersOf`
+  reads the generic form as `carrier: T` **identically at arity four and five**, so item 3 is one key
+  and one choice rather than four entries. What one kind costs is **five sites of which the compiler
+  names two** — `literal.ts`, which returns `string`, and `read-literal.test.ts`'s `EVERY_ARM` — while
+  `decode`, the walk and the encode recogniser are silent, so a kind added by following the compiler
+  alone decodes to `undefined` with every page still rendering. ADR-0223.
 
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across

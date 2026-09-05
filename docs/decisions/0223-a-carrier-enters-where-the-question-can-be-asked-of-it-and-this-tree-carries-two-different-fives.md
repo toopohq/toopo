@@ -166,9 +166,168 @@ Two things downstream, and they take it differently.
 * **Item 3** — `AS_AN_ARGUMENT` gaining a field whose type is a choice. The choice has as many members
   as the arity, so this item is multiplied by it where item 1 may not be.
 
+### What the measurement returned
+
+**The engine and the guard.** The installed build is **152.0.7977.77**; the reduced user agent reports
+`Chrome/152.0.0.0`, and both are written because neither alone identifies what ran. Host zone
+`Europe/Paris`, which is ADR-0216's. The draft guard **passed**: the namespace is exactly the nine and
+`TimeZone` and `Calendar` are both `undefined`.
+
+**The population is seven of nine, enumerated.** `Now` and `PlainMonthDay` carry no `add` — the first
+because it is a namespace rather than a constructor, the second as ADR-0220 measured.
+
+**The matrix reproduces ADR-0216 row for row, seven rows of seven**, so the engine is the control it
+was meant to be and nothing below rests on a reading somebody transcribed:
+
+| carrier | applied | ignored in silence | refused | **inapplicable** |
+| --- | --- | --- | --- | --- |
+| `PlainDate` | 4 | 6 | 0 | **6** |
+| `PlainTime` | 6 | 4 | 0 | **4** |
+| `PlainDateTime` | 10 | 0 | 0 | **0** |
+| `PlainYearMonth` | 2 | 0 | 8 | **8** |
+| `Instant` | 6 | 0 | 4 | **4** |
+| `ZonedDateTime` | 10 | 0 | 0 | **0** |
+| `Duration` | 7 | 0 | 3 | **3** |
+
+**The first decision is uniform on all seven** — an unknown key beside a valid one is dropped in
+silence everywhere, measured rather than assumed, which is what refuses outcome D on a reading instead
+of on an assertion.
+
+### R13, and what it does to the arity
+
+Zone `America/New_York`, transition confirmed in the same reading: `-05:00` at
+`2026-03-08T06:59:00Z` and `-04:00` at `07:01:00Z`.
+
+* **`ZonedDateTime`** — `{ days: 1 }` moves the instant by **23 hours** and `{ hours: 24 }` by 24. The
+  two bags part. Its answer follows the zone.
+* **`PlainDateTime`** — both bags answer `2026-03-08T12:00:00`. They agree. Its answer does not.
+* **`Instant`** — refuses `{ days: 1 }` and applies `{ hours: 24 }` as **exactly** 24 × 3 600 × 10⁹
+  nanoseconds, asserted on the epoch rather than on the rendering.
+* **One carrier of seven exposes a `timeZoneId`**, and it is `ZonedDateTime`.
+
+**So `Instant` is zone-free for `add`, and ADR-0220's classification of it is refuted with a positive
+control in the same reading** — the control being that the carrier the sentence pairs it with parts by
+exactly one hour on the same transition, so the probe can tell the two apart and did.
+
+**And R13 turns out not to be load-bearing for the arity at all.** The only carrier whose answer
+follows the runtime is the one that applies all ten units, so it is already out on the first member of
+the rule before the second is reached. On this population **posability implies zone-freeness**, the two
+conditions are not independent, and R13 removes nobody. That is the structural reason the two later
+records diverged when each read ADR-0216's R13 clause as though it were the arity: **it is a rebuttal
+and not an enumeration.** Six of the seven carriers are zone-free; the clause names four.
+
+### R12, read per carrier for the first time
+
+`date/add@1` is frozen. Its `identity.inputDomain` opens *Absolute instants, shifted by durations
+written in whole units*, its declared signature is `(date: Date, duration: Duration) => Date | null`,
+and its own `Duration` type declares **eight** units — years, months, weeks, days, hours, minutes,
+seconds, milliseconds — every one of which it applies, in UTC, with clamping.
+
+**`Temporal.Instant` refuses four units, and all four are units `date/add@1` declares and applies.**
+So the two would settle one question — *what does adding a duration to an absolute instant do* — on one
+domain, in opposite directions, both frozen. That is not prose held against prose: it is an
+intersection of unit sets over a domain the frozen field names in its first two words.
+
+**It fires on exactly one of the five, and the discriminator is that first phrase.** A `PlainDate` is
+not an absolute instant, nor is a `PlainTime`, a `PlainYearMonth` or a `Duration`; a `Temporal.Instant`
+is. And the frozen sentence reserves the neighbour it does *not* take — *calendar arithmetic in a named
+zone is a separate, later contract* — which is `ZonedDateTime`, already out. Nothing reserves a second
+absolute-instant contract, because `date/add@1` is one.
+
+### The arity, carrier by carrier
+
+| carrier | inapplicable units — the question | R13 | R12 | verdict |
+| --- | --- | --- | --- | --- |
+| `PlainDate` | **6**, every time unit, swallowed | zone-free | no overlap | **in** |
+| `PlainTime` | **4**, every date unit, swallowed | zone-free | no overlap | **in** |
+| `PlainYearMonth` | **8**, refused | zone-free | no overlap | **in** |
+| `Duration` | **3**, refused | zone-free | no overlap | **in** |
+| `Instant` | **4**, refused | zone-free | **fires** | out |
+| `PlainDateTime` | **0** — the question cannot be asked | zone-free | — | out |
+| `ZonedDateTime` | **0** — the question cannot be asked | follows the zone | — | out |
+
+**Outcome A. The arity is four, and the prediction held.** Two carriers swallow and two refuse, so the
+contradiction the contract would publish lives entirely inside the retained set, and the two that agree
+with the answer the contract would give are in it — which is the clause ADR-0150's forty-three rows
+required and which the refused narrow rule would have dropped.
+
+**The four are ADR-0216's four**, and that is a coincidence worth naming rather than a confirmation:
+that clause reaches them by asserting zone-freeness, which is true of six, and it omits `Instant` for a
+reason it does not give. **Its membership is right and its stated ground does not produce it.**
+
+### What the arity does to the generic, and to the third price
+
+Measured on `parametersOf`, which is what the site really reads:
+
+| declared signature | what `parametersOf` returns |
+| --- | --- |
+| `<T extends PlainDate \| PlainTime \| PlainYearMonth \| Duration>(carrier: T, duration: Duration) => T \| null` | `carrier: T`, `duration: Duration` |
+| the same with `Instant` added to the bound | **identical** |
+| `(carrier: PlainDate, duration: Duration) => PlainDate \| null` | `carrier: PlainDate`, `duration: Duration` |
+| the union spelled at the parameter | `carrier: PlainDate \| PlainTime \| PlainYearMonth \| Duration` |
+
+**The arity is invisible to that seam.** Four and five read identically, because the parameter's
+declared type is the type parameter's *name*. So `AS_AN_ARGUMENT` gains **one** key and not four —
+and ADR-0218's *the choice has as many members as the arity* is right about the field and wrong about
+the table. What the arity sizes is the number of options inside one field, which a reader picks from,
+and not the number of rows the site must learn.
+
+**Two things fall out of the same reading and neither was looked for.** `Duration` is **already** a key
+of `AS_AN_ARGUMENT`, declared for `date/add@1`, so the second parameter of the retained form is
+buildable today. And the key the first parameter would need is `T` — **a type parameter's name, which
+is not a type**, so the table would hold an entry that any contract naming its type parameter `T` would
+collide with. That is a property of a table keyed by declared type text, and whoever pays item 3 meets
+it before they meet the choice.
+
+**The case table is inside the precedent.** Four carriers over ten units is **40 rows** for the second
+decision — **21 where the unit is inapplicable and 19 where it applies** — against `date/add@1`'s 43
+and `object/deep-equal@1`'s 58 in ten groups.
+
+### The first price, sized
+
+**The multiplier is one, and it is measured rather than argued.** One encoding shape — the carrier's
+type name beside its ISO rendering — is **lossless on seven carriers of seven**, and the spelling it
+produces **evaluates back to the same rendering on seven of seven**, which is the half `literal.ts`
+needs and which ADR-0219's round trip did not test. So a kind is per *encoding shape* and not per
+type, exactly as `instant` is one kind for `Date`, and **the arity does not enter item 1 at all**.
+ADR-0220's *one kind, four or five* is answered: one.
+
+**What one kind costs was derived from the compiler rather than counted by hand, and the two disagree.**
+A throwaway arm was added to `EncodedValue`, both projects typechecked, and the arm was removed by a
+counter-edit with `git status --porcelain` empty either side:
+
+* **`packages/registry` typechecks clean.** The encode recogniser, `everyValueIn`'s walk and `decode`'s
+  switch are all **silent**: `decode` returns `unknown`, so a missing arm returns `undefined` and is
+  assignable; `everyValueIn` is a generator, so a missing arm yields nothing.
+* **`packages/site` names two sites** — `literal.ts:209`, whose `literal` returns `string` so a missing
+  arm is `TS2366`, and `read-literal.test.ts:314`, whose `EVERY_ARM` is
+  `Readonly<Record<EncodedValue['kind'], unknown>>` and is `TS2741` until a sample exists. That second
+  one is deliberate and its own comment says so.
+
+**So one kind is five sites, of which the compiler names two — and the three it does not name are the
+three that carry the round trip.** A kind added by following the compiler alone encodes, decodes to
+`undefined` and is invisible to the walk, with the page rendering correctly throughout. `hasASpelling`
+and `read-literal.ts` cost nothing, both being derived from `WITHOUT_A_SPELLING` rather than listing
+the kinds again.
+
 ## Consequences
 
-To be completed in this record's second commit, with the measurements taken.
+**The arity is four**, and item 1 of ADR-0218's price is **one kind at five sites, two of them
+compiler-held** — which is the figure ADR-0220 said could not be produced until the arity was fixed.
+Item 3 is one key, one choice of four, and a collision the table's own shape creates.
+
+**Two records are corrected and neither is rewritten.** ADR-0219's five and ADR-0220's five are
+different sets, each right about its own condition and neither the arity; ADR-0220's classification of
+`Instant` is refuted; and ADR-0216's R13 clause is a rebuttal whose membership is right and whose
+stated ground does not produce it. All three are stamped, so the correction is here.
+
+**`Instant` is out on R12 and not on R13**, which is the first time any of the twelve grounds has been
+read one carrier at a time. ADR-0216 judged R12 over the candidate as a whole and called it *Weak*; per
+carrier it is not weak, and the difference is the whole of what this record adds to that one.
+
+**Nothing is repaired.** No contract is written, nothing under `contracts/` moved, none of ADR-0218's
+three repairs was taken, `THE_PACKAGE_VERSION` stays at `1.2.0`, `npm run freeze` is green on three
+guards either side and the ledger is byte-identical at `18cc4e82…`.
 
 ## What would reopen this
 
@@ -194,8 +353,31 @@ Outside this repository, on stage rule 5, alongside ADR-0215's and ADR-0216's.
 
 ### Coordinates
 
-The rule, the four outcomes, the prediction and the protocol above are committed **before the probe was
-written**. The measured coordinates follow in this record's second commit.
+The rule, the four outcomes, the prediction and the protocol are committed at **`d7f4e56`**, before the
+probe was written. Everything below them was measured after it, on **2026-09-05**, against the tree at
+that commit: Chrome **152.0.7977.77** headless, reduced user agent `Chrome/152.0.0.0`, no flag, host
+zone `Europe/Paris`, the draft guard passing. `parametersOf` and the compiler readings are node
+v24.15.0, Windows.
+
+The one edit inside the tree — a throwaway arm on `EncodedValue`, to derive what a kind costs — was
+reverted by a counter-edit, and `git status --porcelain` is empty either side.
+`node packages/registry/print-ledger.ts` hashes to
+`18cc4e821ceb806aa301d7c82f9ef463dae6386663385ed87b7a19dbf88b5d11` across the whole unit, which is what
+ADR-0218 recorded, and `npm run freeze` is green on 3 guards.
+
+### What the reading does not reach
+
+**The R13 verdict rests on two readings and not on one sweep.** The DST test discriminates only the two
+carriers on which both bags apply; for the other five the matrix has already answered, one bag being
+ignored or refused, and what stands in its place is that none of them exposes a `timeZoneId`. **No
+tzdata version was varied here**, which is the reading ADR-0215 took and this one did not, so what is
+established is that no zone enters these operations rather than that two zone databases agree about
+them.
+
+**And the R12 half is a reading.** It is sharper than prose held against prose — an intersection of
+declared unit sets over a domain a frozen field names — but the step from *the same question on the
+same domain* to *a collision* is a judgement about what a frozen contract's subject is, and the bias
+towards taking it was declared above before the count.
 
 ### Why `confirmed-by` is empty
 
