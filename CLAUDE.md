@@ -2641,18 +2641,34 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   because a contract must settle both receiver modes. Both prices are unmoved, which is what made the
   question worth settling slowly. ADR-0224.
 
-  **The residue that record sharpened is being answered, and what is committed before the probe is a
-  criterion rather than an answer.** ADR-0224 left `Duration` as the one carrier posing a second refusal
-  question — a constraint on the pair rather than on the unit — and the owner replies that one sentence
-  covers all four: *adding a duration to a Temporal carrier refuses a unit the carrier does not apply,
-  instead of dropping it in silence*. **What makes that testable is a criterion about the sentence's own
-  shape**: it is one rule exactly if, for every carrier value and every unit, the verdict of `add` is a
-  function of that pair alone — so anything the verdict depends on that the pair does not name is a
-  second clause, whatever it is called. **Five falsifiers, the predicates put to the owner's
-  counter-argument, the prediction with its bias and the protocol are committed at ADR-0225 before a
-  figure of them was read** — and so is the one exemption a sweep will certainly meet, a unit carried
-  with the value nought, ruled on in advance so that meeting it cannot be answered by inventing the
-  distinction afterwards. ADR-0225.
+  **The residue that record sharpened is answered, the owner's sentence survives the test he asked for,
+  and the arity moved anyway — for a reason nobody had written down.** The criterion was committed at
+  `0c0f8c0` before a probe was written: the sentence is one rule exactly if, for every carrier value and
+  every unit, the verdict of `add` is a function of that pair alone, so anything the verdict depends on
+  that the pair does not name is a second clause whatever it is called. **The clause he feared has no
+  instance** — over **520** pairs of units that each apply alone, **7** bags do not apply and all seven
+  are the range rather than a refusal, and over **19** `Duration` bases the mode predicts the
+  inapplicable set with **nought exceptions**. So *…or that the pair does not permit* is not owed, and
+  `Duration` is the same subject. **His counter-argument falls, and on the axis he set aside**: the
+  inapplicable set is one set for each of the other carriers and **two** for `Duration`, and *the cause
+  is the receiver rather than the unit* — the predicate he discounted as being about reasons — **is that
+  same reading taken observationally**, because a cause that is the receiver shows up as a verdict that
+  moves when the receiver moves. The heterogeneity he points to is real and sits on an axis that
+  separates nobody. **What fell instead is the matrix.** `PlainDate.add({hours: 24})` answers
+  `2026-01-16`; `{minutes: 1440}`, `{seconds: 86400}` and the same count of milli-, micro- and
+  nanoseconds all answer it too — **all six time units act as soon as they reach a whole day**, so
+  `PlainDate` truncates rather than swallowing, its inapplicable set is **nought and not six**, and it
+  leaves on posability exactly as `PlainDateTime` does. **The arity is three — `PlainTime`,
+  `PlainYearMonth`, `Duration`** — and neither outcome named in advance had `PlainDate` as the carrier
+  that goes. ADR-0216 measured each unit **alone with the value 1**, ADR-0223 reproduced the method and
+  ADR-0224 corrected it along the other axis; **the matrix reads one value per unit, which is ADR-0224's
+  own sentence one axis over**, and two engines agree — Chrome 152 and V8 13.6 under node v24.15.0.
+  **ADR-0224's *arity four* and *50 rows* both fall**: the table is **40 rows**, three carriers of which
+  one is bimodal, which returns to ADR-0223's figure by a different route. Both of ADR-0218's prices are
+  unmoved, as the owner said they would be. **And a real defect is now outside the rule's reach**:
+  `PlainDate.add({hours: 5})` answers the same day and loses five hours in silence, which is
+  `date/add@1`'s own frozen phrase, and the committed rule cannot see it because the rule is written
+  over the unit and the phenomenon is over the value. Reopening it is the owner's. ADR-0225.
 
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
