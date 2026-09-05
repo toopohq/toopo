@@ -2112,9 +2112,23 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   that unit it would have refused to answer. What caught it was a battery replay, and the run that
   would have carried it had been cancelled by a later push. **The remedy is priced by having been
   taken once**: the replay that verified `W-180` writes a measurement carrying the identities, and
-  `predict` goes **21 → 20** questions it cannot ask with `site` answering *every cell agrees*. One
-  battery run apiece for the other twenty-two, after which a guard added and forgotten is caught in
-  185 ms rather than by a replay a cancellation can swallow. ADR-0206, ADR-0234, ADR-0236, ADR-0237.
+  `predict` goes **21 → 20** questions it cannot ask with `site` answering *every cell agrees*, after
+  which a guard added and forgotten is caught in 185 ms rather than by a replay a cancellation can
+  swallow. ADR-0206, ADR-0234, ADR-0236, ADR-0237.
+
+  **And *the other twenty-two* was ADR-0221's figure repeated rather than read — it was twenty — while
+  the verb was wrong in a way that matters more.** The remaining nineteen were written, each exiting 0,
+  in **2 399 s, 39 min 59 s**, against a bound derived from ADR-0200 of about 33 minutes: **17 % low**,
+  broken by `cli-install` alone at **857 s** where that record measured 729 and 623, having gained
+  ADR-0214's cells. `npm run predict` now reads **0 fault(s) and 0 question(s) it could not ask, exit
+  0** — which it has never reached, having shipped with twenty-two measurements that could not answer.
+  **But the debt is not the repository's and cannot be lifted for it.** `mutation/results/` is
+  gitignored, and `.gitignore` carries the reason: *keeping the measurement as well would put the same
+  claim in two places that can drift*. So a runner's measurements die with the runner, `suites.yml`
+  carries no `upload-artifact`, no `download-artifact` and no `actions/cache`, and **a fresh clone
+  answers `no measurement of this battery is on disk` twenty-three times, correctly.** The 185 ms catch
+  exists for a working copy that has replayed, and for no other — which is a property of a machine
+  rather than a debt a unit closes. ADR-0221, ADR-0238.
 
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
