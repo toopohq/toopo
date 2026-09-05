@@ -2790,6 +2790,44 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   census 10 → 12. **The refusal is exercised and the construction is not** — written in `readCarrier`,
   in the declaration and in `literal.ts`'s arm, and lifted by a runtime carrying `Temporal`. ADR-0234.
 
+  **The third price is costed and not taken, and it turns out to be two prices counted as one.**
+  `AS_AN_ARGUMENT` is keyed by declared type text and holds **five** entries where its own header says
+  four; the catalogue declares seven distinct parameter types and **`T` is not among them**, so the key
+  would land on an empty slot rather than on an occupied one. **The collision is between a global key
+  and a per-signature name, and `parametersOf` is what makes it unavoidable**: the four-carrier bound,
+  the three-carrier bound and no bound at all all render `carrier: T`, so nothing in the key could tell
+  one contract's `T` from another's — and the bound is one field away, `ExportRecord.text` transcribing
+  the whole signature that `parameters` is read off. **What ignoring it costs has a witness that exists
+  today and it is silent**: retyping `number/parse@1`'s `input` to `Duration` **builds a form** with
+  `date/add@1`'s entry, no refusal fires, and the one guard over the table stays green — it is total
+  over a type the table does not hold and blind to a key the table holds meaning the wrong thing, which
+  is `W-37` made permanent with no cell able to redden on it. **The site count is two by ADR-0223's rule
+  and five by behaviour**, and the compiler names **nothing outside the entry**, because
+  `Readonly<Record<string, Argument>>` is an index signature where `EncodedValue` is a union — the
+  hand-written refusal at `playground.ts:451` being the evidence rather than the reading. **The site
+  nobody lists is `spelledFields` in `contract-page.ts`**, which composes a sentence a reader meets out
+  of the entry's own `because`; it speaks on two of the seven pages today and nothing reads what it
+  says, the third unit running in which the unlisted site was the one a reader receives. **Three counts
+  in that file's own prose are false already** — *Four types* at five entries, and two beside it — and
+  they are recorded rather than repaired, this unit having been forbidden the file. **And one of the two
+  build-time refusals was removed by item 1 with nobody costing it**: a carrier used to encode as
+  `instance`, which `WITHOUT_A_SPELLING` holds, so every carrier row was refused and `playgroundOf`
+  would have thrown *the contract settles no case a form can hold* before ever reaching the type.
+
+  **It is a prerequisite, and the reason is two lines anybody can check.** `contract-page.ts:180` calls
+  `playgroundOf` with no `try` and `site.ts:78` maps it over every held contract; measured,
+  `contractPage` on a contract retyped to `T` throws and nothing between there and `theSite` catches,
+  against a control of seven pages. **So there is no publishable state in which a playground refuses to
+  open its cases**, both refusals — an unmodelled type, and a contract settling no case a form can
+  hold — being build-time throws out of that one call, and the hoped-for finding does not hold. **What
+  splits instead is the price.** The key is a prerequisite and is **payable today**, runtime-independent:
+  a literal field opens on the *written literal*, so the build never calls `read`, and `decode` rebuilds
+  a carrier's surface without `Temporal`. A reader who can press the button is **not this price at
+  all** — `read` refuses by name on both legs of the matrix, which is ADR-0234's ruling firing as
+  written, and a stripped reference naming `Temporal` throws `ReferenceError` when called, so the replay
+  reddens on an eighth contract whether or not the key exists. That half is ADR-0220's contributor floor.
+  ADR-0235.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
