@@ -424,7 +424,10 @@ second-engine control is node **v24.15.0**, V8 **13.6.233.17**, under `--harmony
 covers the `PlainDate` reading only.
 
 Nothing inside the tree was edited to take any of it, and `git status --porcelain` was empty across
-every probe.
+every probe. `node packages/registry/print-ledger.ts` hashes to
+`18cc4e821ceb806aa301d7c82f9ef463dae6386663385ed87b7a19dbf88b5d11`, which is what ADR-0218 and ADR-0223
+recorded, so no published binding moved; `pnpm freeze` is green on 3 guards either side and `pnpm meta`
+is 143 of 143 on the clean tree.
 
 ### Why `confirmed-by` is empty
 
