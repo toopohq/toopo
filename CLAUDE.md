@@ -2626,6 +2626,21 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `decode`, the walk and the encode recogniser are silent, so a kind added by following the compiler
   alone decodes to `undefined` with every page still rendering. ADR-0223.
 
+  **What `inapplicable` means in that rule is settled by measurement, and it took one row of the matrix
+  down with it.** It is behaviour **quantified over a carrier's values** — neither one base nor the
+  components the carrier carries. The structural reading was refused on **four of six** carriers rather
+  than on the one line it was handed over broken on: `PlainDate` has no `week` component and applies
+  `weeks`, and `Instant` carries **no component of the ten at all** while applying six. The arity is
+  **four and unchanged**, against a failing direction — `years`, `months` and `weeks` apply to **0 of
+  11** `Duration` bases, and had one applied the set would have been empty and the arity three. **What
+  moves is that `Duration`'s row is bimodal and no other row is**: a receiver whose largest unit is a
+  calendar unit refuses all ten, `nanoseconds` included, where one whose largest unit is `days` or
+  smaller refuses three — so `P1Y` refuses to have a nanosecond added to it. **The matrix reads one base
+  per carrier**, the method ADR-0216 established and ADR-0223 reproduced, and for one row of seven that
+  is not enough; the other five are stable across their bases. **The case table is 50 rows and not 40**,
+  because a contract must settle both receiver modes. Both prices are unmoved, which is what made the
+  question worth settling slowly. ADR-0224.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,

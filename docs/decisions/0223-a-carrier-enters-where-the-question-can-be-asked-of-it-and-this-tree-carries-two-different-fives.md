@@ -8,6 +8,17 @@ confirmed-by: []
 
 # A carrier enters where the question can be asked of it, and this tree carries two different fives
 
+> **What `inapplicable` means in the rule below is settled by
+> [ADR-0224](0224-the-inapplicable-set-is-quantified-over-a-carriers-values-and-one-row-of-seven-needs-two-bases.md),
+> and two things here are corrected without being rewritten.** It is behaviour quantified over a
+> carrier's values rather than over one base or over its components, so **the arity is four and
+> unchanged** — measured against a failing direction, `years`, `months` and `weeks` applying to **0 of
+> 11** `Duration` bases. What moves is that **`Duration`'s row is bimodal**: a receiver whose largest
+> unit is a calendar unit refuses all ten, `nanoseconds` included, where one whose largest unit is
+> `days` or smaller refuses three. The matrix below reads one base per carrier — the method ADR-0216
+> established — so its `Duration` row is one of two modes. **The case table figure of 40 rows is
+> corrected to 50** for the same reason. Both prices are unmoved.
+
 ## Context and Problem Statement
 
 ADR-0218 named three prices for a Temporal `add`, and ADR-0220 wrote that the first of them cannot be

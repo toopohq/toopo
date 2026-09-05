@@ -8,6 +8,14 @@ confirmed-by: []
 
 # The residue is three decisions and the language answers one of them two ways
 
+> **One row of the matrix below is one of two modes, and nothing here says so.**
+> [ADR-0224](0224-the-inapplicable-set-is-quantified-over-a-carriers-values-and-one-row-of-seven-needs-two-bases.md)
+> measured that `Duration`'s row moves with the base: a receiver whose largest unit is a calendar unit
+> refuses **all ten** units, `nanoseconds` included, where one whose largest unit is `days` or smaller
+> refuses the three published here. The row below is correct for the base it was taken on, and the
+> other five carriers are stable across theirs. **Nothing else in this record moves**: the second
+> residue decision, the two-swallow-three-refuse reading and every other row are unaffected.
+
 > **The one ground this record could not rule out is paid, and one of its own objections is withdrawn.**
 > [ADR-0217](0217-r5-is-read-on-what-the-packages-do-and-never-on-how-often-they-are-downloaded.md)
 > reads ten packages by execution: **`luxon` refuses an unknown unit where Temporal ignores it**, so
