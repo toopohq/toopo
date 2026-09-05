@@ -3665,6 +3665,8 @@ import {
    * **Seen red alone before it was written down**: 1 failed of 189, and the assertion is the guard's
    * own - `expected [ 'temporal' ] to deeply equal []`. Nothing else moves, because `hasASpelling`
    * only narrows for a value some case actually holds and no case of this catalogue holds a carrier.
+   * ADR-0237 carries the reading beside the repair: three mechanisms could have named this guard as
+   * unwitnessed and each is blind for its own reason, the one built for it answering *I cannot ask*.
    */
   sameOnEveryLens(
     'W-180',
