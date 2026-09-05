@@ -628,9 +628,15 @@ jobs:
     # Every reading of `registry-storage` on a runner since `1238833` is censored at the 40-minute
     # bound: the job is killed, so what it says is "at least 40 minutes" and nothing more. A bound
     # cannot be derived from censored readings, and raising it is the only way to take an uncensored
-    # one - which is circular, and is why this branch exists. 75 is chosen to be far above any
-    # plausible reading rather than derived from anything; the derived value goes on `main`.
-    timeout-minutes: 75
+    # one - which is circular, and is why this branch exists. 75 was chosen to be far above any
+    # plausible reading rather than derived from anything, and the reading it took is 3 887 s.
+    #
+    # DELIBERATELY TOO SMALL NOW, AND STILL NEVER TO BE MERGED. What is left is the other direction of
+    # the gate's control: that a job killed by this bound really reports `cancelled` in
+    # `needs.*.result`, and that `every-job-answered` reddens on it. Two minutes lets the setup steps
+    # finish and kills the battery step itself, which is the shape the real defect has.
+    # `validation-stage-1` is 97 s on a runner.
+    timeout-minutes: 2
 
     strategy:
       # Every selected battery reports. A first disagreement stopping the matrix would answer a
