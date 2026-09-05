@@ -1810,7 +1810,7 @@ command is a third assertion. ADR-0173.
 
 **A decision that has been taken is a record in `docs/decisions/`**, in MADR format, addressed by
 number and cited as `ADR-0007` — never as a path. ADR-0001 settles the format, the two fields it adds
-and the one section, and nine guards resolve what a record names in both directions. There is no index
+and the one section, and its guards resolve what a record names in both directions. There is no index
 here: the directory listing is the index, because the filenames carry the titles, and a second
 statement of what the folder already says is one that drifts.
 
@@ -1891,6 +1891,20 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
    somebody setting out to build the field. **So an entry that describes what the code does not have
    names where it looked**, the way a count names its population — because the cheapest way to be wrong
    here is to describe a schema nobody opened. ADR-0128.
+
+   **And that remedy is copiable, which is how it failed.** A *Where this looked* block is prose, so
+   the cheapest way to write one is to take the block from a neighbouring entry — and **a copy is
+   indistinguishable from a reading**. Measured at `c62db7a`: *`mutation/decisions.ts` has nine fault
+   functions* stood in **nine** places, six of them entries of this list, one the prose above it, one
+   `CONTRIBUTING.md` and one a stamped record — and that file has declared **eight** since its first
+   commit, `ba78284`, unmoved across the ten commits touching it. **The true figure was already
+   written thirty-five lines above one of the copies, enumerated.** What made the wrong one
+   reproducible is that it counts what the file *mentions* rather than what it *declares*:
+   `guardAddressFaults` is imported and called there, and is the ninth name. **The two failures this
+   section separates were living in one form** — the same sweep found *`mutation/workflows.test.ts`,
+   whose nine guards*, and that one **was** true when it was written, nine on 2026-08-21 and twelve at
+   `aaf625f`. Rule 3's failure and rules 1 and 2's sit in neighbouring blocks and read identically;
+   only counting tells them apart. ADR-0227.
 
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
 decision record.** They are a list and not a sentence, and that is a repair rather than a layout:
@@ -2402,7 +2416,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   stale over *units*; this one goes stale inside a single one, between a draft and a commit an hour
   apart.
 
-  **Where this looked**: the nine fault functions of `mutation/decisions.ts`, which resolve what a
+  **Where this looked**: the fault functions of `mutation/decisions.ts`, which resolve what a
   record *names* and read no figure in it; `mutation/readme.test.ts`, which is the one guard resolving
   a published figure against what produced it and which reads one page; and `mutation/history.ts`,
   whose sweep over this file is for commit identifiers and refused addresses rather than for the
@@ -3034,7 +3048,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   own calibration table, where `string/levenshtein@1`'s incumbent is `none` and `string/slugify@1`'s
   yields nothing. Nothing was red for the whole of its life, because nothing reads it.
 
-  **Where this looked**: the nine fault functions of `mutation/decisions.ts`, which resolve what a record
+  **Where this looked**: the fault functions of `mutation/decisions.ts`, which resolve what a record
   *names* — a path, a guard, a record, a link — and not one of which reads what a record *says*;
   `theCatalogue` in `packages/registry/the-catalogue.ts`, which holds what was published and nothing
   about what was considered; and `packages/registry/field-map.ts`, whose four strata class the fields of
@@ -3085,7 +3099,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `strict` cost no finding.
 
   **Where this looked**: `mutation/workflows.test.ts`, which is the one suite that reads a repository
-  configuration file and reads `suites.yml`; the nine fault functions of `mutation/decisions.ts`, which
+  configuration file and reads `suites.yml`; the fault functions of `mutation/decisions.ts`, which
   resolve what a *record* names; and `packaging/`, whose readers are the manifest and the archive and
   never a compiler configuration.
 
@@ -3632,7 +3646,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   ADR-0225 named three and the sweep found **five**, ADR-0217 and ADR-0219 carrying a claim that had
   stopped being true and being named nowhere.
 
-  **Where this looked**: the nine fault functions of `mutation/decisions.ts`, every one of which
+  **Where this looked**: the fault functions of `mutation/decisions.ts`, every one of which
   resolves what a record *names* — a path, a guard, a record, a link, the presence of a section — and
   not one of which reads what a record *says*; `backCitationFaults` beside them, which resolves
   `governs` in both directions and has no opinion about a correction; and
@@ -4517,7 +4531,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   were. **The asymmetry it exposed is the thing to carry**: a cell is 1.33 times dearer on the Windows
   leg, so two bounds that run out together today do not stay level, and nothing recomputes either.
 
-  **Where this looked**: `mutation/workflows.test.ts`, whose nine guards read what that file may *hold*
+  **Where this looked**: `mutation/workflows.test.ts`, whose guards read what that file may *hold*
   - a pinned digest, the publishing gate, the identity token - and not one of which reads a duration;
   `THE_LONGEST_A_RUN_MAY_TAKE` in `mutation/run.ts`, which bounds one cell at 600 s and is related to
   the job's forty minutes by nothing; and `mutation/selection.ts`, which decides which batteries a push
@@ -4677,7 +4691,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   suggests it did.
 
   **Where this looked**: `mutation/readme.test.ts`, which is the one guard resolving a published
-  figure against what produced it, and which reads one page; the nine fault functions of
+  figure against what produced it, and which reads one page; the fault functions of
   `mutation/decisions.ts`, none of which reads a figure in a record; and `mutation/history.ts`, whose
   sweep over this file is for commit identifiers and refused addresses rather than for the numbers
   beside them.
@@ -4762,7 +4776,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   that coupling every time it has been priced.
 
   **Where this looked**: `theCatalogue` and `eachContract` in `packages/registry/the-catalogue.ts`;
-  the nine guards of `mutation/decisions.ts`, which resolve what a record names in both directions and
+  the guards of `mutation/decisions.ts`, which resolve what a record names in both directions and
   read no prose of this file; and `mutation/history.ts`, whose sweep over this file is for commit
   identifiers and refused addresses.
 

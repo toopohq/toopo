@@ -231,8 +231,8 @@ entry costs, and the rules a session works under.
 **Every decision that has been settled is a record in [docs/decisions/](docs/decisions)**, one file
 each, addressed by number and cited as `ADR-0007`. Each carries the measurement it rests on, the
 alternatives that were refused, the guards that keep it, and what would reopen it. That is where to
-look when you want to know *why* something is the way it is — and nine guards resolve what a record
-names, in both directions, so a path or a guard it cites is one you can open.
+look when you want to know *why* something is the way it is — and a family of guards resolves what a
+record names, in both directions, so a path or a guard it cites is one you can open.
 
 **Neither is a specification, and neither is the document to read before contributing.** This file is.
 Where a decision here has a longer argument behind it, the argument is in the module that owns the

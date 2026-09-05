@@ -8,6 +8,30 @@ confirmed-by: []
 
 # A record that announces a correction is not a record that posts one
 
+> **A figure in this record is wrong, and it is of the class this record could not see.** *`mutation/
+> decisions.ts` has nine fault functions* — **it has eight**, at lines 394, 410, 426, 440, 449, 467,
+> 486 and 502, and it has never had nine: the file was created at `ba78284` with eight and the set has
+> not moved across the ten commits that touch it. The file says so itself — *`declarationFaults` is
+> what keeps the other seven from being vacuous* — and `decisions.test.ts` carries eight `it(…)`, one
+> per function.
+>
+> **The ninth name is measured rather than guessed.** `guardAddressFaults` is the one identifier ending
+> in `Faults` that the file *mentions* without *declaring* it: imported at line 110 from
+> `packages/registry/address.ts` and called at line 452 inside `confirmationFaults`. **A count taken
+> over what a file mentions renders nine; a count taken over what it declares renders eight** — which
+> is reproducible, and is why it kept being written.
+>
+> **It is not this record's figure and it is not stale.** It was copied into nine places, seven of them
+> `CLAUDE.md`, one `CONTRIBUTING.md` and this one, and it was **never true anywhere**. That is the
+> class `CLAUDE.md` names at rule 3 of its open list — *false without being stale* — and not the class
+> this record names, which needs an event to fail to propagate.
+> [ADR-0227](0227-a-block-that-says-where-somebody-looked-is-copied-as-easily-as-it-is-read.md) measures
+> it and repairs the eight live occurrences.
+>
+> **The sentence the figure sits in stands.** All eight functions were read: every one resolves what a
+> record *names* and not one reads what a record *says*, so the mechanism named unbuilt below is
+> unbuilt for the reason given.
+
 ## Context and Problem Statement
 
 ADR-0225 closes with *ADR-0216, ADR-0223 and ADR-0224 are corrected and none is rewritten. They are
