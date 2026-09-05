@@ -104,20 +104,111 @@ and 3, and taking them is taking the price.
 then the counter-edit, then the ledger and `git status --porcelain` again. **The tree is clean at the
 end or this record says it could not be measured without a trace.**
 
+### What the measurement returned
+
+**Outcome A. Neither moves.**
+
+| reading | with the kind present |
+| --- | --- |
+| `tsc -p packages/registry/tsconfig.json` | **clean**, no further edit required |
+| `node packages/registry/print-ledger.ts`, hashed | `18cc4e82…` — **the reference, byte for byte**, 1 206 bytes either side |
+| `pnpm freeze` | **3 passed** |
+
+The typecheck passing with only two edits reproduces ADR-0223's reading of the same seam: `decode`
+returns `unknown` so a missing arm is assignable, and `everyValueIn` is a generator so a missing arm
+yields nothing.
+
+### The control, which is what makes the zero worth anything
+
+**An arm that intercepts nothing changes nothing, and that is a tautology unless the probe can fail.**
+So the same arm was re-aimed — one character of its predicate, `[object Temporal.` to `[object
+Object]`, so that it catches the plain objects the catalogue is full of — and re-read:
+
+| reading | with the arm intercepting |
+| --- | --- |
+| the ledger, hashed | **`2dbce1f30fd4fbe2971a517b0327fbbb6b67571458f214d081d2da1ea32c6866`** |
+| `pnpm freeze` | **1 failed, 2 passed** — `every-published-binding-still-hashes-to-what-it-was-published-as`, **alone** |
+
+**So the probe could return B, and returned A.**
+
+### The two questions turn out to be coupled, and the mechanism says why
+
+**Outcomes C and D have no instance**: the digest moved and the freeze reddened together, and they
+stayed still together. That is not luck. `bindingsAtRevision` runs `git worktree add --detach` at the
+published commit and spawns **that commit's own entry point**, so the past is produced by the *old*
+encoder while `theLocalLedger()` is produced by the current one. **An encoder that changes what it
+emits makes the two disagree by construction**, which is the shape ADR-0107 built and which nothing had
+put under load until now.
+
+### What this says about item 1
+
+**It is ordinary work, under a condition that is measurable and guarded.**
+
+`value.ts` is in no digest **by its content** — `THE_SHARED_FILES` is two files of
+`packages/catalogue/` and names it nowhere. It is in every digest **by its output**. So a kind is
+addable exactly while its arm intercepts nothing already encoded, and the control above is what that
+costs when the condition is broken: six bindings adrift and a red guard naming it.
+
+**The condition is not a hope; it is kept.** The mechanism that refuses a bad addition exists, is the
+one guard that fires, and fires alone. **So item 1 is not the owner's decision** — it is work whose
+correctness the freeze already checks, and the check was seen red on the real failure rather than
+argued.
+
+**What remains the owner's is unchanged and is elsewhere**: whether an eighth contract is published at
+all. Nothing here touches that.
+
+### Items 2 and 3 are not in this perimeter, and now that is measured rather than assumed
+
+`literal.ts`, `read-literal.ts` and `AS_AN_ARGUMENT` are `packages/site`. **No digest reaches that
+folder** — neither by content, `THE_SHARED_FILES` naming two files of `packages/catalogue/`, nor by
+output, since what those modules produce is a page and not an encoding. **So ADR-0218's items 2 and 3
+stand at what it priced them**, and the lock this record went looking for is item 1's alone — where it
+turns out not to be a lock either.
+
 ## Consequences
 
-To be completed after the measurement, which is the point of committing this half first.
+**Adding a kind to `value.ts` moves no published digest**, and `the-freeze.test.ts` stays green:
+`18cc4e82…` byte for byte, 3 passed. **Item 1 of ADR-0218's price is ordinary work**, not permanent
+rule 6, and the condition it rests on — an arm that intercepts nothing already encoded — is kept by the
+freeze, seen red on its real failure with the digest at `2dbce1f3…`.
+
+**The two questions are coupled and the mechanism is named**: the past is rebuilt by the commit's own
+entry point, so an encoder that changes its output makes the local ledger and the rebuilt one disagree.
+Outcomes C and D — a silent divergence — have no instance.
+
+**Items 2 and 3 are outside the perimeter**, measured on `THE_SHARED_FILES` and on what those modules
+produce.
+
+**Nothing is taken.** No kind is added for good, no spelling, no key, nothing under `contracts/`, no
+contract written, no guard added or changed. `THE_PACKAGE_VERSION` stays at `1.2.0`. **The tree is
+clean**: `git status --porcelain` and `git diff --stat` are both empty after the counter-edits, and the
+ledger reads `18cc4e82…` again.
 
 ## What would reopen this
 
-To be completed with the measurement.
+* **A kind whose arm intercepts something already encoded.** That is outcome B, it is what the control
+  produced, and it is a decision rather than a repair — six addresses rebound.
+* **A kind that has to be spelled to be published.** This probe added the type and the arm and stopped
+  where the compiler stopped. If a future kind needs a `literal.ts` spelling *before* a contract can be
+  published, the site's modules enter the path even though no digest reaches them.
+* **The freeze ceasing to rebuild at the commit.** The coupling measured here rests entirely on
+  `bindingsAtRevision` spawning the published commit's own entry point; a rebuild that used the current
+  encoder on historical data would make outcome C reachable and silent.
+* **A shared file gaining `value.ts`.** `THE_SHARED_FILES` names two files today; a third that reached
+  the encoder would put its content inside every digest and make any edit to it a rebinding.
 
 ## More Information
 
 ### Coordinates
 
-The two criteria, the four outcomes, the prediction and the protocol are committed before the probe is
-written, against the tree at `d7edf3c`.
+The two criteria, the four outcomes, the prediction and the protocol are committed at **`84a173f`**,
+before the probe was written. Everything after them was measured on **2026-09-05** against that tree, on
+node v24.15.0, Windows.
+
+The probe is two edits to `packages/registry/value.ts` — an arm on `EncodedValue` and an arm in
+`encodeAt` immediately after the `Date` one — reverted by counter-edit. **`git status --porcelain` and
+`git diff --stat` are both empty after it**, and the ledger reads
+`18cc4e821ceb806aa301d7c82f9ef463dae6386663385ed87b7a19dbf88b5d11`, which is what it read before.
 
 ### Why `confirmed-by` is empty
 

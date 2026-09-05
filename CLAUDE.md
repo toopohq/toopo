@@ -2711,7 +2711,23 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   commit and running **that commit's own** entry point. **Four outcomes, both criteria and the
   prediction with its bias are committed at ADR-0231 before a figure of them is read** — the bias
   declared towards *neither moves*, which is the outcome under which item 1 stays work rather than
-  becoming the owner's decision. ADR-0231.
+  becoming the owner's decision.
+
+  **Neither moves, and the control is what makes that worth anything.** With the kind present the
+  registry typechecks clean on two edits, the ledger is **`18cc4e82…` byte for byte, 1 206 either
+  side**, and `pnpm freeze` is **3 passed**. Re-aiming the same arm by one character of its predicate,
+  so that it catches the plain objects the catalogue is full of, takes the ledger to
+  **`2dbce1f3…`** and reddens
+  `every-published-binding-still-hashes-to-what-it-was-published-as` **alone**. **So the probe could
+  return the other answer and did not.** The two questions turn out to be **coupled, and the mechanism
+  says why**: `bindingsAtRevision` spawns a worktree at the published commit and runs *that commit's
+  own* entry point, so an encoder that changes its output makes the local ledger and the rebuilt one
+  disagree by construction — a silent divergence has no instance. **`value.ts` is in no digest by its
+  content and in every digest by its output**, `THE_SHARED_FILES` being two files of
+  `packages/catalogue/` and naming it nowhere. **So item 1 is ordinary work under a condition the
+  freeze already keeps**, and not permanent rule 6; and **items 2 and 3 are outside the perimeter
+  altogether**, `literal.ts` and `AS_AN_ARGUMENT` being `packages/site`, which no digest reaches by
+  content or by output. Nothing was taken and the tree is clean. ADR-0231.
 
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
