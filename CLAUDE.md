@@ -2599,6 +2599,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   seven, and is not the same function: it is not generic, its caller holds a string rather than a
   carrier, and it grows ADR-0216's residue by a decision the language does not pose. ADR-0219.
 
+  **The arity that would size the first price is being read under a rule committed before the count,
+  and the reading found two different fives already in this tree.** ADR-0220 left item 1 unsized in as
+  many words — *whether that is one kind, four or five is undetermined* — and the two records that
+  name a five name different sets: ADR-0220's is `Duration`, `PlainDate`, **`PlainDateTime`**,
+  `PlainTime`, `PlainYearMonth`, and ADR-0219's control table is `PlainDate`, `PlainTime`,
+  `PlainYearMonth`, **`Instant`**, `Duration`. **They share four, and those four are exactly the four
+  ADR-0216's R13 clause names**, so that clause is an intersection — *zone-free* ∧ *the question can be
+  asked of it* — which nothing anywhere states. The rule, its bias, four outcomes and the protocol are
+  committed at ADR-0223 before a figure of them was read. ADR-0223.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
