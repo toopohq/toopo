@@ -3647,6 +3647,40 @@ import {
       'every-arm-of-an-encoded-value-is-read-back-or-refused-by-name',
     ]),
   ),
+
+  /**
+   * The witness ADR-0234 owed and did not write, which is why `batteries (site)` refused a run with
+   * `never red, UNACCOUNTED FOR (1)`. That unit added two guards to `read-literal.test.ts` and
+   * accounted for one; the census moved with both, so calibration passed and the accounting is what
+   * caught it. ADR-0236 is where the red was found, and it was found by rerunning a job a push had
+   * cancelled rather than by anything watching.
+   *
+   * **The type is widened in the same edit and that is what makes this measure the claim.**
+   * `WITHOUT_A_SPELLING` is a `Record` over a closed union of three, so filing a fourth arm under it
+   * alone is `TS2353` - `npm run site` runs `tsc` before vitest, so the cell would be
+   * `killed-by-typecheck` and would measure the compiler instead of the guard. Widening and filing are
+   * one act by whoever files an arm under both declarations, which is the defect the guard's own
+   * sentence names.
+   *
+   * **Seen red alone before it was written down**: 1 failed of 189, and the assertion is the guard's
+   * own - `expected [ 'temporal' ] to deeply equal []`. Nothing else moves, because `hasASpelling`
+   * only narrows for a value some case actually holds and no case of this catalogue holds a carrier.
+   */
+  sameOnEveryLens(
+    'W-180',
+    'files the carrier under `WITHOUT_A_SPELLING` as well as under the reader-bound declaration, so ' +
+      'one arm is in both and the weaker of the two tests is the one that runs',
+    [
+      literalFile(
+        `export const WITHOUT_A_SPELLING: Readonly<Record<'not-data' | 'opaque' | 'instance', string>> = {
+  'not-data': '<a function, served as a file>',`,
+        `export const WITHOUT_A_SPELLING: Readonly<Record<string, string>> = {
+  temporal: '<a carrier this runtime cannot build>',
+  'not-data': '<a function, served as a file>',`,
+      ),
+    ],
+    killed(['no-arm-is-both-without-a-spelling-and-read-only-where-a-runtime-carries-it']),
+  ),
 ]
 
 export const battery: Battery = {
