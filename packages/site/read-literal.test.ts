@@ -325,6 +325,18 @@ const EVERY_ARM: Readonly<Record<EncodedValue['kind'], unknown>> = {
   'not-data': [1, (x: number) => x],
   'big-integer': 123n,
   instant: new Date(1234),
+  /**
+   * A Temporal carrier stood in for, because `Temporal` is `undefined` on both runtimes of this
+   * repository's matrix. It matches a real one on every property the encoder reads - the tag on the
+   * prototype, an ISO `toString`, and no own property at all - each measured on Chrome 152 against
+   * `PlainTime`, `PlainYearMonth` and `Duration`. `round-trip.test.ts` carries the same double and the
+   * same limit at length: **this does not exercise the spelling against a value `Temporal.from` can
+   * read back**, and a runtime carrying the namespace is what would.
+   */
+  temporal: Object.create({
+    [Symbol.toStringTag]: 'Temporal.PlainTime',
+    toString: () => '12:30:00',
+  }) as object,
   map: new Map<unknown, unknown>([['a', 1]]),
   // With a cause, because a cause is the half an error's spelling would be easiest to leave out.
   error: new TypeError('boom', { cause: 1 }),

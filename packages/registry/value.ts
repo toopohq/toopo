@@ -190,6 +190,21 @@ export type EncodedValue =
       readonly shared?: SharedObject
     }
   /**
+   * A Temporal carrier, by its own type name and its ISO rendering.
+   *
+   * One kind for every carrier rather than one per type, because the shape is what varies and the
+   * shape does not: ADR-0219 measured the pair lossless on seven carriers of seven and re-evaluating
+   * to the same rendering on seven of seven, and ADR-0223 measured that the arity does not multiply
+   * it. `Date` is the precedent one row up - a value keeping its state in an internal slot, spelled
+   * by a kind of its own rather than by the own fields it does not have.
+   */
+  | {
+      readonly kind: 'temporal'
+      readonly typeName: string
+      readonly rendered: string
+      readonly shared?: SharedObject
+    }
+  /**
    * A Map, whose entries are a sequence for the reason a Set's are: insertion order is observable, and
    * `object/deep-equal@1` settles that two Maps built in different orders are one value - which is a
    * claim about the entries and not about the order they happen to be written in.
@@ -341,6 +356,27 @@ const numberLiteralOf = (value: number): NumberLiteral | null => {
 /** The tag `Object.prototype.toString` gives, which reads the internal slot where a prototype does not. */
 const tagOf = (value: object): string => Object.prototype.toString.call(value).slice(8, -1)
 
+/**
+ * A Temporal carrier's own name, or `null`.
+ *
+ * The tag and not `instanceof`, for a reason that is not taste: `Temporal` is absent from both
+ * runtimes this repository runs on, so `value instanceof Temporal.PlainTime` is a `ReferenceError`
+ * here and would make the encoder unloadable rather than merely wrong. The specification gives every
+ * carrier a `Symbol.toStringTag` of `Temporal.<name>`, which `tagOf` reads out of the prototype
+ * chain, so the discriminant travels to a runtime that has the namespace and works on one that does
+ * not. Measured on Chrome 152 against `PlainTime`, `PlainYearMonth` and `Duration`: the tag is exactly
+ * that, `Object.keys` is empty on all three, and `String(carrier)` is the ISO form.
+ *
+ * **`unmodelled` admits it and this arm spells it, and the two are one decision.** Admitting a tag
+ * without an arm drops the carrier into the record arm and loses the slot; an arm without the
+ * admission never runs, because the refusal above it fires first. ADR-0232.
+ */
+const temporalCarrierOf = (value: object): string | null => {
+  const tag = tagOf(value)
+
+  return tag.startsWith('Temporal.') ? tag : null
+}
+
 const BOXED_BY_TAG: Readonly<Record<string, BoxedKind | undefined>> = {
   String: 'string',
   Number: 'number',
@@ -415,6 +451,7 @@ const unmodelled = (value: object): string | null => {
   if (BOXED_BY_TAG[tag] !== undefined) return null
   if (OPAQUE_BY_TAG[tag] !== undefined) return null
   if (typedArrayKindOf(value) !== null) return null
+  if (temporalCarrierOf(value) !== null) return null
 
   if (tag === 'ArrayBuffer' || tag === 'SharedArrayBuffer') return 'a buffer'
   if (tag === 'DataView') return 'a DataView'
@@ -641,6 +678,15 @@ const encodeAt = (value: unknown, path: string, walk: Walk): EncodedValue => {
     return shared === undefined ? { kind: 'instant', epoch } : { kind: 'instant', epoch, shared }
   }
 
+  const carrier = temporalCarrierOf(value)
+  if (carrier !== null) {
+    const rendered = String(value)
+
+    return shared === undefined
+      ? { kind: 'temporal', typeName: carrier, rendered }
+      : { kind: 'temporal', typeName: carrier, rendered, shared }
+  }
+
   if (value instanceof Map) {
     const entries = [...value].map(([key, entry], at) => ({
       key: encodeAt(key, `${path}<key ${at}>`, walk),
@@ -749,6 +795,7 @@ export function* everyValueIn(encoded: EncodedValue): Generator<EncodedValue> {
     case 'hole':
     case 'again':
     case 'opaque':
+    case 'temporal':
       return
     case 'list':
     case 'set':
@@ -1002,6 +1049,26 @@ export const decode = (encoded: EncodedValue, shared: Map<SharedObject, unknown>
       if (encoded.shared !== undefined) shared.set(encoded.shared, instant)
 
       return instant
+    }
+    /**
+     * A carrier comes back as its surface and not as itself, and that is a limit rather than a choice.
+     *
+     * `new Date(epoch)` one arm up rebuilds an instant because `Date` is in the language. A Temporal
+     * carrier needs `Temporal.<name>.from(rendered)`, and `Temporal` is `undefined` on both runtimes
+     * this repository runs on - so a decoder reaching for it would throw where it is asked to answer.
+     * What comes back instead carries **everything the encoder read**: the type name in the tag and
+     * the ISO form in `toString`, so the trip is lossless in what was taken and honest about what it
+     * cannot put back. **A runtime carrying `Temporal` is what lifts this**, and on that day this arm
+     * reaches for the namespace and this comment goes.
+     */
+    case 'temporal': {
+      const carrier = Object.create({
+        [Symbol.toStringTag]: encoded.typeName,
+        toString: () => encoded.rendered,
+      }) as object
+      if (encoded.shared !== undefined) shared.set(encoded.shared, carrier)
+
+      return carrier
     }
     case 'map': {
       const entries = new Map<unknown, unknown>()

@@ -2729,6 +2729,26 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   altogether**, `literal.ts` and `AS_AN_ARGUMENT` being `packages/site`, which no digest reaches by
   content or by output. Nothing was taken and the tree is clean. ADR-0231.
 
+  **The first price is paid, and the arm nobody listed is where the work was.** The owner ruled that the
+  three prices bind before the contract, so they are taken now. **Written guard first**: five guards
+  against a double — an object matching a carrier on every property the encoder reads, each measured on
+  Chrome 152 — fail on the old tree with a message that is not *the wrong kind* but
+  `UnencodableValue: probe holds a Temporal.PlainTime, which the registry does not model`. **That
+  corrects ADR-0218**, which says a carrier encodes to an instance holding nothing: `unmodelled`
+  refuses any tag that is not `Object`, so a contract carrying one could not be serialised at all.
+  **And it corrects ADR-0223 twice.** `unmodelled` is a site that record does not name and is the one
+  that decides whether the rest runs — the refusal fires at line 567 and the `Date` precedent is at
+  638, so **ADR-0231's throwaway arm was dead where it stood**, which only writing the guard could
+  find. And `read-literal.ts`, measured there as costing nothing, reddens
+  `every-arm-of-an-encoded-value-is-read-back-or-refused-by-name` the moment a spelling it cannot parse
+  exists — so the carrier joins `WITHOUT_A_SPELLING` as `<a carrier `, which is ADR-0218's own line
+  between its item 1 and its item 2. **The compiler named exactly the two sites ADR-0223 measured, at
+  the same two line numbers.** Ledger `18cc4e82…` unmoved, `pnpm freeze` 3 passed, registry 472, site
+  187, cli 196, packaging 24, census 34 → 39, cell `E-27` reddening the five together. **What the double
+  does not prove is declared in the code and in the record**: that a real carrier presents that tag, and
+  that `from(rendered)` returns the value — both measured on Chrome 152, neither exercised by anything
+  that runs here, and a runtime carrying `Temporal` is what lifts them. ADR-0232.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,

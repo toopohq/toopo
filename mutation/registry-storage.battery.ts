@@ -634,6 +634,14 @@ const A_FIELD_IS_A_FIELD_WHATEVER_ITS_NAME_LOOKS_LIKE =
   "          typeof entry[0] === 'string' && !beside.has(entry[0]),"
 const A_LABEL_ONCE_GIVEN_IS_THE_LABEL_REUSED =
   '  const existing = walk.labels.get(value)\n' + '  if (existing !== undefined) return existing\n\n'
+const A_CARRIER_IS_SPELLED_BY_ITS_OWN_KIND =
+  '  const carrier = temporalCarrierOf(value)\n' +
+  '  if (carrier !== null) {\n' +
+  '    const rendered = String(value)\n\n' +
+  '    return shared === undefined\n' +
+  "      ? { kind: 'temporal', typeName: carrier, rendered }\n" +
+  "      : { kind: 'temporal', typeName: carrier, rendered, shared }\n" +
+  '  }\n\n'
 
 /**
  * The anchors of ADR-0210's slice, in the order the cells below take them.
@@ -3482,6 +3490,33 @@ const mutants: readonly Mutant[] = [
       'a-record-survives-the-wire-date-add',
       'a-record-survives-the-wire-string-slugify',
       'a-shared-reference-is-still-shared',
+    ]),
+  ),
+
+  /**
+   * The arm removed while the kind stays, which is the shape a reader would get by following the
+   * compiler alone.
+   *
+   * `unmodelled` goes on admitting a carrier, so nothing throws; `EncodedValue`, `decode`,
+   * `everyValueIn` and `literal.ts` go on carrying their arms, so nothing fails to compile. What is
+   * left is a carrier falling through to the record arm and coming back as an instance holding
+   * nothing - the encoder's own comment calls that *the hole a null prototype fell through*, and it is
+   * the defect ADR-0218 names for a value keeping its state in a slot.
+   *
+   * It reddens the five together rather than one apiece, and that is the claim: the three sites the
+   * compiler is silent about are one arm's worth of work, and removing the arm takes all three down.
+   */
+  sameOnEveryLens(
+    'E-27',
+    'drops the arm that spells a Temporal carrier while leaving the kind declared, so a carrier comes ' +
+      'back as an instance holding nothing and the encoding loses the one thing it had to say about it',
+    [valueFile(A_CARRIER_IS_SPELLED_BY_ITS_OWN_KIND, '')],
+    killed([
+      'a-temporal-carrier-is-encoded-as-itself-plain-time',
+      'a-temporal-carrier-is-encoded-as-itself-plain-year-month',
+      'a-temporal-carrier-is-encoded-as-itself-duration',
+      'a-temporal-carrier-survives-the-wire',
+      'a-temporal-carrier-is-seen-by-the-walk',
     ]),
   ),
 
