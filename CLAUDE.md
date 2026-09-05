@@ -3718,6 +3718,19 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   same breath as the sweep, and building it inside the unit that found its instances would make the
   instances the argument for it. ADR-0228.
 
+  **And the limit these readings kept declaring — *every check compares a number with a count and none
+  reads what is being counted* — has its instance, in the record that declared it.** ADR-0228 credits
+  `aaf625f` with falsifying three claims and lists three items; **it falsified one**. That commit's diff
+  of `suites.yml` is additions only, so it did not move a bound — `74b1b75` did, the same day — and
+  *nine guards* had been false since `4131c28`, nine days earlier. **The three was checked against a
+  list of three items and nobody read whether the commit had done each of them**, and two later
+  readings of that paragraph, one written to correct it, passed over the same thing. So the cost is not
+  *a number might be wrong about its noun*: **a number checked against a list makes the list look
+  checked**. Swept over the class: **23 attributions, 8 mechanically checkable, 1 false** — and the
+  other 15 unreachable, two because they name *pushes* and git carries no push boundary, thirteen
+  because their object is a claim rather than a diff. **A third of the class is checkable and the
+  un-checkable two thirds contain the shape that produced the instance.** ADR-0230.
+
 - **That every phrase a contract is found by has been read against what the contract does.** ADR-0023's
   alias review happens at publication: somebody reads each phrase against the contract's own
   description and asks whether it promises something the contract refuses to do, and it caught eight

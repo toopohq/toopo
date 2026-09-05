@@ -17,11 +17,27 @@ confirmed-by: []
 > need a fifth, and its own heading undercounts by one for the same reason, which is what says this is
 > a habit of the tabulating and not a slip.
 >
-> **A second heading here undercounts the same way**: *Both failures live in one form, and one commit
-> made **two** of them* stands over a paragraph reading *`aaf625f` falsified **three** claims across two
-> neighbouring entries*. **It is three** — `workflows.test.ts`'s guard count, the forty minutes and the
-> four declarations. The body is right and the heading is one short, which is now three headings of this
-> shape across two records.
+> **The note below corrected a heading by ratifying a body this record refutes twenty-six lines
+> further on, and the body is the half that is wrong.** *`aaf625f` falsified **three** claims* is
+> false: measured, that commit falsified **one**.
+> [ADR-0230](0230-a-number-checked-against-a-list-is-not-a-list-checked-against-the-world.md) carries
+> the reading, item by item.
+>
+> | what this record credits to `aaf625f` | true of that commit? | what it falsified |
+> | --- | --- | --- |
+> | *moved `workflows.test.ts` from ten guards to twelve* | **yes** | **nothing** — *nine guards* had been false since `4131c28` on 2026-08-27 |
+> | *took the two ubuntu gates from 40 to 79* | **no** — that is `74b1b75` | — |
+> | *added a fifth bound* | **yes** | *the four `timeout-minutes` declarations* |
+>
+> `aaf625f` touches `suites.yml` with **additions only** — `removed []`, `added [5]` — so it could not
+> have moved a bound; `74b1b75`, its neighbour of the same day, shows `removed [40,40]`, `added
+> [79,79]`. **So the heading *one commit made two of them* holds — of `74b1b75`, which falsified *the
+> job's forty minutes* and *two ubuntu gates at 40*.** The heading had the right number and the wrong
+> commit, the body had the wrong number and the wrong commit, and the note ratified the body.
+>
+> **This is the gap this record declares, receiving its instance inside the record that declares it**:
+> *every check here compares a number with a count and none reads what is being counted*. The three was
+> checked against a list of three items and nobody asked whether `aaf625f` had done each of them.
 >
 > **And one figure is withdrawn rather than corrected: *8 of the 24* of resolvable form.** That form is
 > named here by four examples and never defined, so the eight was never counted against a rule — and
