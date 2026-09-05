@@ -14,6 +14,29 @@ confirmed-by:
 
 # A spelling whose reader is honest about what it cannot build
 
+> **This record wrote three guards, accounted for two, and its own battery refused the run.** The two it
+> names in `confirmed-by` are real and are witnessed; the third,
+> `no-arm-is-both-without-a-spelling-and-read-only-where-a-runtime-carries-it`, was named **nowhere** in
+> `mutation/site.battery.ts` — measured, nought occurrences — by no cell, no `unprobedRegions` and no
+> `unreachableGuards`, so `batteries (site)` reported `never red, UNACCOUNTED FOR (1)` and exited 1.
+>
+> **The census is not what failed and that is the part worth reading.** It moved `10 → 12` with both
+> guards, so calibration passed; a count cannot tell *two added* from *two answered*, which is
+> ADR-0206's entry — *a new guard is answered for as many times as it is collected* — firing on a unit
+> whose own file carries that entry. And **`confirmed-by` could not have caught it either**: it resolves
+> the guards a record *cites*, so a guard added and not cited is outside its population by
+> construction.
+>
+> **What should have said so exists and could not.** `npm run predict` reads exactly this — *a guard
+> silent that nothing accounts for* — without paying a replay, and on this battery it answers `1
+> question this reading could not ask`, because the stored measurement predates the guard identities.
+> That is ADR-0221's published debt meeting its first instance.
+>
+> **The red stood unheard for ninety-six minutes**, because the run that would have said so was
+> cancelled by a later push — ADR-0236 is where it was found, by rerunning that job rather than by
+> anything watching. **`W-180` is the witness now**, seen red alone before it was written down.
+> ADR-0237.
+
 ## Context and Problem Statement
 
 ADR-0233 re-costed ADR-0218's item 2 and stopped: the mechanical part is ten lines on `readDate`'s
