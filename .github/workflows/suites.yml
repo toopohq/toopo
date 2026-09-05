@@ -635,8 +635,11 @@ jobs:
     # the gate's control: that a job killed by this bound really reports `cancelled` in
     # `needs.*.result`, and that `every-job-answered` reddens on it. Two minutes lets the setup steps
     # finish and kills the battery step itself, which is the shape the real defect has.
-    # `validation-stage-1` is 97 s on a runner.
-    timeout-minutes: 2
+    #
+    # Two minutes did not bite: measured on run 33951809405 the whole job is 84 s, of which the setup
+    # steps are 9 s and the battery 72 s - both lower than the 40 s and 97 s assumed. One minute kills
+    # the battery step about fifty seconds in.
+    timeout-minutes: 1
 
     strategy:
       # Every selected battery reports. A first disagreement stopping the matrix would answer a

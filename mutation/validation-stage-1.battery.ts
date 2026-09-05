@@ -1,6 +1,7 @@
 /* ON A THROWAWAY BRANCH ONLY: this line exists so the selection picks this battery and no other, so
    that one cheap job can be killed by a deliberately small bound and the gate can be seen red on a
-   real cancellation. It is never merged. ADR-0222. */
+   real cancellation. It is never merged. ADR-0222.
+   Two minutes did not bite - the job is 84 s - so the bound is one minute. */
 /**
  * The battery over the validation pipeline's first stage.
  *
