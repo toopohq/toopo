@@ -8,6 +8,31 @@ confirmed-by: []
 
 # The format carries a generic, and what refuses the retained form is not the generic
 
+> **The block below is true of the stand-in it was measured on and false of the subject, and the
+> stand-in is the finding.** *`encode(carrier)` → `{ "kind": "instance", "className": "InternalState",
+> "fields": [] }`* is what an ordinary class encodes to. **A real carrier never reaches that arm**:
+> `unmodelled` answers `a ${tag}` for every tag that is not `Object`, a carrier's tag is
+> `Temporal.PlainTime`, and `encodeAt` throws `UnencodableValue` **149 lines earlier** at `7c1cf96` —
+> line 567 against the instance arm at 716. So a contract carrying one could not be serialised at all,
+> which is a sharper price than the one priced here and reaches the same conclusion.
+>
+> **`InternalState` reproduced the property under study and not the one that decides the path.**
+> Measured side by side: the ordinary class carries `[object Object]` and no own key and encodes to the
+> instance arm; a double carrying `[object Temporal.PlainTime]` and no own key is refused by name. **The
+> two agree on the absence of fields — the axis this record was reasoning about — and part on the tag,
+> which is the axis the dispatch reads.** A stand-in faithful on the studied property and not on the
+> deciding one measures something else and looks finished.
+>
+> **Item 1 is paid** at [ADR-0232](0232-the-first-price-is-paid-and-the-arm-nobody-listed-is-where-the-work-was.md),
+> which also corrects the site list: `unmodelled` is a site neither this record nor ADR-0223 names, and
+> it is the one that decides whether the others run. Items 2 and 3 stand as priced here, and item 2 is
+> re-costed at [ADR-0233](0233-a-stand-in-is-faithful-on-the-axis-that-decides-or-it-measures-something-else.md).
+>
+> **What this record concludes is untouched**: the format carries a generic, and what refuses the
+> retained form is an unmodelled parameter type rather than the generic. `hasASpelling` answering
+> `false` and the case table naming the carrier are also unchanged — for the reason item 2 is still
+> owed rather than for the reason given here.
+
 > **This record writes no contract and moves no digest.** It asks one question of the machinery —
 > whether the registry can carry a generic signature — and answers it by measurement at `7c1cf96`.
 > The ledger is byte-identical across it, `18cc4e82…` before and after, and `npm run freeze` is green

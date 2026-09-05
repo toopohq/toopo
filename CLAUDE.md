@@ -2749,6 +2749,25 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   that `from(rendered)` returns the value — both measured on Chrome 152, neither exercised by anything
   that runs here, and a runtime carrying `Temporal` is what lifts them. ADR-0232.
 
+  **And why ADR-0218's figure was wrong is worth more than the figure, because it is a rule.** Its
+  stand-in was an ordinary class: **no own fields, which is the property it was reasoning about, and
+  `[object Object]`, which is the property that decides**. Measured side by side in one process, the
+  two doubles agree on the first and part on the second — the ordinary class reaches the instance arm
+  and encodes to exactly what that record published, where a carrier is thrown out **149 lines earlier**
+  at `7c1cf96`. **So: a stand-in is faithful on the axis that decides the path, or it measures something
+  else** — and the tell is that **the red looks right**, a double missing the tag failing with
+  `'instance'` where `'temporal'` was expected, which names the guard, the arm and the expectation and
+  carries no sign that the value never travelled the road under test. **ADR-0232's double holds against
+  that rule on the strength of its own first red** — `UnencodableValue … a Temporal.PlainTime`, the
+  refusal a real carrier meets at the point it meets it — with the five axes of `encodeAt` read on
+  Chrome 152 before it was written, and **one of them credited to `Object.create` rather than to
+  method**. **Item 2 is re-costed and not taken**: ten lines in `read-literal.ts` on `readDate`'s shape,
+  and then a decision item 1 never met — `readDate` ends in `new Date(epoch)` where `readCarrier` must
+  end in `Temporal[name].from(...)`, so **an encoder reads a value somebody else built and a reader has
+  to build one**, with nothing to build it from. It is a browser module and the guards run on node, so
+  the three ways out — throw, double by runtime, or wait — are a rule about the product rather than an
+  edit, and they are the owner's. ADR-0233.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
