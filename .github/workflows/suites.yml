@@ -623,12 +623,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # A hung cell must not hold a runner for six hours. The longest battery on `ubuntu-latest` is
-    # `registry-storage` at 1 649 s, measured at `1008c96`, and this allows rather more than that
-    # before it is called a hang. The line this replaces named `cli-install` at 1 497 s; that battery
-    # is not the longest and 1 497 reproduces on no run read here. What a contract adds to the longest
-    # one is the second gate's comment below.
-    timeout-minutes: 40
+    # PROVISIONAL, ON A THROWAWAY BRANCH, AND NEVER TO BE MERGED.
+    #
+    # Every reading of `registry-storage` on a runner since `1238833` is censored at the 40-minute
+    # bound: the job is killed, so what it says is "at least 40 minutes" and nothing more. A bound
+    # cannot be derived from censored readings, and raising it is the only way to take an uncensored
+    # one - which is circular, and is why this branch exists. 75 is chosen to be far above any
+    # plausible reading rather than derived from anything; the derived value goes on `main`.
+    timeout-minutes: 75
 
     strategy:
       # Every selected battery reports. A first disagreement stopping the matrix would answer a
