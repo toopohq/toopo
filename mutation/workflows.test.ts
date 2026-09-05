@@ -197,6 +197,14 @@ const jobsThatPublish = (): readonly Job[] =>
 /** The command a battery is started by, which is the one the header of `suites.yml` argues for. */
 const A_REPLAY = /\bnpm run battery\b/
 
+/**
+ * The job that reports on the run itself, found by what it runs.
+ *
+ * Named by its command rather than by its job name for the reason `jobsThatPublish` is: a name written
+ * here is a second statement of which job it is, and the two are free to drift.
+ */
+const A_GATE_OVER_THE_RUN = /\bnode mutation\/check-every-job-answered\.ts\b/
+
 const jobsThatReplayABattery = (): readonly Job[] =>
   jobs().filter((job) => A_REPLAY.test(declarationOf(job)))
 
@@ -460,5 +468,59 @@ describe('what the continuous integration is allowed to run', () => {
     )
 
     expect(holding).toEqual([])
+  })
+
+  /**
+   * The gate over the run's own jobs, and why its population is derived rather than named.
+   *
+   * **A job killed by its own `timeout-minutes` reports `cancelled`, which is not `failure`**, so the
+   * run concludes `cancelled` and nothing is red. `every-job-answered.ts` carries the six occurrences.
+   * The gate is only worth its name while it waits for *every* job of its file: one added and left out
+   * of the list is a job whose cancellation is silent again, which is this repository's own recurring
+   * class arriving on the repair for it.
+   *
+   * The gate is found by what it runs rather than by its name, the way a publishing job is - a name
+   * here would be a second statement of which job it is, free to drift from the workflow.
+   *
+   * Seen red both ways: with `publish` taken out of the gate's `needs`, and with the gate's job header
+   * removed from the file entirely. ADR-0222.
+   */
+  it('every-job-of-a-workflow-is-one-its-last-gate-waits-for', () => {
+    const withJobs = [...new Set(jobs().map((job) => job.file))]
+
+    const faults = withJobs.flatMap((file) => {
+      const ours = jobs().filter((job) => job.file === file)
+      const gates = ours.filter((job) => A_GATE_OVER_THE_RUN.test(declarationOf(job)))
+
+      if (gates.length !== 1) {
+        return [`${file} declares ${gates.length} job(s) reporting on this run, where it needs one`]
+      }
+
+      const gate = gates[0] as Job
+      const waited = new Set(jobsWaitedForBy(gate))
+
+      return ours
+        .filter((job) => job.name !== gate.name && !waited.has(job.name))
+        .map((job) => `${file}: ${gate.name} does not wait for ${job.name}`)
+    })
+
+    expect(faults).toEqual([])
+  })
+
+  /**
+   * `always()` and never `failure()`, because a cancelled job produces no failure - which is the whole
+   * subject. Without it the gate is skipped exactly when it is needed, and a skipped gate is as silent
+   * as the cancellation it was written to report.
+   *
+   * Seen red by writing `if: failure()`.
+   */
+  it('the-gate-over-a-run-runs-even-where-a-job-it-waits-for-was-cancelled', () => {
+    const gates = jobs().filter((job) => A_GATE_OVER_THE_RUN.test(declarationOf(job)))
+    const missing = gates
+      .filter((gate) => !/\bif: always\(\)/.test(declarationOf(gate)))
+      .map((gate) => `${gate.file}: ${gate.name} does not run unconditionally`)
+
+    expect(gates.length).toBeGreaterThan(0)
+    expect(missing).toEqual([])
   })
 })

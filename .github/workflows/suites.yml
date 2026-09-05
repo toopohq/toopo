@@ -1129,3 +1129,44 @@ jobs:
       # and `files` decides what enters it.
       - name: publish
         run: npm publish
+
+  # The last job, and the only one whose subject is this run rather than this repository.
+  #
+  # **A job killed by its own `timeout-minutes` reports `cancelled`, and `cancelled` is not `failure`.**
+  # The run concludes `cancelled`, nothing is red, and a reader looking for a red finds none. Measured:
+  # `batteries (registry-storage)` was killed by the 40-minute bound on six pushes of `main` between
+  # `1238833` and `3078f81`, and the five pushes in between selected no battery at all - so the greens
+  # either side say nothing about it. It has not completed since `6d03933`, at 39 min 49 s.
+  #
+  # A bound that is too small and a crossing nobody sees are one fault. ADR-0162 is the precedent and
+  # ADR-0222 is this one; raising a bound without this job is a reprieve, because the next crossing is
+  # silent again.
+  #
+  # **It cannot gate itself**, and nothing can: a job that reports on `needs` has no reading of its own
+  # outcome. What stands in place of that is that its whole step is a JSON read of an expression the
+  # runner has already resolved, so the bound below is four orders of magnitude above the work.
+  #
+  # `if: always()` rather than `failure()`, because `failure()` is exactly what a cancelled job does not
+  # produce - which is the whole subject.
+  every-job-answered:
+    needs: [suites, suites-on-windows, site, version, which-batteries, batteries, every-battery, every-battery-on-windows, publish]
+
+    if: always()
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+
+      # `toJSON(needs)` is passed through the environment rather than interpolated into the command,
+      # so no job name or result can be read as shell.
+      - name: every job this run needed either answered or was skipped
+        env:
+          THE_JOBS_THIS_RUN_NEEDED: ${{ toJSON(needs) }}
+        run: node mutation/check-every-job-answered.ts
