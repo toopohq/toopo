@@ -20,7 +20,7 @@ import { escapedForMarkdown, readingOf, toHtml, toMarkdown, toText, wordsOf } fr
 import { literal } from './literal.js'
 import { localSource } from './local-source.js'
 import { inline } from './marks.js'
-import { theCallOf } from './playground.js'
+import { playgroundOf, theCallOf } from './playground.js'
 import { FRONT_PAGE, linkTo, pageOf, urlOf } from './paths.js'
 import { theSite } from './site.js'
 
@@ -205,6 +205,42 @@ describe('the site', () => {
    * and the caveats reach the reader; the name and the situation stay served and stop being laid
    * out, exactly as the settled cases did.
    */
+  /**
+   * The sentence `spelledFields` composes, which no guard has ever read.
+   *
+   * **It is the site ADR-0235 could not find in any list**, and the third in three units of the same
+   * shape after `unmodelled` and the reader: compiler-silent, reader-visible, named by no *Where this
+   * looked* block and by no test. A field a form reads as a literal is one a reader must type
+   * differently from every other, and the page's whole job there is to say so — so what is asserted is
+   * that every such field is **named** on the page and that the reason it gives is the entry's own
+   * `because`, both derived from the playground rather than listed here.
+   *
+   * The bound is what stops it going green on a catalogue with no literal field left: the contracts
+   * that have one are not zero, which is the shape `every-use-case-replays-…` already uses.
+   */
+  it('every-field-a-form-reads-as-a-literal-is-named-on-its-page-with-the-reason-it-is-one', () => {
+    const faults: string[] = []
+    let named = 0
+
+    for (const one of heldByTheRegistry(localSource())) {
+      const what = renderContract(one.contract.address)
+      const reading = toText(theSite(localSource()).get(pageOf(one.contract.address)) as never)
+
+      for (const field of playgroundOf(one.contract, what).fields) {
+        if (field.reads.kind !== 'a-literal') continue
+
+        named += 1
+        const because = (field.reads as { readonly because: string }).because
+
+        if (!reading.includes(field.name)) faults.push(`${what}: ${field.name} is not named on its page`)
+        if (!reading.includes(because)) faults.push(`${what}: ${field.name} is named without why`)
+      }
+    }
+
+    expect(faults).toEqual([])
+    expect(named).toBeGreaterThan(0)
+  })
+
   it('a-use-case-shows-its-call-its-answer-and-its-caveat', () => {
     const faults: string[] = []
     const declaring = heldByTheRegistry(source).filter((held) => held.binding.useCases !== undefined)

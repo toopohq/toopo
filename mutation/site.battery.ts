@@ -3683,6 +3683,63 @@ import {
     ],
     killed(['no-arm-is-both-without-a-spelling-and-read-only-where-a-runtime-carries-it']),
   ),
+
+  /**
+   * The bound check, neutered rather than removed.
+   *
+   * `A_TYPE_PARAMETER` is what decides whether a declared type is a variable name at all, so a pattern
+   * matching nothing makes `whatAnUnboundCarrierCosts` answer `null` for every parameter and the
+   * refusal never fires. The entry stays, so a bounded carrier still builds - which is what keeps this
+   * aimed at the check and not at the key. ADR-0239.
+   */
+  sameOnEveryLens(
+    'W-181',
+    'stops recognising a bare type parameter, so a contract whose `T` the signature never binds to ' +
+      'the carriers gets a carrier field instead of a refusal',
+    [playgroundFile(`const A_TYPE_PARAMETER = /^[A-Z][0-9]?$/`, `const A_TYPE_PARAMETER = /^(?!)/`)],
+    killed(['a-type-parameter-the-signature-does-not-bind-to-the-carriers-is-refused-by-name']),
+  ),
+
+  /**
+   * The key itself, renamed rather than deleted so `noUnusedLocals` does not turn this into a
+   * `killed-by-typecheck` measuring the compiler.
+   *
+   * **It reddens two and that is a property of the pair rather than a loose aim.** The guard that a
+   * bounded carrier builds and the guard that an unbound one is refused both need the entry to exist,
+   * so no single edit to the table separates them; W-181 above is what isolates the second, and this
+   * one is the witness the first has. ADR-0239.
+   */
+  sameOnEveryLens(
+    'W-182',
+    'files the carrier entry under a key no signature renders, so a contract declaring a carrier as a ' +
+      'type parameter meets `no field of this site knows how to build` again',
+    [playgroundFile(`  T: {\n    readAs: {`, `  Carrier: {\n    readAs: {`)],
+    killed([
+      'a-carrier-declared-as-a-bounded-type-parameter-gets-a-form-read-as-a-literal',
+      'a-type-parameter-the-signature-does-not-bind-to-the-carriers-is-refused-by-name',
+    ]),
+  ),
+
+  /**
+   * The sentence a reader receives about a field they must type differently, aimed at the one thing
+   * that decides which fields it is about.
+   *
+   * `spelledFields` selects the fields read as a literal; selecting the others names the text fields
+   * and says of them what is true of none of them. It is the site ADR-0235 could not find in any list
+   * and the first cell ever aimed at it. ADR-0239.
+   */
+  sameOnEveryLens(
+    'W-183',
+    'names the fields a form reads as text where it means the ones it reads as a literal, so the page ' +
+      'tells a reader to type the wrong ones differently',
+    [
+      contractPageFile(
+        `  const spelled = fields.filter((field) => field.reads.kind === 'a-literal')`,
+        `  const spelled = fields.filter((field) => field.reads.kind === 'the-text-itself')`,
+      ),
+    ],
+    killed(['every-field-a-form-reads-as-a-literal-is-named-on-its-page-with-the-reason-it-is-one']),
+  ),
 ]
 
 export const battery: Battery = {

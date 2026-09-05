@@ -9,6 +9,19 @@ confirmed-by: []
 
 # What protects the publication is not the line that says so
 
+> **This record overstates its own finding once, and the correcting sentence is one this record
+> wrote.** §3 says the concealed red *would have concealed it indefinitely*. It would not:
+> `every-battery` is gated on `github.ref == 'refs/heads/main' && needs.version.outputs.unpublished ==
+> 'true'` and `publish` declares `needs: [site, version, every-battery, every-battery-on-windows]`, so
+> the next publication replays every battery and the unaccounted guard reddens **before `npm
+> publish`**. A guard nothing accounts for is invisible between two commits and never at the moment
+> that decides.
+>
+> **The bound was already written in the paragraph this record repaired.** `suites.yml` reads *it is
+> bounded by `every-battery`, which a publication waits for whatever the per-push selection did* —
+> put there by this unit, then left out of this unit's own account of what the gap costs. What the
+> episode proves is that the diff selection leaves an **interval**, not a breach. ADR-0239.
+
 ## Context and Problem Statement
 
 **This unit begins with the assistant breaking the thing it then measured.** The owner was waiting on two

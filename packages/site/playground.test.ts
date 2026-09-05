@@ -288,6 +288,65 @@ describe('the playground, against the catalogue it opens on', () => {
   })
 
   /**
+   * A contract retyped to the shape ADR-0225 settled - a type parameter bounded by the three carriers
+   * of which the duration question can be asked, `carrier: T` after `parametersOf` has read it.
+   *
+   * **Both halves are substituted and that is what makes the pair below a pair.** `parametersOf`
+   * renders `carrier: T` identically whatever the bound is - measured at ADR-0235 over the four-carrier
+   * bound, the three-carrier bound and no bound at all - so the parameter alone cannot tell one
+   * contract's `T` from another's, and the export's own `text` is where the difference lives.
+   */
+  const retypedTo = (contract: FrozenContract, text: string, type: string): FrozenContract => ({
+    ...contract,
+    surface: {
+      ...contract.surface,
+      exports: contract.surface.exports.map((entry) => ({
+        ...entry,
+        text,
+        parameters: entry.parameters.map((p) => ({ ...p, type })),
+      })),
+    },
+  })
+
+  const A_BOUNDED_CARRIER = '<T extends PlainTime | PlainYearMonth | Duration>(carrier: T) => T'
+
+  it('a-carrier-declared-as-a-bounded-type-parameter-gets-a-form-read-as-a-literal', () => {
+    const one = theHeld()[0] as Held
+    const eighth = retypedTo(one.contract, A_BOUNDED_CARRIER, 'T')
+
+    const built = playgroundOf(eighth, 'the eighth')
+
+    expect(built.fields.map((field) => field.type)).toEqual(built.fields.map(() => 'T'))
+    expect(built.fields.map((field) => field.reads.kind)).toEqual(built.fields.map(() => 'a-literal'))
+  })
+
+  /**
+   * The collision ADR-0235 measured, refused rather than accepted in silence.
+   *
+   * `AS_AN_ARGUMENT` is keyed by declared type text and `T` is a *variable* name, so the key means
+   * *every parameter anybody calls `T`*. What separates this catalogue's `T` from a future contract's
+   * is the bound, which is one field away in the export's own `text` - so the entry is admitted only
+   * where the signature says what `T` stands for, and a bare or foreign bound is refused by name.
+   *
+   * **Without this the failure is silent**: the lookup succeeds on key text alone, and no cell can
+   * redden on it - `a-parameter-type-the-form-cannot-build-stops-the-site-and-names-itself` is total
+   * over a type the table does *not* hold and blind to a key it holds meaning the wrong thing.
+   */
+  it('a-type-parameter-the-signature-does-not-bind-to-the-carriers-is-refused-by-name', () => {
+    const one = theHeld()[0] as Held
+
+    for (const text of ['<T>(carrier: T) => T', '<T extends string>(carrier: T) => T']) {
+      const foreign = retypedTo(one.contract, text, 'T')
+
+      expect(() => playgroundOf(foreign, 'a foreign T'), text).toThrow(ThePlaygroundCannotBeBuilt)
+      expect(() => playgroundOf(foreign, 'a foreign T'), text).toThrow('T')
+      expect(() => playgroundOf(foreign, 'a foreign T'), text).toThrow('PlainTime')
+    }
+
+    expect(() => playgroundOf(retypedTo(one.contract, A_BOUNDED_CARRIER, 'T'), 'the eighth')).not.toThrow()
+  })
+
+  /**
    * A playground names the diagnostic of a contract that publishes one, and nothing of a contract
    * that does not.
    *

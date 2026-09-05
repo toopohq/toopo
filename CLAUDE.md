@@ -4795,8 +4795,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `mutation/site.battery.ts` — nought occurrences — by no cell and no declared region, so the census
   passing at `10 → 12` was never the thing at fault. That is the entry above it, *a new guard is
   answered for as many times as it is collected*, firing on a unit whose own file carries it. **So a
-  red gate stood unheard for ninety-six minutes and would have stood indefinitely**, `4674b09` being
-  green on a selection of nothing. The repair is a cell aiming at the disjointness, or a declared
+  red gate stood unheard for ninety-six minutes**, `4674b09` being green on a selection of nothing.
+  **It would not have stood indefinitely, and the sentence that says so was already in `suites.yml`
+  and written by the unit that missed it**: `every-battery` is gated on `unpublished == 'true'` and
+  `publish` declares `needs: […, every-battery, every-battery-on-windows]`, so the next publication
+  replays every battery and the unaccounted guard reddens before `npm publish`. **The diff selection
+  leaves an interval and not a breach** — a guard nothing accounts for is invisible between two
+  commits and never at the moment that decides. ADR-0239. The repair is a cell aiming at the disjointness, or a declared
   region, and it is **owed and not taken**: it belongs to a unit that sees the red before writing
   against it. ADR-0206, ADR-0234, ADR-0236.
 

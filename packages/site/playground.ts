@@ -245,8 +245,103 @@ const AS_AN_ARGUMENT: Readonly<Record<string, Argument>> = {
     build: (value) => value,
     note: null,
   },
+  /**
+   * **The sixth type, and the first whose key is not a type.** A contract over Temporal's zone-free
+   * carriers is generic — ADR-0217 settled that the polymorphic form is the one that survives — and
+   * `parametersOf` renders its parameter `carrier: T`, which is a *variable* name. So this key means
+   * *every parameter anybody calls `T`*, and that is a collision rather than an entry.
+   *
+   * **It is taken rather than avoided, and the arbitration is written here because it is not
+   * self-evident.** What is given up by taking it: the table gains a row a reader cannot understand
+   * from its key alone. What taking it costs if nothing else changes: the first future contract
+   * declaring `<T>(x: T)` for anything at all gets a carrier field in silence, and **no cell can
+   * redden on that** — `a-parameter-type-the-form-cannot-build-stops-the-site-and-names-itself` is
+   * total over a type the table does *not* hold, so a key that lies is outside its population.
+   * ADR-0235 measured exactly that on `Duration`, where retyping another contract's parameter builds a
+   * form with `date/add@1`'s entry and nothing fires.
+   *
+   * **What was measured against avoiding it is the boundary.** A richer key — the bound rather than
+   * the variable — is available at build time, where `playgroundOf` holds the `ExportRecord` and its
+   * `text`. It is *not* available at `declaredBy` and `argumentsOf`, which take `readonly
+   * ParameterRecord[]` and are the two the browser calls: `start.ts` receives `{name, type}` per
+   * parameter as JSON, so keying on the bound means widening what crosses that boundary, in a module
+   * whose whole subject is that a page carries the reading instead of re-deriving it.
+   *
+   * **So the key is the variable and the meaning is checked where the evidence is.**
+   * `whatAnUnboundCarrierCosts` runs in `playgroundOf`, which has the signature, and refuses a `T` the
+   * export does not bind to these carriers — so a page for a foreign `T` is never built and the
+   * browser never reaches a lookup that could lie. The silence is closed at the one place that can see
+   * it rather than at the one that cannot.
+   *
+   * **It is `a-literal` by the owner's ruling**, and his reason is the one the measurement supports:
+   * `the-text-itself` would have to choose a carrier from text that names none, which is unambiguous
+   * for a string carrying a date or a time and never for one carrying both — and every such string is
+   * taken by `PlainTime` and `PlainYearMonth` alike, which are the two carriers whose verdicts this
+   * contract exists to publish. That price is permanent and on the contract's own subject; this one
+   * expires with a runtime that carries `Temporal`. ADR-0236, ADR-0239.
+   */
+  T: {
+    readAs: {
+      kind: 'a-literal',
+      /**
+       * The tag, which is the axis `value.ts` dispatches a carrier on and the one thing about a
+       * carrier that is readable where `Temporal` is not defined. A reader on such a runtime never
+       * reaches this: `read` refuses the spelling by name one step earlier, which is ADR-0234's
+       * ruling and is the whole of what this field cannot do yet.
+       */
+      spelledBy: (declared) =>
+        typeof declared === 'object' &&
+        declared !== null &&
+        String((declared as { readonly [Symbol.toStringTag]?: unknown })[Symbol.toStringTag]).startsWith(
+          'Temporal.',
+        ),
+      wanted: 'a carrier — Temporal.PlainTime.from(`12:30:00`), Temporal.PlainYearMonth.from(`2026-01`)',
+      because:
+        'a Temporal carrier, which names itself in the spelling because the same string is otherwise ' +
+        'taken by more than one of them',
+    },
+    build: (value) => value,
+    note: null,
+  },
 }
 
+/**
+ * The carriers a type parameter of this catalogue may stand for, and the whole of what makes the key
+ * above honest.
+ *
+ * ADR-0225 settled the arity at three by measuring which carriers the duration question can be asked
+ * of at all. They are named here rather than derived because nothing in a *site* can derive them: the
+ * question is about `Temporal`'s behaviour, the measurement is in that record, and a list this file
+ * computed would be a second answer to a question already settled.
+ */
+const THE_CARRIERS_A_TYPE_PARAMETER_MAY_STAND_FOR = ['PlainTime', 'PlainYearMonth', 'Duration'] as const
+
+/** A bare type-parameter name, which is what `parametersOf` renders a generic carrier as. */
+const A_TYPE_PARAMETER = /^[A-Z][0-9]?$/
+
+/**
+ * Why a signature may not use a bare type parameter as a carrier, or `null` when it may.
+ *
+ * **This is not a second parser of a signature**, which ADR-0026 forbids. It asks one question of the
+ * text — does the type-parameter list bind this name to these carriers — and never what the parameters
+ * are, which is `parametersOf`'s and is read off the record already.
+ */
+const whatAnUnboundCarrierCosts = (parameter: ParameterRecord, text: string): string | null => {
+  if (!A_TYPE_PARAMETER.test(parameter.type)) return null
+
+  const bound = new RegExp(`<[^>]*\\b${parameter.type}\\s+extends\\b([^>]*)>`).exec(text)
+  const missing = THE_CARRIERS_A_TYPE_PARAMETER_MAY_STAND_FOR.filter(
+    (carrier) => !(bound?.[1] ?? '').includes(carrier),
+  )
+
+  return missing.length === 0
+    ? null
+    : `its parameter \`${parameter.name}\` is declared \`${parameter.type}\`, which this site builds ` +
+        `as a Temporal carrier - and \`${text}\` does not bind \`${parameter.type}\` to ` +
+        `${THE_CARRIERS_A_TYPE_PARAMETER_MAY_STAND_FOR.join(', ')}. A type parameter is a name rather ` +
+        `than a type, so the table cannot tell one contract's \`${parameter.type}\` from another's; ` +
+        `what says which is meant is the bound, and this signature does not carry it`
+}
 
 /**
  * The fields of a case, parted where the signature stops.
@@ -351,6 +446,18 @@ export const playgroundOf = (contract: FrozenContract, what: string): Playground
   if (answer === undefined) {
     throw new ThePlaygroundCannotBeBuilt(what, 'the contract publishes no export that answers')
   }
+
+  /**
+   * Before anything is looked up, because the lookup is what cannot see this.
+   *
+   * `AS_AN_ARGUMENT` is keyed by declared type text and `T` is a variable name, so the key matches
+   * every contract that happens to use it. This is the one place holding the evidence that separates
+   * them - the export's own signature - and refusing here is what stops a page for a foreign `T` ever
+   * being built. ADR-0239.
+   */
+  const unbound = answer.parameters.map((parameter) => whatAnUnboundCarrierCosts(parameter, answer.text))
+  const firstUnbound = unbound.find((why) => why !== null)
+  if (firstUnbound !== undefined) throw new ThePlaygroundCannotBeBuilt(what, firstUnbound)
 
   /**
    * The first case the form can actually hold, which for every contract written before
