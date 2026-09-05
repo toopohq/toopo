@@ -122,6 +122,30 @@ for the change no cheap selection answers for. Invisible, because **a superseded
 `every-job-answered` is not among them: ADR-0222 built that guard to make a cancellation say so, and it
 is total over the jobs of its own run and therefore blind by construction to a run that has none.
 
+**And the instance was not an unreplayed battery. It was a red one.** The rerun of `33970943153` was
+taken to close this entry's own debt, its selection was pre-registered — `98aba43..12c9fee` must choose
+`site`, 1 of 23 — and the runner reproduced that line for line. **`batteries (site)` then failed**, and
+the cause is one line of the report: `never red, UNACCOUNTED FOR (1)`, naming
+`no-arm-is-both-without-a-spelling-and-read-only-where-a-runtime-carries-it`. ADR-0234 added two guards
+to `read-literal.test.ts` and answered for one: `W-179` pins
+`a-carrier-is-recognised-by-the-reader-and-refused-by-the-runtime` and
+`every-arm-of-an-encoded-value-is-read-back-or-refused-by-name`, and the disjointness guard is named
+**nowhere** in `mutation/site.battery.ts` — measured, nought occurrences — by no cell, no
+`unprobedRegions` and no `unreachableGuards`. The census moved `10 → 12` so calibration passed; it is
+the *accounting* that refused, which is ADR-0206's entry — *a new guard is answered for as many times
+as it is collected* — firing on a unit whose own file carries that entry.
+
+**So the supersession concealed a red gate for ninety-six minutes**, and would have concealed it
+indefinitely: `4674b09` is green and selected no battery, so nothing on `main` says the tree carries an
+unaccounted guard. **What was priced in this entry as *a battery not replayed* is measured as *a battery
+red and unheard*, which is a different severity and it was found by paying the debt rather than by
+reasoning about it.** The repair is a cell aiming at the disjointness — filing `temporal` under
+`WITHOUT_A_SPELLING` in `literal.ts` while it stays in `READ_ONLY_WHERE_THE_RUNTIME_CARRIES_IT` is the
+single edit that falsifies the guard's own sentence — or a declared region if that edit turns out to
+redden it only alongside the spelling guards. **It is not taken here**, because a cell is written
+against a red seen first and this unit's subject is the concurrency, and because a repair landing inside
+the record that found it would make the finding its own justification.
+
 ### 4. What would close it, and why it is not taken
 
 **`queue: max` is the knob and GitHub names it**: up to a hundred pending in the group instead of one.

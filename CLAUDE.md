@@ -4760,6 +4760,19 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   guard is not among them — it is total over the jobs of its own run and blind by construction to a
   run that never had one.
 
+  **The instance was not an unreplayed battery but a red one, which is a different severity and was
+  found by paying the debt.** The rerun's selection was pre-registered and the runner reproduced it —
+  `98aba43..12c9fee`, **`1 of 23`, `site`** — and `batteries (site)` then **failed**, on `never red,
+  UNACCOUNTED FOR (1)` naming `no-arm-is-both-without-a-spelling-and-read-only-where-a-runtime-carries-it`.
+  ADR-0234 added two guards and answered for one; the second is named **nowhere** in
+  `mutation/site.battery.ts` — nought occurrences — by no cell and no declared region, so the census
+  passing at `10 → 12` was never the thing at fault. That is the entry above it, *a new guard is
+  answered for as many times as it is collected*, firing on a unit whose own file carries it. **So a
+  red gate stood unheard for ninety-six minutes and would have stood indefinitely**, `4674b09` being
+  green on a selection of nothing. The repair is a cell aiming at the disjointness, or a declared
+  region, and it is **owed and not taken**: it belongs to a unit that sees the red before writing
+  against it. ADR-0206, ADR-0234, ADR-0236.
+
   **Where this looked**: the `concurrency` block of `.github/workflows/suites.yml`, whose paragraph
   claimed the protection covered every run of `main` and now says which half it covers;
   `mutation/selection.ts`, which takes the base from the push and has no way to know a push was
