@@ -8,6 +8,28 @@ confirmed-by: []
 
 # A block that says where somebody looked is copied as easily as it is read
 
+> **Four figures in this record are wrong, and three of them come from the sweep it publishes as its
+> population.** Corrected by
+> [ADR-0228](0228-the-copied-figure-is-systematic-and-the-guard-that-would-catch-a-third-of-it.md),
+> which read the population instead of counting it once.
+>
+> * ***nine fault functions* seven times and *nine guards* twice** — it is **six and three**. The owner
+>   said so and was right; the total of nine holds and the split does not.
+> * **37 *Where this looked* blocks** — there are **36**. The phrase occurs 38 times, two of which are
+>   prose mentions rather than blocks.
+> * **104 counted claims** — there are **49** number-and-noun matches, **24** once a bare *one* used as
+>   an article is set aside. The 104 came from a sweep that matched the digits of `ADR-0187` as a count
+>   and swallowed a bullet list carrying no blank lines.
+> * ***twelve at `aaf625f`, yesterday*** — that commit is dated **2026-09-05**, the same day. And it is
+>   not what made the neighbouring entry false: `workflows.test.ts` went to ten at `4131c28` on
+>   2026-08-27, so *nine* had been wrong for nine days and not for hours.
+>
+> **What this record concludes is unchanged and is now measured rather than inferred.** Eight is right,
+> the mention-against-declaration origin is right, removing the count rather than correcting it is
+> right — and *the other ninety-four are unread here* has become a reading: **five more claims are
+> false**, so the copying is systematic and not two instances. ADR-0228 carries the verdict and prices
+> the guard.
+
 ## Context and Problem Statement
 
 ADR-0226:165 writes *`mutation/decisions.ts` has nine fault functions*. **It has eight.** The record

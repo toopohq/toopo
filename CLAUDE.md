@@ -1904,7 +1904,11 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
    section separates were living in one form** — the same sweep found *`mutation/workflows.test.ts`,
    whose nine guards*, and that one **was** true when it was written, nine on 2026-08-21 and twelve at
    `aaf625f`. Rule 3's failure and rules 1 and 2's sit in neighbouring blocks and read identically;
-   only counting tells them apart. ADR-0227.
+   only counting tells them apart. **And reading the whole population turned two instances into a
+   habit**: of nineteen claims examined, **six are false** — 35 guards where a file has had 26 since
+   its first commit, a count of type sizes its own entry contradicts three paragraphs below, a fact
+   attributed to a module that does not record it, and two bounds ADR-0222 moved this morning without
+   sweeping the entry that names them. ADR-0227, ADR-0228.
 
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
 decision record.** They are a list and not a sentence, and that is a repair rather than a layout:
@@ -2448,7 +2452,8 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   **Where this looked**: `unprobedRegions` and `unreachableGuards` on `Battery` in `mutation/run.ts`,
   which are per battery by construction; `mutation/attribution.ts`, whose census is over `(folder,
-  identifier)` pairs and which already records that 69 identifiers collide across folders; and
+  identifier)` pairs rather than over identifiers alone, which is what makes a collision across folders
+  visible at all; and
   `CLAUDE.md`'s own note that adding a guard moves the census, which names one mechanism and not this
   one.
 
@@ -2542,7 +2547,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   replaced is what says so: it wore the previous site's language through the whole redesign, and no
   guard here had an opinion about how it looked either before or after.
 
-  **Where this looked**: `pages.test.ts`, whose 35 guards build documents and read their text;
+  **Where this looked**: `pages.test.ts`, whose guards build documents and read their text;
   `published-tree.test.ts`, which reads what `build.ts` wrote; and `start.test.ts`, which runs the
   builders and asserts what they put in the DOM and never where it lands. That last sentence is the
   one that survives ADR-0187 unchanged, over a file that gained two guards.
@@ -2709,7 +2714,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   **Where this looked**: `--t1` to `--t6` in `packages/site/style.ts`, which is the whole declared
   scale; ADR-0115, which settles it and gives the reason; and `packages/site/components.ts`, where the
-  eight the component layer introduced now live.
+  ones the component layer introduced now live.
 
   **The number this entry descends by went down by its own rule and up by the one that matters.**
   Measured at `ccc9fca`: `var(--a-point)` occurs **10** times in `style.ts`, against the twelve
@@ -3661,6 +3666,41 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   carries no address. Priced as its own unit and not taken, because building it inside the unit that
   repairs its instances would make the instances the argument for it. ADR-0226.
 
+- **That a figure written in a *Where this looked* block was read rather than copied.** Rule 3 of the
+  section above prescribes that an entry names where it looked, *the way a count names its population*.
+  **Nothing keeps that the count was taken**, and a block is prose, so lifting a neighbour's is cheaper
+  than opening the file — and a copy reads exactly like a reading.
+
+  **It is systematic rather than occasional, and that is measured rather than feared.** Swept at
+  `d6bb188`: **36** blocks carrying **49** number-and-noun claims, **24** once a bare *one* used as an
+  article is set aside. **Nineteen were read and six are false** — *`mutation/decisions.ts` has nine
+  fault functions* in nine places against eight since its first commit; *`pages.test.ts`, whose 35
+  guards* against **26**, also unmoved since its first commit; *the eight the component layer
+  introduced*, which its own entry contradicts with **twelve** three paragraphs below and which measures
+  **13** today; *`attribution.ts` … already records that 69 identifiers collide*, which that module does
+  not record at all; and **two** in one entry that ADR-0222 moved this morning, *the job's forty
+  minutes* and *the four `timeout-minutes` declarations*, now 79 and **five**.
+
+  **Both failures this list separates live in this one form.** Three were never true — rule 3 — and
+  three drifted — rules 1 and 2 — and they read identically; `CLAUDE.md:4520` and `CLAUDE.md:4540` were
+  falsified by one commit, `aaf625f`, which swept neither.
+
+  **Where this looked**: rule 3 itself, whose remedy this is; the eight fault functions of
+  `mutation/decisions.ts`, which resolve what a record names and read no prose of this file; and
+  `mutation/readme.test.ts`, which resolves a published figure against what produced it and does so for
+  one page and not for this one.
+
+  **The population is every counted claim in every such block**, 49 today, and it grows with each entry
+  written. **What would close a third of it is cheap and is priced rather than taken**: a guard over the
+  resolvable form alone — *N guards of `<file>`*, *N guards ADR-NNNN names*, *N fault functions of
+  `<file>`*, *N call sites in `<file>`* — which is **8 of the 24**, one file to write and no new
+  dependency. **It would have caught two of the six**, the two whose noun is a guard count; the other
+  four name a thing whose unit only a reader knows — a component layer's type sizes, a fact a module is
+  said to record, a job's bound. **The rest needs what four entries here already refuse**, a validation
+  stage reading this repository's own strings. Priced and not taken: the owner refused the guard in the
+  same breath as the sweep, and building it inside the unit that found its instances would make the
+  instances the argument for it. ADR-0228.
+
 - **That every phrase a contract is found by has been read against what the contract does.** ADR-0023's
   alias review happens at publication: somebody reads each phrase against the contract's own
   description and asks whether it promises something the contract refuses to do, and it caught eight
@@ -4534,14 +4574,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **Where this looked**: `mutation/workflows.test.ts`, whose guards read what that file may *hold*
   - a pinned digest, the publishing gate, the identity token - and not one of which reads a duration;
   `THE_LONGEST_A_RUN_MAY_TAKE` in `mutation/run.ts`, which bounds one cell at 600 s and is related to
-  the job's forty minutes by nothing; and `mutation/selection.ts`, which decides which batteries a push
+  the job's own bound by nothing; and `mutation/selection.ts`, which decides which batteries a push
   answers for and never how long they may take.
 
-  **The population is the four `timeout-minutes` declarations and the cell bound beside them** - two
-  ubuntu gates at 40, the Windows suites leg at 20, the Windows battery leg at 57 - and it grows by one
-  with each gate. **One of the four is derived and three are typed**, which is a narrowing rather than a
-  closure: ADR-0169's arithmetic was performed by a person each time, and re-running it is as unkept as
-  reading the other three.
+  **The population is the `timeout-minutes` declarations of `suites.yml` and the cell bound beside
+  them** - measured at `d6bb188`, the two ubuntu gates at 79, the Windows suites leg at 20, the Windows
+  battery leg at 57 and the answering job at 5 - and it grows by one with each gate. **Three of the five
+  are derived and two are typed**, which is a narrowing rather than a closure: each derivation was
+  performed by a person, and re-running it is as unkept as reading the typed ones. **ADR-0222 moved the
+  two ubuntu gates from 40 to 79 and added the fifth**, so the paragraphs below describing them as typed
+  at 40 are ADR-0169's reading and not this one.
 
   **The derived one now measures the cost of the typed ones, which is the sharpest form this entry has
   ever had.** Over ten readings of `cli-install` the Windows bound re-derived itself three times and had
