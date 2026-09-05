@@ -2103,6 +2103,19 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   battery rather than counting it as agreement. The twelve guards are collected by `npm run meta` and
   witnessed by no battery, which is `mutation/`'s standing trade rather than a new debt.
 
+  **That debt has its first measured instance, and it cost a red gate a whole unit of invisibility.**
+  ADR-0234 added two guards to `read-literal.test.ts` and wrote a cell for one; the census moved with
+  both so calibration passed, `confirmed-by` named two that both exist so the meta suite was green,
+  and **`npm run predict` — whose third bucket is exactly *a guard silent that nothing accounts for* —
+  answered `1 question(s) this reading could not ask`**, this battery's stored measurement predating
+  the guard identities. Exit 2 means it could not read, never that it found nothing, so even run in
+  that unit it would have refused to answer. What caught it was a battery replay, and the run that
+  would have carried it had been cancelled by a later push. **The remedy is priced by having been
+  taken once**: the replay that verified `W-180` writes a measurement carrying the identities, and
+  `predict` goes **21 → 20** questions it cannot ask with `site` answering *every cell agrees*. One
+  battery run apiece for the other twenty-two, after which a guard added and forgotten is caught in
+  185 ms rather than by a replay a cancellation can swallow. ADR-0206, ADR-0234, ADR-0236, ADR-0237.
+
 **The address a host serves is where rule 2 above was broken, by the commit that built the
 mechanism.** The entry
 was closed in fact by `45f702f`, the move to Pages, which changed eight files and none of them this
