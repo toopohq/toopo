@@ -2702,6 +2702,17 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `date/add@1`'s own frozen phrase, and the committed rule cannot see it because the rule is written
   over the unit and the phenomenon is over the value. Reopening it is the owner's. ADR-0225.
 
+  **And the lock under the first price is being measured, which nothing had done.** `value.ts` is the
+  encoder whose output the freeze fixes and six published contracts are bound to digests taken over what
+  it produces, so *one kind at five sites* is a cost in edits only if adding a kind leaves those digests
+  where they are. **Two questions the word *moves* runs together are separated before the probe**: does
+  the ledger's digest change, which is a property of the encoder; and does `the-freeze.test.ts` redden,
+  which is a property of a comparison whose past is rebuilt by spawning a worktree at the published
+  commit and running **that commit's own** entry point. **Four outcomes, both criteria and the
+  prediction with its bias are committed at ADR-0231 before a figure of them is read** — the bias
+  declared towards *neither moves*, which is the outcome under which item 1 stays work rather than
+  becoming the owner's decision. ADR-0231.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
@@ -3714,9 +3725,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   six** false claims, the two whose noun is a guard count; the other
   four name a thing whose unit only a reader knows — a component layer's type sizes, a fact a module is
   said to record, a job's bound. **The rest needs what four entries here already refuse**, a validation
-  stage reading this repository's own strings. Priced and not taken: the owner refused the guard in the
-  same breath as the sweep, and building it inside the unit that found its instances would make the
-  instances the argument for it. ADR-0228.
+  stage reading this repository's own strings. ADR-0228.
+
+  **The guard is not priced-and-not-taken any more; it is blocked on a witness that does not exist, and
+  the reason is better than the rate.** It was first refused on catching two of six. What refuses it now
+  is that **it would live in the meta suite, which no battery injects into, so nothing could ever redden
+  it** — and a guard no battery can redden is not a guard here. **This unit's own instrument
+  demonstrated the cost**: the attribution sweep read *commit* where ADR-0149 says *push*, and returned
+  two false positives while looking finished. A guard built on that reading would have been green and
+  carried the same defect, with nothing able to say so. **So what would reopen it is not a better
+  capture rate — it is a battery able to redden a guard of the meta suite.** ADR-0230.
 
   **And the limit these readings kept declaring — *every check compares a number with a count and none
   reads what is being counted* — has its instance, in the record that declared it.** ADR-0228 credits
