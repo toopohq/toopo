@@ -2641,6 +2641,19 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   because a contract must settle both receiver modes. Both prices are unmoved, which is what made the
   question worth settling slowly. ADR-0224.
 
+  **The residue that record sharpened is being answered, and what is committed before the probe is a
+  criterion rather than an answer.** ADR-0224 left `Duration` as the one carrier posing a second refusal
+  question — a constraint on the pair rather than on the unit — and the owner replies that one sentence
+  covers all four: *adding a duration to a Temporal carrier refuses a unit the carrier does not apply,
+  instead of dropping it in silence*. **What makes that testable is a criterion about the sentence's own
+  shape**: it is one rule exactly if, for every carrier value and every unit, the verdict of `add` is a
+  function of that pair alone — so anything the verdict depends on that the pair does not name is a
+  second clause, whatever it is called. **Five falsifiers, the predicates put to the owner's
+  counter-argument, the prediction with its bias and the protocol are committed at ADR-0225 before a
+  figure of them was read** — and so is the one exemption a sweep will certainly meet, a unit carried
+  with the value nought, ruled on in advance so that meeting it cannot be answered by inventing the
+  distinction afterwards. ADR-0225.
+
 - **That the type sizes this catalogue draws are the scale it declares.** ADR-0115 settles the visual
   system at **six type sizes and no seventh**. The artboard draws **fourteen distinct sizes across
   eighty-one declarations**, of which **four land on the scale** - 11, 13, 15 and 16, which are `--t6`,
