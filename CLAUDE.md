@@ -1910,6 +1910,19 @@ the record now at ADR-0017 named the pre-flight as the thing that would close
    attributed to a module that does not record it, and two bounds ADR-0222 moved this morning without
    sweeping the entry that names them. ADR-0227, ADR-0228.
 
+   **So the block names where somebody looked, and it does not count what they found — unless the
+   count is the finding.** A number belongs there when it *is* what was established: a total
+   enumerated on the spot, so a reader checks it without leaving the sentence; the population the
+   entry is about, where *how many* is the subject; or a totality, where *all of them* would be a
+   different claim at *some*. Everywhere else it decorates — *the three guards of `x.test.ts`, none of
+   which reads a page module's source* is exactly as true at four — and **a decorated count is one
+   nobody re-reads and everybody copies**, which is the whole of how six of them went wrong.
+   **Where a count stays it is re-measured and never carried over**, and where it goes the question of
+   verifying it goes with it. Applied over the population: **thirteen counts removed from ten blocks,
+   thirteen kept in eight and re-measured**, and twenty blocks carried none to begin with. **This
+   removes what a guard would have watched rather than watching it** — which is why the guard priced
+   in the entry below is refused and not deferred. ADR-0229.
+
 **Entries that closed are recorded with the mechanism that closed them, in that mechanism's own
 decision record.** They are a list and not a sentence, and that is a repair rather than a layout:
 this paragraph was a chain of nine clauses joined by semicolons, one unit having added each, and it
@@ -2293,7 +2306,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   what moved is that a release which forgets the cadence is now a red rather than a silence.
 
   **Where this looked**: `THE_WAYS_TO_RUN_IT` in `packages/registry/address.ts`, which carries the
-  readings in its own comment and is where a rewrite of them lands; the three guards ADR-0138 names
+  readings in its own comment and is where a rewrite of them lands; the guards ADR-0138 names
   in `packages/site/pages.test.ts`, every one of which reads what the page *hands over* and not what
   a spelling *does*; and `packaging/against-the-origin/the-whole-chain.test.ts`, the one suite here
   that reaches a live host, which installs a tarball this repository builds and never one npm serves.
@@ -2550,7 +2563,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **Where this looked**: `pages.test.ts`, whose guards build documents and read their text;
   `published-tree.test.ts`, which reads what `build.ts` wrote; and `start.test.ts`, which runs the
   builders and asserts what they put in the DOM and never where it lands. That last sentence is the
-  one that survives ADR-0187 unchanged, over a file that gained two guards.
+  one that survives ADR-0187 unchanged, over a file that gained guards under it.
 
   **The population is every control `start.ts` adds, on every page that carries one, and the
   enumeration this entry gave was short by two.** Measured at `ccc9fca`: `start.ts` exports **six**
@@ -2590,7 +2603,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **Where this looked**: `AS_AN_ARGUMENT` in `packages/site/playground.ts`, which is the table and
   which names its own extension in its refusal; `whatKeepsARowFromTheForm` beside it, which is the
   second branch and is about a case rather than a type; and `packages/registry/field-map.ts`, whose
-  four strata class `surface.exports[].parameters[].type` `structural` and say nothing about whether
+  strata class `surface.exports[].parameters[].type` `structural` and say nothing about whether
   anything can build one.
 
   **The population is every parameter type a future contract may declare**, which is unbounded, and
@@ -2756,7 +2769,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **Where this looked**: `Attributes` in `packages/site/document.ts`, which is
   `Readonly<Record<string, string>>` and takes any key; `drawn` in `packages/site/components.ts`, which
   is the only thing that puts a component's class on an element and writes it last so a caller's cannot
-  win; and the three guards of `packages/site/components.test.ts`, none of which reads a page module's
+  win; and the guards of `packages/site/components.test.ts`, none of which reads a page module's
   source for what it writes.
 
   **The two units this entry named as what would move it most have both happened, and it moved.**
@@ -2817,9 +2830,9 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   freeze` is green across that unit, which is the freeze keeping its promise rather than failing.
   `correctionsToFrozenProse` does not reach it either, resolving its `about` against case identifiers.
 
-  **Where this looked**: `FIELD_MAP` and its four strata in `packages/registry/field-map.ts`;
+  **Where this looked**: `FIELD_MAP` and its strata in `packages/registry/field-map.ts`;
   `CONTRACT_STANDING_FIELDS` in `packages/registry/snapshot.ts`, which is the list of fields the
-  registry may change its mind about and which answers for five roots and no leaf; and
+  registry may change its mind about and which answers for roots and never for a leaf; and
   `packages/registry/against-the-catalogue.test.ts`, whose guards over the catalogue's prose are about
   presence and about stamps.
 
@@ -2875,10 +2888,10 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   the one figure clause in either record attached to no refusal. That is the reading that separates it
   from the entry it survives: the demand dependence was never in a refusal, it was in the bound.
 
-  **Where this looked**: the ten refused briefly in ADR-0163 and the four in ADR-0158, every one of
+  **Where this looked**: the candidates refused briefly in ADR-0163 and in ADR-0158, every one of
   which names a candidate somebody proposed rather than one a sweep returned; `theCatalogue` in
   `packages/registry/the-catalogue.ts`, which knows what was published and nothing about what was
-  considered; and ADR-0191's own calibration, which is over the 34 addresses this catalogue has ruled
+  considered; and ADR-0191's own calibration, which is over the addresses this catalogue has ruled
   on and therefore inherits the narrowing whole — a signal shown to fail above the bound is not shown
   to fail below it.
 
@@ -3056,7 +3069,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   **Where this looked**: the fault functions of `mutation/decisions.ts`, which resolve what a record
   *names* — a path, a guard, a record, a link — and not one of which reads what a record *says*;
   `theCatalogue` in `packages/registry/the-catalogue.ts`, which holds what was published and nothing
-  about what was considered; and `packages/registry/field-map.ts`, whose four strata class the fields of
+  about what was considered; and `packages/registry/field-map.ts`, whose strata class the fields of
   a contract that exists.
 
   **The population is every candidate anybody weighs against this catalogue**, and it is unbounded and
@@ -3685,7 +3698,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   three drifted — rules 1 and 2 — and they read identically; `CLAUDE.md:4520` and `CLAUDE.md:4540` were
   falsified by one commit, `aaf625f`, which swept neither.
 
-  **Where this looked**: rule 3 itself, whose remedy this is; the eight fault functions of
+  **Where this looked**: rule 3 itself, whose remedy this is; the fault functions of
   `mutation/decisions.ts`, which resolve what a record names and read no prose of this file; and
   `mutation/readme.test.ts`, which resolves a published figure against what produced it and does so for
   one page and not for this one.
@@ -3714,7 +3727,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   that declares it by construction, and a phrase promising something the contract refuses passes as
   comfortably as a true one. That sentence is now true of a wider population by exactly one field.
 
-  **Where this looked**, because an entry describing what the code does not have names it: the three
+  **Where this looked**, because an entry describing what the code does not have names it: the
   guards ADR-0155 added, `identity.searchAliases`'s own review in ADR-0023, and `field-map.ts`, where
   `alsoFoundBy[].term` is `executable` and the two sentences beside it are `documentary` — which is the
   classification saying in the schema's own vocabulary that nothing reads them.
@@ -5036,7 +5049,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   excluded is that it is anything the emission does: the two host shapes serve one tree.
 
   **Where this looked**: `theHeaderRules` in `packages/site/served-headers.ts`, which now declares the
-  named policy for all seventeen; `cachePolicyFor` in `packages/registry/response.ts`, which is the
+  named policy for every one of them; `cachePolicyFor` in `packages/registry/response.ts`, which is the
   only place a duration is decided here; and `wrangler.jsonc`, which is where a deployment decision
   would live and which says in its own words that this one does not - *it is attached in the
   dashboard, not here... That is a gap in this file's own claim to hold every decision.*
