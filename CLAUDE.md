@@ -3703,11 +3703,15 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   `mutation/readme.test.ts`, which resolves a published figure against what produced it and does so for
   one page and not for this one.
 
-  **The population is every counted claim in every such block**, 49 today, and it grows with each entry
-  written. **What would close a third of it is cheap and is priced rather than taken**: a guard over the
-  resolvable form alone — *N guards of `<file>`*, *N guards ADR-NNNN names*, *N fault functions of
-  `<file>`*, *N call sites in `<file>`* — which is **8 of the 24**, one file to write and no new
-  dependency. **It would have caught two of the six**, the two whose noun is a guard count; the other
+  **The population is every counted claim in every such block**, **14** since ADR-0229 removed the
+  decorative ones, and it grows with each entry written. **What would close part of it is cheap and is
+  priced rather than taken**: a guard over the resolvable form alone — *N guards of `<file>`*, *N guards
+  ADR-NNNN names*, *N fault functions of `<file>`*, *N call sites in `<file>`* — one file to write and
+  no new dependency. **How much of the population that is carries no figure**, because *resolvable form*
+  was never given a rule tight enough to count against: ADR-0228's *8 of the 24* and ADR-0229's *the
+  boundary removes six* are both readings of a boundary nobody drew, and they are withdrawn rather than
+  restated. **What survives is the reading that does not need one**: it would have caught **two of the
+  six** false claims, the two whose noun is a guard count; the other
   four name a thing whose unit only a reader knows — a component layer's type sizes, a fact a module is
   said to record, a job's bound. **The rest needs what four entries here already refuse**, a validation
   stage reading this repository's own strings. Priced and not taken: the owner refused the guard in the

@@ -8,6 +8,31 @@ confirmed-by: []
 
 # The copied figure is systematic, and the guard that would catch a third of it
 
+> **This record undercounts its own readings by one, in the same place ADR-0229 does.** *The
+> population, measured **three** times before it was right* stands over a table of three rows, and the
+> prose two lines below names a fourth — *a second attempt demanded a colon and dropped the two blocks
+> written with a comma* — which the table does not carry. **It is four readings and not three.** The
+> figure is the finding here, so it stays and is corrected rather than removed:
+> [ADR-0229](0229-a-block-names-where-somebody-looked-and-does-not-count-what-they-found.md) went on to
+> need a fifth, and its own heading undercounts by one for the same reason, which is what says this is
+> a habit of the tabulating and not a slip.
+>
+> **A second heading here undercounts the same way**: *Both failures live in one form, and one commit
+> made **two** of them* stands over a paragraph reading *`aaf625f` falsified **three** claims across two
+> neighbouring entries*. **It is three** — `workflows.test.ts`'s guard count, the forty minutes and the
+> four declarations. The body is right and the heading is one short, which is now three headings of this
+> shape across two records.
+>
+> **And one figure is withdrawn rather than corrected: *8 of the 24* of resolvable form.** That form is
+> named here by four examples and never defined, so the eight was never counted against a rule — and
+> ADR-0229's *the boundary removes six* inherited it. Both go. **The title's *a third of it* goes with
+> them.** What survives is what needed no such rule and was verified: the guard **would have caught two
+> of the six** false claims, and the refusal rests on that and on being born unwitnessed.
+>
+> **What the record concludes is untouched**: six false claims of nineteen read, and the copying is
+> systematic. **The population figures are its own and stayed true at its commit** — the thirty-seventh
+> block is the one this record added, and ADR-0229 later cut the claims from 49 to 14.
+
 ## Context and Problem Statement
 
 ADR-0227 repaired one figure written in nine places and published the rest of its population unread:

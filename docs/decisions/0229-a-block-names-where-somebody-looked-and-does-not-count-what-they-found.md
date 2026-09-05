@@ -8,6 +8,42 @@ confirmed-by: []
 
 # A block names where somebody looked, and does not count what they found
 
+> **The reopening trigger below cannot be read, and that is worse than the count beside it.** It says
+> *a fifth extractor finding a number the fourth missed* — and **the fifth is the one in use**, the
+> bold row of this record's own table. So the clause names the extractor that holds and the one that
+> would replace it with the same word, and a reader cannot tell which the trigger is about. **A
+> trigger that cannot be read freezes a decision exactly as a missing one does**, which is what
+> ADR-0001 requires the section for. **It reads: *a sixth extractor finding a number the fifth
+> missed. Five were written, four were each too narrow in a different way, and nothing says the fifth
+> is not.***
+>
+> **The count is five extractors, of which four were too narrow**, and both figures carry: *five* is
+> what was written, *four* is the defect landing on the unit's own tool. The heading *it took four
+> extractors* stands over a table of **five rows** and undercounts by one; every other *four* in this
+> record is a different quantity and is untouched.
+>
+> **And the correction was said and not posted**, which is the third time in this thread and is the
+> class ADR-0226 names, arriving on a report rather than on a record: it was stated in conversation,
+> the tree stayed at `045bdfe`, and no reader of this repository would ever have met it. Nothing here
+> can keep what is said outside it; what keeps it is that a correction is posted in the same breath as
+> it is spoken.
+>
+> **Two figures of the bare *one* are both right and describe different moments, which the record does
+> not say.** The table reads *31 bare one* and the heading below reads *thirty-two of them*: 31 is the
+> population before the thirteen removals and 32 after, and the extra one is this record's own repair —
+> *the named policy for all seventeen* became *for every one of them*. Measured again after the commit:
+> **32**.
+>
+> **One more figure of this record is withdrawn rather than corrected.** *Of the eight claims of
+> resolvable form ADR-0228 priced, the boundary removes six* rests on ADR-0228's *8 of the 24*, and
+> **neither was counted against a rule** — *resolvable form* was named by four examples and never
+> defined, so the eight and the six are readings of a boundary nobody drew. Both go. What survives is
+> the reading that needs no such rule and was verified: the guard **would have caught two of the six**
+> false claims. The refusal is unaffected, resting on that two and on being born unwitnessed.
+>
+> **Everything else stands.** The boundary, the thirteen removed from ten blocks, the thirteen kept in
+> eight and re-measured, and the twenty blocks that carried none.
+
 ## Context and Problem Statement
 
 ADR-0228 found six false counted claims of nineteen read and priced a guard that would have caught two
