@@ -31,6 +31,24 @@ confirmed-by: []
 > answered unchanged — and it is the classification of that carrier as *ignoring*, not the row, that
 > ADR-0225 overturns.
 
+> **The counts in *A dissolves the disagreement, measured* are each short by one, and the note above
+> does not reach them.** That note narrows the *illustration* — which pair the ambiguity lands on once
+> the arity is three — and says nothing about the table's own arithmetic. Rebuilt on Chrome 152, the
+> engine this record names, over every carrier `Temporal` offers: `2026-01-15` is **4** and not 3,
+> `2026-01-15T12:30:00` is **5** and not 4, `2026-01-15T12:30:00-05:00[America/New_York]` is **7** and
+> not 6. The four rows reading `1 each` all agree.
+>
+> **One cause, and it is the same one three times: `PlainMonthDay`.** This catalogue's carrier
+> population has been *seven* since ADR-0216, and `Temporal` offers **eight** — measured, seven have
+> `add` and `PlainMonthDay` has none, so seven is exactly right for every question ADR-0216, ADR-0223,
+> ADR-0224 and ADR-0225 ask, all of which are about arithmetic. **This table asks a parsing question**,
+> where the population is the eight that have `from`, and it inherited the arithmetic one. It is
+> ADR-0233's rule one level up: a population is faithful on the question that selects it, or it counts
+> something else.
+>
+> **The conclusion is untouched.** It rests on an ISO string not determining its carrier, which holds
+> at 4, 5 and 7 exactly as it held at 3, 4 and 6. ADR-0236.
+
 > **This record writes no contract, opens no `value.ts`, and moves no digest.** It answers the
 > reopening trigger ADR-0218 left — *a carrier this catalogue can already spell* — and answers it
 > negatively. Measured at `58ab1a8` on node v24.15.0 and Chrome 152, the same engine ADR-0216's matrix

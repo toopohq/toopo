@@ -2623,13 +2623,29 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   spelled by being given a kind, which is the repair rather than a way around it.
 
   **Both string transpositions fail, and they fail differently.** Inferring the carrier from the ISO
-  string dissolves the disagreement: `2026-01-15` is accepted by **three** carriers, two of which are
-  the two ADR-0216's split is between, so two honest parsers of one contract answer *ignored* and
-  *refused* on the same row with nothing in the language separating them — and `Temporal.from` does
+  string dissolves the disagreement: an ISO string does not determine its carrier, so two honest
+  parsers of one contract answer *ignored* and *refused* on the same row with nothing in the language
+  separating them — and `Temporal.from` does
   not exist, so the question such a contract would have to settle is one no API asks. Naming the
   carrier as data preserves the disagreement exactly, round-trips losslessly on seven carriers of
   seven, and is not the same function: it is not generic, its caller holds a string rather than a
   carrier, and it grows ADR-0216's residue by a decision the language does not pose. ADR-0219.
+
+  **The counts that argument was illustrated with are each short by one, and one carrier is the whole
+  cause.** Rebuilt on Chrome 152 — the engine ADR-0219 names — over every carrier `Temporal` offers:
+  `2026-01-15` is **4** where that record publishes 3, `2026-01-15T12:30:00` is **5** where it
+  publishes 4, and the zoned string is **7** where it publishes 6; the four rows reading `1 each`
+  agree. **Every gap is `PlainMonthDay`.** `Temporal` offers **eight** carriers and **seven have
+  `add`**, `PlainMonthDay` having none — so seven is exactly right for every question ADR-0216,
+  ADR-0223, ADR-0224 and ADR-0225 ask, all of which are arithmetic, and that table asks a *parsing*
+  question, whose population is the eight that have `from`. It inherited the arithmetic one, which is
+  ADR-0233's rule one level up: **a population is faithful on the question that selects it, or it
+  counts something else.** The conclusion is untouched, resting on an ISO string not determining its
+  carrier, which holds at 4, 5 and 7 as it held at 3, 4 and 6. **And the figure was measured because a
+  decision needed it rather than because anybody audited it**: over the three carriers ADR-0225 admits,
+  **one spelling of seven is ambiguous** — `2026-01-15T12:30:00`, taken by `PlainTime` and
+  `PlainYearMonth` — and each admitted carrier has spellings nothing else takes, `12:30:00`, `2026-01`
+  and `P1D`. Both engines agree, Chrome 152 and V8 13.6 under `node --harmony-temporal`. ADR-0236.
 
   **The arity is four, the first price is one kind at five sites, and the rule that produced both was
   committed before the count.** ADR-0220 left item 1 unsized in as many words — *whether that is one
@@ -4713,6 +4729,39 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   push. Priced and not taken, because deciding what a deployment is worth is not a unit about a page.
   ADR-0146.
 
+- **That a push of `main` whose run was superseded is answered by any battery.** `cancel-in-progress:
+  false` protects the run *in progress*; the pending half is `queue`, absent here and therefore
+  `single`, so a queued run of `main` is cancelled and replaced by the next push. Measured: run
+  `33970943153` sat pending with **nought jobs**, `33972213437` was created at `14:34:25Z`, and the
+  first was cancelled at `14:34:26Z`, while the run actually executing was untouched by both.
+
+  **It reaches no irreversible act, and the reason is not the concurrency line.**
+  `print-whether-to-publish.ts` computes `!held.has(declared.version)` — npm's listing against the
+  manifest on disk — so a superseding push carries the same unpublished version forward and publishes
+  it. The publication is deferred by one run and never lost, which is ADR-0111's own argument for
+  refusing the proxy *did this commit move the number*, arriving on a cause that record did not name.
+
+  **What it does reach is the battery selection, and that half is silent.** `which-batteries` is a
+  diff from the push's base, so the batteries owed to a superseded push are chosen by no run. The
+  instance is this entry's own unit: `12c9fee` moved `packages/site/`, `mutation/site.battery.ts` and
+  `mutation/census.ts`, the diff to `4674b09` is `docs/` and `CLAUDE.md`, and cell `W-179` has been
+  replayed by nothing. **`every-job-answered` cannot see it**: a superseded run has no jobs, so that
+  guard is not among them — it is total over the jobs of its own run and blind by construction to a
+  run that never had one.
+
+  **Where this looked**: the `concurrency` block of `.github/workflows/suites.yml`, whose paragraph
+  claimed the protection covered every run of `main` and now says which half it covers;
+  `mutation/selection.ts`, which takes the base from the push and has no way to know a push was
+  skipped; and `mutation/every-job-answered.ts`, whose population is the jobs of the run it runs in.
+
+  **The population is every push of `main` that arrives while a run of `main` is queued.** What would
+  close it is `queue: max`, which GitHub offers for exactly this and refuses beside
+  `cancel-in-progress: true` — the value the expression here takes on every branch — and whether that
+  refusal reads the expression or its value cannot be measured without moving the configuration and
+  pushing. Priced and not taken. **What is done instead is a convention with nothing under it**: do
+  not push to `main` while a run of `main` is queued. It is bounded by `every-battery`, which a
+  publication waits for whatever the per-push selection did. ADR-0111, ADR-0146, ADR-0222, ADR-0236.
+
 - **That the bound a battery runs under is one anybody compared with what a battery costs.** The two
   ubuntu gates declare `timeout-minutes: 40`, and the share the slowest job consumes is written beside
   them by hand: 1 649 s against 2 400 is 68 %, computed by a reader and by nothing else. It is a dated
@@ -5593,6 +5642,14 @@ These outlive the current stage and are not open to trade-off.
 - Conventional commits, atomic. **`main` is pushed at the end of a unit, and a unit is not finished
   until the run it triggers is green** — every suite on two runtimes, the deployment behind them,
   and the one proof that reaches it. Nothing else: no force and no rewriting of history.
+
+  **And the push waits while a run of `main` is queued**, which is a convention with nothing under it
+  and is written here because it is where somebody about to push arrives. `cancel-in-progress: false`
+  protects the run in progress and not the one behind it: a queued run is cancelled and replaced by
+  the next push, measured to the second, so a push made then destroys a verdict rather than adding
+  one. The publication survives it — the entry below says why — and the battery selection does not.
+  `gh api repos/toopohq/toopo/actions/runs?branch=main` answers whether anything is `queued` or
+  `pending` before a push, and it is one request. ADR-0236.
 
   **That clause has been broken twice, both times deliberately, both times by the owner's decision,
   and it is written here rather than kept as a rule nobody honours.** The history was reissued on

@@ -149,8 +149,37 @@ on:
 # **The branch is the only condition available**, and that is a fact about when this is evaluated rather
 # than a preference. Concurrency is decided before any job runs, so nothing here can know whether this
 # run will publish - the version has not been read yet, and the job that reads it has not started. So
-# what is protected is every run of `main`, which is a superset of the ones that publish and costs a
-# duplicated run on the rare second push. Branches and pull requests stay as cancellable as they were.
+# the condition is every run of `main`, which is a superset of the ones that publish. Branches and pull
+# requests stay as cancellable as they were.
+#
+# **What that protects is the run in progress and not every run of `main`, and this line said otherwise
+# for as long as it has existed.** `cancel-in-progress` decides one thing; the *pending* half is
+# `queue`, which is absent here and therefore `single`, and GitHub's own words for that default are
+# that "any existing `pending` job or workflow in the same concurrency group will be canceled and the
+# new queued job or workflow will take its place". Measured on 2026-09-05: run `33970943153` on
+# `12c9fee` sat pending with **nought jobs** behind a run in progress, `33972213437` was created at
+# `14:34:25Z`, and `33970943153` was cancelled at `14:34:26Z` - while `33970163708`, the one actually
+# running, was untouched by both. So a second push to `main` does not cost "a duplicated run": it costs
+# the queued one, which never starts.
+#
+# **It does not reach the publication, and the reason is a property of the condition rather than of
+# this line.** `packaging/print-whether-to-publish.ts` computes `!held.has(declared.version)` - npm's
+# listing against the manifest on disk - so it asks what *is* rather than what changed. A superseding
+# push carries the same unpublished version forward, so its own run publishes what the superseded run
+# would have: the publication is deferred by one run and not lost. That is ADR-0111's own argument for
+# refusing the proxy *did this commit move the number*, which it justified against a bump pushed under
+# a later commit; supersession is the same failure with a different cause, and the same condition
+# answers it.
+#
+# **What it does reach is the battery selection, silently.** `which-batteries` is a diff from the
+# push's base, so the batteries owed to a superseded push are never chosen by any run - the superseding
+# one selects only its own diff. It is bounded by `every-battery`, which a publication waits for
+# whatever the per-push selection did, and it is invisible: a superseded run has no jobs, so
+# `every-job-answered` is not among them and reports nothing. **`queue: max` is the knob that would
+# close it** - up to a hundred pending - and it is not taken here, both because the hole reaches no
+# irreversible act and because GitHub refuses `queue: max` beside `cancel-in-progress: true`, which is
+# what the expression above evaluates to on every branch. Whether that refusal reads the expression or
+# its value is unmeasured, and measuring it means moving this configuration. ADR-0236.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
