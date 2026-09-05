@@ -4442,6 +4442,22 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   the Windows legs**: one bound now shows its own derivation, and the battery it bounds says what a
   cell costs where somebody adding one reads it. Neither is computed either. ADR-0162, ADR-0169.
 
+  **The entry stopped being a prediction and became six occurrences, and what let them stand is not the
+  number.** Measured over the last twenty-two runs of `main`: `batteries (registry-storage)` was killed
+  by the 40-minute bound on `1238833`, `cc7b64b`, `870354a`, `94458f4`, `46a8a9f` and `3078f81`, each at
+  40 min 16 s to 40 min 20 s, and its last completion is `6d03933` at **39 min 49 s** — eleven seconds
+  under. **The five pushes in between are the prose commits of ADR-0215 to ADR-0220**, where the
+  selection chose no battery at all and the runs carry ten jobs, so `batteries (registry-storage)` was
+  *not launched*: the record is not six cancellations among greens, it is that **the battery has not
+  completed once since `6d03933`**. **Nothing reddened because `cancelled` is not `failure`** — a job
+  killed by its own bound reports `cancelled`, the run concludes `cancelled`, and a reader looking for a
+  red finds none. That half is closed: `every-job-answered` waits for every job of the workflow, runs
+  `if: always()` rather than `failure()` because a cancelled job produces no failure, and refuses any
+  result that is neither `success` nor `skipped`. **What stays open is what this entry has always been
+  about** — the bound is still a number a person derives on the day they think to, and the job that
+  would read the matrix's own durations and refuse a share of them is still priced above and still not
+  taken. ADR-0222.
+
 - **That the reading of who has read this repository's prose is one anything executes.** `npm run
   hands` is in no workflow, and this is the half of the entry ADR-0152 did not close. It is not the
   guard's half: `hands.test.ts` is collected by `mutation/vitest.config.ts` and `npm run meta` is a
