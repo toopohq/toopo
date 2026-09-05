@@ -8,6 +8,30 @@ confirmed-by: []
 
 # A carrier enters where the question can be asked of it, and this tree carries two different fives
 
+> **The arity is three and `PlainDate` is the carrier that leaves.**
+> [ADR-0225](0225-one-rule-or-two-is-decided-by-whether-a-verdict-is-a-function-of-the-pair-the-sentence-names.md)
+> measured each unit at several magnitudes rather than at the value `1` alone, and `PlainDate` applies
+> **all ten**: `add({hours: 24})` answers `2026-01-16`, and `{minutes: 1440}`, `{seconds: 86400}` and
+> the same count of milli-, micro- and nanoseconds answer it too. It truncates rather than swallowing,
+> so its inapplicable set is **nought and not six**, and it leaves on the rule's own first member
+> exactly as `PlainDateTime` does. **The retained carriers are `PlainTime`, `PlainYearMonth` and
+> `Duration`.** The matrix below reads **one value per unit**, which is the note beneath this one, one
+> axis over. Controlled on a second engine, node v24.15.0 under `--harmony-temporal`.
+>
+> **This narrows the ADR-0224 note directly below, on two clauses it states and on nothing else.** *The
+> arity is four and unchanged* is false — it is three. *The case table figure of 40 rows is corrected to
+> 50* is false — it is **40** again, by a different route: three carriers of which one is bimodal, where
+> this record counted four of which none was. Everything else that note establishes stands, `Duration`'s
+> bimodality included.
+>
+> **What does not move is the rule and most of what it decided.** The rule is applied and not reopened,
+> and reaching for a different first member on the strength of the reading it produced would be fitting
+> a criterion to a result. `Duration` stays, `Instant` is still out on R12, R13 still removes nobody,
+> `ZonedDateTime` and `PlainDateTime` are still out on posability, and **both of ADR-0218's prices are
+> unmoved** — item 1 is one kind at any arity and item 3 is one key whose choice now has three members.
+> The `PlainDate.add({ hours: 5 })` observation is reproduced; what falls is the classification built on
+> it.
+
 > **What `inapplicable` means in the rule below is settled by
 > [ADR-0224](0224-the-inapplicable-set-is-quantified-over-a-carriers-values-and-one-row-of-seven-needs-two-bases.md),
 > and two things here are corrected without being rewritten.** It is behaviour quantified over a

@@ -2937,10 +2937,13 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   frozen rationale names the shape: *a plausible value that silently drops what the caller asked for*.
   ADR-0215 refused them on **R10**, the residue being one decision. **The owner refuted that with a
   measurement and it reproduces**: a *known* unit a carrier cannot apply is a second decision, and the
-  language answers it two ways. `PlainDate` ignores **all six** time units and `PlainTime` **all four**
-  date units, silently, while `PlainYearMonth` refuses **eight**, `Instant` **four** and `Duration`
-  **three** — `PlainDate.add({hours: 5})` answers the input unchanged where
-  `PlainYearMonth.add({hours: 5})` throws. **One API, one question, opposite answers.** A third
+  language answers it two ways. `PlainTime` ignores **all four** date units silently, while
+  `PlainYearMonth` refuses **eight**, `Instant` **four** and `Duration` **three** —
+  `PlainDate.add({hours: 5})` answers the input unchanged where `PlainYearMonth.add({hours: 5})`
+  throws. **One API, one question, opposite answers.** **This line read *`PlainDate` ignores all six
+  time units* until ADR-0225 measured the same units at other magnitudes**: `add({hours: 24})` answers
+  `2026-01-16`, so that carrier truncates into whole days rather than swallowing, and it is out of the
+  arity — the observation at `{hours: 5}` is exact and the classification built on it was not. A third
   decision sits beside them: the bag is read through the prototype chain and through getters, and
   `{DAYS: 1}` throws alone and is dropped beside a valid field.
 
@@ -3612,6 +3615,37 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   rather than a source. **What is cheap and is done instead** is that both records now carry a note
   where the divergence is, so a reader arriving at either meets the other rather than the half that was
   replaced. ADR-0173.
+
+- **That a record announcing a correction posts one on the record it corrects.** A stamped record is
+  repaired by a head note and by nothing else, so *ADR-XXXX is corrected and is not rewritten* is a
+  promise whose keeping lives in a different file from the sentence making it. **Nothing reads the two
+  against each other.**
+
+  **It is a recurrence rather than a lapse, which is what took it off a commit message and onto this
+  list.** ADR-0223 closed with *ADR-0220's classification of `Instant` is refuted … the correction is
+  here* and posted no note; ADR-0220 went on publishing *`Instant` and `ZonedDateTime` are the two that
+  are not zone-free* for two days. ADR-0225 closed with *ADR-0216, ADR-0223 and ADR-0224 are corrected*
+  and posted none of the three. **Two records in two days, and the second was written by whoever had
+  just read the first.** Both were found by the owner reading, and neither by any check.
+
+  **And the announcement is not the population**, which is the half a repair scoped to it would miss:
+  ADR-0225 named three and the sweep found **five**, ADR-0217 and ADR-0219 carrying a claim that had
+  stopped being true and being named nowhere.
+
+  **Where this looked**: the nine fault functions of `mutation/decisions.ts`, every one of which
+  resolves what a record *names* — a path, a guard, a record, a link, the presence of a section — and
+  not one of which reads what a record *says*; `backCitationFaults` beside them, which resolves
+  `governs` in both directions and has no opinion about a correction; and
+  `every-decision-says-what-would-reopen-it`, which asks that a trigger section exist and never that a
+  trigger fired be answered.
+
+  **The population is every sentence of a record announcing that another record is corrected**, and it
+  grows with each unit that corrects one. **What would close it is narrower than the lint over prose
+  four entries here already refuse**: the announcing sentence is formulaic, its object is an *address*,
+  and the check is whether that address's record cites this one back — which is `citationFaults`'
+  machinery pointed at a different population. What it cannot see is a superseded **figure**, which
+  carries no address. Priced as its own unit and not taken, because building it inside the unit that
+  repairs its instances would make the instances the argument for it. ADR-0226.
 
 - **That every phrase a contract is found by has been read against what the contract does.** ADR-0023's
   alias review happens at publication: somebody reads each phrase against the contract's own

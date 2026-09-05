@@ -8,6 +8,22 @@ confirmed-by: []
 
 # One rule or two is decided by whether a verdict is a function of the pair the sentence names
 
+> **The head notes this record announces were not posted, and its count of what it corrects is two
+> short.** Its Consequences read *ADR-0216, ADR-0223 and ADR-0224 are corrected and none is rewritten.
+> They are stamped, so the correction is here* — and no note was placed on any of the three, so each
+> went on publishing a refuted sentence with nothing on its face saying so.
+> [ADR-0226](0226-a-record-that-announces-a-correction-is-not-a-record-that-posts-one.md) posts them and
+> sweeps for the population rather than for the announcement: **five records carry a claim that has
+> stopped being true**, the two this record did not name being **ADR-0217**, one term of whose
+> language-side sentence falls, and **ADR-0219**, whose ISO ambiguity loses two of its three carriers.
+> A sixth note goes to **ADR-0220**, which ADR-0223 announced as corrected and likewise left unmarked.
+>
+> **Everything measured here stands**, and the owner reproduced the central reading before answering.
+> What that record adds is one measurement this one did not take: ADR-0219's reopening trigger — *a
+> retained form over fewer carriers whose ISO strings are mutually exclusive* — is examined against the
+> arity of three and **does not fire**, three strings of twelve still colliding, all on `PlainTime`
+> against `PlainYearMonth`.
+
 ## Context and Problem Statement
 
 ADR-0223 fixed the arity at four and reserved one question for the owner. ADR-0224 sharpened it rather

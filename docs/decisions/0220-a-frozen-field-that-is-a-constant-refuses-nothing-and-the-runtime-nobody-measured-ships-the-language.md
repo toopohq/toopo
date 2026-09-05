@@ -8,6 +8,28 @@ confirmed-by: []
 
 # A frozen field that is a constant refuses nothing, and the runtime nobody measured ships the language
 
+> **The classification of `Instant` below is refuted, and this note is late.**
+> [ADR-0223](0223-a-carrier-enters-where-the-question-can-be-asked-of-it-and-this-tree-carries-two-different-fives.md)
+> measured `Instant` on the 2026 US transition: it refuses `{days: 1}` and applies `{hours: 24}` as
+> exactly 24 × 3 600 × 10⁹ nanoseconds, with `ZonedDateTime` parting by one hour on the same instant as
+> the positive control, and `ZonedDateTime` is the only carrier of seven exposing a `timeZoneId`. **So
+> `Instant` is zone-free for `add`**, *`Instant` and `ZonedDateTime` are the two that are not zone-free*
+> is false of the first of them, and **the zone-free subset is six rather than at most five**. That
+> record announced the correction in its own Consequences and posted no note here; the omission was
+> found by the sweep [ADR-0225](0225-one-rule-or-two-is-decided-by-whether-a-verdict-is-a-function-of-the-pair-the-sentence-names.md)
+> owed, and it is repaired here rather than left because a record that publishes a refuted sentence with
+> nothing on its face is the defect that sweep exists to close.
+>
+> **The arity this record asks for is settled and is not five.** It is **three** — `PlainTime`,
+> `PlainYearMonth`, `Duration` — fixed by ADR-0223 under a rule committed before the count and corrected
+> to three by ADR-0225, so *the zone-free subset is at most five* is not the arity and never was: the
+> two conditions are independent, and on this population posability implies zone-freeness.
+>
+> **Everything this record measured stands.** Node 26.8.1 serves the language rather than V8 13.6's
+> draft, `environments` is a constant that refuses nothing, the fourteenth refusal ground is refused,
+> and `PlainDate.add({ hours: 5 })` really does answer the input unchanged — it is the classification
+> later built on that observation, and not the observation, that ADR-0225 overturns.
+
 > **This record writes no contract, takes none of the three repairs it prices, and moves no digest.**
 > It answers the question ADR-0218 and ADR-0219 left standing — what it would cost for ADR-0216's
 > candidate to be writable — and it settles the floor that was expected to refuse it before pricing

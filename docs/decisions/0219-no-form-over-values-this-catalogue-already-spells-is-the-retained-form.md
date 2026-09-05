@@ -8,6 +8,29 @@ confirmed-by: []
 
 # No form over values this catalogue already spells is the retained form
 
+> **The reopening trigger below was examined and does not fire, and the example that carries the
+> argument does.**
+> [ADR-0225](0225-one-rule-or-two-is-decided-by-whether-a-verdict-is-a-function-of-the-pair-the-sentence-names.md)
+> put the arity at **three** — `PlainTime`, `PlainYearMonth`, `Duration` — so two of the three carriers
+> whose ISO strings collide here are outside the contract, and this record's own trigger, *a retained
+> form over fewer carriers … whose ISO strings are mutually exclusive*, is exactly the condition to
+> check. **Re-measured on Chrome 152 by this record's own method, over twelve strings: they are not
+> mutually exclusive.** Three still collide among the three retained —
+> `2026-01-15T12:30:00`, `2026-01-15T12:30` and `2026-01-15T12:30:00-05:00[America/New_York]` — and all
+> three are taken by **`PlainTime` and `PlainYearMonth`**, which are precisely the two carriers whose
+> verdicts differ. Each retained carrier also has an unambiguous string of its own: `12:30:00`,
+> `2026-01`, `P1D`.
+>
+> **So the conclusion stands and the illustration does not.** *The ambiguity lands on the row the
+> contract exists to publish* is argued on `2026-01-15` being accepted by `PlainDate` and
+> `PlainYearMonth` alike; among the retained three that string is taken by `PlainYearMonth` **alone**,
+> and the ambiguity has moved to a different pair and a different string. A narrower form is therefore
+> not a way round A, and the retained form is unchanged.
+>
+> **The table row `PlainDate` + `{hours: 5}` stays true of the value it names** — the input really is
+> answered unchanged — and it is the classification of that carrier as *ignoring*, not the row, that
+> ADR-0225 overturns.
+
 > **This record writes no contract, opens no `value.ts`, and moves no digest.** It answers the
 > reopening trigger ADR-0218 left — *a carrier this catalogue can already spell* — and answers it
 > negatively. Measured at `58ab1a8` on node v24.15.0 and Chrome 152, the same engine ADR-0216's matrix

@@ -8,6 +8,26 @@ confirmed-by: []
 
 # The residue is three decisions and the language answers one of them two ways
 
+> **`PlainDate` does not ignore a time unit, and the matrix below says it does.**
+> [ADR-0225](0225-one-rule-or-two-is-decided-by-whether-a-verdict-is-a-function-of-the-pair-the-sentence-names.md)
+> measured each unit at several magnitudes rather than at the value `1` alone: `PlainDate.add({hours:
+> 24})` answers `2026-01-16`, and `{minutes: 1440}`, `{seconds: 86400}` and the same count of milli-,
+> micro- and nanoseconds answer it too. **All six time units act as soon as they reach a whole day** —
+> the carrier balances the time part into days and discards the remainder — so its row is **10 applied
+> and 0 inapplicable**, not 4 and 6, and the *two-swallow-three-refuse* reading below is **one carrier
+> short**: only `PlainTime` swallows. Controlled on a second engine, node v24.15.0 under
+> `--harmony-temporal`.
+>
+> **This narrows the ADR-0224 note directly below, on one clause**: that note exempts *the
+> two-swallow-three-refuse reading* by name as unaffected, and it is affected. Everything else it
+> exempts stands.
+>
+> **What does not move is most of this record.** `PlainDate.add({ hours: 5 })` really does answer the
+> input unchanged — that observation is reproduced, and it is the *classification* built on it that
+> falls, not the reading. The `PlainYearMonth`, `Instant`, `Duration`, `PlainDateTime` and
+> `ZonedDateTime` rows are reproduced exactly, and so is the third decision, the unknown key dropped in
+> silence on all seven.
+
 > **One row of the matrix below is one of two modes, and nothing here says so.**
 > [ADR-0224](0224-the-inapplicable-set-is-quantified-over-a-carriers-values-and-one-row-of-seven-needs-two-bases.md)
 > measured that `Duration`'s row moves with the base: a receiver whose largest unit is a calendar unit

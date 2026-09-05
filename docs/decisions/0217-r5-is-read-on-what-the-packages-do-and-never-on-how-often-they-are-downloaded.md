@@ -8,6 +8,23 @@ confirmed-by: []
 
 # R5 is read on what the packages do and never on how often they are downloaded
 
+> **One term of the language-side sentence below falls, the sentence itself stands, and the reading it
+> rests on has a limit that is now visible.**
+> [ADR-0225](0225-one-rule-or-two-is-decided-by-whether-a-verdict-is-a-function-of-the-pair-the-sentence-names.md)
+> measured each unit at several magnitudes: `PlainDate.add({hours: 24})` answers `2026-01-16`, so
+> `PlainDate` **truncates rather than ignoring** and *`PlainYearMonth` and `Instant` refuse where
+> `PlainDate` and `PlainTime` ignore* is one carrier short — only `PlainTime` ignores. **The conclusion
+> is untouched**: on the second decision the language still contests itself, and the ecosystem still
+> does not.
+>
+> **What this record measured is untouched, and what it did not measure is named rather than assumed.**
+> R5 does not fire, `luxon` still refuses what Temporal swallows, and the ten packages were read as they
+> were read. But the library rows were taken at **one magnitude** — `CalendarDate.add({ hours: 5 })`
+> answering the input unchanged — which is the method that misread `PlainDate` for three records. Whether
+> `@internationalized/date` also truncates at a whole day was not asked here and is not asked by
+> ADR-0225 either, so *it answers the second question exactly as Temporal answers it* is established at
+> the value read and at no other.
+
 > **This record is committed in two halves and the order is the evidence.** *The method, declared
 > before the first probe* and the prediction closing it were written and committed before any package
 > was installed or read; everything else was added afterwards. That section is byte-identical between

@@ -8,6 +8,28 @@ confirmed-by: []
 
 # The inapplicable set is quantified over a carrier's values, and one row of seven needs two bases
 
+> **The axis corrected here has a neighbour, and the arity moves on it.**
+> [ADR-0225](0225-one-rule-or-two-is-decided-by-whether-a-verdict-is-a-function-of-the-pair-the-sentence-names.md)
+> read each unit at several **magnitudes** where this record read each carrier at several **bases**, and
+> `PlainDate.add({hours: 24})` answers `2026-01-16` — as do `{minutes: 1440}`, `{seconds: 86400}` and
+> the same count of milli-, micro- and nanoseconds. **All six time units act as soon as they reach a
+> whole day**, so `PlainDate` truncates rather than swallowing and its inapplicable set is **nought**.
+> The sentence below — *the matrix reads one base per carrier, and for one row of seven that is not
+> enough* — is true of a second axis it does not name: **the matrix also reads one value per unit**.
+> Controlled on a second engine, node v24.15.0 under `--harmony-temporal`.
+>
+> **Four figures here are superseded.** The stability row **`PlainDate` 6, 6, 6** is nought at every
+> base; the structural table's `PlainDate` line reads **7 components absent against 0 inapplicable**,
+> which leaves its *no* verdict intact and widens the gap; **the case table is 40 rows and not 50**,
+> three carriers of which one is bimodal; and **the arity is three**, `PlainDate` leaving on posability
+> exactly as `PlainDateTime` does.
+>
+> **What this record decided is untouched and is what made the correction possible.** `inapplicable` is
+> behaviour quantified over a carrier's values, and reading it over magnitudes as well is that same
+> decision carried one step further rather than a departure from it. `Duration`'s bimodality stands, the
+> 0-of-11 failing direction stands, the structural reading stays refused on four of six carriers, and
+> both of ADR-0218's prices are unmoved.
+
 ## Context and Problem Statement
 
 ADR-0223 committed a rule before counting and read the arity as four. Its first member is *the question
