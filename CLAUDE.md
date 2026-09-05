@@ -2641,11 +2641,22 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   question, whose population is the eight that have `from`. It inherited the arithmetic one, which is
   ADR-0233's rule one level up: **a population is faithful on the question that selects it, or it
   counts something else.** The conclusion is untouched, resting on an ISO string not determining its
-  carrier, which holds at 4, 5 and 7 as it held at 3, 4 and 6. **And the figure was measured because a
-  decision needed it rather than because anybody audited it**: over the three carriers ADR-0225 admits,
-  **one spelling of seven is ambiguous** — `2026-01-15T12:30:00`, taken by `PlainTime` and
-  `PlainYearMonth` — and each admitted carrier has spellings nothing else takes, `12:30:00`, `2026-01`
-  and `P1D`. Both engines agree, Chrome 152 and V8 13.6 under `node --harmony-temporal`. ADR-0236.
+  carrier, which holds at 4, 5 and 7 as it held at 3, 4 and 6.
+
+  **And the reading beside it was wrong the same way, in the unit that names the class.** Asked over
+  the three carriers ADR-0225 admits, the first sweep reported *one spelling of seven* on a population
+  of seven nobody stated, which left out the zoned form ADR-0219's table names and the seconds-less
+  form its head note names; the owner counted two and was short for the same reason; that head note
+  counts three over its own twelve. **Three readings, three numbers, each right of the population it
+  swept.** What replaces them is the rule they are samples of, total over a stated twelve and agreed
+  by Chrome 152 and V8 13.6.233.17 row for row: **a string is ambiguous over the three retained
+  carriers exactly when it carries a date and a time and no `Z`** — `PlainTime.from` takes the time
+  out of it and `PlainYearMonth.from` takes the year-month out of the same one. Four such strings, all
+  ambiguous; one with `Z`, taken by **none**, the arity holding no exact-time carrier; and seven
+  without a date or without a time, each taken by exactly one. **The pair never moved** — every
+  collision in every reading is `PlainTime` against `PlainYearMonth`, which are the two carriers whose
+  verdicts differ — so *not mutually exclusive* stops being a count and becomes a property of the
+  format, which strengthens ADR-0219's conclusion rather than weakening it. ADR-0236.
 
   **The arity is four, the first price is one kind at five sites, and the rule that produced both was
   committed before the count.** ADR-0220 left item 1 unsized in as many words — *whether that is one

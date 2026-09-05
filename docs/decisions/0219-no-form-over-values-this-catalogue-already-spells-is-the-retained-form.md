@@ -49,6 +49,26 @@ confirmed-by: []
 > **The conclusion is untouched.** It rests on an ISO string not determining its carrier, which holds
 > at 4, 5 and 7 exactly as it held at 3, 4 and 6. ADR-0236.
 
+> **And the note above counts three collisions where a stated population gives four — which
+> strengthens its conclusion rather than weakening it.** Over twelve strings named row by row, on
+> Chrome 152 and on V8 13.6.233.17 agreeing: `2026-01-15T12:30:00`, `2026-01-15T12:30`,
+> `2026-01-15T12:30:00-05:00[America/New_York]` **and `2026-01-15T12:30:00-05:00`** are taken by
+> `PlainTime` and `PlainYearMonth` alike. The fourth is an offset with no zone name, which that note's
+> own twelve did not carry.
+>
+> **What replaces every one of these counts is the rule they are samples of**: a string is ambiguous
+> over the three retained carriers **exactly when it carries a date and a time and no `Z`** — because
+> `PlainTime.from` takes the time out of it and `PlainYearMonth.from` takes the year-month out of the
+> same one. It accounts for all twelve rows: four such strings, all ambiguous; one with `Z`, taken by
+> **none**, an exact time being a thing the arity holds no carrier for; and seven without a time or
+> without a date, each taken by exactly one.
+>
+> **So *not mutually exclusive* stops being a count of what a sample happened to find and becomes a
+> property of the format.** Three readings of this question have now published three different
+> numbers — three, four, and a one that was wrong by omission — and each was right of the population
+> it swept. The pair is what never moved: **every collision, in every reading, is `PlainTime` against
+> `PlainYearMonth`**, which are the two carriers whose verdicts differ. ADR-0236.
+
 > **This record writes no contract, opens no `value.ts`, and moves no digest.** It answers the
 > reopening trigger ADR-0218 left — *a carrier this catalogue can already spell* — and answers it
 > negatively. Measured at `58ab1a8` on node v24.15.0 and Chrome 152, the same engine ADR-0216's matrix

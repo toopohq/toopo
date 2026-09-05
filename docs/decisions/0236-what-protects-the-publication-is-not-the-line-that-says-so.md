@@ -148,10 +148,31 @@ takes. Pricing that branch needs to know whether a bare string names one carrier
 ADR-0225 admits, and **carrying ADR-0219's figure across would have been a transposition** — that table
 was taken when the arity was five and the arity is now three.
 
-Measured on Chrome 152 and on V8 13.6 under `node --harmony-temporal`, agreeing: **over the admitted
-three, one spelling of seven is ambiguous** — `2026-01-15T12:30:00`, taken by `PlainTime` and
-`PlainYearMonth` — and each admitted carrier has spellings of its own that nothing else takes,
-`12:30:00`, `2026-01` and `P1D`.
+**The first reading published here was wrong, by the mechanism this record had just written a head
+note about.** It reported *one spelling of seven*, over a population of seven this unit assembled
+without stating — and that seven left out every date-and-time form but one, the zoned form ADR-0219's
+own table names, and the seconds-less form ADR-0219's own head note names. A population narrower than
+the claim, committed in the unit that names the class, on the day it names it. The owner counted two
+and was short for the same reason at a smaller scale; ADR-0219's head note counted three over twelve
+strings and is short of this one.
+
+**So the count is not the finding, because every one of those counts is a function of a population
+somebody chose.** Re-measured over a population stated row by row — every string ADR-0219's table
+names, every string its head note names, one spelling of its own for each admitted carrier, and the
+ordinary forms a reader types — Chrome 152 and V8 13.6.233.17 agreeing row for row: **4 of 12 are
+ambiguous, and the rule behind them is total over the twelve.**
+
+| | |
+| --- | --- |
+| a date **and** a time, no `Z` | **4, every one taken by `PlainTime` and `PlainYearMonth`** — `2026-01-15T12:30:00`, `2026-01-15T12:30`, `…-05:00[America/New_York]`, `…-05:00` |
+| a date and a time **with** `Z` | 1, taken by **none** of the three — `2026-01-15T12:30:00Z` is an exact time and the arity holds no exact-time carrier |
+| everything else | 7, each taken by exactly one — `12:30:00`, `12:30`, `2026-01`, `2026-01-15`, `P1D`, `PT1H`, `P1Y2M3D` |
+
+**A string is ambiguous over the three admitted carriers exactly when it carries a date and a time and
+no UTC designator**, because `PlainTime.from` takes the time out of such a string and
+`PlainYearMonth.from` takes the year-month out of the same one. That is derivable, it accounts for all
+twelve rows, and it needs no count — which is this repository's own first rule for a figure, arriving
+on three readings that each published one.
 
 **The control refutes the table it was a control for.** Rebuilt row for row on the engine ADR-0219
 names: `2026-01-15` is **4** where that record publishes 3, `2026-01-15T12:30:00` is **5** where it
@@ -171,11 +192,17 @@ note; its conclusion is untouched, resting on an ISO string not determining its 
 > composed onto every such contract page by `spelledFields`, and of a field that refuses by name until
 > a runtime carries `Temporal`; or `the-text-itself`, where the reader types a bare `12:30:00` and
 > `build` constructs the carrier — at the cost of the entry having to choose a carrier from text that
-> names none, which is unambiguous for six of the seven spellings measured and is not for
-> `2026-01-15T12:30:00`, where `PlainTime` and `PlainYearMonth` both accept and the two are exactly
-> the pair whose verdicts the contract exists to publish.**
+> names none, which it can do for a string carrying a date or a time but not both, and cannot do for
+> any string carrying both, every one of which `PlainTime` and `PlainYearMonth` accept alike and those
+> two are exactly the pair whose verdicts the contract exists to publish.**
 
 Both branches are equally inert on today's matrix, so the runtime is not what separates them.
+
+**The rule is what makes that branch dearer than a corner case, and it is why the recount was worth
+taking.** Read as a list of collisions it is a handful of odd spellings; read as the rule, `the-text-
+itself` guesses on **the whole class of date-and-time strings** — and each admitted carrier having an
+unambiguous spelling of its own means the reader guessed at is precisely the one who does not yet know
+which carrier they want, who is the reader a playground exists for.
 
 ## Consequences
 
@@ -190,6 +217,12 @@ Both branches are equally inert on today's matrix, so the runtime is not what se
 * **A published figure of ADR-0219 is corrected by a head note**, with its single cause, and this
   repository has a fourth instance of the class ADR-0233 named: a population faithful to the question
   that selected it, carried into a question it is not faithful to.
+* **And a fifth instance was committed by this record, in the section that names the class.** The
+  first reading of the ambiguity swept seven spellings nobody stated and missed three of the four that
+  matter. It was caught by the owner reading, as the last four have been. **What it cost is one draft
+  and what it bought is the rule**: a count over a population somebody assembled was replaced by a
+  property of the format, which is the difference between a figure three readings disagreed on and a
+  sentence none of them could have disagreed with.
 * **The instance this unit created is not repaired by it.** `12c9fee`'s battery selection is owed a run
   and the only route is `gh run rerun 33970943153` once the group is empty, which cannot be done while
   a run is queued without recreating the fault.
@@ -217,6 +250,8 @@ Both branches are equally inert on today's matrix, so the runtime is not what se
 * ADR-0222 derived the ubuntu bound and built `every-job-answered`, whose population this record names.
 * ADR-0235 costed ADR-0218's item 3 and left the reading to the owner; ADR-0219 is the record whose
   table is corrected here, and ADR-0225 is the arity that made its illustration fall.
-* The probes are `ambiguity.mjs`, `ambiguity.html`, `the-table.html` and `why-seven.html`, run at
-  `4674b09` on Chrome 152.0.0.0 headless and node v24.15.0. They are outside the tree, as rule 5
-  requires of a reading that is not a guard.
+* The probes are `ambiguity.mjs`, `ambiguity.html`, `the-table.html`, `why-seven.html` and
+  `recount.html`, run at `4674b09` and `eaeacb8` on Chrome 152.0.0.0 headless and on node v24.15.0
+  with V8 13.6.233.17 under `--harmony-temporal`. They are outside the tree, as rule 5 requires of a
+  reading that is not a guard. **The first four carry the reading the fifth corrects**, and they are
+  named rather than replaced because the correction is about the population and not the arithmetic.
