@@ -16,6 +16,19 @@ confirmed-by:
 
 # The third price is paid, and the key is a name rather than a type
 
+> **`three false counts` is four claims of which three are false, and the one this record repeats from
+> ADR-0235 misses the sharpest.** That header's paragraph also reads *two `build`s that are not the
+> identity*; measured at `50ff990` and at HEAD, **one build is not the identity at both**, so it was
+> false the day it was written where *Four types* was true then and is six now. The Consequence below
+> is otherwise unchanged, and the three were repaired — with the reason each refusal to repair them
+> lapsed, neither costing nor paying item 3 being what that unit does.
+> [ADR-0240](0240-three-compiler-silences-with-three-causes-and-the-costing-that-counted-twice.md).
+>
+> **And §1's *the site nobody lists is the work* folds three sites into one class that measurement
+> separates.** Compiler-silence holds of all three and for three different causes; *named by nobody*
+> holds of two, ADR-0232's own table recording that a guard named `read-literal.ts`; and
+> *reader-visible* holds of one, `unmodelled` throwing where nothing catches it.
+
 ## Context and Problem Statement
 
 ADR-0235 costed ADR-0218's item 3 and split it in two: **3a**, the key, a prerequisite payable today

@@ -8,6 +8,22 @@ confirmed-by: []
 
 # The third price is two prices counted as one, and only one of them is a prerequisite
 
+> **The count of false counts is short by one, and the one it misses is the sharper of the two
+> failures.** This record names three claims in `playground.ts`'s header — *Four types*, *what two of
+> the four spell*, *the two types reading it* — and the same paragraph carries a fourth: *two `build`s
+> that are not the identity*. Measured at `50ff990`, the commit that wrote it, **one build is not the
+> identity and one has been ever since**, so that clause was false the day it was written and has never
+> moved, where *Four types* was true there and drifted. **Two failures of two different kinds in one
+> sentence**, which is what this list separates as rules 1 to 2 against rule 3. The three named here are
+> correct as far as they go and the classification of the header as a different class stands; what is
+> corrected is *three*. The three false counts are repaired and the fourth claim of that paragraph —
+> `number` as the fourth type the sixth contract declared — was read and holds.
+> [ADR-0240](0240-three-compiler-silences-with-three-causes-and-the-costing-that-counted-twice.md).
+>
+> **And the site table of §3 is the one costing of the four that its payer does not correct**, which
+> that record reads as the method rather than as luck: counting the sites twice is what found
+> `spelledFields`, and the three costings that counted once were each corrected by the unit that paid.
+
 ## Context and Problem Statement
 
 ADR-0218 prices three repairs for an eighth contract. Items 1 and 2 are paid — ADR-0232 gave `value.ts`

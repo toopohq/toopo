@@ -96,7 +96,7 @@ const natureOf = (value: unknown): string => {
  *
  * The refusal machinery lives *inside* the literal arm rather than beside both, and that is the shape
  * doing the work: a field that takes the text itself cannot receive the wrong type, because the text a
- * reader types is a string and the two types reading it are the two the catalogue spells as strings.
+ * reader types is a string and the types reading it are the ones the catalogue spells as strings.
  * `UnusableArgument` exists because a literal can spell anything at all, so it belongs where that is
  * true and nowhere else.
  */
@@ -138,9 +138,13 @@ type Reading =
 /**
  * How a field becomes an argument, by the type the signature declares.
  *
- * Four types, two readings, and two `build`s that are not the identity. Nothing speculative is
- * listed: each entry is here because a contract declares that type, which is the discipline
- * `field-map.ts` deletes a speculative field for.
+ * Nothing speculative is listed: each entry is here because a contract declares that type, which is
+ * the discipline `field-map.ts` deletes a speculative field for.
+ *
+ * **This paragraph counted the table and two of its counts were wrong**, one of them from the day it
+ * was written: measured at `50ff990`, *two `build`s that are not the identity* was one and has been
+ * one ever since, while *Four types* was true there and is six here. The argument survives their
+ * removal, which is why they are gone rather than restated. ADR-0240.
  *
  * **A type added here has to choose a reading, and there is no member to leave out.** That is the rule
  * ADR-0054 asks for before a rule is written in prose: a sixth contract declaring a fourth type does
@@ -155,7 +159,7 @@ type Argument = {
   readonly note: string | null
 }
 
-/** A value that already is the text a field opens on, which is what two of the four spell. */
+/** A value that already is the text a field opens on, which is what `string` and `Date` spell. */
 const THE_TEXT_AS_WRITTEN = (value: unknown): string | null =>
   typeof value === 'string' ? value : null
 

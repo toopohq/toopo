@@ -2861,9 +2861,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   hand-written refusal at `playground.ts:451` being the evidence rather than the reading. **The site
   nobody lists is `spelledFields` in `contract-page.ts`**, which composes a sentence a reader meets out
   of the entry's own `because`; it speaks on two of the seven pages today and nothing reads what it
-  says, the third unit running in which the unlisted site was the one a reader receives. **Three counts
-  in that file's own prose are false already** — *Four types* at five entries, and two beside it — and
-  they are recorded rather than repaired, this unit having been forbidden the file. **And one of the two
+  says, the third unit running in which the unlisted site was the one a reader receives. **That header
+  makes four claims about its own table and three are false** — *Four types* at what is now six, *the
+  two types reading it* at three, and *two `build`s that are not the identity* at one, which no costing
+  named and which was false the day it was written. They were recorded rather than repaired while a
+  costing was in front of them, and **they are repaired now**, by ADR-0240, which is neither costing nor
+  paying item 3 and moves nothing they count. **And one of the two
   build-time refusals was removed by item 1 with nobody costing it**: a carrier used to encode as
   `instance`, which `WITHOUT_A_SPELLING` holds, so every carrier row was refused and `playgroundOf`
   would have thrown *the contract settles no case a form can hold* before ever reaching the type.
@@ -2946,8 +2949,10 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   indirect one dies at `a-component-is-painted-by-its-own-rules-and-by-nothing-else`, and the pair is
   total where neither half is. An entry naming only the type would be describing half a mechanism.
 
-  **Where this looked**: `Attributes` in `packages/site/document.ts`, which is
-  `Readonly<Record<string, string>>` and takes any key; `drawn` in `packages/site/components.ts`, which
+  **Where this looked**: `Attributes` in `packages/site/tree.ts`, which is
+  `Readonly<Record<string, string>>` and takes any key — this block named `document.ts` until ADR-0240
+  resolved it, ADR-0198's cut having moved the node vocabulary with nothing following it here;
+  `drawn` in `packages/site/components.ts`, which
   is the only thing that puts a component's class on an element and writes it last so a caller's cannot
   win; and the guards of `packages/site/components.test.ts`, none of which reads a page module's
   source for what it writes.
@@ -3917,6 +3922,55 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   other 15 unreachable, two because they name *pushes* and git carries no push boundary, thirteen
   because their object is a claim rather than a diff. **A third of the class is checkable and the
   un-checkable two thirds contain the shape that produced the instance.** ADR-0230.
+
+- **That a costing's list of the sites a change touches is one anything checks.** A record that prices
+  a change without taking it publishes the places the change reaches, and **the costing is the one unit
+  structurally unable to check that list** — checking it means making the change, which is what a
+  costing exists to defer. So the failure has no event until somebody pays.
+
+  **It is measured rather than feared, and the rate names the remedy.** Of the four costings of
+  ADR-0218's three prices, **three were corrected by the unit that paid them**: ADR-0223 published
+  *five sites of which the compiler names two* and ADR-0232 found eight, `unmodelled` among them — the
+  one arm without which the rest is dead where it stands; the same record's *`read-literal.ts` costs
+  nothing* became an arm and a whole guard category at ADR-0234; and ADR-0218's own **Where this
+  looked** named three declarations where ADR-0235 found `spelledFields`. **The fourth held.** ADR-0235
+  counted its sites **twice** — once by the text that must change, once by the behaviour the change
+  reaches — and ADR-0239, which paid it, corrects it nowhere. The unlisted site appears only under the
+  second count.
+
+  **Five mechanisms could have named those sites and every one is blind for a structural reason, not
+  by oversight.** `confirmed-by` resolves a `(battery, guard)` pair, and a site is not a guard. The
+  census declares how many guards a *test file* collects, so a site with no guard leaves it unmoved.
+  `predict`'s three counts all range over guards, and `prediction.ts` declares its own bound — *exact
+  for the drift of a declaration against a measurement already taken*. A surface guard like
+  `a-parameter-type-the-form-cannot-build-stops-the-site-and-names-itself` is total over a type its
+  table does not hold. **And a `Where this looked` block cannot name a consumer at all**: swept over
+  this file, **39 blocks carry 25 `identifier` in `path` pairs and 25 of 25 name a declaration**, nought
+  a reader of one. Each mechanism has a vocabulary — a guard, a cell, a declaration — and a site
+  reached by a *value* is in none of them.
+
+  **The three sites this was read on are not one class**, which is the correction this entry carries
+  rather than the observation that opened it. Compiler-silence is true of all three and true for three
+  different reasons — upstream of the union, derived from a declaration, downstream of an index
+  signature — so no one tool reaches them; *named by nobody* is true of two, ADR-0232's own table
+  recording that a guard named the third; and *reader-visible* is true of one, `unmodelled` being
+  thrown where nothing catches it and therefore reaching a build rather than a reader.
+
+  **Where this looked**: `confirmationFaults` in `mutation/decisions.ts`, which resolves what a record
+  *names* and holds no vocabulary for a place; `CENSUS` in `mutation/census.ts`, whose own header says
+  the door it exists for is one that stays green; and `prediction.ts`, which states the bound of its
+  three counts in its first paragraph.
+
+  **The population is every record that prices a change by naming the sites it touches.** What would
+  close it is nothing, and the two candidates are costed rather than waved at. A guard resolving the
+  names a block writes would be **red on its first run** — one of the 25 was stale, `Attributes` having
+  moved to `tree.ts` at ADR-0198 with the block left behind — and it is refused on the witness, being a
+  meta-suite guard nothing can redden, which is the **third** such refusal and the third on the witness
+  rather than on the capture rate. A command naming a declaration's consumers is refused on a
+  measurement: `contract-page.ts` **never mentions** `AS_AN_ARGUMENT`, so a name-keyed walk returns the
+  declaration alone and misses exactly what the block missed. **What is cheap and is done instead is
+  the convention below** — a costing counts its sites twice — moved out of one record and into the
+  discipline where somebody costing a change arrives. ADR-0235, ADR-0240.
 
 - **That every phrase a contract is found by has been read against what the contract does.** ADR-0023's
   alias review happens at publication: somebody reads each phrase against the contract's own
@@ -5945,6 +5999,15 @@ of the thesis.
   it looks correct**, which it does. **No count is published**, on the rule below that a sentence which
   can be true without counting does not count: what is claimed is that the gesture works and that it
   has fired here. ADR-0141.
+- **A costing counts its sites twice: by the text that must change, and by the behaviour the change
+  reaches.** The first count is the compiler's question and the one a costing naturally asks; the
+  second is what finds a site nothing names, because the compiler names the places that *mention* the
+  type that moved and a site reached by a value mentions nothing. **The two counts are written as two,
+  never merged**, since a single number cannot say which question it answered. Measured over the four
+  costings of ADR-0218's prices: three counted once and all three were corrected by the unit that paid
+  them; **the one that counted twice is the one its payer corrects nowhere**. It is a gesture and not a
+  mechanism — five mechanisms are structurally blind to this, which is an entry above rather than a
+  price here. ADR-0235, ADR-0240.
 - **A guard that is green while its subject is broken is not one form, and the five instances this
   repository has found are five mechanisms.** The list was rebuilt rather than remembered, because it
   reads at a glance like one shape and is not:
