@@ -8,6 +8,16 @@ confirmed-by: []
 
 # Nobody ever refused a battery over the instrument, and the obstacle is one guard
 
+> **Completed rather than corrected: a reason exists and it is not in a record.** This record swept
+> `docs/decisions/`, `CLAUDE.md` and the tree for *no battery injects into `mutation/`* and found the
+> fact fourteen times with no reason attached. `mutation/vitest.config.ts`'s own header carries one, for
+> a neighbouring question: *the contracts' suite is run once per cell by the instrument, so putting
+> guards that themselves spawn cells inside it would be a loop.* **That refuses a configuration shape
+> and not the folder** — so §1's finding stands, and what it missed is that the argument for excluding
+> `instrument.test.ts` was already written, one suite over, by somebody solving the same loop. It is
+> what makes the route round the obstacle the repository's own shape rather than an exemption.
+> [ADR-0245](0245-no-distinction-over-the-tree-exists-and-the-route-round-it-opens-one-hole.md).
+
 ## Context and Problem Statement
 
 Five times this repository has refused a guard because no battery can redden it, and **nine entries of

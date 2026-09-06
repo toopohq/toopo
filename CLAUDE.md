@@ -1907,6 +1907,23 @@ not the obstacle either: the measuring suite is **8.59 s** against 36 with that 
 twenty-three batteries of one run answer **9.2 s per cell over 1 032 cells**. Costed and not built; what
 it would take is a ruling on that precondition, which is the owner's. ADR-0244.
 
+**And that precondition was interrogated: no distinction exists, one route round it does, and it opens
+exactly one hole.** A leftover mutant and an injection in progress are `applyEdits` having run, so the
+trees are byte-identical and **no predicate over a tree separates them** — including the clever one,
+*a tree carrying precisely one declared mutant*, which is derivable with no channel and which admits by
+definition the single state `run.ts:545` says nothing else covers. A channel is not the answer either:
+the child inherits the parent's whole environment at `run.ts:1105`, so one exists, and an operator can
+write to it — *a hole with a name on it*, this repository's own refusal. **The route that works never
+runs the guard**: `calibrate` is at module level only in `instrument.test.ts`, only that file spawns
+cells, and its exclusion is the shape `mutation/vitest.config.ts` already argues for — *putting guards
+that themselves spawn cells inside it would be a loop*. It costs a sixth configuration and twelve census
+rows, `theFilesToCollect` answering `[]` whenever a config is named. **What it lets through is one thing
+and it is precise**: `instrument.test.ts:1001` is the only guard over the dirty-tree refusal, so a cell
+mutating `assertCleanTree` would be a survivor by construction and, left behind by an interruption,
+would disarm the next run — the instrument's floor made reachable through the instrument. It closes by
+moving that one guard to a file that spawns nothing. Costed, not taken, and the trade is the owner's.
+ADR-0245.
+
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
 file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
