@@ -273,6 +273,7 @@ export const battery: Battery = {
         'a-refused-folder-change-leaves-the-configuration-naming-the-old-folder',
         'a-registry-that-does-not-answer-is-a-sentence-a-person-can-read',
         'a-registry-that-has-not-moved-changes-nothing',
+        'a-registry-that-sends-the-client-elsewhere-is-refused-by-name-rather-than-followed',
         'a-relocation-leaves-the-lockfile-exactly-as-it-was',
         'a-relocation-of-a-path-that-leaves-the-folder-is-refused',
         'a-removal-leaves-a-folder-that-still-holds-something',

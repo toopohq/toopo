@@ -290,4 +290,50 @@ describe('a registry reached over a socket', () => {
     expect(lines.join('\n')).toContain('cannot tell those apart from here')
     expect(lines.filter((line) => line.trim() === '')).toEqual([])
   })
+
+  /**
+   * A registry that sends the client somewhere else, which `fetch` follows by default and nothing said.
+   *
+   * **The witness is the second origin's own record and not the body that came back.** Both servers
+   * serve the same imagined source, so an answer fetched from either is a valid one - which is exactly
+   * why a guard reading the answer could not tell the two apart. `asked` is taken at the wire, so what
+   * it establishes is that a request was made to a host nobody named.
+   *
+   * The two answers a client cannot check for itself - the index and the implementation bindings - are
+   * the two a redirect would fetch from somewhere else, and everything downstream of a digest is
+   * content-addressed and survives it. So this is defence in depth rather than a hole, and the guard is
+   * written on the request rather than on the bytes.
+   *
+   * ADR-0242.
+   */
+  it('a-registry-that-sends-the-client-elsewhere-is-refused-by-name-rather-than-followed', async () => {
+    const elsewhere = await servingOverHttp(imaginedSource())
+    const origin = await servingOverHttp(imaginedSource(), new Map(), elsewhere.origin)
+
+    try {
+      const outcome = await httpSource(origin.origin)
+        .contractIndex()
+        .then(
+          () => null,
+          (error: unknown) => error,
+        )
+
+      // First, because it is the defect itself: following the redirect asks a host nobody named.
+      expect(elsewhere.asked).toEqual([])
+
+      if (!(outcome instanceof Error)) {
+        throw new Error('a registry that redirects was followed rather than refused')
+      }
+
+      const said = outcome.message
+
+      expect(said).toContain(`${origin.origin}/contract-index`)
+      expect(said).toContain(`${elsewhere.origin}/contract-index`)
+      expect(said).toContain('does not follow')
+      expect(said).toContain('Nothing in your project was read or changed')
+    } finally {
+      await origin.close()
+      await elsewhere.close()
+    }
+  })
 })

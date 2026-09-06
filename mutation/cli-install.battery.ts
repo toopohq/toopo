@@ -210,6 +210,8 @@ const TWO_EDGES_ON_ONE_ADDRESS_AGREE = `      if (already.digest !== edge.digest
 
 const A_FAILURE_IS_NOT_AN_ABSENCE = `    if (!response.ok) throw new TheRegistryDidNotAnswer(url, \`it answered \${response.status}\`)`
 
+const A_REDIRECT_IS_AN_ANSWER_AND_NOT_A_SECOND_REQUEST = `      response = await fetch(url, { redirect: 'manual' })`
+
 // --- The revision a lockfile records, and the registry that does not answer ---
 
 const BOTH_NAMED_ANSWERS_ARE_COMPARED = `  const revision = oneRevisionBehind([
@@ -219,7 +221,10 @@ const THE_LOCKFILE_KEEPS_WHAT_THE_REGISTRY_ANSWERED = `      servedFrom: revisio
 
 const A_TRANSPORT_FAILURE_IS_A_REFUSAL_OF_OURS = `    let response: Response
     try {
-      response = await fetch(url)
+      // \`manual\` rather than the default, so a redirect is an answer this client reads and refuses
+      // rather than a second request it makes to a host nobody named. \`TheRegistrySentItElsewhere\`
+      // carries the measurement that chose it over \`redirect: 'error'\`.
+      response = await fetch(url, { redirect: 'manual' })
     } catch (error) {
       throw new TheRegistryDidNotAnswer(
         url,
@@ -1370,6 +1375,25 @@ import type {
     ]),
   ),
 
+  /**
+   * The client follows a redirect again, which is the defect exactly as it stood.
+   *
+   * **The option is removed rather than the refusal**, so what the cell restores is the state the repair
+   * left behind and not a broken branch: `TheRegistrySentItElsewhere` still compiles and is still
+   * exported, and its arm simply stops being reachable because a followed redirect answers 200. A cell
+   * deleting the throw would have measured `noUnusedLocals` on some runs and the defect on others.
+   *
+   * What reddens is the request the other origin records, not the bytes that come back - both servers
+   * serve the same imagined source, so the answer is valid either way. ADR-0242.
+   */
+  sameOnEveryLens(
+    'C-88',
+    'follows a redirect again, so a registry answering 302 has the client read its answers from a ' +
+      'host nobody named',
+    [httpSourceFile(A_REDIRECT_IS_AN_ANSWER_AND_NOT_A_SECOND_REQUEST, `      response = await fetch(url)`)],
+    killed(['a-registry-that-sends-the-client-elsewhere-is-refused-by-name-rather-than-followed']),
+  ),
+
   // -------------------------------------------------------------------------
   // The revision an installation records, and the registry that does not answer
   // -------------------------------------------------------------------------
@@ -1421,7 +1445,9 @@ import type {
     [
       httpSourceFile(
         A_TRANSPORT_FAILURE_IS_A_REFUSAL_OF_OURS,
-        `    const response = await fetch(url)`,
+        // The redirect option is carried through, so this cell keeps measuring the transport arm alone
+        // rather than reddening the guard C-88 is for as well. ADR-0242.
+        `    const response = await fetch(url, { redirect: 'manual' })`,
       ),
     ],
     killed(['a-registry-that-does-not-answer-is-a-sentence-a-person-can-read']),

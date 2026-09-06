@@ -129,6 +129,44 @@ export class TheRegistryDidNotAnswer extends Error {
 }
 
 /**
+ * The registry answered with a redirect, and this client does not follow one.
+ *
+ * **Separate from the refusal above because it is a different fact about the world**, and the message a
+ * person needs is different: nothing failed, an answer was offered from somewhere else, and what they
+ * can act on is the address they gave rather than the one that did not respond.
+ *
+ * **`redirect: 'manual'` is what the message costs, and `redirect: 'error'` was measured and refused.**
+ * Both are one line. The second throws a `TypeError` whose cause reads `unexpected redirect`, carries no
+ * `Location`, and lands in the `catch` below - so the client would say *did not answer* about a registry
+ * that answered, and could not say where it was being sent. Measured on node v24.15.0 over two servers:
+ * following gives status 200 with `response.url` at the other origin, `'error'` throws with no
+ * destination in hand, and `'manual'` gives 302 with the `Location` header and no second request made.
+ *
+ * Refusing *every* redirect rather than only one that leaves the origin is the narrower claim to keep:
+ * the destination is named either way, and the origin this catalogue is served from answers every
+ * address directly - measured on the live origin, `/contract-index`, `/refusals` and `/` all 200 with no
+ * `Location`, which is ADR-0103's reading holding today. ADR-0242.
+ */
+export class TheRegistrySentItElsewhere extends Error {
+  constructor(url: string, location: string | null) {
+    super(
+      [
+        location === null
+          ? `${url} answered with a redirect and named nowhere to go.`
+          : `${url} answered with a redirect to ${location}`,
+        `Nothing in your project was read or changed.`,
+        `toopo reads the origin it was given and does not follow a redirect away from it. Two of the ` +
+          `answers a client cannot check for itself - the catalogue index and the implementation ` +
+          `bindings - are the two a redirect would fetch from a host nobody named, so the address you ` +
+          `gave is the address it reads. Point toopo at the origin you meant, or ask that origin to ` +
+          `answer this address itself.`,
+      ].join('\n'),
+    )
+    this.name = 'TheRegistrySentItElsewhere'
+  }
+}
+
+/**
  * A registry over HTTP.
  *
  * `origin` is a scheme, a host and a port, with no trailing slash - the shape `THE_ORIGIN` already has
@@ -151,12 +189,21 @@ export const httpSource = (origin: string): RegistrySource => {
 
     let response: Response
     try {
-      response = await fetch(url)
+      // `manual` rather than the default, so a redirect is an answer this client reads and refuses
+      // rather than a second request it makes to a host nobody named. `TheRegistrySentItElsewhere`
+      // carries the measurement that chose it over `redirect: 'error'`.
+      response = await fetch(url, { redirect: 'manual' })
     } catch (error) {
       throw new TheRegistryDidNotAnswer(
         url,
         error instanceof Error ? error.message : String(error),
       )
+    }
+
+    // Before the status arms below, because a redirect is not a registry failing to answer: it is one
+    // answering with somewhere else, and `!response.ok` would report it as the first.
+    if (response.status >= 300 && response.status < 400) {
+      throw new TheRegistrySentItElsewhere(url, response.headers.get('location'))
     }
 
     if (response.status === 404) return null

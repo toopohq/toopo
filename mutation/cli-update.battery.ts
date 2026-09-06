@@ -725,6 +725,7 @@ export const battery: Battery = {
         'itself is `oneRevisionBehind` in `resolve.ts` and `cli-install` carries it with C-70.',
       guards: [
         'a-registry-that-does-not-answer-is-a-sentence-a-person-can-read',
+        'a-registry-that-sends-the-client-elsewhere-is-refused-by-name-rather-than-followed',
         'a-status-that-is-neither-the-answer-nor-a-404-is-an-error-and-not-an-absence',
         'an-install-over-http-plans-exactly-what-the-same-registry-plans-in-process',
         'bytes-served-at-the-address-that-was-asked-for-are-refused-when-they-are-not-that',

@@ -147,6 +147,17 @@ export const servingOverHttp = async (
    * it is held by whatever the server chooses to send.
    */
   misrouted: ReadonlyMap<string, string> = new Map(),
+  /**
+   * An origin this registry sends every request on to, instead of answering it.
+   *
+   * A parameter for `misrouted`'s reason and a *second* `servingOverHttp` for the opposite one: what a
+   * redirect models is somewhere else, so the place it names has to be a different origin rather than a
+   * different answer from this one. The two are not the same shape and this is where they part.
+   *
+   * The request is recorded before it is sent on, because what a guard has to be able to see is that
+   * this origin was asked and the other one was not. ADR-0242.
+   */
+  redirectingTo?: string,
 ): Promise<Serving> => {
   const asked: Asked[] = []
 
@@ -163,6 +174,12 @@ export const servingOverHttp = async (
 
     const wanted = question.address
     asked.push({ method, address: wanted })
+
+    if (redirectingTo !== undefined) {
+      response.writeHead(302, { location: `${redirectingTo}${url.pathname}` }).end()
+
+      return
+    }
 
     void BODY_FOR[method](held, misrouted.get(wanted) ?? wanted)
       .then((body) => {

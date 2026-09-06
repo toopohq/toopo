@@ -1871,7 +1871,8 @@ describing them. It says what was true at one commit by a rule written down befo
 and nothing about tomorrow. ADR-0167.
 
 **And it has been sorted once, by whether an entry can be taken at all, which nobody had asked before.**
-**The population is 83**, and the sweep that reads it as *lines opening with `- **`* answers **92** —
+**The population was 83 at `5fa5de8` and is 82**, one entry having closed since, and the sweep that
+reads it as *lines opening with `- **`* answers **92** —
 holding the eleven closures of the list above and missing the two entries that open with a backticked
 identifier. That is ADR-0167's own population error on the same list under a different marker, which is
 what says **nothing keeps a population read off a marker**. Measured over the 83: **27 are takeable**,
@@ -1883,7 +1884,9 @@ a guard of the meta suite. **The eighth contract retires nought and arms six** �
 reader would expect of it — and of the 26 takeable and not premature, **14 reach a user**. The reading is
 built on each entry's own closure sentence, 416 lines of the 3 429 the list holds, so about one verdict
 in six should be expected to move on a full reading; it is a reading and not a rule, exactly as ADR-0167's
-was. ADR-0241.
+was. **The figures above are that commit's**, and the first of the fourteen is taken — a request staying
+on the origin it was given, closed at ADR-0242 — so today the same rule reads 82, 26 takeable and 13
+reaching a user. ADR-0241, ADR-0242.
 
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
@@ -2097,6 +2100,21 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   than on its price: a type-only error in a source file leaves the report green and the process red,
   which is what five batteries pin as `killed-by-typecheck`, so refusing on that disagreement would
   have turned five pinned cells into cells nobody measured.
+- **a request this client makes staying on the origin it was given** — ADR-0242, and it is the first
+  entry closed by **the triage that sorted the list rather than by the unit that met it**: ADR-0241
+  picked it out of eighty-three as takeable where nine others are not, for the reason a battery injects
+  into its folder. **The entry's own one-liner was refuted by the refusal it owed**: `redirect: 'error'`
+  and `redirect: 'manual'` are both one line, and measured on node v24.15.0 over two servers, only the
+  second leaves the destination in hand — the first throws with cause `unexpected redirect`, carries no
+  `Location`, and lands in the `catch` that already exists, so the client would say *did not answer*
+  about a registry that answered. The red was the second origin's own record of a request the client made
+  to a host nobody named, taken at the wire, while the call itself **succeeded** — which is why the guard
+  is written on the request rather than on the bytes. **A second server was needed and cost nothing**,
+  being one more call to a helper that already exists, and `servingOverHttp`'s refusal of one for
+  `misrouted` is argued not to reach it: a redirect models somewhere else rather than a different answer.
+  What it leaves behind is that **every** 3xx is refused and not only one that leaves the origin — the
+  narrow rule the entry's second option named — which costs nothing while the live origin answers every
+  address directly and is the line that moves the day it does not;
 - **a reading that decides whether to pay for a replay checking every way a replay can refuse** —
   ADR-0221, and it is the first entry this list has closed by **a tool that refuses where it cannot
   answer rather than by one that checks more**. The entry named its own closure — the reading living
@@ -2516,29 +2534,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   at four and every contract folder at two. What would close it is not a guard: the shape is right and
   what is missing is that nobody knows the multiplier before they pay it. Written down rather than
   priced, because the remedy is the same prose the entry above it needs. ADR-0206.
-
-- **That a request this client makes stays on the origin it was given.** `fetch(url)` in
-  `packages/cli/http-source.ts` takes no options, so node follows a redirect to any host at all, and
-  the two answers a client cannot check - the index and the implementation bindings - are exactly the
-  two that would then come from somewhere nobody named. Everything downstream of a digest is
-  content-addressed and survives it.
-
-  **Half of the class is closed by construction and that is why this is narrow.** The authority of a
-  request cannot be steered by an address: `pathTo` always leads with `/`, and `chooseContract` matches
-  what a user typed against the index before any address reaches a URL. What is left needs the origin
-  itself to issue the redirect, and the origin is the declared root of trust for those two answers - so
-  this is defence in depth rather than a hole, and it is written down as such.
-
-  **Where this looked**: `answering` in `packages/cli/http-source.ts`, which catches a throw and reads
-  a status and has no opinion about where the response came from; `endpointOf` in
-  `packages/registry/endpoints.ts`, which decides an address and never a host; and
-  `packages/cli/http-source.test.ts`, whose guards run against a server this repository starts, so the
-  origin and the answer are the same host by construction and no guard there could see one part.
-
-  **The population is the five methods of the port.** What would close it is `redirect: 'error'`, or
-  following one and refusing an answer whose final URL left the origin - a decision about which, plus a
-  sentence for the refusal, plus a guard that needs a second server. Priced as a small unit and not
-  taken: it is not a path frontier, and ADR-0206 was one repair. ADR-0206.
 
 - **That an answer this client reads is one it could hold.** `insisted` and the snapshot reader call
   `response.json()` with no bound on what arrives and no question about the content type, so what a
