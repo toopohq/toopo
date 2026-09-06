@@ -413,8 +413,40 @@ jobs:
   # red Windows suite skips a publication - a skipped dependency skips its dependent, twice over. It is
   # named here rather than in `publish`'s own `needs` because the claim is wider than publishing:
   # nothing is *deployed* from a tree whose Windows suites are red either, and this job is what deploys.
+  # ---------------------------------------------------------------------------
+  # It waits for the instrument, and the condition is what makes that affordable
+  # ---------------------------------------------------------------------------
+  #
+  # **Measured before it was written**: on run `34018431616`, `site` finished at `07:15:11` and
+  # `batteries (site)` at `07:45:01`, so this job deployed **29 min 50 s** before the instrument had
+  # anything to say about the commit it deployed. The run itself already ended with the battery -
+  # `every-job-answered` at `07:45:08` - so the wait costs the run nothing and costs the deployment the
+  # slowest selected battery. ADR-0243 carries the arbitration; the owner ruled for the order of the
+  # proof over the latency.
+  #
+  # **`batteries` is skipped on every push that selects none, which is most of them**, and a skipped
+  # dependency skips its dependent: *if a job fails or is skipped, all jobs that need it are skipped
+  # unless the jobs use a conditional expression that causes the job to continue*. So `needs` alone
+  # would stop the deployment on every prose push, and `every-job-answered` accepts `skipped` - nothing
+  # would say. The condition below is the whole repair and the `needs` line is the easy half.
+  #
+  # **Writing an `if` at all replaces the implicit `success()`**, which is why the two suites are
+  # re-asserted by hand here: without those two clauses a red suite would deploy, which is the property
+  # the header below has claimed since this job was written.
+  #
+  # **An allow-list and never `!= 'failure'`**, and that is measured rather than fastidious: a battery
+  # killed by its own `timeout-minutes` reports `cancelled` and not `failure` - ADR-0222 measured six
+  # such kills in twenty-two runs of `main` - so a deny-list would deploy from a tree whose instrument
+  # was cut off mid-replay. `success` or `skipped` is the same pair `every-job-answered` admits.
   site:
-    needs: [suites, suites-on-windows]
+    needs: [suites, suites-on-windows, batteries]
+
+    if: >-
+      !cancelled()
+      && needs.suites.result == 'success'
+      && needs['suites-on-windows'].result == 'success'
+      && (needs.batteries.result == 'success' || needs.batteries.result == 'skipped')
+
     runs-on: ubuntu-latest
 
     steps:
@@ -1119,8 +1151,14 @@ jobs:
     # **`every-battery-on-windows` is named here for the same reason and not for a different one.** It
     # carries this job's condition too, so a publication this gate would not fire for cannot happen; and
     # a replay that runs somewhere no other job can measure is exactly the replay a publication must not
-    # go without. `every-job-that-replays-a-battery-is-one-the-publication-waits-for` is what keeps a
-    # third from being added and left out of this list. ADR-0169.
+    # go without. **What keeps this list is `nothing-publishes-to-npm-without-waiting-for-a-battery-to-
+    # be-replayed`, and it keeps less than this comment claimed**: it asks that a publishing job wait
+    # for *some* job that replays a battery - `.some`, not `.every` - so a third replaying job added and
+    # left out of this list is exactly what it does **not** catch. This line named
+    # `every-job-that-replays-a-battery-is-one-the-publication-waits-for`, which no suite collects and
+    # which occurs nowhere else in this repository: a comment citing a guard is an assertion nothing
+    # resolves, which is an entry of `CLAUDE.md`'s own list met on the file it governs. ADR-0169,
+    # ADR-0243.
     needs: [site, version, every-battery, every-battery-on-windows]
     if: >-
       github.ref == 'refs/heads/main'

@@ -1871,7 +1871,7 @@ describing them. It says what was true at one commit by a rule written down befo
 and nothing about tomorrow. ADR-0167.
 
 **And it has been sorted once, by whether an entry can be taken at all, which nobody had asked before.**
-**The population was 83 at `5fa5de8` and is 82**, one entry having closed since, and the sweep that
+**The population was 83 at `5fa5de8` and is 81**, two entries having closed since, and the sweep that
 reads it as *lines opening with `- **`* answers **92** —
 holding the eleven closures of the list above and missing the two entries that open with a backticked
 identifier. That is ADR-0167's own population error on the same list under a different marker, which is
@@ -1885,8 +1885,9 @@ reader would expect of it — and of the 26 takeable and not premature, **14 rea
 built on each entry's own closure sentence, 416 lines of the 3 429 the list holds, so about one verdict
 in six should be expected to move on a full reading; it is a reading and not a rule, exactly as ADR-0167's
 was. **The figures above are that commit's**, and the first of the fourteen is taken — a request staying
-on the origin it was given, closed at ADR-0242 — so today the same rule reads 82, 26 takeable and 13
-reaching a user. ADR-0241, ADR-0242.
+on the origin it was given, closed at ADR-0242, and the second is the deployment waiting for the
+instrument, closed at ADR-0243 — so today the same rule reads 81, 25 takeable and 12 reaching a user.
+ADR-0241, ADR-0242, ADR-0243.
 
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
@@ -2100,6 +2101,19 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   than on its price: a type-only error in a source file leaves the report green and the process red,
   which is what five batteries pin as `killed-by-typecheck`, so refusing on that disagreement would
   have turned five pinned cells into cells nobody measured.
+- **the deployment waiting for what the instrument says about the commit it deploys** — ADR-0243, and
+  it is the first entry closed by **a decision the entry asked for rather than by a mechanism it
+  named**: the entry said what would close it is one sentence in the record that decides it, either
+  way, and the owner ruled that the deployment waits. **Its own price was wrong and the measurement is
+  what said so**: *a `needs` edit and a minute of critical path per push* is refuted by run
+  `34018431616`, where `site` finished at `07:15:11`, `batteries (site)` at `07:45:01` and
+  `every-job-answered` at `07:45:08` — so the run already ended with the battery, the wait costs it
+  **nothing**, and what it costs is deployment latency, up to the slowest selected battery. **The
+  `needs` line is the easy half and the condition is the repair**: `batteries` is skipped on every push
+  that selects none, a skipped dependency skips its dependent, and `every-job-answered` accepts
+  `skipped` — so the naive form would have stopped the deployment on every prose push with nothing
+  saying so. What it leaves behind is that **the invariant is kept by prose**: a guard is expressible
+  from helpers `workflows.test.ts` already has, and is refused on the witness for the **fifth** time;
 - **a request this client makes staying on the origin it was given** — ADR-0242, and it is the first
   entry closed by **the triage that sorted the list rather than by the unit that met it**: ADR-0241
   picked it out of eighty-three as takeable where nine others are not, for the reason a battery injects
@@ -3975,8 +3989,9 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   close it is nothing, and the two candidates are costed rather than waved at. A guard resolving the
   names a block writes would be **red on its first run** — one of the 25 was stale, `Attributes` having
   moved to `tree.ts` at ADR-0198 with the block left behind — and it is refused on the witness, being a
-  meta-suite guard nothing can redden, which is the **third** such refusal and the third on the witness
-  rather than on the capture rate. A command naming a declaration's consumers is refused on a
+  meta-suite guard nothing can redden, which is the **fourth** such refusal — this line read *third*
+  until ADR-0243 swept the class and found four, the `extends`, the control character and the figure in
+  a block preceding it — and the fourth on the witness rather than on the capture rate. A command naming a declaration's consumers is refused on a
   measurement: `contract-page.ts` **never mentions** `AS_AN_ARGUMENT`, so a name-keyed walk returns the
   declaration alone and misses exactly what the block missed. **What is cheap and is done instead is
   the convention below** — a costing counts its sites twice — moved out of one record and into the
@@ -4805,31 +4820,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   a draw on the first gate is a red somebody re-runs, and a draw on the second is a publication that
   waits. ADR-0146 carries the criterion that classifies one. **It is now two pushes in forty-three that
   pay a full replay rather than none**, which is where that cost first arrives in fact.
-
-- **That the deployment waits for what the instrument says about the commit it deploys.** It does
-  not. Measured at `92d0d5b` on run `33309448227`, watched while it ran: `site` reported success
-  while `batteries (site)` was still in progress. Read in the file: `site` declares
-  `needs: [suites, suites-on-windows]` and `batteries` declares `needs: [suites, which-batteries]`,
-  so the two are siblings — **a red battery does not un-deploy anything**, and nothing rolls a
-  deployment back.
-
-  **The asymmetry is with npm and it is deliberate there**: `publish` declares
-  `needs: [site, version, every-battery, every-battery-on-windows]`, so an irreversible act waits for
-  every battery and a revertible one does not. That may be exactly right — a page can be redeployed
-  from the next commit and a published version cannot — but **it is a reading of two `needs` lines
-  rather than a decision anybody took.**
-
-  **Where this looked**: ADR-0146, which decides *which* batteries run when — *on every push, the
-  batteries that can say something about the change; before a publication, all of them* — and says
-  nothing about what the deployment waits for; the comment above `site:` in `suites.yml`, which
-  argues at length why that job waits for the Windows suites and does not mention batteries at all;
-  and ADR-0109, which puts `publish` behind `site` and is about the publication.
-
-  **The population is the four `needs:` lines of `suites.yml`**, and it grows with each job. What
-  would close it is one sentence in the record that decides it, either way — and if the answer is
-  that a battery should gate the deployment, it is a `needs` edit and a minute of critical path per
-  push. Priced and not taken, because deciding what a deployment is worth is not a unit about a page.
-  ADR-0146.
 
 - **That a push of `main` whose run was superseded is answered by any battery.** `cancel-in-progress:
   false` protects the run *in progress*; the pending half is `queue`, absent here and therefore

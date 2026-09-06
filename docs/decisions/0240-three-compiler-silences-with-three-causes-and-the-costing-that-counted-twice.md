@@ -9,6 +9,15 @@ confirmed-by: []
 
 # Three compiler silences with three causes, and the costing that counted twice
 
+> **`the third such refusal` is the fourth, and the count was the one thing in §5 nobody measured.**
+> Swept over `CLAUDE.md`, four entries refuse a guard on the ground that it would be born in the meta
+> suite where no battery injects: the `extends` that resolves, the text of a guard being what somebody
+> wrote, a figure in a *Where this looked* block, and this record's own. Three of those precede it, so it
+> is the fourth. Everything else in §5 stands — the refusal, its ground, and that it is not on the
+> capture rate. **The correction is the same class this record is about**: a count read off a
+> recollection of a series rather than off the series.
+> [ADR-0243](0243-the-deployment-waits-for-the-instrument-and-the-condition-is-the-repair.md).
+
 ## Context and Problem Statement
 
 Three units in a row paid a price of ADR-0218 and each found a site the costing before it had not
