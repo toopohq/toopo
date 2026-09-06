@@ -1870,6 +1870,21 @@ list: entries will be rewritten, closed and opened, and no mechanism will notice
 describing them. It says what was true at one commit by a rule written down before it was applied,
 and nothing about tomorrow. ADR-0167.
 
+**And it has been sorted once, by whether an entry can be taken at all, which nobody had asked before.**
+**The population is 83**, and the sweep that reads it as *lines opening with `- **`* answers **92** —
+holding the eleven closures of the list above and missing the two entries that open with a backticked
+identifier. That is ADR-0167's own population error on the same list under a different marker, which is
+what says **nothing keeps a population read off a marker**. Measured over the 83: **27 are takeable**,
+29 wait on a tool this repository has refused — the validation stage over its own strings, or a headless
+browser — 14 are shut by permanent rule 6 or by an unobservable population, **9 are blocked by the
+witness alone**, and 4 are somebody else's act. So **two thirds of the list cannot be acted on today, and
+two decisions move thirty-eight of it**: a ruling on that validation stage, and a battery able to redden
+a guard of the meta suite. **The eighth contract retires nought and arms six** — the opposite of what a
+reader would expect of it — and of the 26 takeable and not premature, **14 reach a user**. The reading is
+built on each entry's own closure sentence, 416 lines of the 3 429 the list holds, so about one verdict
+in six should be expected to move on a full reading; it is a reading and not a rule, exactly as ADR-0167's
+was. ADR-0241.
+
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
 file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
