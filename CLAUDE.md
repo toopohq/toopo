@@ -1889,6 +1889,24 @@ on the origin it was given, closed at ADR-0242, and the second is the deployment
 instrument, closed at ADR-0243 — so today the same rule reads 81, 25 takeable and 12 reaching a user.
 ADR-0241, ADR-0242, ADR-0243.
 
+**And the nine blocked by the witness are blocked by an absence rather than by a decision, which is the
+first thing anybody asked of it.** *No battery injects into `mutation/`* is stated in **fourteen
+places** — ADR-0001, ADR-0109, ADR-0113, ADR-0149, ADR-0152, ADR-0174, ADR-0199, ADR-0200, ADR-0201,
+ADR-0228, ADR-0240, ADR-0241, ADR-0243, five entries of this list and one module — and **not one of them
+gives a reason**. ADR-0001 is the discriminator and it puts the folder on the undecided side in its own
+sentence: `origin`'s exclusion is *designed*, and ADR-0104 says why — a live host, seven suite runs per
+replay, a checkout and an install on metered minutes — while `meta` stands beside it with no such
+clause. ADR-0201 writes *none can be written until that changes*, which treats it as a state and not a
+judgement. **The self-reference everybody assumes is real, bounded and not the obstacle**: six of the
+folder's twenty-four modules are read by a run of any battery, declared in
+`WHAT_A_RUN_OF_ANY_BATTERY_READS`, and eighteen sit outside it. **What stops a battery is one
+precondition, measured**: `instrument.test.ts` calls `assertCleanTree`, and a semantically null edit — two
+comment lines no guard can read — takes the meta suite to `instrument.test.ts (0 test)` with 95 of 143
+passing, so **every cell would come back killed by the dirty tree rather than by a detection**. Time is
+not the obstacle either: the measuring suite is **8.59 s** against 36 with that file, where the
+twenty-three batteries of one run answer **9.2 s per cell over 1 032 cells**. Costed and not built; what
+it would take is a ruling on that precondition, which is the owner's. ADR-0244.
+
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
 file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
