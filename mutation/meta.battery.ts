@@ -407,7 +407,40 @@ const mutants: readonly Mutant[] = [
         'export const asAGlob = (folder: string): string => folder',
       ),
     ],
-    killed(['every-contract-the-suite-does-not-run-is-excluded-in-all-three-places']),
+    /**
+     * **This one does name the anchor guard, where MT-12 and MT-13 do not**, and the difference is
+     * the rule rather than a preference: those two edit rows of `census.ts` that no anchor quotes
+     * but their own, and put back what they remove; this one *replaces* its anchor, so the anchor
+     * occurs nought times while it is injected. Measured on the replay both ways.
+     */
+    killed([
+      'every-contract-the-suite-does-not-run-is-excluded-in-all-three-places',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
+  ),
+
+  /**
+   * A declaration that outlives the folder it names, which is the other direction of the same claim.
+   *
+   * It is the likelier of the two mistakes: a contract is renamed or moved, the folder goes with it,
+   * and the declaration keeps a reason for something that is not there - at which point the three
+   * places exclude a path nothing matches and the real folder is collected again.
+   */
+  sameOnEveryLens(
+    'MT-15',
+    'declares an exclusion for a folder that is not in the tree, so the reason outlives its subject ' +
+      'and the contract it was written for is collected again by every one of the three places',
+    [
+      inFile('excluded-contracts.ts')(
+        `    folder: 'contracts/typescript/temporal/add',`,
+        `    folder: 'contracts/typescript/temporal/subtract',`,
+      ),
+    ],
+    killed([
+      'every-contract-the-suite-does-not-run-is-excluded-in-all-three-places',
+      'every-excluded-contract-is-a-folder-that-exists-and-says-what-would-lift-it',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 ]
 
