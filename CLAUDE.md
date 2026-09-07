@@ -3133,6 +3133,31 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   floor**, and it is blocked in the expensive direction: the field is inside `contractSnapshot`, so
   whatever carries the requirement has to exist *before* the digest is minted or never. ADR-0247.
 
+  **And *the expensive direction* was priced, which nobody had done: it is nil, in both forms.**
+  Measured at `a59e110` against a baseline of 1 206 bytes hashing to `18cc4e82…` — a field of its own
+  inside `contractSnapshot`, and `environments` loaded with a requirement. **Neither moves a published
+  digest**, so the economy of reusing the frozen field does not exist and the choice between the two is
+  about meaning rather than price. **The dichotomy the question carried had a third member the encoder
+  makes reachable**: written as an unconditional key the field is neither omitted nor emitted empty but
+  **refused by name**, `canonicalAt` building a record out of `Object.keys` so that an absent value
+  throws `UncanonicalValue` at the first contract and no ledger is printed at all; written in the
+  conditional spread this repository already uses four times over, the ledger is byte-identical. **The
+  zero is not a tautology and the control says so**: the same expression emitting an empty list moves
+  all six contract digests to `b18a61f0…` and reddens
+  `every-published-binding-still-hashes-to-what-it-was-published-as` alone, six faults, its two
+  neighbours green. **The two questions the word *moves* runs together really do part, and the freeze's
+  population is what parts them**: under that control **seven** contract digests move and the freeze
+  names **six**, `array/group-by@1` going `caf4e401…` to `c1ad948e…` with nothing able to say so,
+  because a contract this catalogue refused mints no binding. **What a field costs while nobody
+  declares it is nothing at all** — 472 of 472 green with `tsc` clean, so one enters the frozen half
+  unclassified, unread and unserved with every guard silent, and the bill arrives with the first value
+  as fourteen reds over `a-snapshot-invents-no-field` and
+  `every-field-a-snapshot-serves-is-classified`. **And what the second form buys is measured rather
+  than argued**: `'node>=26'` inside `environments` leaves the registry suite at 472 of 472, so nothing
+  refuses a version in the field ADR-0006 declares to be a vocabulary of runtimes — the requirement
+  would be carried by convention alone, on a field whose declared sentence the six may never be
+  re-declared to disambiguate. ADR-0248.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
