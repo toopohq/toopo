@@ -98,6 +98,11 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
 const planFile = (find: string, replace: string) => ({ file: 'plan.ts', find, replace })
 const rewriteFile = (find: string, replace: string) => ({ file: 'rewrite.ts', find, replace })
 const installFile = (find: string, replace: string) => ({ file: 'install.ts', find, replace })
+const runtimeCapabilityFile = (find: string, replace: string) => ({
+  file: 'runtime-capability.ts',
+  find,
+  replace,
+})
 const localFile = (find: string, replace: string) => ({ file: 'local-source.ts', find, replace })
 const relocateFile = (find: string, replace: string) => ({ file: 'relocate.ts', find, replace })
 const removalFile = (find: string, replace: string) => ({
@@ -1768,6 +1773,35 @@ import type {
       ),
     ],
     killed(['a-refused-directory-is-named-by-where-it-came-from']),
+  ),
+
+  /**
+   * The two cells of what a contract requires of the runtime. ADR-0249.
+   *
+   * The first is the one that matters to this folder: a field the installer stops reading is a field
+   * in exactly the state `environments` has been in since it was written - served, frozen, and
+   * deciding nothing. The second is the reading itself, which is a shape rather than a presence
+   * because a runtime serving the draft behind a flag has the global and not the language.
+   */
+  sameOnEveryLens(
+    'C-89',
+    'installs whatever the runtime cannot run, so a reader on a runtime that does not carry what ' +
+      'the contract requires is handed a file that will not compile and throws when it is called',
+    [installFile(`  if (refusal.length > 0) return { faults: refusal }`, `  if (refusal.length > 99) return { faults: refusal }`)],
+    killed(['an-install-is-refused-when-this-runtime-lacks-what-a-contract-requires']),
+  ),
+
+  sameOnEveryLens(
+    'C-90',
+    'reads a capability by whether the global is there at all, so a runtime serving the withdrawn ' +
+      'draft behind a flag passes as one carrying the language and the install goes ahead',
+    [
+      runtimeCapabilityFile(
+        `    return WITHDRAWN_FROM_TEMPORAL.every((withdrawn) => !names.has(withdrawn))`,
+        `    return WITHDRAWN_FROM_TEMPORAL.length >= 0 && names.size > 0`,
+      ),
+    ],
+    killed(['a-runtime-serving-the-withdrawn-names-does-not-carry-temporal']),
   ),
 ]
 

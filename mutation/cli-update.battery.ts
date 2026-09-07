@@ -636,6 +636,25 @@ export const battery: Battery = {
    */
   unprobedRegions: [
     /**
+     * What a contract requires of the runtime, which `cli-install` probes and this one cannot.
+     *
+     * The guards call `prepareInstallation` and `THE_READING_FOR` directly, so they are collected
+     * here like every other guard of this folder - but this battery edits `install.ts` twice - both inside the dependency walk - and neither is the refusal, and it edits `runtime-capability.ts` nowhere at all.
+     * `cli-install` carries both: C-90 on the reading, C-89 on the installer that acts on it.
+     * ADR-0249
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'what a contract requires of the runtime: the reading in `runtime-capability.ts` and the ' +
+        'refusal `prepareInstallation` makes on it. this battery edits `install.ts` twice - both inside the dependency walk - and neither is the refusal, and it edits `runtime-capability.ts` nowhere at all. ' +
+        '`cli-install` carries both, with C-90 and C-89. ADR-0249',
+      guards: [
+        'a-runtime-serving-the-withdrawn-names-does-not-carry-temporal',
+        'an-install-is-refused-when-this-runtime-lacks-what-a-contract-requires',
+      ],
+    },
+    /**
      * The confinement, minus the three frontiers this battery does reach.
      *
      * **The declaration rests on a search rather than on a judgement about what is plausible.** The ten

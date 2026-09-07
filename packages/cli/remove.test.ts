@@ -14,6 +14,7 @@ import {
   updatedImaginedSource,
 } from './imagined-source.js'
 import { lockfileAfter, prepareInstallation } from './install.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import { prepareUpdate } from './update.js'
 import type { Removal, RemoveOutcome } from './remove.js'
 import { prepareRemoval } from './remove.js'
@@ -50,6 +51,7 @@ const holding = async (
   for (const contract of names) {
     const { answer: outcome } = await deciding(source, (held) =>
       prepareInstallation(held, {
+        carries: A_RUNTIME_CARRYING_NOTHING,
         root: project.root,
         configuration: project.configuration,
         lockfile,

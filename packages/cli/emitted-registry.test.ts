@@ -16,6 +16,7 @@ import { localSource } from './local-source.js'
 import { removeDirectory } from './remove-directory.js'
 import { prepareRemoval } from './remove.js'
 import { search } from '../registry/search.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import { servingATree } from './serving-a-tree.js'
 import type { AskedOfTheTree } from './serving-a-tree.js'
 import type { HeldRegistry, RegistrySource } from './source.js'
@@ -104,6 +105,7 @@ const installing =
   (root: string, contract: string) =>
   (held: HeldRegistry): InstallOutcome =>
     prepareInstallation(held, {
+      carries: A_RUNTIME_CARRYING_NOTHING,
       root,
       configuration: { version: 1, directory: 'src/lib/toopo' },
       lockfile: EMPTY_LOCKFILE,

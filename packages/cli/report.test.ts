@@ -15,6 +15,7 @@ import {
   renderRefusal,
 } from './report.js'
 import type { Relocation } from './relocate.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject } from './temporary-project.js'
 
 /**
@@ -55,6 +56,7 @@ const anInstallation = async (): Promise<Installation> => {
   try {
     const { answer: outcome } = await deciding(imaginedSource(), (held) =>
       prepareInstallation(held, {
+        carries: A_RUNTIME_CARRYING_NOTHING,
         root: project.root,
         configuration: CONFIGURATION,
         lockfile: EMPTY_LOCKFILE,
@@ -269,6 +271,7 @@ describe('what the user reads', () => {
     try {
       const { answer: outcome } = await deciding(localSource(), (held) =>
         prepareInstallation(held, {
+          carries: A_RUNTIME_CARRYING_NOTHING,
           root: project.root,
           configuration: CONFIGURATION,
           lockfile: EMPTY_LOCKFILE,

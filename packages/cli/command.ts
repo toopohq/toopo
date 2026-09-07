@@ -103,6 +103,7 @@ import {
   renderUpdate,
 } from './report.js'
 import { displayed, search } from '../registry/search.js'
+import { whatThisRuntimeCarries } from './runtime-capability.js'
 import type { RegistrySource } from './source.js'
 import { prepareUpdate } from './update.js'
 import { commit } from './write.js'
@@ -291,6 +292,7 @@ const theCommand = async (theRegistry: () => RegistrySource): Promise<HowItEnded
       const { contract, implementation } = parsed.command
       const { answer: outcome } = await deciding(theRegistry(), (held) =>
         prepareInstallation(held, {
+          carries: whatThisRuntimeCarries(),
           root,
           configuration,
           lockfile,

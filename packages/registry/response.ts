@@ -67,6 +67,7 @@ import type {
   RefusedContract,
   Snapshot,
 } from './snapshot.js'
+import type { RuntimeCapability } from './runtime-capability.js'
 import { SNAPSHOT_FORMAT, digestOfSnapshot } from './snapshot.js'
 
 // ---------------------------------------------------------------------------
@@ -501,6 +502,19 @@ export type ServedIndexEntry = {
   /** `domain/name` split, because the site's navigation is built on the domain. */
   readonly domain: string
   readonly installable: boolean
+  /**
+   * What the runtime must carry, projected here so the client can refuse before it writes. ADR-0249.
+   *
+   * **On the index rather than behind a second request, and that is the reason it is on the index at
+   * all.** The client already holds this document when it turns a name into an address - it is
+   * fetched before every query - so the refusal costs no round trip; the contract's own snapshot is
+   * fetched by nothing the installer runs, and reaching for it would put a network call in front of
+   * every install to carry a field six of seven contracts do not have.
+   *
+   * Absent rather than empty, and a client that has never heard of it ignores it - which is the
+   * property `alsoFoundBy` above states and the reason this is a MINOR rather than a break.
+   */
+  readonly requiresOfTheRuntime?: readonly RuntimeCapability[]
   /** The answer first, then whatever diagnostic ships beside it. */
   readonly exports: readonly ServedExport[]
 }
@@ -563,6 +577,7 @@ export const servedIndex = (
     readonly summary: string
     readonly searchAliases: readonly string[]
     readonly alsoFoundBy?: readonly string[]
+    readonly requiresOfTheRuntime?: readonly RuntimeCapability[]
     readonly exports: readonly ServedExport[]
   }[],
 ): ServedIndex => {
@@ -579,6 +594,10 @@ export const servedIndex = (
       ...(identity.alsoFoundBy === undefined ? {} : { alsoFoundBy: identity.alsoFoundBy }),
       domain: domainOf(identity.address.name),
       installable: published.has(renderContract(identity.address)),
+      // Absent for the reason above, and read by the client before it writes anything. ADR-0249.
+      ...(identity.requiresOfTheRuntime === undefined
+        ? {}
+        : { requiresOfTheRuntime: identity.requiresOfTheRuntime }),
       exports: identity.exports,
     })),
   }

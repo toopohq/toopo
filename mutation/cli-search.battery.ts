@@ -139,6 +139,25 @@ export const battery: Battery = {
    */
   unprobedRegions: [
     /**
+     * What a contract requires of the runtime, which `cli-install` probes and this one cannot.
+     *
+     * The guards call `prepareInstallation` and `THE_READING_FOR` directly, so they are collected
+     * here like every other guard of this folder - but this battery edits `report.ts` alone, and a query neither reads a capability nor installs anything.
+     * `cli-install` carries both: C-90 on the reading, C-89 on the installer that acts on it.
+     * ADR-0249
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'what a contract requires of the runtime: the reading in `runtime-capability.ts` and the ' +
+        'refusal `prepareInstallation` makes on it. this battery edits `report.ts` alone, and a query neither reads a capability nor installs anything. ' +
+        '`cli-install` carries both, with C-90 and C-89. ADR-0249',
+      guards: [
+        'a-runtime-serving-the-withdrawn-names-does-not-carry-temporal',
+        'an-install-is-refused-when-this-runtime-lacks-what-a-contract-requires',
+      ],
+    },
+    /**
      * How a command ends, which `command.ts` decides and this battery injects nowhere near.
      *
      * All three, in the same words as `cli-remove` and `cli-update` - and the uniformity is bought

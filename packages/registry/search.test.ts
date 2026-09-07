@@ -91,6 +91,14 @@ const A_WAY_OF_BEING_FOUND: Readonly<
   installable: null,
   /** An export name is a phrase a query meets, and not one chosen as a way of being found. */
   exports: null,
+  /**
+   * A capability is what a contract needs of the runtime, and never a phrase anybody would type to
+   * reach it. Somebody searching `temporal` wants a date function and not the list of contracts that
+   * happen to require the global - and the vocabulary is the registry's word rather than the
+   * contract's, so reading it here would make every contract needing one findable by a term none of
+   * them chose.
+   */
+  requiresOfTheRuntime: null,
   searchAliases: (entry) => entry.searchAliases,
   alsoFoundBy: (entry) => entry.alsoFoundBy ?? [],
 }

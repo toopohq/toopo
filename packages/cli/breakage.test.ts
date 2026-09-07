@@ -27,6 +27,7 @@ import {
 import type { Installation, InstallOutcome } from './install.js'
 import type { Lockfile } from '../registry/implementation-record.js'
 import { LOCKFILE_VERSION } from '../registry/implementation-record.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 
@@ -55,6 +56,7 @@ const installing = async (
   (
     await deciding(source, (held) =>
       prepareInstallation(held, {
+        carries: A_RUNTIME_CARRYING_NOTHING,
         root: project.root,
         configuration: project.configuration,
         lockfile,

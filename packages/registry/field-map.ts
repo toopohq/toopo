@@ -204,6 +204,35 @@ export const FIELD_MAP: Readonly<Record<string, FieldClassification>> = {
 
   'environments[]': { visibility: 'public', verification: 'documentary' },
 
+  /**
+   * `structural` and not `documentary`, which is the classification the field exists to earn.
+   *
+   * The precedent is three blocks up and has the same mechanism:
+   * `surface.exports[].parameters[].type` is structural because *a type it does not know stops the
+   * build by name*. Here a capability the vocabulary does not know stops the **serialisation** by
+   * name, so no contract carrying one can enter the catalogue at all - which is what `environments[]`
+   * above cannot do for any value whatsoever, and why the two sit one line apart with different
+   * strata.
+   *
+   * **What it does not reach is written down rather than smoothed.** Nothing checks that a contract
+   * declaring nothing needs nothing: the omission is invisible, exactly as GS-11's is one axis over.
+   * That is a claim about a contract's own truthfulness, and the thing that would refuse it is the
+   * contract's harness failing on a runtime without the capability - which is `executable`, and which
+   * no contract of this catalogue can exercise today because none declares one.
+   */
+  'requiresOfTheRuntime[]': {
+    visibility: 'public',
+    verification: 'structural',
+    unfilledBecause:
+      'the field exists so that the first contract needing a runtime capability can be published ' +
+      'with the requirement inside its digest, and `contractSnapshot` freezes it - so it is settled ' +
+      'before publication or never. Writing it after such a contract exists would be writing it too ' +
+      'late for that contract, which is the one case it is for. ADR-0247 measured the gap it fills: ' +
+      'a reader installing a Temporal contract on a runtime without Temporal receives a file that ' +
+      'does not compile and throws, and `environments` cannot warn them because all seven contracts ' +
+      'declare the same three runtimes and a constant cannot be contradicted.',
+  },
+
   'properties.runs': { visibility: 'public', verification: 'executable' },
   'properties.universal[].name': { visibility: 'public', verification: 'structural' },
   'properties.universal[].applicable': { visibility: 'public', verification: 'structural' },
@@ -427,6 +456,10 @@ export const publicContract = (record: ContractRecord): unknown => ({
   identity: record.identity,
   surface: record.surface,
   environments: record.environments,
+  /** Omitted rather than served as an `undefined`, for the reason the standing fields above are. */
+  ...(record.requiresOfTheRuntime === undefined
+    ? {}
+    : { requiresOfTheRuntime: record.requiresOfTheRuntime }),
   properties: record.properties,
   caseTables: record.caseTables,
   benchmarks: record.benchmarks,

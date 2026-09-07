@@ -10,6 +10,7 @@ import { deciding } from './fixpoint.js'
 import { imaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import { filesToMove, pathsLeftBehind, planRelocation, whatMoves } from './relocate.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import type { TemporaryProject } from './temporary-project.js'
 import {
   A_PINNED_INSTANT,
@@ -43,6 +44,7 @@ const installed = async (): Promise<{
   const project = aProject(FROM)
   const { answer: outcome } = await deciding(imaginedSource(), (held) =>
     prepareInstallation(held, {
+      carries: A_RUNTIME_CARRYING_NOTHING,
       root: project.root,
       configuration: project.configuration,
       lockfile: EMPTY_LOCKFILE,

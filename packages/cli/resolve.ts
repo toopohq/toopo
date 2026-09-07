@@ -35,6 +35,7 @@ import type { DependencyEdge } from '../registry/implementation-record.js'
 import { declarationFaults } from '../registry/implementation-record.js'
 import type { ServedExport, ServedIndexEntry } from '../registry/response.js'
 import { servedBlobFaults, servedSnapshotFaults } from '../registry/response.js'
+import type { RuntimeCapability } from '../registry/runtime-capability.js'
 import type { FrozenImplementation, Snapshot } from '../registry/snapshot.js'
 import type { InstallPlan } from './plan.js'
 import type { SourceToRewrite } from './rewrite.js'
@@ -51,6 +52,14 @@ export type Chosen = {
   readonly address: ContractAddress
   readonly summary: string
   readonly exports: readonly ServedExport[]
+  /**
+   * What the contract requires of the runtime, empty where it requires nothing. ADR-0249.
+   *
+   * A list rather than an optional, because every decision downstream asks *what is missing* and an
+   * optional would make each of them answer the absence again. The registry serves the field absent
+   * rather than empty, and the one place that distinction matters is the wire.
+   */
+  readonly requiresOfTheRuntime: readonly RuntimeCapability[]
   /** The revision of the registry whose index this name was resolved through. */
   readonly servedFrom: string
 }
@@ -168,6 +177,8 @@ const installable = (servedFrom: string, entry: ServedIndexEntry): Found<Chosen>
           address: entry.address,
           summary: entry.summary,
           exports: entry.exports,
+          // A registry that has never heard of the field says nothing, which is *requires nothing*.
+          requiresOfTheRuntime: entry.requiresOfTheRuntime ?? [],
           servedFrom,
         },
       }

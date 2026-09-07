@@ -223,6 +223,10 @@ const gather = (): {
       ...(record.alsoFoundBy === undefined
         ? {}
         : { alsoFoundBy: record.alsoFoundBy.map((learned) => learned.term) }),
+      // Carried whole rather than summarised: the client refuses on it, so it must arrive intact.
+      ...(record.requiresOfTheRuntime === undefined
+        ? {}
+        : { requiresOfTheRuntime: record.requiresOfTheRuntime }),
       exports: servedExportsOf(record.surface.exports),
       implementation,
     })

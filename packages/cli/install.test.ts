@@ -18,6 +18,7 @@ import { lockfileAfter, prepareInstallation } from './install.js'
 import { A_REGISTRY_PUBLISHING_BETWEEN_TWO_REQUESTS } from './resolve.js'
 import { localSource } from './local-source.js'
 import { renderUnchanged } from './report.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
@@ -40,6 +41,7 @@ const installing = async (
   (
     await deciding(source, (held) =>
       prepareInstallation(held, {
+        carries: A_RUNTIME_CARRYING_NOTHING,
         root: project.root,
         configuration: project.configuration,
         lockfile,
@@ -326,6 +328,7 @@ export const clamp = (value: number, low: number, high: number): number =>
 
       const { answer: again } = await deciding(imaginedSource(), (held) =>
         prepareInstallation(held, {
+          carries: A_RUNTIME_CARRYING_NOTHING,
           root: project.root,
           configuration: project.configuration,
           lockfile,

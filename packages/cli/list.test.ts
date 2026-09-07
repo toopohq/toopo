@@ -10,6 +10,7 @@ import { imaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import { listProject } from './list.js'
 import { renderList } from './report.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
 
@@ -34,6 +35,7 @@ const installed = async (): Promise<{
   const project = aProject()
   const { answer: outcome } = await deciding(imaginedSource(), (held) =>
     prepareInstallation(held, {
+      carries: A_RUNTIME_CARRYING_NOTHING,
       root: project.root,
       configuration: project.configuration,
       lockfile: EMPTY_LOCKFILE,

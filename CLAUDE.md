@@ -3158,6 +3158,24 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   would be carried by convention alone, on a field whose declared sentence the six may never be
   re-declared to disambiguate. ADR-0248.
 
+  **And the word is written, in the form that price left open: a field of its own, read by two things
+  that refuse.** `requiresOfTheRuntime` is inside `contractSnapshot`, absent on all seven contracts,
+  and it is a **capability** rather than a version because a version does not determine one — measured
+  at `7fcd444`, node v24.15.0 answers `Temporal: undefined` plain and an object of eleven own names
+  under `--harmony-temporal`, `Calendar` and `TimeZone` among them, so one version on one machine
+  answers *absent* and *present and not the language* a flag apart, and a browser carries Temporal
+  with no Node version at all. **The registry refuses a word** — `requiredRuntimeOf` throws by name on
+  anything outside a closed vocabulary, where `targetEnvironments` one line above is a cast nothing
+  can be wrong about — and **the client refuses a runtime**, reading the field off the index it
+  already holds and refusing the install before anything is fetched or written, so the refusal costs
+  no round trip. The stratum is `structural` on the precedent of
+  `surface.exports[].parameters[].type`, and **what it does not reach is in the map rather than
+  smoothed**: nothing checks that a contract declaring nothing needs nothing, which is GS-11's shape
+  one axis over. Ledger `18cc4e82…` and `pnpm freeze` green either side; six guards, each seen red
+  alone on its own condition before any of them was green. **The entry is not closed** — `environments`
+  is exactly as unread as it was, and this is a second field beside it rather than a repair of it.
+  ADR-0249.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
@@ -3179,6 +3197,36 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   of a silence. It costs one guard and one declaration, it would be born green on today's seventeen,
   and the event it would catch is the eighth contract's schema gaining a field nobody classed. Priced
   and not taken. ADR-0175.
+
+- **That a digest this catalogue mints is one the freeze can be asked about.** `the-freeze.test.ts`
+  rebuilds every **anchored** binding at the commit it records, and the ledger holds twelve — six
+  contracts and six implementations. The catalogue holds **seven** contracts: `array/group-by@1` was
+  refused rather than published, so it mints no binding and its frozen half is outside that
+  population entirely.
+
+  **It is measured rather than feared, and it was found by looking for it.** At `a59e110`, a throwaway
+  probe emitting one extra key into every contract's frozen half moved **seven** contract digests —
+  `array/group-by@1` going from `caf4e401…` to `c1ad948e…` — and the freeze named **six**, `group-by`
+  occurring nought times in its faults. So a frozen half can move with nothing able to say so, and the
+  two questions the word *moves* runs together part exactly there.
+
+  **It is harmless today and what it erodes is the memory of a refusal.** Nobody is bound to that
+  digest, no lockfile holds it and no reader can install it. What it costs is that the catalogue's
+  record of what it turned down — and of what that contract *was* on the day it was turned down — is
+  the one artefact here that nothing checks. ADR-0127 gave a refused contract an address of its own;
+  this is the half of that address no mechanism keeps.
+
+  **Where this looked**: `isAnchored` in `packages/registry/rebinding.ts`, which partitions on whether
+  a binding names a commit that can be rebuilt at all; `bindingsOf` beside it, whose population is the
+  ledger's two lists and nothing else; and `theLocalLedger` in `packages/registry/local-read-api.ts`,
+  which pushes a binding only where a contract publishes.
+
+  **The population is every contract this catalogue holds and does not publish, which is one**, and it
+  grows with each refusal that gets an address. What would close it is a second ledger, of refused
+  digests bound at the commit the refusal was taken — which needs the date a refusal carries to be the
+  date it was taken, an entry of this list one line below, and which puts a rebuild of the whole
+  catalogue behind every freeze run where today six are rebuilt. Priced as its own unit and not taken.
+  ADR-0248.
 
 - **That the date a refusal carries is the date the refusal was taken.** `refuseContract` records
   `decidedOn`, `/refusals` serves it, and it is fed by `THE_PUBLICATION_INSTANT` — so

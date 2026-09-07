@@ -6,6 +6,7 @@ import type { EncodedValue } from './value.js'
 import type { CaseProvenance } from './evidence.js'
 import type { HarnessFile } from './implementation-record.js'
 import type { VerificationStratum } from './field-map.js'
+import type { RuntimeCapability } from './runtime-capability.js'
 
 // --- Lifecycle - two retirements, not one ---
 
@@ -473,6 +474,23 @@ export type ContractRecord = {
   readonly identity: IdentityRecord
   readonly surface: SurfaceRecord
   readonly environments: readonly string[]
+  /**
+   * What the runtime must carry for this contract's answers to exist at all. ADR-0249.
+   *
+   * **Inside the digest and not beside it, which is the whole placement decision.** A requirement
+   * that arrives after publication is one a reader already installed against, so it is settled before
+   * the digest is minted or never - the opposite of `useCases` and its three siblings, which are
+   * standing precisely because they may be rewritten.
+   *
+   * **It is not `environments` one field up.** That carries *the runtimes the contract is written
+   * for*, ADR-0006's own sentence, and all seven contracts declare the same three - so it is a
+   * constant, and a constant cannot be contradicted. This one is refused by `requiredRuntimeOf`
+   * against a closed vocabulary and read by the client before it writes anything.
+   *
+   * Absent rather than empty on a contract that runs wherever the language does, which is every
+   * contract of this catalogue.
+   */
+  readonly requiresOfTheRuntime?: readonly RuntimeCapability[]
   readonly properties: PropertiesRecord
   readonly caseTables: readonly CaseTableRecord[]
   readonly benchmarks: BenchmarksRecord

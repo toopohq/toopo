@@ -166,6 +166,11 @@ const signatureFile = (find: string, replace: string) => ({ file: 'signature.ts'
 const serialiseFile = (find: string, replace: string) => ({ file: 'serialise.ts', find, replace })
 const licenceFile = (find: string, replace: string) => ({ file: 'licence.ts', find, replace })
 const snapshotFile = (find: string, replace: string) => ({ file: 'snapshot.ts', find, replace })
+const runtimeCapabilityFile = (find: string, replace: string) => ({
+  file: 'runtime-capability.ts',
+  find,
+  replace,
+})
 const responseFile = (find: string, replace: string) => ({ file: 'response.ts', find, replace })
 const addressFile = (find: string, replace: string) => ({ file: 'address.ts', find, replace })
 const imaginedAddressFile = (find: string, replace: string) => ({
@@ -4594,6 +4599,85 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['the-ways-to-run-it-were-read-for-the-version-this-package-declares']),
+  ),
+
+  /**
+   * The four cells of the runtime requirement, and what each one is aimed at.
+   *
+   * ADR-0249 gives a contract a word for what it needs of the runtime, and the whole argument for it
+   * being a field of its own rather than a second meaning on `environments` is that something reads
+   * it and refuses. These are the cells that say the refusals can fall.
+   */
+  sameOnEveryLens(
+    'I-177',
+    'accepts any string as a runtime capability, so a contract can require a word nothing looks ' +
+      'for and be published with a requirement no reader is ever warned about',
+    [
+      runtimeCapabilityFile(
+        `  THE_RUNTIME_CAPABILITIES.includes(word as RuntimeCapability)`,
+        `  typeof word === 'string'`,
+      ),
+    ],
+    killed(['a-runtime-capability-outside-the-vocabulary-is-refused-by-name']),
+  ),
+
+  sameOnEveryLens(
+    'I-178',
+    'admits an empty requirement, so a contract occupies the field that says something is needed ' +
+      'while saying nothing is',
+    [runtimeCapabilityFile(`  if (declared.length === 0) {`, `  if (declared.length === -1) {`)],
+    killed(['a-runtime-requirement-is-absent-rather-than-empty']),
+  ),
+
+  sameOnEveryLens(
+    'I-179',
+    'drops the requirement out of the frozen half, so a contract published with one is bound to a ' +
+      'digest that does not carry it and an auditor rebuilding the snapshot never sees it',
+    [
+      snapshotFile(
+        `      : { requiresOfTheRuntime: record.requiresOfTheRuntime }),`,
+        `      : {}),`,
+      ),
+    ],
+    killed(['a-required-runtime-is-inside-the-digest-and-on-the-index']),
+  ),
+
+  /**
+   * The one that would have moved six published digests, and it is here because it is the cheap
+   * mistake rather than an exotic one: writing the key is what anybody adding a field does first.
+   *
+   * Eight guards redden and the seven named are the ones the edit was written for. The eighth is
+   * `a-required-runtime-is-inside-the-digest-and-on-the-index`, which I-179 above reddens alone -
+   * so the two cells separate the claim that the field travels from the claim that it is absent
+   * where nothing declares it. ADR-0076, ADR-0248.
+   *
+   * **The anchor is the whole spread and not its first line, and that was measured rather than
+   * chosen.** Turning the condition into an always-true expression is the shorter edit and the
+   * compiler refuses it - `TS2872`, this kind of expression is always truthy - so the cell would have
+   * been a `killed-by-typecheck`, which measures nothing while reading as caught.
+   */
+  sameOnEveryLens(
+    'I-180',
+    'writes the requirement into the frozen half unconditionally, so every contract that requires ' +
+      'nothing carries the key with no value - which `canonical.ts` refuses outright, and which ' +
+      'would rebind six published addresses the day it did not',
+    [
+      snapshotFile(
+        `    ...(record.requiresOfTheRuntime === undefined
+      ? {}
+      : { requiresOfTheRuntime: record.requiresOfTheRuntime }),`,
+        `    requiresOfTheRuntime: record.requiresOfTheRuntime,`,
+      ),
+    ],
+    killed([
+      'a-contract-that-requires-nothing-freezes-no-such-field-number-parse',
+      'a-contract-that-requires-nothing-freezes-no-such-field-date-add',
+      'a-contract-that-requires-nothing-freezes-no-such-field-array-group-by',
+      'a-contract-that-requires-nothing-freezes-no-such-field-string-levenshtein',
+      'a-contract-that-requires-nothing-freezes-no-such-field-string-slugify',
+      'a-contract-that-requires-nothing-freezes-no-such-field-number-round',
+      'a-contract-that-requires-nothing-freezes-no-such-field-object-deep-equal',
+    ]),
   ),
 ]
 

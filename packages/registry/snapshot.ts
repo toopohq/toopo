@@ -81,6 +81,7 @@
 import type { ContractAddress, ImplementationAddress } from './address.js'
 import { renderContract, renderImplementation } from './address.js'
 import { DIGEST, digestOf } from './canonical.js'
+import type { RuntimeCapability } from './runtime-capability.js'
 import type {
   BenchmarksRecord,
   CaseTableRecord,
@@ -120,6 +121,15 @@ export type FrozenContract = {
   readonly identity: IdentityRecord
   readonly surface: SurfaceRecord
   readonly environments: readonly string[]
+  /**
+   * Absent rather than empty, and the absence is what keeps six published digests where they are.
+   *
+   * `canonicalAt` builds a record out of `Object.keys`, so a key written unconditionally is present
+   * with an `undefined` value and is refused by name - measured at `a59e110`, the ledger is not
+   * printed at all. Written as the spread `contractSnapshot` uses below, the canonical text of a
+   * contract declaring nothing is the text it already had. ADR-0248.
+   */
+  readonly requiresOfTheRuntime?: readonly RuntimeCapability[]
   readonly properties: PropertiesRecord
   readonly caseTables: readonly CaseTableRecord[]
   readonly benchmarks: BenchmarksRecord
@@ -304,6 +314,10 @@ export const contractSnapshot = (record: ContractRecord): Snapshot => ({
     identity: record.identity,
     surface: record.surface,
     environments: record.environments,
+    // Omitted rather than frozen as an `undefined`, which `canonical.ts` refuses by name. ADR-0248.
+    ...(record.requiresOfTheRuntime === undefined
+      ? {}
+      : { requiresOfTheRuntime: record.requiresOfTheRuntime }),
     properties: record.properties,
     caseTables: record.caseTables,
     benchmarks: record.benchmarks,

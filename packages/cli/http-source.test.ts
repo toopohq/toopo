@@ -5,6 +5,7 @@ import { TheRegistryDidNotAnswer, httpSource } from './http-source.js'
 import { imaginedSource } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import type { InstallOutcome } from './install.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import { servingOverHttp } from './serving-over-http.js'
 import type { Serving } from './serving-over-http.js'
 import type { HeldRegistry, RegistrySource } from './source.js'
@@ -43,6 +44,7 @@ const installing = (
   contract = 'imagined-number/round',
 ): InstallOutcome =>
   prepareInstallation(held, {
+    carries: A_RUNTIME_CARRYING_NOTHING,
     root,
     configuration: { version: 1, directory: 'src/lib/toopo' },
     lockfile: EMPTY_LOCKFILE,

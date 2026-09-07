@@ -17,6 +17,7 @@ import {
 } from './imagined-source.js'
 import { prepareInstallation } from './install.js'
 import { renderUpToDate, renderUpdate } from './report.js'
+import { A_RUNTIME_CARRYING_NOTHING } from './runtime-capability.js'
 import type { RegistrySource } from './source.js'
 import type { TemporaryProject } from './temporary-project.js'
 import { A_PINNED_INSTANT, EMPTY_LOCKFILE, aProject, committing } from './temporary-project.js'
@@ -44,6 +45,7 @@ const installed = async (): Promise<{
   const project = aProject()
   const { answer: outcome } = await deciding(imaginedSource(), (held) =>
     prepareInstallation(held, {
+      carries: A_RUNTIME_CARRYING_NOTHING,
       root: project.root,
       configuration: project.configuration,
       lockfile: EMPTY_LOCKFILE,
@@ -581,6 +583,7 @@ describe('comparing a project with what the registry serves now', () => {
       for (const contract of ['imagined-text/left', 'imagined-text/right']) {
         const { answer: outcome } = await deciding(source, (held) =>
           prepareInstallation(held, {
+            carries: A_RUNTIME_CARRYING_NOTHING,
             root: project.root,
             configuration: project.configuration,
             lockfile,
@@ -640,6 +643,7 @@ describe('comparing a project with what the registry serves now', () => {
       for (const contract of ['imagined-text/left', 'imagined-text/right']) {
         const { answer: outcome } = await deciding(source, (held) =>
           prepareInstallation(held, {
+            carries: A_RUNTIME_CARRYING_NOTHING,
             root: project.root,
             configuration: project.configuration,
             lockfile,
@@ -717,6 +721,7 @@ describe('comparing a project with what the registry serves now', () => {
     try {
       const { answer: outcome } = await deciding(imaginedSource(), (held) =>
         prepareInstallation(held, {
+          carries: A_RUNTIME_CARRYING_NOTHING,
           root: project.root,
           configuration: project.configuration,
           lockfile: EMPTY_LOCKFILE,

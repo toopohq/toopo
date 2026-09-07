@@ -30,6 +30,7 @@ import { eachContract } from './the-catalogue.js'
 const CARRIED_BY: Readonly<Record<string, string>> = {
   identity: 'identity',
   targetEnvironments: 'environments',
+  requiresOfTheRuntime: 'requiresOfTheRuntime',
   propertyRuns: 'properties.runs',
   universalProperties: 'properties.universal',
   benchmarkProfiles: 'benchmarks.profiles',

@@ -440,6 +440,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/response.test.ts': 67,
     'packages/registry/revision.test.ts': 4,
     'packages/registry/round-trip.test.ts': 39,
+    // Three standalone and one `it.each` over the seven contracts. ADR-0249.
+    'packages/registry/runtime-capability.test.ts': 10,
     'packages/registry/served-files.test.ts': 14,
     'packages/registry/shared-surface.test.ts': 4,
     'packages/registry/search.test.ts': 14,
@@ -480,6 +482,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/cli/remove.test.ts': 13,
     'packages/cli/report.test.ts': 12,
     'packages/cli/rewrite.test.ts': 8,
+    // The reading, and the installer refusing on what it reads. ADR-0249.
+    'packages/cli/runtime-capability.test.ts': 2,
     'packages/cli/search.test.ts': 3,
     'packages/cli/source.test.ts': 6,
     'packages/cli/remove-directory.test.ts': 1,

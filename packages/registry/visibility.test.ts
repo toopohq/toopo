@@ -107,7 +107,11 @@ describe('the public/private frontier', () => {
       .map(([path]) => path)
       .sort()
 
-    expect(kept).toEqual(['caseTables[].cases[].provenance.report', 'lifecycle.answeredBy'])
+    expect(kept).toEqual([
+      'caseTables[].cases[].provenance.report',
+      'lifecycle.answeredBy',
+      'requiresOfTheRuntime[]',
+    ])
   })
 
   /**

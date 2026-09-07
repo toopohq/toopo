@@ -18,8 +18,10 @@ import { digestOfBytes } from '../registry/canonical.js'
 import type { InstalledFile, LockedFeature, Lockfile } from '../registry/implementation-record.js'
 import { dependencyDepthOf, resolveDependencies } from '../registry/implementation-record.js'
 import type { ServedExport } from '../registry/response.js'
+import type { RuntimeCapability } from '../registry/runtime-capability.js'
 import type { FrozenImplementation } from '../registry/snapshot.js'
 import type { Configuration } from './configuration.js'
+import { theRuntimeRefuses } from './runtime-capability.js'
 import { digestOnDisk, withFeature } from './lockfile.js'
 import type { InstallPlan } from './plan.js'
 import { THE_ENTRY_FILE, planInstall } from './plan.js'
@@ -148,6 +150,14 @@ export type InstallRequest = {
   readonly implementation: string | null
   /** The instant recorded in the lockfile, supplied rather than read, so a guard is reproducible. */
   readonly at: string
+  /**
+   * What the runtime carries, supplied rather than read, for the reason the instant above is.
+   * ADR-0249.
+   *
+   * `whatThisRuntimeCarries()` is the one reading, taken at the edge in `command.ts`. A guard hands
+   * a set instead, which is what lets the refusal be seen red without a second runtime existing.
+   */
+  readonly carries: ReadonlySet<RuntimeCapability>
 }
 
 // ---------------------------------------------------------------------------
@@ -230,6 +240,25 @@ export const prepareInstallation = (
 ): InstallOutcome => {
   const chosen = chooseContract(source, request.contract)
   if (refused(chosen)) return { faults: chosen.faults }
+
+  /**
+   * What the contract needs of the runtime, before anything is fetched or written.
+   *
+   * **Here rather than inside `installable`, which is a different sentence.** That funnel answers
+   * *this is installable, or it never will be* - a fact about the catalogue - and a runtime that does
+   * not carry a capability today is not a permanent state. Folding the two would put two claims in
+   * one place, which is what this field exists instead of doing to `environments`.
+   *
+   * **On `add` and not on `update`.** This is the moment the catalogue would hand somebody a file
+   * their runtime cannot run for the first time; refusing an update would strand a reader who already
+   * holds the file and is maintaining it.
+   */
+  const refusal = theRuntimeRefuses(
+    renderContract(chosen.found.address),
+    chosen.found.requiresOfTheRuntime,
+    request.carries,
+  )
+  if (refusal.length > 0) return { faults: refusal }
 
   const binding = bindingFor(source, chosen.found.address, request.implementation)
   if (refused(binding)) return { faults: binding.faults }

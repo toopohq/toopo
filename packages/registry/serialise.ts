@@ -46,6 +46,7 @@ import type {
   UseCaseRecord,
 } from './contract-record.js'
 import { canonical, digestOf, digestOfBytes, servedBytes } from './canonical.js'
+import { requiredRuntimeOf } from './runtime-capability.js'
 import type { Banner } from './licence.js'
 import type { VerificationStratum } from './field-map.js'
 import type { BatteryRecord, CaseProvenance } from './evidence.js'
@@ -853,6 +854,21 @@ export const serialiseContract = (root: string, source: ContractSource): Contrac
         : { couplingRule: source.module['couplingRule'] as string }),
     },
     environments: read<readonly string[]>(source.module, 'targetEnvironments'),
+    /**
+     * Read through a refusal rather than cast, which is the whole difference from the line above.
+     *
+     * `targetEnvironments` is cast to `readonly string[]` and nothing can be wrong about it; this one
+     * is refused against a closed vocabulary, by name, before the contract can be serialised at all.
+     * ADR-0249.
+     */
+    ...(source.module['requiresOfTheRuntime'] === undefined
+      ? {}
+      : {
+          requiresOfTheRuntime: requiredRuntimeOf(
+            source.module['requiresOfTheRuntime'],
+            source.address.name,
+          ),
+        }),
     properties: {
       runs: read<number>(source.module, 'propertyRuns'),
       universal: read<readonly UniversalPropertyRecord[]>(source.module, 'universalProperties').map(
