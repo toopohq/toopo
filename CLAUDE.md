@@ -3176,6 +3176,29 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   is exactly as unread as it was, and this is a second field beside it rather than a repair of it.
   ADR-0249.
 
+  **And what stands between that word and a contract using it is one glob, which is now kept.**
+  `vitest.config.ts` collects `contracts/**/*.test.ts` as a single glob, so a contract needing a
+  runtime neither leg carries reddens the contracts' own suite for every contributor — and the door out
+  is to take it out of the glob and give it a configuration and a battery of its own, which
+  `mutation/fixture` and `meta` already demonstrate twice. **What had no keeper was the mirror of that
+  glob's own argument**: a contract taken *out* left the measurement in silence, with every suite,
+  every other battery and both gates green about it. `mutation/census.test.ts` refuses it in both
+  directions — every contract's declared test files are collected by exactly one configuration and a
+  battery reads it, and no census row names a contract file the catalogue does not declare. Measured
+  at `eee980f`: **seven contracts, thirty test files, nought uncollected, nought collected twice, and
+  every configuration read by a battery.**
+
+  **What is not takeable is the exclusion itself, and three facts say so rather than one.** An
+  exclusion is a pair — out of one glob, into something that runs it — and the second half has no
+  destination: `PlatformFamily` is the closed union `'windows' | 'posix'`, the `batteries` job pins
+  `node-version: '24'`, and *not measured on this platform* is a bucket ADR-0169 emptied to nought. **So
+  the exclusion and the runtime leg are one thing**, and both are downstream of a contract that does
+  not exist — nothing under `contracts/typescript/` may pretend to be one, so there is nothing to
+  exclude. **A double was proposed for it and is refused on ADR-0233's own rule**: it reproduces
+  *outside the glob* and cannot reproduce *and something runs it*, and its red would look exactly
+  right — a `ReferenceError` naming the global, the file and the line, with nothing in it to say the
+  mechanism was never shown to have a destination. ADR-0250.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the

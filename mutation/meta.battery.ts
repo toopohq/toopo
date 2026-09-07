@@ -84,6 +84,7 @@ const handsFile = inFile('hands.ts')
 const decisionsFile = inFile('decisions.ts')
 const predictionFile = inFile('prediction.ts')
 const publishedFile = inFile('published.ts')
+const censusFile = inFile('census.ts')
 
 /**
  * The red every cell of this battery carries, and it is a property of measuring this folder rather
@@ -320,6 +321,61 @@ const mutants: readonly Mutant[] = [
     [publishedFile(`  batteries: batteries.length,`, `  batteries: batteries.length - 1,`)],
     killed([
       'every-figure-in-the-readme-is-the-one-the-instrument-declares',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
+  ),
+
+  /**
+   * The defect this repository would meet the day a contract needs a runtime it does not run on.
+   *
+   * **It is a move and not a deletion, because a move is what somebody would write.** Taking a
+   * contract out of `vitest.config.ts` so that `npm test` stays green for a contributor is a
+   * reasonable thing to do; giving it a configuration of its own is the next reasonable thing; and
+   * forgetting that a configuration nothing reads is a suite nothing runs is exactly where the care
+   * runs out. The census is left describing a contract that has left the measurement, and every
+   * suite, every other battery and both gates are green about it.
+   */
+  sameOnEveryLens(
+    'MT-12',
+    'moves a contract into a configuration of its own and leaves no battery reading it, so the ' +
+      'contract sits in the tree measured by nothing while `npm test` goes green without it',
+    [
+      censusFile(`    'contracts/typescript/number/round/profiles.test.ts': 8,\n`, ''),
+      censusFile(
+        `  'packages/registry/vitest.config.ts': {`,
+        `  'contracts/typescript/number/round/vitest.config.ts': {
+    'contracts/typescript/number/round/profiles.test.ts': 8,
+  },
+
+  'packages/registry/vitest.config.ts': {`,
+      ),
+    ],
+    killed([
+      'every-contract-of-the-catalogue-is-collected-by-a-configuration-a-battery-reads',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
+  ),
+
+  /**
+   * And the other direction, which fails open rather than closed.
+   *
+   * A row naming a contract file nothing declares makes `assertTheCensusHolds` report `declared 8,
+   * collected 0` - which reads as a suite that broke rather than as a row that outlived its contract,
+   * and sends whoever meets it looking in the wrong folder.
+   */
+  sameOnEveryLens(
+    'MT-13',
+    'counts a contract file the catalogue does not declare, so a census row outlives the contract it ' +
+      'was written for and the next run reports a suite that broke instead',
+    [
+      censusFile(
+        `    'contracts/typescript/number/round/profiles.test.ts': 8,`,
+        `    'contracts/typescript/number/round/profiles.test.ts': 8,
+    'contracts/typescript/number/round/legacy.test.ts': 8,`,
+      ),
+    ],
+    killed([
+      'every-contract-file-the-census-names-is-one-the-catalogue-declares',
       THE_ANCHOR_OF_THE_INJECTED_CELL,
     ]),
   ),

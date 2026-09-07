@@ -541,6 +541,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
   'mutation/under-measurement.vitest.config.ts': {
     'mutation/anchors.test.ts': 1,
     'mutation/attribution.test.ts': 4,
+    // What answers for a contract, in both directions. ADR-0250.
+    'mutation/census.test.ts': 2,
     'mutation/clean-tree.test.ts': 1,
     'mutation/contributing.test.ts': 5,
     'mutation/decisions.test.ts': 8,
