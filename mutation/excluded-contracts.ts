@@ -61,42 +61,52 @@ export const THE_CONTRACTS_THIS_SUITE_DOES_NOT_RUN: readonly AnExcludedContract[
 export const THE_FOLDERS_THIS_SUITE_DOES_NOT_RUN: readonly string[] =
   THE_CONTRACTS_THIS_SUITE_DOES_NOT_RUN.map((excluded) => excluded.folder)
 
+/** The glob each configuration appends to a folder, written once because two places use it. */
+export const asAGlob = (folder: string): string => `${folder}/**`
+
 /**
  * Where an exclusion has to be written, in the words a fault says it in.
  *
- * A list rather than three booleans, so the guard reports *which* place is missing rather than that
- * something is - which is the difference between a fault somebody repairs and one they re-derive.
+ * **Two of the three are the configuration's own values and never its text.** A guard searching
+ * `vitest.config.ts` for the name of the declaration passes on a file that imports it and does not
+ * use it — measured: a perturbation renaming the import left the identifier in the body and the
+ * guard stayed green. What is read here is what the configuration *produces*, so the only way to
+ * satisfy it is to actually exclude the folder.
+ *
+ * The third is text because `tsconfig.json` is JSON and can import nothing.
  */
 export type ThePlacesAnExclusionLives = {
-  /** `vitest.config.ts`, as text. */
-  readonly runtimeConfiguration: string
-  /** `tsconfig.json`, as text: JSON, so no configuration can import the declaration above. */
+  /** `test.exclude` as the configuration builds it: what the runner does not collect. */
+  readonly collected: readonly string[]
+  /** `test.typecheck.exclude`: what the type tests do not collect. */
+  readonly typechecked: readonly string[]
+  /** `tsconfig.json`, as text: the typechecker's project, written by hand. */
   readonly typecheckProject: string
 }
 
 /**
  * Which folder is missing from which place, empty when every declared folder is in all three.
  *
- * The two globs of `vitest.config.ts` are read as one place deliberately: they are derived from this
- * declaration by a `map` in that file, so they cannot disagree with each other, and a guard asserting
- * they do would be comparing the declaration with itself. What *can* disagree is the third, which is
- * JSON and is written by hand.
+ * A fault names the place rather than reporting that something is missing, because the three fail
+ * differently: the first leaves a suite that runs a contract it cannot run, the second leaves its
+ * type tests collected, and the third leaves the whole folder inside the typechecker's project — the
+ * one that reads as a broken suite rather than as a missing line.
  */
 export const exclusionFaults = (
   declared: readonly AnExcludedContract[],
   places: ThePlacesAnExclusionLives,
-): readonly string[] => [
-  ...declared.flatMap((excluded) =>
-    places.runtimeConfiguration.includes('THE_FOLDERS_THIS_SUITE_DOES_NOT_RUN')
+): readonly string[] =>
+  declared.flatMap(({ folder }) => [
+    ...(places.collected.includes(asAGlob(folder))
       ? []
-      : [`${excluded.folder}: vitest.config.ts does not read the declaration`],
-  ),
-  ...declared.flatMap((excluded) =>
-    places.typecheckProject.includes(`"${excluded.folder}"`)
+      : [`${folder}: vitest.config.ts does not exclude it from what the suite collects`]),
+    ...(places.typechecked.includes(asAGlob(folder))
+      ? []
+      : [`${folder}: vitest.config.ts does not exclude it from the type tests`]),
+    ...(places.typecheckProject.includes(`"${folder}"`)
       ? []
       : [
-          `${excluded.folder}: tsconfig.json does not exclude it, so the typechecker still reads ` +
-            `the folder and reports what it finds there as a source error`,
-        ],
-  ),
-]
+          `${folder}: tsconfig.json does not exclude it, so the typechecker still reads the folder ` +
+            `and reports what it finds there as a source error`,
+        ]),
+  ])

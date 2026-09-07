@@ -386,6 +386,29 @@ const mutants: readonly Mutant[] = [
     /** Alone, for the reason the cell above is: it adds a row and quotes nobody else's anchor. */
     killed(['every-contract-file-the-census-names-is-one-the-catalogue-declares']),
   ),
+
+  /**
+   * The one derivation the exclusion guard shares with the configuration it checks. ADR-0251.
+   *
+   * `asAGlob` is read by `vitest.config.ts` to build its two exclusions and by the guard to say what
+   * it is looking for, so a defect in it moves both sides together: the configuration would exclude
+   * a *file* named `contracts/typescript/temporal/add`, which does not exist, the folder would be
+   * collected again, and the comparison would be green because it is reading the same map. That is
+   * `GUARD_PERTURBATION_RULE` exactly, and the pinned shape is the second statement that closes it.
+   */
+  sameOnEveryLens(
+    'MT-14',
+    'excludes a contract by its folder name instead of by its contents, so the suite collects the ' +
+      'contract again and the guard comparing the two sides reads one derivation twice and stays ' +
+      'green about it',
+    [
+      inFile('excluded-contracts.ts')(
+        'export const asAGlob = (folder: string): string => `${folder}/**`',
+        'export const asAGlob = (folder: string): string => folder',
+      ),
+    ],
+    killed(['every-contract-the-suite-does-not-run-is-excluded-in-all-three-places']),
+  ),
 ]
 
 export const battery: Battery = {

@@ -547,6 +547,8 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'mutation/contributing.test.ts': 5,
     'mutation/decisions.test.ts': 8,
     'mutation/every-job-answered.test.ts': 5,
+    // The three places an exclusion lives, and what the declaration says. ADR-0251.
+    'mutation/excluded-contracts.test.ts': 2,
     'mutation/hands.test.ts': 3,
     'mutation/history.test.ts': 9,
     'mutation/prediction.test.ts': 12,
