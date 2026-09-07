@@ -45,7 +45,21 @@
  * ---------------------------------------------------------------------------
  *
  * MT-02 is the cell this battery was written for and the only one whose verdict decides whether the
- * battery may exist at all. Everything else here is ordinary work.
+ * battery may exist at all. Everything else here is ordinary work, and the count of it is a rule
+ * rather than an appetite.
+ *
+ * **The rule was written before the cells: one cell per collected guard file, aimed at the decision
+ * that file exists to keep.** It is the shape ADR-0209 to ADR-0211 used to price the unprobed half of
+ * `packages/registry` - *the wholly unprobed file* - applied here as a floor rather than as a slice,
+ * because a first battery over a folder has no residue to slice and the failure it has to avoid is the
+ * one this instrument exists to name: a battery that reddens on nothing is the defect it is for.
+ *
+ * **Eleven cells over thirteen files, and the two that carry none are named rather than counted out.**
+ * `anchors.test.ts` is reddened by every cell already, by construction and not as a witness - see
+ * `THE_ANCHOR_OF_THE_INJECTED_CELL`. `workflows.test.ts` is declared out of reach: its subject is
+ * `.github/workflows/`, which a battery over `mutation/` may not edit, and the only route to it from
+ * this folder is `paths.ts`'s `THE_REPOSITORY` - a shared mechanism, which `mutants.ts` says in as many
+ * words is what a cell must never aim at.
  */
 
 import type { Battery, Mutant } from './run.ts'
@@ -56,12 +70,36 @@ const UNDER: ArmUnderTest = { arm: 'M', asCommitted: 'as-committed', blinded: []
 
 const { sameOnEveryLens } = mutantsOn(UNDER)
 
-const runFile = (find: string, replace: string) => ({ file: 'run.ts', find, replace })
-const jobsFile = (find: string, replace: string) => ({
-  file: 'every-job-answered.ts',
-  find,
-  replace,
-})
+const inFile =
+  (file: string) =>
+  (find: string, replace: string) => ({ file, find, replace })
+
+const runFile = inFile('run.ts')
+const jobsFile = inFile('every-job-answered.ts')
+const attributionFile = inFile('attribution.ts')
+const historyFile = inFile('history.ts')
+const documentsFile = inFile('root-documents.ts')
+const selectionFile = inFile('selection.ts')
+const handsFile = inFile('hands.ts')
+const decisionsFile = inFile('decisions.ts')
+const predictionFile = inFile('prediction.ts')
+const publishedFile = inFile('published.ts')
+
+/**
+ * The red every cell of this battery carries, and it is a property of measuring this folder rather
+ * than a detection.
+ *
+ * `anchors.test.ts` requires every battery cell's `find` text to occur exactly once in the file it
+ * names. A cell of *this* battery replaces that text in a file of `mutation/`, so while the cell is
+ * injected its own anchor occurs nought times and the guard reddens - on every cell, always, whatever
+ * the defect is. No other battery meets this, because no other battery collects `anchors.test.ts`.
+ *
+ * It is named in every pin below rather than declared away. `unclaimedRedsIn` asks for exactly that -
+ * *establish which, then name it in the pin* - and the establishing is this paragraph: the cause is the
+ * injection and not the defect, so the guard is a companion of the apparatus and never a witness of a
+ * cell. What it costs is that no guard of this battery can ever be *alone* on a cell.
+ */
+const THE_ANCHOR_OF_THE_INJECTED_CELL = 'every-anchor-of-every-battery-still-quotes-its-file'
 
 const A_JOB_WITH_NOTHING_TO_DO_HAS_ANSWERED = `export const HOW_A_JOB_ANSWERS: readonly string[] = ['success', 'skipped']`
 
@@ -82,7 +120,7 @@ const mutants: readonly Mutant[] = [
       'refuses every run in which anything was correctly skipped - which is every push that selects ' +
       'no battery',
     [jobsFile(A_JOB_WITH_NOTHING_TO_DO_HAS_ANSWERED, `export const HOW_A_JOB_ANSWERS: readonly string[] = ['success']`)],
-    killed(['a-job-with-nothing-to-do-is-not-a-job-that-failed']),
+    killed(['a-job-with-nothing-to-do-is-not-a-job-that-failed', THE_ANCHOR_OF_THE_INJECTED_CELL]),
   ),
 
   /**
@@ -118,7 +156,129 @@ const mutants: readonly Mutant[] = [
         `  const dirty = git('status', '--porcelain', '--untracked-files=no', '--', 'contracts').trim()`,
       ),
     ],
-    killed(['a-dirty-working-tree-is-refused-before-anything-is-measured']),
+    killed([
+      'a-dirty-working-tree-is-refused-before-anything-is-measured',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
+  ),
+
+  // -------------------------------------------------------------------------
+  // One cell per collected guard file, so that no file of the meta suite is wholly unprobed
+  // -------------------------------------------------------------------------
+
+  sameOnEveryLens(
+    'MT-03',
+    'reports the reds a pin *did* name as the ones it did not, so a cell that owes every guard it ' +
+      'reddened reads as clean and a cell that named them all reads as a debt - the mirror of the ' +
+      'silence, inverted',
+    [
+      attributionFile(
+        `      unclaimed: cell.failedGuards.filter((id) => !(cell.expected.by ?? []).includes(id)),`,
+        `      unclaimed: cell.failedGuards.filter((id) => (cell.expected.by ?? []).includes(id)),`,
+      ),
+    ],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-04',
+    'swaps the two ways a red run is read, so a mutant the compiler refused is reported as caught by ' +
+      'a guard and a mutant a guard caught is reported as refused by the compiler - two verdicts that ' +
+      'mean opposite things about whether the suite noticed anything',
+    [
+      runFile(
+        `  return run.failedGuards.length === 0 ? 'killed-by-typecheck' : 'killed'`,
+        `  return run.failedGuards.length === 0 ? 'killed' : 'killed-by-typecheck'`,
+      ),
+    ],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-05',
+    'reads a citation as eight hexadecimal digits where this repository writes seven, so every commit ' +
+      'identifier in the prose becomes invisible to the sweep and the guard that resolves them passes ' +
+      'over an empty population',
+    [
+      historyFile(
+        'const A_CITATION = /`([0-9a-f]{7})(?:\\^|~\\d+)?`/g',
+        'const A_CITATION = /`([0-9a-f]{8})(?:\\^|~\\d+)?`/g',
+      ),
+    ],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-06',
+    'collapses the white space of a section to nothing instead of to one space, so every pair of ' +
+      'words a root document separates by a line break is glued into one - which is the defect this ' +
+      'repository met once already, on a count served as `all6`',
+    [
+      documentsFile(
+        `  return (closes === -1 ? body : body.slice(0, closes)).replace(/\\s+/g, ' ')`,
+        `  return (closes === -1 ? body : body.slice(0, closes)).replace(/\\s+/g, '')`,
+      ),
+    ],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-07',
+    'stops a battery answering for its own declaration, so editing a cell of a battery selects that ' +
+      'battery only if the edit also touched the folder it injects into - and a pin rewritten alone is ' +
+      'replayed by nothing',
+    [
+      selectionFile(
+        '  path === battery.contractPath ||\n  path.startsWith(`${battery.contractPath}/`) ||\n  path === theFileOf(battery)',
+        '  path === battery.contractPath ||\n  path.startsWith(`${battery.contractPath}/`)',
+      ),
+    ],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-08',
+    'reads every file as source, so a Markdown document is parsed for comments, yields no paragraph, ' +
+      'and the reading of who has read this repository\'s prose goes quiet over the three documents a ' +
+      'reader actually meets',
+    [
+      handsFile(
+        `  return path.endsWith('.md') ? markdownProse(path, source) : commentProse(path, source)`,
+        `  return commentProse(path, source)`,
+      ),
+    ],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-09',
+    'reports a citation of a record that exists and passes over one of a record that does not, so ' +
+      '`ADR-9999` written into any file of this repository resolves silently while every real citation ' +
+      'is named as broken',
+    [decisionsFile(`      .filter((id) => !held.has(id))`, `      .filter((id) => held.has(id))`)],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-10',
+    'gives a reading that could not be taken the exit code of one that found nothing, so a ' +
+      'measurement predating the guard identities answers *agreed* - which is byte for byte what the ' +
+      'predictor printed on the day it was wrong',
+    [
+      predictionFile(
+        `  if (predictions.some((one) => one.unread.length > 0)) return EXIT.unread\n`,
+        ``,
+      ),
+    ],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+  ),
+
+  sameOnEveryLens(
+    'MT-11',
+    'publishes one battery fewer than the instrument holds, so every figure this repository states ' +
+      'about its own defect detection is short by one battery and the page saying so is green',
+    [publishedFile(`  batteries: batteries.length,`, `  batteries: batteries.length - 1,`)],
+    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
   ),
 ]
 
@@ -156,7 +316,31 @@ export const battery: Battery = {
    * nothing moved out, because leaving it here would have published a mutant of the instrument's own
    * floor as a survivor.
    */
-  unreachableGuards: [],
+  unreachableGuards: [
+    {
+      guards: [
+        'there-is-a-workflow-to-sweep-and-it-uses-something',
+        'every-action-a-workflow-uses-is-pinned-to-a-digest',
+        'every-pinned-action-says-which-version-it-was-pinned-at',
+        'exactly-one-job-of-this-repository-publishes-to-npm',
+        'the-job-that-publishes-to-npm-is-gated-by-the-suites-the-branch-and-the-environment',
+        'the-job-that-publishes-to-npm-is-gated-by-a-job-that-read-the-version',
+        'nothing-publishes-to-npm-without-waiting-for-a-battery-to-be-replayed',
+        'every-job-gated-on-the-version-is-one-the-publication-waits-for',
+        'only-the-job-that-publishes-to-npm-can-mint-an-identity-token',
+        'no-workflow-authenticates-to-npm-with-a-long-lived-credential',
+        'every-job-of-a-workflow-is-one-its-last-gate-waits-for',
+        'the-gate-over-a-run-runs-even-where-a-job-it-waits-for-was-cancelled',
+      ],
+      reason:
+        'their subject is `.github/workflows/`, which a battery may not edit - it edits one folder and ' +
+        'that folder is `mutation/`. `workflows.test.ts` imports nothing of this folder but ' +
+        '`THE_REPOSITORY`, so the only edit here that could reach them is one to where the repository ' +
+        'root is, which every guard of every file reads: aiming a cell at it would redden the suite ' +
+        'rather than these twelve, and `mutants.ts` says a cell aims at a choice and never at a shared ' +
+        'mechanism',
+    },
+  ],
 
   unprobedRegions: [],
 }
