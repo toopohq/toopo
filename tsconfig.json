@@ -24,6 +24,10 @@
     "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },
+  // The contracts the contracts suite does not run, declared once in
+  // mutation/excluded-contracts.ts and repeated here because a tsconfig is JSON and can import
+  // nothing. A guard beside that declaration refuses a folder missing from this list. ADR-0251.
+  "exclude": ["contracts/typescript/temporal/add"],
   "include": [
     "packages/catalogue",
     "contracts",
