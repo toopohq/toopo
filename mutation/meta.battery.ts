@@ -350,10 +350,19 @@ const mutants: readonly Mutant[] = [
   'packages/registry/vitest.config.ts': {`,
       ),
     ],
-    killed([
-      'every-contract-of-the-catalogue-is-collected-by-a-configuration-a-battery-reads',
-      THE_ANCHOR_OF_THE_INJECTED_CELL,
-    ]),
+    /**
+     * **The first cell of this battery that leaves the anchor guard green**, and it was measured
+     * rather than predicted: the pin was written with `THE_ANCHOR_OF_THE_INJECTED_CELL` beside it,
+     * on the convention every cell above follows, and the replay reported it *no longer caught by*
+     * that guard.
+     *
+     * ADR-0246 records that every cell of this battery reddens `anchors.test.ts` by construction, so
+     * that no guard of it can ever be seen alone. That is true of a cell editing a module some
+     * battery's anchor quotes, and these two edit `census.ts` - whose rows no anchor quotes but their
+     * own, and their own survive, because this cell puts the line back inside the key it invents.
+     * So the two guards below are the first of this battery to be **red alone**.
+     */
+    killed(['every-contract-of-the-catalogue-is-collected-by-a-configuration-a-battery-reads']),
   ),
 
   /**
@@ -374,10 +383,8 @@ const mutants: readonly Mutant[] = [
     'contracts/typescript/number/round/legacy.test.ts': 8,`,
       ),
     ],
-    killed([
-      'every-contract-file-the-census-names-is-one-the-catalogue-declares',
-      THE_ANCHOR_OF_THE_INJECTED_CELL,
-    ]),
+    /** Alone, for the reason the cell above is: it adds a row and quotes nobody else's anchor. */
+    killed(['every-contract-file-the-census-names-is-one-the-catalogue-declares']),
   ),
 ]
 
