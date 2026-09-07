@@ -3217,6 +3217,28 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   contract enters the repository without entering the catalogue, so the declaration that says what is
   excluded and what would lift it is owed by the commit that excludes. ADR-0251.
 
+  **And it is written: `temporal/add@1` is in the tree, excluded, declared, and in no catalogue.**
+  Seven files under `contracts/typescript/temporal/add/`, `requiresOfTheRuntime: ['temporal']` in the
+  first version of `contract.ts` because `contractSnapshot` freezes it and a published contract can
+  never receive it, the exclusion in its three places derived from one declaration, and two guards that
+  redden on each place separately. **The arity is confirmed twice by independent paths** — the records
+  reasoned three carriers out of `Temporal`'s behaviour, and `packages/site/playground.ts` had already
+  hard-coded the same three in `THE_CARRIERS_A_TYPE_PARAMETER_MAY_STAND_FOR` because a form field has
+  to be built for them. **Forty rows are the matrix and the table is forty-four**: a table of only the
+  matrix could not name a case for every reason the contract declares, and the four extra settle a bag
+  that is not a duration and the range — which is a reason of its own because *an overflow is not an
+  inapplicability*. **Nothing here runs it and what stands in place of that is stated rather than
+  implied**: all seven files typecheck against `ESNext.Temporal` out of band at exit 0, and the
+  forty-four cases replay against the reference with **0 faults** — sound on a draft engine because the
+  reference decides applicability from its own declared sets and never asks the engine. **A reading of
+  ADR-0225 was found short and its conclusion held**: its split table classes `PlainYearMonth`'s eight
+  units *refused at every magnitude* on splits that never reach a month, which is the shortfall that
+  record itself corrected for `PlainDate` one row up — measured on Chrome 152 the language throws at
+  every magnitude, so the proof was short and the conclusion is right. **The working rule that follows
+  is in the declaration's own `liftedBy`**, where the leg unit arrives: no reading taken under
+  `--harmony-temporal` may stand in for one taken on the published runtime, the draft disagreeing on
+  the carrier that decides the arity. ADR-0252.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the

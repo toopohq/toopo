@@ -53,7 +53,13 @@ export const THE_CONTRACTS_THIS_SUITE_DOES_NOT_RUN: readonly AnExcludedContract[
       'a leg of the matrix carrying `Temporal` in the form the language published - node 26 ships it ' +
       'unflagged, and ADR-0220 measured all eight suites green on 26.8.1. What that leg needs and ' +
       'this exclusion does not is a way to route a battery to a runtime: `PlatformFamily` is the ' +
-      'closed union `windows | posix` and the `batteries` job pins `node-version: 24`.',
+      'closed union `windows | posix` and the `batteries` job pins `node-version: 24`. **Two things ' +
+      'that unit will meet and this one measured**: the draft `Temporal` behind `--harmony-temporal` ' +
+      'is not the language and disagrees on the carrier that decides this contract - it answers ' +
+      'where `PlainYearMonth` throws - so no reading taken under that flag may stand in for one ' +
+      'taken on the runtime; and `ESNext.Temporal` is a real lib fragment that `tsc` honours and ' +
+      'vitest does not, so a leg carrying the runtime may still not typecheck this contract\'s ' +
+      '`signature.test-d.ts` under the suite. ADR-0251, ADR-0252.',
   },
 ]
 
