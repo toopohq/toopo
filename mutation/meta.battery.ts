@@ -177,7 +177,12 @@ const mutants: readonly Mutant[] = [
         `      unclaimed: cell.failedGuards.filter((id) => (cell.expected.by ?? []).includes(id)),`,
       ),
     ],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'a-red-the-pin-of-its-own-cell-does-not-name-is-reported',
+      'a-cell-whose-pin-names-every-guard-it-reddened-is-not-reported',
+      'a-red-is-reported-with-what-to-do-about-it-and-a-clean-run-is-not-lectured',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -191,7 +196,10 @@ const mutants: readonly Mutant[] = [
         `  return run.failedGuards.length === 0 ? 'killed' : 'killed-by-typecheck'`,
       ),
     ],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'a-verdict-is-asked-of-the-absence-before-the-evidence',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -205,21 +213,37 @@ const mutants: readonly Mutant[] = [
         'const A_CITATION = /`([0-9a-f]{8})(?:\\^|~\\d+)?`/g',
       ),
     ],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'the-citation-sweep-reaches-the-prose-and-the-declaration',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
+  /**
+   * **Re-aimed after its first reading, and the first reading is why it is worth a paragraph.** MT-06
+   * began as the white-space collapse of `theSectionOn` - `/\s+/g` replaced by nothing rather than by
+   * one space, which is the `all6` defect one floor down. Measured, it reddened
+   * `every-anchor-of-every-battery-still-quotes-its-file` **and nothing else**: killed by the
+   * apparatus and by no guard, which is exactly the false kill this instrument exists to refuse. The
+   * anchor red would have carried it, and only the attribution's *alone on MT-06* said so.
+   *
+   * What it aims at now is the population both root documents count over, which four guards of two
+   * files really read.
+   */
   sameOnEveryLens(
     'MT-06',
-    'collapses the white space of a section to nothing instead of to one space, so every pair of ' +
-      'words a root document separates by a line break is glued into one - which is the defect this ' +
-      'repository met once already, on a count served as `all6`',
+    'serialises every contract of the catalogue but the first, so both root documents are counted ' +
+      'against a catalogue one contract short and every figure either of them publishes about the ' +
+      'catalogue agrees with a registry nobody can ask',
     [
       documentsFile(
-        `  return (closes === -1 ? body : body.slice(0, closes)).replace(/\\s+/g, ' ')`,
-        `  return (closes === -1 ? body : body.slice(0, closes)).replace(/\\s+/g, '')`,
+        `  theCatalogue.map((source) => serialiseContract(REPOSITORY_ROOT, source))`,
+        `  theCatalogue.slice(1).map((source) => serialiseContract(REPOSITORY_ROOT, source))`,
       ),
     ],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -233,7 +257,10 @@ const mutants: readonly Mutant[] = [
         '  path === battery.contractPath ||\n  path.startsWith(`${battery.contractPath}/`)',
       ),
     ],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'every-battery-answers-for-its-own-declaration',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -247,7 +274,10 @@ const mutants: readonly Mutant[] = [
         `  return commentProse(path, source)`,
       ),
     ],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'every-source-that-holds-prose-yields-a-paragraph',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -258,7 +288,10 @@ const mutants: readonly Mutant[] = [
       'carried such a citation and `citationFaults` sweeps every tracked file - the battery breaking ' +
       'the guard it aims at, from its own prose',
     [decisionsFile(`      .filter((id) => !held.has(id))`, `      .filter((id) => held.has(id))`)],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'every-decision-a-file-cites-exists',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -272,7 +305,10 @@ const mutants: readonly Mutant[] = [
         ``,
       ),
     ],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'a-reading-that-could-not-be-taken-exits-differently-from-one-that-found-nothing',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 
   sameOnEveryLens(
@@ -280,7 +316,10 @@ const mutants: readonly Mutant[] = [
     'publishes one battery fewer than the instrument holds, so every figure this repository states ' +
       'about its own defect detection is short by one battery and the page saying so is green',
     [publishedFile(`  batteries: batteries.length,`, `  batteries: batteries.length - 1,`)],
-    killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
+    killed([
+      'every-figure-in-the-readme-is-the-one-the-instrument-declares',
+      THE_ANCHOR_OF_THE_INJECTED_CELL,
+    ]),
   ),
 ]
 
