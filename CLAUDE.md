@@ -3199,6 +3199,24 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   right — a `ReferenceError` naming the global, the file and the line, with nothing in it to say the
   mechanism was never shown to have a destination. ADR-0250.
 
+  **And the exclusion is three places rather than the two anybody would count, which was measured
+  before a line of the contract was written.** A probe under `contracts/` naming `Temporal` at runtime
+  and as a type, run through `npm run test` at `eaf24a6`: untouched it is **exit 1**, 2 test files
+  failed of 32; with **both globs** of `vitest.config.ts` excluding it, 30 files and 718 tests pass and
+  **three errors remain**, every one arriving as an *Unhandled Source Error*, exit 1; with the root
+  `tsconfig.json` excluding it as well, **exit 0**. The third place is the typechecker's own project —
+  vitest typechecks the project rather than the collected set, and `typecheck.ignoreSourceErrors`
+  defaults to false, so turning it on would silence every real source error in every `contract.ts` to
+  serve one contract. **The control is the fourth reading**: with no probe and nothing excluded the
+  suite answers 30 files and 718 tests, identical, so the exclusion is exactly neutral on what remains.
+  **`ESNext.Temporal` is a real lib fragment here** — `tsc -p tsconfig.json` is exit 0 with the probe
+  under it — **and vitest does not honour it**, which closes that route and is published as measured
+  rather than explained. **The order that holds is one commit**: exclusion first excludes a folder that
+  does not exist, contract first puts the suite red on both legs, and the invariant admits no red
+  commit. **And nothing answers for it** — ADR-0250's guard ranges over `theCatalogue`, and this
+  contract enters the repository without entering the catalogue, so the declaration that says what is
+  excluded and what would lift it is owed by the commit that excludes. ADR-0251.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
