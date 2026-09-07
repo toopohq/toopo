@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest'
 import { closureFrom, sourceNamedBy } from '../packaging/reachable.ts'
 
 import { THE_REPOSITORY } from './paths.ts'
+import { battery as meta } from './meta.battery.ts'
 import { THE_BATTERIES, theMeasurement } from './published.ts'
 import {
   batteriesWhereThePlatformDecides,
@@ -97,13 +98,23 @@ describe('which batteries a change has to answer for', () => {
    * A folder beside one a battery injects into is not inside it. Without the separator the prefix test
    * makes `packages/registry-notes.ts` a change to `packages/registry`, which is a battery running on
    * a file it cannot see.
+   *
+   * **It asked for an empty selection until ADR-0246, and that half was a second claim nobody had
+   * separated from this one: that no battery's folder contains another's.** `meta` injects into
+   * `mutation/` and `fixture` into `mutation/fixture`, so `mutation/fixture-notes.ts` is beside one
+   * folder and *inside* the other - and `meta` answering for it is the rule working rather than
+   * failing. What this guard is about survives whole and is now stated per battery: the file beside a
+   * folder is not a change to the battery that injects into *that* folder. The defect it exists for -
+   * a prefix test with no separator - reddens it on every one of the twenty-four.
    */
   it('a-path-beside-a-folder-a-battery-injects-into-is-not-a-path-inside-it', () => {
-    const beside = THE_BATTERIES.map((battery) => `${battery.contractPath}-notes.ts`)
-    const selection = selectionFor(beside, THE_BATTERIES)
+    const answeringForItsOwnSibling = THE_BATTERIES.filter((battery) =>
+      selectionFor([`${battery.contractPath}-notes.ts`], THE_BATTERIES).batteries.includes(
+        battery.name,
+      ),
+    ).map((battery) => battery.name)
 
-    expect(selection.batteries).toEqual([])
-    expect(selection.unaccounted).toEqual(beside)
+    expect(answeringForItsOwnSibling).toEqual([])
   })
 
   /**
@@ -197,12 +208,20 @@ describe('what every battery is built out of', () => {
    * argument is at `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS` and the measurement with it.
    *
    * Seen red by taking the exception out of `everyBatteryAnswersFor`, which selects all twenty-one.
+   *
+   * **It expected nothing until ADR-0246 and now expects one, and the one is not the exception
+   * leaking.** `census.ts` is a file of `mutation/`, and `meta` injects into `mutation/`, so the
+   * ordinary folder rule answers for it - correctly, because a row of that table decides what a cell
+   * of `meta` collects, which is the one battery for which `census.ts` is not *already addressed to a
+   * folder*. What the exception buys is unchanged and is what this still reads: the other
+   * twenty-three do not run. The battery is named through its own declaration rather than
+   * transcribed, so renaming it moves this with it.
    */
   it('a-change-to-a-declaration-left-to-its-own-rows-selects-nothing-and-is-reported', () => {
     const selection = selectionFor([...THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS], THE_BATTERIES)
 
-    expect(selection.batteries).toEqual([])
-    expect(selection.unaccounted).toEqual([...THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS])
+    expect(selection.batteries).toEqual([meta.name])
+    expect(selection.unaccounted).toEqual([])
   })
 })
 

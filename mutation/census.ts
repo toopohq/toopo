@@ -519,6 +519,36 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'mutation/fixture/guards.test.ts': 2,
     'mutation/fixture/second-file.test.ts': 1,
   },
+
+  /**
+   * The meta suite, counted for the first time, because for the first time something measures it.
+   *
+   * **It is thirteen rows and not fourteen, and the missing one is the whole of ADR-0246.**
+   * `instrument.test.ts` is excluded by `under-measurement.vitest.config.ts` - it spawns cells, and a
+   * battery running this suite once per cell would run a battery inside a battery. So its guards are
+   * declared `unreachableGuards` by the battery rather than counted here, and this table says what a
+   * cell of that battery must collect and nothing else.
+   *
+   * **The rows are read off a run rather than counted by hand**, which is available here and is not
+   * available for the contracts: the twelve files above hold no `it.each` over the catalogue, so a
+   * publication does not move a row of this block. What does move one is somebody adding a guard to the
+   * meta suite, which is the door this whole file exists to be.
+   */
+  'mutation/under-measurement.vitest.config.ts': {
+    'mutation/anchors.test.ts': 1,
+    'mutation/attribution.test.ts': 4,
+    'mutation/clean-tree.test.ts': 1,
+    'mutation/contributing.test.ts': 5,
+    'mutation/decisions.test.ts': 8,
+    'mutation/every-job-answered.test.ts': 5,
+    'mutation/hands.test.ts': 3,
+    'mutation/history.test.ts': 9,
+    'mutation/prediction.test.ts': 12,
+    'mutation/readme.test.ts': 14,
+    'mutation/selection.test.ts': 16,
+    'mutation/verdict.test.ts': 6,
+    'mutation/workflows.test.ts': 12,
+  },
 }
 
 /**
@@ -536,10 +566,11 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
  * stopped naming anything would leave calibration refusing a red control that names no guard - *which
  * says only that something did*, the sentence this whole file exists to replace.
  *
- * **One rule and no branch, which is what makes the second refusal cover every battery.** Six of the
- * seven configurations set `root` to their own folder and collect nothing outside it, so the selection
+ * **One rule and no branch, which is what makes the second refusal cover every battery.** Seven of the
+ * eight configurations set `root` to their own folder and collect nothing outside it, so the selection
  * is the whole table for them and a mistyped folder is caught there too - not only under the one
- * configuration that is actually narrowed.
+ * configuration that is actually narrowed. The eighth arrived with ADR-0246 and is a seventh of that
+ * kind: `under-measurement.vitest.config.ts` roots at `mutation/`.
  */
 export const censusFor = (config: string | undefined, folder: string): SuiteCensus => {
   const census = CENSUS[config ?? THE_CONTRACTS_SUITE]

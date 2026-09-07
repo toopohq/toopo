@@ -57,6 +57,7 @@ import { battery as cliUpdate } from './cli-update.battery.ts'
 import { battery as dateAddSpec } from './date-add-spec.battery.ts'
 import { battery as dateAdd } from './date-add.battery.ts'
 import { battery as fixture } from './fixture.battery.ts'
+import { battery as meta } from './meta.battery.ts'
 import { battery as numberParseSpec } from './number-parse-spec.battery.ts'
 import { battery as numberParse } from './number-parse.battery.ts'
 import { battery as numberRoundSpec } from './number-round-spec.battery.ts'
@@ -91,6 +92,7 @@ export const THE_BATTERIES: readonly Battery[] = [
   dateAddSpec,
   dateAdd,
   fixture,
+  meta,
   numberParseSpec,
   numberParse,
   numberRoundSpec,

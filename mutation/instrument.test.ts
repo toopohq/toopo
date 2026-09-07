@@ -68,6 +68,15 @@ import { THE_BATTERIES, survivorFaults, theMeasurement } from './published.ts'
  * spawns real vitest processes. Like the batteries, they require a clean working tree: the
  * instrument checks out arms into the tree it is measuring, and a restore would destroy anything
  * uncommitted.
+ *
+ * **And the guard over that last sentence is no longer in this file, which is a decision and not a
+ * tidy-up.** `a working tree that is not what git says it is` lives in `clean-tree.test.ts`. Because
+ * every guard here spawns cells, this file is the one the battery over `mutation/` cannot collect -
+ * the loop `vitest.config.ts` refuses - so a guard left here is one no cell can redden. That is
+ * tolerable for the forty-seven below, which are declared unreachable and were unmeasurable under any
+ * shape; it was not tolerable for the one over `assertCleanTree`, whose mutant would have been
+ * published as a survivor of the instrument's own floor. It spawns nothing, so it could move; the rest
+ * cannot. ADR-0246.
  */
 
 /**
@@ -986,25 +995,6 @@ void Promise.reject(new Error('a red that never reaches the report'))`,
 
     expect(counted()).toBe(before)
   })
-
-  it(
-    'refuses to measure a working tree that is not what git says it is',
-    () => {
-      // Arms are git refs and the instrument materialises them by checking out over the working
-      // tree, so measuring a dirty tree would both destroy the operator's uncommitted work and
-      // measure an arm that is not the commit it claims to be.
-      const path = join(THE_INSTRUMENT_FOLDER, 'fixture', 'reference.ts')
-
-      try {
-        writeFileSync(path, `${readFileSync(path, 'utf8')}\nexport const dirt = 1\n`)
-
-        expect(() => calibrate(battery)).toThrow(/the working tree carries uncommitted changes/)
-      } finally {
-        execFileSync('git', ['checkout', 'HEAD', '--', 'mutation/fixture'], { cwd: THE_REPOSITORY })
-      }
-    },
-    META_TIMEOUT_MS,
-  )
 })
 
 /**

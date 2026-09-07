@@ -1924,6 +1924,22 @@ would disarm the next run — the instrument's floor made reachable through the 
 moving that one guard to a file that spawns nothing. Costed, not taken, and the trade is the owner's.
 ADR-0245.
 
+**The owner took the middle option, and the guard that decides it was written before the other
+ninety-five.** `mutation/meta.battery.ts` exists: `contractPath: 'mutation'`, a sixth configuration
+excluding the one file that spawns cells, and thirteen census rows. **The hole is closed rather than
+accepted** — the dirty-tree guard is `mutation/clean-tree.test.ts` now, inside what the battery
+collects, and `MT-02` reddens it. **It gained an address in the move**, because a battery pins by
+identifier and `assertGuardsAreAddressed` refuses a run whose guards cannot all be used as addresses;
+measured over the twelve other files, **95 of 95 already carried one and none was duplicated**, so the
+prose titles are exactly the file the battery cannot collect. **The second spawning file does not
+exist** — over the thirteen test files, only `instrument.test.ts` calls `calibrate`, `runBattery` or
+`runSuite`. And **the battery refuted two guards nobody had aimed at it**: `meta` injects into
+`mutation/` and `fixture` into `mutation/fixture`, so two batteries' folders nest for the first time and
+`mutation/fixture-notes.ts` is beside one and inside the other; and `mutation/census.ts` now selects
+`meta` by the ordinary folder rule, correctly, a row of that table being what decides what a cell of
+`meta` collects. Both guards were right about their subject and were carrying a second claim nobody had
+separated from it. ADR-0246.
+
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
 file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
