@@ -242,6 +242,8 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed([
+      'every-figure-in-contributing-is-one-the-contracts-declare',
+      'every-figure-the-readme-gives-about-the-catalogue-is-one-the-contracts-declare',
       THE_ANCHOR_OF_THE_INJECTED_CELL,
     ]),
   ),
@@ -383,5 +385,188 @@ export const battery: Battery = {
     },
   ],
 
-  unprobedRegions: [],
+  /**
+   * The sixty-nine guards this battery collects and no cell of it reddens, declared by the file each
+   * one lives in.
+   *
+   * **They are a measurement of the battery and never an indictment of the guards**, which is what the
+   * name is for. The floor this battery was written to is one cell per collected guard file, and every
+   * file below has one; what is unprobed is the rest of each file's region, which is ordinary work at
+   * the price this repository has now measured five times - about 1.3 candidate runs per cell.
+   *
+   * **It is the largest such declaration in the instrument and that is stated rather than smoothed**:
+   * 69 of the 96 guards this battery collects are silent, so a first battery over this folder buys a
+   * witness for the file and never for the guard. The two thirds are where the next unit goes.
+   */
+  unprobedRegions: [
+    {
+      nature: 'claims detection',
+      guards: [
+        'a-red-above-the-line-a-pin-draws-in-full-is-not-reported',
+      ],
+      reason:
+        'the 1 of `attribution.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'the-ratio-contributing-argues-from-is-the-one-the-counts-give',
+        'every-family-the-census-counts-is-a-field-of-the-record',
+        'every-rule-stage-1-applies-is-named-in-contributing',
+        'contributing-names-no-rule-stage-1-does-not-have',
+      ],
+      reason:
+        'the 4 of `contributing.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'every-decision-declares-what-it-governs-and-what-keeps-it',
+        'no-decision-governs-a-guard-file',
+        'every-decision-says-what-would-reopen-it',
+        'every-path-a-decision-governs-exists',
+        'every-file-a-decision-governs-cites-it-back',
+        'every-guard-a-decision-names-is-one-its-suite-collects',
+        'every-decision-a-record-links-to-is-the-one-it-names',
+      ],
+      reason:
+        'the 7 of `decisions.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'a-job-its-own-timeout-cancelled-is-a-job-that-did-not-answer',
+        'a-job-that-failed-is-named-too-and-the-order-does-not-follow-the-input',
+        'an-answer-that-names-no-job-is-refused-rather-than-read-as-well',
+        'an-answer-that-is-not-a-set-of-job-results-is-named-rather-than-parsed',
+      ],
+      reason:
+        'the 4 of `every-job-answered.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'every-population-a-reading-can-name-is-one-it-really-sweeps',
+        'every-paragraph-a-reading-reports-is-attributed-to-a-commit',
+      ],
+      reason:
+        'the 2 of `hands.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'every-commit-this-repository-cites-is-one-it-has',
+        'an-identifier-two-commits-answer-to-is-refused',
+        'no-object-of-the-graph-carries-a-refused-address',
+        'the-address-sweep-reaches-the-commits-and-the-annotated-tags',
+        'a-refused-address-is-declared-as-a-well-formed-digest',
+        'an-address-is-digested-from-its-lowercased-self',
+        'an-address-in-free-text-is-found-and-matched',
+        'no-worktree-is-registered-beside-this-repository',
+      ],
+      reason:
+        'the 8 of `history.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'a-battery-that-agrees-with-its-own-measurement-predicts-nothing-and-says-so',
+        'a-pin-naming-a-guard-the-measurement-does-not-redden-is-a-fault',
+        'a-pin-whose-verdict-the-measurement-contradicts-is-a-fault',
+        'a-guard-reddening-where-the-battery-declares-silence-is-a-fault',
+        'a-guard-nothing-reddens-and-nothing-accounts-for-is-a-fault',
+        'a-measurement-with-no-guard-identities-is-unread-and-never-clean',
+        'a-column-with-no-guard-list-is-unread-even-beside-columns-that-have-one',
+        'a-measurement-taken-on-another-platform-is-unread',
+        'a-measurement-that-is-not-a-measurement-is-named-rather-than-parsed',
+        'a-cell-the-measurement-does-not-hold-is-named-and-never-judged',
+        'a-cell-the-battery-no-longer-declares-is-named',
+      ],
+      reason:
+        'the 11 of `prediction.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'the-readme-says-what-caught-means-where-a-defect-is-not-everywhere',
+        'the-readme-says-its-figures-are-an-assertion-and-not-an-observation',
+        'every-command-the-readme-tells-a-reader-to-type-carries-the-invocation',
+        'the-readme-never-gives-a-survivor-total-without-its-split',
+        'every-contract-the-catalogue-holds-is-named-on-the-readme',
+        'every-file-the-readme-says-a-contract-holds-is-one-the-contract-declares',
+        'every-field-the-readme-quotes-from-a-case-is-the-one-the-contract-declares',
+        'every-property-the-readme-names-is-one-the-contracts-suite-collects',
+        'the-header-the-readme-shows-is-the-one-the-installer-writes',
+        'the-readme-names-the-banner-form-it-does-not-show-and-a-contract-that-carries-it',
+        'the-readme-names-every-root-an-install-can-write-to',
+        'the-import-line-the-readme-shows-is-the-file-it-just-showed',
+      ],
+      reason:
+        'the 12 of `readme.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'every-battery-answers-for-the-folder-it-injects-into',
+        'a-changed-file-no-battery-answers-for-is-reported-and-never-dropped',
+        'a-path-beside-a-folder-a-battery-injects-into-is-not-a-path-inside-it',
+        'a-selection-is-in-the-order-the-batteries-are-declared-in',
+        'every-file-a-run-of-a-battery-reads-is-declared',
+        'a-change-to-what-every-battery-is-built-out-of-selects-every-battery',
+        'a-declaration-left-to-its-own-rows-is-one-a-run-really-reads',
+        'a-change-to-a-declaration-left-to-its-own-rows-selects-nothing-and-is-reported',
+        'a-push-that-changed-nothing-a-battery-answers-for-selects-none-and-says-so',
+        'a-first-push-selects-every-battery-rather-than-none',
+        'a-base-this-checkout-does-not-hold-selects-every-battery-rather-than-none',
+        'the-log-carries-what-was-passed-over-and-not-only-what-was-chosen',
+        'the-entry-point-answers-for-the-whole-instrument-as-well-as-for-the-selection',
+        'every-battery-holding-a-cell-one-platform-alone-measures-is-named-to-the-gate',
+        'the-entry-point-answers-for-the-platform-no-gate-of-this-file-can-measure',
+      ],
+      reason:
+        'the 15 of `selection.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+    {
+      nature: 'claims detection',
+      guards: [
+        'a-run-cut-short-is-told-from-a-run-that-reddened',
+        'a-red-that-names-no-guard-is-answered-by-what-the-run-printed',
+        'the-report-and-the-exit-code-are-both-reported-and-neither-is-preferred',
+        'a-quotation-of-a-run-says-what-it-left-out',
+        'a-run-that-printed-nothing-says-that-rather-than-promising-a-cause',
+      ],
+      reason:
+        'the 5 of `verdict.test.ts` no cell of this battery aims at. The floor this ' +
+        'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
+        'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
+        'file names rather than a defect nobody can find',
+    },
+  ],
 }
