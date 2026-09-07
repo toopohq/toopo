@@ -2412,6 +2412,28 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   contributor floor rather than about a leg, and `22.18.0` is the leg that exists to redden the day
   that floor rises. ADR-0220.
 
+  **That framing is corrected: the blocker is the schema and not the floor, and October moves neither.**
+  **The flag is closed twice** — node v24.15.0 under `--harmony-temporal` carries a `Temporal` of
+  **eleven** own property names, the nine plus the `Calendar` and `TimeZone` the erratum removed, which
+  is the shape ADR-0215's probe refuses to print on *and* which the pinned compiler answers **TS2339**
+  for; and node **v25.6.0** answers `undefined` bare, under `--harmony-temporal` and under `--js-staging
+  --harmony`. **The compiler knows Temporal and this repository does not ask it to**: under `lib:
+  ["ES2022"]` the namespace is TS2503 and the value TS2304, there is no `es2026` lib, the fragment is
+  `esnext.temporal`, and `tsc -p tsconfig.json --lib ES2022,ESNext.Temporal` is **exit 0** over the whole
+  tree — so the widening costs nothing to what exists and opens one thing, a global claim about the
+  runtime made on a floor of `^22.15.0`. **ADR-0220's third exit is half refuted**: scoping a suite to a
+  configuration is machinery that exists — eleven vitest configurations, one two days old with its own
+  census key and its own battery — and routing a *battery* to a runtime is machinery that does not,
+  `PlatformFamily` being the closed union `'windows' | 'posix'`. **What refuses is the user.**
+  `targetEnvironments` is `readonly string[]`, `documentary`, inside the digest, declared identically as
+  `['node', 'browser', 'bun']` by all seven contracts and read by nothing outside the schema; and
+  `THE_WAYS_TO_RUN_IT` is about package managers for the client. So the catalogue has no way to say that
+  a contract needs a runtime, and a reader would receive a file answering **TS2304** under an ordinary
+  `lib` and **ReferenceError** on the floor, with the install exiting 0. **And `array/group-by@1`'s rule
+  does not transfer** — it reaches `Map.groupBy` through a cast, its subject is a divergence replay and
+  never `reference.ts`, so *fails loudly instead of skipping* would stop meaning *this runtime cannot
+  answer* and start meaning *this contract does not run here*. ADR-0247.
+
 **Still open, and what each one now costs.**
 
 - **That the four forms a contract page offers still run, and still land the bytes the catalogue
@@ -3100,6 +3122,16 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   refused** — the requirement is declarable as prose in `identity.inputDomain`, where every other
   statement of what a contract refuses already lives, and a ground biting on
   undeclarable-by-mechanism would refuse all seven published contracts. ADR-0220.
+
+  **It has a second consequence now, and it is the one that decides a contract rather than a page.**
+  ADR-0220 measured that the field refuses nothing; ADR-0247 measured that it cannot carry the one
+  requirement a contract has ever needed. A Temporal contract needs a runtime the declared floor does
+  not have, and the only two surfaces that could say so are this field — `readonly string[]`,
+  `documentary`, inside the digest, identical across all seven contracts, read by nothing outside the
+  schema — and `THE_WAYS_TO_RUN_IT`, which is four package managers for the client and says nothing
+  about a contract. **So the eighth contract is blocked on this entry rather than on the contributor
+  floor**, and it is blocked in the expensive direction: the field is inside `contractSnapshot`, so
+  whatever carries the requirement has to exist *before* the digest is minted or never. ADR-0247.
 
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
