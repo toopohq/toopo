@@ -252,9 +252,11 @@ const mutants: readonly Mutant[] = [
 
   sameOnEveryLens(
     'MT-09',
-    'reports a citation of a record that exists and passes over one of a record that does not, so ' +
-      '`ADR-9999` written into any file of this repository resolves silently while every real citation ' +
-      'is named as broken',
+    'reports a citation of a record that exists and passes over one of a record that does not, so a ' +
+      'four-digit citation naming no record resolves silently while every real citation is named as ' +
+      'broken. Its own first run reddened the control rather than a cell, because this description ' +
+      'carried such a citation and `citationFaults` sweeps every tracked file - the battery breaking ' +
+      'the guard it aims at, from its own prose',
     [decisionsFile(`      .filter((id) => !held.has(id))`, `      .filter((id) => held.has(id))`)],
     killed([THE_ANCHOR_OF_THE_INJECTED_CELL]),
   ),
