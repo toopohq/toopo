@@ -1940,6 +1940,25 @@ exist** — over the thirteen test files, only `instrument.test.ts` calls `calib
 `meta` collects. Both guards were right about their subject and were carrying a second claim nobody had
 separated from it. ADR-0246.
 
+**What it holds and what it costs are measured.** Eleven cells, one arm, one lens, **108 seconds end to
+end** against ADR-0244's projection of *roughly 7 to 21 minutes* — that projection having been built on
+9.2 s per cell over a population this suite is the cheapest member of. Of the **96 guards it collects,
+15 redden, 12 are out of reach and 69 are unprobed**, exit 0 with nought unaccounted for and nought
+unclaimed, and `npm run predict` reads 24 batteries with 0 faults and 0 questions it could not ask.
+**Sixty-nine of ninety-six silent is the largest such declaration in the instrument**, and it is what
+the floor bought: one cell per collected guard file is a witness for the file and never for the guard.
+**Two findings cost a run each and are worth more than the count.** `anchors.test.ts` reddens on *every*
+cell by construction — a cell replaces the very text that guard requires to occur once — so it is named
+in every pin and **no guard of this battery can ever be seen red alone**; it also nearly published a
+false kill, MT-06 coming back `killed` on that companion and on nothing else until the attribution's
+*alone on MT-06* said so. And the control was red before any cell ran, because MT-09's own description
+carried a citation of no record and `citationFaults` sweeps every tracked file — **the battery breaking
+the guard it aims at, from its prose rather than from its edit**. **Eight of the nine entries are
+unblocked and the ninth is a correction**: ADR-0244 wrote that all nine have a reader that would live in
+`mutation/`, and ADR-0243's deployment invariant does not — its only reader is inside
+`workflows.test.ts`, whose twelve guards are this battery's whole `unreachableGuards` entry, and a cell
+aims at a choice rather than at a guard. ADR-0246.
+
 **An entry is written in two halves, and the reason is that three times in one week a published
 sentence of this repository was false — twice with the true sentence and the false one in the same
 file.** That is not bad luck. It is a list in prose describing what the code does, and the code moves
@@ -3389,6 +3408,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   repository refuses without an argument, and taking it inside a unit about dead code would be deciding
   what the meta suite is worth as a side effect. Priced and not taken. ADR-0174.
 
+  **The trade is gone and the price is what is left.** A battery injects into `mutation/` since
+  ADR-0246, so a guard here is no longer born unwitnessed: it would sit in one of the thirteen files
+  `under-measurement.vitest.config.ts` collects, and a cell mutating the module that resolves an
+  `extends` would redden it. What refuses it now is only that nobody has written it — which is a unit
+  and not an argument. ADR-0246.
+
 - **That an exported name is one something outside its file could want.** Measured at `b1fcff6` over
   the 1 065 names this repository exports: **135 are mentioned by no other tracked file**, of which 14
   are frozen and 13 occur once in their own file - the declaration and nothing else. The remaining
@@ -3496,7 +3521,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   reaches it*. Every one of those declarations was written deliberately and none is silent; what had
   never been done is to read them together, and more than half of that suite is a region its battery
   does not probe. **The meta suite is outside all of it**: no battery injects into `mutation/`, so its
-  **115 guards over 10 files** are out of this population by construction. ADR-0199.
+  **115 guards over 10 files** are out of this population by construction. ADR-0199. **That clause
+  expired at ADR-0246 and the population it names moved rather than closing**: `meta` collects **96 of
+  the meta suite's 143 guards** — the forty-seven of `instrument.test.ts` stay outside by construction,
+  that file being the one a battery may not collect — and of the 96, **15 redden, 12 are out of reach
+  and 69 are unprobed**. So the meta suite enters this reading with the largest unprobed bucket in the
+  instrument rather than with none.
 
   **And that half has now been priced, on the same folder the other half was.** ADR-0209 takes the 34
   guards of `round-trip.test.ts` - the wholly unprobed file carrying the most of them, by a rule fixed
@@ -3985,6 +4015,12 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   carried the same defect, with nothing able to say so. **So what would reopen it is not a better
   capture rate — it is a battery able to redden a guard of the meta suite.** ADR-0230.
 
+  **That reopening condition has fired.** `meta` exists since ADR-0246 and collects the twelve files
+  `instrument.test.ts` is not one of, so a guard over the resolvable form would sit inside what a cell
+  can redden. What is left is the reason it was refused *first* — it would have caught two of the six
+  false claims — and that is a rate rather than a witness, so the entry is priced-and-not-taken again
+  rather than blocked. ADR-0246.
+
   **And the limit these readings kept declaring — *every check compares a number with a count and none
   reads what is being counted* — has its instance, in the record that declared it.** ADR-0228 credits
   `aaf625f` with falsifying three claims and lists three items; **it falsified one**. That commit's diff
@@ -4200,6 +4236,11 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   construction, which is the shape this repository refuses without an argument. Writing the three `0x00`
   as `'\0'` first makes the rule total, with no declared exception. Priced and not taken here, because a
   unit building a page is not where one decides what the meta suite is worth. ADR-0140.
+
+  **Both halves of that price moved at ADR-0246.** A battery injects into `mutation/` now, so the guard
+  is not born unwitnessed; and the census does count the folder, thirteen rows of it, under
+  `under-measurement.vitest.config.ts`. What stands is the sweep and the three `0x00` written as
+  `'\0'` first — ordinary work, with nothing structural left in the way. ADR-0246.
 
 - **That a value a guard looks for appears once on the surface it looks at.** A guard that asks
   whether a figure is *somewhere* on a page is satisfied by any occurrence of it, and a page that

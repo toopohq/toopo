@@ -60,10 +60,13 @@ and it is exactly wrong: what the refusal has to see is dirt *outside* this run'
 left behind by an interrupted run of another battery, which is the state `run.ts:545` says nothing else
 covers.
 
-**Measured: `killed`, on `a-dirty-working-tree-is-refused-before-anything-is-measured` and on nothing
-else.** The guard moved to `clean-tree.test.ts` is inside what the battery collects, the cell reddens
-it alone, and the pin names it in full under ADR-0076's line. The hole ADR-0245 §5 named is closed
-rather than traded away.
+**Measured: `killed`, on `a-dirty-working-tree-is-refused-before-anything-is-measured`.** The guard
+moved to `clean-tree.test.ts` is inside what the battery collects and the cell reddens it. The hole
+ADR-0245 §5 named is closed rather than traded away, and the pin names every guard the cell reddened
+under ADR-0076's line — which is two, because of §4 below.
+
+**It is not *alone* and no guard of this battery can be**, for a reason that is the apparatus rather
+than the cell: §4.
 
 **Its failing direction is expensive, and that is a property of the guard rather than of the cell.**
 Any mutant that falsifies the claim is one that lets `calibrate` past its first statement, at which
@@ -102,7 +105,39 @@ files, `instrument.test.ts` is the only one calling `calibrate`, `runBattery` or
 names the machinery in comments; `attribution.test.ts` says in its own header that it lives outside
 `instrument.test.ts` *because it is pure*.
 
-### 4. What the battery reddened that nobody had asked it to
+### 4. The red every cell carries, and it is the apparatus rather than a detection
+
+`anchors.test.ts` requires every battery cell's `find` text to occur exactly once in the file it names.
+A cell of *this* battery replaces that text in a file of `mutation/`, so while the cell is injected its
+own anchor occurs nought times and the guard reddens — **on every one of the eleven, always, whatever
+the defect is**. No other battery meets it, because no other battery collects that guard.
+
+It is named in every pin rather than declared away, which is what `unclaimedRedsIn` asks for: *establish
+which, then name it in the pin.* **What it costs is that no guard of this battery can ever be seen red
+alone**, so the `alone` column is empty by construction here and the *never alone* bucket is not a debt
+this battery can pay.
+
+**And it is what nearly published a false kill.** MT-06 began as the white-space collapse of
+`theSectionOn` and came back `killed` — on the anchor guard **and nothing else**. Killed by the
+apparatus and by no guard, which is exactly the reading this instrument exists to refuse; the only
+thing that said so was the attribution's *alone on MT-06*. Re-aimed at the population both root
+documents count over, it reddens `every-figure-in-contributing-is-one-the-contracts-declare` and
+`every-figure-the-readme-gives-about-the-catalogue-is-one-the-contracts-declare` — two guards of the two
+files it was written for.
+
+### 5. The control was red before any cell ran, and the cause was the battery's own prose
+
+MT-09 aims at `citationFaults`, which sweeps **every tracked file** for `ADR-\d{4}` and refuses a
+citation naming no record. Its description carried such a citation as an illustration, so the first run
+stopped at calibration with `the unmutated M/as-committed is red` naming
+`every-decision-a-file-cites-exists`.
+
+**The battery broke the guard it aims at, from its sentence rather than from its edit.** It is the
+narrowest form of the self-reference this folder was expected to produce, it cost one run, and it is
+written into the cell rather than quietly repaired — a battery over the instrument is measured by the
+instrument's own guards, and its prose is inside their population.
+
+### 6. What the battery reddened that nobody had asked it to
 
 **Two guards of `selection.test.ts` are refuted by the battery's own existence, and both were right
 about their subject and wrong about a second claim nobody had separated from it.**
@@ -120,12 +155,43 @@ a row of that table decides what a cell of `meta` collects, so `meta` is the one
 census is not *already addressed to a folder*. What the exception buys — the other twenty-three not
 running — is unchanged, and the guard reads that.
 
-### 5. What it unblocks, measured rather than counted forward
+### 7. What the battery holds, measured
 
-ADR-0244 said all nine entries blocked by the witness gain one in principle and three could be aimed at
-immediately. **What this record establishes is one of the nine and the mechanism for the rest**: its own
-`confirmed-by` names `battery: meta`, which is the pair ADR-0201 recorded as one that *cannot be formed
-here at all*.
+**Eleven cells, one arm, one lens, and the whole battery runs in 108 seconds** — measured end to end on
+this machine at `e1eefe0`, calibration included, against ADR-0244's projection of *roughly 7 to 21
+minutes* and a bound of 79. That projection was built on 9.2 s per cell across a population of
+twenty-three; this battery's suite is the meta suite without `instrument.test.ts`, which is the cheapest
+in the instrument.
+
+Of the **96 guards it collects**: **15 redden**, of which fourteen are witnesses of a cell and one is
+§4's structural companion; **12 are out of reach**, declared with the reason; and **69 are unprobed**,
+declared by the file each lives in. Exit 0, every cell agreeing with its pin, nought unaccounted for and
+nought unclaimed. `npm run predict` reads **24 batteries, 0 faults, 0 questions it could not ask**.
+
+**Sixty-nine of ninety-six silent is the largest such declaration in the instrument, and it is stated
+rather than smoothed**: the floor this unit set is one cell per collected guard file, so what a first
+battery over this folder buys is a witness for the file and never for the guard. The two thirds are
+where the next unit goes.
+
+### 8. What it unblocks: eight of the nine, and the ninth is a correction to ADR-0244
+
+That record wrote that **every one of the nine has a reader that would live in `mutation/`**. Measured
+against the battery, it holds for eight and fails for one.
+
+**The one it fails for is ADR-0243's deployment invariant.** Its guard would live beside
+`workflows.test.ts`, whose subject is `.github/workflows/` and which imports nothing of this folder but
+`THE_REPOSITORY` — so the only edit here that reaches it is one to where the repository root is, which
+every guard of every file reads, and `mutants.ts` says a cell aims at a choice and never at a shared
+mechanism. Its twelve guards are this battery's whole `unreachableGuards` entry. **It is a line of work
+and not a refusal**: extracting the reader from the test file into a module of `mutation/` makes it
+witnessable like the other eight.
+
+**And one of the nine is not merely unblocked but already carries a cell.** ADR-0244 named `A_CITATION`
+in `mutation/history.ts` as one of the three whose reader exists today; `MT-05` narrows it and reddens
+`the-citation-sweep-reaches-the-prose-and-the-declaration`.
+
+**The pair itself is the milestone.** This record's `confirmed-by` names `battery: meta`, which is what
+ADR-0201 recorded as a pair that *cannot be formed here at all*.
 
 ## Consequences
 
@@ -138,6 +204,13 @@ here at all*.
   a push touching the instrument pays this battery.
 * **Two guards were repaired on claims they were carrying without stating**, which is this repository's
   own recurring class arriving through a new door.
+* **No guard of this battery can be seen red alone**, §4's companion being red on every cell, so the
+  *never alone* bucket gains fifteen members this battery can never empty.
+* **A count in `run.ts` went stale and is left standing rather than repaired**: *the six configurations
+  of this repository set `root` to their own folder* is seven of eight now. The constraint on this unit
+  was that nothing in `run.ts` moves, and the sentence's argument — that narrowing is expressible only
+  under the contracts' configuration — is unaffected by the number. It is named here rather than
+  corrected in silence. `census.ts`'s copy of the same count was in the unit's reach and was corrected.
 
 ## What would reopen this
 
@@ -150,6 +223,10 @@ here at all*.
 * **A cell of this battery editing `mutation/fixture`.** `clean-tree.test.ts` restores that folder and
   the fixture's own calibration checks it out, so such a cell would read as a survivor of a defect that
   was never present.
+* **`workflows.test.ts`'s reader moving into a module of `mutation/`.** §8's one failure closes, the
+  twelve leave `unreachableGuards`, and ADR-0243's invariant becomes a guard somebody can write.
+* **The sixty-nine falling.** They are the whole of what this battery does not yet say, and the rate at
+  which they fall is what would turn ADR-0244's *between about 30 and 95 cells* into a figure.
 
 ## More Information
 
