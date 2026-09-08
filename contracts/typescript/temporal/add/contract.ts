@@ -323,15 +323,39 @@ export const theDivergences: readonly LanguageDivergence[] = [
 // ---------------------------------------------------------------------------
 
 /**
- * The number of cases every property in this contract is tested on.
+ * The number of cases every property in this contract is tested on. Why this is contract data at all
+ * is the catalogue's rule; the figure is this contract's, and it is measured here.
  *
- * **It is not measured, and that is stated rather than smoothed.** The catalogue's other contracts
- * choose this figure by timing three runs at 100, 1 000 and 10 000 draws; no runtime in this
- * repository carries `Temporal`, so that reading cannot be taken here and no figure is claimed for
- * it. What stands instead is `number/round@1`'s measured 1 000, adopted because the population this
- * contract draws from is small and enumerable - three carriers, ten units, and a handful of
- * magnitudes each - so a draw count an order above fast-check's default already re-draws the region
- * the arbitraries were built to hit. The measurement is owed the day a leg carries the runtime.
+ * **The catalogue takes two readings and not one, which this file said wrongly before it took
+ * either.** Five of the seven other contracts time three runs at 100, 1 000 and 10 000 draws.
+ * `date/add@1` does not - it reads how often the mutant its property exists to catch diverges.
+ * And `object/deep-equal@1`, the most recent and the most explicit, takes both and says in as many
+ * words that **the clock is not what chose it**: what chose it is the count at which every declared
+ * shape is reached. Both are taken here, and they agree.
+ *
+ * **What each count reaches.** The generator's declared shapes are the pairs of a carrier and an
+ * outcome, and there are **22** of them. Over ten seeds at each count: **100 misses one to three of
+ * the twenty-two on nine seeds of ten**, and where it misses none it reaches its rarest once or
+ * twice; **1 000 misses none on ten of ten**, its rarest reached 5 to 11 times; **10 000 misses none
+ * either** and reaches that same rarest 78 to 110 times. So the order above fast-check's default is
+ * what buys the coverage, and the order above *that* buys the same twenty-two shapes ten times over.
+ *
+ * **What each count costs.** Three runs of this contract's property file at each count, on node
+ * v24.15.0 under `--harmony-temporal`: **21-24 ms, 108-112 ms and 770-781 ms** of test time. An order
+ * over the default is bought for about 87 ms; the next order costs **7.7 times** that. It is the
+ * dearest of the eight contracts at every count, at roughly twice `string/slugify@1`.
+ *
+ * **The engine is the draft and the reading is still this contract's own**, because neither half asks
+ * the engine what it thinks: the shapes are counted from a carrier's tag and its own calendar fields,
+ * which is why the case replay was sound on the draft too, and the durations are three counts timed
+ * against each other in one process. What no reading here can be is a *comparison* with the seven,
+ * whose figures were taken on a developer machine with no `Temporal` at all; a reading on a runner
+ * would swap one coordinate for the other rather than holding both. ADR-0258.
+ *
+ * **And two of the five outcomes are unreachable from this generator**, measured as 0 at every count
+ * and every seed: `duration-not-read`, because every key drawn is a unit and at least one is always
+ * named, and `out-of-range`, because the counts are drawn in [-3, 3]. They are settled by four rows
+ * of block 4.4 and by no property, which is a limit of the properties rather than of the table.
  */
 export const propertyRuns = 1000
 
