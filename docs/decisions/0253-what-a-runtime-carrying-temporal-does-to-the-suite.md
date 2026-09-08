@@ -98,7 +98,9 @@ collected is this outcome and never the first.
 
 ### The reading, and it is none of the three as they were written
 
-Run `34201284476` on `d8a75da`, job `the-temporal-reading`, `ubuntu-latest`, **node v26.8.1**.
+Run `34201284476`, job `the-temporal-reading`, `ubuntu-latest`, **node v26.8.1**. The coordinate is the
+run and never a commit, because the branch is deleted and its commits went with it - which is a
+correction this record earned rather than a convention it followed, and the last section says how.
 
 | | what it answered |
 | --- | --- |
@@ -141,7 +143,8 @@ widening is the **incremental cache its typechecker keeps**: vitest spawns
 read in the function that spawns the checker, so every run leaves that file behind and a `lib` widened
 against one written under the narrower one is not honoured.
 
-Measured on node v24.15.0 at `dc6d6f2`, three runs, nothing else moving:
+Measured on node v24.15.0 over `cced79f`'s tree - the exclusion lifted and this record added, so the
+code under measurement is that commit's to the byte - three runs, nothing else moving:
 
 | state | `Type Errors` |
 | --- | --- |
@@ -294,6 +297,25 @@ nothing else changed, the file reports **1 failed of 12**, naming
 by looking for a job whose text matches `npm publish`; one sweeps whole files for an identity token and
 would fire the moment a new job granted itself one; one sweeps for a long-lived npm credential; and one
 is about the gate rather than about any job beside it.
+
+### The unit broke the invariant it was written under, and the cause is a coordinate
+
+**`main` was red on both legs for one commit**, `1834e20`, and the cause is this record's own citations.
+It cited `d8a75da` and `dc6d6f2` - two commits of the throwaway branch - and **deleting the branch
+made both unreachable**, so `every-commit-this-repository-cites-is-one-it-has` reddened the `meta` step
+of `suites (22.18.0)` and `suites (24)` at once, 1 failed of 147.
+
+**The local check was green through it, and that is the half worth keeping.** `npm run meta` was run on
+this working copy after the commit and passed: a clone that *held* those commits until a moment ago
+still holds their objects, so `git rev-list --all` answers here and answers nowhere else.
+`deadCitationFaults` is not wrong - it read a graph this machine had and a runner did not.
+
+**So the rule is that a coordinate on a throwaway branch is not a coordinate.** A run identifier
+survives the branch; a commit of it does not. What replaces the two above is the run for the CI reading
+and `cced79f`'s tree for the local one, which is exactly as true and resolves for everybody.
+
+**It is stated here rather than smoothed** because ADR-0252's invariant is absolute and this unit broke
+it - one commit, both legs, repaired by the next.
 
 ## Consequences
 
