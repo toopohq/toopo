@@ -3287,6 +3287,43 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   all twenty-four batteries**, which is right rather than merely accepted, the declaration having become
   what one battery expects to find. ADR-0254.
 
+  **And the property that fell is repaired, on a ruling that took an option neither the record nor
+  the assistant had named.** ADR-0253 left two decisions — shrink the generator, or answer
+  `duration-not-read` — and the owner took a third: **declare the case, keep the generator, and give
+  it its own reason.** `counts-of-two-signs` is the fourth literal of `failureReasons`. **What the
+  ruling exposed is that the reference's total `catch` was not too wide — it believed the engine.**
+  Measured on node v24.15.0 under `--harmony-temporal`, all three carriers, both `Duration` modes and
+  `Temporal.Duration.from` refuse a mixed-sign bag with one message, **`RangeError: Invalid time
+  value`** — so the language classes a disagreement of signs as a *range* error, and an implementation
+  reporting what it caught publishes the language's own misnomer as its diagnostic. That is
+  ADR-0225's *an overflow is not an inapplicability* holding a second time against a second collapse,
+  and the second collapse came from the language rather than from a reading.
+
+  **The unit found a hole older than itself: a bag can trip two reasons and nothing said which wins.**
+  `{years: 400000, days: 1}` on a `PlainYearMonth` trips the unit and the range; `{dayz: 9, days: 1}`
+  on a `PlainTime` trips the key and the unit. The reference picked one in each and the contract had
+  never promised the pick, so a second conforming implementation could answer the other. The order of
+  `failureReasons` **is** the precedence now — one declaration, because a second list of four literals
+  is two places that drift — and it is **derived rather than chosen**: a refusal reading the bag alone
+  comes before one reading the carrier, and the sign comes after the keys because reading a count is
+  only defined once the keys are units. **The language agrees, and a control is what says so**:
+  `PlainTime.add({days: 1})` answers `12:30:00` with the day dropped in silence, and
+  `add({days: 1, seconds: -1})` **throws** — the only difference is the sign, so the throw can only be
+  the sign.
+
+  **The red was seen before the green and it is three of three.** With the table and the properties
+  written and the reference untouched: **3 failed of 115**, and each fails for its own reason — the
+  plain row on `out-of-range`, the precedence row on `unit-the-carrier-does-not-apply` naming `days`,
+  and the new property. **`p5` was green in that run**, which is what says its precondition is exact:
+  the mixed sign was its only failure. After the check: **115 of 115, exit 0**, `tsc` exit 0 out of
+  band, ledger `18cc4e82…` at 1 206 bytes and `pnpm freeze` 3 passed, both unmoved because this
+  contract mints no binding. **The table is 47 rows and the properties are seven**: `p5` keeps its
+  address and its claim and sets a population aside, `p7` settles it, and the two have different
+  failure conditions — move the sign check after the carrier's and `p7` reddens with `p5` green
+  throughout. **What is owed is the language's own reading of the three sign rows**, which is this
+  contract's `liftedBy` rule applied to itself; what cannot move is the literal, which rests on the
+  specification rather than on an engine. ADR-0255.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
@@ -4557,6 +4594,25 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   than shape would have to be shown to separate them. Priced as its own unit and not taken here,
   because a rewrite is the wrong place to widen the guard that reads it. ADR-0124.
 
+  **And the guard that does exist resolves against today's refs rather than against what a reader will
+  keep, which is a second and sharper half.** `theHistory()` is `git rev-list --all`, so a citation is
+  live while *any* ref reaches it — and a branch deleted afterwards kills it, which cost `main` a red
+  window across both legs at `1834e20`. **The mechanism is cheap and it is not born green.**
+  `deadCitationFaults` already takes its population as an argument, so a second one — `main` and the
+  tags, which is what a clone keeps — is one function and one call site, no new guard and no census
+  row, and it fires the moment a record cites a branch commit rather than the moment the branch goes.
+  **`theHistory()` itself may not narrow**: `history.test.ts` reads it to require the address sweep to
+  cover every commit, and ADR-0095's whole argument is that `--all` is the only spelling a tag cannot
+  fall out of.
+
+  **Measured at `807be8b`: 940 commits are reachable, 939 from `main` and the tags, and the one that is
+  not is `36e4bbb` — cited ten times across four files**, `.github/workflows/suites.yml`, this file,
+  ADR-0169 and `mutation/cli-install.battery.ts`. It is reachable only from `the-windows-reading`, so
+  **that branch is load-bearing for ten citations and nothing here says so** — the fact has been carried
+  by an instruction to whoever is working rather than by any mechanism. The repository's own remedy is
+  one act and no code: an annotated `evidence/*` tag, the precedent three such tags already set. Named
+  and not taken, because a tag is an act the unit that found this was forbidden. ADR-0254.
+
 - **That a breakpoint is the arithmetic of the lengths it separates.** Two guards now keep that every
   ceiling and every track of this site's layout is derived — `every-ceiling-on-a-box-is-derived-and-never-typed`
   and `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` — and **neither can read
@@ -5057,6 +5113,35 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   one `TypeCheckError` either way. So the failure is not only silent, it can be *loud in the wrong
   direction* - a cell that looks caught. The battery's own header had recorded the same hazard for its
   three cache mutants, in as many words, and nothing generalised it. ADR-0200.
+
+- **That an edit a battery injects lands inside the folder that battery answers for.** `applyEdits`
+  composes `join(THE_REPOSITORY, contractPath, edit.file)` and refuses nothing about the result: a
+  `file` written `../../packages/site/style.ts` resolves, the edit applies, and the cell measures a
+  folder its battery does not answer for. **The one refusal that function makes is about the anchor** —
+  it must match exactly once — and an anchor that matches once outside the folder passes it.
+
+  **It became load-bearing rather than merely true at ADR-0254.** `registry-storage`'s expectation is
+  now derived from `mutation/excluded-contracts.ts`, and what makes that sound is precisely that no
+  edit of that battery can reach `mutation/`. So a property that was a description of what the
+  batteries happen to do is now a premise one battery's predicate rests on, and nothing keeps it.
+
+  **Measured at `807be8b` over every battery: 129 `file` declarations, 83 distinct, and nought
+  carrying a `/` or a `..`.** So the convention holds everywhere today and is kept by nobody.
+
+  **Where this looked**: `applyEdits` in `mutation/run.ts`, whose composition is the whole of what
+  decides it and whose only throw is the anchor's; `mutation/check-anchors.ts`, which reads a cell's
+  `find` text and never its path; and `THE_CONTRACTS` in `mutation/registry-storage.battery.ts`, whose
+  comment states the property as an argument and cites no mechanism for it.
+
+  **The population is every `file` of every arm, lens and mutant**, and it grows with each cell.
+  **What would close it is one expression** — refuse a composed path that does not stay inside
+  `THE_REPOSITORY/contractPath`, which `staysInside` already spells one package away — and the price is
+  the witness: the refusal would live in `mutation/`, so a guard over it costs a census row and a cell
+  of `meta`, and it would be **born green on today's 129**. The event it would catch is a battery
+  gaining an edit that escapes its folder, and what that event costs is a battery measuring code it
+  does not answer for — which is ADR-0168's *a guard reddening on a mutant with no causal path to it*
+  one floor up, where that record found it by a battery having no business witnessing a guard. Priced
+  and not taken. ADR-0254.
 
 - **That a change is answered by every battery that could say something about it.** The gates of
   ADR-0146 answer it for the folder a change touches and for the battery file it edits, and that is
