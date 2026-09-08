@@ -437,7 +437,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/imagined-addresses.test.ts': 2,
     'packages/registry/endpoints.test.ts': 12,
     'packages/registry/implementations.test.ts': 24,
-    'packages/registry/response.test.ts': 67,
+    'packages/registry/response.test.ts': 68,
     'packages/registry/revision.test.ts': 4,
     'packages/registry/round-trip.test.ts': 39,
     // Three standalone and one `it.each` over the seven contracts. ADR-0249.
@@ -448,7 +448,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packages/registry/signature.test.ts': 16,
     'packages/registry/snapshot.test.ts': 60,
     'packages/registry/frozen-for-life.test.ts': 4,
-    'packages/registry/publication.test.ts': 10,
+    'packages/registry/publication.test.ts': 12,
     'packages/registry/rebinding.test.ts': 19,
     'packages/registry/rebuild.test.ts': 9,
     'packages/registry/the-sixth-contract.test.ts': 15,

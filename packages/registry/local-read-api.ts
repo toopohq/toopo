@@ -192,28 +192,33 @@ const gather = (): {
         break
 
       /**
-       * The third path, which mints nothing at all - and which is refuted. ADR-0260, ADR-0261.
+       * The three states that mint a binding, and what tells them apart is not here. ADR-0261.
        *
-       * It enters neither list, on the argument that freezing what is not published empties the
-       * permanent rule rather than strengthening it. **The argument holds and this mechanism does
-       * not**: `bindingsAtRevision` runs the ledger script of the commit it rebuilds, and ADR-0106's
-       * coordinate for a contract binding is the commit *before* the publication, at which the
-       * contract reads exactly this state - so an arm that mints nothing makes every future
-       * publication name a commit that binds nothing.
+       * **A binding is what makes an artefact rebuildable at a commit, and nothing more.**
+       * `bindingsAtRevision` runs the ledger script *of the commit it rebuilds*, so an artefact is
+       * reconstructible at a revision exactly when that revision's ledger holds an entry for it - and
+       * ADR-0106's coordinate for a contract binding is the commit *before* the publication, at which
+       * the contract reads `not-yet-published`. An arm that minted nothing would therefore make every
+       * publication after it name a commit that binds nothing, which is ADR-0260's ruling and why it
+       * was refuted rather than kept.
        *
-       * What replaces it carries the same argument on the **anchoring** instead: `isAnchored` already
-       * partitions on the coordinate, and `THE_PUBLICATIONS[…] ?? THE_UNPUBLISHED_PUBLICATION` above
-       * already hands a contract nobody published the stand-in revision. The criteria that measurement
-       * is judged against are committed in ADR-0261 before a figure of them is read.
+       * **What the argument for that ruling was about is carried by the anchoring instead, and it is
+       * carried by the lookup above rather than by anything here.** Nothing not yet published is
+       * frozen for life: `THE_PUBLICATIONS` holds what this repository really published, a contract it
+       * does not name takes `THE_UNPUBLISHED_PUBLICATION`, and `isAnchored` puts forty zeros outside
+       * the half `rebindingFaults` rebuilds. So the state decides nothing here and everything one
+       * field away, and `a-contract-binding-is-anchored-exactly-where-this-repository-published-it`
+       * is what holds the pair together.
+       *
+       * `absorbed-by-the-language` sits here because absorption happens *to* something published - the
+       * language answering a question this catalogue already answered. All three are named rather than
+       * left to fall through, which is the repair the `else` this replaces needed: it published the
+       * fourth state by accident and would have published a fifth the same way.
+       *
+       * What a reader may take is `installable`, and `response.ts` reads it off the lifecycle this
+       * binding carries in its `standing`.
        */
       case 'not-yet-published':
-        break
-
-      /**
-       * Published, and absorbed beside it because absorption happens *to* something published - the
-       * language answering a question this catalogue already answered. It is named rather than left
-       * to fall through, which is the repair: the `else` this replaces published it by accident.
-       */
       case 'published':
       case 'absorbed-by-the-language':
         ledger = publishImplementation(

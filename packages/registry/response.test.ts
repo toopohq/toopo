@@ -104,22 +104,46 @@ const theCatalogueAsALedger = (): Ledger => {
   }, withRefusals)
 }
 
-/** The index over the whole catalogue, built the way the local source builds it. */
-const theServedIndex = () =>
-  servedIndex(
-    SERVED_FROM,
-    theCatalogueAsALedger(),
-    theCatalogue.map((source) => {
-      const record = serialiseContract(REPOSITORY_ROOT, source)
+/**
+ * What the index is told about each contract, which is its identity and never its lifecycle.
+ *
+ * Factored out because a second caller needs the same identities over a *different* ledger, and the
+ * separation is the point rather than the economy: what a contract is does not move when its
+ * lifecycle does, so a guard that changes one and holds the other has to build them apart.
+ */
+const theIdentities = () =>
+  theCatalogue.map((source) => {
+    const record = serialiseContract(REPOSITORY_ROOT, source)
 
-      return {
-        address: record.address,
-        summary: record.identity.summary,
-        searchAliases: record.identity.searchAliases,
-        exports: servedExportsOf(record.surface.exports),
-      }
-    }),
-  )
+    return {
+      address: record.address,
+      summary: record.identity.summary,
+      searchAliases: record.identity.searchAliases,
+      exports: servedExportsOf(record.surface.exports),
+    }
+  })
+
+/** The index over the whole catalogue, built the way the local source builds it. */
+const theServedIndex = () => servedIndex(SERVED_FROM, theCatalogueAsALedger(), theIdentities())
+
+/**
+ * The same ledger with one contract's standing moved, so that what differs between two readings is
+ * the lifecycle and nothing else.
+ *
+ * The digest, the coordinate and the instant all stay where they are, which is what makes the pair a
+ * measurement of the field rather than of the entry.
+ */
+const withTheFirstContractAt = (
+  ledger: Ledger,
+  // The two states that are a bare tag: the other two carry fields, and a cast to reach them would
+  // be this helper inventing a lifecycle rather than moving one.
+  state: 'published' | 'not-yet-published',
+): Ledger => ({
+  ...ledger,
+  contracts: ledger.contracts.map((entry, at) =>
+    at === 0 ? { ...entry, standing: { ...entry.standing, lifecycle: { state } } } : entry,
+  ),
+})
 
 describe('a content-addressed answer carries its own proof', () => {
   it.each(eachContract)('a-snapshot-answer-hashes-to-its-address-%s', (_name, source) => {
@@ -492,6 +516,47 @@ describe('the index, the refusals, and what update compares', () => {
       index.entries.filter((entry) => !entry.installable).map((entry) => entry.address.name),
     ).toEqual(['array/group-by'])
     expect(index.entries.every((entry) => entry.searchAliases.length > 0)).toBe(true)
+  })
+
+  /**
+   * `installable` follows the lifecycle and never membership of the ledger. ADR-0261.
+   *
+   * **The two agreed until a contract could be bound without being publishable**, which is what the
+   * third lifecycle path makes possible: a contract not yet published mints a binding so that the
+   * commit before its publication can be rebuilt, and a reader may not take it. The guard beside this
+   * one covers the other way of holding no entry — a refusal — and cannot see this, because a refused
+   * contract is absent from the ledger where this one is present in it.
+   *
+   * **It is written over a constructed ledger and that is the only shape available.** No contract of
+   * this catalogue carries the state, so a guard filtered on it over `theCatalogue` would assert an
+   * empty population — which is the trap
+   * `a-contract-not-yet-published-carries-the-current-banner` avoids by asserting its own population
+   * is not empty. What is moved here is one field of one entry, the digest and the coordinate staying
+   * where they are, so the pair below is a reading of the lifecycle and of nothing else.
+   *
+   * The control is the same entry left `published`, and it is what stops this passing on an index
+   * that answers `false` to everything.
+   */
+  it('a-contract-not-yet-published-is-served-and-not-installable', () => {
+    const ledger = theCatalogueAsALedger()
+    const first = ledger.contracts[0]
+    if (first === undefined) throw new Error('the ledger this guard is built on binds no contract')
+
+    const held = (state: 'published' | 'not-yet-published') =>
+      servedIndex(SERVED_FROM, withTheFirstContractAt(ledger, state), theIdentities()).entries.find(
+        (entry) => entry.address.name === first.address.name,
+      )
+
+    expect(held('published')?.installable).toBe(true)
+    expect(
+      held('not-yet-published')?.installable,
+      'a contract the catalogue has not published, offered for installation. `installable` is read ' +
+        'off the ledger rather than off the lifecycle, and a binding is what makes an artefact ' +
+        'rebuildable rather than what makes it takeable.',
+    ).toBe(false)
+    // Served either way, and served identically but for that one field: a reader searching for it
+    // finds it and is told they may not take it, which is the refused contract's bargain one state over.
+    expect(held('not-yet-published')).toEqual({ ...held('published'), installable: false })
   })
 
   /**

@@ -8,6 +8,7 @@ import { THE_ORIGIN, THE_PACKAGE_NAME, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
 import { THE_CURRENT_BANNER, THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
 import { theLocalLedger } from './local-read-api.js'
+import { unanchoredBindings } from './rebinding.js'
 import {
   THE_AUTHOR_FIELD,
   THE_MINIMUM_RUNTIME,
@@ -317,6 +318,76 @@ describe('what this repository publishes about itself', () => {
       published.filter((what) => !bound.has(what)),
       'an address this repository published that this tree no longer binds. The freeze cannot see ' +
         'this: its population is the ledger, so a binding that leaves it leaves the check.',
+    ).toEqual([])
+  })
+
+  /**
+   * Every contract this catalogue holds is one the ledger binds or refuses. ADR-0261.
+   *
+   * **This is the guard whose absence let a lifecycle state mint nothing.** `bindingsAtRevision` runs
+   * the ledger script *of the commit it rebuilds*, so an artefact is reconstructible at a revision
+   * exactly when that revision's ledger holds an entry for it — and ADR-0106's coordinate for a
+   * contract binding is the commit *before* the publication, at which the contract is not yet
+   * published. A state that answers neither list therefore costs nothing today and costs the rebuild
+   * of the freeze at the next publication, which is a failure with no event until somebody publishes.
+   *
+   * **It is total over the catalogue rather than filtered by state**, which is what lets it be
+   * non-empty today and what makes it fire on a state nobody has written yet: a fifth arm, or a
+   * fourth that stops minting, leaves a contract answered by nothing.
+   *
+   * It says nothing about *which* list, deliberately. Refusing and binding are two different acts and
+   * the guard beside this one is where the published half is held; what is claimed here is only that
+   * a contract of this catalogue is somewhere the ledger can be asked about.
+   */
+  it('every-contract-this-catalogue-holds-is-one-the-ledger-binds-or-refuses', () => {
+    const ledger = theLocalLedger()
+    const answered = new Set([
+      ...ledger.contracts.map((entry) => renderContract(entry.address)),
+      ...ledger.refusals.map((entry) => renderContract(entry.address)),
+    ])
+    const held = theCatalogue.map((source) => renderContract(source.address))
+
+    expect(held.length).toBeGreaterThan(0)
+    expect(
+      held.filter((what) => !answered.has(what)),
+      'a contract this catalogue holds that the ledger neither binds nor refuses. Nothing can be ' +
+        'rebuilt at a commit whose ledger has no entry for it, so a publication naming a commit at ' +
+        'which it stood here would name a commit that binds nothing.',
+    ).toEqual([])
+  })
+
+  /**
+   * A contract binding is anchored exactly where this repository published it. ADR-0261.
+   *
+   * **Anchoring is what freezes for life, and it is carried by the coordinate rather than by the
+   * existence of the binding.** `isAnchored` partitions on `publishedFrom !== THE_UNPUBLISHED_REVISION`,
+   * `rebindingFaults` rebuilds only the anchored half, and `THE_PUBLICATIONS[…] ?? THE_UNPUBLISHED_PUBLICATION`
+   * is the lookup that decides which side a contract lands on. So the three things the ledger used to
+   * confound are separable: a binding makes an artefact rebuildable, an anchor freezes it, and
+   * `installable` is what a reader may take.
+   *
+   * **Both directions are faults and the guard says `exactly` for that reason.** Published and
+   * unanchored is permanent rule 6 stopping without a word — which is what an unconditional stand-in
+   * for the unpublished state would have produced, and why that option was refused before the probe.
+   * Unpublished and anchored is a coordinate claiming a publication that never happened, which the
+   * freeze would then try to rebuild.
+   *
+   * Contracts only: `THE_PUBLICATIONS` is keyed by a contract's rendering, and an implementation
+   * renders as something else. The lifecycle decides a contract's binding and the reference travels
+   * with it.
+   */
+  it('a-contract-binding-is-anchored-exactly-where-this-repository-published-it', () => {
+    const ledger = theLocalLedger()
+    const unanchored = new Set(unanchoredBindings(ledger))
+    const published = new Set(Object.keys(THE_PUBLICATIONS))
+    const bound = ledger.contracts.map((entry) => renderContract(entry.address))
+
+    expect(bound.length).toBeGreaterThan(0)
+    expect(
+      bound.filter((what) => published.has(what) === unanchored.has(what)),
+      'a contract binding whose anchor and whose publication disagree. Anchored where nothing was ' +
+        'published is a coordinate for a publication that never happened; unanchored where ' +
+        'something was is a published version quietly leaving the freeze.',
     ).toEqual([])
   })
 })

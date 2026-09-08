@@ -564,16 +564,29 @@ export type ServedAttestations = NamedAnswer & {
 const domainOf = (name: string): string => name.slice(0, name.indexOf('/'))
 
 /**
+ * Which lifecycle states a reader may install from. ADR-0261.
+ *
+ * **Total over the union rather than a list of the two that say yes**, so that a fifth state has to be
+ * classed before it compiles rather than defaulting to whichever answer the expression happened to
+ * give. `never-published` is here for that reason alone: a refused contract reaches no ledger entry,
+ * so the row is unreachable today and is what makes the map total.
+ */
+const A_READER_MAY_INSTALL: Readonly<Record<Lifecycle['state'], boolean>> = {
+  'never-published': false,
+  'not-yet-published': false,
+  published: true,
+  'absorbed-by-the-language': true,
+}
+
+/**
  * The index, built from the ledger and from each contract's identity.
  *
- * A contract with no ledger entry is refused rather than published, so it is in the index and is not
- * installable. Everything else is.
- *
- * **That premise is what ADR-0261 asks about**, and it is written as a fact rather than as a rule for
- * a reason: it is true exactly while the only way to hold no entry is to have been refused. A binding
- * carries its contract's lifecycle in `standing`, which `servedRefusals` twelve lines below already
- * reads, so what `installable` must read is a question with an answer one line away. The criteria are
- * committed there before a figure of them is read.
+ * **`installable` follows the lifecycle and never membership of the ledger**, and the two are not the
+ * same question. This read *a contract with no ledger entry is refused rather than published* for as
+ * long as the only way to hold no entry was to have been refused; ADR-0261 makes a contract that is
+ * not yet published mint a binding, so that the commit before its publication can be rebuilt, and a
+ * reader may not take it. The lifecycle travels with the binding in `standing`, which `servedRefusals`
+ * below already reads for the absorbed half.
  */
 export const servedIndex = (
   servedFrom: string,
@@ -587,7 +600,11 @@ export const servedIndex = (
     readonly exports: readonly ServedExport[]
   }[],
 ): ServedIndex => {
-  const published = new Set(ledger.contracts.map((entry) => renderContract(entry.address)))
+  const installable = new Set(
+    ledger.contracts
+      .filter((entry) => A_READER_MAY_INSTALL[entry.standing.lifecycle.state])
+      .map((entry) => renderContract(entry.address)),
+  )
 
   return {
     addressing: 'named',
@@ -599,7 +616,7 @@ export const servedIndex = (
       // Absent rather than empty, so an entry declaring none is one byte and not four.
       ...(identity.alsoFoundBy === undefined ? {} : { alsoFoundBy: identity.alsoFoundBy }),
       domain: domainOf(identity.address.name),
-      installable: published.has(renderContract(identity.address)),
+      installable: installable.has(renderContract(identity.address)),
       // Absent for the reason above, and read by the client before it writes anything. ADR-0249.
       ...(identity.requiresOfTheRuntime === undefined
         ? {}
