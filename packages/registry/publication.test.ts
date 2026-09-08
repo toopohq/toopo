@@ -7,10 +7,12 @@ import { trackedFiles } from '../../mutation/paths.js'
 import { THE_ORIGIN, THE_PACKAGE_NAME, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
 import { THE_CURRENT_BANNER, THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
+import { theLocalLedger } from './local-read-api.js'
 import {
   THE_AUTHOR_FIELD,
   THE_MINIMUM_RUNTIME,
   THE_PACKAGE_VERSION,
+  THE_PUBLICATIONS,
   THE_SOURCE_REPOSITORY,
 } from './publication.js'
 import { REPOSITORY_ROOT, referenceImplementationOf } from './serialise.js'
@@ -285,5 +287,36 @@ describe('what this repository publishes about itself', () => {
 
     expect(free.length).toBeGreaterThan(0)
     expect(wrong).toEqual([])
+  })
+
+  /**
+   * Every address this catalogue published is one the ledger still binds. ADR-0260.
+   *
+   * **The freeze cannot ask this, and that is what the guard is for.** `the-freeze.test.ts` rebuilds
+   * every binding `bindingsOf(ledger)` returns, so its population *is* the ledger — and a binding
+   * that stops being in the ledger leaves the population rather than failing in it. Measured: with
+   * `object/deep-equal@1` set to `not-yet-published`, the printed ledger goes from 1 206 bytes to
+   * **998** and the freeze answers **3 passed**. A contract published and frozen for life left the
+   * ledger and nothing said so.
+   *
+   * **`THE_PUBLICATIONS` is the population that does not shrink**, because it is the record of what
+   * was published and from which commit rather than a reading of what the catalogue holds today. So
+   * it is the expectation and the ledger is the answer, which is the way round the freeze has not
+   * got.
+   *
+   * It is here and not beside the freeze for a reason of witness: that suite is replayed by no
+   * battery — ADR-0107 says why — so a guard written there could never be seen red by the instrument.
+   * `registry-storage` injects into this folder.
+   */
+  it('every-address-this-catalogue-published-is-one-the-ledger-still-binds', () => {
+    const bound = new Set(theLocalLedger().contracts.map((entry) => renderContract(entry.address)))
+    const published = Object.keys(THE_PUBLICATIONS)
+
+    expect(published.length).toBeGreaterThan(0)
+    expect(
+      published.filter((what) => !bound.has(what)),
+      'an address this repository published that this tree no longer binds. The freeze cannot see ' +
+        'this: its population is the ledger, so a binding that leaves it leaves the check.',
+    ).toEqual([])
   })
 })

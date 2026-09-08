@@ -180,45 +180,85 @@ const gather = (): {
     // binding today, and `absorbed-by-the-language` would too, by falling somewhere rather than by
     // being sent there. What replaces this is a total dispatch over the union, and the criteria that
     // measurement is judged against are committed in that record before a figure of them is read.
-    if (record.lifecycle.state === 'never-published') {
-      ledger = refuseContract(ledger, {
-        address: record.address,
-        decidedAgainst: record.lifecycle.decidedAgainst,
-        measurement: record.lifecycle.measurement,
-        keptAs: record.lifecycle.keptAs,
-        decidedOn: THE_PUBLICATION_INSTANT,
-      })
-    } else {
-      ledger = publishImplementation(
-        publishContract(ledger, {
+    switch (record.lifecycle.state) {
+      case 'never-published':
+        ledger = refuseContract(ledger, {
           address: record.address,
-          digest: digestOfSnapshot(contractShot),
-          publishedAt: publication.at,
-          publishedFrom: publication.from,
-          standing: {
-            lifecycle: record.lifecycle,
-            ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
-            ...(record.againstTheLanguage === undefined
-              ? {}
-              : { againstTheLanguage: record.againstTheLanguage }),
-            ...(record.correctionsToFrozenProse === undefined
-              ? {}
-              : { correctionsToFrozenProse: record.correctionsToFrozenProse }),
-            ...(record.alsoFoundBy === undefined ? {} : { alsoFoundBy: record.alsoFoundBy }),
+          decidedAgainst: record.lifecycle.decidedAgainst,
+          measurement: record.lifecycle.measurement,
+          keptAs: record.lifecycle.keptAs,
+          decidedOn: THE_PUBLICATION_INSTANT,
+        })
+        break
+
+      /**
+       * The third path, which mints nothing at all. ADR-0260.
+       *
+       * **It enters neither list**, where the two arms beside it each enter one - and that is the
+       * whole state rather than an omission. *A published version is frozen for life* is the
+       * permanent rule, and freezing what is not published does not strengthen it: if an unpublished
+       * contract were bound like a published one, *published* would stop meaning anything in
+       * particular. A contract in this state must be able to change, which is all the word says.
+       *
+       * **What follows from minting nothing is not written here and is not an accident either**:
+       * `response.ts` builds `installable` from `ledger.contracts` membership, so such a contract is
+       * served as not installable without a line about the lifecycle anywhere near that field.
+       */
+      case 'not-yet-published':
+        break
+
+      /**
+       * Published, and absorbed beside it because absorption happens *to* something published - the
+       * language answering a question this catalogue already answered. It is named rather than left
+       * to fall through, which is the repair: the `else` this replaces published it by accident.
+       */
+      case 'published':
+      case 'absorbed-by-the-language':
+        ledger = publishImplementation(
+          publishContract(ledger, {
+            address: record.address,
+            digest: digestOfSnapshot(contractShot),
+            publishedAt: publication.at,
+            publishedFrom: publication.from,
+            standing: {
+              lifecycle: record.lifecycle,
+              ...(record.useCases === undefined ? {} : { useCases: record.useCases }),
+              ...(record.againstTheLanguage === undefined
+                ? {}
+                : { againstTheLanguage: record.againstTheLanguage }),
+              ...(record.correctionsToFrozenProse === undefined
+                ? {}
+                : { correctionsToFrozenProse: record.correctionsToFrozenProse }),
+              ...(record.alsoFoundBy === undefined ? {} : { alsoFoundBy: record.alsoFoundBy }),
+            },
+          }),
+          {
+            address: {
+              contract: record.address,
+              id: implementation.id,
+              version: THE_PUBLISHED_IMPLEMENTATION_VERSION,
+            },
+            digest: digestOfSnapshot(implementationShot),
+            publishedAt: publication.at,
+            publishedFrom: publication.from,
+            standing: { status: implementation.status },
           },
-        }),
-        {
-          address: {
-            contract: record.address,
-            id: implementation.id,
-            version: THE_PUBLISHED_IMPLEMENTATION_VERSION,
-          },
-          digest: digestOfSnapshot(implementationShot),
-          publishedAt: publication.at,
-          publishedFrom: publication.from,
-          standing: { status: implementation.status },
-        },
-      )
+        )
+        break
+
+      /**
+       * A fifth state does not compile rather than falling somewhere, which is the half the `if` and
+       * its `else` could not hold: `absorbed-by-the-language` was published by falling through, and
+       * a state added tomorrow would have been too, silently and with every guard green.
+       */
+      default: {
+        const unreached: never = record.lifecycle
+
+        throw new Error(
+          `a lifecycle this registry does not dispatch: ${JSON.stringify(unreached)}. Every state ` +
+            `is refused, held back, or published, and a new one is a decision rather than a default.`,
+        )
+      }
     }
 
     holdings.push({

@@ -709,6 +709,47 @@ proof's and is stated in the same place**: no mutant reddens those two guards, s
 they are worth, and what stands in for it is that they were seen red on three real conditions with the
 reds published. ADR-0107.
 
+**And the lifecycle's third word has a mechanism, which found the freeze's own population on the way.**
+`not-yet-published` had been a member of `Lifecycle` since ADR-0007 with nothing behind it: the dispatch
+branched on `never-published` alone and everything else fell through to `publishContract`, so a contract
+nobody published was bound like one that was — and `absorbed-by-the-language` was published by falling
+through an `else` rather than by being sent anywhere. **The owner ruled for a third path that mints
+nothing**, on the permanent rule rather than on economy: *a published version is frozen for life*, and
+freezing what is not published empties that rule rather than strengthening it. The dispatch is total
+over the union now, so a fifth state fails to compile instead of landing somewhere.
+
+**The criteria were committed at `679340a` before a figure of them was read, and the control refuted
+half of its own expectation.** The two questions were separated in advance — does the printed ledger
+move, and does `the-freeze.test.ts` redden — because ADR-0231 measured them coupled and ADR-0248
+measured them parting. With the third path in place the reading is flat: `18cc4e82…` at 1 206 bytes,
+`pnpm freeze` 3 passed, the registry suite 25 files and 483 tests. **Under the control they part.**
+`object/deep-equal@1` set to `not-yet-published` takes the ledger to **998 bytes** and `ef31c467…` with
+both of its bindings gone — **and `pnpm freeze` stays 3 passed on that same tree**. The cause is one
+line: `bindingsOf(ledger)` makes the freeze's population the ledger itself, so a binding that leaves it
+leaves the check rather than failing it. **A published address can disappear and the mechanism whose
+whole subject is permanent rule 6 says nothing.**
+
+**What answers it is a guard over the population that does not shrink.** `THE_PUBLICATIONS` is the
+addresses this repository published and is derived from no catalogue, so
+`every-address-this-catalogue-published-is-one-the-ledger-still-binds` sees what the freeze cannot —
+red on the control naming `typescript/object/deep-equal@1`, beside a green freeze. **A second control
+says the guard reads the publication rather than the state**: the same edit on the contract this
+catalogue *refused* reddens **eight** guards of that folder and shares **none** of the three the first
+control reddens, this one green among them. `I-181` of `registry-storage` is the cell, and its pin
+names all three.
+
+**Three questions were answered rather than assumed and one prediction is refuted.** `installable`
+answers **false** untouched, by `ledger.contracts` membership and never by a lifecycle test; the
+`playground.test.ts` hole closes for free, `heldByTheRegistry` dropping the contract before line 159
+imports and calls a stripped reference — `npm run site` exit 0, **18 files and 192 tests** on the
+control; and the site builds **no page at all**, which is the one question no prediction was written
+for. **There is no second frozen half unguarded**: the snapshot and the blobs are registered before the
+branch, so the read API can still answer in process, and the emitted tree writes neither —
+`what-is-served-and-cannot-be-asked-for-is-the-refused-contract` reddens with the contract joining the
+unreachable set at `files: 7`. The class is guarded, by a guard nobody wrote for it — **and that guard
+asserts a literal list of one, so the day an eighth contract enters as `not-yet-published` it reddens**,
+which is a line the catalogue-entry unit owes rather than a defect. ADR-0260.
+
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
 `string/titlecase`, `number/rond`, `toy/thing` — every one two kebab-case segments, which is exactly
@@ -3455,6 +3496,18 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   date it was taken, an entry of this list one line below, and which puts a rebuild of the whole
   catalogue behind every freeze run where today six are rebuilt. Priced as its own unit and not taken.
   ADR-0248.
+
+  **Half of it has a keeper now, and the half that has one is the published side.** ADR-0260 moved a
+  *published* contract out of the ledger and met the same silence — 998 bytes and `ef31c467…` against
+  1 206 and `18cc4e82…`, with `pnpm freeze` 3 passed on both — so the mechanism this entry names is not
+  about refusals at all: it is `bindingsOf(ledger)`, and a refused contract is one instance of it rather
+  than the population.
+  `every-address-this-catalogue-published-is-one-the-ledger-still-binds` reads `THE_PUBLICATIONS`, which
+  does not shrink with the catalogue, so a published address leaving the ledger is a red rather than a
+  silence. **What is unchanged is everything about a contract this catalogue turned down**:
+  `array/group-by@1` stands in `THE_PUBLICATIONS` nowhere — measured, the same edit on it leaves the new
+  guard green among eight reds — so its frozen half is outside both populations, and the second ledger
+  is still what would close it. ADR-0260.
 
 - **That the date a refusal carries is the date the refusal was taken.** `refuseContract` records
   `decidedOn`, `/refusals` serves it, and it is fed by `THE_PUBLICATION_INSTANT` — so

@@ -4715,6 +4715,51 @@ const mutants: readonly Mutant[] = [
       'a-contract-that-requires-nothing-freezes-no-such-field-object-deep-equal',
     ]),
   ),
+
+  /**
+   * The third lifecycle path taken by a contract that *was* published, which is the one state the
+   * freeze is structurally unable to see. ADR-0260.
+   *
+   * It is the plausible mistake rather than an exotic one: `not-yet-published` is the arm a contract
+   * sits in while it is being written, and moving one back into it is what a unit does that has
+   * decided to withdraw something. Under it `object/deep-equal@1` mints neither binding - measured,
+   * the ledger goes from 1 206 bytes and `18cc4e82…` to 998 and `ef31c467…`, both of its bindings
+   * gone - **and `pnpm freeze` stays 3 passed on the same tree**, because `bindingsOf` makes the
+   * freeze's population the ledger itself, so a binding that leaves it leaves the check. That parting
+   * is what this guard exists for, and it is why the guard's population is `THE_PUBLICATIONS`, which
+   * does not shrink with the catalogue.
+   *
+   * **The control is what says the guard reads the publication rather than the state, and it is
+   * disjoint.** The same edit on the contract this catalogue refused - `array/group-by@1`, from
+   * `never-published` to `not-yet-published` - reddens **eight** guards of this folder and this one is
+   * green among them, a refused contract minting no binding and appearing in `THE_PUBLICATIONS`
+   * nowhere. So the two answers are separated by a measurement and not only by a reading.
+   *
+   * The two companions are the same fact met elsewhere and neither of them reads a binding: the
+   * closure asserts that the one contract whose snapshot the tree does not emit is the refused one,
+   * and a second contract joins that set; the profile rule holds every contract whose frozen half it
+   * believes is still open, and this contract's profiles are among those it refuses. **Both are green
+   * under the control**, which is what says they are about this contract and not about the state -
+   * the eight the control reddens share none of these three.
+   */
+  sameOnEveryLens(
+    'I-181',
+    'moves a published contract onto the third lifecycle path, so an address this repository has ' +
+      'published mints no binding and leaves the ledger with the freeze still green about it',
+    [
+      catalogueFile(
+        `    address: DEEP_EQUAL,
+    lifecycle: PUBLISHED,`,
+        `    address: DEEP_EQUAL,
+    lifecycle: { state: 'not-yet-published' },`,
+      ),
+    ],
+    killed([
+      'every-address-this-catalogue-published-is-one-the-ledger-still-binds',
+      'what-is-served-and-cannot-be-asked-for-is-the-refused-contract',
+      'no-two-profiles-of-an-unpublished-contract-are-indistinguishable',
+    ]),
+  ),
 ]
 
 export const battery: Battery = {

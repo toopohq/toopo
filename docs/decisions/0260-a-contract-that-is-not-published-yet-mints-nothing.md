@@ -3,7 +3,9 @@ status: accepted
 date: 2026-09-08
 governs:
   - packages/registry/local-read-api.ts
-confirmed-by: []
+confirmed-by:
+  - battery: registry-storage
+    guard: every-address-this-catalogue-published-is-one-the-ledger-still-binds
 ---
 
 # A contract that is not published yet mints nothing
@@ -103,15 +105,120 @@ work rather than the owner's decision a second time.
 
 ## Decision Outcome
 
-*Written after the probe, in the commit that carries the readings.*
+**The third path is written, it is inert on today's catalogue, and the control refuted half of its
+own expectation — which is the finding.** Outcome 1 on the reading; the criteria said the control
+must move the ledger *and* redden the freeze, and it moved the ledger with the freeze green.
+
+**Q1 — the printed ledger.** Flat with the third path in place: `18cc4e82…` at **1 206 bytes**,
+`pnpm freeze` 3 passed, `tsc` exit 0, the registry suite 25 files and 483 tests. Under the control it
+**moves**: `object/deep-equal@1` set to `not-yet-published` takes the ledger to **998 bytes** and
+`ef31c467a37b65e863fa85854768d82221ef8558461b4055d907e5c40788ea90`, both of that contract's bindings
+gone. So the probe could answer otherwise and did not.
+
+**Q2 — the freeze.** `pnpm freeze` is **3 passed on both trees**, the control's included. **The two
+questions parted, in the direction that matters**: a published address left the ledger and the
+mechanism whose whole subject is permanent rule 6 said nothing. The cause is one line —
+`bindingsOf(ledger)` at `packages/registry/rebinding.ts:91` — so the freeze's population **is** the
+ledger, and a binding that leaves it leaves the check rather than failing it. ADR-0231 measured the
+two coupled because an encoder that changes its output makes the local ledger and the rebuilt one
+disagree by construction; that argument holds for what a binding *says* and is silent about a binding
+that stops existing.
+
+**What answers it is a new guard whose population is `THE_PUBLICATIONS`**, the table that does not
+shrink with the catalogue: `every-address-this-catalogue-published-is-one-the-ledger-still-binds`, in
+`publication.test.ts`. Seen red on the control before it was green, and the message is the claim
+rather than a diff:
+
+```
+× every-address-this-catalogue-published-is-one-the-ledger-still-binds
+AssertionError: an address this repository published that this tree no longer binds. The freeze
+cannot see this: its population is the ledger, so a binding that leaves it leaves the check.:
+expected [ 'typescript/object/deep-equal@1' ] to deeply equal []
+```
+
+— beside `pnpm freeze` exit 0, 3 passed, on that same tree.
+
+**Q3 — `installable`, untouched.** **False**, as predicted, and by membership rather than by a
+lifecycle test: `response.ts` reads `ledger.contracts`, and under the third path the contract is in
+neither list. No line was written for it.
+
+**Q4 — the `playground.test.ts` hole.** **It closes for free.** `heldByTheRegistry` filters on
+`installable`, so the contract drops out of the population before `playground.test.ts:159` imports
+and calls its stripped `reference.js`. Measured on the control: `npm run site` exit 0, **18 files and
+192 tests**, no `ReferenceError`. That is the hardest hole the catalogue-entry sweep found, closed by
+this unit without being aimed at.
+
+**Q5 — what the site builds.** Of the three shapes named in advance — a page as today, no page at
+all, a throw at build time — it is **no page at all**, and the suite is green through it.
+
+**Q6 — a second frozen half nothing guards.** **The prediction is refuted, and by an existing
+guard.** The snapshot and the blobs *are* registered before the branch, so the read API can still
+answer for such a contract in process — but the emitted tree does not write those addresses, and
+`what-is-served-and-cannot-be-asked-for-is-the-refused-contract` is what says so, by reddening on the
+control with the contract joining the unreachable set at **`files: 7`**:
+
+```
+- [ { "contract": "typescript/array/group-by@1", "files": 9 } ]
++ [ { "contract": "typescript/array/group-by@1", "files": 9 },
++   { "contract": "typescript/object/deep-equal@1", "files": 7 } ]
+```
+
+So there is no frozen half served at an address no binding names: the contract leaves the emission
+whole, exactly as the refused one does. The class is guarded, by a guard nobody wrote for it.
+
+**The cell is `I-181` of `registry-storage`**, and it is the control promoted into the instrument.
+Three reds, at or below ADR-0076's line, so the pin names all three:
+`every-address-this-catalogue-published-is-one-the-ledger-still-binds`,
+`what-is-served-and-cannot-be-asked-for-is-the-refused-contract` and
+`no-two-profiles-of-an-unpublished-contract-are-indistinguishable`. **A second control separates the
+new guard from its two companions and it is disjoint**: the same edit on the contract this catalogue
+*refused* — `array/group-by@1`, `never-published` to `not-yet-published` — reddens **eight** guards of
+this folder and shares **none** of those three, the new one green among them. A refused contract mints
+no binding and stands in `THE_PUBLICATIONS` nowhere, which is the discrimination the guard claims,
+measured rather than read.
 
 ## Consequences
 
-*Written after the probe.*
+**The dispatch is total over the union.** `default` binds `record.lifecycle` to `never` and throws, so
+a fifth lifecycle state fails to compile rather than falling into whichever arm the `else` was. What
+this replaces published `absorbed-by-the-language` by accident; it is now named beside `published`,
+with the reason written where the arm is.
+
+**A word that had nothing behind it has a mechanism**, and the entry class this repository keeps a
+list of is one instance shorter — on the field that decides whether a digest is frozen for life.
+
+**The freeze's blind spot is named and is not closed.** `bindingsOf` is unchanged: widening it is a
+different unit, and what stands in its place is a guard over the population that does not shrink.
+That population is a hand-maintained table, so the guard inherits the table's own debt — an address
+never added to `THE_PUBLICATIONS` is invisible to it, exactly as ADR-0177 left it.
+
+**The eighth contract will pay one line for this path, and it is measured rather than predicted.**
+`what-is-served-and-cannot-be-asked-for-is-the-refused-contract` asserts a literal list of one, so the
+day a contract enters the catalogue as `not-yet-published` its snapshot joins the unreachable set and
+that guard reddens — which is the same red this unit's control produced, arriving from the intended
+use rather than from a defect. The catalogue-entry unit owes that guard a sentence about two states
+rather than one.
+
+**Nothing entered the catalogue and no digest moved.** The ledger is `18cc4e82…` at 1 206 bytes on
+both sides, `pnpm freeze` is 3 passed on both, `npm run test` is 30 files and 718 tests, and the
+census row for `publication.test.ts` moves 9 to 10 for the new guard.
 
 ## What would reopen this
 
-*Written after the probe.*
+**A binding this repository published that `THE_PUBLICATIONS` does not name.** The new guard's
+population is that table, so a publication recorded nowhere is outside it — and the guard would be
+green while the freeze was blind, which is the state this unit found. What would close *that* is the
+second ledger ADR-0248's entry prices, of refused and unpublished digests bound at the commit each
+decision was taken.
+
+**`bindingsOf` gaining a population that is not the ledger.** The parting measured here is a property
+of one line; widening the freeze to rebuild what the catalogue holds rather than what the ledger binds
+would make this guard a restatement, and it would have to be withdrawn rather than kept beside it.
+
+**A contract really entering `not-yet-published`.** Everything above is measured on a control and on a
+path nothing takes. The first real inhabitant is what says whether `installable` answering false by
+membership reads as a decision or as a coincidence to whoever meets it — and it is the moment the
+closure guard's list of one has to become a list of two.
 
 ## More Information
 
