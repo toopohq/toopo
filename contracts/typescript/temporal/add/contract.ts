@@ -142,23 +142,52 @@ export type Add = <T extends Temporal.PlainTime | Temporal.PlainYearMonth | Temp
 /**
  * Why a call cannot be answered. Declared as a list rather than only as a type, so that the partition
  * is a value the contract can check itself against: `edge-cases.test.ts` requires the reasons the
- * table actually produces to be exactly these three.
+ * table actually produces to be exactly these four.
+ *
+ * **The order of this list is the precedence, and it is a promise rather than a detail of one
+ * implementation.** A bag can trip two of these at once — `{days: 1, seconds: -1}` on a `PlainTime`
+ * names a unit that carrier will not apply *and* carries two signs — so with no declared order two
+ * conforming implementations would name different reasons for one call. It is the same promise
+ * `describeAddFailure` already makes about *which* unit it names, one literal up. **The order is
+ * derived rather than chosen**: a refusal that reads the bag alone is decided before one that reads
+ * the carrier, because a bag that names no duration names none for any carrier; and the one that
+ * needs the arithmetic to have been attempted is last.
  *
  * The partition is frozen with the major, so each literal is argued rather than listed.
+ *
+ * `duration-not-read` is one literal for a bag this contract cannot read as a duration at all — a
+ * value that is not an object, an object naming no unit of the ten, or one carrying a key that is
+ * not among them. **All three arms are about the bag's keys**, which is why it is first: whether the
+ * counts can be read at all is settled before any count is read. ADR-0216 measured the shape the
+ * third arm exists for: Temporal silently ignores an unknown field whenever one field it knows is
+ * present, so `{days: 1, dayz: 9}` is answered as though the second had not been written —
+ * `date/add@1`'s own frozen phrase, *a plausible value that silently drops what the caller asked
+ * for*, met a second time on a second surface.
+ *
+ * `counts-of-two-signs` is a bag whose keys are all units and whose non-zero counts are not all of
+ * one sign. **No duration has two signs**, which is the specification rather than an engine's
+ * behaviour: `Temporal.Duration` requires every non-zero field to carry the sign of the whole, so
+ * such a bag names no duration for any carrier to apply. A zero count is exempt because it carries
+ * no sign — `{hours: 0, seconds: -1}` is `-PT1S`. It is separate from the literal above because that
+ * one's three arms are all about keys and this bag's keys are impeccable, and the repair a caller
+ * makes is different again: fix a key there, pick a sign here. **It names no unit**, because two
+ * units are at fault and the field holds one.
+ *
+ * **It is the one reason of the four where the language is not heterogeneous**, and that is what
+ * makes it worth publishing rather than folding into the literal below. Measured on node v24.15.0
+ * under `--harmony-temporal`, all three carriers and both `Duration` modes refuse a mixed-sign bag
+ * with one message — `RangeError: Invalid time value` — and `Temporal.Duration.from` refuses it
+ * identically, so the refusal is the bag's construction rather than the addition. **So the language
+ * calls a disagreement of signs a *range* error**, and an implementation that catches the arithmetic
+ * and reports what it caught inherits that misnomer: this contract's own reference did exactly that
+ * until `p5` was executed on an engine carrying `Temporal` for the first time. That reading is the
+ * draft's and the language's is owed, per this contract's own rule; what it cannot move is the
+ * literal, which rests on the specification. ADR-0253, ADR-0255.
  *
  * `unit-the-carrier-does-not-apply` is the contract's subject and carries the unit's name in the
  * diagnostic, because a caller who wrote a bag of six units needs to know which one was refused.
  *
- * `duration-not-read` is one literal for a bag this contract cannot read as a duration at all — a
- * value that is not an object, an object naming no unit of the ten, or one carrying a key that is
- * not among them. It is separate from the first because the repair is different: the first is a
- * caller asking a carrier for something it cannot do, and the second is a caller who has not written
- * a duration. ADR-0216 measured the shape the third arm exists for: Temporal silently ignores an
- * unknown field whenever one field it knows is present, so `{days: 1, dayz: 9}` is answered as
- * though the second had not been written — `date/add@1`'s own frozen phrase, *a plausible value that
- * silently drops what the caller asked for*, met a second time on a second surface.
- *
- * `out-of-range` is the third, and it is the distinction this contract exists to keep sharp. **An
+ * `out-of-range` is the last, and it is the distinction this contract exists to keep sharp. **An
  * overflow is not an inapplicability.** ADR-0225 measured seven bags of five hundred and twenty that
  * do not apply for the range rather than for the unit, and named the distinction; a reading that
  * confuses them classes a carrier as refusing a unit it applies perfectly well at every reachable
@@ -166,8 +195,9 @@ export type Add = <T extends Temporal.PlainTime | Temporal.PlainYearMonth | Temp
  * making that mistake.
  */
 export const failureReasons = [
-  'unit-the-carrier-does-not-apply',
   'duration-not-read',
+  'counts-of-two-signs',
+  'unit-the-carrier-does-not-apply',
   'out-of-range',
 ] as const
 
@@ -399,7 +429,10 @@ export const benchmarkProfiles: readonly BenchmarkProfile[] = [
     name: 'not-a-duration-at-all',
     description:
       'Bags naming no unit of the ten, refused before any carrier is consulted. A caller validating ' +
-      'input hits this path most, and it is the one path that does not depend on the carrier.',
+      'input hits this path most. It is not the only refusal that is decided before the carrier - a ' +
+      'bag of two signs is the other - and that one is deliberately not sampled here rather than ' +
+      'folded in, because this path stops at the keys where that one reads every count, and a ' +
+      'profile holding both would measure neither.',
     addClass: 'refused-before-a-unit',
     samples: [
       { carrier: 'PlainTime', from: '12:30:00', duration: {} },

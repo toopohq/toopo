@@ -54,7 +54,29 @@ const willNotApply = (
     : ['years', 'months', 'weeks']
 }
 
-/** A bag of one to three units, drawn small so the arithmetic never reaches the range. */
+/**
+ * Whether a bag carries counts of both signs, restated here rather than imported from the reference,
+ * for `willNotApply`'s reason: a property asking the implementation which bags it refuses would be
+ * comparing it with itself.
+ *
+ * Non-zero counts only, and `>` and `<` rather than a sign function, because that is the rule the
+ * contract states — a zero field belongs to no sign, and `-0` is a zero.
+ */
+const carriesTwoSigns = (bag: DurationBag): boolean => {
+  const counts = durationUnits
+    .filter((unit) => bag[unit] !== undefined)
+    .map((unit) => bag[unit] as number)
+
+  return counts.some((count) => count > 0) && counts.some((count) => count < 0)
+}
+
+/**
+ * A bag of one to three units, drawn small so the *magnitude* never reaches the range.
+ *
+ * **The size is not the whole of what makes a bag a duration**, and reading this line as though it
+ * were is what left `p5` wrong until an engine ran it: each count is drawn independently, so two of
+ * them can disagree in sign, and a bag of two signs is no duration at any magnitude. ADR-0255.
+ */
 const aBag: fc.Arbitrary<DurationBag> = fc
   .uniqueArray(fc.constantFrom(...durationUnits), { minLength: 1, maxLength: 3 })
   .chain((units) =>
@@ -132,13 +154,21 @@ describe('temporal/add@1 universal properties', () => {
    * The contract's own sentence, quantified: a call is refused for a unit exactly when the bag names
    * one the carrier does not apply.
    *
-   * The bags drawn here never reach the range, so `out-of-range` cannot fire and the two reasons
-   * cannot be confused — which is the distinction the case table settles by name and this property
-   * keeps out of its own population deliberately.
+   * **The population it sets aside is settled by `p7` rather than skipped.** A bag of two signs is
+   * refused ahead of any carrier, so the biconditional above is false of it — and that is what this
+   * property was red on, on the first engine that ever executed it. Its own comment claimed the bags
+   * drawn never reach the range; the reference answered `out-of-range` on `{seconds: -1, hours: 0,
+   * microseconds: 1}`, because the language calls a disagreement of signs a `RangeError` and a total
+   * `catch` reports what it caught. ADR-0253, ADR-0255.
+   *
+   * **Neither half can go vacuous unnoticed**: the generator always draws at least one unit and a bag
+   * of one unit cannot carry two signs, so every one-unit draw is this property's by construction.
    */
   it('p5-a-unit-the-carrier-does-not-apply-is-refused', () => {
     fc.assert(
       fc.property(aCarrier, aBag, (of, bag) => {
+        if (carriesTwoSigns(bag)) return
+
         const carrier = of()
         const refusedUnits = willNotApply(carrier)
         const named = durationUnits.filter((unit) => bag[unit] !== undefined)
@@ -162,6 +192,28 @@ describe('temporal/add@1 universal properties', () => {
         if (described?.reason !== 'unit-the-carrier-does-not-apply') return
 
         expect(described.unit === null ? false : bag[described.unit] !== undefined).toBe(true)
+      }),
+      runs,
+    )
+  })
+
+  /**
+   * The half `p5` sets aside, and the one place the precedence of `failureReasons` is quantified.
+   *
+   * It is a property of its own rather than an arm of `p5` because the claim is a different one:
+   * `p5` says what a *carrier* refuses, and this says a bag of two signs is refused **whatever
+   * carrier it meets** — which is the whole of what makes one helper over three carriers give one
+   * answer to one mistake. The two failure conditions are distinct and neither is `p5`'s: put the
+   * sign check after the carrier's and this reddens on every draw whose bag also names an
+   * inapplicable unit, with `p5` green throughout; take it out and this reddens with `out-of-range`,
+   * which is the state the contract shipped in. ADR-0255.
+   */
+  it('p7-a-bag-of-two-signs-is-refused-by-every-carrier', () => {
+    fc.assert(
+      fc.property(aCarrier, aBag, (of, bag) => {
+        if (!carriesTwoSigns(bag)) return
+
+        expect(describeAddFailure(of(), bag)).toEqual({ reason: 'counts-of-two-signs', unit: null })
       }),
       runs,
     )

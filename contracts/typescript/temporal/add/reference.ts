@@ -77,12 +77,37 @@ const unitsNamedBy = (duration: DurationBag): readonly DurationUnit[] | null => 
 }
 
 /**
+ * Whether the counts a bag names disagree in sign, which is the second refusal decided before any
+ * carrier is consulted.
+ *
+ * `> 0` and `< 0` rather than a sign function, because the rule is written over the *non-zero*
+ * counts: a zero field belongs to no sign and neither does `-0`, so `{hours: 0, seconds: -1}` is the
+ * duration `-PT1S` and is answered. A count that is not a number satisfies neither test and falls
+ * through to the range, which is where this implementation already sent it.
+ */
+const countsDisagreeInSign = (
+  duration: DurationBag,
+  named: readonly DurationUnit[],
+): boolean => {
+  const counts = named.map((unit) => duration[unit] as number)
+
+  return counts.some((count) => count > 0) && counts.some((count) => count < 0)
+}
+
+/**
  * Why this call cannot be answered, or `null` when it can.
  *
- * The order is the contract's: a bag that cannot be read is refused before any carrier is consulted,
- * then the first unit the carrier will not apply — first in the declared order of `durationUnits`,
- * so that two implementations refusing the same bag name the same unit — and the range last, because
- * it is the only reason that needs the arithmetic to have been attempted.
+ * **The order is `failureReasons`' own**, which the contract declares as the precedence rather than
+ * leaving it to an implementation: the two refusals that read the bag alone come first — a bag whose
+ * keys are not units, then one whose counts disagree in sign — then the first unit the carrier will
+ * not apply, first in the declared order of `durationUnits` so that two implementations refusing one
+ * bag name one unit, and the range last, because it is the only reason that needs the arithmetic to
+ * have been attempted.
+ *
+ * **The `catch` below is narrower than it looks, and that is the repair ADR-0255 made.** It reports
+ * the range, and the language throws a `RangeError` for a disagreement of signs as well — so until
+ * the sign was decided ahead of it, a total `catch` published the language's own misnomer as this
+ * contract's diagnostic, on a bag every unit of which the carrier applies.
  */
 export const describeAddFailure = (
   carrier: Temporal.PlainTime | Temporal.PlainYearMonth | Temporal.Duration,
@@ -90,6 +115,8 @@ export const describeAddFailure = (
 ): AddFailure | null => {
   const named = unitsNamedBy(duration)
   if (named === null) return { reason: 'duration-not-read', unit: null }
+
+  if (countsDisagreeInSign(duration, named)) return { reason: 'counts-of-two-signs', unit: null }
 
   const willNotApply = whatTheCarrierWillNotApply(carrier)
   const refused = named.find((unit) => willNotApply.includes(unit))

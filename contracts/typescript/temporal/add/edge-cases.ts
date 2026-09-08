@@ -10,24 +10,39 @@
  * is claimed to have been.
  *
  * ---------------------------------------------------------------------------
- * Forty rows are the matrix; the table is forty-four, and the four say why
+ * Forty rows are the matrix; the table is forty-seven, and the seven say why
  * ---------------------------------------------------------------------------
  *
  * ADR-0225 publishes *the case table is 40 rows* - `PlainTime` and `PlainYearMonth` ten each,
  * `Duration` twenty for its two modes. That is the **matrix**: one row per carrier and unit. A table
  * of only those forty could not name a case for every reason this contract declares, which
- * `edge-cases.test.ts` requires in both directions - so two rows settle a bag that is not a duration
- * and two settle the range, which is the reason that exists because *an overflow is not an
- * inapplicability*. The forty are unchanged and the record's figure is the matrix's.
+ * `edge-cases.test.ts` requires in both directions - so two rows settle a bag that is not a duration,
+ * three settle a bag whose counts disagree in sign, and two settle the range, which is the reason
+ * that exists because *an overflow is not an inapplicability*. The forty are unchanged and the
+ * record's figure is the matrix's.
+ *
+ * **One of the seven settles a precedence rather than a behaviour**, which no row of the matrix can:
+ * a bag can trip two reasons at once, `failureReasons` declares the order they are tested in, and
+ * `a-bag-of-two-signs-and-a-unit-the-carrier-drops` is the call on which two conforming
+ * implementations would otherwise be free to disagree. ADR-0255.
  *
  * ---------------------------------------------------------------------------
  * Where each answer comes from
  * ---------------------------------------------------------------------------
  *
- * The fifteen applied answers were measured on node v24.15.0, V8 13.6.233.17, and the two
- * out-of-range rows with them. The twenty-five refusals are the language's, read on Chrome 152 at
- * ADR-0225: the draft `Temporal` behind `--harmony-temporal` **disagrees on `PlainYearMonth`**,
- * answering where the language throws, so no refusal here is taken from it.
+ * The sixteen applied answers were measured on node v24.15.0, V8 13.6.233.17, and the two
+ * out-of-range rows with them. The twenty-five refusals of the matrix are the language's, read on
+ * Chrome 152 at ADR-0225: the draft `Temporal` behind `--harmony-temporal` **disagrees on
+ * `PlainYearMonth`**, answering where the language throws, so no refusal of the matrix is taken from
+ * it.
+ *
+ * **The three sign rows are the exception and it is declared rather than smoothed.** Their answers
+ * were read on the draft, which is the only engine this machine has; what makes them sound is that
+ * the refusal is `Temporal.Duration`'s own requirement that every non-zero field carry the sign of
+ * the whole - the specification rather than a behaviour - and that the draft was measured refusing
+ * `Temporal.Duration.from({hours: 1, seconds: -1})` identically to `carrier.add`, so the bag never
+ * reaches a carrier at all. A reading on the published language is owed and is what this contract's
+ * own `liftedBy` asks for. ADR-0255.
  */
 
 import type { CaseGroup } from '../../../../packages/catalogue/identifier.js'
@@ -66,6 +81,14 @@ export const edgeCaseGroups: readonly CaseGroup[] = [
   },
   { id: 'a-duration-that-applies-seven', title: 'A duration that applies seven', note: null },
   { id: 'a-bag-that-is-not-a-duration', title: 'A bag that is not a duration', note: null },
+  {
+    id: 'a-bag-whose-counts-disagree-in-sign',
+    title: 'A bag whose counts disagree in sign',
+    note:
+      'No duration has two signs, so such a bag names one for no carrier - which is why the refusal ' +
+      'is decided before the carrier is consulted, and why one bag gets one answer whichever of the ' +
+      'three it is handed to. A zero count carries no sign and the last row is what says so.',
+  },
   {
     id: 'the-range-and-not-the-unit',
     title: 'The range, and not the unit',
@@ -556,6 +579,59 @@ export const edgeCases: readonly EdgeCase[] = [
       'frozen phrase met a second time - a plausible value that silently drops what the caller ' +
       'asked for - and the whole bag is refused rather than the key dropped, because a caller who ' +
       'misspelled one field has no reason to trust the others.',
+  },
+
+  // -------------------------------------------------------------------------
+  // A bag whose counts disagree in sign
+  // -------------------------------------------------------------------------
+  {
+    id: 'a-bag-of-two-signs',
+    group: 'a-bag-whose-counts-disagree-in-sign',
+    carrier: 'PlainTime',
+    from: A_TIME,
+    duration: { hours: 1, seconds: -1 },
+    expected: null,
+    reason: 'counts-of-two-signs',
+    unit: null,
+    provenance: 'specified',
+    rationale:
+      'Both units are ones this carrier applies, and the call is still refused - for the bag rather ' +
+      'than for the carrier. The language refuses it too and calls it `RangeError: Invalid time ' +
+      'value`, which is the misnomer this reason exists to keep out of the diagnostic: an ' +
+      'implementation that catches the arithmetic and reports what it caught reports the range here ' +
+      'and is wrong about which of two decisions the caller got wrong.',
+  },
+  {
+    id: 'a-bag-of-two-signs-and-a-unit-the-carrier-drops',
+    group: 'a-bag-whose-counts-disagree-in-sign',
+    carrier: 'PlainTime',
+    from: A_TIME,
+    duration: { days: 1, seconds: -1 },
+    expected: null,
+    reason: 'counts-of-two-signs',
+    unit: null,
+    provenance: 'specified',
+    rationale:
+      'The row that settles the precedence rather than a behaviour. This call trips two refusals - ' +
+      '`days` is one of the four this carrier drops, and the counts carry two signs - and the ' +
+      'contract names the bag\'s, because a bag that names no duration names none for any carrier ' +
+      'while an inapplicable unit is a fact about this one. Without this row a second conforming ' +
+      'implementation could answer the other reason and no case would say it was wrong.',
+  },
+  {
+    id: 'a-zero-count-carries-no-sign',
+    group: 'a-bag-whose-counts-disagree-in-sign',
+    carrier: 'PlainTime',
+    from: A_TIME,
+    duration: { hours: 0, seconds: -1 },
+    expected: '12:29:59',
+    reason: null,
+    unit: null,
+    provenance: 'specified',
+    rationale:
+      'The boundary of the rule above, and the reason it is written over non-zero counts. A zero ' +
+      'field belongs to no sign, so this bag is the duration `-PT1S` and the call is answered. An ' +
+      'implementation reading the sign of every field it finds refuses this and is refused here.',
   },
 
   // -------------------------------------------------------------------------
