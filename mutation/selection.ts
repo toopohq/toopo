@@ -75,13 +75,23 @@ export const theFileOf = (battery: Battery): string => `mutation/${battery.name}
  * battery's own declaration are what a battery is *built out of*: change one of these and every
  * verdict this instrument produces is a verdict about different code.
  *
- * **Eight files and not six.** Two of them are outside `mutation/` and would be missed by any rule
+ * **Nine files and not six.** Two of them are outside `mutation/` and would be missed by any rule
  * scoped to the instrument's folder: `vitest-entry-point.ts`, which every cell is collected through,
  * and `packages/catalogue/identifier.ts`. The second is worth its own line, because it narrows a
  * population this repository keeps an entry for: `packages/catalogue/` is the folder reached by
  * everything and injected into by nothing, and one of its two files is now answered for. The other,
  * `every-contract.ts`, is read by the contract suites and by no run of a battery, so it stays exactly
  * where ADR-0146 left it.
+ *
+ * **The ninth is `mutation/excluded-contracts.ts`, and it arrived as a bill nobody had costed.**
+ * `registry-storage.battery.ts` derives the contract slugs its families spell from the tracked folders
+ * *minus* what that declaration excludes, so the declaration is now on the execution path of every
+ * battery - the walk said so before any reader did, which is the half of this pair that works.
+ * **What it costs is that editing the exclusion selects all twenty-four batteries**, and that is
+ * defensible rather than merely accepted: the declaration now decides what one battery expects to
+ * find, so a change to it is a change to an expectation and every battery answering is the right
+ * answer. It is also rare - a contract entering or leaving the suite - where `census.ts`, the one
+ * entry below that deliberately selects nothing, moves whenever a guard is added. ADR-0254.
  *
  * **The blind spot is published rather than discovered.** `measure.ts` resolves its battery through a
  * templated `import()`, and `specifiersIn` matches only a quoted literal - so the walk reaches no
@@ -94,6 +104,7 @@ export const theFileOf = (battery: Battery): string => `mutation/${battery.name}
 export const WHAT_A_RUN_OF_ANY_BATTERY_READS: readonly string[] = [
   'mutation/attribution.ts',
   'mutation/census.ts',
+  'mutation/excluded-contracts.ts',
   'mutation/measure.ts',
   'mutation/mutants.ts',
   'mutation/paths.ts',

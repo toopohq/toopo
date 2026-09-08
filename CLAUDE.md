@@ -3272,6 +3272,21 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   so that battery is the only one the eighth folder reaches. It is not repaired in the unit that found
   it. ADR-0253.
 
+  **It is repaired now, and the instrument sent a bill neither the owner nor the assistant had
+  costed.** `THE_CONTRACTS` is the tracked contract folders **minus what
+  `mutation/excluded-contracts.ts` declares** — that file is in `mutation/` and this battery's
+  `contractPath` is `packages/registry`, so no cell of it can reach the declaration it now reads, which
+  is the comment's own argument surviving the subtraction whole: measured, **25 files named and nought
+  carrying a `/` or a `..`**. **The exact reading does not exist**: `the-catalogue.ts` is inside the
+  edit surface and `packages/catalogue/every-contract.ts` is outside it and **enumerates no contract**.
+  The control is the refusal's own arithmetic — **508 → 484 pin entries and 51 → 46 declared**, which
+  is the 24 and the 5 it named, 29 addresses in all, of which **28 end in `-temporal-add` and one
+  carries the slug in the middle**. **And the import put that declaration on the execution path of
+  every battery**, so `every-file-a-run-of-a-battery-reads-is-declared` reddened before any reader
+  noticed and `WHAT_A_RUN_OF_ANY_BATTERY_READS` goes eight to nine: **editing the exclusion now selects
+  all twenty-four batteries**, which is right rather than merely accepted, the declaration having become
+  what one battery expects to find. ADR-0254.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
@@ -6053,6 +6068,42 @@ These outlive the current stage and are not open to trade-off.
   one. The publication survives it — the entry below says why — and the battery selection does not.
   `gh api repos/toopohq/toopo/actions/runs?branch=main` answers whether anything is `queued` or
   `pending` before a push, and it is one request. ADR-0236.
+
+  **And that convention is one of three, which are one form: a verification here binds to a state it
+  does not name, so an act on that state un-does it and nothing says so.** Three instances, three
+  different substrates, and the act looked unrelated to the verification every time:
+
+  - **the working tree, during a replay.** An edit while cells are running does not throw, it *lies*:
+    a sweeping guard red on every cell turns declared survivors into fake kills. `assertCleanTree`
+    refuses a dirty tree at the start and has no opinion about one that goes dirty afterwards.
+  - **the run queue, before a pending verdict.** `cancel-in-progress: false` protects the run in
+    progress and not the one behind it, so a push made while a run of `main` is queued destroys a
+    verdict rather than adding one — and a superseded run has no jobs, so `every-job-answered` is not
+    among them and reports nothing. ADR-0236.
+  - **the ref graph, after a green.** Deleting a throwaway branch kills every citation of its commits;
+    `theHistory()` is `git rev-list --all`, so a `meta` run taken *before* the delete passes on a graph
+    that is about to stop existing, and the runner's fresh clone reddens. It cost `main` a red window
+    across both legs at `1834e20`. ADR-0253.
+
+  **The rule is one sentence: the verification is the last thing you do, and anything you do after it
+  un-does it.** What gives it teeth is the second half — **an act on the tree, on the queue or on the
+  refs moves what every verification read, whatever it looks like it touches.** Each of the three was
+  invisible because the act seemed to be about something else: an edit about a file, a push about a
+  commit, a delete about a branch.
+
+  **What the rule predicts and nothing has burned yet** is the fourth substrate of the same kind: the
+  installed dependencies. `pnpm install` during a verification moves what every cell runs against, and
+  no reading here records the store it was taken over — so it would fail in exactly the same silence.
+  Named rather than measured, and it is a prediction rather than an instance.
+
+- **`npm run predict` is run before a push that moves what a battery expects**, and it is a convention
+  because it cannot be a job. It answers *would a replay refuse* in about 185 ms; it read **22 faults
+  since `cced79f`** and nobody ran it, which is the whole of how a red battery stayed invisible for
+  five pushes. It cannot become a step of `suites.yml`: `mutation/results/` is gitignored on purpose —
+  `.gitignore` carries the reason, that keeping the measurement as well would put one claim in two
+  places that can drift — so a runner reads nothing and a fresh clone answers *no measurement of this
+  battery is on disk* twenty-four times, correctly. **Exit 2 means it could not read and never that it
+  found nothing.** ADR-0221, ADR-0238, ADR-0253, ADR-0254.
 
   **That clause has been broken twice, both times deliberately, both times by the owner's decision,
   and it is written here rather than kept as a rule nobody honours.** The history was reissued on

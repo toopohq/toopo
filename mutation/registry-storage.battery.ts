@@ -78,6 +78,7 @@
 
 import type { Battery, Mutant } from './run.ts'
 import type { ArmUnderTest } from './mutants.ts'
+import { THE_FOLDERS_THIS_SUITE_DOES_NOT_RUN } from './excluded-contracts.ts'
 import { killed, mutantsOn, survived } from './mutants.ts'
 import { trackedFiles } from './paths.ts'
 
@@ -105,16 +106,51 @@ const { sameOnEveryLens } = mutantsOn(UNDER)
  * be the same object, and a defect that emptied the catalogue would empty what the battery expects to
  * find. `contracts/` is outside everything this battery edits, so what is read here cannot be perturbed
  * by what is measured.
+ *
+ * ---------------------------------------------------------------------------
+ * The disk is not the catalogue, and one folder is what said so
+ * ---------------------------------------------------------------------------
+ *
+ * **The reading above is of the tree, and the rows it has to predict are the catalogue's.** They
+ * agreed until a contract entered the repository without entering the catalogue: `temporal/add` is
+ * seven files under `contracts/typescript/`, ADR-0252 excluded it in three places, and this
+ * derivation went on spelling `…-temporal-add` for every family - **29 addresses no row of the suite
+ * carries**, which `assertGuardsAreAddressed` refuses by name. ADR-0252 wrote that such a contract is
+ * outside every population by construction; this is the one population read off the disk, which is
+ * exactly what made it un-perturbable and exactly what made it see a folder the catalogue does not.
+ *
+ * **The subtraction preserves the argument rather than trading it away.**
+ * `mutation/excluded-contracts.ts` is in `mutation/` and this battery's `contractPath` is
+ * `packages/registry`, so no edit of this battery can reach it - measured over its own declarations,
+ * 25 files named and nought carrying a `/` or a `..`, where `applyEdits` joins the root, that
+ * `contractPath` and the file. Reading `the-catalogue.ts` would have been the exact answer and is
+ * refused by the paragraph above; `packages/catalogue/every-contract.ts` is outside the surface too
+ * and **does not enumerate the contracts**, so there is no third place to read this from. ADR-0254.
+ *
+ * **What it does not reach is declared rather than guarded.** A declared folder that exists and is not
+ * two segments under `contracts/typescript/` yields no slug and subtracts nothing, silently. The
+ * declaration's own guards already refuse a folder that is not in the tree, so what is left is a real
+ * folder somewhere else - and a guard for that costs a census row and a cell of `meta` to answer for a
+ * shape nobody has written.
  */
-const THE_CONTRACTS: readonly string[] = [
-  ...new Set(
-    trackedFiles().flatMap((path) => {
-      const hit = /^contracts\/typescript\/([^/]+)\/([^/]+)\//.exec(path)
+const A_CONTRACT_FOLDER = /^contracts\/typescript\/([^/]+)\/([^/]+)(?:\/|$)/
 
-      return hit === null ? [] : [`${hit[1]}-${hit[2]}`]
-    }),
-  ),
-].sort()
+/** The slug a path names, for a tracked file and for a declared folder alike, so the two cannot drift. */
+const theSlugOf = (path: string): readonly string[] => {
+  const hit = A_CONTRACT_FOLDER.exec(path)
+
+  return hit === null ? [] : [`${hit[1]}-${hit[2]}`]
+}
+
+const THE_SUITE_DOES_NOT_RUN: ReadonlySet<string> = new Set(
+  THE_FOLDERS_THIS_SUITE_DOES_NOT_RUN.flatMap(theSlugOf),
+)
+
+const THE_CONTRACTS: readonly string[] = [
+  ...new Set(trackedFiles().flatMap(theSlugOf)),
+]
+  .filter((slug) => !THE_SUITE_DOES_NOT_RUN.has(slug))
+  .sort()
 
 /**
  * One address per contract, spelled by the caller because the slug is not always the last segment.
