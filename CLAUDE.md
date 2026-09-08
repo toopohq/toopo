@@ -709,46 +709,57 @@ proof's and is stated in the same place**: no mutant reddens those two guards, s
 they are worth, and what stands in for it is that they were seen red on three real conditions with the
 reds published. ADR-0107.
 
-**And the lifecycle's third word has a mechanism, which found the freeze's own population on the way.**
-`not-yet-published` had been a member of `Lifecycle` since ADR-0007 with nothing behind it: the dispatch
-branched on `never-published` alone and everything else fell through to `publishContract`, so a contract
-nobody published was bound like one that was — and `absorbed-by-the-language` was published by falling
-through an `else` rather than by being sent anywhere. **The owner ruled for a third path that mints
-nothing**, on the permanent rule rather than on economy: *a published version is frozen for life*, and
-freezing what is not published empties that rule rather than strengthening it. The dispatch is total
-over the union now, so a fifth state fails to compile instead of landing somewhere.
+**And the lifecycle's third word has a mechanism, after a ruling that was taken, refuted by the
+reconstruction, and replaced in the same day.** `not-yet-published` had been a member of `Lifecycle`
+since ADR-0007 with nothing behind it: the dispatch branched on `never-published` alone and everything
+else fell through to `publishContract`, so a contract nobody published was bound like one that was —
+and `absorbed-by-the-language` was published by falling through an `else` rather than by being sent
+anywhere. **The owner first ruled that the state should mint nothing**, on the permanent rule: freezing
+what is not published empties it rather than strengthening it.
 
-**The criteria were committed at `679340a` before a figure of them was read, and the control refuted
-half of its own expectation.** The two questions were separated in advance — does the printed ledger
-move, and does `the-freeze.test.ts` redden — because ADR-0231 measured them coupled and ADR-0248
-measured them parting. With the third path in place the reading is flat: `18cc4e82…` at 1 206 bytes,
-`pnpm freeze` 3 passed, the registry suite 25 files and 483 tests. **Under the control they part.**
-`object/deep-equal@1` set to `not-yet-published` takes the ledger to **998 bytes** and `ef31c467…` with
-both of its bindings gone — **and `pnpm freeze` stays 3 passed on that same tree**. The cause is one
-line: `bindingsOf(ledger)` makes the freeze's population the ledger itself, so a binding that leaves it
-leaves the check rather than failing it. **A published address can disappear and the mechanism whose
-whole subject is permanent rule 6 says nothing.**
+**What refuted that is not a guard.** `bindingsAtRevision` runs the ledger script *of the commit it
+rebuilds*, so an artefact is reconstructible at a revision exactly when that revision's ledger holds an
+entry for it — and ADR-0106's coordinate for a contract binding is the commit **before** the
+publication, at which the contract reads `not-yet-published`. Measured: the four founding bindings name
+`d3a5166`, whose own dispatch branches on `never-published` alone and publishes everything else. **So a
+state that mints nothing breaks the rebuild of the freeze for every publication after it**,
+`temporal/add` first, with no live binding at risk — every existing one rebuilds under its own commit's
+code. It arrived as `frozen-for-life.test.ts` failing to collect, four guards skipped on
+`Error: 0298a5b4… binds no typescript/string/slugify@1`, and **only once the change was committed**:
+that file clones at committed HEAD, so the reading taken an hour earlier — 25 files and 483 tests, all
+green — was about the code the commit replaced.
 
-**What answers it is a guard over the population that does not shrink.** `THE_PUBLICATIONS` is the
-addresses this repository published and is derived from no catalogue, so
-`every-address-this-catalogue-published-is-one-the-ledger-still-binds` sees what the freeze cannot —
-red on the control naming `typescript/object/deep-equal@1`, beside a green freeze. **A second control
-says the guard reads the publication rather than the state**: the same edit on the contract this
-catalogue *refused* reddens **eight** guards of that folder and shares **none** of the three the first
-control reddens, this one green among them. `I-181` of `registry-storage` is the cell, and its pin
-names all three.
+**So the state mints, and the argument is carried by the anchoring instead.** Nothing was built for it:
+`THE_PUBLICATIONS[…] ?? THE_UNPUBLISHED_PUBLICATION` already hands a contract nobody published the
+stand-in revision, `isAnchored` puts forty zeros outside the half `rebindingFaults` rebuilds, and
+`unanchoredBindings` names the rest — a mechanism whose second side had never had an inhabitant. Three
+things the ledger confounded are three: a **binding** makes an artefact rebuildable at a commit, an
+**anchor** freezes it for life, and `installable` is what a reader may take, read off the lifecycle the
+binding carries in its own `standing` through a map total over the union.
 
-**Three questions were answered rather than assumed and one prediction is refuted.** `installable`
-answers **false** untouched, by `ledger.contracts` membership and never by a lifecycle test; the
-`playground.test.ts` hole closes for free, `heldByTheRegistry` dropping the contract before line 159
-imports and calls a stripped reference — `npm run site` exit 0, **18 files and 192 tests** on the
-control; and the site builds **no page at all**, which is the one question no prediction was written
-for. **There is no second frozen half unguarded**: the snapshot and the blobs are registered before the
-branch, so the read API can still answer in process, and the emitted tree writes neither —
-`what-is-served-and-cannot-be-asked-for-is-the-refused-contract` reddens with the contract joining the
-unreachable set at `files: 7`. The class is guarded, by a guard nobody wrote for it — **and that guard
-asserts a literal list of one, so the day an eighth contract enters as `not-yet-published` it reddens**,
-which is a line the catalogue-entry unit owes rather than a defect. ADR-0260.
+**Both controls answer, and one of them refutes a prediction of the probe's own.** A contract that
+*was* published, put back — `object/deep-equal@1` — keeps its real coordinate, stays anchored, leaves
+the ledger at `18cc4e82…` and 1 206 bytes and the freeze at 3 passed: **flipping a standing field does
+not unfreeze a published version**, where under the first ruling the same edit took the ledger to 998
+bytes with both bindings gone and the freeze silent. A contract nobody published — `array/group-by@1` —
+takes the stand-in revision: the ledger **moves**, 1 206 → **1 408 bytes** and `18cc4e82…` →
+`1939c5d8…`, gaining `caf4e401…`, which is the digest ADR-0248's entry names as the one that could move
+with nothing able to say so. **And the freeze reddens**, which was predicted not to: `rebindingFaults`
+does ignore an unanchored binding, and the suite carries a second guard about its own *population* that
+refuses one. So an unanchored binding creates no unguarded frozen half — it is **over-guarded**, named
+by `unanchoredBindings` where a refusal leaves no binding at all to name.
+
+**What that costs is measured and deliberately not paid here.** Four guards assume the state has no
+inhabitant — two about anchoring, two in the site reading *not installable* as *refused* — and each
+reddens the day one really carries it. The anchoring pair was restated and the restatement withdrawn on
+its price: both names encode *every binding is anchored*, so ADR-0017 makes the repair a rename, and the
+two addresses are cited **fourteen times across six records**, three in `confirmed-by` and five in the
+prose of stamped records. They belong to the unit that adds the first inhabitant and sees all four red
+for real. **Three guards are written and each has the only shape available**: one over a constructed
+ledger, because a guard filtered on this state would assert an empty population; two total over the
+catalogue and over the ledger. Four cells, one apiece and one re-aimed — `I-181`'s old edit reddens a
+profile guard and says nothing about the ledger now, so it records a published contract as refused,
+which is the one edit that still empties one. ADR-0260, ADR-0261.
 
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
@@ -3497,17 +3508,24 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   catalogue behind every freeze run where today six are rebuilt. Priced as its own unit and not taken.
   ADR-0248.
 
-  **Half of it has a keeper now, and the half that has one is the published side.** ADR-0260 moved a
-  *published* contract out of the ledger and met the same silence — 998 bytes and `ef31c467…` against
-  1 206 and `18cc4e82…`, with `pnpm freeze` 3 passed on both — so the mechanism this entry names is not
-  about refusals at all: it is `bindingsOf(ledger)`, and a refused contract is one instance of it rather
-  than the population.
-  `every-address-this-catalogue-published-is-one-the-ledger-still-binds` reads `THE_PUBLICATIONS`, which
-  does not shrink with the catalogue, so a published address leaving the ledger is a red rather than a
-  silence. **What is unchanged is everything about a contract this catalogue turned down**:
-  `array/group-by@1` stands in `THE_PUBLICATIONS` nowhere — measured, the same edit on it leaves the new
-  guard green among eight reds — so its frozen half is outside both populations, and the second ledger
-  is still what would close it. ADR-0260.
+  **Half of it has a keeper now, and the mechanism this entry names turns out not to be about refusals
+at all.** It is `bindingsOf(ledger)`: the freeze's population *is* the ledger, so anything that leaves
+the ledger leaves the check rather than failing it. Measured on a *published* contract moved out —
+998 bytes and `ef31c467…` against 1 206 and `18cc4e82…`, with `pnpm freeze` 3 passed on both — so a
+refused contract is one instance of it and never the population.
+  `every-address-this-catalogue-published-is-one-the-ledger-still-binds` answers the published side,
+  reading `THE_PUBLICATIONS`, which does not shrink with the catalogue.
+
+  **And the entry narrows rather than growing, which is the opposite of what the third lifecycle path
+  looked like it would do.** A contract in `not-yet-published` mints a binding and takes the stand-in
+  revision, so its frozen half is **inside** `bindingsOf` and **named** by `unanchoredBindings` — it
+  can move, and something says which. What stays silent is a contract this catalogue *refused*, which
+  mints no binding at all and is therefore in no population any check ranges over. Measured:
+  `array/group-by@1` put into the third state binds `caf4e401…` — the very digest this entry names as
+  the one that could move with nothing able to say so — and two guards refuse the state on the spot.
+  **So the population is every contract this catalogue holds and has *refused*, which is one**, and it
+  grows only with the next refusal that gets an address. The second ledger is still what would close it.
+  ADR-0260, ADR-0261.
 
 - **That the date a refusal carries is the date the refusal was taken.** `refuseContract` records
   `decidedOn`, `/refusals` serves it, and it is fed by `THE_PUBLICATION_INSTANT` — so
@@ -6370,12 +6388,28 @@ These outlive the current stage and are not open to trade-off.
     `theHistory()` is `git rev-list --all`, so a `meta` run taken *before* the delete passes on a graph
     that is about to stop existing, and the runner's fresh clone reddens. It cost `main` a red window
     across both legs at `1834e20`. ADR-0253.
+  - **committed `HEAD`, while the working tree is what is being measured.** A verification that clones
+    or spawns at `git rev-parse HEAD` reads the code the last commit carries, so a change sitting in
+    the working tree is invisible to it and the reading is green about a state that no longer exists.
+    `frozen-for-life.test.ts` is one: it clones at committed HEAD and runs *that* code over three
+    lifecycle states, and it is what refuted ADR-0260 — but only once the change was committed. Before
+    that, `npm run registry` answered **25 files and 483 tests, all green**, on a tree whose dispatch
+    the suite had never executed. ADR-0261.
 
   **The rule is one sentence: the verification is the last thing you do, and anything you do after it
   un-does it.** What gives it teeth is the second half — **an act on the tree, on the queue or on the
-  refs moves what every verification read, whatever it looks like it touches.** Each of the three was
-  invisible because the act seemed to be about something else: an edit about a file, a push about a
+  refs moves what every verification read, whatever it looks like it touches.** Each of the first three
+  was invisible because the act seemed to be about something else: an edit about a file, a push about a
   commit, a delete about a branch.
+
+  **The fourth completes the axis by inverting it, and that is why it is worth writing beside them
+  rather than under them.** In the first three the act comes *after* the verification and undoes it; in
+  the fourth the verification is *behind* the working tree and was never about it. So the remedies do
+  not rhyme: for the three, verify last; for this one, **commit before you measure**, because there is
+  nothing you can do afterwards that makes the reading have been about the right code. It is also the
+  only one of the four whose failure is silent in the *safe* direction — the reading is green rather
+  than wrong — which is what let it stand for an hour with a suite reporting a state that had been
+  replaced.
 
   **What the rule predicts and nothing has burned yet** is the fourth substrate of the same kind: the
   installed dependencies. `pnpm install` during a verification moves what every cell runs against, and

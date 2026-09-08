@@ -4,7 +4,13 @@ date: 2026-09-08
 governs:
   - packages/registry/local-read-api.ts
   - packages/registry/response.ts
-confirmed-by: []
+confirmed-by:
+  - battery: registry-storage
+    guard: a-contract-not-yet-published-is-served-and-not-installable
+  - battery: registry-storage
+    guard: every-contract-this-catalogue-holds-is-one-the-ledger-binds-or-refuses
+  - battery: registry-storage
+    guard: a-contract-binding-is-anchored-exactly-where-this-repository-published-it
 ---
 
 # A contract not yet published binds without being anchored
@@ -122,15 +128,150 @@ ruling rather than a second ruling.
 
 ## Decision Outcome
 
-*Written after the probe, in the commit that carries the readings.*
+**Outcome 1, with one prediction of my own refuted — and the refutation is the answer to Q5.**
+
+**Q1 — the ledger.** Flat: `18cc4e82…` at **1 206 bytes**. No contract carries the state, so the arm
+that now mints is an arm nothing takes.
+
+**Q2 — the freeze.** `pnpm freeze` 3 passed.
+
+**Q3 — `installable`.** It reads `entry.standing.lifecycle.state` through `A_READER_MAY_INSTALL`, a map
+total over the union so a fifth state is classed rather than defaulted. **The served index does not
+move on today's catalogue** — not by a byte comparison, and it does not need one: `installable` is the
+only field the change reaches, and `a-refused-contract-is-findable-and-not-installable` pins the
+complete list of entries answering false, green on both sides.
+
+**Q4 — the `playground.test.ts` hole closes.** Under C1 `npm run site` is **190 passed of 192**, and
+`playground.test.ts` is not among the two failures: `heldByTheRegistry` drops the contract before line
+159 imports and calls its stripped `reference.js`. That half of ADR-0260's finding survives the change
+of mechanism intact.
+
+**Q6 — `frozen-for-life.test.ts` is green and not one byte of it moved.** `25 passed (25)`,
+`486 passed (486)`. Its three lifecycle states each mint a binding again, so its third line is true as
+written — which is what the whole ruling was about, arriving as a suite that collects.
+
+**C1 — a published contract put back.** `object/deep-equal@1` to `not-yet-published`: the ledger is
+**1 206 bytes and `18cc4e82…`, unmoved**, and `pnpm freeze` is **3 passed**. The binding keeps its real
+coordinate, stays anchored, and the freeze goes on checking it. **So flipping a standing field does not
+unfreeze a published version** — where under ADR-0260's ruling the same edit took the ledger to 998
+bytes with both bindings gone and the freeze silent. Outcome 3 is refused by measurement.
+
+**C2 — a contract nobody published, which is the eighth contract's future.** `array/group-by@1` to
+`not-yet-published`: the ledger **moves**, 1 206 → **1 408 bytes**, `18cc4e82…` → `1939c5d8…`, gaining
+`typescript/array/group-by@1 → caf4e401…` and its reference at `38fe32f1…`. **`caf4e401…` is the digest
+ADR-0248's entry names as the one that could move with nothing able to say so**, and under this ruling
+it is in the ledger and named. So the probe could answer otherwise, and did.
+
+### Q5, where my own prediction was wrong
+
+**Predicted: the freeze stays green, an unanchored binding never being rebuilt. Measured: the freeze
+reddens.** `rebindingFaults` does ignore it — that half held — but the suite carries a second guard
+about its own *population*:
+
+```
+× nothing-this-tree-binds-escapes-the-freeze-check :: the population is every binding
+AssertionError: expected [ 'typescript/array/group-by@1', …(1) ] to deeply equal []
+```
+
+with `every-published-binding-still-hashes-to-what-it-was-published-as` green beside it. And a second
+guard says the same thing in the registry's own suite,
+`every-binding-anchors-a-commit-and-the-check-reaches-all-of-them`.
+
+**So the answer to *does an unanchored binding create a frozen half nothing guards* is no, and it is
+the opposite of what the entry it grows would suggest.** A refused contract leaves *no binding*, so it
+is outside `bindingsOf` and invisible — that is ADR-0248's silence. An unanchored binding is inside
+`bindingsOf`, named by `unanchoredBindings`, and **refused twice**. The state is over-guarded rather
+than unguarded.
+
+**What that costs is measured and is not paid here.** Four guards assume the state has no inhabitant
+and each reddens the day one really carries it:
+
+| | what it assumes |
+| --- | --- |
+| `nothing-this-tree-binds-escapes-the-freeze-check` | no binding is unanchored |
+| `every-binding-anchors-a-commit-and-the-check-reaches-all-of-them` | the same, in memory |
+| `a-refused-contract-is-in-the-index-and-resolves-to-no-binding` | not installable implies no binding |
+| `every-contract-the-index-lists-has-a-page-at-its-own-address` | exactly one entry is not installable |
+
+**The first two were restated and the restatement was withdrawn on its price.** Both names encode
+*every binding is anchored*, so ADR-0017 makes the repair a **rename**: narrowing a claim under an
+address that then over-reads is the one thing that record forbids. Swept, the two addresses are cited
+**fourteen times across six records**, three of them in `confirmed-by` blocks the meta suite resolves
+and five in the prose of stamped records, which nothing resolves and which would go stale in silence —
+this list's own class. Paying an address cost of that size for a state no contract carries, in a unit
+whose brief is that nothing enters the catalogue, would be paying it where the red can only be produced
+by a control. **They are named here and they belong to the unit that adds the first inhabitant**, which
+sees all four red for real.
+
+### What the guards are, and why each has the shape it has
+
+**`a-contract-not-yet-published-is-served-and-not-installable`** is the only one of the three that can
+be red on this tree, and it was: *expected true to be false*, on the sentence *a contract the catalogue
+has not published, offered for installation*. It is written over a **constructed** ledger with one
+entry's lifecycle moved and its digest, coordinate and instant left alone, because a guard filtered on
+this state over `theCatalogue` would assert an empty population — the trap
+`a-contract-not-yet-published-carries-the-current-banner` avoids by asserting its own is not empty. Its
+control is the same entry left `published`.
+
+**`every-contract-this-catalogue-holds-is-one-the-ledger-binds-or-refuses`** is total over the
+catalogue and is the guard whose absence let ADR-0260's ruling through. It is deliberately silent about
+*which* list.
+
+**`a-contract-binding-is-anchored-exactly-where-this-repository-published-it`** holds both directions,
+and the second is why the unconditional stand-in was refused before the probe: unpublished and anchored
+is a coordinate for a publication that never happened, published and unanchored is permanent rule 6
+stopping without a word.
+
+**Four cells, one per new guard and one re-aimed.** `I-182` reads `installable` off ledger membership
+again — the expression this repair replaced, which was the code for a year and which no reading of the
+real catalogue can see is wrong. `I-183` makes the coordinate lookup unconditional, which is the
+refused option built: nothing anchored, the freeze comparing an empty set. `I-184` drops the assignment
+on the refusal arm, an immutable update discarded, which is the one edit that still leaves a contract
+answered by neither list. And **`I-181` is re-aimed**: under this ruling its old edit reddens one guard
+about profiles and says nothing about the ledger, so it now records a published contract as refused —
+seven reds, above ADR-0076's line, pinning the one it was written for, with
+`every-contract-this-catalogue-holds-is-one-the-ledger-binds-or-refuses` **green** through it, which is
+the two guards measured apart rather than argued apart.
 
 ## Consequences
 
-*Written after the probe.*
+**Three things the ledger confounded are three things.** A binding is minted by three of the four
+lifecycle states and says only that the artefact can be rebuilt at a commit. An anchor is the
+coordinate, and `isAnchored` has a second side for the first time. `installable` is the lifecycle, read
+off the binding's own `standing`.
+
+**Nothing was built for the anchoring**: `THE_UNPUBLISHED_PUBLICATION`, `isAnchored`,
+`rebindingFaults`' filter and `unanchoredBindings` all existed and were unused, and
+`THE_UNPUBLISHED_PUBLICATION`'s own comment already said *a stand-in anchors nothing and still dates its
+bindings correctly*. The ruling gave a mechanism its first inhabitant rather than adding one.
+
+**ADR-0106's coordinate is safe and it is safe by construction.** The four founding bindings name
+`d3a5166`, at which the contracts read `not-yet-published`; `bindingsAtRevision` runs *that commit's
+own* entry point, whose dispatch branches on `never-published` alone. That is why every existing
+binding rebuilt correctly under ADR-0260's ruling and why the refutation arrived from the one suite
+that runs today's dispatch over the three states.
+
+**The catalogue-entry unit inherits four reds, measured and named above**, and two of them cost a rename
+priced at fourteen citations.
+
+**Nothing entered the catalogue and no digest moved.** Ledger `18cc4e82…` at 1 206 bytes on both sides,
+`pnpm freeze` 3 passed on both, `npm run test` 30 files and 718 tests, the site 18 and 192, the registry
+25 and 486. Census: `publication.test.ts` 10 → 12, `response.test.ts` 67 → 68.
 
 ## What would reopen this
 
-*Written after the probe.*
+**A contract really entering `not-yet-published`.** Everything above is measured on two controls and on
+a path nothing takes. The first inhabitant is what turns four named reds into four seen ones, and it is
+the moment the anchoring partition stops being a mechanism with one side.
+
+**A binding this repository published that `THE_PUBLICATIONS` does not name.** Both new guards keyed to
+it inherit that table's debt: a publication recorded nowhere is outside their population, and they
+would be green while the freeze was blind. ADR-0248's second ledger is what closes it.
+
+**A fifth lifecycle state.** `A_READER_MAY_INSTALL` and the dispatch are both total over the union, so
+one does not compile until it is classed twice — but *which* answer it takes is a decision neither map
+can make, and a state that mints no binding is now known to cost the rebuild of every publication after
+it rather than nothing.
 
 ## More Information
 

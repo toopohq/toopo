@@ -237,6 +237,19 @@ const catalogueFile = (find: string, replace: string) => ({
 const endpointsFile = (find: string, replace: string) => ({ file: 'endpoints.ts', find, replace })
 const searchFile = (find: string, replace: string) => ({ file: 'search.ts', find, replace })
 const readApiFile = (find: string, replace: string) => ({ file: 'read-api.ts', find, replace })
+/**
+ * The first helper of this battery to edit the module that builds the ledger. ADR-0261.
+ *
+ * Every cell before these three injected into a function the ledger is *made of* - the canonical
+ * form, the snapshot, the encoding, the projection - and none into the loop that decides which of the
+ * ledger's two lists an address enters. That is where the lifecycle is read, so it is where a defect
+ * about what a state mints has to live.
+ */
+const localReadApiFile = (find: string, replace: string) => ({
+  file: 'local-read-api.ts',
+  find,
+  replace,
+})
 const revisionFile = (find: string, replace: string) => ({ file: 'revision.ts', find, replace })
 const rebindingFile = (find: string, replace: string) => ({ file: 'rebinding.ts', find, replace })
 const rebuildFile = (find: string, replace: string) => ({ file: 'rebuild.ts', find, replace })
@@ -504,7 +517,7 @@ const WHAT_A_NEW_CONTRACT_CARRIES = `export const THE_CURRENT_BANNER: Banner = '
 
 const NORMALISE_THEN_HASH = `  const recomputed = digestOfBytes(servedBytes(response.bytes))`
 
-const INSTALLABLE_MEANS_PUBLISHED = `      installable: published.has(renderContract(identity.address)),`
+const WHAT_A_READER_MAY_TAKE = `      installable: installable.has(renderContract(identity.address)),`
 
 const WALK_BEFORE_PUSHING = `      const next = mustHold(holdings, edge.implementation)
       walk(next, [...open, what])
@@ -1095,7 +1108,7 @@ const mutants: readonly Mutant[] = [
     'I-14',
     'offers a contract the catalogue refused for installation, which is the search index contradicting ' +
       'the refusals page of the same site',
-    [responseFile(INSTALLABLE_MEANS_PUBLISHED, `      installable: true,`)],
+    [responseFile(WHAT_A_READER_MAY_TAKE, `      installable: true,`)],
     killed(['a-refused-contract-is-findable-and-not-installable']),
   ),
 
@@ -4717,48 +4730,128 @@ const mutants: readonly Mutant[] = [
   ),
 
   /**
-   * The third lifecycle path taken by a contract that *was* published, which is the one state the
-   * freeze is structurally unable to see. ADR-0260.
+   * A published contract recorded as one this catalogue turned down, which is the one edit that still
+   * takes an address out of the ledger. ADR-0260, ADR-0261.
    *
-   * It is the plausible mistake rather than an exotic one: `not-yet-published` is the arm a contract
-   * sits in while it is being written, and moving one back into it is what a unit does that has
-   * decided to withdraw something. Under it `object/deep-equal@1` mints neither binding - measured,
-   * the ledger goes from 1 206 bytes and `18cc4e82…` to 998 and `ef31c467…`, both of its bindings
-   * gone - **and `pnpm freeze` stays 3 passed on the same tree**, because `bindingsOf` makes the
-   * freeze's population the ledger itself, so a binding that leaves it leaves the check. That parting
-   * is what this guard exists for, and it is why the guard's population is `THE_PUBLICATIONS`, which
-   * does not shrink with the catalogue.
+   * **It was the third lifecycle path until that path stopped emptying the ledger.** Under ADR-0260's
+   * ruling this cell moved `object/deep-equal@1` to `not-yet-published` and the ledger fell from
+   * 1 206 bytes to 998 with both of its bindings gone, `pnpm freeze` staying 3 passed on the same
+   * tree - which is the parting the guard exists for and is measured in that record. ADR-0261 makes
+   * that state mint a binding, so the same edit now reddens one guard about profiles and says nothing
+   * about the ledger. What is left that empties it is a refusal, and that is what this injects.
    *
-   * **The control is what says the guard reads the publication rather than the state, and it is
-   * disjoint.** The same edit on the contract this catalogue refused - `array/group-by@1`, from
-   * `never-published` to `not-yet-published` - reddens **eight** guards of this folder and this one is
-   * green among them, a refused contract minting no binding and appearing in `THE_PUBLICATIONS`
-   * nowhere. So the two answers are separated by a measurement and not only by a reading.
+   * **The defect is plausible and it is the expensive direction**: a contract people have installed,
+   * recorded on the refusals page as one the catalogue declined, its binding gone and its freeze
+   * unasked. `refuseContract` is the only arm of the dispatch that mints no binding, so this is the
+   * whole of what the guard's sentence can still be falsified by.
    *
-   * The two companions are the same fact met elsewhere and neither of them reads a binding: the
-   * closure asserts that the one contract whose snapshot the tree does not emit is the refused one,
-   * and a second contract joins that set; the profile rule holds every contract whose frozen half it
-   * believes is still open, and this contract's profiles are among those it refuses. **Both are green
-   * under the control**, which is what says they are about this contract and not about the state -
-   * the eight the control reddens share none of these three.
+   * **Seven guards redden and one is named, which is ADR-0076 above the line.** What makes the pin
+   * that one rather than another is the separation this unit is about:
+   * `every-contract-this-catalogue-holds-is-one-the-ledger-binds-or-refuses` stays **green** through
+   * it - the contract is answered, by the other list - so the two guards are measured apart rather
+   * than argued apart. The six not named are the refusals page, the index, the README count and the
+   * emitted tree meeting a second refused contract.
    */
   sameOnEveryLens(
     'I-181',
-    'moves a published contract onto the third lifecycle path, so an address this repository has ' +
-      'published mints no binding and leaves the ledger with the freeze still green about it',
+    'records a contract this repository published as one the catalogue turned down, so a published ' +
+      'address leaves the ledger and its freeze is never asked again',
     [
       catalogueFile(
         `    address: DEEP_EQUAL,
     lifecycle: PUBLISHED,`,
         `    address: DEEP_EQUAL,
-    lifecycle: { state: 'not-yet-published' },`,
+    lifecycle: {
+      state: 'never-published',
+      decidedAgainst: groupBy.catalogueAdmission.decidedAgainst,
+      measurement: groupBy.catalogueAdmission.measurement,
+      keptAs: groupBy.catalogueAdmission.keptAs,
+    },`,
+      ),
+    ],
+    killed(['every-address-this-catalogue-published-is-one-the-ledger-still-binds']),
+  ),
+
+  /**
+   * `installable` read off the ledger again, which is the expression this repair replaced. ADR-0261.
+   *
+   * **It is the plausible slip rather than a wrong one, and it was the code for a year**: membership
+   * of `ledger.contracts` and *a reader may take this* were one question for as long as the only way
+   * to hold no entry was to have been refused. The third lifecycle path separates them - a contract
+   * not yet published binds so that the commit before its publication can be rebuilt - and this cell
+   * puts them back together.
+   *
+   * **On today's catalogue the two expressions agree**, no contract carrying the state, which is why
+   * the guard it reddens is written over a constructed ledger rather than over `theCatalogue`. That
+   * is the whole reason this cell exists: the defect is invisible to every reading of the real
+   * catalogue and visible to one guard.
+   */
+  sameOnEveryLens(
+    'I-182',
+    'reads `installable` off membership of the ledger rather than off the lifecycle the binding ' +
+      'carries, so a contract the catalogue has not published is offered for installation',
+    [
+      responseFile(
+        `  const installable = new Set(
+    ledger.contracts
+      .filter((entry) => A_READER_MAY_INSTALL[entry.standing.lifecycle.state])
+      .map((entry) => renderContract(entry.address)),
+  )`,
+        `  const installable = new Set(ledger.contracts.map((entry) => renderContract(entry.address)))`,
+      ),
+    ],
+    killed(['a-contract-not-yet-published-is-served-and-not-installable']),
+  ),
+
+  /**
+   * The coordinate lookup made unconditional, which is the option ADR-0261 refused before its probe.
+   *
+   * **It is what an author writes who has read *nothing not yet published is frozen for life* and
+   * reached for the nearest mechanism**: hand every contract the stand-in revision, and nothing is
+   * anchored. Under it the freeze's comparison is computed over an empty set - a check that goes
+   * green for ever - and six published versions leave permanent rule 6 with nothing on screen.
+   *
+   * It is the cell that says the anchoring is carried by the lookup rather than by the arm below it:
+   * the switch is untouched, every contract still binds, and what moves is only which commit the
+   * binding names.
+   */
+  sameOnEveryLens(
+    'I-183',
+    'hands every binding the stand-in revision instead of the commit it was published from, so ' +
+      'nothing is anchored and the freeze compares an empty set',
+    [
+      localReadApiFile(
+        '      THE_PUBLICATIONS[renderContract(record.address)] ?? THE_UNPUBLISHED_PUBLICATION',
+        '      THE_UNPUBLISHED_PUBLICATION',
       ),
     ],
     killed([
-      'every-address-this-catalogue-published-is-one-the-ledger-still-binds',
-      'what-is-served-and-cannot-be-asked-for-is-the-refused-contract',
-      'no-two-profiles-of-an-unpublished-contract-are-indistinguishable',
+      'a-contract-binding-is-anchored-exactly-where-this-repository-published-it',
+      'every-binding-anchors-a-commit-and-the-check-reaches-all-of-them',
     ]),
+  ),
+
+  /**
+   * The refusal arm minting nothing, which is form A applied to the other end of the union.
+   *
+   * ADR-0260 ruled that a state could answer neither list and ADR-0261 refuted it, on the ground that
+   * `bindingsAtRevision` runs the ledger script of the commit it rebuilds - so an artefact is
+   * reconstructible at a revision exactly when that revision's ledger holds an entry for it. **The
+   * refusal arm is the one place where answering neither list is still reachable by a single edit**,
+   * and the guard it reddens is total over the catalogue for that reason rather than filtered by a
+   * state no contract carries.
+   */
+  sameOnEveryLens(
+    'I-184',
+    'drops the assignment on the refusal arm, so a contract the catalogue turned down is answered ' +
+      'by neither list of the ledger and can be rebuilt at no commit',
+    [
+      localReadApiFile(
+        '        ledger = refuseContract(ledger, {',
+        '        refuseContract(ledger, {',
+      ),
+    ],
+    killed(['every-contract-this-catalogue-holds-is-one-the-ledger-binds-or-refuses']),
   ),
 ]
 
