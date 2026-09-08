@@ -3373,6 +3373,37 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   of one. Re-taken on the arbitrary alone: **308, and 345/369/286 by unit count**, four figures exact.
   ADR-0258.
 
+  **And the folder nothing executed has a job, which is what turns a probe into a leg.** `suites.yml`
+  gains `excluded-contracts` — a **sibling** and not a matrix leg, for a measured reason and a
+  structural one: `needs` waits for *every* leg and two jobs wait on `suites`, so a third leg charges
+  its whole duration to every push including the prose ones, which ADR-0169 measured at **132 s** when
+  the Windows suites were the candidate; and the legs run *one* configuration on two runtimes where
+  this runs a *different* one, so a matrix entry would have run all eight suites on node 26 to reach
+  one folder. **The exclusion is lifted from the single declaration and never beside it**:
+  `excluded-contracts.vitest.config.ts` computes both its includes from
+  `THE_FOLDERS_THIS_SUITE_DOES_NOT_RUN`, and the typechecker's project **names no folder at all** —
+  it extends the root, widens `lib`, and sets `exclude: []`, so the declaration reaches it by emptying
+  the root's exclusion rather than by a fourth transcription that could drift.
+
+  **The guard was seen red before it was green**, which is what a job is answered for means:
+  `every-job-of-a-workflow-is-one-its-last-gate-waits-for` named it — *`suites.yml`:
+  `every-job-answered` does not wait for `excluded-contracts`* — 1 of 12, then 12 of 12.
+
+  **And a publication waits for it, on an argument that is deliberately not the resemblance.**
+  `every-battery` and `every-battery-on-windows` carry `publish`'s own condition, so waiting on them
+  is free and they skip together; this one has no condition. They replay over code that reaches the
+  archive, where this folder reaches none — no catalogue, so no snapshot, no binding, no served
+  address, and `files: ["dist"]` keeps `contracts/` out of the tarball. **What decides is the chain
+  and the hole in it**: `publish → site → suites` already puts every suite in front of the
+  irreversible act, and this job runs the one suite that chain does not reach. A publication mints a
+  provenance naming `refs/heads/main` and a `gitHead`, so it freezes what a commit says about itself.
+  **It is named in `publish`'s `needs` and not in `site`'s**, where the Windows leg is, and the
+  difference is exact: that line exists because nothing is *deployed* from a tree whose Windows suites
+  are red, and the deployment does not carry this folder at all. Measured beside it: `npm test` is
+  **unchanged at 30 files and 718 tests with no type errors**, and the folder's own suite is **4 files,
+  122 tests, no type errors** on this machine's draft — the first green of that whole suite anywhere
+  with its properties repaired, and not yet the language's. ADR-0259.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
@@ -5348,6 +5379,39 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   pushing. Priced and not taken. **What is done instead is a convention with nothing under it**: do
   not push to `main` while a run of `main` is queued. It is bounded by `every-battery`, which a
   publication waits for whatever the per-push selection did. ADR-0111, ADR-0146, ADR-0222, ADR-0236.
+
+- **That a configuration this repository declares is one something runs.** ADR-0259 gives the eighth
+  contract a configuration of its own and a job that runs it, and the configuration cannot drift from
+  what it collects: its population is computed from `THE_FOLDERS_THIS_SUITE_DOES_NOT_RUN`, so a folder
+  excluded tomorrow is collected by it with nobody editing it. **What nothing keeps is one level up** —
+  that anything reaches the configuration at all.
+
+  **The failure has no event and it is the expensive direction.** Delete that job and the eighth
+  contract is exactly where it was before the unit that gave it one: excluded from `npm test` on both
+  legs, out of the typechecker's project, in no catalogue so no battery may inject into it, and now
+  with a configuration nobody runs. Every suite green, every gate green, and a contract folder executed
+  by nothing.
+
+  **The routes are three and that is measured rather than assumed.** Swept over the tracked tree:
+  **eleven configurations before this unit and twelve with it**, of which **two are named by no
+  script** — `mutation/fixture/vitest.config.ts` and `mutation/under-measurement.vitest.config.ts`,
+  which a battery reaches through `measure.ts` rather than through `package.json`. So a configuration
+  is reached by a script, by a job, or by the instrument, and no reading anywhere asks which of the
+  three a given one has.
+
+  **Where this looked**: `mutation/workflows.test.ts`, whose twelve guards read what `suites.yml` may
+  *hold* — a pinned digest, a publishing gate, an identity token, the last gate's `needs` — and not one
+  of which reads whether a job runs a thing this repository declares; `CENSUS` in `mutation/census.ts`,
+  which is keyed by configuration and answers for the guards each collects rather than for whether
+  anything runs it; and `excluded-contracts.test.ts`, which keeps the exclusion in its three places and
+  has no opinion about the door out.
+
+  **The population is every vitest configuration this repository declares**, twelve, and it grows with
+  each suite. **What would close it is one guard and it is not self-comparing** — the workflow is text
+  and a configuration is a value, which is what separates it from a guard over the derived `include`,
+  refused as `GUARD_PERTURBATION_RULE`. Priced at one guard, one census row and a name in the meta
+  battery's `unreachableGuards` entry, and **not taken**: a unit that adds a job is not where one
+  decides what else the workflow must answer for. ADR-0259.
 
 - **That the bound a battery runs under is one anybody compared with what a battery costs.** The two
   ubuntu gates declare `timeout-minutes: 40`, and the share the slowest job consumes is written beside
