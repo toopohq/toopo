@@ -301,9 +301,15 @@ is about the gate rather than about any job beside it.
 ### The unit broke the invariant it was written under, and the cause is a coordinate
 
 **`main` was red on both legs for one commit**, `1834e20`, and the cause is this record's own citations.
-It cited `d8a75da` and `dc6d6f2` - two commits of the throwaway branch - and **deleting the branch
-made both unreachable**, so `every-commit-this-repository-cites-is-one-it-has` reddened the `meta` step
-of `suites (22.18.0)` and `suites (24)` at once, 1 failed of 147.
+It named **two commits of the throwaway branch** - one as the coordinate of the run, one as the
+coordinate of the local probe - and **deleting the branch made both unreachable**, so
+`every-commit-this-repository-cites-is-one-it-has` reddened the `meta` step of `suites (22.18.0)` and
+`suites (24)` at once, 1 failed of 147.
+
+**They are not written here, and that is the same discipline rather than an evasion.** A citation of a
+dead identifier inside the paragraph explaining why it is dead is the defect the paragraph describes -
+which this repository already records against the four attestations whose `gitHead` no longer resolves,
+and which the first draft of this section committed before the guard refused it a second time.
 
 **The local check was green through it, and that is the half worth keeping.** `npm run meta` was run on
 this working copy after the commit and passed: a clone that *held* those commits until a moment ago
