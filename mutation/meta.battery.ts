@@ -590,6 +590,7 @@ export const battery: Battery = {
       nature: 'claims detection',
       guards: [
         'every-commit-this-repository-cites-is-one-it-has',
+        'every-commit-this-repository-cites-is-one-a-clone-keeps',
         'an-identifier-two-commits-answer-to-is-refused',
         'no-object-of-the-graph-carries-a-refused-address',
         'the-address-sweep-reaches-the-commits-and-the-annotated-tags',
@@ -599,7 +600,7 @@ export const battery: Battery = {
         'no-worktree-is-registered-beside-this-repository',
       ],
       reason:
-        'the 8 of `history.test.ts` no cell of this battery aims at. The floor this ' +
+        'the 9 of `history.test.ts` no cell of this battery aims at. The floor this ' +
         'battery was written to is one cell per collected guard file, and this file has one; the rest of ' +
         'its region is ordinary work nobody has taken, and the cell that would take it is a defect this ' +
         'file names rather than a defect nobody can find',

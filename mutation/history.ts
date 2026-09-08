@@ -126,6 +126,48 @@ import { THE_COMMITS_QUOTED } from './published.ts'
 export const theHistory = (): readonly string[] => answered(git('rev-list', '--all'))
 
 /**
+ * The refs a clone keeps, in the order they are tried. Neither is `HEAD`, and that is the whole point.
+ *
+ * A population read off `HEAD` grows to include whichever branch somebody is standing on, so a
+ * citation of that branch's own commit resolves exactly while it is worthless — which is the defect
+ * this second population exists to catch, committed inside the thing catching it.
+ */
+const THE_MAIN_REFS: readonly string[] = ['refs/heads/main', 'refs/remotes/origin/main']
+
+/** Whether a ref resolves here, asked so that a missing one is a fallback and never a silent zero. */
+const resolves = (ref: string): boolean => {
+  try {
+    git('rev-parse', '--verify', '--quiet', ref)
+
+    return true
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Every commit reachable from what a clone of this repository keeps: `main` and the tags.
+ *
+ * **It is a second population beside `theHistory()` and never a narrowing of it.** That one may not
+ * narrow: `the-address-sweep-is-total-over-the-history` reads it to require the sweep to cover every
+ * commit, and ADR-0095's argument is that `--all` is the only spelling of *this repository* a tag
+ * cannot fall out of. This one answers a different question — whether a citation survives the deletion
+ * of a working branch — which `--all` cannot see, a citation being live while any ref reaches it. The
+ * two are the same rule read at two moments, and the moment is what the first one binds to.
+ *
+ * **Measured at `744e4bc`**: `--all` reaches 945 commits, `main` and the tags reach 944, and the one
+ * that parts them was cited ten times across four files while a branch was the only thing holding it.
+ *
+ * **The fallback to `HEAD` fires only where neither main ref exists at all**, which is a detached
+ * checkout — a runner testing a commit that *is* main's tip. It is declared rather than silent, and it
+ * cannot fire in a clone that has either ref. That the runner holds the tags is measured rather than
+ * assumed: three commits no branch reaches are cited, in `suites.yml` twice and in ADR-0145 once, and
+ * `every-commit-this-repository-cites-is-one-it-has` is green there. ADR-0257.
+ */
+export const whatACloneKeeps = (): readonly string[] =>
+  answered(git('rev-list', THE_MAIN_REFS.find(resolves) ?? 'HEAD', '--tags'))
+
+/**
  * Every file a published contract freezes, derived from what the registry serves rather than listed.
  *
  * A published contract's digest covers its seven declared files and every file they reach outside the

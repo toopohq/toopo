@@ -10,6 +10,7 @@ import {
   refusedAddressFaults,
   strayWorktreeFaults,
   theHistory,
+  whatACloneKeeps,
 } from './history.ts'
 
 /**
@@ -19,7 +20,7 @@ import {
  * file gives: `mutation/` is the folder no battery injects into, so a guard over a document does not
  * force a battery to declare a Markdown file an unprobed region of something it measures.
  *
- * **Three of the nine resolve a reference, four keep the readings that feed them honest, and two fire
+ * **Four of the ten resolve a reference, four keep the readings that feed them honest, and two fire
  * a refusal this repository cannot produce.** A resolver whose sweep reaches nothing is green for ever
  * and says nothing, which is the shape this whole module exists against: `THE_COMMITS_QUOTED` looked
  * like a guard on exactly these identifiers for a year and never asked git a question about any of
@@ -43,6 +44,24 @@ describe('what this repository cites of its own history', () => {
    */
   it('every-commit-this-repository-cites-is-one-it-has :: an identifier in the prose resolves', () => {
     expect(deadCitationFaults()).toEqual([])
+  })
+
+  /**
+   * The same resolution against what a clone keeps, and it is where the *moment* stops mattering.
+   *
+   * The guard above is green while **any** ref reaches the commit, so a citation of a throwaway
+   * branch's own commit passes for as long as the branch exists and dies with it — which cost `main` a
+   * red window across both legs when a branch was deleted after a green rather than before it. This
+   * one is red the day the citation is written, which is the day somebody can still choose another
+   * coordinate.
+   *
+   * **It is a second population and not a replacement**, and the pair is what makes each claim
+   * legible: `--all` says *this repository holds it*, `main` and the tags say *a reader will hold it
+   * too*. They part on exactly one commit today and the parting is the whole of what this guard is
+   * for. ADR-0257.
+   */
+  it('every-commit-this-repository-cites-is-one-a-clone-keeps :: and not one a branch alone holds', () => {
+    expect(deadCitationFaults(citationsMade(), whatACloneKeeps())).toEqual([])
   })
 
   /**
