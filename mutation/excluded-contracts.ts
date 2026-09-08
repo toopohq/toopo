@@ -57,9 +57,12 @@ export const THE_CONTRACTS_THIS_SUITE_DOES_NOT_RUN: readonly AnExcludedContract[
       'that unit will meet and this one measured**: the draft `Temporal` behind `--harmony-temporal` ' +
       'is not the language and disagrees on the carrier that decides this contract - it answers ' +
       'where `PlainYearMonth` throws - so no reading taken under that flag may stand in for one ' +
-      'taken on the runtime; and `ESNext.Temporal` is a real lib fragment that `tsc` honours and ' +
-      'vitest does not, so a leg carrying the runtime may still not typecheck this contract\'s ' +
-      '`signature.test-d.ts` under the suite. ADR-0251, ADR-0252.',
+      'taken on the runtime; and the leg was read before anybody built one - on `ubuntu-latest` at ' +
+      'node v26.8.1, with `ESNext.Temporal` in `lib` and this folder collected, the suite answers 34 ' +
+      'files and 831 tests with no type errors, `signature.test-d.ts` typechecks, and 112 of this ' +
+      "folder's 113 tests pass. ADR-0251's clause that vitest does not honour the project's `lib` is " +
+      'refuted there: what does not survive a widening is the incremental cache its typechecker ' +
+      'keeps. ADR-0251, ADR-0252, ADR-0253.',
   },
 ]
 

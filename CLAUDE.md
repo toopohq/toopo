@@ -3210,8 +3210,10 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   serve one contract. **The control is the fourth reading**: with no probe and nothing excluded the
   suite answers 30 files and 718 tests, identical, so the exclusion is exactly neutral on what remains.
   **`ESNext.Temporal` is a real lib fragment here** — `tsc -p tsconfig.json` is exit 0 with the probe
-  under it — **and vitest does not honour it**, which closes that route and is published as measured
-  rather than explained. **The order that holds is one commit**: exclusion first excludes a folder that
+  under it — **and the suite was read as not honouring it, which ADR-0253 refuted**: vitest does honour
+  the project's `lib`, and what does not survive a widening is the incremental cache its typechecker
+  keeps, so the reading was taken against a `.tsbuildinfo` written under the narrower one. **The order
+  that holds is one commit**: exclusion first excludes a folder that
   does not exist, contract first puts the suite red on both legs, and the invariant admits no red
   commit. **And nothing answers for it** — ADR-0250's guard ranges over `theCatalogue`, and this
   contract enters the repository without entering the catalogue, so the declaration that says what is
@@ -3238,6 +3240,35 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   is in the declaration's own `liftedBy`**, where the leg unit arrives: no reading taken under
   `--harmony-temporal` may stand in for one taken on the published runtime, the draft disagreeing on
   the carrier that decides the arity. ADR-0252.
+
+  **And the leg was read before anybody built one, which is what the reading was for.** A job on a
+  throwaway branch at node **v26.8.1** — nine own names, `Calendar` and `TimeZone` absent, the
+  published language — lifted the exclusion for itself alone: **34 test files and 831 tests** against a
+  baseline of 30 and 718, **`Type Errors  no errors`**, `signature.test-d.ts` collected and passing,
+  and **112 of the folder's 113 tests green**. So vitest typechecks it and runs it, and the leg
+  delivers what a leg is for. **ADR-0251's clause is refuted and the cause is measured**: vitest does
+  honour the project's `lib`, and what does not survive a widening is the incremental cache its
+  typechecker keeps — `tsc --noEmit --incremental --tsBuildInfoFile <vitest's own dist>/…` — so the
+  same widened `lib` gives 40 errors against a cache written under the narrower one and none with that
+  file removed, on two machines and two operating systems. **The one red is the finding.**
+  `p5-a-unit-the-carrier-does-not-apply-is-refused` fails on `{milliseconds: -1, hours: 1}`, because
+  its own comment says the bags drawn never reach the range and the generator draws each count
+  independently in `[-3, 3]` — so a bag can carry **mixed signs**, which is not a duration at all, and
+  the reference's total `catch` calls that `out-of-range`. **It is not a draft-against-language
+  divergence** — both engines throw on a mixed-sign bag — it is that **the six properties had never
+  been executed on any engine**, ADR-0252 having replayed the forty-four *cases*. Whether the generator
+  should refuse such a bag and whether the reason should be `duration-not-read` are two decisions
+  inside files a publication freezes. **And the branch's first push selects every battery, which found
+  a red on `main`**: `registry-storage` refuses at calibration because `THE_CONTRACTS` is derived from
+  the tracked folders under `contracts/typescript/` — deliberately, so a mutant of that battery cannot
+  move it — so it spells **29 guard addresses ending in `-temporal-add`** that no row of the suite
+  carries. *A contract in the tree and not in the catalogue is outside every population by
+  construction* is false of the one population read off the disk. **The reading that would have caught
+  it in 185 ms exists and was not taken**: `npm run predict` answers **22 fault(s) a replay would
+  refuse on** and has since `cced79f` — and it cannot become a job, because `mutation/results/` is
+  gitignored and a runner reads nothing, so what is missing is a convention rather than a mechanism. It
+  is bounded by `every-battery`, which a publication waits for, and it is not repaired in the unit that
+  found it. ADR-0253.
 
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`

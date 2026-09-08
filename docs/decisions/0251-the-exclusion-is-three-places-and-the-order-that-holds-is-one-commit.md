@@ -8,6 +8,21 @@ confirmed-by: []
 
 # The exclusion is three places, and the order that holds is one commit
 
+> **One clause of this record is refuted, and it is *what it does not reach is the suite*.** Vitest
+> **does** honour the project's `lib`. What does not survive a widening is the incremental cache its
+> typechecker keeps: it spawns
+> `tsc --noEmit --pretty false --incremental --tsBuildInfoFile <its own dist>/tsconfig.tmp.tsbuildinfo`,
+> so a `lib` widened against a file written under the narrower one is read as though it had not been.
+> Measured three times on node v24.15.0 and reproduced on `ubuntu-latest` at node v26.8.1 — narrow and
+> cold gives 40 errors, widened with the cache kept gives the same 40, and the same widened `lib` with
+> the file removed gives none.
+> [ADR-0253](0253-what-a-runtime-carrying-temporal-does-to-the-suite.md) is the reading, and it is what
+> the reopening trigger below named.
+>
+> **Nothing else here is retracted, and the third place stands.** The four states, the control, and the
+> conclusion that an exclusion is three places are all unaffected: `tsconfig.json`'s `exclude` is what
+> keeps the folder out of the typechecker's project, and no widening of `lib` replaces it.
+
 ## Context and Problem Statement
 
 The eighth contract needs Temporal, which neither leg of this repository's matrix carries, and the
