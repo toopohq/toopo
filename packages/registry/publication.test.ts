@@ -8,6 +8,7 @@ import { THE_ORIGIN, THE_PACKAGE_NAME, renderContract } from './address.js'
 import { servedBytes } from './canonical.js'
 import { THE_CURRENT_BANNER, THE_REPOSITORY_LICENCE, isMarked, licenceHeaderOf } from './licence.js'
 import { theLocalLedger } from './local-read-api.js'
+import type { Ledger } from './snapshot.js'
 import { unanchoredBindings } from './rebinding.js'
 import {
   THE_AUTHOR_FIELD,
@@ -39,6 +40,23 @@ import { theCatalogue } from './the-catalogue.js'
 
 const textOf = (path: string): string =>
   servedBytes(readFileSync(join(REPOSITORY_ROOT, path))).toString('utf8')
+
+/**
+ * The ledger the three guards below read, built once for the file rather than once each.
+ *
+ * **`gather()` is not memoised** - the sentence *built lazily and once* one screen below it in
+ * `local-read-api.ts` is about `theLocalReadApi` and not about the ledger - so `theLocalLedger()`
+ * serialises the whole catalogue and hashes every declared file on every call. Measured at **809, 707
+ * and 508 ms** for the three, and `registry-storage` replays this suite once per cell over 238 of
+ * them: three calls are about five minutes of that battery's bound, which is what killed the job at
+ * 79 min 21 s against a bound of 79. ADR-0261.
+ *
+ * **Lazily rather than at module scope**, because a throw at collection takes every guard of the file
+ * with it and reports them `skipped` - which is the shape `frozen-for-life.test.ts` was found in, and
+ * a defect detected by a file failing to collect is a defect no guard caught.
+ */
+let theLedgerOnce: Ledger | undefined
+const theLedger = (): Ledger => (theLedgerOnce ??= theLocalLedger())
 
 /**
  * What `toopo add` copies, taken from the installer's own answer rather than from a list.
@@ -310,7 +328,7 @@ describe('what this repository publishes about itself', () => {
    * `registry-storage` injects into this folder.
    */
   it('every-address-this-catalogue-published-is-one-the-ledger-still-binds', () => {
-    const bound = new Set(theLocalLedger().contracts.map((entry) => renderContract(entry.address)))
+    const bound = new Set(theLedger().contracts.map((entry) => renderContract(entry.address)))
     const published = Object.keys(THE_PUBLICATIONS)
 
     expect(published.length).toBeGreaterThan(0)
@@ -340,7 +358,7 @@ describe('what this repository publishes about itself', () => {
    * a contract of this catalogue is somewhere the ledger can be asked about.
    */
   it('every-contract-this-catalogue-holds-is-one-the-ledger-binds-or-refuses', () => {
-    const ledger = theLocalLedger()
+    const ledger = theLedger()
     const answered = new Set([
       ...ledger.contracts.map((entry) => renderContract(entry.address)),
       ...ledger.refusals.map((entry) => renderContract(entry.address)),
@@ -377,7 +395,7 @@ describe('what this repository publishes about itself', () => {
    * with it.
    */
   it('a-contract-binding-is-anchored-exactly-where-this-repository-published-it', () => {
-    const ledger = theLocalLedger()
+    const ledger = theLedger()
     const unanchored = new Set(unanchoredBindings(ledger))
     const published = new Set(Object.keys(THE_PUBLICATIONS))
     const bound = ledger.contracts.map((entry) => renderContract(entry.address))

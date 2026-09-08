@@ -267,6 +267,31 @@ is the case ADR-0221 built it for exactly — a declaration drifting against a m
 taken — and it answers *every cell of this measurement agrees with what the battery declares today*,
 0 faults and 0 questions over 24 batteries, in about 185 ms against 65 minutes.
 
+**The push made `main` red, and what it cost is a guard's wall clock rather than a verdict.**
+`batteries (registry-storage)` was killed at **79 min 21 s** against its 79-minute bound, `cancelled`
+rather than `failure`, and `every-job-answered` — ADR-0222's gate — turned that into a red job exactly
+as written. **The previous completion of that battery on `main` was 67 min 26 s**, run `34211210792`,
+so the margin was 11 min 34 s and this unit spent all of it.
+
+**The cause is measured and it is not the three cells.** A cell replays the whole registry suite, so a
+guard's own duration is multiplied by 238. Read per guard: `every-address-…-still-binds` **809 ms**,
+`every-contract-…-binds-or-refuses` **707 ms**, `a-contract-binding-is-anchored-…` **508 ms** —
+because each calls `theLocalLedger()` and **`gather()` is not memoised**, the sentence *built lazily
+and once* one screen below it belonging to `theLocalReadApi`. Three calls, three full serialisations of
+the catalogue with every declared file hashed. **The first hypothesis was wrong and the measurement
+said so**: `theIdentities()` rebuilt four times inside the fourth guard looked like the cost, was
+repaired, and the suite did not move — 46.76 s against 46.58.
+
+Shared through one lazy build in the file, the two later guards fall to **0 ms** and the suite's tests
+go **46.76 s → 42.27 s**, which is the reading it had before these guards existed. The build is lazy
+rather than at module scope, because a throw at collection takes every guard of the file with it and
+reports them `skipped` — which is the shape this unit found `frozen-for-life.test.ts` in.
+
+**What follows is a projection and is published as one.** At 238 cells and ~1.1 s per cell of added
+suite time, the job should return to about **72 minutes** against the 79-minute bound: under it, with
+roughly six minutes of margin where this morning had eleven and a half. Only the runner can settle it,
+which is what the bound is about — and the bound was not touched.
+
 **Nothing entered the catalogue and no digest moved.** Ledger `18cc4e82…` at 1 206 bytes on both sides,
 `pnpm freeze` 3 passed on both, `npm run test` 30 files and 718 tests, the site 18 and 192, the registry
 25 and 486. Census: `publication.test.ts` 10 → 12, `response.test.ts` 67 → 68.

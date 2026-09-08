@@ -542,21 +542,39 @@ describe('the index, the refusals, and what update compares', () => {
     const first = ledger.contracts[0]
     if (first === undefined) throw new Error('the ledger this guard is built on binds no contract')
 
-    const held = (state: 'published' | 'not-yet-published') =>
-      servedIndex(SERVED_FROM, withTheFirstContractAt(ledger, state), theIdentities()).entries.find(
-        (entry) => entry.address.name === first.address.name,
-      )
+    // One identity, computed once, and `servedIndex` called twice over it. `serialiseContract` reads
+    // and hashes a contract's whole folder, and a cell of `registry-storage` replays this suite once
+    // per mutant - so a guard that builds the catalogue's identities per assertion costs the battery
+    // its bound rather than costing this file a second. ADR-0165's lesson, one folder over.
+    const source = theCatalogue.find((held) => held.address.name === first.address.name)
+    if (source === undefined) throw new Error('the ledger binds a contract this catalogue does not hold')
 
-    expect(held('published')?.installable).toBe(true)
+    const record = serialiseContract(REPOSITORY_ROOT, source)
+    const identities = [
+      {
+        address: record.address,
+        summary: record.identity.summary,
+        searchAliases: record.identity.searchAliases,
+        exports: servedExportsOf(record.surface.exports),
+      },
+    ]
+
+    const entryAt = (state: 'published' | 'not-yet-published') =>
+      servedIndex(SERVED_FROM, withTheFirstContractAt(ledger, state), identities).entries[0]
+
+    const asPublished = entryAt('published')
+    const asNotYetPublished = entryAt('not-yet-published')
+
+    expect(asPublished?.installable).toBe(true)
     expect(
-      held('not-yet-published')?.installable,
+      asNotYetPublished?.installable,
       'a contract the catalogue has not published, offered for installation. `installable` is read ' +
         'off the ledger rather than off the lifecycle, and a binding is what makes an artefact ' +
         'rebuildable rather than what makes it takeable.',
     ).toBe(false)
     // Served either way, and served identically but for that one field: a reader searching for it
     // finds it and is told they may not take it, which is the refused contract's bargain one state over.
-    expect(held('not-yet-published')).toEqual({ ...held('published'), installable: false })
+    expect(asNotYetPublished).toEqual({ ...asPublished, installable: false })
   })
 
   /**
