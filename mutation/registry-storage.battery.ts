@@ -4985,31 +4985,17 @@ export const battery: Battery = {
    * on the guard written for it. They are reachable, demonstrated, and the mutant was not promoted
    * into this battery - which is a debt with a name rather than an open question. The other
    * twenty-two had no perturbation written at all.
+   *
+   * **`the-readme-counts-the-catalogue-the-registry-declares` left this list, and its own region
+   * predicted the day it would.** That region argued no mutant here could name it rather than a
+   * dozen, and closed with *a sixth contract, or a second refused one, makes the count movable*.
+   * `I-181` is a second refused one: it records a published contract as one the catalogue turned
+   * down, the README's count moves, and the replay refused the run with *is declared silent and a
+   * mutant reddened it, so the declaration is stale*. The guard is witnessed by a cell whose pin does
+   * not name it, which is ADR-0076 above the line working as written - `attributionOf` reads the reds
+   * a cell really produced and never its pin. ADR-0261.
    */
   unprobedRegions: [
-    /**
-     * The sentence the README publishes about the size of this catalogue, against what `theCatalogue`
-     * declares. It is reachable from here and no mutant reaches it.
-     *
-     * `the-catalogue.ts` is in this folder, so an edit that moved `array/group-by@1` out of
-     * `never-published` would take the refused count to zero and redden it - which is the mutant this
-     * region asks for. It is not written here because that edit reddens the refusals page, the index
-     * and the installability of a contract the catalogue turned down, so the cell would attribute its
-     * kill to any of a dozen guards; naming this one would need a narrower edit than the data allows.
-     * A sixth contract, or a second refused one, makes the count movable without moving anything else.
-     */
-    {
-      nature: 'claims detection',
-      reason:
-        'an edit to `the-catalogue.ts` that changed how many contracts are refused would redden it, and ' +
-        'every such edit also reddens the refusals page and the index - so no mutant here names this ' +
-        'guard rather than a dozen. ADR-0211 measured the edit this region asks for: marking the ' +
-        'refused contract published reddens nine guards, and the two nearest descriptions of it are ' +
-        '`what-is-served-and-cannot-be-asked-for-is-the-refused-contract` and ' +
-        '`a-contract-not-yet-published-carries-the-current-banner`, so the prediction written here ' +
-        'holds as a measurement rather than as a reading',
-      guards: ['the-readme-counts-the-catalogue-the-registry-declares'],
-    },
     {
       nature: 'claims detection',
       reason:

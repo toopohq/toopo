@@ -254,6 +254,19 @@ that runs today's dispatch over the three states.
 **The catalogue-entry unit inherits four reds, measured and named above**, and two of them cost a rename
 priced at fourteen citations.
 
+**The replay refused the run, on a declaration that had predicted the day it would go stale.**
+`registry-storage` calibrated green over 486 tests, all four cells came back *killed as expected*, and
+the battery exited on one disagreement:
+`the-readme-counts-the-catalogue-the-registry-declares` *is declared silent and a mutant reddened it*.
+That guard's `unprobedRegions` entry argued no mutant of this battery could name it rather than a
+dozen, and closed with *a sixth contract, or a second refused one, makes the count movable* — and
+`I-181` is a second refused one. So the region is removed, witnessed by a cell whose pin does not name
+it, which is ADR-0076 above the line working as written: the attribution reads the reds a cell really
+produced and never its pin. **The re-verification is `npm run predict` and not a second replay**, which
+is the case ADR-0221 built it for exactly — a declaration drifting against a measurement already
+taken — and it answers *every cell of this measurement agrees with what the battery declares today*,
+0 faults and 0 questions over 24 batteries, in about 185 ms against 65 minutes.
+
 **Nothing entered the catalogue and no digest moved.** Ledger `18cc4e82…` at 1 206 bytes on both sides,
 `pnpm freeze` 3 passed on both, `npm run test` 30 files and 718 tests, the site 18 and 192, the registry
 25 and 486. Census: `publication.test.ts` 10 → 12, `response.test.ts` 67 → 68.

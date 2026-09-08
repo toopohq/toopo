@@ -759,7 +759,15 @@ for real. **Three guards are written and each has the only shape available**: on
 ledger, because a guard filtered on this state would assert an empty population; two total over the
 catalogue and over the ledger. Four cells, one apiece and one re-aimed — `I-181`'s old edit reddens a
 profile guard and says nothing about the ledger now, so it records a published contract as refused,
-which is the one edit that still empties one. ADR-0260, ADR-0261.
+which is the one edit that still empties one. **And the replay refused the run on a declaration that
+had predicted the day it would go stale**: `registry-storage` calibrated green over 486 tests, all four
+cells came back *killed as expected*, and
+`the-readme-counts-the-catalogue-the-registry-declares` — declared unprobed on the argument that no
+mutant here could name it rather than a dozen, closing with *a second refused one makes the count
+movable* — was reddened by exactly that. The region leaves; the guard is witnessed by a cell whose pin
+does not name it, the attribution reading the reds a cell produced rather than its pin. The
+re-verification is `npm run predict`, 185 ms against 65 minutes, which is the drift ADR-0221 built it
+for. ADR-0260, ADR-0261.
 
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
