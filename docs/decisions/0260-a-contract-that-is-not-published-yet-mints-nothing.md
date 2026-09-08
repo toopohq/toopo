@@ -10,6 +10,29 @@ confirmed-by:
 
 # A contract that is not published yet mints nothing
 
+> **The ruling below is refuted and is replaced by
+> [ADR-0261](0261-a-contract-not-yet-published-binds-without-being-anchored.md).**
+> `bindingsAtRevision` runs the ledger script *of the commit it rebuilds*, so a binding exists at a
+> revision exactly when that revision's ledger holds one — and ADR-0106's coordinate for a contract
+> binding is the commit **before** the publication, at which the contract reads `not-yet-published`.
+> Measured: the four founding bindings name `d3a5166`, whose own `local-read-api.ts` branches on
+> `never-published` alone. **So a state that mints nothing breaks the rebuild of the freeze for every
+> publication after it**, `temporal/add` first, and it does so with no live binding at risk, every
+> existing one rebuilding under its own commit's code. It arrived as `frozen-for-life.test.ts` failing
+> to collect — `Error: 0298a5b4… binds no typescript/string/slugify@1`, four guards skipped — because
+> that file is the one place that clones at today's HEAD and runs today's dispatch over three lifecycle
+> states.
+>
+> **The argument for the ruling survives and the mechanism carrying it does not.** Nothing
+> `not-yet-published` is frozen for life; it is carried by the **anchoring** — `isAnchored`, which
+> partitions on the coordinate — instead of by the absence of a binding.
+>
+> **What is measured below and stands** is everything the two controls established: the ledger and the
+> freeze parting, `bindingsOf(ledger)` making the freeze's population the ledger, the guard that
+> answers it, and the emitted tree writing neither the snapshot nor the blobs of a contract with no
+> binding. **What is superseded is the Decision Outcome's first sentence and Q6**, which read the
+> emission under a path that no longer exists.
+
 ## Context and Problem Statement
 
 `Lifecycle` has carried `{ state: 'not-yet-published' }` since ADR-0007 and **no code honours it.**

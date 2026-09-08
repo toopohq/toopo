@@ -192,17 +192,19 @@ const gather = (): {
         break
 
       /**
-       * The third path, which mints nothing at all. ADR-0260.
+       * The third path, which mints nothing at all - and which is refuted. ADR-0260, ADR-0261.
        *
-       * **It enters neither list**, where the two arms beside it each enter one - and that is the
-       * whole state rather than an omission. *A published version is frozen for life* is the
-       * permanent rule, and freezing what is not published does not strengthen it: if an unpublished
-       * contract were bound like a published one, *published* would stop meaning anything in
-       * particular. A contract in this state must be able to change, which is all the word says.
+       * It enters neither list, on the argument that freezing what is not published empties the
+       * permanent rule rather than strengthening it. **The argument holds and this mechanism does
+       * not**: `bindingsAtRevision` runs the ledger script of the commit it rebuilds, and ADR-0106's
+       * coordinate for a contract binding is the commit *before* the publication, at which the
+       * contract reads exactly this state - so an arm that mints nothing makes every future
+       * publication name a commit that binds nothing.
        *
-       * **What follows from minting nothing is not written here and is not an accident either**:
-       * `response.ts` builds `installable` from `ledger.contracts` membership, so such a contract is
-       * served as not installable without a line about the lifecycle anywhere near that field.
+       * What replaces it carries the same argument on the **anchoring** instead: `isAnchored` already
+       * partitions on the coordinate, and `THE_PUBLICATIONS[…] ?? THE_UNPUBLISHED_PUBLICATION` above
+       * already hands a contract nobody published the stand-in revision. The criteria that measurement
+       * is judged against are committed in ADR-0261 before a figure of them is read.
        */
       case 'not-yet-published':
         break

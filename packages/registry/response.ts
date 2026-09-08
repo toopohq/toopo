@@ -568,6 +568,12 @@ const domainOf = (name: string): string => name.slice(0, name.indexOf('/'))
  *
  * A contract with no ledger entry is refused rather than published, so it is in the index and is not
  * installable. Everything else is.
+ *
+ * **That premise is what ADR-0261 asks about**, and it is written as a fact rather than as a rule for
+ * a reason: it is true exactly while the only way to hold no entry is to have been refused. A binding
+ * carries its contract's lifecycle in `standing`, which `servedRefusals` twelve lines below already
+ * reads, so what `installable` must read is a question with an answer one line away. The criteria are
+ * committed there before a figure of them is read.
  */
 export const servedIndex = (
   servedFrom: string,
