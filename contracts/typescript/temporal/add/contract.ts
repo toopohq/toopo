@@ -174,15 +174,20 @@ export type Add = <T extends Temporal.PlainTime | Temporal.PlainYearMonth | Temp
  * units are at fault and the field holds one.
  *
  * **It is the one reason of the four where the language is not heterogeneous**, and that is what
- * makes it worth publishing rather than folding into the literal below. Measured on node v24.15.0
- * under `--harmony-temporal`, all three carriers and both `Duration` modes refuse a mixed-sign bag
- * with one message — `RangeError: Invalid time value` — and `Temporal.Duration.from` refuses it
- * identically, so the refusal is the bag's construction rather than the addition. **So the language
- * calls a disagreement of signs a *range* error**, and an implementation that catches the arithmetic
- * and reports what it caught inherits that misnomer: this contract's own reference did exactly that
- * until `p5` was executed on an engine carrying `Temporal` for the first time. That reading is the
- * draft's and the language's is owed, per this contract's own rule; what it cannot move is the
- * literal, which rests on the specification. ADR-0253, ADR-0255.
+ * makes it worth publishing rather than folding into the literal below. Read on Chrome 152: all
+ * three carriers and both `Duration` modes refuse a mixed-sign bag with one message —
+ * `RangeError: Temporal error: Duration was not valid.` — and `Temporal.Duration.from` refuses it
+ * identically, so the refusal is the bag's construction and not the addition.
+ *
+ * **The class is the range, the message is not, and the reference reads neither — which is why the
+ * repair had to be the order.** `RangeError` is what a mixed-sign bag throws and what an overflow
+ * throws, so no reading of the *class* separates them. The message does separate them and says the
+ * right thing, and it differs between the two engines: the draft answers `RangeError: Invalid time
+ * value`. What the reference inherited was therefore neither — its `catch` takes no binding at all —
+ * but an **assumption about the language's refusals**: that once the keys are units and the carrier
+ * applies every one of them, the range is the only thing left to throw for. That held while the
+ * reason set was three and stopped holding the moment a refusal survived past the carrier check.
+ * ADR-0253, ADR-0255, ADR-0256.
  *
  * `unit-the-carrier-does-not-apply` is the contract's subject and carries the unit's name in the
  * diagnostic, because a caller who wrote a bag of six units needs to know which one was refused.

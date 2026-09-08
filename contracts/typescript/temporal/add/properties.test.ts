@@ -205,9 +205,9 @@ describe('temporal/add@1 universal properties', () => {
    * carrier it meets** — which is the whole of what makes one helper over three carriers give one
    * answer to one mistake. **The two failure conditions are distinct and neither is `p5`'s, which is
    * measured rather than argued**: with the sign check moved below the carrier's, this property and
-   * the precedence row of block 4.4 are the whole of what reddens — **2 of 115, with `p5` green
+   * the two precedence rows of block 4.4 are the whole of what reddens — **3 of 117, with `p5` green
    * throughout** — and with the check taken out this reddens with `out-of-range`, which is the state
-   * the contract shipped in. ADR-0255.
+   * the contract shipped in. ADR-0255, ADR-0256.
    */
   it('p7-a-bag-of-two-signs-is-refused-by-every-carrier', () => {
     fc.assert(

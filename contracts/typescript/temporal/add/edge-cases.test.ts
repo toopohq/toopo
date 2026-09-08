@@ -111,9 +111,9 @@ describe('temporal/add@1 edge case table', () => {
 
   it('settles-every-carrier-against-every-unit :: the forty rows of the matrix', () => {
     // ADR-0225's figure, asserted rather than transcribed: three carriers of which one is bimodal,
-    // ten units each. The seven rows beyond it are the three reasons the matrix cannot reach and the
-    // precedence between two of them, and this guard is what says the matrix is whole rather than
-    // that the table is forty long.
+    // ten units each. The eight rows beyond it are the three reasons the matrix cannot reach and the
+    // precedence between two of them, settled on both carriers that can tell it apart, and this
+    // guard is what says the matrix is whole rather than that the table is forty long.
     const theMatrixGroups = [
       'a-time-and-the-four-units-it-drops',
       'a-year-month-and-the-eight-it-refuses',

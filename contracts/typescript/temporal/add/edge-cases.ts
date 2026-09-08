@@ -10,39 +10,40 @@
  * is claimed to have been.
  *
  * ---------------------------------------------------------------------------
- * Forty rows are the matrix; the table is forty-seven, and the seven say why
+ * Forty rows are the matrix; the table is forty-eight, and the eight say why
  * ---------------------------------------------------------------------------
  *
  * ADR-0225 publishes *the case table is 40 rows* - `PlainTime` and `PlainYearMonth` ten each,
  * `Duration` twenty for its two modes. That is the **matrix**: one row per carrier and unit. A table
  * of only those forty could not name a case for every reason this contract declares, which
  * `edge-cases.test.ts` requires in both directions - so two rows settle a bag that is not a duration,
- * three settle a bag whose counts disagree in sign, and two settle the range, which is the reason
+ * four settle a bag whose counts disagree in sign, and two settle the range, which is the reason
  * that exists because *an overflow is not an inapplicability*. The forty are unchanged and the
  * record's figure is the matrix's.
  *
- * **One of the seven settles a precedence rather than a behaviour**, which no row of the matrix can:
+ * **Two of the eight settle a precedence rather than a behaviour**, which no row of the matrix can:
  * a bag can trip two reasons at once, `failureReasons` declares the order they are tested in, and
- * `a-bag-of-two-signs-and-a-unit-the-carrier-drops` is the call on which two conforming
- * implementations would otherwise be free to disagree. ADR-0255.
+ * those two are the calls on which conforming implementations would otherwise be free to disagree.
+ * One is on the carrier that drops its refused units in silence and one on the carrier that refuses
+ * them loudly, which is what makes the second the language's own word on the order rather than this
+ * contract's. ADR-0255, ADR-0256.
  *
  * ---------------------------------------------------------------------------
  * Where each answer comes from
  * ---------------------------------------------------------------------------
  *
  * The sixteen applied answers were measured on node v24.15.0, V8 13.6.233.17, and the two
- * out-of-range rows with them. The twenty-five refusals of the matrix are the language's, read on
- * Chrome 152 at ADR-0225: the draft `Temporal` behind `--harmony-temporal` **disagrees on
- * `PlainYearMonth`**, answering where the language throws, so no refusal of the matrix is taken from
- * it.
+ * out-of-range rows with them. **Every refusal is the language's, read on Chrome 152** - the
+ * twenty-five of the matrix at ADR-0225 and the seven beyond it at ADR-0255 and ADR-0256, the four
+ * sign rows among them. The draft `Temporal` behind `--harmony-temporal` **disagrees on
+ * `PlainYearMonth`**, answering where the language throws, so no refusal here is taken from it.
  *
- * **The three sign rows are the exception and it is declared rather than smoothed.** Their answers
- * were read on the draft, which is the only engine this machine has; what makes them sound is that
- * the refusal is `Temporal.Duration`'s own requirement that every non-zero field carry the sign of
- * the whole - the specification rather than a behaviour - and that the draft was measured refusing
- * `Temporal.Duration.from({hours: 1, seconds: -1})` identically to `carrier.add`, so the bag never
- * reaches a carrier at all. A reading on the published language is owed and is what this contract's
- * own `liftedBy` asks for. ADR-0255.
+ * **And the sign rows are where that rule stopped being about a verdict and became about a word.**
+ * The two engines agree on every verdict of this group and part on the message: the language answers
+ * `RangeError: Temporal error: Duration was not valid.` where the draft answers `RangeError: Invalid
+ * time value`. Nothing in this table reads a message, which is why the group could be written from
+ * the draft and confirmed rather than corrected - but anything that ever does is bound to one engine
+ * by writing it down. ADR-0256.
  */
 
 import type { CaseGroup } from '../../../../packages/catalogue/identifier.js'
@@ -617,6 +618,25 @@ export const edgeCases: readonly EdgeCase[] = [
       'contract names the bag\'s, because a bag that names no duration names none for any carrier ' +
       'while an inapplicable unit is a fact about this one. Without this row a second conforming ' +
       'implementation could answer the other reason and no case would say it was wrong.',
+  },
+  {
+    id: 'a-year-month-refuses-two-signs-before-it-refuses-the-unit',
+    group: 'a-bag-whose-counts-disagree-in-sign',
+    carrier: 'PlainYearMonth',
+    from: A_YEAR_MONTH,
+    duration: { hours: 1, seconds: -1 },
+    expected: null,
+    reason: 'counts-of-two-signs',
+    unit: null,
+    provenance: 'specified',
+    rationale:
+      'The hardest confirmation of the order, and it is the language\'s own rather than this ' +
+      'contract\'s. Both units are among the eight this carrier refuses, so the carrier has a loud ' +
+      'refusal ready - `Can only add years or months to PlainYearMonth.` - and the language answers ' +
+      '`Duration was not valid.` instead. So it reads the sign before the carrier reads the unit, on ' +
+      'the one carrier where the two refusals are told apart by their own words. The row is here ' +
+      'because a call two reasons could claim and the language settles is exactly what this group ' +
+      'exists to publish.',
   },
   {
     id: 'a-zero-count-carries-no-sign',

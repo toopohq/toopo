@@ -104,10 +104,14 @@ const countsDisagreeInSign = (
  * bag name one unit, and the range last, because it is the only reason that needs the arithmetic to
  * have been attempted.
  *
- * **The `catch` below is narrower than it looks, and that is the repair ADR-0255 made.** It reports
- * the range, and the language throws a `RangeError` for a disagreement of signs as well — so until
- * the sign was decided ahead of it, a total `catch` published the language's own misnomer as this
- * contract's diagnostic, on a bag every unit of which the carrier applies.
+ * **The `catch` below takes no binding, and that is the whole of why the order had to be the
+ * repair.** It reads neither the class of what was thrown nor its message: it classes on the *fact*
+ * that something threw, which is sound exactly while the range is the only thing left to throw for.
+ * A disagreement of signs throws here too, and throws a `RangeError`, so reading the class would not
+ * have separated them either — and reading the message would have bound this file to one engine's
+ * wording, the draft and the language disagreeing on it. So until the sign was decided ahead of the
+ * arithmetic, this reported the range on a bag every unit of which the carrier applies.
+ * ADR-0255, ADR-0256.
  */
 export const describeAddFailure = (
   carrier: Temporal.PlainTime | Temporal.PlainYearMonth | Temporal.Duration,
