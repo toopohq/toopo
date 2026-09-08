@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "test": "node run-vitest.ts run --typecheck",
+    "excluded-contracts": "node run-vitest.ts run --typecheck --config excluded-contracts.vitest.config.ts",
     "mutation": "node mutation/replay.ts",
     "battery": "node mutation/measure.ts",
     "predict": "node mutation/predict.ts",

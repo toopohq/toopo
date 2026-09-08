@@ -34,6 +34,10 @@
     "mutation",
     "run-vitest.ts",
     "vitest-entry-point.ts",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    // The second configuration, listed for the reason the first one is: this project names its
+    // root-level files one at a time, so a `.ts` left out of the list is one no compiler reads.
+    // ADR-0259.
+    "excluded-contracts.vitest.config.ts"
   ]
 }

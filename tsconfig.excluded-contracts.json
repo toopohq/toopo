@@ -1,0 +1,17 @@
+{
+  // The typechecker's project for the one job that runs the contracts `npm test` does not. ADR-0259.
+  //
+  // It names no folder, and that is the point: `exclude: []` empties the root's exclusion rather than
+  // restating it, so the single declaration in mutation/excluded-contracts.ts reaches this file by
+  // negation. A second contract excluded tomorrow is typechecked here with nobody editing this file,
+  // where a fourth transcription of the folder path would be a fourth place to forget.
+  //
+  // `ESNext.Temporal` is the widening this job exists for. `tsc` honours it at 7.0.2 - measured at
+  // ADR-0247, exit 0 over the whole tree - and the root keeps `ES2022` because the two legs of the
+  // matrix carry no Temporal and a global they do not have must not typecheck there.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "ESNext.Temporal"]
+  },
+  "exclude": []
+}

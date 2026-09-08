@@ -386,6 +386,67 @@ jobs:
         run: npm run freeze
 
   # ---------------------------------------------------------------------------
+  # The contracts `npm test` does not run, run where they can be
+  # ---------------------------------------------------------------------------
+  #
+  # **A sibling job and not a leg of the matrix, and the reason is measured rather than stylistic.**
+  # `site` and `batteries` both wait for `suites`, and `needs` waits for *every* leg - so a third leg
+  # puts its whole duration on the critical path of every push, including the prose pushes that select
+  # no battery at all. ADR-0169 measured that at 132 s when the Windows suites were the candidate and
+  # took the sibling for exactly this reason. **A second reason is this job's own and no matrix entry
+  # could carry it**: the legs above run one configuration on two runtimes, and this runs a *different*
+  # configuration - `excluded-contracts.vitest.config.ts`, which collects only what the root one
+  # excludes. A matrix entry would have run all eight suites on node 26 to reach one folder.
+  #
+  # **What it measures is measured nowhere else, which is why it exists.**
+  # `contracts/typescript/temporal/add` is excluded from `npm test` on both legs and from the
+  # typechecker's project; it is in no catalogue, so `every-contract-battery-injects-into-a-folder-a-
+  # contract-of-the-catalogue-owns` forbids a battery over it; and `files: ["dist"]` keeps it out of
+  # the archive. Before this job the eighth contract was a folder nothing in this repository executed.
+  #
+  # **No `fetch-depth: 0`, and the contrast with the suites above is a reason rather than an economy.**
+  # Those resolve fifty-four citations against `git rev-list --all`. Nothing this job runs asks git
+  # anything - swept over `run-vitest.ts`, `vitest-entry-point.ts` and the two shared catalogue files
+  # the contract's own tests import, none of which spawns git at all.
+  #
+  # `node-version: '26'` is the whole of what this job buys. `Temporal` reached stage 4 in March 2026
+  # and 26 ships it unflagged; ADR-0220 measured all eight suites green on 26.8.1, and ADR-0253
+  # measured this folder collected, run and typechecked there. ADR-0259.
+  # ---------------------------------------------------------------------------
+  excluded-contracts:
+    runs-on: ubuntu-latest
+
+    # **A hang detector and not a budget, and it is typed rather than derived** - which is said out
+    # loud so the number is not read as measured. There is no reading of this job to derive one from:
+    # the run carrying this line is the first. `suites-on-windows` holds the same stance one job up
+    # for the same reason, and this is re-derived from this job's own readings the day there are some.
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '26'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The coordinates a reading taken here needs, and the second line is the one that matters: what
+      # this runtime answers for `Temporal` is the whole premise of the job. The shape to look for is
+      # ADR-0215's - the specification's nine own property names, with `Calendar` and `TimeZone`
+      # absent, which is what separates the published language from the draft behind a flag.
+      - name: what this reading was taken on
+        run: |
+          node --version
+          node -e "console.log(Object.getOwnPropertyNames(Temporal).sort().join(' '))"
+
+      - name: the contracts the suite does not run
+        run: npm run excluded-contracts
+
+  # ---------------------------------------------------------------------------
   # The site, built where the environment is declared
   # ---------------------------------------------------------------------------
   #
@@ -1159,7 +1220,25 @@ jobs:
     # which occurs nowhere else in this repository: a comment citing a guard is an assertion nothing
     # resolves, which is an entry of `CLAUDE.md`'s own list met on the file it governs. ADR-0169,
     # ADR-0243.
-    needs: [site, version, every-battery, every-battery-on-windows]
+    #
+    # **`excluded-contracts` is waited for, and the resemblance to the two above is not the argument.**
+    # Those carry this job's own condition, so waiting costs nothing and they are skipped together;
+    # that one has no condition and runs on every push. And they replay batteries over code that
+    # reaches the archive, where the folder it measures reaches none - it is in no catalogue, so no
+    # snapshot, no binding, no served address, and `files: ["dist"]` keeps `contracts/` out of the
+    # tarball. **The argument is the chain and the hole in it.** `publish -> site -> suites` already
+    # puts every suite this repository runs in front of the irreversible act, and that job runs the one
+    # suite the chain does not reach. A publication mints a provenance naming `refs/heads/main` and a
+    # `gitHead`, so it freezes what a commit says about itself; leaving one contract folder of that
+    # commit unmeasured in front of the act is the single gap in an ordering that is otherwise total.
+    #
+    # **It is named here and not in `site`'s `needs`, where the Windows leg is, and the difference is
+    # exact.** That line is there because *nothing is deployed from a tree whose Windows suites are
+    # red* - a claim about what the deployment runs. This folder is in no catalogue, so the deployment
+    # does not carry it and that claim does not reach it; what does reach it is that a publication
+    # freezes a commit. The cost is nil either way: it runs beside `every-battery`, which is forty
+    # minutes where this is one. ADR-0259.
+    needs: [site, version, every-battery, every-battery-on-windows, excluded-contracts]
     if: >-
       github.ref == 'refs/heads/main'
       && needs.version.outputs.unpublished == 'true'
@@ -1237,7 +1316,7 @@ jobs:
   # `if: always()` rather than `failure()`, because `failure()` is exactly what a cancelled job does not
   # produce - which is the whole subject.
   every-job-answered:
-    needs: [suites, suites-on-windows, site, version, which-batteries, batteries, every-battery, every-battery-on-windows, publish]
+    needs: [suites, suites-on-windows, excluded-contracts, site, version, which-batteries, batteries, every-battery, every-battery-on-windows, publish]
 
     if: always()
 
