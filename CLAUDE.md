@@ -4642,6 +4642,28 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   line into `main` changes `main`, and a cherry-pick changes the identifier the ten citations spell.
   ADR-0256.
 
+  **This half is closed, and the order it closed in is what the class it belongs to is about.** The
+  owner lifted the tag prohibition once and by name; `every-commit-this-repository-cites-is-one-a-clone-keeps`
+  was written and **seen red before the tag existed**, naming `36e4bbb` in **five files** where the
+  entry above counted four — the fifth being ADR-0256, written in the unit before, which cited the
+  commit while its own entry recorded that nothing held it. The tag was posted, pushed **before any
+  other push** and verified on origin after the event, `refs/tags/evidence/the-windows-reading`
+  dereferencing to `36e4bbb…`; `main --tags` went **944 → 945, equal to `--all`**; the guard re-read
+  **10 of 10**. The only thing that moved between the two readings is the tag.
+
+  **Two spellings were wrong before one was right, and a plausible number is why.**
+  `--branches=main --remotes=origin/main --tags` answers **873, identical to `--tags` alone** — which
+  reads as *main is inside the tags* and is really *both selectors matched nothing*. `--branches=main`
+  selects **0** commits here. The spelling that works is the plain revision, `main --tags`.
+
+  **And that a runner holds the tags is measured rather than assumed**, which is what makes the
+  population usable in CI at all: **23 commits are reachable from a tag and from no branch, and three
+  of them are cited** — `6203758` and `26e2000` in `suites.yml`, `92f60d8` in ADR-0145 — so
+  `every-commit-this-repository-cites-is-one-it-has` being green on the runner *is* the reading, and
+  no belief about `actions/checkout` was needed. **What it leaves behind** is the fallback to `HEAD`,
+  declared and correct only where HEAD is main's tip, and the fact that `theHistory()` still may not
+  narrow: the two populations are two questions and the pair is what makes each legible. ADR-0257.
+
 - **That a breakpoint is the arithmetic of the lengths it separates.** Two guards now keep that every
   ceiling and every track of this site's layout is derived — `every-ceiling-on-a-box-is-derived-and-never-typed`
   and `every-track-of-a-layout-is-a-fraction-a-floor-or-a-declared-length` — and **neither can read
@@ -6209,6 +6231,19 @@ These outlive the current stage and are not open to trade-off.
   installed dependencies. `pnpm install` during a verification moves what every cell runs against, and
   no reading here records the store it was taken over — so it would fail in exactly the same silence.
   Named rather than measured, and it is a prediction rather than an instance.
+
+  **One substrate is now mechanised, and what that buys is a remedy the rule did not have: narrow the
+  population to the part of the substrate the act cannot move.** For the ref graph that part is `main`
+  and the tags — `every-commit-this-repository-cites-is-one-a-clone-keeps` reads it, and a citation of
+  a working branch's own commit is red the day it is written rather than the day the branch is
+  deleted. **It generalises to two of the three and the third fails for a structural reason, which is
+  the finding rather than the remedy.** The working tree has such a part — a verification reading
+  *committed* state is immune to an edit made while it runs, which is what `frozen-for-life.test.ts`
+  already does by cloning at committed `HEAD`, at the price that it then says nothing about the
+  working tree. **The run queue has none**: a queued run is not a sub-state of anything, it is a
+  pending event, and no part of it survives a push. So *the verification is the last thing you do* is
+  retired for the ref graph, available at a stated price for the tree, and stands undiminished for the
+  queue. ADR-0257.
 
 - **`npm run predict` is run before a push that moves what a battery expects**, and it is a convention
   because it cannot be a job. It answers *would a replay refuse* in about 185 ms; it read **22 faults
