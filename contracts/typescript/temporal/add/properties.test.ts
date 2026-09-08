@@ -203,10 +203,11 @@ describe('temporal/add@1 universal properties', () => {
    * It is a property of its own rather than an arm of `p5` because the claim is a different one:
    * `p5` says what a *carrier* refuses, and this says a bag of two signs is refused **whatever
    * carrier it meets** — which is the whole of what makes one helper over three carriers give one
-   * answer to one mistake. The two failure conditions are distinct and neither is `p5`'s: put the
-   * sign check after the carrier's and this reddens on every draw whose bag also names an
-   * inapplicable unit, with `p5` green throughout; take it out and this reddens with `out-of-range`,
-   * which is the state the contract shipped in. ADR-0255.
+   * answer to one mistake. **The two failure conditions are distinct and neither is `p5`'s, which is
+   * measured rather than argued**: with the sign check moved below the carrier's, this property and
+   * the precedence row of block 4.4 are the whole of what reddens — **2 of 115, with `p5` green
+   * throughout** — and with the check taken out this reddens with `out-of-range`, which is the state
+   * the contract shipped in. ADR-0255.
    */
   it('p7-a-bag-of-two-signs-is-refused-by-every-carrier', () => {
     fc.assert(

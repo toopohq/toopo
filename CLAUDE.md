@@ -3318,9 +3318,11 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   the mixed sign was its only failure. After the check: **115 of 115, exit 0**, `tsc` exit 0 out of
   band, ledger `18cc4e82…` at 1 206 bytes and `pnpm freeze` 3 passed, both unmoved because this
   contract mints no binding. **The table is 47 rows and the properties are seven**: `p5` keeps its
-  address and its claim and sets a population aside, `p7` settles it, and the two have different
-  failure conditions — move the sign check after the carrier's and `p7` reddens with `p5` green
-  throughout. **What is owed is the language's own reading of the three sign rows**, which is this
+  address and its claim and sets a population aside, `p7` settles it, and **that the two have
+  different failure conditions is measured rather than argued**: with the sign check moved below the
+  carrier's, `p7` and the precedence row are the whole of what reddens — **2 of 115, `p5` green
+  throughout** — so that one row of the forty-seven is the only case separating the two orders.
+  **What is owed is the language's own reading of the three sign rows**, which is this
   contract's `liftedBy` rule applied to itself; what cannot move is the literal, which rests on the
   specification rather than on an engine. ADR-0255.
 

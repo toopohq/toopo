@@ -106,10 +106,15 @@ mixed sign was its only failure and excluding it left nothing else red. With the
 
 `p5` claims what a *carrier* refuses. `p7` claims that a bag of two signs is refused **whatever
 carrier it meets**, which is the property that makes one helper over three carriers give one answer to
-one mistake — and it is the only thing that quantifies the precedence. The two have different failure
-conditions: move the sign check after the carrier's and `p7` reddens with `p5` green throughout;
-remove it and `p7` reddens with `out-of-range`. Folding them would have given one guard two claims,
-which is the shape ADR-0246 found and named on two other guards.
+one mistake — and it is the only thing that quantifies the precedence. Folding them would have given
+one guard two claims, which is the shape ADR-0246 found and named on two other guards.
+
+**That the two failure conditions are distinct is measured and not argued.** With the sign check moved
+below the carrier's and nothing else changed, exactly two things redden — `p7` and the precedence row
+— **2 of 115, with `p5` green throughout**, as is the plain sign row, whose bag names no inapplicable
+unit and so cannot tell the two orders apart. Take the check out instead and `p7` reddens with
+`out-of-range`. So the precedence row is the only case of the forty-seven that separates the orders,
+which is what it was written for.
 
 **Neither half can go vacuous unnoticed**, and one of the two arguments is derivable rather than
 measured: the generator always draws at least one unit and a one-unit bag cannot carry two signs, so
