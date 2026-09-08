@@ -3267,8 +3267,10 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   it in 185 ms exists and was not taken**: `npm run predict` answers **22 fault(s) a replay would
   refuse on** and has since `cced79f` — and it cannot become a job, because `mutation/results/` is
   gitignored and a runner reads nothing, so what is missing is a convention rather than a mechanism. It
-  is bounded by `every-battery`, which a publication waits for, and it is not repaired in the unit that
-  found it. ADR-0253.
+  is bounded by `every-battery`, which a publication waits for, and **the damage is bounded by the same
+  run rather than estimated**: all twenty-four batteries were selected and **twenty-three are green**,
+  so that battery is the only one the eighth folder reaches. It is not repaired in the unit that found
+  it. ADR-0253.
 
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`

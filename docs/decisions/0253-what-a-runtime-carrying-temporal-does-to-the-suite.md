@@ -192,6 +192,12 @@ cases stand; what rested on the engine was never applicability.
 ### And a red on `main` that this branch's first push found by accident
 
 **The first push of a branch selects every battery**, which is ADR-0169's own reading of the selection.
+**The damage is bounded by that same run rather than estimated**: all twenty-four batteries were
+selected and **twenty-three are green**, so `registry-storage` is the only one the eighth folder
+reaches — and this is the full replay nobody had paid for since `cced79f`, arriving as the by-product
+of a branch that existed to ask about a runtime. ADR-0169's *6 690 runner-seconds nobody wanted* is
+the same replay wanted, once.
+
 `batteries (registry-storage)` **failed at calibration in 21 seconds**, and it is `main`'s red rather
 than the branch's - reproduced locally in the same words, in seconds, at this branch's tip:
 
