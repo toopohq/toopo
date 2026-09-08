@@ -175,6 +175,11 @@ const gather = (): {
       blobs.set(file.sha256, servedBlob(servedFileOf(REPOSITORY_ROOT, file.path, file.sha256)))
     }
 
+    // **Two arms and three states, which is the shape ADR-0260 decides.** `never-published` is
+    // refused and everything else falls through to the publication - so `not-yet-published` mints a
+    // binding today, and `absorbed-by-the-language` would too, by falling somewhere rather than by
+    // being sent there. What replaces this is a total dispatch over the union, and the criteria that
+    // measurement is judged against are committed in that record before a figure of them is read.
     if (record.lifecycle.state === 'never-published') {
       ledger = refuseContract(ledger, {
         address: record.address,
