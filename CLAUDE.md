@@ -3340,6 +3340,39 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   language declining a loud refusal it had ready. It is a case now, and **two of the eight rows beyond
   the matrix settle the precedence, one on each carrier that can tell it apart**. ADR-0255, ADR-0256.
 
+  **And the debt that contract declared for its own draw count is paid — the number survives and the
+  reason it gave does not.** `propertyRuns` said *the catalogue's other contracts choose this figure
+  by timing three runs*, which is **true of five of seven**: `date/add@1` read how often its mutant
+  diverges, and `object/deep-equal@1` — the most recent and the most explicit — took both and wrote
+  that **the clock is not what chose it**. So the reading was never one reading, and the sentence
+  naming it was written from five of a population of seven.
+
+  **A duration has two coordinates and this contract cannot hold both**, which is the whole of why the
+  question was worth asking before the figure was: this machine gives the seven's machine and an
+  engine they never had, a runner at Node 26 gives the published engine and a machine they were never
+  taken on. **The reaching half has no coordinates at all** — a shape is counted from a carrier's tag
+  and its own calendar fields and never from the engine, the same property that made the case replay
+  sound — so it is the half that transfers, and it is the half `object/deep-equal@1` says decided.
+  Measured: the declared shapes are **22 pairs of a carrier and an outcome**, and over ten seeds
+  **100 misses one to three of them on nine seeds of ten**, **1 000 misses none on ten of ten** with
+  its rarest reached 5 to 11 times, and **10 000 misses none either** and reaches that same rarest 78
+  to 110. The seven's conclusion, arrived at independently. Timing beside it, three runs at each
+  count: **21-24 / 108-112 / 770-781 ms**, an order over the default bought for ~87 ms and the next
+  costing **7.7×** — the dearest of the eight contracts, about twice `string/slugify@1`.
+
+  **No branch and no runner second was spent, and the second reason is the stronger one**: a runner
+  would swap one coordinate for the other rather than holding both, *and* it would price a cost
+  nobody pays, this contract being in no suite on any leg. A measurement entering no decision is not
+  bought at any price. What a runner would be owed for is a leg's bound the day one really carries
+  this contract, which is a job's figure and not a contract's field.
+
+  **And a control came back close, which is worse than coming back wrong.** The reaching probe
+  transcribes the generator, so it carries a control: reproduce **308** bags of two signs at seed 1.
+  It answered **315** — seven apart, near enough to read as agreement, and the cause was not the
+  transcription but that a property of two arbitraries consumes the random stream differently from one
+  of one. Re-taken on the arbitrary alone: **308, and 345/369/286 by unit count**, four figures exact.
+  ADR-0258.
+
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
   for `outputAlphabet`, on the strength of GS-11 surviving. ADR-0175 wrote the guard that reads the
