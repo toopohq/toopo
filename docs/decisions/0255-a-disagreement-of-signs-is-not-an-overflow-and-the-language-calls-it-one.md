@@ -10,6 +10,28 @@ confirmed-by: []
 
 # A disagreement of signs is not an overflow, and the language calls it one
 
+> **The title's second clause is half false and the record's decision is untouched, which is exactly
+> the split this note exists to make.** The **class** is `RangeError` on both engines, so a reading of
+> the class cannot separate a sign disagreement from an overflow — that half holds. The **message**
+> does separate them and says the right thing: read on Chrome 152 the language answers
+> `RangeError: Temporal error: Duration was not valid.`, naming the validity of the duration and not
+> the range. `RangeError: Invalid time value`, published here as the language's, is the **draft's**.
+> So the language does not misname it.
+>
+> **And the mechanism named for the inheritance is wrong in a way worth reading**: this record says the
+> reference *reports what it caught*, and the reference reads neither the class nor the message — its
+> `catch` takes no binding at all. What it inherited was an assumption about the language's refusals,
+> that once the keys are units and the carrier applies every one of them the range is the only thing
+> left to throw for. Both records were written from the draft, and the correcting reading names the
+> third answer neither had allowed for: not *the range*, not *the sign*, but *the validity*.
+>
+> **The reopening clause below did not fire.** Every one of its eight calls was measured on Chrome 152
+> and every expectation held, including the one named as the only line that could move a decision —
+> `PlainTime.add({days: 1, seconds: -1})` throws. The order stands, and a call outside those eight
+> confirms it harder than any of them.
+> [ADR-0256](0256-the-message-names-the-validity-and-the-reference-reads-neither.md) is the correction,
+> the ninth reading and the row it bought.
+
 ## Context and Problem Statement
 
 ADR-0253 built a leg on a runtime carrying `Temporal` and, with it, executed `temporal/add@1`'s six

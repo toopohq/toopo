@@ -3291,13 +3291,19 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   the assistant had named.** ADR-0253 left two decisions — shrink the generator, or answer
   `duration-not-read` — and the owner took a third: **declare the case, keep the generator, and give
   it its own reason.** `counts-of-two-signs` is the fourth literal of `failureReasons`. **What the
-  ruling exposed is that the reference's total `catch` was not too wide — it believed the engine.**
-  Measured on node v24.15.0 under `--harmony-temporal`, all three carriers, both `Duration` modes and
-  `Temporal.Duration.from` refuse a mixed-sign bag with one message, **`RangeError: Invalid time
-  value`** — so the language classes a disagreement of signs as a *range* error, and an implementation
-  reporting what it caught publishes the language's own misnomer as its diagnostic. That is
-  ADR-0225's *an overflow is not an inapplicability* holding a second time against a second collapse,
-  and the second collapse came from the language rather than from a reading.
+  ruling exposed is that the reference's total `catch` was not too wide — it reads nothing at all.**
+  Read on Chrome 152, all three carriers, both `Duration` modes and `Temporal.Duration.from` refuse a
+  mixed-sign bag with one message, **`RangeError: Temporal error: Duration was not valid.`** So the
+  **class** is the range — which is also what an overflow throws, so no reading of the class separates
+  them — and the **message** names the validity of the duration, which is exactly right. **The
+  reference reads neither**: its `catch` takes no binding, and what it inherited is an *assumption
+  about the language's refusals*, that once the keys are units and the carrier applies every one of
+  them the range is the only thing left to throw for. True while the reason set was three, false the
+  moment a fourth refusal survived past the carrier check. **That is why the repair had to be the
+  order**: narrowing the `catch` would have meant reading a message, and the message is the one thing
+  the two engines disagree on — the draft says `RangeError: Invalid time value`. ADR-0225's *an
+  overflow is not an inapplicability* holds a second time, and this collapse came from an assumption
+  rather than from a word.
 
   **The unit found a hole older than itself: a bag can trip two reasons and nothing said which wins.**
   `{years: 400000, days: 1}` on a `PlainYearMonth` trips the unit and the range; `{dayz: 9, days: 1}`
@@ -3317,14 +3323,22 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   and the new property. **`p5` was green in that run**, which is what says its precondition is exact:
   the mixed sign was its only failure. After the check: **115 of 115, exit 0**, `tsc` exit 0 out of
   band, ledger `18cc4e82…` at 1 206 bytes and `pnpm freeze` 3 passed, both unmoved because this
-  contract mints no binding. **The table is 47 rows and the properties are seven**: `p5` keeps its
+  contract mints no binding. **The table is 48 rows and the properties are seven**: `p5` keeps its
   address and its claim and sets a population aside, `p7` settles it, and **that the two have
   different failure conditions is measured rather than argued**: with the sign check moved below the
-  carrier's, `p7` and the precedence row are the whole of what reddens — **2 of 115, `p5` green
-  throughout** — so that one row of the forty-seven is the only case separating the two orders.
-  **What is owed is the language's own reading of the three sign rows**, which is this
-  contract's `liftedBy` rule applied to itself; what cannot move is the literal, which rests on the
-  specification rather than on an engine. ADR-0255.
+  carrier's, `p7` and the two precedence rows are the whole of what reddens — **3 of 117, `p5` green
+  throughout** — so those rows are the only cases of the forty-eight separating the two orders.
+
+  **The language's own reading was owed and is taken, and it moved a sentence rather than a
+  decision.** Nine calls on Chrome 152: the eight this repository asked for, every expectation held,
+  and **the reopening clause did not fire** — `PlainTime.add({days: 1, seconds: -1})` throws, which
+  was named as the only line that could move a decision. **The ninth was not asked for and is the
+  hardest confirmation of the order there is**: `PlainYearMonth.add({hours: 1, seconds: -1})` throws
+  `Duration was not valid.` where the same carrier answers `Can only add years or months to
+  PlainYearMonth.` for a single inapplicable unit — so on `PlainTime` the sign is proved by
+  elimination, the carrier dropping its units in silence, and on `PlainYearMonth` it is proved by the
+  language declining a loud refusal it had ready. It is a case now, and **two of the eight rows beyond
+  the matrix settle the precedence, one on each carrier that can tell it apart**. ADR-0255, ADR-0256.
 
   **The live instance was created by the unit that opened this entry, which is what makes it worth
   reading twice.** `string/slugify@1` publishes `ownDeclarations[].verification` of `one-directional`
@@ -4612,8 +4626,21 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   ADR-0169 and `mutation/cli-install.battery.ts`. It is reachable only from `the-windows-reading`, so
   **that branch is load-bearing for ten citations and nothing here says so** — the fact has been carried
   by an instruction to whoever is working rather than by any mechanism. The repository's own remedy is
-  one act and no code: an annotated `evidence/*` tag, the precedent three such tags already set. Named
-  and not taken, because a tag is an act the unit that found this was forbidden. ADR-0254.
+  one act and no code: an annotated `evidence/*` tag, on the precedent of the **five** this repository
+  already carries and reissues across every history rewrite. Named and not taken, because a tag is an
+  act the unit that found this was forbidden. ADR-0254.
+
+  **It is recommended now, with what it commits, and the recommendation corrects the argument for
+  it.** A tag does not make the commit undeletable — a tag is as deletable as a branch — and it does
+  not *reinforce* the standing instruction either. **It retires the instruction's load**, which is
+  better: today ten citations depend on somebody remembering never to delete a branch, and with the
+  tag they depend on a ref whose whole declared purpose is to be kept. The instruction may stay for
+  its own reasons; it stops being the only thing between ten citations and a dead coordinate, and the
+  narrowed population stops depending on the moment it is read. **What it commits** is one more
+  permanent ref, reissued by any future rewrite, which adds to the cost of a third — already a
+  decision with a record. The alternatives are worse and are named rather than waved at: merging that
+  line into `main` changes `main`, and a cherry-pick changes the identifier the ten citations spell.
+  ADR-0256.
 
 - **That a breakpoint is the arithmetic of the lengths it separates.** Two guards now keep that every
   ceiling and every track of this site's layout is derived — `every-ceiling-on-a-box-is-derived-and-never-typed`
@@ -6374,6 +6401,17 @@ of the thesis.
   with runs of whitespace collapsed, so an expectation is the sentence rather than the sentence plus
   its column width. The alternative is a guard about the instrument going red on a re-flow, repaired by
   transcribing a layout into an expectation, which is one more place the layout is now declared.
+- **A check that filters on the text of an engine's message depends on the engine, and this
+  repository has two.** Measured on the eighth contract's mixed-sign refusal: one bag, one class and
+  one verdict on both engines, and two wordings — Chrome 152 answers `RangeError: Temporal error:
+  Duration was not valid.` where the draft behind `--harmony-temporal` answers `RangeError: Invalid
+  time value`. So a guard asserting on a message is green on the engine it was written against and
+  says nothing about the other, where a guard asserting on the verdict says the same thing on both.
+  **It is not Temporal's alone**: the same holds of any thrown message and of any engine or library
+  version, which is what makes it a rule rather than a note on one contract. Nothing here reads a
+  message today, so this is written for the first guard that does rather than as a repair — and the
+  place it would bite first is the one folder whose two engines are already known to disagree.
+  ADR-0256.
 - **A guard perturbs the claim, never the object derived from it.** Perturbing the derived object
   establishes that the derivation is self-consistent, which is true of a derivation with a hole in it —
   measured twice, ten units apart, on subjects sharing nothing. It is the cheapest test for a guard
