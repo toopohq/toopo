@@ -752,10 +752,14 @@ by `unanchoredBindings` where a refusal leaves no binding at all to name.
 **What that costs is measured and deliberately not paid here.** Four guards assume the state has no
 inhabitant — two about anchoring, two in the site reading *not installable* as *refused* — and each
 reddens the day one really carries it. The anchoring pair was restated and the restatement withdrawn on
-its price: both names encode *every binding is anchored*, so ADR-0017 makes the repair a rename, and the
-two addresses are cited **fourteen times across six records**, three in `confirmed-by` and five in the
-prose of stamped records. They belong to the unit that adds the first inhabitant and sees all four red
-for real. **Three guards are written and each has the only shape available**: one over a constructed
+its price: both names encode *every binding is anchored*, so ADR-0017 makes the repair a rename. They
+belong to the unit that adds the first inhabitant and sees all four red for real. **The figure that
+priced them does not reproduce and the four do not cost the same thing** — re-measured at `db9e20d` by
+counting each address in the committed bytes of every tracked file, the anchoring pair stands **21
+times in 9 files, 16 of them in 6 records, with 5 `confirmed-by` entries across 3**, against ADR-0261's
+*fourteen across six, three in `confirmed-by`*, which no rule anybody can state gives. And only that
+pair encodes its claim in its address: the two site guards are repaired inside their own bodies and
+move no address, so the bill is **21 rather than the four's 41**. ADR-0262. **Three guards are written and each has the only shape available**: one over a constructed
 ledger, because a guard filtered on this state would assert an empty population; two total over the
 catalogue and over the ledger. Four cells, one apiece and one re-aimed — `I-181`'s old edit reddens a
 profile guard and says nothing about the ledger now, so it records a published contract as refused,
@@ -787,9 +791,22 @@ chosen over the number**: `base × spread` is `cells × max` once the median can
 leaves the bound where it is and tightens only the growth term, which is ADR-0169's property held in
 both directions where `max/median` over job totals holds it in one. **And the price that caused all of
 it is written where somebody pays it**: a guard's duration is multiplied by the cell count of its
-folder — `packages/registry` **239**, `packages/site` 172, `packages/cli` 149 over four batteries — so
+folder — `packages/registry` **239**, `packages/site` 173, `packages/cli` 149 over four batteries — so
 1.2 s of local suite time was worth **321 s of runner**, measured on a pair whose only difference is
-the memo. ADR-0262.
+the memo.
+
+**And replaying the three batteries the diff selected found a red on `main` that nothing had ever
+named, which is ADR-0261's own bill.** `packages/site/local-source.ts` and `mutation/site.battery.ts`
+are byte-identical since the last commit whose CI ran `batteries (site)` green; what moved is one line
+of `response.ts`, `installable` ceasing to mean membership of the ledger. `W-19` publishes the refused
+contract, which used to make it installable — a page, an install command, three guards red. It is bound
+and still not installable now, so **1 failed of 192** and that one guard alone, the pin named three, and
+`a-contract-the-catalogue-turned-down-is-marked-and-still-shown` was left reddened by nothing.
+**Nothing selected it**: ADR-0261's diff touched `packages/registry` alone and the selection follows
+folders, and `predict` answered `0 fault(s), 0 question(s)` on that very tree minutes before the replay
+refused — it compares a declaration against a measurement already taken, and what moved is behaviour.
+W-19 is re-pinned to the guard it reddens and `W-184` is written for the one it stopped witnessing.
+ADR-0262.
 
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
@@ -2663,7 +2680,7 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   now.** A cell replays the whole suite, so a guard's own duration is paid once per cell of every
   battery that collects it - the multiplier is neither the guard's nor the instrument's, it is the
   **cell count of the folder the guard lands in**. Measured at `db9e20d` off each battery's own stored
-  measurement: `packages/registry` **239**, `packages/site` 172, `packages/cli` **149 across four
+  measurement: `packages/registry` **239**, `packages/site` 173, `packages/cli` **149 across four
   batteries**, a contract folder 28 to 82 across two, `packages/validation` 21, `packaging` 20,
   `mutation` 15. **So `packages/registry` is the dearest place in this repository to write a guard**,
   and the client's figure is a sum, which is ADR-0206's *a new guard is answered for as many times as

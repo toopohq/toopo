@@ -383,7 +383,7 @@
  * `db9e20d` off each battery's own stored measurement:
  *
  *     packages/registry        registry-storage                                  239
- *     packages/site            site                                              172
+ *     packages/site            site                                              173
  *     packages/cli             cli-install, cli-update, cli-remove, cli-search    149
  *     contracts/…/date/add     date-add, date-add-spec                             82
  *     contracts/…/string/slugify                                                   72

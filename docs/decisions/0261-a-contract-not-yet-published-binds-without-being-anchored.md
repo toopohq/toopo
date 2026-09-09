@@ -15,6 +15,27 @@ confirmed-by:
 
 # A contract not yet published binds without being anchored
 
+> **Two things below are corrected by
+> [ADR-0262](0262-a-bound-re-derived-from-its-own-job-and-the-tax-a-guard-pays-per-cell.md), and the
+> second is a red this record left on `main`.**
+>
+> **The address cost does not reproduce.** *Fourteen citations across six records, three in
+> `confirmed-by` and five in the prose of stamped records* is re-measured at `db9e20d` by counting each
+> address in the committed bytes of every tracked file: the anchoring pair stands **21 times in 9
+> files, 16 of them in 6 records, with 5 `confirmed-by` entries across 3**. The six records are right
+> if this one is counted; every other reading of the pair is 12, 16, 17 or 21, and no rule anybody can
+> state gives fourteen. **And the four do not cost the same thing**: only the anchoring pair encodes
+> its claim in its address, so only that pair costs a rename — the two site guards are repaired inside
+> their own bodies and move no address, which makes the bill 21 rather than the four's 41.
+>
+> **`installable` following the lifecycle moved what a site cell reddens, and no selection said so.**
+> `site · W-19` publishes the refused contract; while `installable` meant membership of the ledger that
+> made it installable, so it gained a page and an install command and reddened three guards. It is
+> bound and still not installable now, so it reddens one — measured, 1 failed of 192 — and
+> `a-contract-the-catalogue-turned-down-is-marked-and-still-shown` was left reddened by nothing. This
+> record's diff touched `packages/registry` alone, so the folder rule named no site battery and the red
+> sat on `main` unselected. ADR-0262 re-pins W-19 and writes `W-184` for the orphaned guard.
+
 ## Context and Problem Statement
 
 **ADR-0260 ruled that `not-yet-published` mints nothing, and the reconstruction refutes it.**

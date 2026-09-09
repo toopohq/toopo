@@ -699,11 +699,16 @@ const mutants: readonly Mutant[] = [
     'publishes the contract the catalogue decided against, so it gains a page of its own and the ' +
       'refusals page and the catalogue contradict each other',
     [localFile(A_REFUSED_CONTRACT_IS_REFUSED, `    if (false) {`)],
-    killed([
-      'a-refused-contract-is-in-the-index-and-resolves-to-no-binding',
-      'every-contract-the-index-lists-has-a-page-at-its-own-address',
-      'nothing-offers-an-install-command-for-a-contract-that-cannot-be-installed',
-    ]),
+    // **This pin named three guards until ADR-0261 and it now names the one that reddens**, which is
+    // a re-aiming of the *reading* rather than of the cell: the edit is unchanged and what it does is
+    // not. While `installable` meant membership of the ledger, publishing the refused contract made
+    // it installable, so it gained a page and an install command and all three reddened. `installable`
+    // follows the lifecycle now, so the contract is bound and still not installable - no page, no
+    // command, and only the guard about resolving to *no binding* has anything to say. Measured on
+    // this tree: 1 failed of 192, and it is that guard alone. **The two it no longer reddens are
+    // witnessed by `W-20`** - measured, `red on W-20 / alone on -` for both - so nothing left the
+    // accounting there; the one guard that did is `W-184`'s. ADR-0262.
+    killed(['a-refused-contract-is-in-the-index-and-resolves-to-no-binding']),
   ),
 
   sameOnEveryLens(
@@ -3739,6 +3744,56 @@ import {
       ),
     ],
     killed(['every-field-a-form-reads-as-a-literal-is-named-on-its-page-with-the-reason-it-is-one']),
+  ),
+
+  /**
+   * Shows a reader only what they can install, so the contract this catalogue turned down is
+   * answered with silence rather than with the refusal it published.
+   *
+   * **It is the cell `a-contract-the-catalogue-turned-down-is-marked-and-still-shown` was owed and
+   * had never had, and that guard's own comment names the defect**: *dropping it is the defect
+   * `toopo search` already carries a mutant for, arriving on the surface where somebody clicks*.
+   *
+   * **What it replaces is a witness that stopped witnessing, and the cause is one field.** `W-19`
+   * publishes the refused contract, and while `installable` meant membership of the ledger that made
+   * it installable - the mark disappeared and this guard reddened. ADR-0261 made `installable`
+   * follow the *lifecycle*, so W-19 now leaves the contract bound and still not installable: the
+   * mark is still right, the guard is still green, and it went silent with nothing saying so. The
+   * diff that did it touched `packages/registry` alone, so no selection named this battery -
+   * `CLAUDE.md`'s entry about a guard reddened from a neighbouring folder, firing for real.
+   *
+   * **It aims at the choice rather than at that mechanism**, which is `mutants.ts`'s own rule: what
+   * is edited is the decision to show every answer, and never the field the mark is derived from.
+   *
+   * **It was written expecting to redden alone and it reddens two, which the measurement said before
+   * the pin did.** The argument for *alone* was sound as far as it went - every other guard driving
+   * `whatThePanelShows` asks it about `ANSWERED`, `UNHEARD` or `asking('a')`, and `array/group-by@1`
+   * is reached by none of them - and it left out the surface one floor down: an answer never shown is
+   * a mark never painted, so ADR-0197's `every-rule-this-sheet-paints-is-one-a-page-writes` reddens
+   * too. Measured before this pin was written: **2 failed of 192**, and those two.
+   *
+   * **The second red is not a reason to aim elsewhere**, because the obvious alternative - an
+   * unconditional `mark: null` - drags the same painting guard by the same route, and it falsifies
+   * *marked* where this catalogue's own comment names *dropped* as the defect. So the pin names both,
+   * which is what ADR-0076 asks at or below its line, and the guard leaves the unaccounted bucket
+   * without entering the isolated one. ADR-0262.
+   */
+  sameOnEveryLens(
+    'W-184',
+    'shows a reader only the contracts they can install, so the one this catalogue turned down is ' +
+      'dropped from the answers rather than shown with its mark',
+    [
+      controlFile(
+        `    answers: found.results.map((result) => theAnswerShownFor(result, where.root)),`,
+        `    answers: found.results\n` +
+          `      .filter((result) => result.installable)\n` +
+          `      .map((result) => theAnswerShownFor(result, where.root)),`,
+      ),
+    ],
+    killed([
+      'a-contract-the-catalogue-turned-down-is-marked-and-still-shown',
+      'every-rule-this-sheet-paints-is-one-a-page-writes',
+    ]),
   ),
 ]
 

@@ -4,6 +4,7 @@ date: 2026-09-09
 governs:
   - .github/workflows/suites.yml
   - mutation/census.ts
+  - mutation/site.battery.ts
   - packages/registry/local-read-api.ts
   - CLAUDE.md
 confirmed-by: []
@@ -148,7 +149,7 @@ cell count of the folder the guard lands in.
 | folder | batteries | cells |
 | --- | --- | --- |
 | `packages/registry` | `registry-storage` | **239** |
-| `packages/site` | `site` | 172 |
+| `packages/site` | `site` | 173 |
 | `packages/cli` | `cli-install`, `cli-update`, `cli-remove`, `cli-search` | 149 |
 | a contract folder | its two batteries | 28 to 82 |
 | `packages/validation` | `validation-stage-1` | 21 |
@@ -228,6 +229,51 @@ not reproduce**: the six records are right if its own is counted, and every othe
 is 12, 16, 17 or 21, with five `confirmed-by` entries rather than three. It is corrected here rather
 than in that record, which is stamped.
 
+## The red the replay found, which is ADR-0261's own bill and is paid here
+
+**Replaying the three batteries this unit's diff selects turned up a `site` that refuses, and it is on
+`main` rather than in this diff.** `packages/site/local-source.ts` and `mutation/site.battery.ts` are
+**byte-identical since `5fa5de8`**, the last commit whose CI ran `batteries (site)` green. What moved
+between them is one line of `packages/registry/response.ts`: `installable: published.has(…)` — membership
+of the ledger — became a set built from the lifecycle, which is ADR-0261.
+
+**`W-19` publishes the refused contract, and that used to make it installable.** It gained a page and an
+install command, so three guards reddened. It is bound and still **not** installable now, so no page and
+no command are produced and only `a-refused-contract-is-in-the-index-and-resolves-to-no-binding` has
+anything to say. Measured directly rather than inferred, by applying the edit and running the suite the
+way the battery does: **1 failed of 192**, 18 files, nothing skipped, and that guard alone. The pin named
+three, so the battery refused; and
+`a-contract-the-catalogue-turned-down-is-marked-and-still-shown` — whose only witness W-19 was — was left
+reddened by nothing.
+
+**Nothing selected it, which is the half worth carrying.** ADR-0261's diff touched `packages/registry`
+alone and the selection follows folders, so no site battery was named on that push or on any since. It is
+`CLAUDE.md`'s standing entry — *a change is answered by every battery that could say something about it* —
+firing for real, and **`npm run predict` cannot see it**: it compares a declaration against a measurement
+already taken, and what moved is behaviour. It answered `0 fault(s), 0 question(s)` over 24 batteries on
+this very tree, minutes before the replay refused.
+
+**What is done.** `W-19` is re-pinned to the one guard it reddens — a re-aiming of the *reading* and not
+of the cell, whose edit is unchanged. The two it no longer reddens are witnessed by `W-20`, measured
+(`red on W-20 / alone on -` for both), so nothing left the accounting there. And `W-184` is written for
+the guard that did: it filters the panel's answers to the installable ones, which is the defect that
+guard's own comment names — *dropping it is the defect `toopo search` already carries a mutant for*. It
+aims at the **choice** rather than at the field the mark is derived from, which is `mutants.ts`'s rule.
+
+**It was written expecting to redden alone and it reddens two, and the measurement is what said so
+before the pin was written.** The argument for *alone* was that every other guard driving
+`whatThePanelShows` asks it about `ANSWERED`, `UNHEARD` or `asking('a')`, and `array/group-by@1` is
+reached by none of them — sound as far as it went, and blind to the surface one floor down: an answer
+never shown is a mark never painted, so ADR-0197's `every-rule-this-sheet-paints-is-one-a-page-writes`
+reddens too. **2 failed of 192**, and those two. The obvious alternative — an unconditional `mark:
+null` — drags the same painting guard by the same route and falsifies *marked* where the guard's own
+comment names *dropped*, so the aim is kept and the pin names both, which is what ADR-0076 asks at or
+below its line. **The guard leaves the unaccounted bucket without entering the isolated one.**
+
+**The cell moves this record's own table**, `packages/site` 172 → 173, which is rule 2 of that list
+arriving inside the unit that wrote the table — swept in the three places it is written rather than in
+the one a reader would open.
+
 ## Consequences
 
 The two ubuntu gates read 92. `every-battery` takes the first gate's number for the first gate's
@@ -259,6 +305,9 @@ the arithmetic beside the table that makes somebody edit it.
 * **A guard added to `packages/registry` costing more than about half a second.** The table in
   `census.ts` prices it at two minutes of runner, and that figure is what the next unit to add one
   should check its own guard against rather than trust.
+* **`installable` moving again, or a second reader of it.** `W-19` and `W-184` both rest on a contract
+  that is bound and not installable, which is the state ADR-0261 created; a third meaning for that
+  field re-aims both, and the reading that would say so is a replay rather than `predict`.
 
 ## More Information
 
