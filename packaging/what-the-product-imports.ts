@@ -49,6 +49,8 @@
  * import added there would put the lexer on both their graphs to serve one guard. Measured: neither
  * `packaging/reachable.ts` nor `packages/site/scanning.ts` is inside what the published entry point
  * reaches, so nothing here changes what an install downloads.
+ *
+ * ADR-0264.
  */
 
 import { readFileSync } from 'node:fs'

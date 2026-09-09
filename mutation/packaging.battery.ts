@@ -483,7 +483,7 @@ const mutants: readonly Mutant[] = [
    *
    * What it injects is under-reading and not over-reading, which is the direction that matters: a
    * reader that misses an import makes a declared package look unreached, where one that invents an
-   * import is what a *pattern* does and is why this reader is driven by the scanner at all.
+   * import is what a *pattern* does and is why this reader is driven by the scanner at all. ADR-0264.
    */
   sameOnEveryLens(
     'A-29',

@@ -842,6 +842,24 @@ keeps it and publishes beside it with a standing that says `published`, which we
 ADR-0261 and are two after. Measured by hand before either pin: **5 failed of 199**, which is
 ADR-0076's line exactly. ADR-0263.
 
+**And the manifest is read against what the product reaches, on the cheapest entry this list carried
+and by the reader it invites refusing to work.** `dependencies` is the field `npm install` walks and
+`files: ["dist"]` does not bound it, so a package moved from the dev list to the runtime one reaches
+every consumer with neither archive guard seeing it. **The witness is what made it takeable** and was
+answered before a line was written: `mutation/packaging.battery.ts` declares `contractPath:
+'packaging'`, so this guard is injected into where four other entries are refused for the opposite
+reason. **The entry's own figure was short and its remedy was half of one**: the walk is 43 source
+files and not 41, and `reachable.ts` reads *relative* specifiers alone, so the package half had to be
+written. **The reader the entry invites is red on its first run.** With the anchors `specifiersIn`
+itself uses, a pattern over bare specifiers answers **five packages of which four do not exist** —
+`did the lockfile change at all`, `we changed this underneath you`, `the registry lost it` and one
+spanning a line — every one prose in which `from` precedes a quoted phrase. **What saves the walk and
+not the reader is the walk's own shape**: a phantom file is discarded by the filesystem and a phantom
+package has nothing to discard it, and the two closures answer 43 either way. So the exact reading is
+the scanner this repository already drives, where a comment is a token the language names. Red first
+on both directions, `wrangler` declared and `happy-dom` imported, each restored; green at 1 test and
+42 ms; then `A-29`, measured at **1 failed of 25** before it was pinned. ADR-0264.
+
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
 `string/titlecase`, `number/rond`, `toy/thing` — every one two kebab-case segments, which is exactly
@@ -2332,6 +2350,25 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   What it leaves behind is that **every** 3xx is refused and not only one that leaves the origin — the
   narrow rule the entry's second option named — which costs nothing while the live origin answers every
   address directly and is the line that moves the day it does not;
+- **the manifest declaring no dependency the product could reach** — ADR-0264, and it is the first
+  entry closed by **a witness this repository already had and nobody had looked for**. That entry read
+  *one file, and it is the cheapest entry on this list*; what it did not say is where the guard would
+  live, and four entries here are refused because their guard would sit where no battery reaches.
+  `mutation/packaging.battery.ts` declares `contractPath: 'packaging'`, so this one is injected into,
+  and the question that decided the unit was answered before a line was written. **Its own figure was
+  short**: the entry names `reachable.ts` as the thing that already computes the walk, and the walk is
+  only half of it — `specifiersIn` reads *relative* specifiers alone, so the package half had to be
+  written. **And the reader it invites is the one that cannot be built.** With the anchors
+  `specifiersIn` itself uses, a pattern over bare specifiers answers **five packages of which four do
+  not exist**, every one a sentence in which the word `from` precedes a quoted phrase — so a guard
+  built the cheap way is red on its first run naming packages that are not there. What saves the walk
+  and not the reader is the walk's own shape: **a phantom file is discarded by the filesystem and a
+  phantom package has nothing to discard it**, and the two closures answer 43 either way. The exact
+  reading is the scanner this repository already drives, where a comment is a token the language
+  names. What it leaves behind is written in the guard rather than here: it reads sources and not
+  `dist/`, one entry point and not every `bin`, no version, nothing about what a dependency itself
+  depends on, neither `optionalDependencies` nor `peerDependencies`, and no specifier composed at run
+  time — which is ADR-0149's own published blind spot arriving on a second reader;
 - **a reading that decides whether to pay for a replay checking every way a replay can refuse** —
   ADR-0221, and it is the first entry this list has closed by **a tool that refuses where it cannot
   answer rather than by one that checks more**. The entry named its own closure — the reading living
@@ -6262,23 +6299,6 @@ refused contract is one instance of it and never the population.
   **The population is every mutant cell**, and what would reopen it is a mutant that edits two test
   files — which would give the per-cell census the reachable instance it has not got. Priced and
   refused. ADR-0166.
-- **That the manifest declares no dependency the product could reach**, which stage rule 3 now states
-  as a criterion and nothing reads. The two mechanisms that rule names are real and are about *files*:
-  `no-part-of-the-instrument-or-of-the-suite-is-in-the-archive` and
-  `every-file-in-the-archive-is-loaded-by-a-command` ask what the tarball holds. Measured at the commit
-  that added `wrangler`: no module of `packaging/` reads `dependencies` or `devDependencies` at all, so
-  **a package moved from the dev list to the runtime one would be installed by every consumer and no
-  guard would notice** — `dependencies` is the field `npm install` walks, and `files: ["dist"]` does not
-  bound it. It closes on a guard over the manifest: the runtime `dependencies` are exactly the packages
-  the published entry point imports, which `reachable.ts` already computes and nothing compares against
-  the manifest. One file, and it is the cheapest entry on this list.
-
-  **That guard would be green the day it is written, and it was measured rather than assumed.** At
-  `27d1dbb` the manifest declares one runtime dependency, `typescript`, and
-  `dist/packages/validation/typescript-api.js` imports `typescript/unstable/sync` — so the declaration
-  and the walk already agree, and the guard finds nothing. It is written anyway on the rule below about
-  a guard born green: what it buys is not today's defect but the day somebody moves a package from one
-  list to the other, and on that day the package is installed into every consumer's project.
 - `contractAnatomy` — triaged entry by entry against stage 1's own constraint, *readable in the source
   alone, without evaluating the module*: **three of the eleven are settled by the source alone, four
   need the module, four are a reader's and no stage will ever take them.** So the conformance
@@ -6462,9 +6482,16 @@ refused contract is one instance of it and never the population.
    `@types/node`, `wrangler`, `happy-dom` — and it is the criterion that decides the seventh, not the
    list: a rule written as names plus an exception grows an exception per tool, where a rule that
    states its test survives its first case.
-   Two mechanisms answer it and both are measured: `files: ["dist"]` decides what `npm pack` ships,
-   and `packaging/reachable.ts` prunes `dist` to what the published entry point can reach — so a tool
-   no published module imports is absent from the archive twice over, by a declaration and by a walk.
+   Three mechanisms answer it and all three are measured: `files: ["dist"]` decides what `npm pack`
+   ships, `packaging/reachable.ts` prunes `dist` to what the published entry point can reach — so a
+   tool no published module imports is absent from the archive twice over, by a declaration and by a
+   walk — and **the third reads a list rather than a file**, which is what the first two could not.
+   `the-runtime-dependencies-are-the-packages-the-product-reaches` compares `dependencies` against the
+   packages the entry point really names, in both directions: `dependencies` is the field
+   `npm install` walks and `files` does not bound it, so a tool moved from the list below to the one
+   above is installed into every consumer's project and neither of the other two mechanisms sees it.
+   It is born green — 43 source files reached, one package named, one declared — and what it does not
+   cover is written in its own header. ADR-0264.
    `happy-dom` executes a module against a document, which is what nothing here could do and what no
    earlier refusal had priced: ADR-0157 refused a headless browser for the fourth time and wrote that
    *this wants a module executed against a document, which is a different tool at a different price*.
