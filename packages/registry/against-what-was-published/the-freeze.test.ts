@@ -92,6 +92,14 @@ describe('what this repository published, against what it produces today', () =>
    * than not at all. The repair is a rename for the reason its twin in `rebinding.test.ts` gives, at
    * the price measured there, and it belongs to the unit that puts a contract into the state.
    * ADR-0261, ADR-0262.
+   *
+   * **And it is the only one of this file's three that reddens, which was read rather than assumed.**
+   * `rebindingFaults` above and `misdatedBindings` below both open by filtering `everyBinding(ledger)`
+   * on `isAnchored`, so a binding taking the stand-in revision is outside both of them; this guard
+   * asserts that the same filter finds nothing. So a reader meeting one red here has one repair and
+   * not three, and the rename it takes makes the claim stronger rather than narrower - *every
+   * unanchored binding is one this catalogue declares unpublished* is exact in both directions, where
+   * the sentence it replaces only ever refused the state. ADR-0263.
    */
   it('nothing-this-tree-binds-escapes-the-freeze-check :: the population is every binding', () => {
     const ledger = theLocalLedger()

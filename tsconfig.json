@@ -27,6 +27,17 @@
   // The contracts the contracts suite does not run, declared once in
   // mutation/excluded-contracts.ts and repeated here because a tsconfig is JSON and can import
   // nothing. A guard beside that declaration refuses a folder missing from this list. ADR-0251.
+  //
+  // **What this line does is narrower than it reads, and the difference decides a unit.** `exclude`
+  // filters the project's *root file set*. A file that an included file imports is pulled in as a
+  // dependency and typechecked whatever this list says - so the day `packages/registry/the-catalogue.ts`
+  // names the folder below, this project reads it and answers six `TS2503`, because
+  // `mutation/census.test.ts` and `mutation/root-documents.ts` both import `theCatalogue` and
+  // `mutation` is in the `include` below. Measured at `3e530f7` with one throwaway import.
+  //
+  // So the line keeps a folder out of `npm test` while nothing imports it, and stops keeping it out
+  // the moment something does. `lib` staying at `ES2022` is what refuses the folder then, which is
+  // why the widening belongs to the unit that enters rather than to a tidy-up before it. ADR-0263.
   "exclude": ["contracts/typescript/temporal/add"],
   "include": [
     "packages/catalogue",

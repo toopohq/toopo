@@ -808,6 +808,27 @@ refused — it compares a declaration against a measurement already taken, and w
 W-19 is re-pinned to the guard it reddens and `W-184` is written for the one it stopped witnessing.
 ADR-0262.
 
+**The eighth contract does not enter, and what says so is a chain rather than a preference.** Three
+measurements at `3e530f7`, each forcing the next. **The catalogue naming the folder forces the root
+`lib`**: the root project follows the import and answers **six `TS2503`**, exit 0 with
+`ESNext.Temporal` — and `exclude` does not save it, because that filters the project's *root files*
+and never a dependency an included file imports, `mutation/census.test.ts` and
+`mutation/root-documents.ts` both reading `theCatalogue` inside the root project. **The entry forces
+a battery**, the join guard being bidirectional. **The battery forces a runtime**: the folder's own
+suite on node 24 answers **106 failed of 122** with no type errors. **The owner ruled that the
+routing is machinery that expires** — it exists only while `batteries` pins `node-version: '24'` —
+so nothing is built and the entry waits on the floor. **What the chain established and no unit
+should rediscover** is that all three of the folder's non-test modules import cleanly with no
+`Temporal` — 11, 2 and 2 exports — so the catalogue *could* hold it on both legs and only the
+folder's own tests need the global; that the ledger gains **two lines and not one**, 1 206 → **1 404
+bytes**, derivable before any digest because a line is its address plus 66; and that **exactly one**
+of the freeze's three guards reddens, the other two filtering on `isAnchored`, so the freeze stays
+green on one rename that makes the claim stronger. **The count of this catalogue was taken from the
+object** and not from a pattern — `theCatalogue.length` is 7, six published — where the wide shape
+answers **647 over 211 files** and almost all of it is `one contract` used as an article; narrowed
+and read one at a time it is **90 over 30 files**, of which 28 become false at the entry and are left
+alone, and **3 were false already** and are repaired. ADR-0263.
+
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
 `string/titlecase`, `number/rond`, `toy/thing` — every one two kebab-case segments, which is exactly
@@ -6842,6 +6863,19 @@ of the thesis.
   one of them says it looks correct**, and not one was found by rereading - they were found by a mutant,
   by a neighbouring guard naming its own cause, by a character sweep, and twice by perturbing a module
   to see what noticed. That is evidence for the two gestures above rather than a sixth rule.
+- **Three stops do not make a rule, and saying so is worth more than the rule would have been.** One
+  chain of units stopped three times rather than writing on: a contract whose arity the same unit had
+  just measured wrong, a guard whose address refused to be narrowed to fit, and a battery whose
+  calibration no runtime on the machine could take. Each stop produced more than the writing would
+  have. **The temptation is to publish that as a fourth rule — *stop when what you are about to write
+  rests on something you cannot check* — and the reason not to is that it is three rules already
+  written, firing.** The arity stop is *measure before concluding*; the guard stop is ADR-0017 in as
+  many words, an address may not over-read; the battery stop is *a pin is checked against the run
+  that wrote it*. Three different mechanisms, one resemblance, and a fourth statement of what three
+  rules already say is the duplication a record exists to avoid — the same reason the five green-while-
+  broken guards above open no entry. What they share is a discovery and not a form: **the stop was
+  legible each time only because the rule it was firing was already written down**, which is an
+  argument for writing rules down and not for adding one. ADR-0263.
 - Distinguish what you **measured** (quote the command and its output) from what you **assume**.
   A coherent explanation is not a measurement.
 - **Read the exit code of the thing being asked about, never the last one of the wrapper around it.**

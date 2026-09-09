@@ -248,6 +248,21 @@ const gather = (): {
        * figure reproduces under no rule this repository can state - the six records are right if its
        * own is counted, and every other reading is 12, 16, 17 or 21. It is corrected here rather than
        * in that record, which is stamped. ADR-0262.
+       *
+       * **Exactly one of the three guards of `against-what-was-published/` reddens, which is read off
+       * the functions rather than inferred.** `rebindingFaults` and `misdatedBindings` both open by
+       * filtering `everyBinding(ledger)` on `isAnchored`, so the stand-in revision's forty zeros are
+       * outside both; `nothing-this-tree-binds-escapes-the-freeze-check` asserts that the same filter
+       * finds nothing and is the only one an unanchored binding falsifies. So the freeze stays green
+       * on that one rename, and the rename makes it stronger: *every unanchored binding is one this
+       * catalogue declares unpublished* is exact in both directions, where *no binding is unanchored*
+       * only ever refused the state.
+       *
+       * **And the bill is not owed yet, for a reason that is not this file's.** Entering a contract
+       * here forces a battery over its folder, and a battery over `temporal/add` forces a runtime the
+       * matrix does not carry - so the entry waits on the floor rather than on anything decidable in
+       * this dispatch. The whole chain, the ledger's two new lines and what each of the four guards
+       * costs are in ADR-0263.
        */
       case 'not-yet-published':
       case 'published':

@@ -62,7 +62,14 @@ export const THE_CONTRACTS_THIS_SUITE_DOES_NOT_RUN: readonly AnExcludedContract[
       'files and 831 tests with no type errors, `signature.test-d.ts` typechecks, and 112 of this ' +
       "folder's 113 tests pass. ADR-0251's clause that vitest does not honour the project's `lib` is " +
       'refuted there: what does not survive a widening is the incremental cache its typechecker ' +
-      'keeps. ADR-0251, ADR-0252, ADR-0253.',
+      'keeps. **What lifts this is the floor and never a routing dimension.** The entry to the ' +
+      'catalogue forces three things at once, measured at `3e530f7`: the root `lib` gains ' +
+      '`ESNext.Temporal`, because a project follows an import into a folder its `exclude` names and ' +
+      'answers six `TS2503`; a battery becomes due, because the guard that owns this join is ' +
+      'bidirectional; and that battery needs a runtime, because this folder on node 24 answers 106 ' +
+      'failed of 122. The routing that would supply one exists only while `batteries` pins ' +
+      '`node-version: 24`, so it expires with this exclusion and is not built. What the entry will ' +
+      'cost is priced rather than left to be rediscovered. ADR-0251, ADR-0252, ADR-0253, ADR-0263.',
   },
 ]
 
