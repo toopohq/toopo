@@ -50,10 +50,17 @@
  * printed only what it chose would say nothing about that, and a reader of the job's log would have no
  * way to tell the ordinary case from it.
  *
- * **The second is `mutation/census.ts`, and it is the one path this file deliberately answers nothing
- * for.** The argument is at `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS`. What matters here is that it
- * leaves through this half rather than through the floor: the residue is printed on every run that
+ * **The second is `mutation/census.ts`, and it is the one path this file deliberately exempts from the
+ * rule above.** The argument is at `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS`. What matters here is that
+ * it leaves through this half rather than through the floor: the residue is printed on every run that
  * touches it, so a reader of the log sees the gap instead of reading it in a paragraph somewhere else.
+ *
+ * **This read *the one path this file deliberately answers nothing for* until ADR-0262 measured it,
+ * and the exemption is from one rule rather than from the selection.** ADR-0246 gave `mutation/` a
+ * battery, so `answersFor` catches this file for `meta` by the ordinary folder rule and it selects one
+ * where `run.ts` beside it selects all twenty-four. The sentence was true of the rule above on the day
+ * it was written and false of the file two units later, with nothing in between able to say so - which
+ * is `CLAUDE.md`'s own recurring class, arriving on the module whose subject is what a change reaches.
  */
 
 import type { Battery, PlatformFamily } from './run.ts'

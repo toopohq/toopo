@@ -169,10 +169,21 @@ past its bound.
 **Where it is written is decided by a measurement rather than by taste.** It is in the header of
 `mutation/census.ts`, beside the price in *edits* that section already states — the file
 `assertTheCensusHolds` sends somebody to at the moment they add a guard, and the one member of
-`WHAT_A_RUN_OF_ANY_BATTERY_READS` the selection deliberately answers nothing for, so writing there
-costs no replay. **The derived form is priced and refused**: `assertTheCensusHolds` knows the battery
-and its mutant count, so the refusal could print the multiplier — and it lives in `run.ts`, which
-selects all twenty-four batteries on every push that touches it.
+`WHAT_A_RUN_OF_ANY_BATTERY_READS` that `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS` exempts from the
+every-battery rule, so an edit there selects **one** battery where `run.ts` beside it selects
+**twenty-four**. **The derived form is priced and refused** on exactly that: `assertTheCensusHolds`
+knows the battery and its mutant count, so the refusal could print the multiplier, and it lives in
+`run.ts`.
+
+**The placement argument was believed in a stronger form than it holds, and the selection refuted it
+before this record was committed.** `selection.ts` says *`mutation/census.ts` … is the one path this
+file deliberately answers nothing for*, which was true of the every-battery rule on the day it was
+written and has been false of the *file* since ADR-0246 gave `mutation/` a battery: `answersFor`
+catches it for `meta` by the ordinary folder rule. Run over this unit's own diff the selection prints
+**three batteries — `meta`, `registry-storage`, `site`** — and `meta` is there for `census.ts` alone.
+The exemption is from one rule and not from the selection; the sentence is repaired where it is
+written, and the argument survives at twenty-four against one rather than twenty-four against nought.
+It is this list's own class arriving on the module whose subject is what a change reaches.
 
 ## What the sweep of `suites.yml` found while the bound was being moved
 

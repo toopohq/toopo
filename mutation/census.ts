@@ -414,9 +414,17 @@
  * **The derived form is priced and not taken.** `assertTheCensusHolds` knows the battery and its
  * mutant count, so the refusal a person meets could print this multiplier instead of a reader having
  * to find it here. It lives in `run.ts`, which is in `WHAT_A_RUN_OF_ANY_BATTERY_READS`, so the edit
- * would select all twenty-four batteries on every push touching it - and this file is the one member
- * of that list the selection deliberately answers nothing for, which is what makes it the cheap place
- * to write and the expensive place to derive. ADR-0262.
+ * would select **all twenty-four batteries** on every push touching it - where this file is exempted
+ * from that rule by `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS` and selects **one**, `meta`, at 15 cells
+ * and 108 seconds end to end. Twenty-four against one is what makes this the cheap place to write and
+ * the expensive place to derive.
+ *
+ * **The exemption is from that rule and not from the selection, which is a distinction `selection.ts`
+ * itself had stopped making.** Its comment read *the one path this file deliberately answers nothing
+ * for* - true of the rule on the day it was written, and false of the file since ADR-0246 gave
+ * `mutation/` a battery, so the ordinary folder rule catches it for `meta`. It was believed here and a
+ * measurement refuted it: the selection over this unit's own diff prints three batteries and `meta` is
+ * one of them. ADR-0262.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */

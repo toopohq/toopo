@@ -2678,12 +2678,18 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
 
   **It is written in the header of `mutation/census.ts`, and the placement is a measurement rather
   than a taste**: that file is where `assertTheCensusHolds` sends somebody at the moment they add a
-  guard, and it is the one member of `WHAT_A_RUN_OF_ANY_BATTERY_READS` the selection deliberately
-  answers nothing for, so writing there costs no replay. **The derived form is priced and refused** -
-  `assertTheCensusHolds` knows the battery and its mutant count, so the refusal could print the
-  multiplier, and it lives in `run.ts`, which selects all twenty-four batteries on every push touching
-  it. So this half is a figure with a coordinate where the entry above is a convention, and neither is
-  kept by anything. ADR-0206, ADR-0262.
+  guard, and it is the one member of `WHAT_A_RUN_OF_ANY_BATTERY_READS` that
+  `THE_DECLARATION_LEFT_TO_ITS_OWN_ROWS` exempts from the every-battery rule, so an edit there selects
+  **one** battery where `run.ts` beside it selects **twenty-four**. That is why the derived form -
+  the refusal printing the multiplier it already has the two numbers for - is priced and refused.
+
+  **The placement was believed in a stronger form than it holds and the selection refuted it.**
+  `selection.ts` says `census.ts` is *the one path this file deliberately answers nothing for*, which
+  was true of the every-battery rule and has been false of the file since ADR-0246 gave `mutation/` a
+  battery: the ordinary folder rule catches it for `meta`. Measured over ADR-0262's own diff, the
+  selection prints **three batteries** and `meta` is there for `census.ts` alone. The sentence is
+  repaired where it is written. So this half is a figure with a coordinate where the entry above is a
+  convention, and neither is kept by anything. ADR-0206, ADR-0246, ADR-0262.
 
 - **That a figure corrected inside a unit reaches every surface that unit writes.** A record is dated
   and an entry of this list is the present tense, so when a measurement moves *during* a unit the
