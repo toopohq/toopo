@@ -769,6 +769,28 @@ does not name it, the attribution reading the reds a cell produced rather than i
 re-verification is `npm run predict`, 185 ms against 65 minutes, which is the drift ADR-0221 built it
 for. ADR-0260, ADR-0261.
 
+**Those three guards then crossed a job's bound, and the re-derivation that followed is the first this
+battery has ever made out of its own readings.** ADR-0222's first reopening trigger fired six days
+after it shipped — `batteries (registry-storage)` killed at **79 min 21 s**, turned into a red job by
+the gate that record built, its first real instance. **The unit each reading is taken in is what
+changed**: a per-cell median off the timestamps of the job's own log, which removes the growth in
+cells that made ADR-0222 call this battery's own ratio a trap and borrow its spread from `site`. Eight
+readings on `main` give 10.08 to 19.66 s a cell, so the spread is **1.137** against a borrowed 1.042,
+and the bound is `239 × 17.29 × 1.137 + 41 × 19.66 = 5 505 s`, **92 minutes** — 1.24× the measured
+job, holding 57 cells where the bound it replaces held **26 seconds** over a healthy run and killed
+it. **Two thirds of the rise is the spread alone**, which is ADR-0199's *a bound extrapolated from one
+member of a population states the cost of that member* arriving on that term rather than on the base.
+**What the runner does was measured paired**: `71c85d6` and `98aba43` are 231 cells and a 472-test
+control apiece and read 2 371 s and 4 056 s, and matched cell by cell over 193 of them the ratio is
+p10 1.65, median 1.73, p90 1.77 — every cell slower, uniformly, under one runner label. **The form was
+chosen over the number**: `base × spread` is `cells × max` once the median cancels, so a *faster* run
+leaves the bound where it is and tightens only the growth term, which is ADR-0169's property held in
+both directions where `max/median` over job totals holds it in one. **And the price that caused all of
+it is written where somebody pays it**: a guard's duration is multiplied by the cell count of its
+folder — `packages/registry` **239**, `packages/site` 172, `packages/cli` 149 over four batteries — so
+1.2 s of local suite time was worth **321 s of runner**, measured on a pair whose only difference is
+the memo. ADR-0262.
+
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
 `string/titlecase`, `number/rond`, `toy/thing` — every one two kebab-case segments, which is exactly
@@ -2636,6 +2658,32 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   with something under it - the eight suites cannot read a census without becoming the instrument, so
   what is available is a line where somebody adding a guard arrives, and that is prose. Priced and not
   taken. ADR-0206.
+
+  **The second price a guard carries is wall clock, it is the larger of the two, and it is written
+  now.** A cell replays the whole suite, so a guard's own duration is paid once per cell of every
+  battery that collects it - the multiplier is neither the guard's nor the instrument's, it is the
+  **cell count of the folder the guard lands in**. Measured at `db9e20d` off each battery's own stored
+  measurement: `packages/registry` **239**, `packages/site` 172, `packages/cli` **149 across four
+  batteries**, a contract folder 28 to 82 across two, `packages/validation` 21, `packaging` 20,
+  `mutation` 15. **So `packages/registry` is the dearest place in this repository to write a guard**,
+  and the client's figure is a sum, which is ADR-0206's *a new guard is answered for as many times as
+  it is collected* arriving on time rather than on answers.
+
+  **It is confirmed on a runner by a pair rather than reasoned about.** `5939df3` and `db9e20d` hold
+  the same 239 cells and the same 486-test control, and ADR-0261's memo is the only thing between
+  them: the per-cell median went **19.66 s to 18.36 s** and the job went **4 761 s to 4 440 s**. Some
+  1.2 s of local suite time was worth **321 seconds of runner** — and the three guards that produced
+  it were 809, 707 and 508 ms, which at 239 cells is 484 s and is what took the battery past its
+  bound.
+
+  **It is written in the header of `mutation/census.ts`, and the placement is a measurement rather
+  than a taste**: that file is where `assertTheCensusHolds` sends somebody at the moment they add a
+  guard, and it is the one member of `WHAT_A_RUN_OF_ANY_BATTERY_READS` the selection deliberately
+  answers nothing for, so writing there costs no replay. **The derived form is priced and refused** -
+  `assertTheCensusHolds` knows the battery and its mutant count, so the refusal could print the
+  multiplier, and it lives in `run.ts`, which selects all twenty-four batteries on every push touching
+  it. So this half is a figure with a coordinate where the entry above is a convention, and neither is
+  kept by anything. ADR-0206, ADR-0262.
 
 - **That a figure corrected inside a unit reaches every surface that unit writes.** A record is dated
   and an entry of this list is the present tense, so when a measurement moves *during* a unit the
@@ -5525,7 +5573,20 @@ refused contract is one instance of it and never the population.
   are derived and two are typed**, which is a narrowing rather than a closure: each derivation was
   performed by a person, and re-running it is as unkept as reading the typed ones. **ADR-0222 moved the
   two ubuntu gates from 40 to 79 and added the fifth**, so the paragraphs below describing them as typed
-  at 40 are ADR-0169's reading and not this one.
+  at 40 are ADR-0169's reading and not this one. **ADR-0262 moved the same two to 92**, so the five
+  read 92, 92, 20, 57 and 5 at `db9e20d`, and the rate is now measurable: **two units in seven days
+  re-derived the same number**, once because it had never been derived and once because its own
+  trigger fired.
+
+  **And a unit that moves a bound does not sweep the file it moves it in, which is measured rather than
+  feared.** ADR-0222 took the gates 40 to 79 and left **five statements of the old number inside
+  `suites.yml`**, three of them present-tense - *the slowest job consumes 68 % of its bound*, *nothing
+  compares 40 minutes to what the slowest battery really costs*, and *the two ubuntu gates are typed at
+  40 minutes*. The other two are inside ADR-0169's stamped arithmetic, where 40 is the value that
+  derivation used and only the pointer was wrong. ADR-0262 found them while re-deriving and repaired
+  the three; what it did **not** do is restate the 68 % with today's number, because that share moves
+  whenever the battery grows or the bound is re-derived. It is this list's rule 2 failing inside the
+  file whose whole subject is keeping other declarations. ADR-0262.
 
   **The derived one now measures the cost of the typed ones, which is the sharpest form this entry has
   ever had.** Over ten readings of `cli-install` the Windows bound re-derived itself three times and had
@@ -5579,10 +5640,35 @@ refused contract is one instance of it and never the population.
   and one a convention said out loud, 1.22× the measured job with fifty cells of margin, and 79 rather
   than 80 so that it carries its own arithmetic in its digits.
 
+  **That bound was crossed six days later, and its own first reopening trigger is what fired.**
+  `batteries (registry-storage)` was killed at **79 min 21 s** on `5939df3` — and the gate ADR-0222
+  built turned that `cancelled` into a red job, which is its first real instance. **The re-derivation
+  is this battery's own for the first time**: eight readings on `main`, each read as a **per-cell
+  median** off the timestamps of the job's own log, which is the unit that disarms the trap ADR-0222
+  named — a ratio over job totals measures the growth in cells where a ratio per cell does not. They
+  are 10.08, 13.48, 16.99, 17.12, 17.46, 17.73, 18.36 and 19.66 s, so the spread is **1.137** against
+  the 1.042 borrowed from `site`, and **the bound is 239 cells × 17.29 s × 1.137 + 41 cells × 19.66 s
+  = 5 505 s, which is 92 minutes** — 1.24× the measured job, holding 57 cells, where the bound it
+  replaces held **26 seconds** over a healthy run and killed it. Two thirds of the rise is the spread
+  alone, which is ADR-0199's rule arriving on that term rather than on the base.
+
+  **What the runner really does was measured paired, and it is the sharpest reading in the entry.**
+  `71c85d6` and `98aba43` hold 231 cells and a 472-test control apiece — identical work — and read
+  2 371 s and 4 056 s; matched cell by cell over 193 of them the ratio is p10 1.65, median 1.73, p90
+  1.77. **Every cell was slower, uniformly, under the same runner label**, and the steps say the
+  tooling is 13 to 17 s in every reading, so none of it is the checkout.
+
+  **And the form was chosen over the number.** `base × spread` is `cells × median × (max / median)`,
+  so the median cancels and the product is `cells × max`: a *faster* reading leaves the bound exactly
+  where it is, and the median survives only in the growth term, where a faster reading tightens it.
+  That is ADR-0169's property held in **both** directions, which `max/median` over job totals does not
+  manage — appending a fast reading there lowers the median and raises the bound, one decimal place
+  down from the failure that record refused `max/min` for.
+
   **What stays open is what this entry has always been
   about** — the bound is still a number a person derives on the day they think to, and the job that
   would read the matrix's own durations and refuse a share of them is still priced above and still not
-  taken. ADR-0222.
+  taken. ADR-0222, ADR-0262.
 
 - **That the reading of who has read this repository's prose is one anything executes.** `npm run
   hands` is in no workflow, and this is the half of the entry ADR-0152 did not close. It is not the

@@ -153,6 +153,14 @@ describe('the site', () => {
    * **The one page that is not about a contract is named here**, so that a page appearing or
    * disappearing is this guard's business rather than nobody's - which is what it was for when
    * ADR-0129 added a fourth, and the only guard that noticed.
+   *
+   * **`refused.length` is typed as one and that is the clause a contract carrying `not-yet-published`
+   * falsifies.** Since ADR-0261 `installable` is read off the lifecycle, so such a contract joins this
+   * list without having been refused at all, and the count becomes two. **The repair is inside this
+   * body and moves no address**: the name promises a page per listed contract and says nothing about
+   * how many are uninstallable, so the expectation is derived from the index rather than typed. It is
+   * the cheap half of the four ADR-0261 priced; `local-read-api.ts` carries all four beside the
+   * measurement of what each costs. ADR-0261, ADR-0262.
    */
   it('every-contract-the-index-lists-has-a-page-at-its-own-address', () => {
     const refused = index.entries.filter((entry) => !entry.installable)

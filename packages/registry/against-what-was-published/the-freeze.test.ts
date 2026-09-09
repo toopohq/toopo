@@ -84,6 +84,14 @@ describe('what this repository published, against what it produces today', () =>
    * unreachable is now empty, and the population the check runs over is every binding this tree mints.
    * A binding falling back to `THE_UNPUBLISHED_REVISION` would drop silently out of the guard above,
    * and reddens here instead.
+   *
+   * **The next thing to redden it is `not-yet-published`, and that is the state working rather than
+   * failing.** A contract in it mints a binding and takes the stand-in revision deliberately, so this
+   * guard is the mechanism saying which binding is unanchored - the answer ADR-0261 measured to *does
+   * an unanchored binding leave a frozen half nothing guards*, which is no: it is refused twice rather
+   * than not at all. The repair is a rename for the reason its twin in `rebinding.test.ts` gives, at
+   * the price measured there, and it belongs to the unit that puts a contract into the state.
+   * ADR-0261, ADR-0262.
    */
   it('nothing-this-tree-binds-escapes-the-freeze-check :: the population is every binding', () => {
     const ledger = theLocalLedger()

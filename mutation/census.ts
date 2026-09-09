@@ -104,7 +104,8 @@
  *
  * **The maintenance cost, stated plainly rather than discovered.** Adding a test breaks this pin.
  * That is the same price as a pinned verdict, already paid deliberately everywhere else in this
- * folder. Measured on the unit that wrote this file - the immutable storage - it would have touched
+ * folder. **It is the price in edits, and it is the smaller of the two a guard costs** - the other is
+ * wall clock, it is paid on every replay for ever, and it is measured at the foot of this comment. Measured on the unit that wrote this file - the immutable storage - it would have touched
  * five of the entries it declared: four new test files, and one existing file whose count changed.
  * Measured again on the read API, the unit after it: four entries, three of them new files. A unit
  * that adds a contract touches four. A unit that only changes behaviour touches none.
@@ -370,6 +371,52 @@
  * five case tables gives 194 where the catalogue publishes 187 cases, because a group carries one
  * too. An independent source would need a second careful statement, which is what the first paragraph
  * of this file refuses.
+ *
+ * ---------------------------------------------------------------------------
+ * What a guard costs in wall clock, which is the price this table's own is the smaller half of
+ * ---------------------------------------------------------------------------
+ *
+ * **A cell replays the whole suite, so a guard's own duration is paid once per cell of every battery
+ * that collects it.** The multiplier is not a property of the guard and not a property of the
+ * instrument: it is the cell count of the folder the guard lands in, which is why it belongs beside
+ * the table that sends somebody here rather than in a record they will not open. Measured at
+ * `db9e20d` off each battery's own stored measurement:
+ *
+ *     packages/registry        registry-storage                                  239
+ *     packages/site            site                                              172
+ *     packages/cli             cli-install, cli-update, cli-remove, cli-search    149
+ *     contracts/…/date/add     date-add, date-add-spec                             82
+ *     contracts/…/string/slugify                                                   72
+ *     packages/validation      validation-stage-1                                  21
+ *     packaging                packaging                                           20
+ *     mutation                 meta                                                15
+ *
+ * **So `packages/registry` is the dearest place in this repository to write a guard**, 1.4 times the
+ * site and 1.6 times the client - and the client's figure is the sum over four batteries, which is
+ * ADR-0206's *a new guard is answered for as many times as it is collected* arriving on wall clock
+ * rather than on answers. Add two to any row for the control and the calibration mutant, which run the
+ * suite once each before the first cell does.
+ *
+ * **It is confirmed on a runner rather than reasoned about, and the pair is exact.** ADR-0261 put
+ * three guards into `packages/registry` that each rebuilt the whole ledger - 809, 707 and 508 ms - and
+ * ADR-0262's repair made two of them share one build, removing about 1 215 ms from every run of the
+ * suite and changing nothing else. `5939df3` and `db9e20d` therefore hold the same 239 cells and the
+ * same 486-test control, and the memo is the only thing between them: the per-cell median went
+ * **19.66 s to 18.36 s** and the job went **4 761 s to 4 440 s**. Rather more than a second of local
+ * suite time was worth **321 seconds of runner**, and it is what took the battery past its bound.
+ *
+ * **What that says to somebody about to write one is a rule and not a prohibition.** A guard costing
+ * 10 ms is free anywhere. A guard costing half a second is two minutes of runner in `packages/registry`
+ * and eight seconds in `mutation`. A guard that rebuilds a derivation the file already has is the
+ * expensive shape, and sharing it across the file's guards is the cheap repair - lazily, because a
+ * throw at module scope takes every guard of the file with it and reports them `skipped`.
+ *
+ * **The derived form is priced and not taken.** `assertTheCensusHolds` knows the battery and its
+ * mutant count, so the refusal a person meets could print this multiplier instead of a reader having
+ * to find it here. It lives in `run.ts`, which is in `WHAT_A_RUN_OF_ANY_BATTERY_READS`, so the edit
+ * would select all twenty-four batteries on every push touching it - and this file is the one member
+ * of that list the selection deliberately answers nothing for, which is what makes it the cheap place
+ * to write and the expensive place to derive. ADR-0262.
  */
 
 /** The key for a battery that names no configuration, which collects the contracts' own suite. */

@@ -28,6 +28,20 @@ confirmed-by:
 > **This record writes no contract, moves no digest and touches nothing under `contracts/`.**
 > `THE_PACKAGE_VERSION` stays at `1.2.0` and nothing here reaches npm.
 
+> **Its first reopening trigger fired on 2026-09-08 and the bound below is superseded by
+> [ADR-0262](0262-a-bound-re-derived-from-its-own-job-and-the-tax-a-guard-pays-per-cell.md).**
+> `batteries (registry-storage)` was killed at 79 min 21 s on `5939df3`, and the gate this record
+> built is what turned that `cancelled` into a red job — its first real instance, six days after it
+> shipped. The re-derivation reads **92 minutes**, and the term that moved most is the one measured
+> here least: the spread was borrowed from `site` because this battery had a single uncensored reading
+> on a throwaway branch, and its own answer over eight readings on `main` is **1.137** rather than
+> 1.042. The unit that took it also found that this record moved the two gates from 40 to 79 and left
+> **five statements of the old number in `suites.yml`**, three of them present-tense; they are
+> repaired there rather than here. **What stands below is everything else**: the gate over a run's own
+> jobs, `cancelled` not being `failure`, the six kills, the derivation's *form* — and the property
+> that decides it, which ADR-0262 holds in both directions where `max/median` over job totals holds it
+> in one.
+
 ## Context and Problem Statement
 
 `CLAUDE.md` carries an entry asking that *the bound a battery runs under is one anybody compared with

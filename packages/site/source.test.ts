@@ -174,6 +174,15 @@ describe('where the generator gets what it publishes', () => {
   /**
    * A contract the catalogue refused has no binding, so it has no contract page - and it is in the
    * index, because somebody who has heard of it must be told the catalogue considered it.
+   *
+   * **Its population is `!installable` and its name says `refused`, and the two part the day a
+   * contract carries `not-yet-published`.** Since ADR-0261 `installable` is read off the lifecycle, so
+   * such a contract is not installable, enters this list, and *does* resolve to a binding - both
+   * expectations below redden at once, and both are right to. **The repair is inside this body and
+   * costs no address**: nothing in the name promises that everything uninstallable is refused, so
+   * filtering on the lifecycle being `never-published` keeps the sentence exactly true. That is what
+   * separates it from the two anchoring guards, whose names encode the claim and therefore cost a
+   * rename - `local-read-api.ts` carries all four with the measurement. ADR-0261, ADR-0262.
    */
   it('a-refused-contract-is-in-the-index-and-resolves-to-no-binding', () => {
     const source = localSource()

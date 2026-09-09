@@ -746,30 +746,44 @@ jobs:
     runs-on: ubuntu-latest
 
     # A hung cell must not hold a runner for six hours, and the number is derived rather than chosen.
-    # ADR-0222 carries the whole reading; what belongs here is the arithmetic.
+    # ADR-0262 carries the whole reading; what belongs here is the arithmetic.
     #
-    #     base       3 887 s   registry-storage, 230 cells, on a runner, measured at `6203758`
-    #     spread     x 1.042   -> 4 050 s
-    #     growth     +  693 s  -> 4 743 s  =  79 minutes
+    #     base       4 132 s   registry-storage, 239 cells at 17.29 s a cell, read on `main`
+    #     spread     x 1.137   -> 4 699 s
+    #     growth     + 41 cells x 19.66 s  ->  5 505 s  =  91.8 minutes  ->  92
     #
-    # **The spread is measured where the work did not move.** Over the twenty-two runs read,
-    # `mutation/site.battery.ts` and `packages/site` both have zero commits, so that battery's five
-    # readings are five readings of identical work - which is the population ADR-0169's `max/median`
-    # requires. It answers 1.042. Every other long battery grew: `cli-install` eight commits,
-    # `registry-storage` fourteen.
+    # **Every term is this battery's own now, where ADR-0222 had to borrow one.** That record held a
+    # single uncensored reading of `registry-storage`, taken on a throwaway branch, so it took its
+    # spread from `site` - the one battery whose work had not moved - and answered 1.042. There are
+    # eight readings of this job on `main` today, and the unit each is read in is the **per-cell
+    # median**, taken off the timestamps of the job's own log: 10.08, 13.48, 16.99, 17.12, 17.46,
+    # 17.73, 18.36, 19.66 s. Per cell rather than per job is what disarms the trap ADR-0222 named -
+    # a ratio over job totals measures the growth in cells rather than the runner - so this battery
+    # may now be its own population. Median 17.29, max 19.66, spread **1.137** against a borrowed
+    # 1.042. It is ADR-0199's rule - a bound extrapolated from one member of a population states the
+    # cost of that member - arriving on the spread rather than on the base.
     #
-    # **`max/median` over registry-storage's own readings answers 1.809 and is a trap.** Its median is a
-    # reading of a battery that had 163 cells where it now has 230, so the ratio measures the growth
-    # rather than the runner. The short batteries are the same trap inverted -
-    # `string-levenshtein-spec` answers 1.529 over a job of 34 s.
+    # **What the spread measures is the runner, and that is paired rather than inferred.** `71c85d6`
+    # and `98aba43` are 231 cells and a 472-test control apiece - identical work - and read 2 371 s
+    # and 4 056 s. Matched cell by cell over 193 of them the ratio is p10 1.65, median 1.73, p90 1.77:
+    # every cell was slower, uniformly, under the same `ubuntu-latest` label. A job's own steps say the
+    # same, the checkout and the install being 13 to 17 s in every reading.
     #
-    # **The growth term is a convention said out loud**: 41 cells at the 16.9 s a cell costs here, which
-    # is the margin ADR-0169 derived for the Windows leg. So the bound is 1.22x the measured job and
-    # holds 50 cells, ten from the spread and forty-one from the convention.
+    # **The product is `cells x max`, and that is what decides the form rather than the number.**
+    # ADR-0169 refuses a derivation that moves in response to a *faster* run; `max/median` over job
+    # totals keeps that flaw in the third decimal, and written this way it has none - the median
+    # cancels out of `base x spread`, so a faster reading leaves the bound exactly where it is. The
+    # median survives in the growth term alone, where a faster reading *tightens* it.
     #
-    # 79 rather than 80 because it carries its own arithmetic in its digits, which is ADR-0205's reason
-    # for 60 060.
-    timeout-minutes: 79
+    # **The growth term is ADR-0222's convention said out loud**, 41 cells, priced at the tail rather
+    # than at the typical because headroom that only survives at the typical rate is not headroom. So
+    # the bound is 1.24x the measured job of `db9e20d` and holds 57 cells over it, where the bound it
+    # replaces held 26 seconds over a healthy run and killed it.
+    #
+    # 92 rather than 90 because 5 505 s is 91.8 minutes and a bound rounded down sits below its own
+    # derivation - and because an hour and a half reads as chosen where 92 reads as derived, which is
+    # ADR-0205's reason for 60 060.
+    timeout-minutes: 92
 
     strategy:
       # Every selected battery reports. A first disagreement stopping the matrix would answer a
@@ -841,10 +855,17 @@ jobs:
   # is 1.8 to 2.6 times slower, and a bound argued from a local reading is argued against the wrong
   # population.
   #
-  # **The slowest job therefore consumes 68 % of its bound**, not the 38 % a local reading suggests.
-  # That is run 32842887678's reading. What used to follow it guessed at what would move it - which of
-  # the batteries carry the catalogue, and what a queue costs - and both guesses were wrong. What
-  # replaces them is measured. ADR-0162.
+  # **The slowest job consumed 68 % of its bound on that run**, not the 38 % a local reading suggests.
+  # That is run 32842887678's reading, against the forty minutes the gates then allowed. What used to
+  # follow it guessed at what would move it - which of the batteries carry the catalogue, and what a
+  # queue costs - and both guesses were wrong. What replaces them is measured. ADR-0162.
+  #
+  # **The share is not restated with today's number and the reason is the whole of ADR-0018's rule.**
+  # It moves whenever the battery grows or the bound is re-derived, and it has been made false twice by
+  # units that moved the bound and swept nothing: ADR-0222 took the gates 40 to 79 and left five
+  # statements of the old number in this file, three of them present-tense. ADR-0262 measured that
+  # while re-deriving the bound and repaired the three. What a reader may take is the reading above,
+  # with the run it was taken on beside it. ADR-0262.
   #
   # ---------------------------------------------------------------------------
   # What a contract costs, and what actually spends the bound
@@ -920,8 +941,10 @@ jobs:
   # the list of what nothing keeps.
   #
   # **What is on that list is the bound itself.** The 68 % above was computed by hand, in a file that
-  # exists to keep other declarations, and nothing compares 40 minutes to what the slowest battery
-  # really costs.
+  # exists to keep other declarations, and nothing compares the bound to what the slowest battery
+  # really costs. It has been derived twice by a person who thought to - ADR-0222 and ADR-0262 - and
+  # the job that would read the matrix's own durations and refuse a share of them is priced in
+  # `CLAUDE.md` and still not taken.
   every-battery:
     needs: [suites, version, which-batteries]
 
@@ -932,8 +955,8 @@ jobs:
     runs-on: ubuntu-latest
 
     # The first gate's number, for the first gate's reason: this job runs the same batteries on the same
-    # runner, so a second derivation here would be a second statement free to disagree with it. ADR-0222.
-    timeout-minutes: 79
+    # runner, so a second derivation here would be a second statement free to disagree with it. ADR-0262.
+    timeout-minutes: 92
 
     strategy:
       fail-fast: false
@@ -1024,8 +1047,8 @@ jobs:
   #       1 392, 1 417, 1 477, 1 515, 1 541, 1 549, 1 566, 1 632 s, median
   #       1 496: 1 632 / 1 496                                               x 1.0909
   #     = the worst plausible run                                            2 315 s  38.6 min
-  #     x what the 40 minutes above already allows the longest job it
-  #       was written against: 2 400 / 1 649                                 x 1.4554
+  #     x what the forty minutes the ubuntu gates then allowed already gave
+  #       the longest job it was written against: 2 400 / 1 649              x 1.4554
   #     =                                                                    3 369 s  56.2 min
   #
   # rounded up to the whole minute the field takes, which is the only rounding here.
@@ -1099,11 +1122,13 @@ jobs:
   # Buy it on the day a run approaches the bound, which is the same trigger as above and turns a
   # speculative expense into a triggered one.
   #
-  # **What this exposes is the bound beside it, which is derived from nothing.** The two ubuntu gates
-  # are typed at 40 minutes, so as this battery's slowest reading grows their margin shrinks with nobody
-  # deciding anything: across these ten readings it went 42 cells, then 41, then 38. This number
-  # re-derived itself three times over the same window and that one did not move at all. `CLAUDE.md`
-  # carries it as an entry; the rate is here.
+  # **What this exposed is the bound beside it, which was derived from nothing.** The two ubuntu gates
+  # were typed at 40 minutes when this was written, so as `cli-install`'s slowest reading grew their
+  # margin shrank with nobody deciding anything: across these ten readings it went 42 cells, then 41,
+  # then 38. This number re-derived itself three times over the same window and that one did not move
+  # at all. **Both halves have since been answered rather than left**: ADR-0222 derived those gates
+  # from readings and ADR-0262 re-derived them, so the clause is history and is kept as taken.
+  # `CLAUDE.md` carries the entry, which is that nothing re-derives any of the five without a person.
   #
   # **What it assumes, said rather than buried.** That the Windows job's relative spread is the ubuntu
   # one for this battery - there is a single Windows reading and n = 1 measures no spread at all. And
@@ -1116,8 +1141,8 @@ jobs:
   # re-runs.
   #
   # **What it lands on is the check rather than the argument**: 3 420 s over the worst plausible 2 315
-  # leaves 1 105 s, which at 27.1 s a cell here is 41 cells - against the 38 the 40 minutes above leave
-  # the ubuntu leg over its own worst plausible 1 632. And it is 1.61 times the job that was measured,
+  # leaves 1 105 s, which at 27.1 s a cell here is 41 cells - against the 38 the forty minutes the
+  # ubuntu gates then allowed left them over their own worst plausible 1 632. And it is 1.61 times the job that was measured,
   # where the form this replaces had reached 1.95 - a bound approaching twice its subject has stopped
   # being a hang detector.
   #

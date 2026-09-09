@@ -217,6 +217,37 @@ const gather = (): {
        *
        * What a reader may take is `installable`, and `response.ts` reads it off the lifecycle this
        * binding carries in its `standing`.
+       *
+       * ---------------------------------------------------------------------------
+       * What the first inhabitant of this state costs, priced before it arrives
+       * ---------------------------------------------------------------------------
+       *
+       * **No contract carries `not-yet-published` today, and four guards are written as though none
+       * ever will.** They are named here rather than only in a record because this is where somebody
+       * putting a contract into the state arrives, and each of the four reddens the moment they do:
+       *
+       * - `nothing-this-tree-binds-escapes-the-freeze-check` - no binding is unanchored;
+       * - `every-binding-anchors-a-commit-and-the-check-reaches-all-of-them` - the same, in memory;
+       * - `a-refused-contract-is-in-the-index-and-resolves-to-no-binding` - not installable implies
+       *   no binding, which this state falsifies in both halves at once;
+       * - `every-contract-the-index-lists-has-a-page-at-its-own-address` - exactly one entry of the
+       *   index is not installable.
+       *
+       * **The four do not cost the same thing, and the difference is what ADR-0261 priced as one
+       * number.** Both anchoring names *encode* that every binding is anchored, so ADR-0017 makes
+       * their repair a rename - narrowing a claim under an address that then over-reads is the one
+       * thing that record forbids. Measured at `db9e20d` over the tracked tree by counting each
+       * address in the committed bytes: the pair stands **21 times in 9 files, 16 of them in 6
+       * records, with 5 `confirmed-by` entries across 3**. The two site guards cost no address at all:
+       * neither name says how many entries are refused or that an uninstallable one has no binding, so
+       * each is repaired inside its own body by reading the *lifecycle* where it reads `installable`,
+       * and the 17 citations of `every-contract-the-index-lists-has-a-page-at-its-own-address` are not
+       * a bill anybody pays. **So the price is the pair's 21, not the four's 41.**
+       *
+       * ADR-0261 published *fourteen citations across six records, three in `confirmed-by`*, and that
+       * figure reproduces under no rule this repository can state - the six records are right if its
+       * own is counted, and every other reading is 12, 16, 17 or 21. It is corrected here rather than
+       * in that record, which is stamped. ADR-0262.
        */
       case 'not-yet-published':
       case 'published':

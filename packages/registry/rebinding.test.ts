@@ -210,6 +210,16 @@ describe('the population this check runs over, named rather than counted', () =>
    * `against-what-was-published/` is where they are computed against a real rebuild, and this is the
    * cheap half - a statement about the population, in memory, that a battery may replay sixty times
    * without spawning anything.
+   *
+   * **And it names in advance the second event that will falsify it, which is a contract carrying
+   * `not-yet-published`.** That state mints a binding and takes `THE_UNPUBLISHED_PUBLICATION`, so
+   * `unanchoredBindings` names it and this guard reddens - correctly, on a tree where the claim has
+   * stopped being true. The repair is a **rename** and never a narrowing: this address encodes *every
+   * binding is anchored*, so narrowing the assertion under it would leave a name that over-reads,
+   * which is what ADR-0017 forbids. What that costs is measured at `db9e20d` and shared with
+   * `nothing-this-tree-binds-escapes-the-freeze-check`: the pair stands 21 times in 9 files, 16 of
+   * them in 6 records, with 5 `confirmed-by` entries across 3. The bill belongs to the unit that adds
+   * the first inhabitant, which sees the red for real rather than under a control. ADR-0261, ADR-0262.
    */
   it('every-binding-anchors-a-commit-and-the-check-reaches-all-of-them :: the population is not empty', () => {
     const ledger = theLocalLedger()
