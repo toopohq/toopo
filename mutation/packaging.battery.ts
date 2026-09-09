@@ -70,6 +70,17 @@ const originFile = (find: string, replace: string) => ({
   find,
   replace,
 })
+const productImportsFile = (find: string, replace: string) => ({
+  file: 'what-the-product-imports.ts',
+  find,
+  replace,
+})
+
+/**
+ * The clause of the specifier reader that recognises `import x from '…'`, which is every value
+ * import, every type import and every re-export this repository writes.
+ */
+const THE_COMMONEST_IMPORT_FORM_IS_READ = `      before === SyntaxKind.FromKeyword ||`
 
 const THE_OUTPUT_IS_WALKED_TO_THE_BOTTOM = `    return statSync(full).isDirectory() ? every(full) : [full]`
 
@@ -455,6 +466,32 @@ const mutants: readonly Mutant[] = [
       ),
     ],
     killed(['a-deployment-may-retire-a-page-and-never-an-address-a-contract-was-published-at']),
+  ),
+
+  /**
+   * The reader the manifest guard is built on, neutered on the commonest import form.
+   *
+   * `the-runtime-dependencies-are-the-packages-the-product-reaches` is born green - the entry point
+   * reaches 43 source files and names one package, and the manifest declares that one - so what it is
+   * worth is the day it is not, and this is the cell that says the day would be seen. **Written from a
+   * reading rather than from a guess**: the edit was applied by hand and the suite run, giving **1
+   * failed of 25** over four files, this guard alone, naming `declaredAndNotReached: ['typescript']`.
+   *
+   * **The clause is neutered rather than removed** for `W-179`'s reason: `before` is read by the two
+   * clauses below it, so deleting the line leaves the binding used and deleting the *binding* would be
+   * a `killed-by-typecheck` - the compiler detecting where the point is a guard detecting.
+   *
+   * What it injects is under-reading and not over-reading, which is the direction that matters: a
+   * reader that misses an import makes a declared package look unreached, where one that invents an
+   * import is what a *pattern* does and is why this reader is driven by the scanner at all.
+   */
+  sameOnEveryLens(
+    'A-29',
+    'stops recognising a `from` import, so every package the product names through the commonest ' +
+      'spelling is invisible to the reading and the one dependency the manifest declares looks like ' +
+      'a download no command loads',
+    [productImportsFile(THE_COMMONEST_IMPORT_FORM_IS_READ, '      false ||')],
+    killed(['the-runtime-dependencies-are-the-packages-the-product-reaches']),
   ),
 
   // -------------------------------------------------------------------------

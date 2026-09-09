@@ -572,6 +572,7 @@ export const CENSUS: Readonly<Record<string, SuiteCensus>> = {
     'packaging/archive.test.ts': 9,
     'packaging/what-npm-holds.test.ts': 6,
     'packaging/what-the-origin-lists.test.ts': 9,
+    'packaging/what-the-product-imports.test.ts': 1,
   },
 
   'mutation/fixture/vitest.config.ts': {
