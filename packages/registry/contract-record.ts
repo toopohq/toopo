@@ -377,8 +377,15 @@ export type PublishedProseCorrection = {
  * words that it is the one field of `identity` that is not frozen - *nobody links to an alias, no
  * answer cites one, and correcting one breaks nobody's code*. `contractSnapshot` freezes `identity`
  * whole, so on a published contract that decision is unkept: measured, adding one alias to
- * `string/slugify@1` moves its digest from `855107da…` to `5fe0ecfa…`. Five of the six contracts are
- * published, so the cheapest contribution this project invites is the one it cannot accept.
+ * `string/slugify@1` moves its digest from `855107da…` to `5fe0ecfa…`. Six of the seven contracts
+ * are published, so the cheapest contribution this project invites is the one it cannot accept.
+ *
+ * This read *five of the six* until the count was taken from `theCatalogue` rather than from a
+ * memory of it. Both halves were true when they were written and both expired at
+ * `object/deep-equal@1`'s publication, with nothing pointing at them - the class this repository
+ * keeps finding, arriving on a sentence whose argument the number does not carry. What survives the
+ * correction unchanged is the argument: the contribution ADR-0023 invites is the one the freeze
+ * refuses, and that is true at any count above nought. ADR-0018.
  *
  * ---------------------------------------------------------------------------
  * Why this is curation and not a second statement of the frozen half

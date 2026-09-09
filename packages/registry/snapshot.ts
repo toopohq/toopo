@@ -269,7 +269,7 @@ export const CONTRACT_STANDING_FIELDS: readonly StandingField[] = [
       'catalogue\'s six publications, `slugify a blog post` answered 0, 0, 0, 1, 4, 4 while no ' +
       'contract moved. Inside the digest, a phrase added on a Tuesday rebinds every address the ' +
       'contract has, which permanent rule 6 forbids - so the catalogue could never learn a word ' +
-      'about anything it had published, which is five of its six contracts.',
+      'about anything it had published.',
   },
 ]
 

@@ -3252,7 +3252,14 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   needs a runtime the others do not. **A fourteenth refusal ground was proposed on that and is
   refused** — the requirement is declarable as prose in `identity.inputDomain`, where every other
   statement of what a contract refuses already lives, and a ground biting on
-  undeclarable-by-mechanism would refuse all seven published contracts. ADR-0220.
+  undeclarable-by-mechanism would refuse every contract this catalogue holds. ADR-0220.
+
+  **That clause read *all seven published contracts* and the catalogue publishes six**, which the
+  count taken from `theCatalogue` is what says: seven entries, six `published` and one
+  `never-published`. The ground bites on every contract of the catalogue and not on the published
+  half, so the word was carrying a number the argument never needed - and it is removed rather than
+  corrected, on the rule that a sentence which can be true without counting does not count.
+  ADR-0018.
 
   **It has a second consequence now, and it is the one that decides a contract rather than a page.**
   ADR-0220 measured that the field refuses nothing; ADR-0247 measured that it cannot carry the one
