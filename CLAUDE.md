@@ -829,6 +829,19 @@ answers **647 over 211 files** and almost all of it is `one contract` used as an
 and read one at a time it is **90 over 30 files**, of which 28 become false at the entry and are left
 alone, and **3 were false already** and are repaired. ADR-0263.
 
+**And the replay that dossier forced found ADR-0261's bill on a second battery.** Editing the
+exclusion puts it on every battery's execution path, so the commit selects **24 of 24**; that replay
+took 94 min 58 s and came back with `cli-install` disagreeing. **The red is on `main` and nothing had
+selected it** — `packages/cli/` and its battery are byte-identical since `07a60e7`, which moved
+`packages/registry/response.ts` alone — so ADR-0262's `site` finding was half the bill and not the
+whole of it. `C-17` publishes the refused contract and that no longer offers it, `installable`
+following the lifecycle rather than the ledger, so two pinned guards stopped and three were left
+witnessed by nothing. The cell keeps its edit and is re-pinned to the one guard it reddens alone;
+`C-91` is written for the rest and is **not that cell rewritten** — one removes the refusal, the other
+keeps it and publishes beside it with a standing that says `published`, which were one defect before
+ADR-0261 and are two after. Measured by hand before either pin: **5 failed of 199**, which is
+ADR-0076's line exactly. ADR-0263.
+
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
 `string/titlecase`, `number/rond`, `toy/thing` — every one two kebab-case segments, which is exactly

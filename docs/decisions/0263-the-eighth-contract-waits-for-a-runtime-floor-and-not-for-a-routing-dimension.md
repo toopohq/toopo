@@ -174,6 +174,44 @@ published*, `packages/registry/snapshot.ts` reading *which is five of its six co
 `CLAUDE.md` reading *would refuse all seven published contracts*. Two carried a count their argument
 never needed and lost it; one carries the measured pair with a note saying which unit falsified it.
 
+## The red the full replay found, which is ADR-0261's bill on a second battery
+
+Editing `mutation/excluded-contracts.ts` puts it on every battery's execution path, so this record's
+own commit selects **24 of 24** — ADR-0254's consequence working as written. That replay took **94
+min 58 s** and came back with **one battery disagreeing: `cli-install`**.
+
+**The red is on `main` and nothing had selected it**, which is measured rather than argued:
+`packages/cli/` and `mutation/cli-install.battery.ts` are byte-identical since `07a60e7`, and that
+commit moved `packages/registry/response.ts` alone. So this is exactly ADR-0262's `site` finding on a
+second battery, and **ADR-0261's bill was two batteries rather than one** — the earlier unit reached
+only `site` because that is what its own diff selected.
+
+**`C-17` publishes the contract the catalogue refused, and that no longer offers it.** The cell takes
+the refusal arm out and publishes with `record.lifecycle`, which reads `never-published`; since
+`installable` follows the lifecycle, a binding carrying that standing is not installable whoever
+minted it. So two of its pinned guards stopped reddening and three guards were left witnessed by
+nothing: `the-catalogue-lists-every-contract-and-marks-the-one-it-refuses`,
+`a-refused-contract-is-offered-no-install-line` and
+`a-refused-contract-is-in-the-index-and-is-not-installable`.
+
+**The repair is a re-aiming of the reading and an addition.** `C-17` keeps its edit and is pinned to
+the one guard it reddens, `search-decides-the-same-thing-against-the-emitted-tree`, which it is alone
+on. `C-91` is written for the rest, and it is **not `C-17` rewritten**: that cell removes the
+refusal, this one keeps it and publishes beside it with a standing that says `published`. Before
+ADR-0261 those were one defect; after it they are two, which is the finding stated as a cell.
+
+**Measured by hand before either pin was written**, the edit applied to `packages/cli/local-source.ts`
+and the suite run the way the battery runs it: **5 failed of 199** over 23 files, naming the three
+guards nothing was reddening plus the two `C-17` stopped reddening. Five is ADR-0076's line exactly,
+so the pin names all five. **The refusal is kept rather than replaced for a measured reason**:
+`refuseContract` is called once in that file, so removing the call orphans its import and
+`noUnusedLocals` turns the cell into a `killed-by-typecheck`, which is the compiler detecting where a
+guard should.
+
+The cell moves what the instrument declares about itself, so the README's three figures go **1028 →
+1029** cells and **986 → 987** caught, named by
+`every-figure-in-the-readme-is-the-one-the-instrument-declares` rather than by anybody remembering.
+
 ## Consequences
 
 **What is bought is a dossier and a repair.** The chain is written where somebody meets it, the four

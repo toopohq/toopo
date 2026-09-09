@@ -610,10 +610,29 @@ const mutants: readonly Mutant[] = [
     killed(['every-feature-the-install-writes-gets-its-own-lockfile-entry', THE_TWO_DIGESTS]),
   ),
 
+  /**
+   * **This pin named two guards until ADR-0263 and it now names the one that reddens.**
+   *
+   * The edit has not moved and neither has this folder: `packages/cli/` and this file are
+   * byte-identical since `07a60e7`. What moved is one line of `packages/registry/response.ts`, where
+   * `installable` stopped meaning membership of the ledger and became a set derived from the
+   * lifecycle. ADR-0261.
+   *
+   * So this cell takes the refusal arm out and publishes the contract with `record.lifecycle`, which
+   * for `array/group-by@1` reads `never-published` - and a binding carrying that standing is not
+   * installable, whoever minted it. **The defect is now that the branch is not taken, where it used
+   * to be that the contract is offered**, and those are two different claims since that line moved.
+   * What still separates the stand-in from the emitted tree is the comparison, so this cell is alone
+   * on `search-decides-the-same-thing-against-the-emitted-tree` and pins that.
+   *
+   * The two it stopped reddening are C-91's, which is the cell written for the guards this one
+   * stopped witnessing. Measured by hand before either pin was written: the candidate reddens five,
+   * and this one reddens one.
+   */
   sameOnEveryLens(
     'C-17',
-    'publishes the contract the catalogue decided against, so the index of the very registry whose ' +
-      'refusals page exists to say it was turned down offers it for installation',
+    'publishes the contract the catalogue decided against without saying it was published, so the ' +
+      'stand-in and the emitted tree stop deciding the same thing about it',
     [
       localFile(
         A_REFUSED_CONTRACT_IS_REFUSED,
@@ -625,9 +644,51 @@ const mutants: readonly Mutant[] = [
       })`,
       ),
     ],
+    killed(['search-decides-the-same-thing-against-the-emitted-tree']),
+  ),
+
+  /**
+   * The standing lies about the lifecycle, which is the only way left to offer a refused contract.
+   *
+   * **It is not C-17 rewritten and the difference is the whole finding.** That cell removes the
+   * refusal; this one keeps it and publishes beside it with a standing that says `published`. Since
+   * ADR-0261 `installable` is read off the lifecycle a binding carries, so minting a binding for the
+   * refused contract is no longer enough to offer it and corrupting what that binding *says* is.
+   * Two defects that were one before that line moved.
+   *
+   * **The refusal is kept rather than replaced for a measured reason**: `refuseContract` is called
+   * once in that file, so removing the call orphans its import and `noUnusedLocals` turns the cell
+   * into a `killed-by-typecheck` - a detection by the compiler where the point is a detection by a
+   * guard. `W-179` neutered a pattern rather than removing a dispatch for the same reason.
+   *
+   * **Written from a reading rather than from a guess**: the edit was applied by hand and the suite
+   * run the way this battery runs it, giving **5 failed of 199** over 23 files - the three guards
+   * nothing was reddening, plus the two C-17 stopped reddening. Five is ADR-0076's line, so the pin
+   * names all of them.
+   */
+  sameOnEveryLens(
+    'C-91',
+    'records the refusal and publishes the contract beside it as though it had been published, so ' +
+      'the index of the registry whose refusals page says it was turned down offers it again',
+    [
+      localFile(
+        A_REFUSED_CONTRACT_IS_REFUSED,
+        `${A_REFUSED_CONTRACT_IS_REFUSED}
+      ledger = publishContract(ledger, {
+        address: record.address,
+        digest: contractDigest,
+        publishedAt: publication.at,
+        publishedFrom: THE_UNPUBLISHED_REVISION,
+        standing: { lifecycle: { state: 'published' } },
+      })`,
+      ),
+    ],
     killed([
+      'the-catalogue-lists-every-contract-and-marks-the-one-it-refuses',
+      'a-refused-contract-is-offered-no-install-line',
       'a-refused-contract-is-in-the-index-and-is-not-installable',
       'a-contract-the-catalogue-refused-is-not-installable',
+      'search-decides-the-same-thing-against-the-emitted-tree',
     ]),
   ),
 
