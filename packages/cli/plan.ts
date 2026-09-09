@@ -132,7 +132,17 @@ export type InstallPlan = {
 
 export type PlanResult = { readonly plan: InstallPlan } | { readonly faults: readonly string[] }
 
-const destinationOf = (contractName: string, file: string): string =>
+/**
+ * Where a served file lands, relative to the configured directory.
+ *
+ * **Exported so that a guard can ask it rather than restate it.** ADR-0264's own subject one folder
+ * over: a second statement of this composition, written in a test, would establish that two
+ * expressions agree and never that the catalogue's paths are ones this client may write. The reader
+ * is `packages/registry/against-the-catalogue.test.ts`, which is where the catalogue is held to the
+ * confinement, and it is a test file - nothing of the product imports this across the boundary.
+ * ADR-0265.
+ */
+export const destinationOf = (contractName: string, file: string): string =>
   file === THE_ENTRY_FILE ? `${contractName}.ts` : `${contractName}/${file}`
 
 const addressOf = (held: FrozenImplementation): ImplementationAddress => ({

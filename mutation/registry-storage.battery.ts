@@ -4996,6 +4996,44 @@ export const battery: Battery = {
    * a cell really produced and never its pin. ADR-0261.
    */
   unprobedRegions: [
+    /**
+     * The catalogue's paths against the client's confinement, unprobed because **both edits that
+     * reach it fail A2**, and that was measured rather than argued.
+     *
+     * The guard composes what the catalogue serves the way `plan.ts` composes it and asks
+     * `staysInside`. Two things can falsify it, and this battery can reach exactly one of them.
+     *
+     * **The served path.** `hashedFile` returning a name the folder does not carry - `path.replace('-',
+     * ' ')`, which is the entry's own example `edge cases.ts` - reddens this guard and **38 others**,
+     * measured over the whole registry suite: 39 failed of 487. Its plainest description is *the
+     * registry announces a file under a name it does not have*, which is
+     * `a-blob-answer-hashes-to-its-address`'s claim and not this one. A candidate whose plainest
+     * description names a neighbour has witnessed the neighbour, so it is thrown away.
+     *
+     * **The composition.** `destinationOf` writing `${name}/../${file}` reddens it and **77 others** -
+     * 78 failed of 199 across ten files of `packages/cli` - and is outside this battery's folder in
+     * any case.
+     *
+     * So both are shared mechanisms, which `mutants.ts` forbids aiming at, and the asymmetry that
+     * makes a narrow aim impossible is structural: `CONTRACT_NAME` is a strict subset of
+     * `A_PATH_INSIDE`, so no contract *name* can be refused, and the only other input is a file name
+     * that every digest, every blob address and every emitted address is resolved through.
+     *
+     * **What would witness it is the event it exists for**, which no edit produces: a contract folder
+     * really holding a file the confinement refuses. That folder would fail `harnessOf` first unless
+     * the declaration moved with it, and a cell moving both is a cell that renames a file on disk,
+     * which no battery does. ADR-0265.
+     */
+    {
+      nature: 'claims detection',
+      reason:
+        'the catalogue against the confinement. The guard is born green and its failure condition is ' +
+        'a contract folder holding a file name the client may not write, which no edit inside this ' +
+        'folder produces: the two that reach it are the served path and the composition, measured at ' +
+        '39 reds of 487 and 78 of 199, and both fail A2 by being more plainly described as somebody ' +
+        "else's claim.",
+      guards: ['every-path-this-catalogue-serves-is-one-the-confinement-admits'],
+    },
     {
       nature: 'claims detection',
       reason:

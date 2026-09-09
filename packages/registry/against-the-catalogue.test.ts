@@ -16,6 +16,11 @@ import {
   serialiseContract,
 } from './serialise.js'
 import { eachContract, theCatalogue } from './the-catalogue.js'
+// The confinement and the composition are the client's, and this is a test file: nothing of the
+// product imports across that boundary, and `shared-surface.test.ts` reaches `packaging/` the same
+// way. Restating either here would compare two statements rather than hold one. ADR-0265.
+import { destinationOf } from '../cli/plan.js'
+import { staysInside } from '../cli/where-a-file-may-land.js'
 import { everyNode, readSources } from '../validation/source.js'
 import type { Node, SourceFile } from '../validation/typescript-api.js'
 import { TYPESCRIPT_SURFACE } from '../validation/typescript-api.js'
@@ -719,6 +724,71 @@ describe('the five, read against their own source', () => {
       expect(wrong.map((file) => file.path)).toEqual([])
     },
   )
+
+  /**
+   * Every path this catalogue serves is a place the client is allowed to write.
+   *
+   * ---------------------------------------------------------------------------
+   * Two alphabets, and nothing kept the agreement
+   * ---------------------------------------------------------------------------
+   *
+   * ADR-0206 states one alphabet for a path this tool writes, reads or removes, and this catalogue
+   * states another for what a contract folder may be called - and the second one is `readdirSync`.
+   * They agree today by a literal: `referenceImplementationOf` filters an implementation's files to
+   * `reference.ts`, so one spelling per contract reaches an install. **The failure has no event.** A
+   * contract whose folder holds `edge cases.ts` is served correctly, hashes correctly, and is refused
+   * at the moment somebody installs it - with a sentence about a path being outside a directory,
+   * which is true and is not the cause.
+   *
+   * ---------------------------------------------------------------------------
+   * Composed and never declared, which is what decides whether this is worth anything
+   * ---------------------------------------------------------------------------
+   *
+   * **The confinement sees a path the client composes, and never a file name the catalogue declares.**
+   * `plan.ts` says so in its own words where it calls the predicate: *both halves of that composition
+   * are the registry's, so the confinement is asked of the result rather than of either - a contract
+   * whose name left the directory would satisfy a check written about the file name beside it.* So a
+   * guard over `source.files` would be green on a population that is not the one that counts, and this
+   * one composes with `destinationOf` - the client's own function, imported rather than restated,
+   * because a second expression here would establish that two statements agree.
+   *
+   * Measured while it was written: the catalogue declares **9** distinct file names and **2** shared
+   * ones, and the composition of what it *serves* is **52** destinations, of which the confinement
+   * refuses nought. Eleven is a count of names; fifty-two is the population.
+   *
+   * ---------------------------------------------------------------------------
+   * What it does not cover, written rather than smoothed
+   * ---------------------------------------------------------------------------
+   *
+   * **The shared harness is outside it.** `packages/catalogue/every-contract.ts` and its neighbour are
+   * served with a snapshot and never composed into a destination, because they are what an auditor
+   * fetches rather than what an install writes. Including them would assert something about a path
+   * `destinationOf` never builds.
+   *
+   * **It reads the contract's harness and not an implementation's.** The two coincide today, an
+   * implementation's files being the contract's filtered to one; the day the filter opens they are two
+   * populations and this reads the wider.
+   *
+   * **It is about a string and never about a disk.** `under` asks the filesystem what the deepest
+   * existing part of a path really is, and a link standing where a file goes is the half ADR-0206
+   * measured and left open. This guard cannot see one.
+   *
+   * **And a path it refuses is not a rule to widen.** `A_PATH_INSIDE` is a floor, and a floor is not
+   * repaired by lowering it: a contract whose file name this refuses is a contract that has to be
+   * renamed, or a finding to put in front of whoever owns the alphabet. ADR-0265.
+   */
+  it('every-path-this-catalogue-serves-is-one-the-confinement-admits', () => {
+    const refused = theCatalogue.flatMap((source) => {
+      const record = serialiseContract(REPOSITORY_ROOT, source)
+
+      return record.harness
+        .map((file) => destinationOf(record.address.name, file.path))
+        .filter((path) => !staysInside(path))
+        .map((path) => `${renderContract(record.address)} serves a path that would land at ${path}`)
+    })
+
+    expect(refused).toEqual([])
+  })
 
   /**
    * A re-examination says when it was taken, in the spelling something already resolves.

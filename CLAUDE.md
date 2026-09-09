@@ -860,6 +860,23 @@ the scanner this repository already drives, where a comment is a token the langu
 on both directions, `wrangler` declared and `happy-dom` imported, each restored; green at 1 test and
 42 ms; then `A-29`, measured at **1 failed of 25** before it was pinned. ADR-0264.
 
+**And the catalogue is held to the confinement on the path a client composes, by a guard nothing can
+witness.** ADR-0206 states one alphabet for a path this tool writes and the catalogue states another
+for what a folder may be called, and they agree today by a literal. **Which population counts was
+measured rather than chosen**: `plan.ts` asks `staysInside` of `destinationOf(name, file)` and says
+why at the call site, so a guard over declared names would be green on a population that is not the
+one the confinement sees. **Eleven is a count of names and fifty-two is the population** — 9 declared
+and 2 shared against 52 composed destinations, nought refused. Red first on both conditions, the
+served path and the composition, the first arriving in the entry's own example `edge cases.ts`; then
+green at 487 of 487. **And there is no cell, which is measured and not shrugged at**: `hashedFile`
+renaming a served path reddens **39 of 487** and `destinationOf` leaving the folder reddens **78 of
+199**, and each is more plainly somebody else's claim, so both fail A2 and the guard is declared under
+`unprobedRegions` with the two figures. **The asymmetry is structural** — `CONTRACT_NAME` is a strict
+subset of `A_PATH_INSIDE`, so only a file name can falsify it, and every digest resolves through one.
+It lives in the registry's own suite importing the client's two functions, which inverts no layering:
+the product carries **nought** imports that way and a test file is in nothing `reachable.ts` walks.
+ADR-0265.
+
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
 `string/titlecase`, `number/rond`, `toy/thing` — every one two kebab-case segments, which is exactly
@@ -2350,6 +2367,24 @@ adding one cannot lengthen anything a reader has already read. ADR-0112.
   What it leaves behind is that **every** 3xx is refused and not only one that leaves the origin — the
   narrow rule the entry's second option named — which costs nothing while the live origin answers every
   address directly and is the line that moves the day it does not;
+- **every path this catalogue serves being one the confinement admits** — ADR-0265, and it is the
+  first entry closed by **a guard nothing can witness, said rather than manufactured**. Its own
+  arithmetic was wrong twice. *One expression over `theCatalogue`* is two: the confinement is asked of
+  a path the client **composes**, which `plan.ts` says at the call site — *a contract whose name left
+  the directory would satisfy a check written about the file name beside it* — so a guard over the
+  declared names is green on a population that does not count. And **eleven is a count of names where
+  the population is fifty-two**: 9 declared file names and 2 shared against 52 composed destinations,
+  of which the confinement refuses nought. **Two candidates for a cell were measured and both fail
+  A2** — `hashedFile` renaming a served path reddens **39 of 487** and is more plainly *the registry
+  announces a file under a name it does not have*, and `destinationOf` leaving the folder reddens
+  **78 of 199** and is the plan's claim — so the guard is declared under `unprobedRegions` with both
+  figures beside it. **The asymmetry is structural**: `CONTRACT_NAME` is a strict subset of
+  `A_PATH_INSIDE`, so no contract name a mutant can write is refused, and the only other input is a
+  file name every digest resolves through. What would witness it is a contract folder really holding a
+  refused name, which fails `harnessOf` first unless its declaration moves with it — a rename on disk
+  no battery performs. What it leaves behind is in the guard's own header: the shared harness is
+  outside it, it reads a string and never a disk, and a path it refuses is a contract to rename or a
+  finding to pose and never a rule to widen;
 - **the manifest declaring no dependency the product could reach** — ADR-0264, and it is the first
   entry closed by **a witness this repository already had and nobody had looked for**. That entry read
   *one file, and it is the cheapest entry on this list*; what it did not say is where the guard would
@@ -2668,33 +2703,6 @@ this repository recorded, in a file it may no longer edit, naming two repairs it
   red for the whole of every release unit — on the one push ADR-0109's ordering exists to put every
   verdict in front of. What is stamped is the version this package declares when the table was last
   read. ADR-0138, ADR-0213, ADR-0214.
-
-- **That every path this catalogue serves is a path the confinement admits.** ADR-0206 states one
-  alphabet for a path this tool writes, reads or removes, and the catalogue states another for what a
-  contract folder may be called - and the second is `readdirSync`. They agree today by a literal:
-  `referenceImplementationOf` filters an implementation's files to `'reference.ts'`, so the only
-  spelling that reaches an install is that one, and `CONTRACT_NAME` is a strict subset of the alphabet
-  whose segments cannot begin with a dot. **Nothing keeps the agreement.**
-
-  **The failure has no event and it is the expensive direction.** A contract whose folder holds
-  `edge cases.ts`, `réference.ts` or `x+1.ts` is served correctly, hashes correctly, and is refused at
-  the moment somebody installs it - with a sentence about a path being outside a directory, which is
-  true and is not the cause. It arrives the day the filter opens, which `plan.ts` already names as a
-  unit of its own: *a folder arrives beside the entry rather than around it*.
-
-  **Where this looked**: `referenceImplementationOf` in `packages/registry/serialise.ts`, which is the
-  literal; `harnessOf` beside it, which derives a path from a directory listing and constrains nothing
-  about its spelling; and `A_PATH_INSIDE` in `packages/cli/where-a-file-may-land.ts`, whose comment
-  says it is the alphabet `configuration.ts` always required and says nothing about the catalogue.
-
-  **The population is every file name a contract folder may hold**, which is unbounded, and the part of
-  it that reaches an install is one spelling today. What would close it is a guard total over the
-  catalogue - *every path this catalogue serves is one the confinement admits* - which is one
-  expression over `theCatalogue` and would be **born green on today's six**, on the rule this
-  repository states for a guard that finds nothing on the day it is written: the event it would catch
-  is the eighth contract, or the unit that opens the filter, and what that event costs is an install
-  that refuses a contract nobody can see is wrong. Priced as its own unit and not taken, because a
-  security release is not where one decides what the catalogue's own alphabet is. ADR-0206.
 
 - **That a link standing where the file itself goes is answered.** ADR-0206 measured the directory half
   of that class and left the other half unmeasured, and it says so rather than deducing it: a
