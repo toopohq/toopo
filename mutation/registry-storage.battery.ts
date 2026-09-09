@@ -5014,24 +5014,37 @@ export const battery: Battery = {
      * 78 failed of 199 across ten files of `packages/cli` - and is outside this battery's folder in
      * any case.
      *
-     * So both are shared mechanisms, which `mutants.ts` forbids aiming at, and the asymmetry that
-     * makes a narrow aim impossible is structural: `CONTRACT_NAME` is a strict subset of
-     * `A_PATH_INSIDE`, so no contract *name* can be refused, and the only other input is a file name
-     * that every digest, every blob address and every emitted address is resolved through.
+     * **The declaration.** `the-catalogue.ts` naming `out come.ts` where `array/group-by@1` declares
+     * `outcome.ts` reddens it and **78 others**, 79 failed of 487, because `harnessOf` then finds a
+     * file declared and not present and throws for that contract. Its plainest description is *a
+     * contract declares a file its folder does not hold*, which is `harnessOf`'s claim.
+     *
+     * So all three are shared mechanisms, which `mutants.ts` forbids aiming at, and each is more
+     * plainly somebody else's claim. The asymmetry that makes a narrow aim impossible is structural:
+     * `CONTRACT_NAME` is a strict subset of `A_PATH_INSIDE`, so no contract *name* a mutant can write
+     * is refused, and the only other input is a file name - which is either resolved through every
+     * digest or checked against the folder before anything reads it.
      *
      * **What would witness it is the event it exists for**, which no edit produces: a contract folder
-     * really holding a file the confinement refuses. That folder would fail `harnessOf` first unless
-     * the declaration moved with it, and a cell moving both is a cell that renames a file on disk,
-     * which no battery does. ADR-0265.
+     * really holding a file the confinement refuses, *declared and present*. That is a rename on disk
+     * and no battery performs one.
+     *
+     * **This declaration was written once and the instrument refuted it**, which is why it now carries
+     * three figures instead of an argument. The guard read `serialiseContract(…).harness` in its first
+     * shape, so `I-125`, `I-126` and `I-127` reddened it by making `parametersOf` throw - none of them
+     * about a path - and the battery refused the run with *declared silent and a mutant reddened it*.
+     * The guard asks the declaration now, which is the same fifty-two strings without the serialiser
+     * behind them, and those three no longer reach it. ADR-0168's class, caught by the accounting
+     * rather than by a reading. ADR-0265.
      */
     {
       nature: 'claims detection',
       reason:
         'the catalogue against the confinement. The guard is born green and its failure condition is ' +
-        'a contract folder holding a file name the client may not write, which no edit inside this ' +
-        'folder produces: the two that reach it are the served path and the composition, measured at ' +
-        '39 reds of 487 and 78 of 199, and both fail A2 by being more plainly described as somebody ' +
-        "else's claim.",
+        'a contract folder holding a file name the client may not write, declared and present, which ' +
+        'no edit inside this folder produces: the three that reach it are the served path, the ' +
+        'composition and the declaration, measured at 39 reds of 487, 78 of 199 and 79 of 487, and ' +
+        "all three fail A2 by being more plainly described as somebody else's claim.",
       guards: ['every-path-this-catalogue-serves-is-one-the-confinement-admits'],
     },
     {

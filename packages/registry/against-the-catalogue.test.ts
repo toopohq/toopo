@@ -775,17 +775,32 @@ describe('the five, read against their own source', () => {
    *
    * **And a path it refuses is not a rule to widen.** `A_PATH_INSIDE` is a floor, and a floor is not
    * repaired by lowering it: a contract whose file name this refuses is a contract that has to be
-   * renamed, or a finding to put in front of whoever owns the alphabet. ADR-0265.
+   * renamed, or a finding to put in front of whoever owns the alphabet.
+   *
+   * ---------------------------------------------------------------------------
+   * Why it reads the declaration and not `serialiseContract`, which the instrument decided
+   * ---------------------------------------------------------------------------
+   *
+   * It read `serialiseContract(…).harness` for one commit, on the argument that *serves* means what
+   * the registry really produces. **The two are the same strings** - `harnessOf` returns
+   * `[...source.files].sort()` hashed, so the paths are the declaration sorted - and the difference is
+   * only what else comes along.
+   *
+   * What came along is a dependency on the whole serialiser. Measured: `I-125` removes an empty-part
+   * filter in `signature.ts`, `parametersOf` throws `UnreadableSignature`, and this guard went red on
+   * a stack trace rather than on its own claim - it and ten others, none of which is about a path.
+   * The instrument said so rather than a reading: `registry-storage` refused the run with *declared
+   * silent and a mutant reddened it*, naming `I-125`, `I-126` and `I-127`, none of which has a causal
+   * path to this claim. **That is ADR-0168's class**, and the repair is to ask the declaration, which
+   * is the same population without the fragility. ADR-0265.
    */
   it('every-path-this-catalogue-serves-is-one-the-confinement-admits', () => {
-    const refused = theCatalogue.flatMap((source) => {
-      const record = serialiseContract(REPOSITORY_ROOT, source)
-
-      return record.harness
-        .map((file) => destinationOf(record.address.name, file.path))
+    const refused = theCatalogue.flatMap((source) =>
+      source.files
+        .map((file) => destinationOf(source.address.name, file))
         .filter((path) => !staysInside(path))
-        .map((path) => `${renderContract(record.address)} serves a path that would land at ${path}`)
-    })
+        .map((path) => `${renderContract(source.address)} serves a path that would land at ${path}`),
+    )
 
     expect(refused).toEqual([])
   })

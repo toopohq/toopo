@@ -89,27 +89,49 @@ suite answers **487 of 487** where it answered 486.
 
 ## The cell, and why there is not one
 
-**Both candidates were measured and both fail A2.**
+**Three candidates were measured and all three fail A2.**
 
 | candidate | reds | its plainest description |
 | --- | --- | --- |
 | `hashedFile` renaming a served path | **39 of 487** | *the registry announces a file under a name it does not have* |
 | `destinationOf` leaving the folder | **78 of 199** | *an installed file lands outside the folder it was planned into* |
+| `the-catalogue.ts` declaring `out come.ts` | **79 of 487** | *a contract declares a file its folder does not hold* |
 
-The first names `a-blob-answer-hashes-to-its-address`'s claim and the second names the plan's, so each
-has witnessed a neighbour rather than this guard. Both are also shared mechanisms, which
-`mutation/mutants.ts` forbids aiming at, and the second is outside `registry-storage`'s folder anyway.
+The first names `a-blob-answer-hashes-to-its-address`'s claim, the second the plan's and the third
+`harnessOf`'s, so each has witnessed a neighbour rather than this guard. All three are shared
+mechanisms, which `mutation/mutants.ts` forbids aiming at, and the second is outside
+`registry-storage`'s folder anyway.
 
 **The asymmetry that makes a narrow aim impossible is structural.** `CONTRACT_NAME` is a strict subset
 of `A_PATH_INSIDE`, so no contract *name* a mutant could write is refused; the only other input is a
-file name, and every digest, every blob address and every emitted address resolves through it. What
-would witness the guard is the event it exists for — a contract folder really holding a file the
-confinement refuses — and that folder fails `harnessOf` first unless its declaration moves with it,
-which is a rename on disk that no battery performs.
+file name, and it is either resolved through every digest or checked against the folder before
+anything reads it. What would witness the guard is the event it exists for — a contract folder really
+holding a refused name, declared **and** present — which is a rename on disk that no battery performs.
 
-So the guard is declared under `unprobedRegions` on `registry-storage`, with both figures and the A2
-reading beside it. **That is a measured declaration and not a shrug**: it names what would witness it
-and why nothing here does.
+So the guard is declared under `unprobedRegions` on `registry-storage`, with the three figures and the
+A2 reading beside it. **That is a measured declaration and not a shrug**: it names what would witness
+it and why nothing here does.
+
+### The instrument refuted this declaration once, and that is what shaped the guard
+
+The declaration was written on two candidates I had thought of, and the battery answered with three I
+had not: **`registry-storage` refused the run with *declared silent and a mutant reddened it***,
+naming `I-125`, `I-126` and `I-127`.
+
+**None of the three is about a path.** The guard read `serialiseContract(…).harness` in its first
+shape, so it carried a dependency on the whole serialiser: `I-125` removes an empty-part filter in
+`signature.ts`, `parametersOf` throws `UnreadableSignature`, and the guard went red on a stack trace
+rather than on its own claim — with ten others, none of them about a path either. That is ADR-0168's
+class, *a guard reddening on a mutant with no causal path to it*, and the accounting is what found it
+where a reading had not.
+
+**The repair is that the guard asks the declaration.** `harnessOf` returns `[...source.files].sort()`
+hashed, so `record.harness`'s paths *are* the declaration sorted — the same fifty-two strings without
+the serialiser behind them. Measured after: the same eleven-red tree gives ten, and this guard is not
+among them.
+
+**What that changes about the entry's own reasoning is worth keeping**: *no cell can reach it* was a
+statement about the candidates somebody thought of, and the instrument answered with the population.
 
 ## Consequences
 

@@ -875,7 +875,13 @@ renaming a served path reddens **39 of 487** and `destinationOf` leaving the fol
 subset of `A_PATH_INSIDE`, so only a file name can falsify it, and every digest resolves through one.
 It lives in the registry's own suite importing the client's two functions, which inverts no layering:
 the product carries **nought** imports that way and a test file is in nothing `reachable.ts` walks.
-ADR-0265.
+**And the instrument refuted the declaration before it was believed**, which is what shaped the guard:
+the first shape read `serialiseContract(…).harness`, so `I-125`, `I-126` and `I-127` reddened it by
+making `parametersOf` throw, and the battery refused with *declared silent and a mutant reddened it* —
+ADR-0168's class, found by the accounting where a reading had not. It asks the declaration now, which
+is the same fifty-two strings without the serialiser behind them, and a third candidate was measured
+at **79 of 487**. *No cell can reach it* was a statement about the candidates somebody thought of, and
+the instrument answered with the population. ADR-0265.
 
 **The fixtures stood on nine addresses the catalogue could publish, and one of them is the sixth
 contract.** `number/round`, `string/pad`, `number/clamp`, `number/sign`, `text/left`, `text/right`,
